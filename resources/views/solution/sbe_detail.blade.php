@@ -418,6 +418,8 @@ SBE Detail
                     if (result.length == 0) {
                         showEmptyConfig()
                     }else{
+                        var sumTotalPrice = 0
+
                         $.each(result,function(index,items){
                             if (index == "Implementation") {
                                 var bg_color = "#789de5"
@@ -440,12 +442,12 @@ SBE Detail
                             appendTemporary = appendTemporary + '            </div>'
                             appendTemporary = appendTemporary + '            <div class="col-md-9 col-xs-12">'
                             appendTemporary = appendTemporary + '                <div class="table-responsive">'
-                            appendTemporary = appendTemporary + '                    <table class="table table-bordered" width="100%">'
+                            appendTemporary = appendTemporary + '                    <table class="table table-bordered" id="tablePreviewConfig" width="100%">'
                             appendTemporary = appendTemporary + '                        <thead style="background-color:'+ bg_color +';color:white">'
                             appendTemporary = appendTemporary + '                            <tr>'
                             appendTemporary = appendTemporary + '                                <th>No</th>'
                             appendTemporary = appendTemporary + '                                <th>Function</th>'
-                            appendTemporary = appendTemporary + '                                <th>Total</th>'
+                            appendTemporary = appendTemporary + '                                <th width="150">Total</th>'
                             appendTemporary = appendTemporary + '                            </tr>'
                             appendTemporary = appendTemporary + '                        </thead>'
                             appendTemporary = appendTemporary + '                        <tbody>'
@@ -460,7 +462,7 @@ SBE Detail
                             })
                             appendTemporary = appendTemporary + '      <tfoot>'
                             appendTemporary = appendTemporary + '          <tr>'
-                            appendTemporary = appendTemporary + '              <th colspan="2" style="text-align:right">Grand Total</th>'
+                            appendTemporary = appendTemporary + '              <th colspan="2" style="text-align:right">Total Price</th>'
                             appendTemporary = appendTemporary + '              <th>'+ formatter.format(items[0].nominal) +'</th>'
                             appendTemporary = appendTemporary + '          </tr>'
                             appendTemporary = appendTemporary + '                        </tfoot>'
@@ -468,10 +470,34 @@ SBE Detail
                             appendTemporary = appendTemporary + '                </div>'
                             appendTemporary = appendTemporary + '            </div>'
                             appendTemporary = appendTemporary + '        </div>'
+
+                            sumTotalPrice += parseInt(items[0].nominal) 
                         })
-                        
+
                         appendTemporary = appendTemporary + '     <button class="btn btn-sm btn-success pull-right" onclick="generatePDF()" id="btnGeneratePdf" style="display:none">Generate</button>'
                         $("#boxConfigTemp").append(appendTemporary).fadeIn('slow')
+
+
+                        var appendGrandTotal = ""
+                        appendGrandTotal = appendGrandTotal + "<div class='row'>"
+                        appendGrandTotal = appendGrandTotal + "     <div class='pull-right'>"
+                        appendGrandTotal = appendGrandTotal + "         <div class='col-md-12'>"
+                        appendGrandTotal = appendGrandTotal + "             <table class='table' style='background-color:#42855B!important;color:white'>"
+                        appendGrandTotal = appendGrandTotal + "                 <tr>"
+                        appendGrandTotal = appendGrandTotal + "                     <th colspan=2>"
+                        appendGrandTotal = appendGrandTotal + "                         Grand Total Price"
+                        appendGrandTotal = appendGrandTotal + "                     </th>"
+                        appendGrandTotal = appendGrandTotal + "                     <th width='150'>"
+                        appendGrandTotal = appendGrandTotal + formatter.format(sumTotalPrice)
+                        appendGrandTotal = appendGrandTotal + "                     </th>"
+                        appendGrandTotal = appendGrandTotal + "                 </tr>"
+                        appendGrandTotal = appendGrandTotal + "             </table>"
+
+                        appendGrandTotal = appendGrandTotal + "         </div>"
+                        appendGrandTotal = appendGrandTotal + "     </div>"
+                        appendGrandTotal = appendGrandTotal + "</div>" 
+
+                        $("#boxConfigTemp").find(".row").last().after(appendGrandTotal)
                     }
 
                     accesable.forEach(function(item,index){
@@ -490,59 +516,87 @@ SBE Detail
         append = append + '<div class="box">'
         append = append + '    <div class="box-body">'
         append = append + '<div class="row">'
-        append = append + '    <div class="col-md-6">'
+        append = append + '    <div class="col-md-12 col-xs-12">'
         append = append + '        <div class="form-group">'
         append = append + '            <label>Lead ID*</label>'
-        append = append + '            <select onchange="validateInput(this)" class="form-control select2" name="inputLead" id="inputLead"><option></option></select>'
+        append = append + '            <select onchange="validateInput(this)" class="form-control select2" name="inputLead" id="inputLead" style="width:100%"><option></option></select>'
         append = append + '            <span class="help-block" style="display:none">Please Select Lead Id!</span>'
         append = append + '        </div>'
-        append = append + '        <div class="form-group">'
-        append = append + '            <label>Project Location*</label>'
-        append = append + '            <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;" name="textareaLoc" id="textareaLoc"></textarea>'
-        append = append + '            <span class="help-block" style="display:none">Please Fill Project Location!</span>'
-        append = append + '        </div>'
-        // append = append + '        <div class="form-group">'
-        // append = append + '            <label>Duration*</label>'
-        // append = append + '            <input onkeyup="validateInput(this)" type="text" class="form-control" name="inputDuration" id="inputDuration">'
-        // append = append + '            <span class="help-block" style="display:none">Please Fill Duration!</span>'
-        // append = append + '        </div>'
+        append = append + '    </div>'
+        append = append + '    <div class="col-md-6">'
         append = append + '        <div class="form-group">'
         append = append + '            <label>Estimated Running*</label>'
-        append = append + '            <input onkeyup="validateInput(this)" type="text" class="form-control" name="inputEstimatedRun" id="inputEstimatedRun">'
+        append = append + '            <input onkeyup="validateInput(this)" type="text" class="form-control" name="inputEstimatedRun" id="inputEstimatedRun" placeholder="End of February">'
         append = append + '            <span class="help-block" style="display:none">Please Fill Estimated Running!</span>'
         append = append + '        </div>'
         append = append + '    </div>'
         append = append + '    <div class="col-md-6">'
         append = append + '        <div class="form-group">'
-        append = append + '            <label>Scope Of Work*</label>'
-        append = append + '            <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" name="textareaSOW" id="textareaSOW"></textarea>'
-        append = append + '            <span class="help-block" style="display:none">Please Fill Scope of Work!</span>'
-        append = append + '        </div>'
-        append = append + '        <div class="form-group">'
-        append = append + '            <label>Out Of Scope*</label>'
-        append = append + '            <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" row="20" name="textareaScope" id="textareaScope"></textarea>'
-        append = append + '            <span class="help-block" style="display:none">Please Fill Out of Scope!</span>'
+        append = append + '            <label>Project Location*</label>'
+        // append = append + '            <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;" name="textareaLoc" id="textareaLoc"></textarea>'
+        append = append + '               <input class="form-control" name="textareaLoc" id="textareaLoc" placeholder="Jakarta" onkeyup="validateInput(this)">'
+        append = append + '            <span class="help-block" style="display:none">Please Fill Project Location!</span>'
         append = append + '        </div>'
         append = append + '    </div>'
         append = append + '</div>'
         append = append + '<div class="row">'
         append = append + '    <div class="col-md-12 col-xs-12">'
         append = append + '        <label>Config*</label>'
+        append = append + '<div class="form-group">'
+            append = append + '    <div class="checkbox">'
+        append = append + '             <label style="margin-right:10px">'
+        append = append + '                 <input type="checkbox" class="cbConfig" id="cbSO" onchange="validateInput(this)">'
+        append = append + '                 Supply Only'
+        append = append + '             </label>'
+        append = append + '             <label style="margin-right:10px">'
+        append = append + '                 <input type="checkbox" class="cbConfig" id="cbImp" onchange="validateInput(this)">'
+        append = append + '                 Implementation'
+        append = append + '             </label>'
+        append = append + '             <label style="margin-right:10px">'
+        append = append + '                 <input type="checkbox" class="cbConfig" id="cbMnS" onchange="validateInput(this)">'
+        append = append + '                 Maintenance and Services'
+        append = append + '             </label>'
+        append = append + '         </div>'
+        append = append + '         <span class="help-block" style="display:none">Please Select Config!</span>'
+        append = append + '</div>'
         append = append + '        <div class="nav-tabs-custom">'
         append = append + '            <ul class="nav nav-tabs">'
-        append = append + '                <li class="active"><a href="#tab_1" data-toggle="tab">Supply Only</a><input id="durationSO" hidden></li>'
-        append = append + '                <li><a href="#tab_2" data-toggle="tab">Implementation</a><input id="durationImp" hidden></</li>'
-        append = append + '                <li><a href="#tab_3" data-toggle="tab">Maintenance & Managed Service</a><input id="durationMnS" hidden></</li>'
-        append = append + '                <li style="float: right;display: inline-flex;">'
-        append = append + '                     <label style="vertical-align: middle;display: inline;margin-top: 10px;margin-right: 10px;'
-        append = append + '                         ">Duration*</label>'
-        append = append + '                     <input class="form-control" id="inputDuration" name="inputDuration" onkeyup="validateInput(this)" fdprocessedid="52jb4" style="display: inline;width:250px" placeholder="Input Duration">'
-        append = append + '                 </li>'
+        append = append + '                <li class="disabled" disabled style="display:none"><a href="#tab_1">Supply Only</a></li>'
+        append = append + '                <li class="disabled" disabled style="display:none"><a href="#tab_2">Implementation</a></</li>'
+        append = append + '                <li class="disabled" disabled style="display:none"><a href="#tab_3">Maintenance & Managed Service</a></</li>'
+        // append = append + '                <li style="float: right;display: inline-flex;">'
+        // append = append + '                     <label style="vertical-align: middle;display: inline;margin-top: 10px;margin-right: 10px;'
+        // append = append + '                         ">Duration*</label>'
+        // append = append + '                     <input class="form-control" id="inputDuration" name="inputDuration" onkeyup="validateInput(this)" fdprocessedid="52jb4" style="display: inline;width:250px" placeholder="Input Duration">'
+        // append = append + '                 </li>'
         append = append + '            </ul>'
         append = append + '            <div class="tab-content">'
-        append = append + '                <div class="tab-pane active" id="tab_1">'
+        append = append + '                 <div class="tab-pane" id="tab_1">'
+        append = append + '                     <div class="row">'
+        append = append + '                         <div class="col-md-12">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Duration*</label>'
+        append = append + '                                 <input class="form-control" id="durationSO" name="durationSO" onkeyup="validateInput(this)" fdprocessedid="52jb4" placeholder="Input Duration">'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Duration!</span>'
+        append = append + '                             </div>'
+        append = append + '                         </div>'
+        append = append + '                         <div class="col-md-6">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Scope Of Work*</label>'
+        append = append + '                                      <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" name="textareaSOWSo" id="textareaSOWSo"></textarea>'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Scope of Work!</span>'
+        append = append + '                             </div>'
+        append = append + '                         </div>'
+        append = append + '                         <div class="col-md-6">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Out Of Scope*</label>'
+        append = append + '                                      <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" row="20" name="textareaScopeSo" id="textareaScopeSo"></textarea>'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Out of Scope!</span>'
+        append = append + '                              </div>'
+        append = append + '                         </div>'
+        append = append + '                     </div>'
         append = append + '                     <div class="table-responsive">'
-        append = append + '                         <table class="table" name="tableSO" id="tableItemsSO_0" style="display:none">'
+        append = append + '                         <table class="table" name="tableSO" id="tableItemsSO_0">'
         append = append + '                             <thead>'
         append = append + '                                 <tr>'
             append = append + '                                <th width=20%>'
@@ -609,8 +663,31 @@ SBE Detail
         append = append + '                    </div>'
         append = append + '                </div>'
         append = append + '                <div class="tab-pane" id="tab_2">'
+        append = append + '                     <div class="row">'
+        append = append + '                         <div class="col-md-12">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Duration*</label>'
+        append = append + '                                 <input class="form-control" id="durationImp" name="durationImp" onkeyup="validateInput(this)" fdprocessedid="52jb4" placeholder="Input Duration">'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Duration!</span>'
+        append = append + '                             </div>'
+        append = append + '                         </div>'
+        append = append + '                         <div class="col-md-6">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Scope Of Work*</label>'
+        append = append + '                                      <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" name="textareaSOWImp" id="textareaSOWImp"></textarea>'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Scope of Work!</span>'
+        append = append + '                             </div>'
+        append = append + '                         </div>'
+        append = append + '                         <div class="col-md-6">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Out Of Scope*</label>'
+        append = append + '                                      <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" row="20" name="textareaScopeImp" id="textareaScopeImp"></textarea>'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Out of Scope!</span>'
+        append = append + '                              </div>'
+        append = append + '                         </div>'
+        append = append + '                     </div>'
         append = append + '                  <div class="table-responsive">'
-        append = append + '                    <table class="table" name="tableImp" id="tableItemsImp_0" style="display:none">'
+        append = append + '                    <table class="table" name="tableImp" id="tableItemsImp_0">'
         append = append + '                        <thead>'
         append = append + '                            <tr>'
             append = append + '                            <th width=20%>'
@@ -676,8 +753,31 @@ SBE Detail
         append = append + '                    </div>'
         append = append + '                </div>'
         append = append + '                <div class="tab-pane" id="tab_3">'
+        append = append + '                     <div class="row">'
+        append = append + '                         <div class="col-md-12">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Duration*</label>'
+        append = append + '                                 <input class="form-control" id="durationMnS" name="durationMnS" onkeyup="validateInput(this)" fdprocessedid="52jb4" placeholder="Input Duration">'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Duration!</span>'
+        append = append + '                             </div>'
+        append = append + '                         </div>'
+        append = append + '                         <div class="col-md-6">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Scope Of Work*</label>'
+        append = append + '                                      <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" name="textareaSOWMnS" id="textareaSOWMnS"></textarea>'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Scope of Work!</span>'
+        append = append + '                             </div>'
+        append = append + '                         </div>'
+        append = append + '                         <div class="col-md-6">'
+        append = append + '                             <div class="form-group">'
+        append = append + '                                 <label>Out Of Scope*</label>'
+        append = append + '                                      <textarea onkeyup="validateInput(this)" class="form-control" style="resize: vertical;height: 150px;" row="20" name="textareaScopeMnS" id="textareaScopeMnS"></textarea>'
+        append = append + '                                         <span class="help-block" style="display:none">Please Fill Out of Scope!</span>'
+        append = append + '                              </div>'
+        append = append + '                         </div>'
+        append = append + '                     </div>'
         append = append + '                     <div class="table-responsive">'
-        append = append + '                         <table class="table" name="tableMnS" id="tableItemsMnS_0" style="display:none">'
+        append = append + '                         <table class="table" name="tableMnS" id="tableItemsMnS_0" >'
             append = append + '                        <thead>'
             append = append + '                            <tr>'
                 append = append + '                                <th width=20%>'
@@ -883,6 +983,8 @@ SBE Detail
         
         var priceTotal = 0
         var priceGrandTotal = 0
+        var sumPriceGrandTotal = 0
+
         priceTotal += $(val).closest("tr").find("td").eq(2).find("input").val() == '' ? parseInt($(val).closest("tr").find("td").eq(3).find("input").val().replaceAll(".","")) : parseInt($(val).closest("tr").find("td").eq(2).find("input").val()) * parseInt($(val).closest("tr").find("td").eq(3).find("input").val().replaceAll(".",""))
 
         priceTotal *= $(val).closest("tr").find("td").eq(4).find("input").val() == '' ? 1 : parseInt($(val).closest("tr").find("td").eq(4).find("input").val()) 
@@ -902,11 +1004,18 @@ SBE Detail
 
         $(val).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
 
+        $("table[name='tableUpdateConfig']").find("input[name='inputGrandTotal']").each(function(index,item){
+            sumPriceGrandTotal += parseInt(item.value.replaceAll(".",""))
+        })
+
+        $("#inputSumPriceGrandTotal").val(formatter.format(sumPriceGrandTotal))
+
     }
 
     function changeManPower(val){
         var priceTotal = 0
         var priceGrandTotal = 0
+        var sumPriceGrandTotal = 0
 
         priceTotal += $(val).closest("tr").find("td").eq(4).find("input").val() == '' ? parseInt($(val).closest("tr").find("td").eq(3).find("input").val().replaceAll(".","")) : parseInt($(val).closest("tr").find("td").eq(4).find("input").val()) * parseInt($(val).closest("tr").find("td").eq(3).find("input").val().replaceAll(".",""))
 
@@ -925,6 +1034,10 @@ SBE Detail
 
         $(val).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
 
+        $("table[name='tableUpdateConfig']").find("input[name='inputGrandTotal']").each(function(index,item){
+            sumPriceGrandTotal += parseInt(item.value.replaceAll(".",""))
+        })
+        $("#inputSumPriceGrandTotal").val(formatter.format(sumPriceGrandTotal))
     }
 
     function showTemporarySBE(value){
@@ -946,7 +1059,7 @@ SBE Detail
                 },
                 // async: false,
                 success:function(result){
-                        var append = "", i = 0, z = 0, j = 0
+                        var append = "", i = 0, z = 0, j = 0, loopInt = 0
 
                         append = append + '<div class="box">'
                         append = append + '    <div class="box-body">'
@@ -1007,13 +1120,11 @@ SBE Detail
                             append = append + '    </thead>'
                             append = append + '<tbody>'
 
-                            results.sort(function(a, b) {
-                              return a[0] - b[0];
-                            });
-
-                            $.each(results, function(keys, resultsDetail){
+                            Object.keys(results).forEach(function(keys) {
                                 j++
-                                // console.log(keys)
+                                var resultsDetail = results[keys];
+                                console.log(keys + ": " + resultsDetail.detail_item)
+
                                 append = append + ' <tr>'
                                 append = append + '     <td>'
                                 append = append + '       <input type="" style="width:300px" class="form-control" name="inputItemsTemporary" id="" value="'+ key +'" placeholder="Ex: PM Maintenance">'
@@ -1036,27 +1147,77 @@ SBE Detail
                                 append = append + '         <input type="" class="form-control totalItemsTemporary_'+ j +'" name="totalItems" id="totalItemsUpdate" readonly value="'+ formatter.format(resultsDetail.total_nominal) +'" style="width:300px">'
                                 append = append + '     </td>'
                                 append = append + '     <td></td>'
-                                append = append + ' </tr>'
+                                append = append + ' </tr>' 
+                                // $(".detailItemsTemporary_"+z).select2().val(resultsDetail.detail_item).trigger("change")
+                            });
 
-                                $.ajax({
-                                    url:"{{url('/sbe/getDropdownDetailItem')}}",
-                                    type:"GET",
-                                    success:function(result){  
+                            $.ajax({
+                                url:"{{url('/sbe/getDropdownDetailItem')}}",
+                                type:"GET",
+                                success:function(result){ 
+                                    Object.keys(results).forEach(function(keys) {
+                                        var resultsDetail = results[keys];
+                                        console.log(resultsDetail.detail_item+"---------")
+
+                                        loopInt++ 
                                         $("#tableShowConfig_"+i).each(function(item,results){
-                                            z++ 
-                                            console.log(keys+"---------")
-                                            // console.log(resultsDetail.detail_item+"---------")
-
-                                            
-                                            $(".detailItemsTemporary_"+z).select2({
+                                            $(".detailItemsTemporary_"+loopInt).select2({
                                                 placeholder:"Select Detail Items",
                                                 data:result.data,
                                                 disabled:true
-                                            }).val(resultsDetail.detail_item).trigger("change")
+                                            }).val(resultsDetail.detail_item).trigger("change")                                           
                                         })
-                                    }
-                                })
+                                    })                                    
+                                }
                             })
+
+                            // $.each(results.reverse(), function(keys, resultsDetail){
+
+                            //     j++
+                            //     // console.log(keys)
+                            //     append = append + ' <tr>'
+                            //     append = append + '     <td>'
+                            //     append = append + '       <input type="" style="width:300px" class="form-control" name="inputItemsTemporary" id="" value="'+ key +'" placeholder="Ex: PM Maintenance">'
+                            //     append = append + '     </td>'
+                            //     append = append + '     <td>'
+                            //     append = append + '       <select type="" style="width:450px" class="select2 form-control detailItemsTemporary_'+ j +'" name="detailItemsTemporary" id="detailItemsTemporary">'
+                            //     append = append + '             <option></option>'
+                            //     append = append + '       </select>'
+                            //     append = append + '     </td>'
+                            //     append = append + '     <td>'
+                            //     append = append + '         <input type="number" style="width:60px" class="form-control" name="" id="" value="'+ resultsDetail.qty +'">'
+                            //     append = append + '     </td>'
+                            //     append = append + '     <td>'
+                            //     append = append + '         <input type="" class="form-control priceItemsUpdate_'+ j +'" name="" id="" readonly="" value="'+ formatter.format(resultsDetail.price) +'" style="width:300px">'
+                            //     append = append + '     </td>'
+                            //     append = append + '     <td>'
+                            //     append = append + '         <input type="" style="width:60px" class="form-control" name="manpowerItemsUpdate" id="" value="'+ resultsDetail.manpower +'">'
+                            //     append = append + '     </td>'
+                            //     append = append + '     <td>'
+                            //     append = append + '         <input type="" class="form-control totalItemsTemporary_'+ j +'" name="totalItems" id="totalItemsUpdate" readonly value="'+ formatter.format(resultsDetail.total_nominal) +'" style="width:300px">'
+                            //     append = append + '     </td>'
+                            //     append = append + '     <td></td>'
+                            //     append = append + ' </tr>'
+
+                            //     $.ajax({
+                            //         url:"{{url('/sbe/getDropdownDetailItem')}}",
+                            //         type:"GET",
+                            //         success:function(result){  
+                            //             $("#tableShowConfig_"+i).each(function(item,results){
+                            //                 z++ 
+                            //                 console.log(keys+"---------")
+                            //                 // console.log(resultsDetail.detail_item+"---------")
+
+                                            
+                            //                 $(".detailItemsTemporary_"+z).select2({
+                            //                     placeholder:"Select Detail Items",
+                            //                     data:result.data,
+                            //                     disabled:true
+                            //                 }).val(resultsDetail.detail_item).trigger("change")
+                            //             })
+                            //         }
+                            //     })
+                            // })
                             append = append + '        </tbody>'
                             append = append + '        <tfoot>'
                             append = append + '          <tr>'
@@ -1171,7 +1332,7 @@ SBE Detail
     function addItemsSO(val){
         var countable = $("table[name='tableSO']").length
 
-        if (countable > 0) {
+        if (countable >= 1) {
             arrTableSO.push(countable)
             $(".nav-tabs-custom").find(".alert").remove()
         }
@@ -1257,6 +1418,7 @@ SBE Detail
     
         if (countable == 1) {
             $("table[name='tableSO']").hide()
+            arrTableSO = []
             $("#removeItemsSO").remove()
         }else{
             var whichtr = $("table[name='tableSO']:last");
@@ -1393,6 +1555,7 @@ SBE Detail
 
         if (countable == 1) {
             $("table[name='tableImp']").hide()
+            arrTableImp = []
             $("#removeItemsImp").remove()
         }else{
             var whichtr = $("table[name='tableImp']:last");
@@ -1529,6 +1692,7 @@ SBE Detail
 
         if (countable == 1) {
             $("table[name='tableMnS']").hide()
+            arrTableMnS = []
             $("#removeItemsMnS").remove()
         }else{
             var whichtr = $("table[name='tableMnS']:last");
@@ -1617,12 +1781,10 @@ SBE Detail
                         append = append + '        </tr>'
                         append = append + '    </thead>'
                         append = append + '<tbody id="tbodyItems">'
-                        
-                        results.sort(function(a, b) {
-                            return a[0] - b[0];
-                        });
 
-                        $.each(results, function(keys, resultsDetail){
+                        Object.keys(results).forEach(function(keys) {
+                            var resultsDetail = results[keys];
+
                             j++
                             append = append + ' <tr>'
                             append = append + '     <td>'
@@ -1647,13 +1809,17 @@ SBE Detail
                             append = append + '     </td>'
                             append = append + '     <td></td>'
                             append = append + ' </tr>'
+                        })
 
-                            $.ajax({
-                                url:"{{url('/sbe/getDropdownDetailItem')}}",
-                                type:"GET",
-                                success:function(result){                                  
-                                    $("#tableItemsUpdateConfig_"+i).each(function(item,results){
+                        $.ajax({
+                            url:"{{url('/sbe/getDropdownDetailItem')}}",
+                            type:"GET",
+                            success:function(result){     
+                                Object.keys(results).forEach(function(keys) {
+                                    var resultsDetail = results[keys];
+                                    console.log(resultsDetail.detail_item+"---------")
                                     z++ 
+                                    $("#tableItemsUpdateConfig_"+i).each(function(item,results){
                                         console.log(keys+"------")
                                         $(".detailItemsUpdate_"+z).select2({
                                             placeholder:"Select Detail Items",
@@ -1684,9 +1850,10 @@ SBE Detail
 
                                         $(".detailItemsUpdate_"+z).val(resultsDetail.detail_item).trigger("change")
                                     })
-                                }
-                            })
+                                })                                                          
+                            }
                         })
+
                         append = append + '        </tbody>'
                         append = append + '        <tfoot>'
                         append = append + '          <tr>'
@@ -1809,7 +1976,7 @@ SBE Detail
 
     function updateItems(val){
         // conMnSle.log(val)
-
+        $("table[name='tableUpdateConfig']:last").find("tr:last").remove()
         var countable = $("table[name='tableUpdateConfig']").length + 1
 
         var append = ""
@@ -1818,7 +1985,7 @@ SBE Detail
         append = append + '<thead>'
         append = append + '   <tr>'
         append = append + '        <th>'
-        append = append + '            Items'
+        append = append + '            '
         append = append + '        </th>'
         append = append + '        <th>'
         append = append + '            Detail Items'
@@ -1843,10 +2010,10 @@ SBE Detail
         append = append + '     <tbody>'
         append = append + '         <tr>'
         append = append + '             <td>'
-        append = append + '                 <input type="" class="form-control" name="inputItemsUpdate" id="inputItemsUpdate" onkeyup="validateInput(this)" placeholder="Ex: PM Maintenance">'
+        append = append + '                 <input type="" class="form-control" name="inputItemsUpdate" id="inputItemsUpdate" onkeyup="validateInput(this)" placeholder="Ex: PM Maintenance" style="width:300px">'
         append = append + '             </td>'
         append = append + '             <td>'
-        append = append + '                 <select type="" style="width: 100%" class="select2 form-control detailItemsUpdate_'+ countable +'" name="detailItemsUpdate" id="detailItemsUpdate">'
+        append = append + '                 <select type="" style="width: 450px" class="select2 form-control detailItemsUpdate_'+ countable +'" name="detailItemsUpdate" id="detailItemsUpdate">'
         append = append + '                     <option></option>'
         append = append + '                 </select>'
         append = append + '             </td>'
@@ -1854,13 +2021,13 @@ SBE Detail
         append = append + '                 <input type="number" style="width:60px" class="form-control" name="qtyItemsUpdate" id="qtyItemsUpdate" onkeyup="changeQtyItems(this)">'
         append = append + '             </td>'
         append = append + '             <td>'
-        append = append + '                 <input type="" class="form-control" name="priceItemsUpdate" id="priceItemsUpdate" readonly="">'
+        append = append + '                 <input type="" class="form-control" name="priceItemsUpdate" id="priceItemsUpdate" readonly="" style="width:300px">'
         append = append + '             </td>'
         append = append + '             <td>'
-        append = append + '                 <input type="" style="width:60px" class="form-control" name="manpowerItemsUpdate" id="manpowerItemsUpdate" onkeyup="changeManPower(this)">'
+        append = append + '                 <input type="" style="width:60px;margin-left:10px" class="form-control" name="manpowerItemsUpdate" id="manpowerItemsUpdate" onkeyup="changeManPower(this)">'
         append = append + '             </td>'
         append = append + '             <td>'
-        append = append + '                 <input type="" class="form-control" name="totalItems" id="totalItemsUpdate" readonly>'
+        append = append + '                 <input type="" style="width:300px" class="form-control" name="totalItems" id="totalItemsUpdate" readonly>'
         append = append + '             </td>'
         append = append + '             <td></td>'
         append = append + '         </tr>'
@@ -1887,6 +2054,17 @@ SBE Detail
             }
         }
 
+        $("table[name='tableUpdateConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right;width: 300px;' id='inputSumPriceGrandTotal' name='inputSumPriceGrandTotal' readonly/></td></tr>")
+
+        var sumPriceGrandTotal = 0
+        $("table[name='tableUpdateConfig']").find("input[name='inputGrandTotal']").each(function(index,item){
+            if (item.value != "") {
+                sumPriceGrandTotal += parseInt(item.value.replaceAll(".",""))
+            }
+        })
+
+        $("#inputSumPriceGrandTotal").val(formatter.format(sumPriceGrandTotal))
+
     }
 
     function removeItemsDetailforUpdate(){
@@ -1898,30 +2076,44 @@ SBE Detail
         if (countable == 1) {
             $("#removeItemsDetailforUpdate").remove()
         } 
+
+         $("table[name='tableUpdateConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right;width: 300px;' id='inputSumPriceGrandTotal' name='inputSumPriceGrandTotal' readonly/></td></tr>")
+
+        var sumPriceGrandTotal = 0
+        $("table[name='tableUpdateConfig']").find("input[name='inputGrandTotal']").each(function(index,item){
+            if (item.value != "") {
+                sumPriceGrandTotal += parseInt(item.value.replaceAll(".",""))
+            }
+        })
+
+        $("#inputSumPriceGrandTotal").val(formatter.format(sumPriceGrandTotal))
     }
 
     //saveCOnfig
-    var arrItemSO = [], arrItemImp = [], arrItemMnS = []
-    var isReadyStore = false
-
     function saveConfig(){
+        var arrItemSO = [], arrItemImp = [], arrItemMnS = [], arrSelectConf = [], isCompleteFillSO = false, isCompleteFillImp = false, isCompleteFillMnS = false, arrCompleteFill = [], isReadyStore = false
+
         if ($("#inputLead").val() == "") {
             $("#inputLead").next().next().show()
             $("#inputLead").closest("div").addClass("has-error")
-        }else if ($("#textareaLoc").val() == "") {
-            $("#textareaLoc").next().show()
-            $("#textareaLoc").closest("div").addClass("has-error")
         }else if ($("#inputEstimatedRun").val() == "") {
             $("#inputEstimatedRun").next().show()
             $("#inputEstimatedRun").closest("div").addClass("has-error")
+        }else if ($("#textareaLoc").val() == "") {
+            $("#textareaLoc").next().show()
+            $("#textareaLoc").closest("div").addClass("has-error")
+        }else if ($("input[class='cbConfig']").is(":checked") == false) {
+            $(".cbConfig").last().closest("div").next().show()
+            $(".cbConfig").last().closest("div").closest(".form-group").addClass("has-error")
         }
-        else if ($("#textareaSOW").val() == "") {
-            $("#textareaSOW").next().show()
-            $("#textareaSOW").closest("div").addClass("has-error")
-        }else if ($("#textareaScope").val() == "") {
-            $("#textareaScope").next().show()
-            $("#textareaScope").closest("div").addClass("has-error")
-        }else{
+        // else if ($("#textareaSOW").val() == "") {
+        //     $("#textareaSOW").next().show()
+        //     $("#textareaSOW").closest("div").addClass("has-error")
+        // }else if ($("#textareaScope").val() == "") {
+        //     $("#textareaScope").next().show()
+        //     $("#textareaScope").closest("div").addClass("has-error")
+        // }
+        else{
             // var append = ""
             // append = append + ' <div class="alert alert-danger alert-dismissible" style="display:none">'
             // append = append + '      <h4><i class="icon fa fa-ban"></i> Alert!</h4>'
@@ -1932,49 +2124,60 @@ SBE Detail
                 if (results.id.split("_")[0] == "tableItemsSO") {
                     $("#"+results.id).find("tbody tr").each(function(itemTbody,resultTbodyTr){
                         var itemsSO = "", detailItemsSO = "", qtyItemsSO = "", manpowerSO = "", priceItemsSO=""
-
                         $(resultTbodyTr).each(function(itemInput,resultItemTd){
                             $(resultItemTd).find(".form-control").each(function(itemInput,resultItem){ 
                                 if ($("#durationSO").val() != '') {
-                                    if(resultItem.id != "totalItems"){
-                                        if ($(resultItem).val() == "") {
-                                            isReadyStore = false
-                                            arrFalse.push($(resultItem).val())
+                                    if ($("#textareaSOWSo").val() == "") {
+                                        $("#textareaSOWSo").next().show()
+                                        $("#textareaSOWSo").closest("div").addClass("has-error")
+                                    }else if ($("#textareaScopeSo").val() == "") {
+                                        $("#textareaScopeSo").next().show()
+                                        $("#textareaScopeSo").closest("div").addClass("has-error")
+                                    }else{
+                                        if(resultItem.id != "totalItems"){
+                                            if ($(resultItem).val() == "") {
+                                                isReadyStore = false
+                                                isCompleteFillSO = false
 
-                                            $("table[name='tableSO']:first").closest("div").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please fill the empty row!</div>')
-                                            $(".alert-danger:not(:first-child)").remove()
-                                        }else{
-                                            if (resultItem.name == 'InputItems') {
-                                                itemsSO = resultItem.value
+                                                $("table[name='tableSO']:first").closest("div").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please fill the empty row!</div>')
+                                                $(".alert-danger:not(:first-child)").remove()
+                                            }else{
+                                                if (resultItem.name == 'InputItems') {
+                                                    itemsSO = resultItem.value
+                                                }
+
+                                                if (resultItem.name == 'detailItemsSO') {
+                                                    detailItemsSO = resultItem.value
+                                                }
+
+                                                if (resultItem.name == 'qtyItems') {
+                                                    qtyItemsSO = resultItem.value
+                                                }
+
+                                                if (resultItem.name == 'priceItems') {
+                                                    priceItemsSO = resultItem.value
+                                                }
+
+                                                if (resultItem.name == "manpowerItems") {
+                                                    manpowerSO = resultItem.value
+                                                }
+
+                                                // arrCompleteFill.push("complete")
+                                                isCompleteFillSO = true
+
                                             }
-
-                                            if (resultItem.name == 'detailItemsSO') {
-                                                detailItemsSO = resultItem.value
-                                            }
-
-                                            if (resultItem.name == 'qtyItems') {
-                                                qtyItemsSO = resultItem.value
-                                            }
-
-                                            if (resultItem.name == 'priceItems') {
-                                                priceItemsSO = resultItem.value
-                                            }
-
-                                            if (resultItem.name == "manpowerItems") {
-                                                manpowerSO = resultItem.value
-                                            }
-
                                         }
                                     }
-                                    
+                                }else{
+                                    $("#durationSO").next().show()
+                                    $("#durationSO").closest("div").addClass("has-error")
                                 }
                             })
                             
                         })
 
-                
                         if ($("#durationSO").val() != "") {
-                            arrItemSO.push({items:itemsSO,detailItems:detailItemsSO,qtyItems:qtyItemsSO,priceItems:priceItemsSO,manpower:manpowerSO})                            
+                            arrItemSO.push({items:itemsSO,detailItems:detailItemsSO,qtyItems:qtyItemsSO,priceItems:priceItemsSO,manpower:manpowerSO})
                         }
                         
                         // readyToPost(arrItemSO)
@@ -1989,35 +2192,53 @@ SBE Detail
                         $(resultTbodyTr).each(function(itemInput,resultItemTd){
                             $(resultItemTd).find(".form-control").each(function(itemInput,resultItem){ 
                                 if ($("#durationImp").val() != '') {
-                                    if(resultItem.id != "totalItems"){
-                                        if ($(resultItem).val() == "") {
-                                            isReadyStore = false
-                                            arrFalse.push($(resultItem).val())
+                                    if ($("#textareaSOWImp").val() == "") {
+                                        $("#textareaSOWImp").next().show()
+                                        $("#textareaSOWImp").closest("div").addClass("has-error")
+                                    }else if ($("#textareaScopeImp").val() == "") {
+                                        $("#textareaScopeImp").next().show()
+                                        $("#textareaScopeImp").closest("div").addClass("has-error")
+                                    }else{
+                                        if(resultItem.id != "totalItems"){
+                                            if ($(resultItem).val() == "") {
+                                                isReadyStore = false
+                                                isCompleteFillImp = false
 
-                                            $("table[name='tableImp']:first").closest("div").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please fill the empty row!</div>')
-                                            $(".alert-danger:not(:first-child)").remove()
-                                        }else{
-                                            if (resultItem.name == 'InputItemsImp') {
-                                                itemsImp = resultItem.value
-                                            }
+                                                arrFalse.push($(resultItem).val())
 
-                                            if (resultItem.name == 'detailItemsImp') {
-                                                detailItemsImp = resultItem.value
-                                            }
+                                                $("table[name='tableImp']:first").closest("div").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please fill the empty row!</div>')
+                                                $(".alert-danger:not(:first-child)").remove()
+                                            }else{
+                                                if (resultItem.name == 'InputItemsImp') {
+                                                    itemsImp = resultItem.value
+                                                }
 
-                                            if (resultItem.name == 'qtyItemsImp') {
-                                                qtyItemsImp = resultItem.value
-                                            }
+                                                if (resultItem.name == 'detailItemsImp') {
+                                                    detailItemsImp = resultItem.value
+                                                }
 
-                                            if (resultItem.name == 'priceItemsImp') {
-                                                priceItemsImp = resultItem.value
-                                            }
+                                                if (resultItem.name == 'qtyItemsImp') {
+                                                    qtyItemsImp = resultItem.value
+                                                }
 
-                                            if (resultItem.name == "manpowerItemsImp") {
-                                                manpowerImp = resultItem.value
+                                                if (resultItem.name == 'priceItemsImp') {
+                                                    priceItemsImp = resultItem.value
+                                                }
+
+                                                if (resultItem.name == "manpowerItemsImp") {
+                                                    manpowerImp = resultItem.value
+                                                }
+
+                                                // arrCompleteFill.push("complete")
+                                                isCompleteFillImp = true
+
                                             }
                                         }
                                     }
+                                    
+                                }else{
+                                    $("#durationImp").next().show()
+                                    $("#durationImp").closest("div").addClass("has-error")
                                 }
                             })
                         })
@@ -2035,38 +2256,53 @@ SBE Detail
                         $(resultTbodyTr).each(function(itemInput,resultItemTd){
                             $(resultItemTd).find(".form-control").each(function(itemInput,resultItem){ 
                                 if ($("#durationMnS").val() != '') {
-                                    if(resultItem.id != "totalItems"){
-                                        
-                                        if ($(resultItem).val() == "") {
-                                            isReadyStore = false
-                                            arrFalse.push($(resultItem).val())
-                                            // 
-                                            $("table[name='tableMnS']:first").closest("div").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please fill the empty row!</div>')
-                                            $(".alert-danger:not(:first-child)").remove()
+                                    if ($("#textareaSOWMnS").val() == "") {
+                                        $("#textareaSOWMnS").next().show()
+                                        $("#textareaSOWMnS").closest("div").addClass("has-error")
+                                    }else if ($("#textareaScopeMnS").val() == "") {
+                                        $("#textareaScopeMnS").next().show()
+                                        $("#textareaScopeMnS").closest("div").addClass("has-error")
+                                    }else{
+                                        if(resultItem.id != "totalItems"){
                                             
-                                        }else{
-                                            if (resultItem.name == 'InputItemsMnS') {
-                                                itemsMnS = resultItem.value
-                                            }
+                                            if ($(resultItem).val() == "") {
+                                                isReadyStore = false
+                                                isCompleteFillMnS = false
+                                                arrFalse.push($(resultItem).val())
+                                                // 
+                                                $("table[name='tableMnS']:first").closest("div").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please fill the empty row!</div>')
+                                                $(".alert-danger:not(:first-child)").remove()
+                                                
+                                            }else{
+                                                if (resultItem.name == 'InputItemsMnS') {
+                                                    itemsMnS = resultItem.value
+                                                }
 
-                                            if (resultItem.name == 'detailItemsMnS') {
-                                                detailItemsMnS = resultItem.value
-                                            }
+                                                if (resultItem.name == 'detailItemsMnS') {
+                                                    detailItemsMnS = resultItem.value
+                                                }
 
-                                            if (resultItem.name == 'qtyItemsMnS') {
-                                                qtyItemsMnS = resultItem.value
-                                            }
+                                                if (resultItem.name == 'qtyItemsMnS') {
+                                                    qtyItemsMnS = resultItem.value
+                                                }
 
-                                            if (resultItem.name == 'priceItemsMnS') {
-                                                priceItemsMnS = resultItem.value
-                                            }
+                                                if (resultItem.name == 'priceItemsMnS') {
+                                                    priceItemsMnS = resultItem.value
+                                                }
 
-                                            if (resultItem.name == "manpowerItemsMnS") {
-                                                manpowerMnS = resultItem.value
-                                            }
+                                                if (resultItem.name == "manpowerItemsMnS") {
+                                                    manpowerMnS = resultItem.value
+                                                }
 
+                                                // arrCompleteFill.push("complete")
+                                                isCompleteFillMnS = true
+
+                                            }
                                         }
                                     }
+                                }else{
+                                    $("#durationMnS").next().show()
+                                    $("#durationMnS").closest("div").addClass("has-error")
                                 }
                             })
                         })
@@ -2079,13 +2315,59 @@ SBE Detail
                 
             })
             
-            if(arrFalse.length == 0){
+         
+            console.log(isCompleteFillSO)
+            console.log(isCompleteFillImp)
+            console.log(isCompleteFillMnS)
+            $("input[class='cbConfig']").each(function(item,value){
+                console.log(value.id)
+                if ($("#"+value.id).is(":checked") == true) {
+                    arrSelectConf.push(value.id)
+
+                    if (value.id == "cbSO") {
+                        if (isCompleteFillSO == true) {
+                            arrCompleteFill.push("completeSO")
+                        }else{
+                            arrCompleteFill = []
+                        }
+                    }
+
+                    if (value.id == "cbImp") {
+                        if (isCompleteFillImp == true) {
+                            arrCompleteFill.push("completeImp")
+                        
+                        }else{
+                            arrCompleteFill = []
+                        }
+                    }
+
+                    if (value.id == "cbMnS") {
+                        if (isCompleteFillMnS == true) {
+                            arrCompleteFill.push("completeMnS")
+                        }else{
+                            arrCompleteFill = []
+                        }
+                    }
+                }
+            })
+
+            arrSelectConf = $.unique(arrSelectConf)
+            arrCompleteFill = $.unique(arrCompleteFill)
+
+            console.log(arrSelectConf)
+            console.log(arrCompleteFill)
+            if (arrSelectConf.length == arrCompleteFill.length) {
                 isReadyStore = true
             }else{
-                arrItemSO = []
-                arrItemImp = []
-                arrItemMnS = []
+                isReadyStore = false
             }
+            // if(arrFalse.length == 0){
+            //     isReadyStore = true
+            // }else{
+            //     arrItemSO = []
+            //     arrItemImp = []
+            //     arrItemMnS = []
+            // }
 
             formData = new FormData
             formData.append("_token","{{ csrf_token() }}")      
@@ -2094,8 +2376,12 @@ SBE Detail
             formData.append("textareaLoc",$("#textareaLoc").val())     
             formData.append("inputDuration",$("#inputDuration").val())     
             formData.append("inputEstimatedRun",$("#inputEstimatedRun").val())     
-            formData.append("textareaSOW",$("#textareaSOW").val())     
-            formData.append("textareaScope",$("#textareaScope").val())  
+            formData.append("textareaSOWSo",$("#textareaSOWSo").val())     
+            formData.append("textareaScopeSo",$("#textareaScopeSo").val())  
+            formData.append("textareaSOWImp",$("#textareaSOWImp").val())     
+            formData.append("textareaScopeImp",$("#textareaScopeImp").val())  
+            formData.append("textareaSOWMnS",$("#textareaSOWMnS").val())     
+            formData.append("textareaScopeMnS",$("#textareaScopeMnS").val())  
             formData.append("durationSO",$("#durationSO").val())  
             formData.append("durationImp",$("#durationImp").val())  
             formData.append("durationMnS",$("#durationMnS").val())  
@@ -2128,20 +2414,67 @@ SBE Detail
     }
 
     function cekTableLength(arrTableSO,arrTableImp,arrTableMnS,isReadyStore,formData,swalFireCustom,swalSuccess,url){
-        if (arrTableSO.length > 0 || arrTableImp.length > 0 || arrTableMnS.length > 0) {
-            if ($("#inputDuration").val() == "") {
-                $("#inputDuration").css("border-color","red")
-            }else{
-                if (isReadyStore == true) {
-                    createPost(swalFireCustom,formData,swalSuccess,url)
-                }
-            }
+        console.log(arrTableSO.length + "SO")
+        console.log(arrTableImp.length + "imp")
+        console.log(arrTableMnS.length + "Mns")
+
+        if (isReadyStore == true) {
+            createPost(swalFireCustom,formData,swalSuccess,url)
         }else{
-            if (isReadyStore != "tab") {
-               $(".nav-tabs-custom").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please Add Config!</div>') 
-           }
-           
+
+
+
+            if ($(".nav-tabs-custom").find('.alert-danger').length == 0) {
+                $(".nav-tabs-custom").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please Add Config!</div>') 
+            }
         }
+        // if (arrTableSO.length > 0 || arrTableImp.length > 0 || arrTableMnS.length > 0) {
+        //     if (arrTableSO.length > 0 ) {
+        //         if ($("#durationSO").val() == "") {
+        //             $("#durationSO").next().show()
+        //             $("#durationSO").closest("div").addClass("has-error")
+        //         }
+        //     }
+
+        //     if (arrTableImp.length > 0) {
+        //         if ($("#durationImp").val() == "") {
+        //             $("#durationImp").next().show()
+        //             $("#durationImp").closest("div").addClass("has-error")
+        //         }
+        //     }
+
+        //     if (arrTableMnS.length > 0) {
+        //         if ($("#durationMnS").val() == "") {
+        //             $("#durationMnS").next().show()
+        //             $("#durationMnS").closest("div").addClass("has-error")
+        //         }
+        //     }
+
+        //     console.log(isReadyStore)
+            
+        //     // if ($("#durationSO").val() == "" || $("#durationImp").val() == "" || $("#durationMnS").val() == "") {
+                
+
+                
+
+        //     //     if ($("#durationMnS").val() == "") {
+        //     //         $("#durationMnS").next().show()
+        //     //         $("#durationMnS").closest("div").addClass("has-error")
+        //     //     }
+                
+        //     //     // $("#durationSO").css("border-color","red")
+        //     // }else{
+                
+        //     // }
+        // }else{
+        //     if (isReadyStore != "tab") {
+        //         if ($(".nav-tabs-custom").find('.alert-danger').length == 0) {
+        //             $(".nav-tabs-custom").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please Add Config!</div>') 
+        //         }
+               
+        //    }
+           
+        // }
     }
 
     var arrItems = []
@@ -2306,23 +2639,128 @@ SBE Detail
     }
 
     function validateInput(val){
+        console.log()
         if ($(val).is("select")) {
             if (val.value != "") {
                 $("#"+val.id).next().next().hide()
                 $("#"+val.id).closest("div").removeClass("has-error")
+            }
+        }else if(val.type == "checkbox"){
+            $(val).last().closest("div").next().hide()
+            $(val).last().closest("div").closest(".form-group").removeClass("has-error")
+
+            console.log($(".cbConfig:checked").length)
+            if ($(".cbConfig:checked").length == 1) {
+                console.log($(".cbConfig:checked").length)
+                if (val.id == "cbSO") {
+                    $('.nav-tabs li:nth-child(1)').addClass("active")
+                    $('.tab-content div:nth-child(1)').addClass('active')
+
+                }else if (val.id == "cbImp") {
+                    $('.nav-tabs li:nth-child(2)').addClass("active")
+                    $('.tab-content div:nth-child(2)').addClass('active')
+
+                }else if (val.id == "cbMnS") {
+                    $('.nav-tabs li:nth-child(3)').addClass("active")
+                    $('.tab-content div:nth-child(3)').addClass('active')
+
+                }
+            }
+
+            if (val.id == "cbSO") {
+                if ($("#"+val.id).is(":checked") == true) {
+                    $('.nav-tabs li:nth-child(1)').show()
+                    $('.nav-tabs li:nth-child(1)').prop('disabled', false).removeClass('disabled').find("a").attr("data-toggle","tab")
+                }else{
+                    $('.nav-tabs li:nth-child(1)').hide().prop('disabled', true).removeClass('active').addClass('disabled').find("a").removeAttr("data-toggle")
+                    $('.tab-content div:nth-child(1)').removeClass('active')
+
+                    if ($(".cbConfig:checked").length >= 1) {
+                        if ($(".cbConfig:checked")[0].id == "cbSO") {
+                            $('.nav-tabs li:nth-child(1)').addClass("active")
+                            $('.tab-content div:nth-child(1)').addClass('active')
+
+                        }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                            $('.nav-tabs li:nth-child(2)').addClass("active")
+                            $('.tab-content div:nth-child(2)').addClass('active')
+
+                        }else if ($(".cbConfig:checked")[0].id == "cbMnS") {
+                            $('.nav-tabs li:nth-child(3)').addClass("active")
+                            $('.tab-content div:nth-child(3)').addClass('active')
+
+                        }
+                    }
+
+                }
+            }else if (val.id == "cbImp") {
+                if ($("#"+val.id).is(":checked") == true) {
+                    $('.nav-tabs li:nth-child(2)').show()
+                    $('.nav-tabs li:nth-child(2)').prop('disabled', false).removeClass('disabled').find("a").attr("data-toggle","tab");
+
+                }else{
+                    $('.nav-tabs li:nth-child(2)').hide().prop('disabled', true).removeClass('active').addClass('disabled').find("a").removeAttr("data-toggle")
+                    $('.tab-content div:nth-child(2)').removeClass('active')
+
+                    if ($(".cbConfig:checked").length >= 1) {
+                        if ($(".cbConfig:checked")[0].id == "cbSO") {
+                            $('.nav-tabs li:nth-child(1)').addClass("active")
+                            $('.tab-content div:nth-child(1)').addClass('active')
+
+                        }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                            $('.nav-tabs li:nth-child(2)').addClass("active")
+                            $('.tab-content div:nth-child(2)').addClass('active')
+
+                        }else if ($(".cbConfig:checked")[0].id == "cbMnS") {
+                            $('.nav-tabs li:nth-child(3)').addClass("active")
+                            $('.tab-content div:nth-child(3)').addClass('active')
+
+                        }
+                    }
+                }
+            }else{
+               if ($("#"+val.id).is(":checked") == true) {
+                    $('.nav-tabs li:nth-child(3)').show()
+                    $('.nav-tabs li:nth-child(3)').prop('disabled', false).removeClass('disabled').find("a").attr("data-toggle","tab");
+
+                }else{
+                    $('.nav-tabs li:nth-child(3)').hide().prop('disabled', true).removeClass('active').addClass('disabled').find("a").removeAttr("data-toggle")
+                    $('.tab-content div:nth-child(3)').removeClass('active');
+
+                    if ($(".cbConfig:checked").length >= 1) {
+                        if ($(".cbConfig:checked")[0].id == "cbSO") {
+                            $('.nav-tabs li:nth-child(1)').addClass("active")
+                            $('.tab-content div:nth-child(1)').addClass('active')
+
+                        }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                            $('.nav-tabs li:nth-child(2)').addClass("active")
+                            $('.tab-content div:nth-child(2)').addClass('active')
+
+                        }else if ($(".cbConfig:checked")[0].id == "cbMnS") {
+                            $('.nav-tabs li:nth-child(3)').addClass("active")
+                            $('.tab-content div:nth-child(3)').addClass('active')
+
+                        }
+                    }
+                }
             }
         }else{
             if (val.value != "") {
                 $("#"+val.id).next().hide()
                 $("#"+val.id).closest("div").removeClass("has-error")
 
-                
                 if (val.name == "inputDuration") {
                     if (val.value.length == 1) {
                         $('ul li.active').find("input").val("")  
+
+                        document.body.onkeyup = function(e){
+                          if(e.keyCode == 32){
+                            console.log(true)
+                          }
+                        }
                     }else{
                         $('ul li.active').find("input").val(val.value)  
                     }
+                    // $('ul li.active').find("input").val(val.value)  
                     $(val).css("border-color","#d2d6de")                  
                 }
 

@@ -145,16 +145,26 @@ class SBEController extends Controller
     	if (count($dataSO) != 0 ) {
             $countVersion = DB::table('tb_sbe_config')->where('project_type','Supply Only')->where('id_sbe', $create->id)->count()+1;
 
+            if (DB::table('tb_sbe')->where('lead_id',$request->inputLead)->exists()) {
+                $getAllId = SbeConfig::where('id_sbe',$create->id)->where('project_type','Supply Only')->get();
+                foreach ($getAllId as $key => $value) {
+                    // return $value;
+                    $updateVersion = SbeConfig::where('id',$value->id)->first();
+                    $updateVersion->status = 'New';
+                    $updateVersion->save();
+                }
+            }
+
     		$createConfig = new SbeConfig();
             $createConfig->id_sbe = $create->id;
 	    	$createConfig->project_location = $request->textareaLoc;
     		$createConfig->project_type = 'Supply Only';
-	    	$createConfig->duration = $request->inputDuration;
+	    	$createConfig->duration = $request->durationSO;
 	    	$createConfig->estimated_running = $request->inputEstimatedRun;
             $createConfig->date_add = Carbon::now()->toDateTimeString();
             $createConfig->status = 'Choosed';
-            $createConfig->sow = $request->textareaSOW;
-            $createConfig->oos = $request->textareaScope;
+            $createConfig->sow = $request->textareaSOWSo;
+            $createConfig->oos = $request->textareaScopeSo;
             $createConfig->version = $countVersion;
             $createConfig->save();
 	    	
@@ -191,16 +201,26 @@ class SBEController extends Controller
     	if (count($dataImp) != 0 ) {
             $countVersion = DB::table('tb_sbe_config')->where('project_type','Implementation')->where('id_sbe', $create->id)->count()+1;
 
+            if (DB::table('tb_sbe')->where('lead_id',$request->inputLead)->exists()) {
+                $getAllId = SbeConfig::where('id_sbe',$create->id)->where('project_type','Implementation')->get();
+                foreach ($getAllId as $key => $value) {
+                    // return $value;
+                    $updateVersion = SbeConfig::where('id',$value->id)->first();
+                    $updateVersion->status = 'New';
+                    $updateVersion->save();
+                }
+            }
+
     		$createConfig = new SbeConfig();
 	    	$createConfig->id_sbe = $create->id;
 	    	$createConfig->project_location = $request->textareaLoc;
     		$createConfig->project_type = 'Implementation';
-	    	$createConfig->duration = $request->inputDuration;
+	    	$createConfig->duration = $request->durationImp;
 	    	$createConfig->estimated_running = $request->inputEstimatedRun;
             $createConfig->date_add = Carbon::now()->toDateTimeString();
             $createConfig->status = 'Choosed';
-            $createConfig->sow = $request->textareaSOW;
-            $createConfig->oos = $request->textareaScope;
+            $createConfig->sow = $request->textareaSOWImp;
+            $createConfig->oos = $request->textareaScopeImp;
             $createConfig->version = $countVersion;
             $createConfig->save();
 
@@ -237,16 +257,26 @@ class SBEController extends Controller
     	if (count($dataMnS) != 0 ) {
             $countVersion = DB::table('tb_sbe_config')->where('project_type','Maintenance')->where('id_sbe', $create->id)->count()+1;
 
+            if (DB::table('tb_sbe')->where('lead_id',$request->inputLead)->exists()) {
+                $getAllId = SbeConfig::where('id_sbe',$create->id)->where('project_type','Maintenance')->get();
+                foreach ($getAllId as $key => $value) {
+                    // return $value;
+                    $updateVersion = SbeConfig::where('id',$value->id)->first();
+                    $updateVersion->status = 'New';
+                    $updateVersion->save();
+                }
+            }
+
     		$createConfig = new SbeConfig();
 	    	$createConfig->id_sbe = $create->id;
 	    	$createConfig->project_location = $request->textareaLoc;
     		$createConfig->project_type = 'Maintenance';
-	    	$createConfig->duration = $request->inputDuration;
+	    	$createConfig->duration = $request->durationMnS;
 	    	$createConfig->estimated_running = $request->inputEstimatedRun;
             $createConfig->date_add = Carbon::now()->toDateTimeString();
             $createConfig->status = 'Choosed';
-            $createConfig->sow = $request->textareaSOW;
-            $createConfig->oos = $request->textareaScope;
+            $createConfig->sow = $request->textareaSOWMnS;
+            $createConfig->oos = $request->textareaScopeMnS;
             $createConfig->version = $countVersion;
             $createConfig->save();
 
