@@ -1354,13 +1354,14 @@ Route::get('testMailSBE','TestController@testMailSBE');
 // Route::get('testDataTable','TestController@testDataTable');
 Route::get('testFullCalendar','TestController@indexCalendar');
 Route::get('getListCalendar','TestController@getListCalendar');
-Route::get('getListCalendarEvent','TestController@getListCalendarEvent');
+// Route::get('getListCalendarEvent','TestController@getListCalendarEvent');
 
 Route::get('timesheet','TimesheetController@timesheet');
 Route::get('timesheet/dashboard','TimesheetController@timesheet_dashboard');
 Route::get('timesheet/config','TimesheetController@timesheet_config');
 
 Route::post('timesheet/addConfig','TimesheetController@addConfig');
+Route::get('getListCalendarEvent','TimesheetController@getListCalendarEvent');
 Route::post('timesheet/storePhaseConfig','TimesheetController@storePhaseConfig');
 Route::post('timesheet/storeTaskConfig','TimesheetController@storeTaskConfig');
 Route::post('timesheet/assignPidConfig','TimesheetController@assignPidConfig');

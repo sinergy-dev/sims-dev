@@ -48,6 +48,53 @@ class TimesheetController extends Controller
         return view('timesheet/config_timesheet')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('timesheet')]);
     }
 
+    public function getListCalendarEvent(Request $request){
+        // $url = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
+        // $client = new Client();
+        // $token = $this->getOauth2AccessToken();
+
+        // $response =  $client->request(
+        //     'GET', 
+        //     $url,        
+        //     [
+        //         'headers' => [
+        //             'Content-Type'=>'application/json',
+        //             'Authorization'=>$token
+        //         ],
+        //         // 'form_params' => [
+        //         //     'sendNotifications' => true,
+        //         // ],
+        //     ]
+        // );
+
+        $calenderId = User::where('nik',$request->nik)->first()->email;
+        // Auth::User()->email;
+        //calendar id nya apa aja?
+        //ladinar@sinergy.co.id
+        
+
+        $client = new Client();
+        $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
+        $token = $this->getOauth2AccessToken();
+
+
+        $response =  $client->request(
+            'GET', 
+            $url,        
+            [
+                'headers' => [
+                    'Content-Type'=>'application/json',
+                    'Authorization'=>$token
+                ],
+                // 'form_params' => [
+                //     'sendNotifications' => true,
+                // ],
+            ]
+        );
+
+        return json_decode($response->getBody(),true);
+    }
+
     public function storePhaseConfig(Request $request)
     {
     	$store = new TimesheetPhase();
