@@ -710,6 +710,8 @@ class TimesheetController extends Controller
         $getPermit = $getPermit->where('nik',$nik)->get();
         $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik')->get();
 
+        // return count($sumMandays);
+
         $allWorkdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
         $allWorkdays = $allWorkdays->toArray();
 
@@ -737,23 +739,29 @@ class TimesheetController extends Controller
 
         $billable = count($differenceArray2);
 
-        $planned = $sumMandays->map(function ($item, $key) {
-            $planned = $item['planned'];
-            $actual = $item['point_mandays'];
-            $name = $item['name'];
-            return [$planned,$actual,$name];
-        });
-
-        // return $planned[0];
-
-        $percentage = number_format($planned[0][1]/$planned[0][0]*100,  2, '.', '');
-
         $isEndMonth = 'false';
         if ($now == $endDate) {
             $isEndMonth = 'true';
         }
 
-        return collect(['percentage'=>$percentage,'name'=>$planned[0][2],'isEndMonth'=>$isEndMonth]);
+        if (count($sumMandays) == 1) {
+            $planned = $sumMandays->map(function ($item, $key) {
+                $planned = $item['planned'];
+                $actual = $item['point_mandays'];
+                $name = $item['name'];
+                return [$planned,$actual,$name];
+            });
+
+            // return $planned;
+
+            $percentage = number_format($planned[0][1]/$planned[0][0]*100,  2, '.', '');
+
+            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth]);
+        } else {
+            return collect(['percentage'=>'0','name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth]);
+        }
+
+        
     }
 
     public function getLevelChart(Request $request)
