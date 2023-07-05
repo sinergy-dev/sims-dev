@@ -169,15 +169,15 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Duration</label>
-                      <select class="form-control" name="selectDuration" id="selectDuration"><option></option></select>
-                      <!-- <span class="help-block" style="display:none">Please select task!</span> -->
+                      <select class="form-control" name="selectDuration" id="selectDuration" onchange="validateInput(this)"><option></option></select>
+                      <span class="help-block" style="display:none">Please select Duration!</span>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Status</label>
-                      <select class="form-control" name="selectStatus" id="selectStatus"><option></option></select>
-                      <!-- <span class="help-block" style="display:none">Please select phase!</span> -->
+                      <select class="form-control" name="selectStatus" id="selectStatus" onchange="validateInput(this)"><option></option></select>
+                      <span class="help-block" style="display:none">Please select Status!</span>
                     </div>
                   </div>
                 </div>
@@ -732,6 +732,7 @@
                       $("#id_activity").val(calEvent.id)
 
                       //staff
+                      console.log(calEvent.pid)
                       $('#selectType').val(calEvent.type).trigger('change')
                       $('#selectLead').val(calEvent.pid).trigger('change')
                       $('#selectLevel').val(calEvent.level).trigger('change')
@@ -932,7 +933,6 @@
         $('#selectDuration').val(eventObj.duration).trigger('change')
         $('#selectStatus').val(eventObj.status).trigger('change')
       }
-      
     }
 
     function addPermit(){
@@ -1258,7 +1258,7 @@
             $("#selectLead").empty()
             $("#selectLead").select2("destroy")
           }
-          $("#selectLead").next().next().hide()
+          $("#selectLead").next().hide()
           $("#selectLead").closest("div").removeClass("has-error")
         } else if (selectedOption === 'Approach') {
           setLeadId()
@@ -1268,7 +1268,7 @@
 
     function setSchedule(date){
       $("#selectSchedule").select2({
-        placeholder:"Select Type",
+        placeholder:"Select Schedule",
         data: [{
             id: 'Planned',
             text: 'Planned'
@@ -1292,7 +1292,10 @@
         })
         // Perform action based on the selected option
         if (selectedOption === 'Planned') {
-          
+          $("#selectDuration").prev("span").remove()
+          $("#selectStatus").prev("span").remove()
+          $("#selectDuration").val("").trigger("change")
+          $("#selectStatus").val("").trigger("change")
           $("#selectDuration").prop("disabled",true)
           $("#selectStatus").prop("disabled",true)
           // Action for Option 1
@@ -1331,6 +1334,8 @@
           }
           
         } else if (selectedOption === 'Unplanned') {
+          $("#selectDuration").prev("label").after("<span>*</span>")
+          $("#selectStatus").prev("label").after("<span>*</span>")
           $("#selectDuration").prop("disabled",false)
           $("#selectStatus").prop("disabled",false)
           $("#daterange-input").prop("disabled",true)
@@ -1392,7 +1397,19 @@
         $("#textareaActivity").closest("div").find("span").show()
         $("#textareaActivity").closest("div").addClass("has-error")
       }else{
-        storeTimesheet()
+        if ($("#selectSchedule").val() == 'Unplanned') {
+          if ($("#selectDuration").val() == '') {
+            $("#selectDuration").closest("div").find("span").show()
+            $("#selectDuration").closest("div").addClass("has-error")
+          }else if ($("#selectStatus").val() == '') {
+            $("#selectStatus").closest("div").find("span").show()
+            $("#selectStatus").closest("div").addClass("has-error")
+          }else{
+            storeTimesheet()
+          }
+        }else{
+          storeTimesheet()
+        }
       }
       // timesheet/addTimesheet      
       function storeTimesheet(){
@@ -1526,21 +1543,20 @@
             }
           })
         }
-    })
-  }
+      })
+    }
 
-  function showAlertRemaining(){
-    $.ajax({
-      type:"GET",
-      url:"{{url('timesheet/getPercentage')}}",
-      success:function(result){
-        $("#alertForRemaining").show()
-        $($("#alertForRemaining").find("span")[0]).text(result.name)
-        $($("#alertForRemaining").find("span")[1]).text(result.percentage)
-      }
-    })
-  }
+    function showAlertRemaining(){
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getPercentage')}}",
+        success:function(result){
+          $("#alertForRemaining").show()
+          $($("#alertForRemaining").find("span")[0]).text(result.name)
+          $($("#alertForRemaining").find("span")[1]).text(result.percentage)
+        }
+      })
+    }
     
   </script>
-  }
 @endsection
