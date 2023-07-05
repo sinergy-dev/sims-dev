@@ -102,7 +102,7 @@
           </div>
         </div>
 
-        <div class="box box-primary">
+        <div class="box box-primary" id="box_assign_pid" style="display:none">
           <div class="box-header">
             <h3 class="box-title">
               Assign PID
