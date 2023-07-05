@@ -221,17 +221,8 @@
     console.log(accesable)
     accesable.forEach(function(item,index){
       $("#" + item).show()
+      console.log(item)
     })
-
-    $(document).ready(function(){
-      if (!accesable.includes('btnAddConfig')) {
-        $('.config-container').find('.box-add-config').find('select').prop('disabled',true)
-        $("#selectLock").prop("disabled",true)
-      }
-
-      getConfigbyDivision()
-    })
-    
 
     $("#tbConfDef").DataTable({
       "ajax":{
@@ -331,6 +322,12 @@
               selectTask('')
           }
 
+          if (accesable.includes('btnAddConfig') == false) {
+            console.log("woyyyy")
+            $('.config-container').find('.box-add-config').find('select').prop('disabled',true)
+            $("#selectLock").prop("disabled",true)
+          }
+
         }
       })
     }
@@ -379,7 +376,6 @@
           $("#selectLock").select2().val(result[0].lock_duration).trigger('change')
       }
     })
-
 
     function selectUnit(val="",idx=""){
       $.ajax({
@@ -450,7 +446,6 @@
       })
     }
     
-
     $.ajax({
       url: "{{'/timesheet/getAllUser'}}",
       type: 'GET',success:function(result){
@@ -699,6 +694,10 @@
           }
       })
     }
+
+    $(document).ready(function(){
+      getConfigbyDivision()
+    })
 
   </script>
 @endsection
