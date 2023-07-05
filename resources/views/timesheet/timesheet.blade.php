@@ -334,6 +334,7 @@
             nik:nik
           },
           success:function(results){
+            console.log(results)
             Pace.restart();
             Pace.track(function(){
               $.ajax({
@@ -1010,10 +1011,9 @@
 
     function showHelp(params){
       if (params == 'level') {
-        $("#ModalAddTimesheet").find('.modal-footer').next("div").remove()
+        $("#ModalAddTimesheet").find('.modal-footer').next("div").hide()
 
         var appendHelp = ""
-
         appendHelp = appendHelp + '<div class="alert alert-default alert-dismissible">'
           appendHelp = appendHelp + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'
             appendHelp = appendHelp + '<div class="form-group">'
@@ -1022,31 +1022,31 @@
                 appendHelp = appendHelp + '<tr>'
                   appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'A'
                   appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
+                  appendHelp = appendHelp + '<td>' + 'Pekerjaan/aktivitas yang bersifat kritikal,rumit, atau pertama kali dilakukan'
                   appendHelp = appendHelp + '</td>'
                 appendHelp = appendHelp + '</tr>'
                 appendHelp = appendHelp + '<tr>'
                   appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'B'
                   appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
+                  appendHelp = appendHelp + '<td>' + 'Pekerjaan/aktivitas dengan level sulit, namun sudah pernah dilakukan sebelumnya'
                   appendHelp = appendHelp + '</td>'
                 appendHelp = appendHelp + '</tr>'
                 appendHelp = appendHelp + '<tr>'
                   appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'C'
                   appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
+                  appendHelp = appendHelp + '<td>' + 'Pekerjaan/aktivitas yang sudah sering dilakukan'
                   appendHelp = appendHelp + '</td>'
                 appendHelp = appendHelp + '</tr>'
                 appendHelp = appendHelp + '<tr>'
                   appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'D'
                   appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
+                  appendHelp = appendHelp + '<td>' + 'Pekerjaan/aktivitas yang setiap hari dilakukan'
                   appendHelp = appendHelp + '</td>'
                 appendHelp = appendHelp + '</tr>'
                 appendHelp = appendHelp + '<tr>'
                   appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'E'
                   appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
+                  appendHelp = appendHelp + '<td>' + 'Pekerjaan/aktivitas yang membutuhkan usaha sangat sedikit / effortless'
                   appendHelp = appendHelp + '</td>'
                 appendHelp = appendHelp + '</tr>'
               appendHelp = appendHelp + '</table>'
@@ -1054,96 +1054,38 @@
         appendHelp = appendHelp + '</div>'
 
         $("#ModalAddTimesheet").find('.modal-footer').after(appendHelp)
-      }else if (params == 'task') {
-        $("#ModalAddTimesheet").find('.modal-footer').next("div").remove()
+      }else {
+        $("#ModalAddTimesheet").find('.modal-footer').next("div").hide()
 
         var appendHelp = ""
-
-        appendHelp = appendHelp + '<div class="alert alert-default alert-dismissible">'
-          appendHelp = appendHelp + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'
-            appendHelp = appendHelp + '<div class="form-group">'
-              appendHelp = appendHelp + '<label><i class="fa fa-info"></i>) Help</label>'
-              appendHelp = appendHelp + '<table class="table">'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'Meeting'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'B'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'C'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'D'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'E'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-              appendHelp = appendHelp + '</table>'
-            appendHelp = appendHelp + '</div>'
-        appendHelp = appendHelp + '</div>'
-
-        $("#ModalAddTimesheet").find('.modal-footer').after(appendHelp)
-      }else{
-        $("#ModalAddTimesheet").find('.modal-footer').next("div").remove()
-
-        var appendHelp = ""
-
-        appendHelp = appendHelp + '<div class="alert alert-default alert-dismissible">'
-          appendHelp = appendHelp + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'
-            appendHelp = appendHelp + '<div class="form-group">'
-              appendHelp = appendHelp + '<label><i class="fa fa-info"></i>) Help</label>'
-              appendHelp = appendHelp + '<table class="table">'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'Development'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'B'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'C'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'D'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-                appendHelp = appendHelp + '<tr>'
-                  appendHelp = appendHelp + '<th width="20" class="bg-info">' + 'E'
-                  appendHelp = appendHelp + '</th>'
-                  appendHelp = appendHelp + '<td>' + 'A'
-                  appendHelp = appendHelp + '</td>'
-                appendHelp = appendHelp + '</tr>'
-              appendHelp = appendHelp + '</table>'
-            appendHelp = appendHelp + '</div>'
-        appendHelp = appendHelp + '</div>'
-
-        $("#ModalAddTimesheet").find('.modal-footer').after(appendHelp)
+        $.ajax({
+          type:"GET",
+          url:"{{url('/timesheet/getTaskPhaseByDivisionForTable')}}",
+          success:function(result){
+            console.log(result)
+             appendHelp = appendHelp + '<div class="alert alert-default alert-dismissible">'
+                appendHelp = appendHelp + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'
+                  appendHelp = appendHelp + '<div class="form-group">'
+                    appendHelp = appendHelp + '<label><i class="fa fa-info"></i>) Help</label>'
+                    appendHelp = appendHelp + '<table class="table">'
+                    $.each(result,function(index,values){
+                        if (index.toLowerCase() == params) {
+                          $.each(values,function(idx,value){
+                            appendHelp = appendHelp + '<tr>'
+                              appendHelp = appendHelp + '<th width="20" class="bg-info">' + value.title
+                              appendHelp = appendHelp + '</th>'
+                              appendHelp = appendHelp + '<td>' + value.description
+                              appendHelp = appendHelp + '</td>'
+                            appendHelp = appendHelp + '</tr>'
+                          })
+                        }
+                    })
+                    appendHelp = appendHelp + '</table>'
+                        appendHelp = appendHelp + '</div>'
+                    appendHelp = appendHelp + '</div>'
+            $("#ModalAddTimesheet").find('.modal-footer').after(appendHelp)
+          }
+        })
       }
     }
 
