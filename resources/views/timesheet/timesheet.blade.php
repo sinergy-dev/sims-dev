@@ -30,6 +30,10 @@
     .ui-datepicker-week-end {
       color: red;
     }
+
+    .date-range-highlight {
+      background-color: #C3D3D6; /* Replace with your desired color */
+    }
   </style>
 @endsection
 @section('content')
@@ -69,6 +73,17 @@
               <div class="external-event" style="position: relative;background-color: #605ca8;color: white;cursor: text;">Sick</div>
               <div class="external-event" style="position: relative;background-color: #605ca8;color: white;cursor: text;">Permite</div>
               <div class="external-event" style="position: relative;background-color: #605ca8;color: white;cursor: text;">Leaving Permite</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box box-solid">
+          <div class="box-header with-border">
+            <h4 class="box-title">Lock Duration</h4>
+          </div>
+          <div class="box-body">
+            <div id="external-events">
+              <div class="external-event" style="position: relative;background-color: #C3D3D6;color: white;cursor: text;"><i class="fa fa-lock"></i>&nbsp<span id="title_lock_duration"></span></div>
             </div>
           </div>
         </div>
@@ -467,6 +482,8 @@
           var incDate = 30
         }
 
+        $("#title_lock_duration").text(lock_activity[0].lock_activity + " Week")
+
         // Set the date to the first day of the two-week or three-week period
         var startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysToSubtract);
         var datesInWeek = []; // Array to store the dates in the week
@@ -563,7 +580,7 @@
                   Swal.fire({
                     icon: 'warning',
                     title: 'Warning',
-                    text: 'Sorry not yet for update. Date is after the current date!',
+                    text: 'Sorry, you won`t be permitted to create timesheet on the disabled date. Please create a timesheet in enabled date!',
                     confirmButtonText: 'OK'
                   }).then((result) => {
                     // Handle the user's interaction with the alert if needed
@@ -732,7 +749,6 @@
                       $("#id_activity").val(calEvent.id)
 
                       //staff
-                      console.log(calEvent.pid)
                       $('#selectType').val(calEvent.type).trigger('change')
                       $('#selectLead').val(calEvent.pid).trigger('change')
                       $('#selectLevel').val(calEvent.level).trigger('change')
@@ -742,19 +758,76 @@
                     }
                   }
                 } else {
-                  Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    text: 'Sorry not yet for update. Date is after the current date!',
-                    confirmButtonText: 'OK'
-                  }).then((result) => {
-                    // Handle the user's interaction with the alert if needed
-                    if (result.isConfirmed) {
-                      // The user clicked the 'OK' button
-                      console.log('User clicked OK');
-                    }
-                  });
+                  if(calEvent.schedule == "Planned"){
+                    setDuration()
+                    setTask(calEvent.task)
+                    setPhase(calEvent.phase)
+                    setLevel()
+                    setStatus()
+                    setType()
+                    setSchedule()
 
+                    var momentDate = moment(calEvent.start);
+                    var currentDate = moment();
+                    if (momentDate > currentDate) {
+                      $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                      $('#selectSchedule').prop("disabled",true)
+                      $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                      $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'));
+                      $('#daterange-input').prop("disabled",true)
+
+                      //supervisor
+                      if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
+                        $('#selectType').prop("disabled",true)
+                        $('#selectLead').prop("disabled",true)
+                        $('#selectTask').prop("disabled",true)
+                        $('#selectPhase').prop("disabled",true)
+                        $('#selectLevel').prop("disabled",true)
+                        $('#textareaActivity').prop("disabled",true)
+                        $('#selectDuration').prop("disabled",true)
+                        $('#selectStatus').prop("disabled",true)  
+                        $("#ModalAddTimesheet").find('.modal-footer').hide()
+                      }else{
+                        $("#ModalAddTimesheet").find('.modal-footer').show()
+                        $('#selectDuration').prop("disabled",true)
+                        $('#selectStatus').prop("disabled",true)
+                        
+                        $('#selectType').prop("disabled",false)
+                        $('#selectLead').prop("disabled",false)
+                        $('#selectTask').prop("disabled",false)
+                        $('#selectPhase').prop("disabled",false)
+                        $('#selectLevel').prop("disabled",false)
+                        $('#textareaActivity').prop("disabled",false)
+                      }
+
+                      $("#id_activity").val(calEvent.id)
+
+                      //staff
+                      $('#selectType').val(calEvent.type).trigger('change')
+                      $('#selectLead').val(calEvent.pid).trigger('change')
+                      $('#selectLevel').val(calEvent.level).trigger('change')
+                      $('#textareaActivity').val(calEvent.title).trigger('change')
+                      $('#selectDuration').val(calEvent.duration).trigger('change')
+                      $('#selectStatus').val(calEvent.status).trigger('change')
+
+                      $("#ModalAddTimesheet").modal("show")
+                      $(".modal-title").text("Update Timesheet")
+                      $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+                    }
+                  }else{
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Warning',
+                      text: 'Sorry not yet for update. Date is after the current date!',
+                      confirmButtonText: 'OK'
+                    }).then((result) => {
+                      // Handle the user's interaction with the alert if needed
+                      if (result.isConfirmed) {
+                        // The user clicked the 'OK' button
+                        console.log('User clicked OK');
+                      }
+                    });
+                  }
                 }
               // Handle the selection event for allowed dates
             } else {
@@ -776,50 +849,100 @@
 
                 $("#tbInfo").append(append)
               }else{
-                console.log("aku klik ini")
                 setDuration()
                 setTask(calEvent.task)
                 setPhase(calEvent.phase)
                 setLevel()
                 setStatus()
+                setType()
                 setSchedule()
 
-                $("#ModalAddTimesheet").modal("show")
-                $(".modal-title").text("Detail Timesheet")
-                $("#ModalAddTimesheet").find('.modal-footer').hide()
-                $('#selectSchedule').prop("disabled",true)
-                $('#selectType').prop("disabled",true)
-                $('#selectLead').prop("disabled",true)
-                $('#selectTask').prop("disabled",true)
-                $('#selectPhase').prop("disabled",true)
-                $('#selectLevel').prop("disabled",true)
-                $('#textareaActivity').prop("disabled",true)
-                $('#selectDuration').prop("disabled",true)
-                $('#selectStatus').prop("disabled",true)
-
-                if (calEvent.refer) {
-                  $('#selectSchedule').val('Planned').trigger('change') 
-                  $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                  $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
-                  $('#daterange-input').prop("disabled",true)    
-                  $('#textareaActivity').val(calEvent.title).trigger('change')   
-                }else{
+                var momentDate = moment(calEvent.start);
+                var currentDate = moment();
+                if (momentDate > currentDate) {
                   $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                  $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                  $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
+                  $('#selectSchedule').prop("disabled",true)
+                  $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                  $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'));
                   $('#daterange-input').prop("disabled",true)
+
+                  //supervisor
+                  if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
+                    $('#selectType').prop("disabled",true)
+                    $('#selectLead').prop("disabled",true)
+                    $('#selectTask').prop("disabled",true)
+                    $('#selectPhase').prop("disabled",true)
+                    $('#selectLevel').prop("disabled",true)
+                    $('#textareaActivity').prop("disabled",true)
+                    $('#selectDuration').prop("disabled",true)
+                    $('#selectStatus').prop("disabled",true)  
+                    $("#ModalAddTimesheet").find('.modal-footer').show()
+                  }else{
+                    $("#ModalAddTimesheet").find('.modal-footer').hide()
+                    $('#selectDuration').prop("disabled",true)
+                    $('#selectStatus').prop("disabled",true)
+                    
+                    $('#selectType').prop("disabled",false)
+                    $('#selectLead').prop("disabled",false)
+                    $('#selectTask').prop("disabled",false)
+                    $('#selectPhase').prop("disabled",false)
+                    $('#selectLevel').prop("disabled",false)
+                    $('#textareaActivity').prop("disabled",false)
+                  }
+
+                  $("#id_activity").val(calEvent.id)
+
+                  //staff
                   $('#selectType').val(calEvent.type).trigger('change')
                   $('#selectLead').val(calEvent.pid).trigger('change')
-                  $('#selectTask').val(calEvent.task).trigger('change')
-                  $('#selectPhase').val(calEvent.phase).trigger('change')
                   $('#selectLevel').val(calEvent.level).trigger('change')
-                  $('#textareaActivity').val(calEvent.title)
+                  $('#textareaActivity').val(calEvent.title).trigger('change')
                   $('#selectDuration').val(calEvent.duration).trigger('change')
                   $('#selectStatus').val(calEvent.status).trigger('change')
+
+                  $("#ModalAddTimesheet").modal("show")
+                  $(".modal-title").text("Update Timesheet")
+                  $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+                }else{
+                  console.log("aku klik ini")
+
+                  $("#ModalAddTimesheet").modal("show")
+                  $(".modal-title").text("Detail Timesheet")
+                  $("#ModalAddTimesheet").find('.modal-footer').hide()
+                  $('#selectSchedule').prop("disabled",true)
+                  $('#selectType').prop("disabled",true)
+                  $('#selectLead').prop("disabled",true)
+                  $('#selectTask').prop("disabled",true)
+                  $('#selectPhase').prop("disabled",true)
+                  $('#selectLevel').prop("disabled",true)
+                  $('#textareaActivity').prop("disabled",true)
+                  $('#selectDuration').prop("disabled",true)
+                  $('#selectStatus').prop("disabled",true)
+
+                  if (calEvent.refer) {
+                    $('#selectSchedule').val('Planned').trigger('change') 
+                    $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                    $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
+                    $('#daterange-input').prop("disabled",true)    
+                    $('#textareaActivity').val(calEvent.title).trigger('change')   
+                  }else{
+                    $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                    $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                    $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
+                    $('#daterange-input').prop("disabled",true)
+                    $('#selectType').val(calEvent.type).trigger('change')
+                    $('#selectLead').val(calEvent.pid).trigger('change')
+                    $('#selectTask').val(calEvent.task).trigger('change')
+                    $('#selectPhase').val(calEvent.phase).trigger('change')
+                    $('#selectLevel').val(calEvent.level).trigger('change')
+                    $('#textareaActivity').val(calEvent.title)
+                    $('#selectDuration').val(calEvent.duration).trigger('change')
+                    $('#selectStatus').val(calEvent.status).trigger('change')
+                  }
+                
+                  // Disable the day click event for disallowed dates
+                  return false;
                 }
-              
-                // Disable the day click event for disallowed dates
-                return false;
               }
             }
         },
@@ -832,6 +955,17 @@
           })) {
               cell.css('background-color', '#EEE');
           }
+          console.log(disabledDates)
+          if (datesInWeek.some(function(dates) {            
+              return currentDate.isSame(moment(dates).endOf('day'), 'day');
+          })) {
+            console.log(moment(currentDate).format('YYYY-MM-DD'))
+            cell.addClass('date-range-highlight');
+          }
+
+          // if (datesInWeek.includes(date)) {
+          //   cell.addClass('date-range-highlight');
+          // }
 
           var todays = new Date()
           var today = moment().startOf('day'); // Get the current date
