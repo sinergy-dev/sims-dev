@@ -21,6 +21,12 @@
     .select2-container {
       width: 100% !important;
     }
+
+    .datatable-container-hidden {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
   </style>
 @endsection
 @section('content')
@@ -80,7 +86,7 @@
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="table">
-              <div class="box box-primary" id="box_mandays">
+              <div class="box box-primary" id="box_mandays" >
                 <div class="box-header bg-primary with-border">
                   <h3 class="box-title" style="color: white;">Summary of Mandays</h3>
                 </div>
@@ -188,7 +194,7 @@
                 </div>
               </div>
 
-              <div class="box box-primary" id="box_pid" style="display:none;">
+              <div class="box box-primary" id="box_pid" style="display:none">
                 <div class="box-header bg-primary with-border">
                   <h3 class="box-title" style="color: white;">Assign PID</h3>
                 </div>
@@ -221,8 +227,8 @@
                         </div>
                     </div>
                   </div>
-                  <div class="table-responsive">
-                    <table class="table " id="tbAssignPID">
+                  <div>
+                    <table class="table" id="tbAssignPID">
                     </table>
                   </div>
                 </div>
@@ -309,7 +315,134 @@
       var accesable = @json($feature_item);
       accesable.forEach(function(item,index){
         $("#" + item).show()
+        console.log("gak aku sek lee")
+
       })
+
+      if (accesable.includes('box_pid')) {
+        var tbSummarySbe = $("#tbSummarySbe").DataTable({
+          data:[
+            [
+              "109/BBTN/SIP/X/2022",
+              "Salma",
+              "256",
+              "145",
+              "120",
+              "130",
+              "130%",
+              "111"
+            ],
+            [
+              "109/BBTN/SIP/X/2022",
+              "Rony",
+              "256",
+              "145",
+              "120",
+              "130",
+              "130%",
+              "111"
+            ],
+            [
+              "108/BMRI/SIP/IX/2022",
+              "Paul",
+              "256",
+              "145",
+              "120",
+              "130",
+              "130%",
+              "111"
+            ],
+            [
+              "108/BMRI/SIP/IX/2022",
+              "Nabila",
+              "256",
+              "145",
+              "120",
+              "130",
+              "130%",
+              "111"
+            ],
+          ],
+          columns: [
+            { title: 'PID'},
+            { title: 'Name' },
+            { title: 'Planned' },
+            { title: 'Actual' },
+            { title: 'Threshold' },
+            { title: 'Billable' },
+            { title: '%Billable' },
+            { title: 'Deviation' },
+          ],
+          lengthChange: false,
+          columnDefs: [{ visible: false, targets: 0 }],
+          order: [[0, 'asc']],
+          lengthChange: false,
+          drawCallback: function (settings) {
+              var api = this.api();
+              var rows = api.rows({ page: 'current' }).nodes();
+              var last = null;
+
+              api
+                  .column(0, { page: 'current' })
+                  .data()
+                  .each(function (group, i) {
+                      if (last !== group) {
+                          $(rows)
+                              .eq(i)
+                              .before('<tr class="group"><td colspan="6"><b>' + group + '</b></td><td><b>Total Mandays : 254</b></td></tr>');
+                          last = group;
+                      }
+                  });
+          },
+        }) 
+
+        var tbPID = $("#tbAssignPID").DataTable({
+          "ajax":{
+            type:"GET",
+            url:"{{url('/timesheet/getAllAssignPidByDivision')}}",
+          },
+          columns: [
+            { title: 'pid',
+              data: 'pid' 
+            },
+            { title: 'Name',
+              data: 'name'
+            },
+            { title: 'Role',
+              data: 'role' 
+            },
+          ],
+          columnDefs: [{ visible: false, targets: 0 }],
+          order: [[0, 'asc']],
+          lengthChange: false,
+          drawCallback: function (settings) {
+              var api = this.api();
+              var rows = api.rows({ page: 'current' }).nodes();
+              var last = null;
+
+              api
+                  .column(0, { page: 'current' })
+                  .data()
+                  .each(function (group, i) {
+                      if (last !== group) {
+                          $(rows)
+                              .eq(i)
+                              .before('<tr class="group"><td colspan="2"><b>' + group + '</b></td></tr>');
+                          last = group;
+                      }
+                  });
+          },
+        })
+        
+        console.log("aku sek lee")
+        $('#tbSummarySbe').removeClass('datatable-container-hidden');
+        $("#tbAssignPID").removeClass('datatable-container-hidden');
+      }else{
+        $('#tbSummarySbe').addClass('datatable-container-hidden');
+        $("#tbAssignPID").addClass('datatable-container-hidden');
+      }
+
+      
       console.log(accesable) 
       
     })
@@ -357,120 +490,6 @@
           $(item).prop('checked', column.visible())
         })
       }
-    })
-
-    var tbSummarySbe = $("#tbSummarySbe").DataTable({
-      data:[
-        [
-          "109/BBTN/SIP/X/2022",
-          "Salma",
-          "256",
-          "145",
-          "120",
-          "130",
-          "130%",
-          "111"
-        ],
-        [
-          "109/BBTN/SIP/X/2022",
-          "Rony",
-          "256",
-          "145",
-          "120",
-          "130",
-          "130%",
-          "111"
-        ],
-        [
-          "108/BMRI/SIP/IX/2022",
-          "Paul",
-          "256",
-          "145",
-          "120",
-          "130",
-          "130%",
-          "111"
-        ],
-        [
-          "108/BMRI/SIP/IX/2022",
-          "Nabila",
-          "256",
-          "145",
-          "120",
-          "130",
-          "130%",
-          "111"
-        ],
-      ],
-      columns: [
-        { title: 'PID'},
-        { title: 'Name' },
-        { title: 'Planned' },
-        { title: 'Actual' },
-        { title: 'Threshold' },
-        { title: 'Billable' },
-        { title: '%Billable' },
-        { title: 'Deviation' },
-      ],
-      lengthChange: false,
-      columnDefs: [{ visible: false, targets: 0 }],
-      order: [[0, 'asc']],
-      lengthChange: false,
-      drawCallback: function (settings) {
-          var api = this.api();
-          var rows = api.rows({ page: 'current' }).nodes();
-          var last = null;
-
-          api
-              .column(0, { page: 'current' })
-              .data()
-              .each(function (group, i) {
-                  if (last !== group) {
-                      $(rows)
-                          .eq(i)
-                          .before('<tr class="group"><td colspan="6"><b>' + group + '</b></td><td><b>Total Mandays : 254</b></td></tr>');
-                      last = group;
-                  }
-              });
-      },
-    })
-
-    var tbPID = $("#tbAssignPID").DataTable({
-      "ajax":{
-        type:"GET",
-        url:"{{url('/timesheet/getAllAssignPidByDivision')}}",
-      },
-      columns: [
-        { title: 'pid',
-          data: 'pid' 
-        },
-        { title: 'Name',
-          data: 'name'
-        },
-        { title: 'Role',
-          data: 'role' 
-        },
-      ],
-      columnDefs: [{ visible: false, targets: 0 }],
-      order: [[0, 'asc']],
-      lengthChange: false,
-      drawCallback: function (settings) {
-          var api = this.api();
-          var rows = api.rows({ page: 'current' }).nodes();
-          var last = null;
-
-          api
-              .column(0, { page: 'current' })
-              .data()
-              .each(function (group, i) {
-                  if (last !== group) {
-                      $(rows)
-                          .eq(i)
-                          .before('<tr class="group"><td colspan="2"><b>' + group + '</b></td></tr>');
-                      last = group;
-                  }
-              });
-      },
     })
 
     function changeColumnTable(id,data){
