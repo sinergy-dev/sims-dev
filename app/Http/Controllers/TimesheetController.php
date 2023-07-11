@@ -188,32 +188,115 @@ class TimesheetController extends Controller
         $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
         $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
 
-        if (isset($request->id_activity)) {
-            $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
-        } else {
-            $addTimesheet = new Timesheet();
-        }
-    	$addTimesheet->nik = Auth::User()->nik;
-    	$addTimesheet->schedule = $request->selectSchedule;
-    	$addTimesheet->start_date = $request->startDate;
-    	$addTimesheet->end_date = $request->endDate;
-    	$addTimesheet->pid = $request->selectLead;
-    	$addTimesheet->task = $request->selectTask;
-    	$addTimesheet->phase = $request->selectPhase;
-    	$addTimesheet->level = $request->selectLevel;
-    	$addTimesheet->activity = $request->textareaActivity;
-    	$addTimesheet->status = $request->selectStatus;
-    	$addTimesheet->duration = $request->selectDuration;
-    	$addTimesheet->type = $request->selectType;
-    	$addTimesheet->date_add = Carbon::now()->toDateTimeString();
-        $getPoint = (int)$request->selectDuration/480;
-        $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
-        $addTimesheet->month = date("n");
-        $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-        $addTimesheet->workdays = count($workdays);
-    	$addTimesheet->save();
+        $startDateInput = $request->startDate . '00:01:02';
+        $endDateInput = $request->endDate . '23:59:59';
 
-        return $addTimesheet;
+        // $toDate = Carbon::parse($startDateInput)->addDays(1);
+        // $fromDate = Carbon::parse($request->endDate)->addDays(1);
+        Carbon::setTestNow();
+
+        $toDate = Carbon::createFromFormat('Y-m-d', $request->endDate, 'Asia/Jakarta');
+        $fromDate = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta');
+  
+        $days = $toDate->diffInDays($fromDate);
+        // $allDaysPlanned = $days+1;
+        
+        if ($request->selectSchedule == 'Planned') {
+            if ($days > 0) {
+                for ($i=0; $i <= $days; $i++) { 
+                    
+                    if (isset($request->id_activity)) {
+                        $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
+                    } else {
+                        $addTimesheet = new Timesheet();
+                    }
+
+                    // $addTimesheet = new Timesheet();
+                    $addTimesheet->nik = Auth::User()->nik;
+                    $addTimesheet->schedule = $request->selectSchedule;
+                    $startDatePlanned = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta')->addDays($i);
+
+                    // return Carbon::parse($startDate);
+                    $addTimesheet->start_date = $startDatePlanned;
+                    $addTimesheet->end_date = $startDatePlanned;
+                    $addTimesheet->pid = $request->selectLead;
+                    $addTimesheet->task = $request->selectTask;
+                    $addTimesheet->phase = $request->selectPhase;
+                    $addTimesheet->level = $request->selectLevel;
+                    $addTimesheet->activity = $request->textareaActivity;
+                    $addTimesheet->status = $request->selectStatus;
+                    $addTimesheet->duration = $request->selectDuration;
+                    $addTimesheet->type = $request->selectType;
+                    $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+                    $getPoint = (int)$request->selectDuration/480;
+                    $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+                    $addTimesheet->month = date("n");
+                    $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
+                    $addTimesheet->workdays = count($workdays);
+                    $addTimesheet->save();
+
+                    $storeAll[] = $addTimesheet;
+                }
+            }else{
+                if (isset($request->id_activity)) {
+                    $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
+                } else {
+                    $addTimesheet = new Timesheet();
+                }
+                $addTimesheet->nik = Auth::User()->nik;
+                $addTimesheet->schedule = $request->selectSchedule;
+                $startDatePlanned = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta');
+                // return Carbon::parse($startDate);
+                $addTimesheet->start_date = $startDatePlanned;
+                $addTimesheet->end_date = $startDatePlanned;
+                $addTimesheet->pid = $request->selectLead;
+                $addTimesheet->task = $request->selectTask;
+                $addTimesheet->phase = $request->selectPhase;
+                $addTimesheet->level = $request->selectLevel;
+                $addTimesheet->activity = $request->textareaActivity;
+                $addTimesheet->status = $request->selectStatus;
+                $addTimesheet->duration = $request->selectDuration;
+                $addTimesheet->type = $request->selectType;
+                $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+                $getPoint = (int)$request->selectDuration/480;
+                $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+                $addTimesheet->month = date("n");
+                $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
+                $addTimesheet->workdays = count($workdays);
+                $addTimesheet->save();
+
+                $storeAll[] = $addTimesheet;
+            }
+        } else {
+            if (isset($request->id_activity)) {
+                $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
+            } else {
+                $addTimesheet = new Timesheet();
+            }
+            $addTimesheet->nik = Auth::User()->nik;
+            $addTimesheet->schedule = $request->selectSchedule;
+            $addTimesheet->start_date = $request->startDate;
+            $addTimesheet->end_date = $request->endDate;
+            $addTimesheet->pid = $request->selectLead;
+            $addTimesheet->task = $request->selectTask;
+            $addTimesheet->phase = $request->selectPhase;
+            $addTimesheet->level = $request->selectLevel;
+            $addTimesheet->activity = $request->textareaActivity;
+            $addTimesheet->status = $request->selectStatus;
+            $addTimesheet->duration = $request->selectDuration;
+            $addTimesheet->type = $request->selectType;
+            $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+            $getPoint = (int)$request->selectDuration/480;
+            $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+            $addTimesheet->month = date("n");
+            $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
+            $addTimesheet->workdays = count($workdays);
+            $addTimesheet->save();
+
+            $storeAll [] = $addTimesheet;
+        }
+
+        return $storeAll;
     }
 
     public function storeLockDuration(Request $request)
@@ -858,27 +941,38 @@ class TimesheetController extends Controller
             } else {
                 $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
             }
+        }elseif($cek_role->group == 'msm') {
+            if ($cek_role->name == 'MSM Manager') {
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+            } else {
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+            }
         }
 
-        $first = $level[0]->level;
-        $hasil = [0,0,0,0,0];
-        $bulan_angka = ['A', 'B', 'C', 'D', 'E'];
-        $pie = 0;
+        if (count($level) == 0) {
+            $hasil2 = [0,0,0,0];
+        }else{
+            $first = $level[0]->level;
 
-        foreach ($bulan_angka as $key => $value2) {
-            foreach ($level as $value) {
-                    if ($value->level == $value2) {
-                        $hasil[$key]++;
-                        $pie++;
+            $hasil = [0,0,0,0,0];
+            $bulan_angka = ['A', 'B', 'C', 'D', 'E'];
+            $pie = 0;
+
+            foreach ($bulan_angka as $key => $value2) {
+                foreach ($level as $value) {
+                        if ($value->level == $value2) {
+                            $hasil[$key]++;
+                            $pie++;
+                        }
                     }
-                }
-        }
+            }
 
-        $hasil2 = [0,0,0,0,0];
-        foreach ($hasil as $key => $value) {
-            $hasil2[$key] = ($value/$pie)*100;
+            $hasil2 = [0,0,0,0,0];
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
         }
-
+        
         return $hasil2;
     }
 
@@ -917,25 +1011,42 @@ class TimesheetController extends Controller
             } else {
                 $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
             }
+        }elseif($cek_role->group == 'msm') {
+            if ($cek_role->name == 'MSM Manager') {
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+            } else {
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+            }
         }
 
-        $first = $status[0]->status;
-        $hasil = [0,0,0,0];
-        $bulan_angka = ['Done','NotDone','Cancel','Reschedule'];
-        $pie = 0;
+        // return $status[0]->status;
 
-        foreach ($bulan_angka as $key => $value2) {
-            foreach ($status as $value) {
+        // if (count($status) != 0) {
+        //     $first = $status[0]->status;
+        // }else{
+
+        // }
+
+        if (count($status) == 0) {
+            $hasil2 = [0,0,0,0];
+        }else{
+            $hasil = [0,0,0,0];
+            $bulan_angka = ['Done','NotDone','Cancel','Reschedule'];
+            $pie = 0;
+
+            foreach ($bulan_angka as $key => $value2) {
+                foreach ($status as $value) {
                     if ($value->status == $value2) {
                         $hasil[$key]++;
                         $pie++;
                     }
                 }
-        }
+            }
 
-        $hasil2 = [0,0,0,0];
-        foreach ($hasil as $key => $value) {
-            $hasil2[$key] = ($value/$pie)*100;
+            $hasil2 = [0,0,0,0];
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
         }
 
         return $hasil2;
@@ -976,26 +1087,37 @@ class TimesheetController extends Controller
             } else {
                 $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
             }
-        }
-
-        $first = $schedule[0]->schedule;
-        $hasil = [0,0];
-        $statusSchedule = ['Planned','Unplanned'];
-        $pie = 0;
-
-        foreach ($statusSchedule as $key => $value2) {
-            foreach ($schedule as $value) {
-                if ($value->schedule == $value2) {
-                    $hasil[$key]++;
-                    $pie++;
-                    // return $hasil;
-                }
+        }elseif ($cek_role->group == 'msm') {
+            if ($cek_role->name == 'MSM Manager') {
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+            } else {
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
             }
         }
 
-        $hasil2 = [0,0];
-        foreach ($hasil as $key => $value) {
-            $hasil2[$key] = ($value/$pie)*100;
+        if (count($schedule) == 0) {
+            $hasil2 = [0,0];
+        }else{
+            $first = $schedule[0]->schedule;
+
+            $hasil = [0,0];
+            $statusSchedule = ['Planned','Unplanned'];
+            $pie = 0;
+
+            foreach ($statusSchedule as $key => $value2) {
+                foreach ($schedule as $value) {
+                    if ($value->schedule == $value2) {
+                        $hasil[$key]++;
+                        $pie++;
+                        // return $hasil;
+                    }
+                }
+            }
+
+            $hasil2 = [0,0];
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
         }
 
         return $hasil2;
@@ -1142,7 +1264,19 @@ class TimesheetController extends Controller
         $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $bulan_angka = [1,2,3,4,5,6,7,8,9,10,11,12];
 
-        $data = DB::table('tb_timesheet')->join('users','tb_timesheet.nik','users.nik');
+        $data = DB::table('tb_timesheet')
+                ->join('users','tb_timesheet.nik','users.nik')
+                // ->selectRaw('MONTH(start_date) AS month')
+                ->selectRaw('round(point_mandays, 2) as cummulative_mandays')
+                ->selectRaw('users.name')
+                ->groupBy('name');
+
+        return $data->get();
+
+
+        // $data = DB::table('tb_timesheet')
+        //         ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status')->selectRaw('MONTH(start_date) AS month_number');
+
 
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager') {
@@ -1172,10 +1306,10 @@ class TimesheetController extends Controller
             if ($cek_role->name == 'BCD Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
                 // $data = $data->select(DB::raw('SUM(point_mandays) AS `point_mandays`'),'name')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->groupby('name')->get();
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupby('name');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
-                // return $data;
-                $data = $data->toArray();
+
+                // $data = $data->toArray();
                 // return array_column($data, 'point_mandays');
                 // foreach ($bulan_angka as $key => $value2) {
                 //    foreach ($data as $value) {
@@ -1185,17 +1319,28 @@ class TimesheetController extends Controller
                 //                 $hasil[$key] = $hasil[$key]+$values->point_mandays;
                 //             }
                 //         }
-                        
                 //     }
                 // }
 
-                // foreach ($bulan_angka as $key => $value2) {
-                //    foreach ($data as $value) {
-                //        if ($value->month == $value2) {
-                //             $hasil[$key] = $hasil[$key]+$value->point_mandays;
-                //         }
-                //     }
-                // }
+                foreach ($bulan_angka as $key_month => $value2) {
+                   foreach ($data as $key_value => $value) {
+                        foreach($value as $value_gName){
+                            if ($value_gName->name === $key_value) {
+                                $hasil = 0 + $value_gName->point_mandays;
+                                $arrGroupName = collect(['name'=>$key_value,'month_array'=>$hasil]);
+
+                                // if ($value_gName->month_number == $value2) {
+                                //     $hasil[$key_month] = $hasil[$key_month]+$value_gName->point_mandays;
+                                // }
+                            }
+                        }
+                    }
+                }
+
+                // return $data;
+                return var_dump($arrGroupName);
+
+
 
                 // foreach ($data as $keys => $value) {
                 //     // return $value;
@@ -1243,8 +1388,8 @@ class TimesheetController extends Controller
         }
 
         // return $data;
-        return $hasil;
+        // return $hasil;
 
-        // return array("data" => $data);
+        return array($data);
     }
 }
