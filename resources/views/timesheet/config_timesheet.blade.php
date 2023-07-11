@@ -373,7 +373,9 @@
       url: "{{'/timesheet/getLockDurationByDivision'}}",
       type: 'GET',
       success:function(result){
+        if (result.length > 0) {
           $("#selectLock").select2().val(result[0].lock_duration).trigger('change')
+        }
       }
     })
 
