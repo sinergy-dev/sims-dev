@@ -150,7 +150,7 @@
             <form action="" id="modal_phase" name="modal_phase">
                 @csrf
                 <div class="form-group">
-                  <label>Task*</label>
+                  <label>Phase*</label>
                   <input class="form-control" name="inputPhase" id="inputPhase" placeholder="Enter Phase" onkeyup="validateInput(this)"/>
                   <span class="help-block" style="display:none">Please fill Phase!</span>
                 </div>
