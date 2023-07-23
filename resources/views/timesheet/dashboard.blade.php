@@ -5,7 +5,6 @@
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
   <style type="text/css">
@@ -26,6 +25,54 @@
       position: absolute;
       left: -9999px;
       top: -9999px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .pagination-link {
+      display: inline-block;
+      padding: 8px 12px;
+      margin-right: 5px;
+      text-decoration: none;
+      color: #333;
+      background-color: #f2f2f2;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .pagination-link:hover {
+      background-color: #ddd;
+    }
+
+    .pagination-link.active {
+      background-color: #007bff!important;
+      color: #fff!important;
+      border-color: #007bff!important;
+    }
+
+    /* Styling for disabled anchor elements */
+    .pagination-link:disabled {
+      color: #ccc!important; /* Color for disabled anchors */
+      pointer-events: none!important; /* Disable click events */
+      cursor: not-allowed; /* Set cursor to "not-allowed" */
+    }
+
+    .loading-indicator {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
     }
   </style>
 @endsection
@@ -54,25 +101,29 @@
             </div>
             <div class="form-group">
               <label>Filter by PIC</label>
-              <select type="select" class="select2 form-control" id="selectPic" name="selectPic" onchange="customFilter(this)"><option></option></select>
+              <select type="select" class="select2 form-control" id="selectPic" name="selectPic" onchange="customFilter(this.value,'selectPic')">
+                <!-- <option></option> -->
+              </select>
             </div>
             <div class="form-group">
               <label>Filter by Status</label>
-              <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus" onchange="customFilter(this)">
-                <option></option>
+              <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus" onchange="customFilter(this.value,'selectStatus')">
+                <!-- <option></option> -->
               </select>
             </div>
             <div class="form-group">
               <label>Filter by Task</label>
-              <select type="select" class="select2 form-control" id="selectTask" name="selectTask" onchange="customFilter(this)"><option value=""></option></select>
+              <select type="select" class="select2 form-control" id="selectTask" name="selectTask" onchange="customFilter(this.value,'selectTask')">
+                <!-- <option></option> -->
+              </select>
             </div>
             <div class="form-group">
               <label>Filter by Year</label>
-              <select type="select" class="select2 form-control" id="selectYear" name="selectYear" onchange="customFilter(this)"><option value=""></option></select>
+              <select type="select" class="select2 form-control" id="selectYear" name="selectYear" onchange="customFilter(this.value,'selectYear')"><option value=""></option></select>
             </div>
             <div class="form-group">
               <label>Filter by Schedule</label>
-              <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule" onchange="customFilter(this)"><option></option></select>
+              <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule" onchange="customFilter(this.value,'selectSchedule')"><option></option></select>
             </div>
             <button id="" class="btn btn-sm btn-info btn-block" onclick="resetFilter()"><i class="fa fa-refresh"></i> Reset</button>
           </div>
@@ -88,7 +139,8 @@
             <div class="tab-pane active" id="table">
               <div class="box box-primary" id="box_mandays" >
                 <div class="box-header bg-primary with-border">
-                  <h3 class="box-title" style="color: white;">Summary of Mandays</h3>
+                  <h3 class="box-title" style="color: white;">Summary of Mandays <span id="title_summary_year"></span></h3>
+                  <span id="filterSumPoint" class="pull-right"><i class="fa fa-circle" style="color: red;"></i> <span style="color: white">not ready to filter..</span></span>
                 </div>
                 <div class="box-body">
                   <div class="row">
@@ -136,6 +188,11 @@
                   <div class="table-responsive">
                     <table class="table" id="tbSummaryMandays">
                     </table>
+                  </div>
+                  <!-- Loading element (spinner or message) -->
+                  <div id="loadingIndicator" class="loading-indicator">
+                    <!-- Add your loading content here (e.g., a spinner or loading message) -->
+                    Loading...
                   </div>
                 </div>
               </div>
@@ -234,13 +291,13 @@
                 </div>
               </div>
 
-              <div class="row" id="box_definition">
+              <div class="row" id="box_definition" style="display:none;">
               </div>
             </div>
             <div class="tab-pane" id="chart">
               <div class="box box-primary">
                 <div class="box-header bg-primary" style="color:white">
-                  <h3 class="box-title">Cummulative Mandays</h3>
+                  <h3 class="box-title">Cummulative Mandays (Status Done)</h3>
                 </div>
                 <div class="box-body">
                   <canvas id="cummulativeMandaysChart" width="400" height="200"></canvas>
@@ -249,10 +306,16 @@
 
               <div class="box box-primary">
                 <div class="box-header bg-primary" style="color:white">
-                  <h3 class="box-title">Remaining</h3>
+                  <h3 class="box-title">Remaining <span id="span-remaining"></span> (Status Done)</h3>
                 </div>
                 <div class="box-body">
-                  <canvas id="remainingChart" width="400" height="200"></canvas>
+                  <div id="box-remaining">
+                    <!-- <canvas id="remainingChart" width="400" height="200"></canvas> -->
+                  
+                  </div>
+                  <div id="pagination" style="margin-top:20px" class="pull-right">
+                    
+                  </div>
                 </div>
               </div>
 
@@ -297,13 +360,14 @@
         </div>
       </div>
     </div>
-  </section>
+    </section>
 @endsection
 @section('scriptImport')
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
   <!--datatable-->
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
@@ -315,63 +379,23 @@
       var accesable = @json($feature_item);
       accesable.forEach(function(item,index){
         $("#" + item).show()
-        console.log("gak aku sek lee")
-
       })
 
       if (accesable.includes('box_pid')) {
         var tbSummarySbe = $("#tbSummarySbe").DataTable({
-          data:[
-            [
-              "109/BBTN/SIP/X/2022",
-              "Salma",
-              "256",
-              "145",
-              "120",
-              "130",
-              "130%",
-              "111"
-            ],
-            [
-              "109/BBTN/SIP/X/2022",
-              "Rony",
-              "256",
-              "145",
-              "120",
-              "130",
-              "130%",
-              "111"
-            ],
-            [
-              "108/BMRI/SIP/IX/2022",
-              "Paul",
-              "256",
-              "145",
-              "120",
-              "130",
-              "130%",
-              "111"
-            ],
-            [
-              "108/BMRI/SIP/IX/2022",
-              "Nabila",
-              "256",
-              "145",
-              "120",
-              "130",
-              "130%",
-              "111"
-            ],
-          ],
+          "ajax":{
+            type:"GET",
+            url:"{{url('/timesheet/sumPointSbe')}}",
+          },
           columns: [
-            { title: 'PID'},
-            { title: 'Name' },
-            { title: 'Planned' },
-            { title: 'Actual' },
-            { title: 'Threshold' },
-            { title: 'Billable' },
-            { title: '%Billable' },
-            { title: 'Deviation' },
+            { title: 'PID', data:'pid'},
+            { title: 'Name', data:'name'},
+            { title: 'Planned',data:'planned'},
+            { title: 'Actual',data:'actual'},
+            // { title: 'Threshold' },
+            // { title: 'Billable' },
+            // { title: '%Billable' },
+            // { title: 'Deviation' },
           ],
           lengthChange: false,
           columnDefs: [{ visible: false, targets: 0 }],
@@ -383,16 +407,16 @@
               var last = null;
 
               api
-                  .column(0, { page: 'current' })
-                  .data()
-                  .each(function (group, i) {
-                      if (last !== group) {
-                          $(rows)
-                              .eq(i)
-                              .before('<tr class="group"><td colspan="6"><b>' + group + '</b></td><td><b>Total Mandays : 254</b></td></tr>');
-                          last = group;
-                      }
-                  });
+              .column([0,2], { page: 'current' })
+              .data()
+              .each(function (group, i) {
+                  if (last !== group) {
+                      $(rows)
+                          .eq(i)
+                          .before('<tr class="group"><td colspan="2"><b>' + group + '</b></td><td><b>Total Mandays : '+ api.column(2).data()[i] +'</b></td></tr>');
+                      last = group;
+                  }
+              });
           },
         }) 
 
@@ -433,8 +457,6 @@
                   });
           },
         })
-        
-        console.log("aku sek lee")
         $('#tbSummarySbe').removeClass('datatable-container-hidden');
         $("#tbAssignPID").removeClass('datatable-container-hidden');
       }else{
@@ -442,54 +464,76 @@
         $("#tbAssignPID").addClass('datatable-container-hidden');
       }
 
-      
-      console.log(accesable) 
-      
-    })
-
-    var tbSummary = $("#tbSummaryMandays").DataTable({
-      data:[
-        [
-          "Salma",
-          "256",
-          "145",
-          "120",
-          "130",
-          "130%",
-          "111"
-        ],
-        [
-          "Rony",
-          "256",
-          "145",
-          "120",
-          "130",
-          "130%",
-          "111"
-        ],
-      ],
-      columns: [
-        { title: 
-          'Name',
-          render: function (data, type, row, meta){
-            return '<a href="{{url("/timesheet?nik=1210889030")}}" style="cursor:pointer">'+ data +'</a>'
-          } 
+      isTbSummary = false
+      var tbSummary = $("#tbSummaryMandays").DataTable({
+        "ajax":{
+          type:"GET",
+          url:"{{url('/timesheet/sumPointMandays')}}",
         },
-        { title: 'Planned' },
-        { title: 'Actual' },
-        { title: 'Threshold' },
-        { title: 'Billable' },
-        { title: '%Billable' },
-        { title: 'Deviation' },
-      ],
-      lengthChange: false,
-      initComplete: function () {
-        $.each($("#selectShowColumnTicket li input"),function(index,item){
-          var column = $("#tablePerformance").DataTable().column(index)
-          // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-          $(item).prop('checked', column.visible())
-        })
-      }
+        columns: [
+          { title: 
+            'Name',
+            render: function (data, type, row, meta){
+              return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
+            } 
+          },
+          { title: 'Planned',
+            data:'planned'
+          },
+          { title: 'Actual', 
+            data:'actual'
+          },
+          { title: 'Threshold',
+            data:'threshold' 
+          },
+          { title: 'Billable', 
+            data:'billable'
+          },
+          { title: '%Billable', 
+            data:'percentage_billable'
+          },
+          { title: 'Deviation', 
+            data:'deviation'
+          },
+        ],
+        lengthChange: false,
+        initComplete: function () {
+          isTbSummary = true
+          $("#filterSumPoint").find("i").css("color","#80ff80")
+          $("#filterSumPoint").find("span").text("ready to filter")
+          $('#loadingIndicator').hide();
+          $.each($("#selectShowColumnTicket li input"),function(index,item){
+            var column = $("#tablePerformance").DataTable().column(index)
+            // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+            $(item).prop('checked', column.visible())
+          })
+        }
+      })
+
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getAllUser')}}",
+        success:function(result) {
+          $("#selectPic").select2({
+            placeholder:"Select PIC",
+            data:result,
+            multiple:true
+          })
+        }
+      })
+
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getTaskByDivision')}}",
+        success:function(result) {
+          $("#selectTask").select2({
+            placeholder:"Select Task",
+            data:result,
+            multiple:true
+          })
+        }
+      })
+
     })
 
     function changeColumnTable(id,data){
@@ -595,23 +639,23 @@
           id:"Undone",
           text:"Undone"
         },
-      ]
+      ],
+      multiple:true
     })
 
     $("#selectSchedule").select2({
       placeholder:"Select Schedule",
-    })
-
-    $("#selectTask").select2({
-      placeholder:"Select Status",
-    })
-
-    $("#selectSchedule").select2({
-      placeholder:"Select Schedule",
-    })
-
-    $("#selectPic").select2({
-      placeholder:"Select PIC",
+      data:[
+        {
+          id:"Planned",
+          text:"Planned"
+        },
+        {
+          id:"Unplanned",
+          text:"Unplanned"
+        },
+      ],
+      multiple:true
     })
 
     arrFilterYear = []
@@ -625,28 +669,83 @@
 
     $("#selectYear").select2({
       placeholder:"Select Year",
-      data:arrFilterYear
+      data:arrFilterYear,
     })
 
-    function customFilter(val){
-      var arrFilterMonth = [], selectPic = '', selectStatus = '', selectTask = '', selectYear = '', selectSchedule = ''
+    function customFilter(val,id=""){
+      console.log(id + "wooo")
+      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectYear = 'year=', selectSchedule = 'schedule='
 
-      if (val.id = "cbMonth") {
-        arrFilterMonth = []
-        cummulativeLineChart.destroy()
-        $(".cbMonth").each(function(idx,values){
-          if ($(values).is(":checked") == true) {
-            arrFilterMonth.push(values.value)
+      
+      console.log("aku disini")
+      arrFilterMonth = []
+      arrMonth = []
+      cummulativeLineChart.destroy()
+      $(".cbMonth").each(function(idx,values){
+        if ($(values).is(":checked") == true) {
+          if(arrFilterMonth == 'month[]=') {
+            arrFilterMonth = arrFilterMonth + values.value
+          }else{
+            arrFilterMonth = arrFilterMonth + '&month[]=' + values.value
           }
-        })
+
+          arrMonth.push(values.value)
+        }
+      })
+      
+      $.each($('#selectPic').val(),function(key,val){
+        if(selectPic == 'pic[]=') {
+          selectPic = selectPic + val
+        }else{
+          selectPic = selectPic + '&pic[]=' + val
+        }
+      })
+
+      $.each($('#selectStatus').val(),function(key,val){
+        if(selectStatus == 'status[]=') {
+          selectStatus = selectStatus + val
+        }else{
+          selectStatus = selectStatus + '&status[]=' + val
+        }
+      })
+
+      $.each($('#selectTask').val(),function(key,val){
+        if(selectTask == 'task[]=') {
+          selectTask = selectTask + val
+        }else{
+          selectTask = selectTask + '&task[]=' + val
+        }
+      })
+
+      if(selectYear == 'year=') {
+        selectYear = selectYear + $('#selectYear').val()
+      }else{
+        selectYear = selectYear + '&year=' + $('#selectYear').val()
       }
 
-      var arrFilter = '?month=' + arrFilterMonth + '&pic=' + selectPic + '&status=' + selectStatus + '&task=' + selectTask + '&year=' + selectYear + '&schedule=' + selectSchedule
+      if(selectSchedule == 'schedule=') {
+        selectSchedule = selectSchedule + $('#selectSchedule').val()
+      }else{
+        selectSchedule = selectSchedule + '&schedule=' + $('#selectSchedule').val()
+      }
 
-      cummulativeChart(arrFilterMonth)
+      if ($(".cbMonth").is(":checked") == false) {
+        arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        $.each(arrMonth,function(idx,valueMonth){
+          if(arrFilterMonth == 'month[]=') {
+            arrFilterMonth = arrFilterMonth + valueMonth
+          }else{
+            arrFilterMonth = arrFilterMonth + '&month[]=' + valueMonth
+          }
+        })
+        console.log(arrMonth)
+        cummulativeChart(arrMonth)
+      }else{
+        cummulativeChart(arrMonth)
+      }
 
-      console.log(arrFilterMonth)
-      // showDataFilter(arrFilter)
+      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
+      showDataFilter(arrFilter)
     }
 
     var colors = [
@@ -674,151 +773,104 @@
     let cummulativeLineChart = ''
 
     $(document).ready(function(){
+      $("#title_summary_year").text(moment().year())
+      duplicateCanvasRemaining()
       cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
     })
 
     function cummulativeChart(labelChartLineByFilter){
-      const myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels:labelChartLineByFilter,
-          datasets: [
-            {
-                label: 'Salma',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000'
-                ],
-                borderColor: [
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000',
-                    '#FF0000'
-                ],
-                borderWidth: 1,
-                tension:0.5,
-            },
-            {
-                label: 'Rony',
-                data: [10, 9, 5, 12, 3, 1],
-                backgroundColor: [
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                ],
-                borderColor: [
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                    colors[2],
-                ],
-                borderWidth: 1,
-                tension:0.4,
-            },
-            {
-                label: 'Paul',
-                data: [11, 19, 25, 1, 7, 4],
-                backgroundColor: [
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                ],
-                borderColor: [
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                    colors[3],
-                ],
-                borderWidth: 1,
-                tension:0.4,
-            },
-            {
-                label: 'Nabila',
-                data: [33, 34, 14, 12, 13, 21],
-                backgroundColor: [
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                ],
-                borderColor: [
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                    colors[4],
-                ],
-                borderWidth: 1,
-                tension:0.4,
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getCummulativeMandaysChart')}}",
+        success:function(results) {
+          var cummulativeArr = []
+          $.each(results,function(idx,value){
+            if (value.name == null) {
+              cummulativeArr = cummulativeArr
+              console.log("ini null")
+            }else{
+              console.log("ini ga null")
+              if (results.length > 1) {
+                $.each(value.month_array,function(idxs,values){
+                    if (idxs == value.name) {
+                      var bgColorArr_idx = [colors[idx]]
+                      cummulativeArr.push({"label":value.name,"data":value.month_array[idxs],"backgroundColor":bgColorArr_idx,"borderWidth":1,"tension":0.5})
+                    }
+                })
+              }else{
+                // console.log(value)
+                for(i=0;i<12;i++){
+                  var bgColorArr = []
+                  bgColorArr.push(colors[idx])
+                }
+                cummulativeArr.push({"label":value.name,"data":value.month_array,"backgroundColor":bgColorArr,"borderWidth":1,"tension":0.5})
+              }
             }
-          ]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+          })
+
+          const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels:labelChartLineByFilter,
+              datasets:cummulativeArr
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero:true,
+                        suggestedMax:results[results.length - 1].workdays,
+                        ticks: {
+                          stepSize: 2,
+                          callback: function(value, index, values) {
+                              return value;
+                          }
+                        }
+                    }
                 }
             }
-        }
-      });
+          });
 
-      return cummulativeLineChart = myChart
+          return cummulativeLineChart = myChart
+        }
+      })
     }    
 
-    const myChart2 = new Chart(ctx2, {
+    function remainingChart(idCtx,value){
+      // console.log(idCtx)
+      // console.log(value)
+      var datasetRemaining = [], arrConfig = [], labels = []
+      if (typeof(value) == "object") {
+        var i = 0, j = 0
+        $.each(value,function(index,values){
+          $.each(values[0],function(idx,valueName){
+            labels.push(valueName)
+          })
+        })
+
+        $.each(value.label,function(index,valueLabel){
+            var borderColorArr = [colors[i++]]
+            var backgroundColorArr = [colors[j++]]
+            if (index == 'Prosentase') {
+              arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
+            }else if(index == 'Remaining'){
+              arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
+            }
+        })
+        datasetRemaining.push({"datasets":arrConfig})
+      }else{
+        arrConfig.push({"label":"","data":[0],"borderColor":'',"backgroundColor":'',borderWidth:1,minBarLength:2,barThickness:30})
+
+        datasetRemaining.push({"datasets":arrConfig})
+        labels = labels
+      }
+
+      // console.log(datasetRemaining)
+      $("#span-remaining").text(moment().format('MMMM'))
+      const myChart2 = new Chart(idCtx, {
         type: 'bar',
         data: {
-            labels: ['Salma', 'Rony'],
-            datasets: [{
-                  label: 'Prosentase',
-                  data: ['80','70'],
-                  backgroundColor: [
-                      colors[0],
-                      colors[0],
-                  ],
-                  borderColor: [
-                      colors[0],
-                      colors[0],                                                 
-                  ],
-                  borderWidth: 1,
-                  minBarLength: 2,
-                  barThickness: 30,
-                  },
-                  {
-                      label: 'Remaining',
-                      data: ['20','30'],
-                      backgroundColor: [
-                          colors[1],
-                          colors[1],                      
-                      ],
-                      borderColor: [
-                          colors[1],
-                          colors[1],
-                      ],
-                      borderWidth: 1,
-                      minBarLength: 2,
-                      barThickness: 30,
-                  }],
+            labels: labels,
+            datasets:datasetRemaining[0].datasets
         },
         options: {
           scales: {
@@ -849,8 +901,115 @@
             }
           }
         }
-    });
+      });
 
+      return myChart2;
+      // Create a new canvas element
+      // var duplicateCanvas = document.createElement('canvas');
+      // $("#remainingChart").after(duplicateCanvas)
+    }
+
+    function duplicateCanvasRemaining(){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/timesheet/getRemainingChart')}}",
+        success:function(results){
+          // console.log(results)
+          $.each(results,function(index,value){
+            // console.log(typeof(value))
+            if (typeof(value) == "object") {
+              $.each(value,function(idx,values){
+                var duplicateCanvas = document.createElement('canvas');
+                duplicateCanvas.width = 400;
+                duplicateCanvas.height = 200;
+                duplicateCanvas.id = 'remainingChart'+moment().month(idx-1).format('MMMM')
+
+                $("#box-remaining").append(duplicateCanvas)
+                // document.getElementById('remainingChart'+value).style.display = 'none';
+
+                // console.log(values)
+                const ctxvalue = document.getElementById('remainingChart'+moment().month(idx-1).format('MMMM'));
+                remainingChart(ctxvalue,values)
+              })
+            }else{
+              var duplicateCanvas = document.createElement('canvas');
+              duplicateCanvas.width = 400;
+              duplicateCanvas.height = 200;
+              duplicateCanvas.id = 'remainingChart'+moment().month(value-1).format('MMMM')
+
+              $("#box-remaining").append(duplicateCanvas)
+
+              const ctxvalue = document.getElementById('remainingChart'+moment().month(value-1).format('MMMM'));
+              remainingChart(ctxvalue,value)
+            }
+          })
+
+          var itemsPerPage = 1; // Number of items per page
+          var $myDiv = $("#box-remaining");
+          var $pagination = $('#pagination');
+          var items = $myDiv.children(); // Get the items within the div
+          var totalPages = Math.ceil(items.length / itemsPerPage);
+
+          console.log(totalPages+"total pages")
+          // Generate pagination links
+          for (var i = 1; i <= totalPages; i++) {
+            if (i === moment().month() + 1) {
+              $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
+            }else{
+              //bedakan dengan filter year
+              if (i > moment().month() + 1) {
+                $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+              }else{
+                $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+              }
+            }
+          }
+
+          //set current month
+          showItems(moment().month() + 1);
+
+          // Handle pagination link click event
+          $pagination.on('click', '.pagination-link', function(e) {
+            e.preventDefault();
+            var page = parseInt($(this).text()); // Get the clicked page number
+            const monthName = moment().month(page-1).format('MMMM')
+            $("#span-remaining").text(monthName)
+            $.each($(".pagination-link"),function(idx,value){
+              if (value.text == page) {
+                $(value).addClass('active')
+              }else{
+                $(value).removeClass('active')
+              }
+            })
+
+            showItems(page); // Display items for the clicked page
+          });
+
+          function showItems(page) {
+            var startIndex = (page - 1) * itemsPerPage;
+            var endIndex = startIndex + itemsPerPage;
+            
+            items.hide() // Hide all items
+                 .slice(startIndex, endIndex) // Show only items for the current page
+                 .show();
+          }
+        }
+      })
+      // $.each(arrMonth,function(index,value){
+      //   var duplicateCanvas = document.createElement('canvas');
+      //   duplicateCanvas.width = 400;
+      //   duplicateCanvas.height = 200;
+      //   duplicateCanvas.id = 'remainingChart'+value
+
+      //   $("#box-remaining").append(duplicateCanvas)
+      //   // document.getElementById('remainingChart'+value).style.display = 'none';
+
+      //   const ctxvalue = document.getElementById('remainingChart'+value);
+      //   remainingChart(ctxvalue)
+      // })
+      // Initially show the first page
+    }
+    
     appendChartLevel = ""
       appendChartLevel = appendChartLevel + '<table class="table table-striped" style="border-collapse: separate;border-spacing: 0 10px;">'
         appendChartLevel = appendChartLevel + '<tr>'
@@ -1066,6 +1225,29 @@
         })
       } 
     })
+
+    function showDataFilter(arrFilter){
+      if (isTbSummary == true) {
+        $("#loadingIndicator").show()
+        Pace.restart();
+        Pace.track(function(){
+          $("#tbSummaryMandays").DataTable().ajax.url("{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter).load();
+        })
+      }
+
+      // $.ajax({
+      //   type:"GET",
+      //   url:"{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter,
+      //   success:function(result) {
+          
+      //   }
+      // })
+    }
+
+    $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
+      // AJAX reload is complete
+      $("#loadingIndicator").hide()
+    });
 
     function resetFilter(){
       location.reload()    
