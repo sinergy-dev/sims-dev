@@ -941,6 +941,8 @@
                   $("#ModalAddTimesheet").modal("show")
                   $(".modal-title").text("Detail Timesheet")
                   $("#ModalAddTimesheet").find('.modal-footer').hide()
+                  $('#selectDuration').prop("disabled",true)
+                  $('#selectStatus').prop("disabled",true)
                   $('#selectSchedule').prop("disabled",true)
                   $('#selectType').prop("disabled",true)
                   $('#selectLead').prop("disabled",true)
@@ -948,8 +950,7 @@
                   $('#selectPhase').prop("disabled",true)
                   $('#selectLevel').prop("disabled",true)
                   $('#textareaActivity').prop("disabled",true)
-                  $('#selectDuration').prop("disabled",true)
-                  $('#selectStatus').prop("disabled",true)
+                 
 
                   if (calEvent.refer) {
                     $('#selectSchedule').val('Planned').trigger('change') 
@@ -1081,11 +1082,9 @@
           })) {
               cell.css('background-color', '#EEE');
           }
-          console.log(disabledDates)
           if (datesInWeek.some(function(dates) {            
               return currentDate.isSame(moment(dates).endOf('day'), 'day');
           })) {
-            console.log(moment(currentDate).format('YYYY-MM-DD'))
             cell.addClass('date-range-highlight');
           }
 
