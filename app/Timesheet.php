@@ -156,22 +156,74 @@ class Timesheet extends Model
     //     // return [$workdays,$threshold];
     // }
 
-    public function getPlannedAttribute()
+    public function getPlannedAttribute($month)
     {
-        $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
-        $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
-        $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
-        return $workdays = count($workdays);
+        $this->month = $month;
+        if (isset($this->month)) {
+            $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+            foreach($this->month as $month){
+                $date = Carbon::parse($month);
+                // Get the numeric representation of the month (1 to 12)
+                $numericMonth = $date->month;
+                // return $numericMonth;
+
+                $startDate = Carbon::now();
+                $startDate->month($numericMonth);
+
+                $endDate = Carbon::now();
+                $endDate->month($numericMonth);
+
+                $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+                $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                $workdays = $this->getWorkDays($startDateFinal,$endDateFinal,"workdays");
+                $arrMonthMandays[$numericMonth-1] = $arrMonthMandays[$numericMonth-1]+count($workdays);
+            }
+
+            $sumMandays = array_sum($arrMonthMandays);
+
+            return $sumMandays;
+        }else{
+            $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
+            $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
+            $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
+            return $workdays = count($workdays);
+        }
     }
 
-    public function getThresholdAttribute()
+    public function getThresholdAttribute($month)
     {
-        $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
-        $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
-        $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
-        $workdays = count($workdays);
-        return $threshold = $workdays*80/100;
+        $this->month = $month;
+        if (isset($this->month)) {
+            $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+            foreach($this->month as $month){
+                $date = Carbon::parse($month);
+                // Get the numeric representation of the month (1 to 12)
+                $numericMonth = $date->month;
+                // return $numericMonth;
 
+                $startDate = Carbon::now();
+                $startDate->month($numericMonth);
+
+                $endDate = Carbon::now();
+                $endDate->month($numericMonth);
+
+                $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+                $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                $workdays = $this->getWorkDays($startDateFinal,$endDateFinal,"workdays");
+                $arrMonthMandays[$numericMonth-1] = $arrMonthMandays[$numericMonth-1]+count($workdays);
+            }
+
+            $sumMandays = array_sum($arrMonthMandays);
+            return $threshold = $sumMandays*80/100;
+        }else{
+            $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
+            $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
+            $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
+            $workdays = count($workdays);
+            return $threshold = $workdays*80/100;
+        }
         // return collect(["planned"=>$workdays,"threshold"=>$threshold]);
         // return [$workdays,$threshold];
     }
