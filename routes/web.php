@@ -1392,4 +1392,7 @@ Route::get('timesheet/getRemainingChart','TimesheetController@getRemainingChart'
 Route::get('timesheet/getCummulativeMandaysChart','TimesheetController@getCummulativeMandaysChart');
 Route::get('timesheet/getHoliday','TimesheetController@getHoliday');
 Route::get('timesheet/getPercentage','TimesheetController@getPercentage');
+Route::get('timesheet/sumPointSbe','TimesheetController@sumPointSbe');
+Route::get('timesheet/getFilterSumPointMandays','TimesheetController@getFilterSumPointMandays');
+
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');
