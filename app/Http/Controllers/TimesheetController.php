@@ -897,17 +897,17 @@ class TimesheetController extends Controller
         
         $sumPointMandays = collect();
         foreach($sumPointByUser as $key_point => $valueSumPoint){
-                $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
-                $sumPointMandays->push([
-                    "name"=>$key_point,
-                    "nik"=>collect($sumMandays)->first()->nik,
-                    "actual"=>$valueSumPoint,
-                    "planned"=>collect($sumMandays)->first()->planned,
-                    "threshold"=>collect($sumMandays)->first()->threshold,
-                    "billable"=>$valueSumPoint - $billable,
-                    "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
-                    "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
-                ]); 
+            $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
+            $sumPointMandays->push([
+                "name"=>$key_point,
+                "nik"=>collect($sumMandays)->first()->nik,
+                "actual"=>$valueSumPoint,
+                "planned"=>collect($sumMandays)->first()->planned,
+                "threshold"=>collect($sumMandays)->first()->threshold,
+                "billable"=>$valueSumPoint - $billable,
+                "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
+                "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
+            ]); 
         }  
         
         $collection = collect($sumPointMandays);        
@@ -1194,39 +1194,75 @@ class TimesheetController extends Controller
 
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'DPG') {
             if ($cek_role->name == 'SID Manager') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'bcd') {
             if ($cek_role->name == 'BCD Manager') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'hr') {
             if ($cek_role->name == 'HR Manager') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }
 
@@ -1264,39 +1300,75 @@ class TimesheetController extends Controller
 
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')
+                        // ->whereMonth('start_date',date('m'))
+                        ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                        // ->whereMonth('start_date',date('m'))
+                        ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'DPG') {
             if ($cek_role->name == 'SID Manager') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'bcd') {
             if ($cek_role->name == 'BCD Manager') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'hr') {
             if ($cek_role->name == 'HR Manager') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }
 
@@ -1340,39 +1412,75 @@ class TimesheetController extends Controller
 
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'DPG') {
             if ($cek_role->name == 'SID Manager') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'bcd') {
             if ($cek_role->name == 'BCD Manager') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'hr') {
             if ($cek_role->name == 'HR Manager') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             } else {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)->whereMonth('start_date',date('m'))->get();
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('tb_timesheet.nik',Auth::User()->nik)
+                // ->whereMonth('start_date',date('m'))->get();
+                ->whereYear('start_date',date('Y'))
+                        ->get();
             }
         }
 
@@ -1412,13 +1520,24 @@ class TimesheetController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
         $data = DB::table('tb_timesheet')
-                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status')->selectRaw('MONTH(start_date) AS month_number');
+                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status','users.nik')->selectRaw('MONTH(start_date) AS month_number');
 
         if ($cek_role->group == 'pmo') {
-            if ($cek_role->name == 'PMO Manager') {
+            if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
                 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('month_number');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 
@@ -1453,6 +1572,10 @@ class TimesheetController extends Controller
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
                     }
 
                     foreach($arrName->unique() as $key_name => $value_name){
@@ -1537,10 +1660,21 @@ class TimesheetController extends Controller
                 }
             }
         }elseif ($cek_role->group == 'DPG') {
-            if ($cek_role->name == 'SID Manager') {
+            if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
                 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('month_number');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 
@@ -1577,6 +1711,10 @@ class TimesheetController extends Controller
                         $arrName->push($datas->name);
                     }
 
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
+                    }
+
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
@@ -1585,7 +1723,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -1662,7 +1800,18 @@ class TimesheetController extends Controller
             if ($cek_role->name == 'SOL Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
                 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('month_number');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 
@@ -1697,6 +1846,10 @@ class TimesheetController extends Controller
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
                     }
 
                     foreach($arrName->unique() as $key_name => $value_name){
@@ -1781,10 +1934,21 @@ class TimesheetController extends Controller
                 }
             }
         }elseif ($cek_role->group == 'bcd') {
-            if ($cek_role->name == 'BCD Manager') {
+            if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('month_number');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 
@@ -1819,6 +1983,10 @@ class TimesheetController extends Controller
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
                     }
 
                     foreach($arrName->unique() as $key_name => $value_name){
@@ -1907,7 +2075,18 @@ class TimesheetController extends Controller
             if ($cek_role->name == 'HR Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
                 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('month_number');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 
@@ -1942,6 +2121,10 @@ class TimesheetController extends Controller
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
                     }
 
                     foreach($arrName->unique() as $key_name => $value_name){
@@ -2026,10 +2209,21 @@ class TimesheetController extends Controller
                 }
             }
         }elseif ($cek_role->group == 'msm') {
-            if ($cek_role->name == 'MSM Manager') {
+            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('month_number');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 
@@ -2064,6 +2258,10 @@ class TimesheetController extends Controller
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
                     }
 
                     foreach($arrName->unique() as $key_name => $value_name){
@@ -2164,25 +2362,40 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        $hasil = [0,0,0,0,0,0,0,0,0,0,0,0];
+        // $hasil = [0,0,0,0,0,0,0,0,0,0,0,0];
 
         $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $bulan_angka = [1,2,3,4,5,6,7,8,9,10,11,12];
 
         $data = DB::table('tb_timesheet')
-                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status')->selectRaw('MONTH(start_date) AS month_number');
+                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status','users.nik')->selectRaw('MONTH(start_date) AS month_number');
 
         $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
         $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
         $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
         $workdays = count($workdays['workdays']);
 
+        $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('nik', $data->get()->pluck('nik'))
+                                        ->get();
+
+        $arrCummulativeMandays = collect();
         if ($cek_role->group == 'pmo') {
-            if ($cek_role->name == 'PMO Manager') {
+            if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                // return $data;
                 if (count($data) == 0) {
-                   $arrCummulativeMandays = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -2201,33 +2414,50 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
-                }
-            } else {
-                // $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik');
-                
-                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
 
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
+                }                
+            } else {
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $arrayName = array(Auth::User()->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                 if (count($data) == 0) {
-                    $arrCummulativeMandays[] = collect(['name'=>Auth::User()->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);
                 }else{
-                    foreach ($bulan_angka as $key => $value2) {
-                       foreach ($data as $value) {
-                           if ($value->month_number == $value2) {
-                                $hasil[$key] = $hasil[$key]+$value->point_mandays;
+                    foreach($arrayName as $key_month_name => $month_value){
+                        if ($key_month_name == Auth::User()->name) {
+                            foreach ($bulan_angka as $key => $value2) {
+                               foreach ($data as $value) {
+                                   if ($value->month_number == $value2) {
+                                        $arrayName[$key_month_name][$key] = $arrayName[$key_month_name][$key]+$value->point_mandays;
+                                    }
+                                }
                             }
                         }
                     }
-                    $arrCummulativeMandays[] = collect(['name'=>$value->name,'month_array'=>$hasil]);
+
+                    $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
-            }            
+            }          
         }elseif ($cek_role->group == 'DPG') {
-            if ($cek_role->name == 'SID Manager') {
+            if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
+
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                // return $data;
                 if (count($data) == 0) {
-                   $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -2246,80 +2476,49 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
-                }
-            } else {
-                // $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik');
-                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
 
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
+                }                
+            } else {
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $arrayName = array(Auth::User()->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                 if (count($data) == 0) {
-                    $arrCummulativeMandays[] = collect(['name'=>Auth::User()->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);
                 }else{
-                    foreach ($bulan_angka as $key => $value2) {
-                       foreach ($data as $value) {
-                           if ($value->month_number == $value2) {
-                                $hasil[$key] = $hasil[$key]+$value->point_mandays;
+                    foreach($arrayName as $key_month_name => $month_value){
+                        if ($key_month_name == Auth::User()->name) {
+                            foreach ($bulan_angka as $key => $value2) {
+                               foreach ($data as $value) {
+                                   if ($value->month_number == $value2) {
+                                        $arrayName[$key_month_name][$key] = $arrayName[$key_month_name][$key]+$value->point_mandays;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    $arrCummulativeMandays[] = collect(['name'=>$value->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
-            }            
+            }          
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
-                if (count($data) == 0) {
-                   $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
-                }else{
-                    foreach ($data as $key_value => $value) {
-                        $arrayName [] = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
-
-                        foreach($data[$key_value] as $data_value){
-                            if ($key_value === $data_value->name) {
-                                foreach($arrayName as $key_month_name => $month_value){
-                                    if ($key_month_name == $data_value->name) {
-                                        foreach ($bulan_angka as $key_month => $value2) {
-                                            if ($data_value->month_number == $value2) {
-                                                $arrayName[$key_month_name][$key_month] = $month_value[$key_month]+$data_value->point_mandays;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
-                    }
-                }
-            } else {
-                // $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik');
-                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
-
-                if (count($data) == 0) {
-                   $arrCummulativeMandays[] = collect(['name'=>Auth::User()->name,'month_array'=>$hasil]);
-                }else{
-                    foreach ($bulan_angka as $key => $value2) {
-                       foreach ($data as $value) {
-                           if ($value->month_number == $value2) {
-                                $hasil[$key] = $hasil[$key]+$value->point_mandays;
-                            }
-                        }
-                    }
-
-                    $arrCummulativeMandays[] = collect(['name'=>$value->name,'month_array'=>$hasil]);
-                }
-            }
-        }elseif ($cek_role->group == 'bcd') {
-            if ($cek_role->name == 'BCD Manager') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
-
+            $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
-                    $arrCummulativeMandays [] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -2338,35 +2537,112 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
-                }
-                
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
+                }                
             } else {
                 $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
-
+                $arrayName = array(Auth::User()->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                 if (count($data) == 0) {
-                   $arrCummulativeMandays [] = collect(['name'=>Auth::User()->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);
                 }else{
-                    foreach ($bulan_angka as $key => $value2) {
-                       foreach ($data as $value) {
-                           if ($value->month_number == $value2) {
-                                $hasil[$key] = $hasil[$key]+$value->point_mandays;
+                    foreach($arrayName as $key_month_name => $month_value){
+                        if ($key_month_name == Auth::User()->name) {
+                            foreach ($bulan_angka as $key => $value2) {
+                               foreach ($data as $value) {
+                                   if ($value->month_number == $value2) {
+                                        $arrayName[$key_month_name][$key] = $arrayName[$key_month_name][$key]+$value->point_mandays;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    $arrCummulativeMandays[] = collect(['name'=>$value->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
+                }
+            }
+        }elseif ($cek_role->group == 'bcd') {
+            if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
+                
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                // return $data;
+                if (count($data) == 0) {
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
+                }else{
+                    foreach ($data as $key_value => $value) {
+                        $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                        foreach($data[$key_value] as $data_value){
+                            if ($key_value === $data_value->name) {
+                                foreach($arrayName as $key_month_name => $month_value){
+                                    if ($key_month_name == $data_value->name) {
+                                        foreach ($bulan_angka as $key_month => $value2) {
+                                            if ($data_value->month_number == $value2) {
+                                                $arrayName[$key_month_name][$key_month] = $month_value[$key_month]+$data_value->point_mandays;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
+                    }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
+                }                
+            } else {
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $arrayName = array(Auth::User()->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                if (count($data) == 0) {
+                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);
+                }else{
+                    foreach($arrayName as $key_month_name => $month_value){
+                        if ($key_month_name == Auth::User()->name) {
+                            foreach ($bulan_angka as $key => $value2) {
+                               foreach ($data as $value) {
+                                   if ($value->month_number == $value2) {
+                                        $arrayName[$key_month_name][$key] = $arrayName[$key_month_name][$key]+$value->point_mandays;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }
         }elseif ($cek_role->group == 'hr') {
             if ($cek_role->name == 'HR Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->groupBy('tb_timesheet.nik');
-
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                // return $data;
                 if (count($data) == 0) {
-                    $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -2385,34 +2661,50 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
-                }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
+                }                
             } else {
                 $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
-
+                $arrayName = array(Auth::User()->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                 if (count($data) == 0) {
-                    $arrCummulativeMandays [] = collect(['name'=>Auth::User()->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);
                 }else{
-                    foreach ($bulan_angka as $key => $value2) {
-                       foreach ($data as $value) {
-                           if ($value->month_number == $value2) {
-                                $hasil[$key] = $hasil[$key]+$value->point_mandays;
+                    foreach($arrayName as $key_month_name => $month_value){
+                        if ($key_month_name == Auth::User()->name) {
+                            foreach ($bulan_angka as $key => $value2) {
+                               foreach ($data as $value) {
+                                   if ($value->month_number == $value2) {
+                                        $arrayName[$key_month_name][$key] = $arrayName[$key_month_name][$key]+$value->point_mandays;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    $arrCummulativeMandays [] = collect(['name'=>$value->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->groupBy('tb_timesheet.nik');
-
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                // return $data;
                 if (count($data) == 0) {
-                    $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -2431,29 +2723,42 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
-                }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
+                }                
             } else {
                 $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
-
+                $arrayName = array(Auth::User()->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                 if (count($data) == 0) {
-                    $arrCummulativeMandays [] = collect(['name'=>Auth::User()->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);
                 }else{
-                    foreach ($bulan_angka as $key => $value2) {
-                       foreach ($data as $value) {
-                           if ($value->month_number == $value2) {
-                                $hasil[$key] = $hasil[$key]+$value->point_mandays;
+                    foreach($arrayName as $key_month_name => $month_value){
+                        if ($key_month_name == Auth::User()->name) {
+                            foreach ($bulan_angka as $key => $value2) {
+                               foreach ($data as $value) {
+                                   if ($value->month_number == $value2) {
+                                        $arrayName[$key_month_name][$key] = $arrayName[$key_month_name][$key]+$value->point_mandays;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    $arrCummulativeMandays [] = collect(['name'=>$value->name,'month_array'=>$hasil]);
+                    $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }
         }
 
-        $arrCummulativeMandays[]['workdays'] = $workdays;
+        $arrCummulativeMandays->push(["workdays"=>$workdays]);
         return $arrCummulativeMandays;
     }
 
@@ -2495,6 +2800,13 @@ class TimesheetController extends Controller
 
         $getPermit = TimesheetPermit::select('tb_timesheet_permit.start_date','tb_timesheet_permit.nik','users.name')->join('users','users.nik','=','tb_timesheet_permit.nik')->whereIn(\DB::raw('MONTH(start_date)'),$arrayMonth);
 
+        $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                                        ->select('users.name')
+                                        ->where('roles.group',$cek_role->group)
+                                        ->where('roles.name','not like','%Manager')
+                                        ->where('users.status_delete','-');
+
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
@@ -2509,10 +2821,18 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->get();
                 }else{
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                    $getUserByGroup = $getUserByGroup
+                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->whereIn('nik',$request->pic)    
+                                        ->get();
                 }
 
                 if ($request->task[0] === null) {
@@ -2527,10 +2847,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('status',$request->status);                    
                 }
 
-                if (is_null($request->selectYear)) {
+                if (is_null($request->year)) {
                     $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
                 }else{
-                    $sumMandays = $sumMandays->whereYear('start_date',$request->selectYear);                    
+                    $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
                 if (is_null($request->selectSchedule)) {
@@ -2541,16 +2861,7 @@ class TimesheetController extends Controller
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
 
-                $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
-                                        ->where('roles.group','pmo')
-                                        ->where('roles.name','not like','%Manager')
-                                        ->where('users.status_delete','-')
-                                        ->whereNotIn('nik', $sumMandays->pluck('nik'))
-                                        ->get();
                 $isStaff = false;
-
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
@@ -2572,15 +2883,22 @@ class TimesheetController extends Controller
                         }
                     });
 
-                // return 
                 if ($request->pic[0] === null) {
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->get();
                 }else{
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                    $getUserByGroup = $getUserByGroup
+                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->whereIn('nik',$request->pic)    
+                                        ->get();
                 }
 
                 if ($request->task[0] === null) {
@@ -2595,10 +2913,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('status',$request->status);                    
                 }
 
-                if (is_null($request->selectYear)) {
+                if (is_null($request->year)) {
                     $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
                 }else{
-                    $sumMandays = $sumMandays->whereYear('start_date',$request->selectYear);                    
+                    $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
                 if (is_null($request->selectSchedule)) {
@@ -2608,15 +2926,6 @@ class TimesheetController extends Controller
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
-
-                $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
-                                        ->where('roles.group','DPG')
-                                        ->where('roles.name','not like','%Manager')
-                                        ->where('users.status_delete','-')
-                                        ->whereNotIn('nik', $sumMandays->pluck('nik'))
-                                        ->get();
 
                 $isStaff = false;
             } else {
@@ -2644,10 +2953,18 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->get();
                 }else{
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                    $getUserByGroup = $getUserByGroup
+                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->whereIn('nik',$request->pic)    
+                                        ->get();
                 }
 
                 if ($request->task[0] === null) {
@@ -2662,10 +2979,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('status',$request->status);                    
                 }
 
-                if (is_null($request->selectYear)) {
+                if (is_null($request->year)) {
                     $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
                 }else{
-                    $sumMandays = $sumMandays->whereYear('start_date',$request->selectYear);                    
+                    $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
                 if (is_null($request->selectSchedule)) {
@@ -2675,15 +2992,6 @@ class TimesheetController extends Controller
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
-
-                $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
-                                        ->where('roles.group','presales')
-                                        ->where('roles.name','not like','%Manager')
-                                        ->where('users.status_delete','-')
-                                        ->whereNotIn('nik', $sumMandays->pluck('nik'))
-                                        ->get();
                 $isStaff = false;
 
             } else {
@@ -2712,10 +3020,18 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->get();
                 }else{
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                    $getUserByGroup = $getUserByGroup
+                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->whereIn('nik',$request->pic)    
+                                        ->get();
                 }
 
                 if ($request->task[0] === null) {
@@ -2730,10 +3046,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('status',$request->status);                    
                 }
 
-                if (is_null($request->selectYear)) {
+                if (is_null($request->year)) {
                     $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
                 }else{
-                    $sumMandays = $sumMandays->whereYear('start_date',$request->selectYear);                    
+                    $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
                 if (is_null($request->selectSchedule)) {
@@ -2743,18 +3059,7 @@ class TimesheetController extends Controller
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
-
-                $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
-                                        ->where('roles.group','bcd')
-                                        ->where('roles.name','not like','%Manager')
-                                        ->where('users.status_delete','-')
-                                        ->whereNotIn('nik', $sumMandays->pluck('nik'))
-                                        ->get();
                 $isStaff = false;
-
-                // return $sumMandays;
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
@@ -2780,10 +3085,18 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->get();
                 }else{
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                    $getUserByGroup = $getUserByGroup
+                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->whereIn('nik',$request->pic)    
+                                        ->get();
                 }
 
                 if ($request->task[0] === null) {
@@ -2798,10 +3111,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('status',$request->status);                    
                 }
 
-                if (is_null($request->selectYear)) {
+                if (is_null($request->year)) {
                     $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
                 }else{
-                    $sumMandays = $sumMandays->whereYear('start_date',$request->selectYear);                    
+                    $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
                 if (is_null($request->selectSchedule)) {
@@ -2847,10 +3160,18 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->get();
                 }else{
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                    $getUserByGroup = $getUserByGroup
+                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                        ->whereIn('nik',$request->pic)    
+                                        ->get();
                 }
 
                 if ($request->task[0] === null) {
@@ -2865,10 +3186,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('status',$request->status);                    
                 }
 
-                if (is_null($request->selectYear)) {
+                if (is_null($request->year)) {
                     $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
                 }else{
-                    $sumMandays = $sumMandays->whereYear('start_date',$request->selectYear);                    
+                    $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
                 if (is_null($request->selectSchedule)) {
@@ -2879,14 +3200,6 @@ class TimesheetController extends Controller
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
 
-                $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
-                                        ->where('roles.group','msm')
-                                        ->where('roles.name','not like','%Manager')
-                                        ->where('users.status_delete','-')
-                                        ->whereNotIn('nik', $sumMandays->pluck('nik'))
-                                        ->get();
                 $isStaff = false;
 
             } else {
@@ -2961,28 +3274,22 @@ class TimesheetController extends Controller
         }
 
         if ($isStaff == false) {
-            foreach($getUserByGroup as $value_group){
-                $arrSumPoint->push(["name"=>$value_group->name,
-                    "nik"=>"-",
-                    "actual"    =>"-",
-                    "planned"   =>$countPlanned,
-                    "threshold" =>"-",
-                    "billable"  =>"-",
-                    "percentage_billable" =>"-",
-                    "deviation" =>"-"
-                ]);
+            if (isset($getUserByGroup)) {
+                foreach($getUserByGroup as $value_group){
+                    $arrSumPoint->push(["name"=>$value_group->name,
+                        "nik"=>"-",
+                        "actual"    =>"-",
+                        "planned"   =>$countPlanned,
+                        "threshold" =>"-",
+                        "billable"  =>"-",
+                        "percentage_billable" =>"-",
+                        "deviation" =>"-"
+                    ]);
+                }
             }
         }
 
         return array("data"=>$arrSumPoint);
-        // if ($request) {
-        //     // code...
-        // }
-        // $startDate = Carbon::now();
-        // $startDate->month($valueMonth);
-
-        // $endDate = Carbon::now();
-        // $endDate->month($valueMonth);
     }
 
     public function getFilterCummulativeMandaysChart(Request $request)
@@ -2996,19 +3303,68 @@ class TimesheetController extends Controller
         $bulan_angka = [1,2,3,4,5,6,7,8,9,10,11,12];
 
         $data = DB::table('tb_timesheet')
-                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status')->selectRaw('MONTH(start_date) AS month_number');
+                ->join('users','tb_timesheet.nik','users.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'name','end_date','status','users.nik')->selectRaw('MONTH(start_date) AS month_number');
 
         $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
         $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
         $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
         $workdays = count($workdays['workdays']);
+        $arrCummulativeMandays = collect();
+
+        $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-');
 
         if ($cek_role->group == 'pmo') {
-            if ($cek_role->name == 'PMO Manager') {
+            if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                
+                if ($request->pic[0] === null) {
+                    $data = $data->whereIn('tb_timesheet.nik',$listGroup);
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $data->get()->pluck('nik'))
+                                        ->get();
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                    $getUserByGroup = $getUserByGroup
+                                ->whereNotIn('nik', $data->get()->pluck('nik'))
+                                ->whereIn('nik',$request->pic)    
+                                ->get();
+                }
+
+                if ($request->task[0] === null) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('task',$request->task);                    
+                }
+
+                if ($request->status[0] === null) {
+                    $data = $data->where('status','Done');
+                }else{
+                    $data = $data->whereIn('status',$request->status);                    
+                }
+
+                if (is_null($request->year)) {
+                    $data = $data->whereYear('start_date',date('Y'));
+                }else{
+                    $data = $data->whereYear('start_date',$request->year);                    
+                }
+
+                if (is_null($request->selectSchedule)) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                }
+
+                $data = $data->get()->groupBy('name');
+
                 if (count($data) == 0) {
-                   $arrCummulativeMandays = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -3027,8 +3383,17 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
                 }
             } else {
                 // $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik');
@@ -3049,11 +3414,52 @@ class TimesheetController extends Controller
                 }
             }            
         }elseif ($cek_role->group == 'DPG') {
-            if ($cek_role->name == 'SID Manager') {
+            if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+
+                if ($request->pic[0] === null) {
+                    $data = $data->whereIn('tb_timesheet.nik',$listGroup);
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $data->get()->pluck('nik'))
+                                        ->get();
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                    $getUserByGroup = $getUserByGroup
+                                ->whereNotIn('nik', $data->get()->pluck('nik'))
+                                ->whereIn('nik',$request->pic)    
+                                ->get();
+                }
+
+                if ($request->task[0] === null) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('task',$request->task);                    
+                }
+
+                if ($request->status[0] === null) {
+                    $data = $data->where('status','Done');
+                }else{
+                    $data = $data->whereIn('status',$request->status);                    
+                }
+
+                if (is_null($request->year)) {
+                    $data = $data->whereYear('start_date',date('Y'));
+                }else{
+                    $data = $data->whereYear('start_date',$request->year);                    
+                }
+
+                if (is_null($request->selectSchedule)) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                }
+
+                $data = $data->get()->groupBy('name');
+
                 if (count($data) == 0) {
-                   $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -3072,8 +3478,17 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
                 }
             } else {
                 // $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik');
@@ -3096,12 +3511,53 @@ class TimesheetController extends Controller
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                
+                if ($request->pic[0] === null) {
+                    $data = $data->whereIn('tb_timesheet.nik',$listGroup);
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $data->get()->pluck('nik'))
+                                        ->get();
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                    $getUserByGroup = $getUserByGroup
+                                ->whereNotIn('nik', $data->get()->pluck('nik'))
+                                ->whereIn('nik',$request->pic)    
+                                ->get();
+                } 
+
+                if ($request->task[0] === null) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('task',$request->task);                    
+                }
+
+                if ($request->status[0] === null) {
+                    $data = $data->where('status','Done');
+                }else{
+                    $data = $data->whereIn('status',$request->status);                    
+                }
+
+                if (is_null($request->year)) {
+                    $data = $data->whereYear('start_date',date('Y'));
+                }else{
+                    $data = $data->whereYear('start_date',$request->year);                    
+                }
+
+                if (is_null($request->selectSchedule)) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                }
+
+                $data = $data->get()->groupBy('name');
+
                 if (count($data) == 0) {
-                   $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
-                        $arrayName [] = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
 
                         foreach($data[$key_value] as $data_value){
                             if ($key_value === $data_value->name) {
@@ -3117,8 +3573,17 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
                 }
             } else {
                 // $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik');
@@ -3139,13 +3604,52 @@ class TimesheetController extends Controller
                 }
             }
         }elseif ($cek_role->group == 'bcd') {
-            if ($cek_role->name == 'BCD Manager') {
+            if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                
+                if ($request->pic[0] === null) {
+                    $data = $data->whereIn('tb_timesheet.nik',$listGroup);
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $data->get()->pluck('nik'))
+                                        ->get();
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                    $getUserByGroup = $getUserByGroup
+                                ->whereNotIn('nik', $data->get()->pluck('nik'))
+                                ->whereIn('nik',$request->pic)    
+                                ->get();
+                } 
 
-                // return $data;
+                if ($request->task[0] === null) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('task',$request->task);                    
+                }
+
+                if ($request->status[0] === null) {
+                    $data = $data->where('status','Done');
+                }else{
+                    $data = $data->whereIn('status',$request->status);                    
+                }
+
+                if (is_null($request->year)) {
+                    $data = $data->whereYear('start_date',date('Y'));
+                }else{
+                    $data = $data->whereYear('start_date',$request->year);                    
+                }
+
+                if (is_null($request->selectSchedule)) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                }
+
+                $data = $data->get()->groupBy('name');
+
                 if (count($data) == 0) {
-                    $arrCummulativeMandays [] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -3164,10 +3668,18 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
-                }
-                
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
+                }                
             } else {
                 $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
 
@@ -3189,10 +3701,49 @@ class TimesheetController extends Controller
             if ($cek_role->name == 'HR Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->groupBy('tb_timesheet.nik');
+                if ($request->pic[0] === null) {
+                    $data = $data->whereIn('tb_timesheet.nik',$listGroup);
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $data->get()->pluck('nik'))
+                                        ->get();
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                    $getUserByGroup = $getUserByGroup
+                                ->whereNotIn('nik', $data->get()->pluck('nik'))
+                                ->whereIn('nik',$request->pic)    
+                                ->get();
+                } 
+
+                if ($request->task[0] === null) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('task',$request->task);                    
+                }
+
+                if ($request->status[0] === null) {
+                    $data = $data->where('status','Done');
+                }else{
+                    $data = $data->whereIn('status',$request->status);                    
+                }
+
+                if (is_null($request->year)) {
+                    $data = $data->whereYear('start_date',date('Y'));
+                }else{
+                    $data = $data->whereYear('start_date',$request->year);                    
+                }
+
+                if (is_null($request->selectSchedule)) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                }
+
+                $data = $data->get()->groupBy('name');
 
                 if (count($data) == 0) {
-                    $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -3211,8 +3762,17 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
                 }
             } else {
                 $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
@@ -3232,13 +3792,52 @@ class TimesheetController extends Controller
                 }
             }
         }elseif ($cek_role->group == 'msm') {
-            if ($cek_role->name == 'MSM Manager') {
+            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
 
-                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->groupBy('tb_timesheet.nik');
+                if ($request->pic[0] === null) {
+                    $data = $data->whereIn('tb_timesheet.nik',$listGroup);
+                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $data->get()->pluck('nik'))
+                                        ->get();
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                    $getUserByGroup = $getUserByGroup
+                                ->whereNotIn('nik', $data->get()->pluck('nik'))
+                                ->whereIn('nik',$request->pic)    
+                                ->get();
+                } 
+
+                if ($request->task[0] === null) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('task',$request->task);                    
+                }
+
+                if ($request->status[0] === null) {
+                    $data = $data->where('status','Done');
+                }else{
+                    $data = $data->whereIn('status',$request->status);                    
+                }
+
+                if (is_null($request->year)) {
+                    $data = $data->whereYear('start_date',date('Y'));
+                }else{
+                    $data = $data->whereYear('start_date',$request->year);                    
+                }
+
+                if (is_null($request->selectSchedule)) {
+                    $data = $data;
+                }else{
+                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                }
+
+                $data = $data->get()->groupBy('name');
 
                 if (count($data) == 0) {
-                    $arrCummulativeMandays[] = collect(['name'=>null,'month_array'=>$hasil]);
+                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                        $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+                        $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
+                    }
                 }else{
                     foreach ($data as $key_value => $value) {
                         $arrayName = array($key_value => [0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -3257,8 +3856,17 @@ class TimesheetController extends Controller
                             }
                         }
 
-                       $arrCummulativeMandays[] = collect(['name'=>$key_value,'month_array'=>$arrayName]);
+                       $arrCummulativeMandays->push(['name'=>$key_value,'month_array'=>$arrayName]);
                     }
+
+                    if(isset($getUserByGroup)){
+                        foreach($getUserByGroup as $key => $value_group){
+                            $arrayName = array($value_group->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
+
+                            $arrCummulativeMandays->push(['name'=>$value_group->name,'month_array'=>$arrayName]);
+                        }
+                    }
+                    
                 }
             } else {
                 $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
@@ -3279,12 +3887,1221 @@ class TimesheetController extends Controller
             }
         }
 
-        $arrCummulativeMandays[]['workdays'] = $workdays;
+        $arrCummulativeMandays->push(["workdays"=>$workdays]);
         return $arrCummulativeMandays;
     }
 
-    public function getPicbyDivision($value='')
+    public function getFilterRemainingChart(Request $request)
     {
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        $data = DB::table('tb_timesheet')
+                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status','users.nik')->selectRaw('MONTH(start_date) AS month_number');
+
+        if (is_null($request->year)) {
+            $data = $data->whereYear('start_date',date('Y'));
+        }else{
+            $data = $data->whereYear('start_date',$request->year);                    
+        }
+
+        if ($cek_role->group == 'pmo') {
+            if ($cek_role->name == 'PMO Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+                
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
+
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+                foreach($arrMonth as $key_months => $valueMonth){
+                    $startDate = Carbon::now();
+                    $startDate->month($valueMonth);
+
+                    $endDate = Carbon::now();
+                    $endDate->month($valueMonth);
+
+                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                        if ($key_months == $key_mandays) {
+                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        }
+                    }
+                }
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    $arrName = collect();
+                    $arrProsentaseByUser = collect();
+                    $arrRemainingByUser = collect();
+                    $arrFinalProsentaseByUser = collect();
+                    $arrFinalRemainingByUser = collect();
+
+                    foreach($value as $datas){
+                        $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
+                    }
+
+                    foreach($arrName->unique() as $key_name => $value_name){
+                        $arrProsentaseByUser->put($value_name,0); 
+                        $arrRemainingByUser->put($value_name,0);
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
+                                    if ($key_byUser == $datas->name) {
+                                    $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
+                                }
+                            }
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+                    }
+
+                    foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
+
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName->unique()),
+                                "label"=>array(
+                                    "Prosentase"=>$hasil_prosentase[$key_prosentase],
+                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            } else {
+                $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+                $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
+
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get()->groupBy('month_number');
+
+                $EffectiveMandaysMonthly = count($this->getWorkDays($startDate,$endDate)["workdays"]->values());
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    foreach($value as $datas){
+                        $arrName = collect([$datas->name]);
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $value_prosentase+$datas->point_mandays;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $value_remaining+$datas->point_mandays;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName),
+                                "label"=>array(
+                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
+                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            }
+        }elseif ($cek_role->group == 'DPG') {
+            if ($cek_role->name == 'SID Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
+                
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
+
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+                foreach($arrMonth as $key_months => $valueMonth){
+                    $startDate = Carbon::now();
+                    if (is_null($request->year)) {
+                        $startDate->setYear(date('Y'));
+                    }else{
+                        $startDate->setYear($request->year);
+                    }
+                    $startDate->month($valueMonth);
+                    
+
+                    $endDate = Carbon::now();
+                    if (is_null($request->year)) {
+                        $endDate->setYear(date('Y'));
+                    }else{
+                        $endDate->setYear($request->year);
+                    }
+                    $endDate->month($valueMonth);
+
+                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+
+                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                        if ($key_months == $key_mandays) {
+                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        }
+                    }
+                }
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    $arrName = collect();
+                    $arrProsentaseByUser = collect();
+                    $arrRemainingByUser = collect();
+                    $arrFinalProsentaseByUser = collect();
+                    $arrFinalRemainingByUser = collect();
+
+                    foreach($value as $datas){
+                        $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
+                    }
+
+                    foreach($arrName->unique() as $key_name => $value_name){
+                        $arrProsentaseByUser->put($value_name,0); 
+                        $arrRemainingByUser->put($value_name,0);
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
+                                if ($key_byUser == $datas->name) {
+                                    $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
+                                }
+                            }
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+                    }
+
+                    foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
+
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName->unique()),
+                                "label"=>array(
+                                    "Prosentase"=>$hasil_prosentase[$key_prosentase],
+                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            } else {
+                $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+                $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
+
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get()->groupBy('month_number');
+
+                $EffectiveMandaysMonthly = count($this->getWorkDays($startDate,$endDate)["workdays"]->values());
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    foreach($value as $datas){
+                        $arrName = collect([$datas->name]);
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $value_prosentase+$datas->point_mandays;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $value_remaining+$datas->point_mandays;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName),
+                                "label"=>array(
+                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
+                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            }
+        }elseif ($cek_role->group == 'presales') {
+            if ($cek_role->name == 'SOL Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+                
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
+
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+                foreach($arrMonth as $key_months => $valueMonth){
+                    $startDate = Carbon::now();
+                    $startDate->month($valueMonth);
+
+                    $endDate = Carbon::now();
+                    $endDate->month($valueMonth);
+
+                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                        if ($key_months == $key_mandays) {
+                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        }
+                    }
+                }
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    $arrName = collect();
+                    $arrProsentaseByUser = collect();
+                    $arrRemainingByUser = collect();
+                    $arrFinalProsentaseByUser = collect();
+                    $arrFinalRemainingByUser = collect();
+
+                    foreach($value as $datas){
+                        $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
+                    }
+
+                    foreach($arrName->unique() as $key_name => $value_name){
+                        $arrProsentaseByUser->put($value_name,0); 
+                        $arrRemainingByUser->put($value_name,0);
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
+                                    if ($key_byUser == $datas->name) {
+                                    $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
+                                }
+                            }
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+                    }
+
+                    foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
+
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName->unique()),
+                                "label"=>array(
+                                    "Prosentase"=>$hasil_prosentase[$key_prosentase],
+                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            } else {
+                $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+                $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
+
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get()->groupBy('month_number');
+
+                $EffectiveMandaysMonthly = count($this->getWorkDays($startDate,$endDate)["workdays"]->values());
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    foreach($value as $datas){
+                        $arrName = collect([$datas->name]);
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $value_prosentase+$datas->point_mandays;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $value_remaining+$datas->point_mandays;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName),
+                                "label"=>array(
+                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
+                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            }
+        }elseif ($cek_role->group == 'bcd') {
+            if ($cek_role->name == 'BCD Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
+
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
+
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+                foreach($arrMonth as $key_months => $valueMonth){
+                    $startDate = Carbon::now();
+                    $startDate->month($valueMonth);
+
+                    $endDate = Carbon::now();
+                    $endDate->month($valueMonth);
+
+                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                        if ($key_months == $key_mandays) {
+                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        }
+                    }
+                }
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    $arrName = collect();
+                    $arrProsentaseByUser = collect();
+                    $arrRemainingByUser = collect();
+                    $arrFinalProsentaseByUser = collect();
+                    $arrFinalRemainingByUser = collect();
+
+                    foreach($value as $datas){
+                        $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
+                    }
+
+                    foreach($arrName->unique() as $key_name => $value_name){
+                        $arrProsentaseByUser->put($value_name,0); 
+                        $arrRemainingByUser->put($value_name,0);
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
+                                    if ($key_byUser == $datas->name) {
+                                    $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
+                                }
+                            }
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+                    }
+
+                    foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
+
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName->unique()),
+                                "label"=>array(
+                                    "Prosentase"=>$hasil_prosentase[$key_prosentase],
+                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            } else {
+                $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+                $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
+
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get()->groupBy('month_number');
+
+                $EffectiveMandaysMonthly = count($this->getWorkDays($startDate,$endDate)["workdays"]->values());
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    foreach($value as $datas){
+                        $arrName = collect([$datas->name]);
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $value_prosentase+$datas->point_mandays;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $value_remaining+$datas->point_mandays;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName),
+                                "label"=>array(
+                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
+                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                )
+                            ])); 
+                        }
+                    }
+                }
+
+            }
+        }elseif ($cek_role->group == 'hr') {
+            if ($cek_role->name == 'HR Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+                
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
+
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+                foreach($arrMonth as $key_months => $valueMonth){
+                    $startDate = Carbon::now();
+                    $startDate->month($valueMonth);
+
+                    $endDate = Carbon::now();
+                    $endDate->month($valueMonth);
+
+                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                        if ($key_months == $key_mandays) {
+                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        }
+                    }
+                }
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    $arrName = collect();
+                    $arrProsentaseByUser = collect();
+                    $arrRemainingByUser = collect();
+                    $arrFinalProsentaseByUser = collect();
+                    $arrFinalRemainingByUser = collect();
+
+                    foreach($value as $datas){
+                        $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
+                    }
+
+                    foreach($arrName->unique() as $key_name => $value_name){
+                        $arrProsentaseByUser->put($value_name,0); 
+                        $arrRemainingByUser->put($value_name,0);
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
+                                    if ($key_byUser == $datas->name) {
+                                    $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
+                                }
+                            }
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+                    }
+
+                    foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
+
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName->unique()),
+                                "label"=>array(
+                                    "Prosentase"=>$hasil_prosentase[$key_prosentase],
+                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            } else {
+                $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+                $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
+
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get()->groupBy('month_number');
+
+                $EffectiveMandaysMonthly = count($this->getWorkDays($startDate,$endDate)["workdays"]->values());
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    foreach($value as $datas){
+                        $arrName = collect([$datas->name]);
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $value_prosentase+$datas->point_mandays;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $value_remaining+$datas->point_mandays;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName),
+                                "label"=>array(
+                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
+                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            }
+        }elseif ($cek_role->group == 'msm') {
+            if ($cek_role->name == 'MSM Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+
+                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name')
+                        ->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('users.status_delete','-')
+                        ->whereNotIn('users.nik', $data->pluck('nik'))
+                        ->get();
+
+                $data = $data->groupBy('month_number');
+
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+                foreach($arrMonth as $key_months => $valueMonth){
+                    $startDate = Carbon::now();
+                    $startDate->month($valueMonth);
+
+                    $endDate = Carbon::now();
+                    $endDate->month($valueMonth);
+
+                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
+
+                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                        if ($key_months == $key_mandays) {
+                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        }
+                    }
+                }
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    $arrName = collect();
+                    $arrProsentaseByUser = collect();
+                    $arrRemainingByUser = collect();
+                    $arrFinalProsentaseByUser = collect();
+                    $arrFinalRemainingByUser = collect();
+
+                    foreach($value as $datas){
+                        $arrName->push($datas->name);
+                    }
+
+                    foreach($getUserByGroup as $value_group){
+                        $arrName->push($value_group->name);
+                    }
+
+                    foreach($arrName->unique() as $key_name => $value_name){
+                        $arrProsentaseByUser->put($value_name,0); 
+                        $arrRemainingByUser->put($value_name,0);
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
+                                    if ($key_byUser == $datas->name) {
+                                    $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
+                                }
+                            }
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+                    }
+
+                    foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
+
+                    }
+
+                    foreach($value as $datas){
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $arrFinalProsentaseByUser;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName->unique()),
+                                "label"=>array(
+                                    "Prosentase"=>$hasil_prosentase[$key_prosentase],
+                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            }else{
+                $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+                $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
+
+                $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get()->groupBy('month_number');
+
+                $EffectiveMandaysMonthly = count($this->getWorkDays($startDate,$endDate)["workdays"]->values());
+                $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+                foreach($data as $key => $value){
+                    $hasil_prosentase  = array($key => 0);
+                    $hasil_remaining   = array($key => 0);
+
+                    foreach($value as $datas){
+                        $arrName = collect([$datas->name]);
+                        foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
+                            $hasil_prosentase[$key_prosentase] = $value_prosentase+$datas->point_mandays;
+                        }
+
+                        foreach($hasil_remaining as $key_remaining => $value_remaining){
+                            $hasil_remaining[$key_remaining] = $value_remaining+$datas->point_mandays;
+                        }
+                    }
+
+                    foreach($arrMonth as $keys => $month){
+                        if ($month == $key) {
+                            $arrMonth[$keys] = array($key=>collect([
+                                "arrName"=>array($arrName),
+                                "label"=>array(
+                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
+                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                )
+                            ])); 
+                        }
+                    }
+                }
+            }
+        }
+
+        return $arrMonth;
+    }
+
+    public function getFilterStatusChart(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        $arrayMonth = collect();
+        foreach($request->month as $month){
+            $date = Carbon::parse($month);
+            // Get the numeric representation of the month (1 to 12)
+            $numericMonth = $date->month;
+            // return $numericMonth;
+            $arrayMonth->push($numericMonth);
+        } 
+
+        $data = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')
+                ->join('role_user', 'role_user.user_id', '=', 'users.nik')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->where(function ($query) use ($arrayMonth) {
+                    foreach ($arrayMonth as $month) {
+                        $query->orWhereRaw("MONTH(start_date) = $month");
+                    }
+                });
+
+        if (is_null($request->year)) {
+            $data = $data->whereYear('start_date',date('Y'));
+        }else{
+            $data = $data->whereYear('start_date',$request->year);                    
+        }
+
+        if ($cek_role->group == 'pmo') {
+            if ($cek_role->name == 'PMO Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'DPG') {
+            if ($cek_role->name == 'SID Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'presales') {
+            if ($cek_role->name == 'SOL Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'bcd') {
+            if ($cek_role->name == 'BCD Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'hr') {
+            if ($cek_role->name == 'HR Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif($cek_role->group == 'msm') {
+            if ($cek_role->name == 'MSM Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }
+
+        $status = $data->get();
+
+        if (count($status) == 0) {
+            $hasil2 = [0,0,0,0];
+        }else{
+            $hasil = [0,0,0,0];
+            $bulan_angka = ['Done','NotDone','Cancel','Reschedule'];
+            $pie = 0;
+
+            foreach ($bulan_angka as $key => $value2) {
+                foreach ($status as $value) {
+                    if ($value->status == $value2) {
+                        $hasil[$key]++;
+                        $pie++;
+                    }
+                }
+            }
+
+            $hasil2 = [0,0,0,0];
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
+        }
+
+        return $hasil2;
+    }
+
+    public function getFilterLevelChart(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        $arrayMonth = collect();
+        foreach($request->month as $month){
+            $date = Carbon::parse($month);
+            // Get the numeric representation of the month (1 to 12)
+            $numericMonth = $date->month;
+            // return $numericMonth;
+            $arrayMonth->push($numericMonth);
+        } 
+
+        $data = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')
+                ->join('role_user', 'role_user.user_id', '=', 'users.nik')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->where(function ($query) use ($arrayMonth) {
+                    foreach ($arrayMonth as $month) {
+                        $query->orWhereRaw("MONTH(start_date) = $month");
+                    }
+                });
+
+        if (is_null($request->year)) {
+            $data = $data->whereYear('start_date',date('Y'));
+        }else{
+            $data = $data->whereYear('start_date',$request->year);                    
+        }
+
+        if ($cek_role->group == 'pmo') {
+            if ($cek_role->name == 'PMO Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'DPG') {
+            if ($cek_role->name == 'SID Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'presales') {
+            if ($cek_role->name == 'SOL Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'bcd') {
+            if ($cek_role->name == 'BCD Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'hr') {
+            if ($cek_role->name == 'HR Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif($cek_role->group == 'msm') {
+            if ($cek_role->name == 'MSM Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }
+
+        $level = $data->get();
+
+        if (count($level) == 0) {
+            $hasil2 = [0,0,0,0];
+        }else{
+            $first = $level[0]->level;
+
+            $hasil = [0,0,0,0,0];
+            $bulan_angka = ['A', 'B', 'C', 'D', 'E'];
+            $pie = 0;
+
+            foreach ($bulan_angka as $key => $value2) {
+                foreach ($level as $value) {
+                        if ($value->level == $value2) {
+                            $hasil[$key]++;
+                            $pie++;
+                        }
+                    }
+            }
+
+            $hasil2 = [0,0,0,0,0];
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
+        }
         
+        return $hasil2;
+    }
+
+    public function getFilterScheduleChart(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        $arrayMonth = collect();
+        $arrayMonth = collect();
+        foreach($request->month as $month){
+            $date = Carbon::parse($month);
+            // Get the numeric representation of the month (1 to 12)
+            $numericMonth = $date->month;
+            // return $numericMonth;
+            $arrayMonth->push($numericMonth);
+        } 
+
+        $data = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')
+                ->join('role_user', 'role_user.user_id', '=', 'users.nik')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->where(function ($query) use ($arrayMonth) {
+                    foreach ($arrayMonth as $month) {
+                        $query->orWhereRaw("MONTH(start_date) = $month");
+                    }
+                });
+
+        if (is_null($request->year)) {
+            $data = $data->whereYear('start_date',date('Y'));
+        }else{
+            $data = $data->whereYear('start_date',$request->year);                    
+        }
+
+        if ($cek_role->group == 'pmo') {
+            if ($cek_role->name == 'PMO Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'DPG') {
+            if ($cek_role->name == 'SID Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'presales') {
+            if ($cek_role->name == 'SOL Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'bcd') {
+            if ($cek_role->name == 'BCD Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif ($cek_role->group == 'hr') {
+            if ($cek_role->name == 'HR Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }elseif($cek_role->group == 'msm') {
+            if ($cek_role->name == 'MSM Manager') {
+                if ($request->pic[0] === null) {
+                    $data = $data->where('roles.group',$cek_role->group);
+                }else{
+                    $data = $data->whereIn('tb_timesheet.nik',$request->pic);
+                }
+            } else {
+               $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
+            }
+        }
+
+        $schedule = $data->get();
+
+        if (count($schedule) == 0) {
+            $hasil2 = [0,0];
+        }else{
+            $first = $schedule[0]->schedule;
+
+            $hasil = [0,0];
+            $statusSchedule = ['Planned','Unplanned'];
+            $pie = 0;
+
+            foreach ($statusSchedule as $key => $value2) {
+                foreach ($schedule as $value) {
+                    if ($value->schedule == $value2) {
+                        $hasil[$key]++;
+                        $pie++;
+                        // return $hasil;
+                    }
+                }
+            }
+
+            $hasil2 = [0,0];
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
+        }
+
+        return $hasil2;
     }
 }
