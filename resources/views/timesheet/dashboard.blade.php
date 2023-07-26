@@ -21,18 +21,6 @@
       width: 100% !important;
     }
 
-    .datatable-container-hidden {
-      position: absolute;
-      left: -9999px;
-      top: -9999px;
-    }
-
-    .pagination {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
     .pagination-link {
       display: inline-block;
       padding: 8px 12px;
@@ -99,32 +87,40 @@
               <div id="monthFilter">
               </div>
             </div>
-            <div class="form-group">
+
+            <div class="form-group" id="form_filter_pic" style="display:none">
               <label>Filter by PIC</label>
               <select type="select" class="select2 form-control" id="selectPic" name="selectPic" onchange="customFilter(this.value,'selectPic')">
                 <!-- <option></option> -->
               </select>
             </div>
+
             <div class="form-group">
               <label>Filter by Status</label>
               <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus" onchange="customFilter(this.value,'selectStatus')">
                 <!-- <option></option> -->
               </select>
             </div>
+
             <div class="form-group">
               <label>Filter by Task</label>
               <select type="select" class="select2 form-control" id="selectTask" name="selectTask" onchange="customFilter(this.value,'selectTask')">
                 <!-- <option></option> -->
               </select>
             </div>
+
             <div class="form-group">
               <label>Filter by Year</label>
               <select type="select" class="select2 form-control" id="selectYear" name="selectYear" onchange="customFilter(this.value,'selectYear')"><option value=""></option></select>
             </div>
+
             <div class="form-group">
               <label>Filter by Schedule</label>
-              <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule" onchange="customFilter(this.value,'selectSchedule')"><option></option></select>
+              <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule" onchange="customFilter(this.value,'selectSchedule')">
+                <!-- <option></option> -->
+              </select>
             </div>
+
             <button id="" class="btn btn-sm btn-info btn-block" onclick="resetFilter()"><i class="fa fa-refresh"></i> Reset</button>
           </div>
         </div>
@@ -323,7 +319,7 @@
                 <div class="col-md-4">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
-                      <h3 class="box-title">Level</h3>
+                      <h3 class="box-title">Level <span id="textLevel"></span></h3>
                     </div>
                     <div class="box-body">
                       <canvas id="levelChart" width="400" height="200"></canvas>
@@ -334,7 +330,7 @@
                 <div class="col-md-4">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
-                      <h3 class="box-title">Status</h3>
+                      <h3 class="box-title">Status <span id="textStatus"></span></h3>
                     </div>
                     <div class="box-body">
                       <canvas id="statusChart" width="400" height="200"></canvas>
@@ -345,7 +341,7 @@
                 <div class="col-md-4">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
-                      <h3 class="box-title">Schedule</h3>
+                      <h3 class="box-title">Schedule <span id="textSchedule"></span></h3>
                     </div>
                     <div class="box-body">
                       <canvas id="scheduleChart" width="400" height="200"></canvas>
@@ -380,6 +376,7 @@
       accesable.forEach(function(item,index){
         $("#" + item).show()
       })
+      console.log(accesable)
 
       if (accesable.includes('box_pid')) {
         var tbSummarySbe = $("#tbSummarySbe").DataTable({
@@ -457,11 +454,6 @@
                   });
           },
         })
-        $('#tbSummarySbe').removeClass('datatable-container-hidden');
-        $("#tbAssignPID").removeClass('datatable-container-hidden');
-      }else{
-        $('#tbSummarySbe').addClass('datatable-container-hidden');
-        $("#tbAssignPID").addClass('datatable-container-hidden');
       }
 
       isTbSummary = false
@@ -667,17 +659,16 @@
       text:currentYear
     })
 
+    arrFilterYear.push({id:2022,text:2022})
+
     $("#selectYear").select2({
       placeholder:"Select Year",
       data:arrFilterYear,
     })
 
     function customFilter(val,id=""){
-      console.log(id + "wooo")
-      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectYear = 'year=', selectSchedule = 'schedule='
+      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectYear = 'year=', selectSchedule = 'schedule[]='
 
-      
-      console.log("aku disini")
       arrFilterMonth = []
       arrMonth = []
       cummulativeLineChart.destroy()
@@ -723,11 +714,14 @@
         selectYear = selectYear + '&year=' + $('#selectYear').val()
       }
 
-      if(selectSchedule == 'schedule=') {
-        selectSchedule = selectSchedule + $('#selectSchedule').val()
-      }else{
-        selectSchedule = selectSchedule + '&schedule=' + $('#selectSchedule').val()
-      }
+      $.each($('#selectSchedule').val(),function(key,val){
+        if(selectSchedule == 'schedule=[]') {
+          selectSchedule = selectSchedule + val
+        }else{
+          selectSchedule = selectSchedule + '&schedule[]=' + val
+        }
+      })
+      
 
       if ($(".cbMonth").is(":checked") == false) {
         arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -738,14 +732,11 @@
             arrFilterMonth = arrFilterMonth + '&month[]=' + valueMonth
           }
         })
-        console.log(arrMonth)
-        cummulativeChart(arrMonth)
-      }else{
-        cummulativeChart(arrMonth)
       }
 
       var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
-      showDataFilter(arrFilter)
+
+      showDataFilter(arrFilter,arrMonth)
     }
 
     var colors = [
@@ -770,43 +761,43 @@
     const ctx4 = document.getElementById('statusChart');
     const ctx5 = document.getElementById('scheduleChart');
 
-    let cummulativeLineChart = ''
+    let cummulativeLineChart = '',levelDoughnutChart = '',statusPieChart = '',schedulePieChart = '', remainingBarChart = []
 
     $(document).ready(function(){
+      $("#span-remaining").text(moment().format('MMMM'))
+      $("#textLevel").text(moment().format('YYYY'))
+      $("#textStatus").text(moment().format('YYYY'))
+      $("#textSchedule").text(moment().format('YYYY'))
       $("#title_summary_year").text(moment().year())
-      duplicateCanvasRemaining()
-      cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+      duplicateCanvasRemaining("/timesheet/getRemainingChart","")
+      levelChart("/timesheet/getLevelChart","")
+      statusChart("/timesheet/getStatusChart","")
+      scheduleChart("/timesheet/getScheduleChart","")
+      cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],"timesheet/getCummulativeMandaysChart","")
     })
 
-    function cummulativeChart(labelChartLineByFilter){
+    function cummulativeChart(labelChartLineByFilter,url,param){
       $.ajax({
         type:"GET",
-        url:"{{url('timesheet/getCummulativeMandaysChart')}}",
+        url:"{{url('/')}}/"+url+param,
         success:function(results) {
-          var cummulativeArr = []
+          console.log(results)
+          cummulativeArr = []
           $.each(results,function(idx,value){
-            if (value.name == null) {
-              cummulativeArr = cummulativeArr
-              console.log("ini null")
-            }else{
-              console.log("ini ga null")
-              if (results.length > 1) {
-                $.each(value.month_array,function(idxs,values){
-                    if (idxs == value.name) {
-                      var bgColorArr_idx = [colors[idx]]
-                      cummulativeArr.push({"label":value.name,"data":value.month_array[idxs],"backgroundColor":bgColorArr_idx,"borderWidth":1,"tension":0.5})
-                    }
+            array_result = []
+            $.each(value.month_array,function(idxs,values){
+              if (idxs == value.name) {
+                $.each(labelChartLineByFilter,function(id,valueLabel){
+                  month_filter = moment().month(valueLabel).format("M")
+                  array_result.push(value.month_array[idxs][month_filter-1])
                 })
-              }else{
-                // console.log(value)
-                for(i=0;i<12;i++){
-                  var bgColorArr = []
-                  bgColorArr.push(colors[idx])
-                }
-                cummulativeArr.push({"label":value.name,"data":value.month_array,"backgroundColor":bgColorArr,"borderWidth":1,"tension":0.5})
+                var bgColorArr_idx = [colors[idx]]
+                cummulativeArr.push({"label":value.name,"data":array_result,"backgroundColor":bgColorArr_idx,"borderWidth":1,"tension":0.5})
               }
-            }
+            })
+              
           })
+
 
           const myChart = new Chart(ctx, {
             type: 'line',
@@ -836,36 +827,39 @@
     }    
 
     function remainingChart(idCtx,value){
-      // console.log(idCtx)
-      // console.log(value)
       var datasetRemaining = [], arrConfig = [], labels = []
-      if (typeof(value) == "object") {
-        var i = 0, j = 0
-        $.each(value,function(index,values){
-          $.each(values[0],function(idx,valueName){
-            labels.push(valueName)
-          })
-        })
+      remainingBarChart = []
 
-        $.each(value.label,function(index,valueLabel){
-            var borderColorArr = [colors[i++]]
-            var backgroundColorArr = [colors[j++]]
-            if (index == 'Prosentase') {
-              arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
-            }else if(index == 'Remaining'){
-              arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
-            }
-        })
-        datasetRemaining.push({"datasets":arrConfig})
+      if (value == null) {
+        labels = ""
+        datasetRemaining.push(null)
       }else{
-        arrConfig.push({"label":"","data":[0],"borderColor":'',"backgroundColor":'',borderWidth:1,minBarLength:2,barThickness:30})
+        if (typeof(value) == "object") {
+          var i = 0, j = 0
+          $.each(value,function(index,values){
+            $.each(values[0],function(idx,valueName){
+              labels.push(valueName)
+            })
+          })
 
-        datasetRemaining.push({"datasets":arrConfig})
-        labels = labels
+          $.each(value.label,function(index,valueLabel){
+              var borderColorArr = [colors[i++]]
+              var backgroundColorArr = [colors[j++]]
+              if (index == 'Prosentase') {
+                arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
+              }else if(index == 'Remaining'){
+                arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
+              }
+          })
+          datasetRemaining.push({"datasets":arrConfig})
+        }else{
+          arrConfig.push({"label":"","data":[0],"borderColor":'',"backgroundColor":'',borderWidth:1,minBarLength:2,barThickness:30})
+
+          datasetRemaining.push({"datasets":arrConfig})
+          labels = labels
+        }
       }
 
-      // console.log(datasetRemaining)
-      $("#span-remaining").text(moment().format('MMMM'))
       const myChart2 = new Chart(idCtx, {
         type: 'bar',
         data: {
@@ -903,44 +897,37 @@
         }
       });
 
-      return myChart2;
+      return remainingBarChart.push(myChart2);
       // Create a new canvas element
       // var duplicateCanvas = document.createElement('canvas');
       // $("#remainingChart").after(duplicateCanvas)
     }
 
-    function duplicateCanvasRemaining(){
+    function duplicateCanvasRemaining(url,param){
       $.ajax({
         type:"GET",
-        url:"{{url('/timesheet/getRemainingChart')}}",
+        url:"{{url('/')}}/"+url+param,
         success:function(results){
-          // console.log(results)
           $.each(results,function(index,value){
-            // console.log(typeof(value))
             if (typeof(value) == "object") {
               $.each(value,function(idx,values){
                 var duplicateCanvas = document.createElement('canvas');
                 duplicateCanvas.width = 400;
                 duplicateCanvas.height = 200;
                 duplicateCanvas.id = 'remainingChart'+moment().month(idx-1).format('MMMM')
-
                 $("#box-remaining").append(duplicateCanvas)
-                // document.getElementById('remainingChart'+value).style.display = 'none';
-
-                // console.log(values)
-                const ctxvalue = document.getElementById('remainingChart'+moment().month(idx-1).format('MMMM'));
+                const ctxvalue = document.getElementById('remainingChart'+moment().month(idx-1).format('MMMM'))
                 remainingChart(ctxvalue,values)
               })
             }else{
-              var duplicateCanvas = document.createElement('canvas');
-              duplicateCanvas.width = 400;
-              duplicateCanvas.height = 200;
-              duplicateCanvas.id = 'remainingChart'+moment().month(value-1).format('MMMM')
+                var duplicateCanvas = document.createElement('canvas');
+                duplicateCanvas.width = 400;
+                duplicateCanvas.height = 200;
+                duplicateCanvas.id = 'remainingChart'+moment().month(value-1).format('MMMM')
+                $("#box-remaining").append(duplicateCanvas)
 
-              $("#box-remaining").append(duplicateCanvas)
-
-              const ctxvalue = document.getElementById('remainingChart'+moment().month(value-1).format('MMMM'));
-              remainingChart(ctxvalue,value)
+                const ctxvalue = document.getElementById('remainingChart'+moment().month(value-1).format('MMMM'));
+                remainingChart(ctxvalue,value)
             }
           })
 
@@ -949,7 +936,6 @@
           var $pagination = $('#pagination');
           var items = $myDiv.children(); // Get the items within the div
           var totalPages = Math.ceil(items.length / itemsPerPage);
-
           console.log(totalPages+"total pages")
           // Generate pagination links
           for (var i = 1; i <= totalPages; i++) {
@@ -995,19 +981,6 @@
           }
         }
       })
-      // $.each(arrMonth,function(index,value){
-      //   var duplicateCanvas = document.createElement('canvas');
-      //   duplicateCanvas.width = 400;
-      //   duplicateCanvas.height = 200;
-      //   duplicateCanvas.id = 'remainingChart'+value
-
-      //   $("#box-remaining").append(duplicateCanvas)
-      //   // document.getElementById('remainingChart'+value).style.display = 'none';
-
-      //   const ctxvalue = document.getElementById('remainingChart'+value);
-      //   remainingChart(ctxvalue)
-      // })
-      // Initially show the first page
     }
     
     appendChartLevel = ""
@@ -1069,40 +1042,98 @@
       definitionSchedule = definitionSchedule + '</table>'
     $("#definitionSchedule").append(definitionSchedule)
 
-    $.ajax({
-      type:"GET",
-      url:"/timesheet/getLevelChart",
-      success:function(result){
-        const myChart3 = new Chart(ctx3, {
-            type: 'doughnut',
+    function levelChart(url,param){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/')}}/"+url+param,
+        success:function(result){
+          const myChart3 = new Chart(ctx3, {
+              type: 'doughnut',
+              data: {
+                labels: [
+                  'A',
+                  'B',
+                  'C',
+                  'D',
+                  'E'
+                ],
+                datasets: [{
+                  label: 'My First Dataset',
+                  data: result,
+                  backgroundColor: [
+                    '#f35512',
+                    '#f39112',
+                    '#f3dc12',
+                    '#00c0ef',
+                    '#00a65a'
+                  ],
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  },
+                plugins: {
+                  tooltip: {
+                      callbacks: {
+                        label: function(context) {
+                          var label = context.label || '';
+
+                          if (label) {
+                            label += ': ';
+                          }
+
+                          label += context.formattedValue + "%";
+
+                          return label;
+                        }
+                    }
+                  }
+                }
+              }
+          });
+
+          return levelDoughnutChart = myChart3
+        }
+      })
+    }
+
+    function statusChart(url,param){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/')}}/"+url+param,
+        success:function(result) {
+          const myChart4 = new Chart(ctx4, {
+            type: 'pie',
             data: {
               labels: [
-                'A',
-                'B',
-                'C',
-                'D',
-                'E'
+                'Done',
+                'Not-Done',
+                'Cancel',
+                'Reschedule',
               ],
               datasets: [{
                 label: 'My First Dataset',
                 data: result,
                 backgroundColor: [
-                  '#f35512',
-                  '#f39112',
-                  '#f3dc12',
+                  '#00a65a',
+                  '#f39c12',
+                  '#f56954',
                   '#00c0ef',
-                  '#00a65a'
                 ],
                 hoverOffset: 4
               }]
             },
             options: {
-              scales: {
+                scales: {
                     y: {
                         beginAtZero: true
                     }
                 },
-              plugins: {
+            plugins: {
                 tooltip: {
                     callbacks: {
                       label: function(context) {
@@ -1120,113 +1151,67 @@
                 }
               }
             }
-        });
-      }
-    })
+          });
 
-    $.ajax({
-      type:"GET",
-      url:"{{url('timesheet/getStatusChart')}}",
-      success:function(result) {
-        const myChart4 = new Chart(ctx4, {
-          type: 'pie',
-          data: {
-            labels: [
-              'Done',
-              'Not-Done',
-              'Cancel',
-              'Reschedule',
-            ],
-            datasets: [{
-              label: 'My First Dataset',
-              data: result,
-              backgroundColor: [
-                '#00a65a',
-                '#f39c12',
-                '#f56954',
-                '#00c0ef',
-              ],
-              hoverOffset: 4
-            }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              },
-          plugins: {
-              tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      var label = context.label || '';
-
-                      if (label) {
-                        label += ': ';
-                      }
-
-                      label += context.formattedValue + "%";
-
-                      return label;
-                    }
-                }
-              }
-            }
-          }
-      });
-      }
-    })
+          return statusPieChart = myChart4
+        }
+      })
+    }
     
-    $.ajax({
-      type:"GET",
-      url:"{{url('timesheet/getScheduleChart')}}",
-      success:function(result){
-        const myChart5 = new Chart(ctx5, {
-            type: 'pie',
-            data: {
-              labels: [
-                'Planned',
-                'Unplanned',
-              ],
-              datasets: [{
-                label: 'My First Dataset',
-                data: result,
-                backgroundColor: [
-                  '#3c8dbc',
-                  '#00c0ef',
+    function scheduleChart(url,param){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/')}}/"+url+param,
+        success:function(result){
+          const myChart5 = new Chart(ctx5, {
+              type: 'pie',
+              data: {
+                labels: [
+                  'Planned',
+                  'Unplanned',
                 ],
-                hoverOffset: 4
-              }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-            plugins: {
-              tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      var label = context.label || '';
-
-                      if (label) {
-                        label += ': ';
+                datasets: [{
+                  label: 'My First Dataset',
+                  data: result,
+                  backgroundColor: [
+                    '#3c8dbc',
+                    '#00c0ef',
+                  ],
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
                       }
+                  },
+              plugins: {
+                tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        var label = context.label || '';
 
-                      label += context.formattedValue + "%";
+                        if (label) {
+                          label += ': ';
+                        }
 
-                      return label;
-                    }
+                        label += context.formattedValue + "%";
+
+                        return label;
+                      }
+                  }
                 }
               }
-            }
-          },
-        })
-      } 
-    })
+            },
+          })
 
-    function showDataFilter(arrFilter){
+          return schedulePieChart = myChart5
+        } 
+      })
+    }
+
+    function showDataFilter(arrFilter,arrMonth){
       if (isTbSummary == true) {
         $("#loadingIndicator").show()
         Pace.restart();
@@ -1235,13 +1220,34 @@
         })
       }
 
-      // $.ajax({
-      //   type:"GET",
-      //   url:"{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter,
-      //   success:function(result) {
-          
-      //   }
-      // })
+      //cummulative mandays chart update
+      cummulativeLineChart.destroy()
+      cummulativeChart(arrMonth,"timesheet/getFilterCummulativeMandaysChart",arrFilter)
+
+      //level mandays chart update
+      levelDoughnutChart.destroy()
+      levelChart("/timesheet/getFilterLevelChart",arrFilter)
+
+      //status mandays chart update
+      statusPieChart.destroy()
+      statusChart("/timesheet/getFilterStatusChart",arrFilter)
+
+      //schedule mandays chart update
+      schedulePieChart.destroy()
+      scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
+
+      //remaining chart update
+      const yearRegex = /\b\d{4}\b/; // Matches a 4-digit number
+      const yearMatch = arrFilter.match(yearRegex);
+      if (yearMatch) {
+        const year = yearMatch[0];
+        $.each(remainingBarChart,function(idx,value){
+          value.destroy()
+        })
+        $("#pagination").empty("")
+        $("#box-remaining").empty("")
+        duplicateCanvasRemaining("timesheet/getFilterRemainingChart",arrFilter)
+      } 
     }
 
     $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
