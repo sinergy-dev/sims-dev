@@ -781,7 +781,6 @@
         type:"GET",
         url:"{{url('/')}}/"+url+param,
         success:function(results) {
-          console.log(results)
           cummulativeArr = []
           $.each(results,function(idx,value){
             array_result = []
@@ -827,37 +826,33 @@
     }    
 
     function remainingChart(idCtx,value){
+      console.log(value.label)
       var datasetRemaining = [], arrConfig = [], labels = []
       remainingBarChart = []
+      if (typeof(value) == "object") {
+        var i = 0, j = 0
+        $.each(value,function(index,values){
+          $.each(values[0],function(idx,valueName){
+            labels.push(valueName)
+          })
+        })
 
-      if (value == null) {
-        labels = ""
-        datasetRemaining.push(null)
+        $.each(value.label,function(index,valueLabel){
+            console.log(valueLabel)
+            var borderColorArr = [colors[i++]]
+            var backgroundColorArr = [colors[j++]]
+            if (index == 'Prosentase') {
+              arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
+            }else if(index == 'Remaining'){
+              arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
+            }
+        })
+        datasetRemaining.push({"datasets":arrConfig})
       }else{
-        if (typeof(value) == "object") {
-          var i = 0, j = 0
-          $.each(value,function(index,values){
-            $.each(values[0],function(idx,valueName){
-              labels.push(valueName)
-            })
-          })
+        arrConfig.push({"label":"","data":[0],"borderColor":'',"backgroundColor":'',borderWidth:1,minBarLength:2,barThickness:30})
 
-          $.each(value.label,function(index,valueLabel){
-              var borderColorArr = [colors[i++]]
-              var backgroundColorArr = [colors[j++]]
-              if (index == 'Prosentase') {
-                arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
-              }else if(index == 'Remaining'){
-                arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
-              }
-          })
-          datasetRemaining.push({"datasets":arrConfig})
-        }else{
-          arrConfig.push({"label":"","data":[0],"borderColor":'',"backgroundColor":'',borderWidth:1,minBarLength:2,barThickness:30})
-
-          datasetRemaining.push({"datasets":arrConfig})
-          labels = labels
-        }
+        datasetRemaining.push({"datasets":arrConfig})
+        labels = labels
       }
 
       const myChart2 = new Chart(idCtx, {
@@ -936,7 +931,6 @@
           var $pagination = $('#pagination');
           var items = $myDiv.children(); // Get the items within the div
           var totalPages = Math.ceil(items.length / itemsPerPage);
-          console.log(totalPages+"total pages")
           // Generate pagination links
           for (var i = 1; i <= totalPages; i++) {
             if (i === moment().month() + 1) {
