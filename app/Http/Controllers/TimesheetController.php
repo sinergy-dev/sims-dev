@@ -4750,7 +4750,7 @@ class TimesheetController extends Controller
             $data = $data->whereIn('status',$request->status);                    
         }
 
-        if (is_null($request->schedule) === null) {
+        if ($request->schedule[0] === null) {
             $data = $data;
         }else{
             $data = $data->whereIn('schedule',$request->schedule);                    
@@ -4886,7 +4886,7 @@ class TimesheetController extends Controller
             $data = $data->whereIn('status',$request->status);                    
         }
 
-        if (is_null($request->schedule) === null) {
+        if ($request->schedule[0] === null) {
             $data = $data;
         }else{
             $data = $data->whereIn('schedule',$request->schedule);                    
@@ -5025,7 +5025,7 @@ class TimesheetController extends Controller
             $data = $data->whereIn('status',$request->status);                    
         }
 
-        if (is_null($request->schedule) === null) {
+        if ($request->schedule[0] === null) {
             $data = $data;
         }else{
             $data = $data->whereIn('schedule',$request->schedule);                    
