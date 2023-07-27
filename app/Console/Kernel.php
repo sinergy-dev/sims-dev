@@ -31,6 +31,17 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('ReminderCreateProjectCharter:daily')->daily()->at('07:30');
 
+        $schedule->command('UpdateStatusTimesheet:daily')->daily()->at('23:59:59');
+
+        $schedule->command('ReminderUpdateStatusTimesheet:daily')->daily()->at('07:00');
+
+
+        // $schedule->command('ReminderUpdateStatusTimesheet:daily')->monthly()->at('01:00');
+
+        $schedule->command('AddWorkdays:monthly')->when(function () {
+            return \Carbon\Carbon::now()->startOfMonth()->isToday();
+        });
+
         $schedule->command('SalesRemainder:weekly')
             ->weekly()
             ->thursdays()
