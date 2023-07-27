@@ -528,7 +528,7 @@
         }, 
         dayClick: function(date, jsEvent, view) {
           var position = "{{Auth::User()->id_position}}"
-          if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== window.location.href.split("/")[3].split("=")[1]) {
+          if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
             return false
           }else{
             
