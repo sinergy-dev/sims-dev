@@ -708,7 +708,7 @@
                       $('#selectSchedule').val(calEvent.schedule).trigger('change')
                       $('#selectSchedule').prop("disabled",true)
                       $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                      $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'));
+                      $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
                       $('#daterange-input').prop("disabled",true)
 
 
@@ -968,7 +968,7 @@
                   }else{
                     $('#selectSchedule').val(calEvent.schedule).trigger('change')
                     $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                    $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
+                    $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
                     $('#daterange-input').prop("disabled",true)
                     $('#selectType').val(calEvent.type).trigger('change')
                     $('#selectLead').val(calEvent.pid).trigger('change')
@@ -1088,7 +1088,7 @@
         
         $('#selectSchedule').val(eventObj.schedule).trigger('change')
         $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
-        $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.end));
+        $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
         $('#selectSchedule').prop("disabled",true)
         $('#daterange-input').prop("disabled",true)
         $('#selectType').prop("disabled",true)
