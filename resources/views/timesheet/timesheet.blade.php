@@ -879,7 +879,7 @@
                   $('#selectSchedule').val(calEvent.schedule).trigger('change')
                   $('#selectSchedule').prop("disabled",true)
                   $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                  $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'));
+                  $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
                   $('#daterange-input').prop("disabled",true)
                   $("#id_activity").val(calEvent.id)
 
