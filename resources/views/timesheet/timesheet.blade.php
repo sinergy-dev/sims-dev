@@ -759,7 +759,6 @@
                   }
                 } else {
                   if(calEvent.schedule == "Planned"){
-                    console.log(calEvent)
                     setDuration()
                     setTask(calEvent.task)
                     setPhase(calEvent.phase)
@@ -864,16 +863,15 @@
 
                 $("#tbInfo").append(append)
               }else{
-                if(calEvent.schedule == "Planned"){
-                  // console.log(calEvent)
-                  setDuration()
-                  setTask(calEvent.task)
-                  setPhase(calEvent.phase)
-                  setLevel()
-                  setStatus()
-                  setType()
-                  setSchedule()
+                setDuration()
+                setTask(calEvent.task)
+                setPhase(calEvent.phase)
+                setLevel()
+                setStatus()
+                setType()
+                setSchedule()
 
+                if(calEvent.schedule == "Planned"){
                   var momentDate = moment(calEvent.start);
                   var currentDate = moment();
                   $('#selectSchedule').val(calEvent.schedule).trigger('change')
@@ -946,8 +944,8 @@
                     $("#ModalAddTimesheet").find('.modal-footer').hide()
                   }
                 }else{
-                  console.log("aku klik ini")
-
+                  console.log("aku klik ini iya disiniiii")
+                  console.log(calEvent)
                   $("#ModalAddTimesheet").modal("show")
                   $(".modal-title").text("Detail Timesheet")
                   $("#ModalAddTimesheet").find('.modal-footer').hide()
@@ -958,7 +956,7 @@
                   $('#selectPhase').prop("disabled",true)
                   $('#selectLevel').prop("disabled",true)
                   $('#textareaActivity').prop("disabled",true)
-                 
+
                   if (calEvent.refer) {
                     $('#selectSchedule').val('Planned').trigger('change') 
                     $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
