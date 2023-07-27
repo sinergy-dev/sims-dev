@@ -356,6 +356,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('admin/storeTax', 'PrDraftController@storeTax');
 	Route::post('admin/storeTaxComparing', 'PrDraftController@storeTaxComparing');
 	Route::get('admin/getSupplier', 'PrDraftController@getSupplier');
+	Route::get('admin/getDropdownFilterPr', 'PrDraftController@getDropdownFilterPr');
 
 
 	Route::get('/po', 'PONumberController@index');
