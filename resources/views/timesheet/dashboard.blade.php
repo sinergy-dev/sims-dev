@@ -376,7 +376,7 @@
       accesable.forEach(function(item,index){
         $("#" + item).show()
       })
-      console.log(accesable)
+      
 
       if (accesable.includes('box_pid')) {
         var tbSummarySbe = $("#tbSummarySbe").DataTable({
@@ -826,7 +826,7 @@
     }    
 
     function remainingChart(idCtx,value){
-      console.log(value.label)
+      
       var datasetRemaining = [], arrConfig = [], labels = []
       remainingBarChart = []
       if (typeof(value) == "object") {
@@ -838,7 +838,7 @@
         })
 
         $.each(value.label,function(index,valueLabel){
-            console.log(valueLabel)
+            
             var borderColorArr = [colors[i++]]
             var backgroundColorArr = [colors[j++]]
             if (index == 'Prosentase') {

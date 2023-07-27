@@ -304,7 +304,7 @@
     var calendar
     $(document).ready(function(){
       var accesable = @json($feature_item);
-      console.log(accesable) 
+      
 
       accesable.forEach(function(item,index){
         $("#" + item).show()
@@ -349,7 +349,7 @@
             nik:nik
           },
           success:function(results){
-            console.log(results)
+            
             Pace.restart();
             Pace.track(function(){
               $.ajax({
@@ -528,9 +528,10 @@
         }, 
         dayClick: function(date, jsEvent, view) {
           var position = "{{Auth::User()->id_position}}"
-          if (position.includes("MANAGER") || window.location.href.split("/")[3].split("=")[1]) {
+          if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== window.location.href.split("/")[3].split("=")[1]) {
             return false
           }else{
+            
             var clickedDate = moment(date).format("YYYY-MM-DD"); 
             // Check if the clicked date is in the allowedDates array
             var isAllowedDate = datesInWeek.some(function(date) {
@@ -586,7 +587,7 @@
                     // Handle the user's interaction with the alert if needed
                     if (result.isConfirmed) {
                       // The user clicked the 'OK' button
-                      console.log('User clicked OK');
+                      
                     }
                   });
                 }
@@ -779,7 +780,7 @@
                       //supervisor
                       if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
                         if(nik != "{{Auth::User()->nik}}"){
-                          console.log("ini samaa")
+                          
                           $('#selectType').prop("disabled",true)
                           $('#selectLead').prop("disabled",true)
                           $('#selectTask').prop("disabled",true)
@@ -838,7 +839,7 @@
                       // Handle the user's interaction with the alert if needed
                       if (result.isConfirmed) {
                         // The user clicked the 'OK' button
-                        console.log('User clicked OK');
+                        
                       }
                     });
                   }
@@ -893,7 +894,7 @@
                        //supervisor
                     if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
                       if(nik != "{{Auth::User()->nik}}"){
-                        console.log("ini samaa")
+                        
                         $('#selectType').prop("disabled",true)
                         $('#selectLead').prop("disabled",true)
                         $('#selectTask').prop("disabled",true)
@@ -944,8 +945,7 @@
                     $("#ModalAddTimesheet").find('.modal-footer').hide()
                   }
                 }else{
-                  console.log("aku klik ini iya disiniiii")
-                  console.log(calEvent)
+                  
                   $("#ModalAddTimesheet").modal("show")
                   $(".modal-title").text("Detail Timesheet")
                   $("#ModalAddTimesheet").find('.modal-footer').hide()
@@ -1234,7 +1234,7 @@
           type:"GET",
           url:"{{url('/timesheet/getTaskPhaseByDivisionForTable')}}",
           success:function(result){
-            console.log(result)
+            
              appendHelp = appendHelp + '<div class="alert alert-default alert-dismissible">'
                 appendHelp = appendHelp + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'
                   appendHelp = appendHelp + '<div class="form-group">'
@@ -1616,14 +1616,14 @@
         }
 
         if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").length) {
-          console.log("store")
+          
           swalSuccess = {
               icon: 'success',
               title: 'Create Timesheet Succesfully!',
               text: 'Click Ok to reload page',
           } 
         }else{
-          console.log("update")
+          
           swalSuccess = {
               icon: 'success',
               title: 'Update Timesheet Succesfully!',
@@ -1677,7 +1677,7 @@
                     var newEvents = []
 
                     $.each(results, function(index, datas) {
-                      console.log(datas.end_date)
+                      
                       newEvents.push({
                         title:datas.activity,
                         start:datas.start_date,
@@ -1708,12 +1708,12 @@
                     //   status:results.status,
                     // }
 
-                    console.log(newEvents)
+                    
 
                       // loadData()
                       // Call the refetchEvents method to reload the events
                       if(localStorage.getItem('isUpdate') == 'false') {
-                        console.log("hoeeee")
+                        
                         $.each(newEvents, function(index, event) {
                           $('#calendar').fullCalendar('renderEvent', event, true);
                           $('#calendar').fullCalendar('refetchEvents');
@@ -1737,7 +1737,7 @@
                   }else{
                     var newEvents = []
                     $.each(results,function(idx,value){
-                      console.log(value.end_date)
+                      
                       newEvents.push({"title":value.activity,"start":value.start_date,"end":value.end_date,"id":value.id,"remarks":value.status})
                     })   
 
