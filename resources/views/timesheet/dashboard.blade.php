@@ -376,8 +376,8 @@
       accesable.forEach(function(item,index){
         $("#" + item).show()
       })
+      console.log(accesable)
       
-
       if (accesable.includes('box_pid')) {
         var tbSummarySbe = $("#tbSummarySbe").DataTable({
           "ajax":{
