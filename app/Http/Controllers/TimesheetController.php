@@ -77,10 +77,10 @@ class TimesheetController extends Controller
 
         $client = new Client();
         $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
+
         $token = $this->getOauth2AccessToken();
 
-
-        $response =  $client->request(
+        $response = $client->request(
             'GET', 
             $url,        
             [
@@ -94,6 +94,7 @@ class TimesheetController extends Controller
             ]
         );
 
+        // return $response;
         return json_decode($response->getBody(),true);
     }
 
@@ -317,7 +318,9 @@ class TimesheetController extends Controller
     public function addConfig(Request $request)
     {
     	// return $request->arrConfig;
-
+        $delete = TimesheetConfig::where('division',Auth::User()->id_division);
+        $delete->delete();
+        
     	foreach (json_decode($request->arrConfig,true) as $key => $value) {
     		// return gettype($value['phase']);
 	    	// foreach ($value['phase'] as $key => $phase) {
@@ -422,7 +425,7 @@ class TimesheetController extends Controller
                 $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase',function ($join) {
                     $join->on('tb_timesheet_config.phase', 'LIKE', DB::raw("CONCAT('%', tb_timesheet_phase.id, '%')"));
                 })
-                ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase as title','tb_timesheet_phase.description')->where('name','BCD Development')->get();
+                ->select('tb_timesheet_phase.id as id', 'tb_timesheet_phase.phase as text')->where('name','BCD Development')->get();
             } else {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('name')->where('user_id',Auth::User()->nik)->first()->name;
 
@@ -864,8 +867,9 @@ class TimesheetController extends Controller
 
             }
         }elseif ($cek_role->group == 'msm') {
-            if ($cek_role->name == 'MSM Manager') {
+            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -875,6 +879,7 @@ class TimesheetController extends Controller
                                         ->select('users.name')
                                         ->where('roles.group','msm')
                                         ->where('roles.name','not like','%Manager')
+                                        ->where('roles.name','not like','%MSM Helpdesk%')
                                         ->where('users.status_delete','-')
                                         ->whereNotIn('nik', $sumMandays->pluck('nik'))
                                         ->get();
@@ -891,73 +896,94 @@ class TimesheetController extends Controller
 
         $getLeavingPermitByName = collect($getLeavingPermit)->groupBy('name');
         $getPermitByName        = collect($getPermit)->groupBy('name');
-
-        $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
-            return round($group->sum('point_mandays'),2);
-        });
-
-        $getPermitByName = $getPermitByName->map(function ($group) {
-            return $group->count('start_date');
-        });
-
-        $getLeavingPermitByName = $getLeavingPermitByName->map(function ($group){
-            return $group->count('date');
-        });
-
-        $sumArrayPermitByName = array();
-        // Merge the arrays and sum the values
-        $mergedKeys = array_merge(array_keys(json_decode(json_encode($getPermitByName), true)), array_keys(json_decode(json_encode($getLeavingPermitByName), true)));
-        $mergedKeys = array_unique($mergedKeys); // Remove duplicates
-
-        foreach ($mergedKeys as $key) {
-            $sumArrayPermitByName[$key] = (isset($getPermitByName[$key]) ? $getPermitByName[$key] : 0) + (isset($getLeavingPermitByName[$key]) ? $getLeavingPermitByName[$key] : 0);
-        }
-        
-        $sumPointMandays = collect();
-        foreach($sumPointByUser as $key_point => $valueSumPoint){
-            $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
-            $sumPointMandays->push([
-                "name"=>$key_point,
-                "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
-                "actual"=>$valueSumPoint,
-                "planned"=>collect($sumMandays)->first()->planned,
-                "threshold"=>collect($sumMandays)->first()->threshold,
-                "billable"=>$valueSumPoint - $billable,
-                "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
-                "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
-            ]); 
-        }  
-        
-        $collection = collect($sumPointMandays);        
-        $uniqueCollection = $collection->groupBy('name')->map->first();
-
         $arrSumPoint = collect();
-        foreach($uniqueCollection->all() as $key_uniq => $data_uniq){
-            if ($data_uniq['name'] == $key_uniq) {
-                $arrSumPoint->push([
-                    "name"      =>$data_uniq['name'],
-                    "nik"       =>$data_uniq['nik'],
-                    "actual"    =>$data_uniq['actual'],
-                    "planned"   =>$data_uniq['planned'],
-                    "threshold" =>$data_uniq['threshold'],
-                    "billable"  =>$data_uniq['billable'],
-                    "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
-                    "deviation" =>$data_uniq['deviation']
-                ]);
-            }
-        }
 
-        if ($isStaff == false) {
-            foreach($getUserByGroup as $value_group){
-                $arrSumPoint->push(["name"=>$value_group->name,
-                    "nik"=>"-",
-                    "actual"    =>"-",
-                    "planned"   =>collect($sumMandays)->first()->planned,
-                    "threshold" =>"-",
-                    "billable"  =>"-",
-                    "percentage_billable" =>"-",
-                    "deviation" =>"-"
-                ]);
+        if (count($sumMandays) === 0) {
+            $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
+            $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
+            $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
+            $workdays        = count($workdays["workdays"]);
+
+            if ($isStaff == false) {
+                foreach($getUserByGroup as $value_group){
+                    $arrSumPoint->push(["name"=>$value_group->name,
+                        "nik"=>"-",
+                        "actual"    =>"-",
+                        "planned"   =>$workdays,
+                        "threshold" =>"-",
+                        "billable"  =>"-",
+                        "percentage_billable" =>"-",
+                        "deviation" =>"-"
+                    ]);
+                }
+            }
+        }else{
+            $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
+                return round($group->sum('point_mandays'),2);
+            });
+
+            $getPermitByName = $getPermitByName->map(function ($group) {
+                return $group->count('start_date');
+            });
+
+            $getLeavingPermitByName = $getLeavingPermitByName->map(function ($group){
+                return $group->count('date');
+            });
+
+            $sumArrayPermitByName = array();
+            // Merge the arrays and sum the values
+            $mergedKeys = array_merge(array_keys(json_decode(json_encode($getPermitByName), true)), array_keys(json_decode(json_encode($getLeavingPermitByName), true)));
+            $mergedKeys = array_unique($mergedKeys); // Remove duplicates
+
+            foreach ($mergedKeys as $key) {
+                $sumArrayPermitByName[$key] = (isset($getPermitByName[$key]) ? $getPermitByName[$key] : 0) + (isset($getLeavingPermitByName[$key]) ? $getLeavingPermitByName[$key] : 0);
+            }
+            
+            $sumPointMandays = collect();
+            foreach($sumPointByUser as $key_point => $valueSumPoint){
+                $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
+                $sumPointMandays->push([
+                    "name"=>$key_point,
+                    "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
+                    "actual"=>$valueSumPoint,
+                    "planned"=>collect($sumMandays)->first()->planned,
+                    "threshold"=>collect($sumMandays)->first()->threshold,
+                    "billable"=>$valueSumPoint - $billable,
+                    "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
+                    "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
+                ]); 
+            }  
+            
+            $collection = collect($sumPointMandays);        
+            $uniqueCollection = $collection->groupBy('name')->map->first();
+
+            foreach($uniqueCollection->all() as $key_uniq => $data_uniq){
+                if ($data_uniq['name'] == $key_uniq) {
+                    $arrSumPoint->push([
+                        "name"      =>$data_uniq['name'],
+                        "nik"       =>$data_uniq['nik'],
+                        "actual"    =>$data_uniq['actual'],
+                        "planned"   =>$data_uniq['planned'],
+                        "threshold" =>$data_uniq['threshold'],
+                        "billable"  =>$data_uniq['billable'],
+                        "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
+                        "deviation" =>$data_uniq['deviation']
+                    ]);
+                }
+            }
+
+            if ($isStaff == false) {
+                foreach($getUserByGroup as $value_group){
+                    $arrSumPoint->push(["name"=>$value_group->name,
+                        "nik"=>"-",
+                        "actual"    =>"-",
+                        "planned"   =>collect($sumMandays)->first()->planned,
+                        "threshold" =>"-",
+                        "billable"  =>"-",
+                        "percentage_billable" =>"-",
+                        "deviation" =>"-"
+                    ]);
+                }
             }
         }
 
@@ -3131,7 +3157,7 @@ class TimesheetController extends Controller
 
             }
         }elseif ($cek_role->group == 'msm') {
-            if ($cek_role->name == 'MSM Manager') {
+            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
                 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where(function ($query) use ($arrayMonth) {
@@ -3205,68 +3231,86 @@ class TimesheetController extends Controller
         $getLeavingPermitByName = collect($getLeavingPermit)->groupBy('name');
         $getPermitByName        = collect($getPermit)->groupBy('name');
 
-        $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
-            return round($group->sum('point_mandays'),2);
-        });
+        if (count($sumMandays) === 0) {
+            $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
+                return round($group->sum('point_mandays'),2);
+            });
 
-        $getPermitByName = $getPermitByName->map(function ($group) {
-            return $group->count('start_date');
-        });
+            $getPermitByName = $getPermitByName->map(function ($group) {
+                return $group->count('start_date');
+            });
 
-        $getLeavingPermitByName = $getLeavingPermitByName->map(function ($group){
-            return $group->count('date');
-        });
+            $getLeavingPermitByName = $getLeavingPermitByName->map(function ($group){
+                return $group->count('date');
+            });
 
-        $sumArrayPermitByName = array();
-        // Merge the arrays and sum the values
-        $mergedKeys = array_merge(array_keys(json_decode(json_encode($getPermitByName), true)), array_keys(json_decode(json_encode($getLeavingPermitByName), true)));
-        $mergedKeys = array_unique($mergedKeys); // Remove duplicates
+            $sumArrayPermitByName = array();
+            // Merge the arrays and sum the values
+            $mergedKeys = array_merge(array_keys(json_decode(json_encode($getPermitByName), true)), array_keys(json_decode(json_encode($getLeavingPermitByName), true)));
+            $mergedKeys = array_unique($mergedKeys); // Remove duplicates
 
-        foreach ($mergedKeys as $key) {
-            $sumArrayPermitByName[$key] = (isset($getPermitByName[$key]) ? $getPermitByName[$key] : 0) + (isset($getLeavingPermitByName[$key]) ? $getLeavingPermitByName[$key] : 0);
-        }
-        
-        $sumPointMandays = collect();
-        foreach($sumPointByUser as $key_point => $valueSumPoint){
+            foreach ($mergedKeys as $key) {
+                $sumArrayPermitByName[$key] = (isset($getPermitByName[$key]) ? $getPermitByName[$key] : 0) + (isset($getLeavingPermitByName[$key]) ? $getLeavingPermitByName[$key] : 0);
+            }
+            
+            $sumPointMandays = collect();
+            foreach($sumPointByUser as $key_point => $valueSumPoint){
                 $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
                 $sumPointMandays->push([
                     "name"=>$key_point,
-                    "nik"=>collect($sumMandays)->first()->nik,
+                    "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
                     "actual"=>$valueSumPoint,
-                    "planned"=>$countPlanned,
-                    "threshold"=>$countThresholdFinal,
+                    "planned"=>collect($sumMandays)->first()->planned,
+                    "threshold"=>collect($sumMandays)->first()->threshold,
                     "billable"=>$valueSumPoint - $billable,
-                    "percentage_billable"=>number_format(($valueSumPoint - $billable)/$countPlanned*100,  2, '.', ''),
-                    "deviation"=>$countPlanned - $valueSumPoint
+                    "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
+                    "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
                 ]); 
-        }  
-        
-        $collection = collect($sumPointMandays);        
-        $uniqueCollection = $collection->groupBy('name')->map->first();
+            }  
+            
+            $collection = collect($sumPointMandays);        
+            $uniqueCollection = $collection->groupBy('name')->map->first();
 
-        $arrSumPoint = collect();
-        foreach($uniqueCollection->all() as $key_uniq => $data_uniq){
-            if ($data_uniq['name'] == $key_uniq) {
-                $arrSumPoint->push([
-                    "name"      =>$data_uniq['name'],
-                    "nik"       =>$data_uniq['nik'],
-                    "actual"    =>$data_uniq['actual'],
-                    "planned"   =>$data_uniq['planned'],
-                    "threshold" =>$data_uniq['threshold'],
-                    "billable"  =>$data_uniq['billable'],
-                    "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
-                    "deviation" =>$data_uniq['deviation']
-                ]);
+            foreach($uniqueCollection->all() as $key_uniq => $data_uniq){
+                if ($data_uniq['name'] == $key_uniq) {
+                    $arrSumPoint->push([
+                        "name"      =>$data_uniq['name'],
+                        "nik"       =>$data_uniq['nik'],
+                        "actual"    =>$data_uniq['actual'],
+                        "planned"   =>$data_uniq['planned'],
+                        "threshold" =>$data_uniq['threshold'],
+                        "billable"  =>$data_uniq['billable'],
+                        "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
+                        "deviation" =>$data_uniq['deviation']
+                    ]);
+                }
             }
-        }
 
-        if ($isNeedOtherUser == true) {
-            if (isset($getUserByGroup)) {
+            if ($isNeedOtherUser == false) {
                 foreach($getUserByGroup as $value_group){
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"=>"-",
                         "actual"    =>"-",
-                        "planned"   =>$countPlanned,
+                        "planned"   =>collect($sumMandays)->first()->planned,
+                        "threshold" =>"-",
+                        "billable"  =>"-",
+                        "percentage_billable" =>"-",
+                        "deviation" =>"-"
+                    ]);
+                }
+            }
+        }else{
+            $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
+            $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
+            $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
+            $workdays  = count($workdays["workdays"]);
+
+            if ($isNeedOtherUser == false) {
+                foreach($getUserByGroup as $value_group){
+                    $arrSumPoint->push(["name"=>$value_group->name,
+                        "nik"=>"-",
+                        "actual"    =>"-",
+                        "planned"   =>$workdays,
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
@@ -4842,7 +4886,7 @@ class TimesheetController extends Controller
             $hasil2 = [0,0,0,0];
         }else{
             $hasil = [0,0,0,0];
-            $bulan_angka = ['Done','NotDone','Cancel','Reschedule'];
+            $bulan_angka = ['Done','Undone','Cancel','Reschedule'];
             $pie = 0;
 
             foreach ($bulan_angka as $key => $value2) {
