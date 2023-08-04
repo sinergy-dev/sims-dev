@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\TimesheetConfig;
 use App\Timesheet;
@@ -75,27 +74,64 @@ class TimesheetController extends Controller
         //ladinar@sinergy.co.id
         
 
-        $client = new Client();
-        $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
+        // $client = new Client();
+        // $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
+        try {
+            // Create a new Guzzle HTTP client
+            $client = new Client();
+            // Make the API request
+            $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
+            $token = $this->getOauth2AccessToken();
 
-        $token = $this->getOauth2AccessToken();
+            $response = $client->request(
+                'GET', 
+                $url,        
+                [
+                    'headers' => [
+                        'Content-Type'=>'application/json',
+                        'Authorization'=>$token
+                    ],
+                    // 'form_params' => [
+                    //     'sendNotifications' => true,
+                    // ],
+                ]
+            );
+            // Check for successful response (status code in the range of 200-299)
+            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) { 
+                return json_decode($response->getBody(), true);
+                // Use the response data as needed
+                // ...
+            } else {
+                // Handle non-successful response
+                $errorCode = $response->getStatusCode();
+                throw new Exception('Error: API returned status code ' . $errorCode);
+            }
 
-        $response = $client->request(
-            'GET', 
-            $url,        
-            [
-                'headers' => [
-                    'Content-Type'=>'application/json',
-                    'Authorization'=>$token
-                ],
-                // 'form_params' => [
-                //     'sendNotifications' => true,
-                // ],
-            ]
-        );
+        } catch (RequestException $e) {
+            // Handle Guzzle-specific HTTP request exception
+            // This may include network issues or connectivity problems
+            return $response = [];
+        } catch (Exception $e) {
+            // Handle other exceptions
+            echo 'Caught exception: ', $e->getMessage(), "\n";
+        }
 
-        // return $response;
-        return json_decode($response->getBody(),true);
+        // $token = $this->getOauth2AccessToken();
+
+        // $response = $client->request(
+        //     'GET', 
+        //     $url,        
+        //     [
+        //         'headers' => [
+        //             'Content-Type'=>'application/json',
+        //             'Authorization'=>$token
+        //         ],
+        //         // 'form_params' => [
+        //         //     'sendNotifications' => true,
+        //         // ],
+        //     ]
+        // );
+        // return json_decode($response->getBody(),true);
     }
 
     public function getOauth2AccessToken(){
@@ -156,20 +192,45 @@ class TimesheetController extends Controller
 
     public function storePhaseConfig(Request $request)
     {
-    	$store = new TimesheetPhase();
-    	$store->phase = $request->inputPhase;
-    	$store->description = $request->inputPhaseDesc;
-    	$store->date_add = Carbon::now()->toDateTimeString();
-    	$store->save();
+        if (isset($request->id)) {
+            $update = TimesheetPhase::where('id',$request->id)->first();
+            $update->phase = $request->inputPhase;
+            $update->description = $request->inputPhaseDesc;
+            $update->update();
+        }else{
+            $store = new TimesheetPhase();
+            $store->phase = $request->inputPhase;
+            $store->description = $request->inputPhaseDesc;
+            $store->date_add = Carbon::now()->toDateTimeString();
+            $store->save();
+        }
+    }
+
+    public function deleteTaskPhase(Request $request)
+    {
+        if ($request->type == "phase") {
+            $delete = TimesheetPhase::where('id',$request->id);
+            $delete->delete();
+        }else{
+            $delete = TimesheetTask::where('id',$request->id);
+            $delete->delete();
+        }
     }
 
     public function storeTaskConfig(Request $request)
     {
-    	$store = new TimesheetTask();
-    	$store->task = $request->inputTask;
-    	$store->description = $request->inputTaskDesc;
-    	$store->date_add = Carbon::now()->toDateTimeString();
-    	$store->save();
+        if (isset($request->id)) {
+            $update = TimesheetTask::where('id',$request->id)->first();
+            $update->task = $request->inputTask;
+            $update->description = $request->inputTaskDesc;
+            $update->update();
+        }else{
+            $store = new TimesheetTask();
+            $store->task = $request->inputTask;
+            $store->description = $request->inputTaskDesc;
+            $store->date_add = Carbon::now()->toDateTimeString();
+            $store->save();
+        }
     }
 
     public function assignPidConfig(Request $request)
@@ -234,7 +295,7 @@ class TimesheetController extends Controller
                     $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
                     $addTimesheet->month = date("n");
                     $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-                    $addTimesheet->workdays = count($workdays);
+                    // $addTimesheet->workdays = count($workdays);
                     $addTimesheet->save();
 
                     $storeAll[] = $addTimesheet;
@@ -264,7 +325,7 @@ class TimesheetController extends Controller
                 $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
                 $addTimesheet->month = date("n");
                 $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-                $addTimesheet->workdays = count($workdays);
+                // $addTimesheet->workdays = count($workdays);
                 $addTimesheet->save();
 
                 $storeAll[] = $addTimesheet;
@@ -292,7 +353,7 @@ class TimesheetController extends Controller
             $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
             $addTimesheet->month = date("n");
             $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-            $addTimesheet->workdays = count($workdays);
+            // $addTimesheet->workdays = count($workdays);
             $addTimesheet->save();
 
             $storeAll [] = $addTimesheet;
@@ -320,7 +381,7 @@ class TimesheetController extends Controller
     	// return $request->arrConfig;
         $delete = TimesheetConfig::where('division',Auth::User()->id_division);
         $delete->delete();
-        
+
     	foreach (json_decode($request->arrConfig,true) as $key => $value) {
     		// return gettype($value['phase']);
 	    	// foreach ($value['phase'] as $key => $phase) {
@@ -368,7 +429,11 @@ class TimesheetController extends Controller
 
     public function getAllTask(Request $request)
     {
-    	return $getAll = TimesheetTask::select('id as id','task as text')->get();
+        if (isset($request->id)) {
+            return $getAll = TimesheetTask::select('id as id','task as text','description')->where('id',$request->id)->get();
+        }else{
+            return $getAll = TimesheetTask::select('id as id','task as text')->get();
+        }
     }
 
     public function getTaskByDivision(Request $request)
@@ -458,7 +523,11 @@ class TimesheetController extends Controller
 
     public function getAllPhase(Request $request)
     {
-    	return $getPhase = TimesheetPhase::select('id as id','phase as text')->get();
+        if (isset($request->id)) {
+            return $getPhase = TimesheetPhase::select('id as id','phase as text','description')->where('id',$request->id)->get();
+        }else{
+            return $getPhase = TimesheetPhase::select('id as id','phase as text')->get();
+        }
     }
 
     public function getLockDurationByDivision(Request $request)
@@ -506,10 +575,19 @@ class TimesheetController extends Controller
 
     public function getAllPhaseTask(Request $request)
     {
-    	$dataTask = TimesheetTask::select('task as name','description')->get();
-    	$dataPhase = TimesheetPhase::select('phase as name','description')->get();
+    	$dataTask = TimesheetTask::select('task as name','description','id')->get();
+    	$dataPhase = TimesheetPhase::select('phase as name','description','id')->get();
 
-    	$array = array_merge($dataTask->toArray(),$dataPhase->toArray());
+        if (isset($request->type)) {
+            if ($request->type == 'Task') {
+                $array = $dataTask;
+            }else if ($request->type == 'Phase') {
+                $array = $dataPhase;
+            }
+        }else{
+            $array = array_merge($dataTask->toArray(),$dataPhase->toArray());
+        }
+
 		return array("data"=>$array);
     }
 
@@ -751,7 +829,7 @@ class TimesheetController extends Controller
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
+                                        ->select('users.name','users.nik')
                                         ->where('roles.group','pmo')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
@@ -776,7 +854,7 @@ class TimesheetController extends Controller
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
+                                        ->select('users.name','users.nik')
                                         ->where('roles.group','DPG')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
@@ -800,7 +878,7 @@ class TimesheetController extends Controller
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
+                                        ->select('users.name','users.nik')
                                         ->where('roles.group','presales')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
@@ -826,7 +904,7 @@ class TimesheetController extends Controller
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
+                                        ->select('users.name','users.nik')
                                         ->where('roles.group','bcd')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
@@ -851,7 +929,7 @@ class TimesheetController extends Controller
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
+                                        ->select('users.name','users.nik')
                                         ->where('roles.group','hr')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
@@ -876,7 +954,7 @@ class TimesheetController extends Controller
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
+                                        ->select('users.name','users.nik')
                                         ->where('roles.group','msm')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('roles.name','not like','%MSM Helpdesk%')
@@ -907,7 +985,7 @@ class TimesheetController extends Controller
             if ($isStaff == false) {
                 foreach($getUserByGroup as $value_group){
                     $arrSumPoint->push(["name"=>$value_group->name,
-                        "nik"=>"-",
+                        "nik"       =>$value_group->nik,
                         "actual"    =>"-",
                         "planned"   =>$workdays,
                         "threshold" =>"-",
@@ -975,7 +1053,7 @@ class TimesheetController extends Controller
             if ($isStaff == false) {
                 foreach($getUserByGroup as $value_group){
                     $arrSumPoint->push(["name"=>$value_group->name,
-                        "nik"=>"-",
+                        "nik"       =>$value_group->nik,
                         "actual"    =>"-",
                         "planned"   =>collect($sumMandays)->first()->planned,
                         "threshold" =>"-",
@@ -2380,7 +2458,7 @@ class TimesheetController extends Controller
                         ->where('roles.name','not like','%Manager')
                         ->where('users.status_delete','-')
                         ->whereNotIn('nik', $data->get()->pluck('nik'))
-                                        ->get();
+                        ->get();
 
         $arrCummulativeMandays = collect();
         if ($cek_role->group == 'pmo') {
@@ -2390,7 +2468,7 @@ class TimesheetController extends Controller
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
-                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                    foreach($getUserByGroup as $name_pic){
                         $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                         $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
                     }
@@ -2452,7 +2530,7 @@ class TimesheetController extends Controller
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
-                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                    foreach($getUserByGroup as $name_pic){
                         $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                         $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
                     }
@@ -2513,7 +2591,7 @@ class TimesheetController extends Controller
             $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
-                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                    foreach($getUserByGroup as $name_pic){
                         $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                         $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
                     }
@@ -2575,7 +2653,7 @@ class TimesheetController extends Controller
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
-                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                    foreach($getUserByGroup as $name_pic){
                         $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                         $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
                     }
@@ -2637,7 +2715,7 @@ class TimesheetController extends Controller
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
-                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                    foreach($getUserByGroup as $name_pic){
                         $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                         $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
                     }
@@ -2699,7 +2777,7 @@ class TimesheetController extends Controller
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
-                    foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                    foreach($getUserByGroup as $name_pic){
                         $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                         $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
                     }
@@ -2776,6 +2854,7 @@ class TimesheetController extends Controller
         $countThresholdFinal = (int)$dataThreshold;
 
         $arrayMonth = collect();
+        $arrSumPoint = collect();
         foreach($request->month as $month){
             $date = Carbon::parse($month);
             // Get the numeric representation of the month (1 to 12)
@@ -2800,7 +2879,7 @@ class TimesheetController extends Controller
 
         $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name')
+                                        ->select('users.name','users.nik')
                                         ->where('roles.group',$cek_role->group)
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-');
@@ -3232,6 +3311,25 @@ class TimesheetController extends Controller
         $getPermitByName        = collect($getPermit)->groupBy('name');
 
         if (count($sumMandays) === 0) {
+            $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
+            $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
+            $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
+            $workdays  = count($workdays["workdays"]);
+
+            if ($isNeedOtherUser == false) {
+                foreach($getUserByGroup as $value_group){
+                    $arrSumPoint->push(["name"=>$value_group->name,
+                        "nik"       =>$value_group->nik,
+                        "actual"    =>"-",
+                        "planned"   =>$workdays,
+                        "threshold" =>"-",
+                        "billable"  =>"-",
+                        "percentage_billable" =>"-",
+                        "deviation" =>"-"
+                    ]);
+                }
+            }
+        }else{
             $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
                 return round($group->sum('point_mandays'),2);
             });
@@ -3289,28 +3387,9 @@ class TimesheetController extends Controller
             if ($isNeedOtherUser == false) {
                 foreach($getUserByGroup as $value_group){
                     $arrSumPoint->push(["name"=>$value_group->name,
-                        "nik"=>"-",
+                        "nik"       =>$value_group->nik,
                         "actual"    =>"-",
                         "planned"   =>collect($sumMandays)->first()->planned,
-                        "threshold" =>"-",
-                        "billable"  =>"-",
-                        "percentage_billable" =>"-",
-                        "deviation" =>"-"
-                    ]);
-                }
-            }
-        }else{
-            $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
-            $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
-            $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
-            $workdays  = count($workdays["workdays"]);
-
-            if ($isNeedOtherUser == false) {
-                foreach($getUserByGroup as $value_group){
-                    $arrSumPoint->push(["name"=>$value_group->name,
-                        "nik"=>"-",
-                        "actual"    =>"-",
-                        "planned"   =>$workdays,
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
