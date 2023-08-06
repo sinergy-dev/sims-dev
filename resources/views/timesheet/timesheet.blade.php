@@ -120,7 +120,7 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <input type="" name="id_activity" id="id_activity" value="" hidden>
+                      <input type="" name="id_activity" id="id_activity" value="">
                       <label>Schedule*</label>
                       <select class="form-control select2" name="selectSchedule" id="selectSchedule" onchange="validateInput(this)">
                         <option></option>
@@ -558,6 +558,7 @@
                     setType()
                     setSchedule(date)
 
+                    $("#id_activity").val('')
                     $('#selectSchedule').val('').trigger('change')
                     $('#selectType').val('').trigger('change').prop("disabled",false)
                     $('#selectLead').val('').trigger('change').prop("disabled",false)
