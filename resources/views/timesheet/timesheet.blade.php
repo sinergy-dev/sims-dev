@@ -120,7 +120,7 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <input type="" name="id_activity" id="id_activity" value="">
+                      <input type="" name="id_activity" id="id_activity" value="" hidden>
                       <label>Schedule*</label>
                       <select class="form-control select2" name="selectSchedule" id="selectSchedule" onchange="validateInput(this)">
                         <option></option>
@@ -669,15 +669,41 @@
                       $('#textareaActivity').val(calEvent.title).trigger('change') 
 
                       if(nik != "{{Auth::User()->nik}}"){
-                        $('#selectType').prop("disabled",true)
-                        $('#selectLead').prop("disabled",true)
-                        $('#selectTask').prop("disabled",true)
-                        $('#selectPhase').prop("disabled",true)
-                        $('#selectLevel').prop("disabled",true)
-                        $('#textareaActivity').prop("disabled",true)
-                        $('#selectDuration').prop("disabled",true)
-                        $('#selectStatus').prop("disabled",true)
-                        $("#ModalAddTimesheet").find('.modal-footer').hide()
+                        //spv/manager
+                        var momentDate = moment(calEvent.start); // Replace with your own moment date
+                        // Get today's date
+                        var today = moment();
+                        var isSameDateToday = momentDate.isSame(today, 'day');
+                        if (isSameDateToday) {
+                          $('#selectType').prop("disabled",true)
+                          $('#selectLead').prop("disabled",true)
+                          $('#selectTask').prop("disabled",true)
+                          $('#selectPhase').prop("disabled",true)
+                          $('#selectLevel').prop("disabled",true)
+                          $('#textareaActivity').prop("disabled",true)
+                          $('#selectDuration').prop("disabled",true)
+                          $('#selectStatus').prop("disabled",true)
+                          $("#ModalAddTimesheet").find('.modal-footer').hide()
+                        }else{
+                          $('#selectType').prop("disabled",false)
+                          $('#selectLead').prop("disabled",false)
+                          $('#selectTask').prop("disabled",false)
+                          $('#selectPhase').prop("disabled",false)
+                          $('#selectLevel').prop("disabled",false)
+                          $('#textareaActivity').prop("disabled",false)
+                          $('#selectDuration').prop("disabled",false)
+                          $('#selectStatus').prop("disabled",false)
+                          $("#ModalAddTimesheet").find('.modal-footer').show()
+                        }
+                        // $('#selectType').prop("disabled",true)
+                        // $('#selectLead').prop("disabled",true)
+                        // $('#selectTask').prop("disabled",true)
+                        // $('#selectPhase').prop("disabled",true)
+                        // $('#selectLevel').prop("disabled",true)
+                        // $('#textareaActivity').prop("disabled",true)
+                        // $('#selectDuration').prop("disabled",true)
+                        // $('#selectStatus').prop("disabled",true)
+                        // $("#ModalAddTimesheet").find('.modal-footer').hide()
                       }else{
                         var momentDate = moment(calEvent.start); // Replace with your own moment date
                         // Get today's date
