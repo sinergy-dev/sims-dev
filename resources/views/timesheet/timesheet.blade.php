@@ -396,38 +396,41 @@
 
                   var lock_activity = [{"lock_activity":results.lock_duration}]
                   var arrayData = []
-                  result.items.map(item => {
-                    if (item.creator != undefined) {
-                      if (Object.keys(item.creator).length == 2) {
-                        if (item.creator.self == true) {
-                          const events = arrayData.push({
-                            id:item.id,
-                            title: item.summary,
-                            start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
-                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
-                            activity: item.summary,
-                            refer:"gcal",
-                          })
-                        }
-                      }
-                    }
-                 
+                  
+                  if (result != "") {
+                    result.items.map(item => {
+                      // if (item.creator != undefined) {
+                      //   if (Object.keys(item.creator).length == 2) {
+                      //     if (item.creator.self == true) {
+                      //       const events = arrayData.push({
+                      //         id:item.id,
+                      //         title: item.summary,
+                      //         start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
+                      //         end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                      //         activity: item.summary,
+                      //         refer:"gcal",
+                      //       })
+                      //     }
+                      //   }
+                      // }
+                   
 
-                    $.each(item.attendees,function(index,itemX){
-                      if (itemX.responseStatus == "accepted") {
-                        if (itemX.email == email) {
-                          const events = arrayData.push({
-                            id:item.id,
-                            title: item.summary,
-                            start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
-                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
-                            activity: item.summary,
-                            refer:"gcal"
-                          })
+                      $.each(item.attendees,function(index,itemX){
+                        if (itemX.responseStatus == "accepted") {
+                          if (itemX.email == email) {
+                            const events = arrayData.push({
+                              id:item.id,
+                              title: item.summary,
+                              start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
+                              end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                              activity: item.summary,
+                              refer:"gcal"
+                            })
+                          }
                         }
-                      }
+                      })
                     })
-                  })
+                  }
 
                   var filteredData = arrayData.filter(function(obj1) {
                     return !events.some(function(obj2) {
@@ -654,6 +657,9 @@
 
 
                     if (calEvent.refer) {
+                      console.log(calEvent.refer)
+                      console.log(calEvent.id)
+                      $("#id_activity").val(calEvent.id)
                       $('#selectSchedule').prop("disabled",true)
                       $('#selectSchedule').val('Planned').trigger('change')
                       $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
@@ -1602,7 +1608,11 @@
         formData.append("textareaActivity",$("#textareaActivity").val())        
         formData.append("selectDuration",$("#selectDuration").val())        
         formData.append("selectStatus",$("#selectStatus").val())
-        formData.append("id_activity",$("#id_activity").val()) 
+        if (isNaN($("#id_activity").val()) == false) {
+          formData.append("id_activity",$("#id_activity").val()) 
+        }else{
+          formData.append("id_activity","") 
+        }
 
         swalFireCustom = {
           title: 'Are you sure?',
@@ -1616,14 +1626,12 @@
         }
 
         if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").length) {
-          
           swalSuccess = {
               icon: 'success',
               title: 'Create Timesheet Succesfully!',
               text: 'Click Ok to reload page',
           } 
         }else{
-          
           swalSuccess = {
               icon: 'success',
               title: 'Update Timesheet Succesfully!',
@@ -1675,9 +1683,7 @@
                 if (result.value) {
                   if (postParam == 'timesheet') {
                     var newEvents = []
-
                     $.each(results, function(index, datas) {
-                      
                       newEvents.push({
                         title:datas.activity,
                         start:datas.start_date,
@@ -1712,8 +1718,12 @@
 
                       // loadData()
                       // Call the refetchEvents method to reload the events
+                      if (isNaN($("#id_activity").val()) == true) {
+                        $('#calendar').fullCalendar('clientEvents', $("#id_activity").val())[0];
+                        $('#calendar').fullCalendar('removeEvents', $("#id_activity").val())
+                      }
+                      
                       if(localStorage.getItem('isUpdate') == 'false') {
-                        
                         $.each(newEvents, function(index, event) {
                           $('#calendar').fullCalendar('renderEvent', event, true);
                           $('#calendar').fullCalendar('refetchEvents');
