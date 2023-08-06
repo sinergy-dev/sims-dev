@@ -902,8 +902,8 @@ class TimesheetController extends Controller
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
-                $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                $getUserByGroup     = User::Rightjoin('role_user', 'role_user.user_id', '=', 'users.nik')
+                                        ->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')
                                         ->select('users.name','users.nik')
                                         ->where('roles.group','bcd')
                                         ->where('roles.name','not like','%Manager')
@@ -916,7 +916,7 @@ class TimesheetController extends Controller
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $sumMandays         = Timesheet::Leftjoin('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
                 $isStaff = true;
 
             }
@@ -2038,7 +2038,7 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'bcd') {
             if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
+                $listGroup = User::Rightjoin('role_user', 'role_user.user_id', '=', 'users.nik')->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
@@ -2864,7 +2864,7 @@ class TimesheetController extends Controller
         }      
 
         $nik = Auth::User()->nik;
-        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+        $cek_role = DB::table('role_user')->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
         $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')
                             ->join('users','users.nik','=','tb_cuti.nik')
