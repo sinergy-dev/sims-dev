@@ -38,49 +38,49 @@ class PRDraft extends Model
         'created_at'
 	];
 
-	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name','status_pr'];
+	protected $appends = ['no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name','status_pr'];
 
     public function getToAttribute()
     {
-        $data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.to')->where('tb_pr_draft.id', $this->id)->first();
+        $data = DB::table('tb_pr')->join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.to')->where('tb_pr_draft.id', $this->id)->first();
 
         return empty($data->to)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->to) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->to):$data->to;
     }
 
-    public function getComparisonAttribute()
-    {
-        $data = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')
-        		// ->join('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')
-        		->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
-        		->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'tb_pr_compare.term_payment', 'tb_pr_compare.nominal', 'tb_pr_compare.note_pembanding', 'tb_pr_compare.id', 'tb_pr_compare.id_draft_pr', 'tb_pr_draft.type_of_letter', 'tb_pr_draft.request_method', 'tb_pr_draft.pid', 'tb_pr_draft.lead_id', 'name as issuance', 'tb_pr_compare.status', 'tb_pr_compare.status_tax', 'users.name', DB::raw("(CASE WHEN (tb_pr_draft.quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"))
-        		->where('tb_pr_compare.id_draft_pr', $this->id)
-        		->orderByRaw('FIELD(tb_pr_draft.status, "SAVED", "DRAFT", "REJECT", "VERIFIED", "COMPARING", "CIRCULAR", "DISAPPROVE", "FINALIZED", "SENDED", "REJECTED")')
-        		->get();
+    // public function getComparisonAttribute()
+    // {
+    //     $data = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')
+    //     		// ->join('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')
+    //     		->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
+    //     		->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'tb_pr_compare.term_payment', 'tb_pr_compare.nominal', 'tb_pr_compare.note_pembanding', 'tb_pr_compare.id', 'tb_pr_compare.id_draft_pr', 'tb_pr_draft.type_of_letter', 'tb_pr_draft.request_method', 'tb_pr_draft.pid', 'tb_pr_draft.lead_id', 'name as issuance', 'tb_pr_compare.status', 'tb_pr_compare.status_tax', 'users.name', DB::raw("(CASE WHEN (tb_pr_draft.quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"))
+    //     		->where('tb_pr_compare.id_draft_pr', $this->id)
+    //     		->orderByRaw('FIELD(tb_pr_draft.status, "SAVED", "DRAFT", "REJECT", "VERIFIED", "COMPARING", "CIRCULAR", "DISAPPROVE", "FINALIZED", "SENDED", "REJECTED")')
+    //     		->get();
 
-        return $data->map(function ($item, $key){
-        	$item->product = $item->product_detail;
-        	$item->document = $item->document_detail;
-        	return $item;
-        });
-    }
+    //     return $data->map(function ($item, $key){
+    //     	$item->product = $item->product_detail;
+    //     	$item->document = $item->document_detail;
+    //     	return $item;
+    //     });
+    // }
 
     public function getNoPrAttribute()
     {
-    	$data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('no_pr')->where('tb_pr_draft.id', $this->id)->first();
+    	$data = DB::table('tb_pr')->join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('no_pr')->where('tb_pr_draft.id', $this->id)->first();
 
     	return empty($data->no_pr)?$this->id:$data->no_pr;
     }
 
     public function getTitleAttribute()
     {
-    	$data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.title as title_pr')->where('tb_pr_draft.id', $this->id)->first();
+    	$data = DB::table('tb_pr')->join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.title as title_pr')->where('tb_pr_draft.id', $this->id)->first();
 
     	return empty($data->title_pr)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->title) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->title):$data->title_pr;
     }
 
     public function getNominalAttribute()
     {
-    	$data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.amount as nominal')->where('tb_pr_draft.id', $this->id)->first();
+    	$data = DB::table('tb_pr')->join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.amount as nominal')->where('tb_pr_draft.id', $this->id)->first();
 
     	return empty($data->nominal)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->nominal) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->nominal):$data->nominal;
     }
@@ -94,7 +94,7 @@ class PRDraft extends Model
 
     public function getStatusPrAttribute()
     {
-        $data = PR::join('tb_pr_draft','tb_pr_draft.id','tb_pr.id_draft_pr')->select('tb_pr.status')->where('tb_pr_draft.id', $this->id)->first();
+        $data = DB::table('tb_pr')->join('tb_pr_draft','tb_pr_draft.id','tb_pr.id_draft_pr')->select('tb_pr.status')->where('tb_pr_draft.id', $this->id)->first();
         return empty($data->status)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->status) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->status):$data->status;
         // return $data->status;
     }
@@ -107,7 +107,7 @@ class PRDraft extends Model
 
     public function getIssuanceAttribute()
     {
-        $data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.issuance')->where('tb_pr_draft.id', $this->id)->first();
+        $data = DB::table('tb_pr')->join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.issuance')->where('tb_pr_draft.id', $this->id)->first();
         return empty($data->issuance)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->issuance) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->issuance):$data->issuance;
     }
 
@@ -120,8 +120,8 @@ class PRDraft extends Model
 
     public function getDateAttribute()
 	{
-		$data = DB::table('tb_pr_draft')->select('created_at')->where('id', $this->id)->first();
-		return empty($data->created_at)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->created_at) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->created_at):$data->created_at;
+		return $data = DB::table('tb_pr_draft')->select('created_at')->where('id', $this->id)->first()->created_at;
+		return empty($data->created_at)?(empty(DB::table('tb_pr')->where('id_draft_pr',$this->id)->first()->date) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->created_at):$data->created_at;
 	}
 
 	public function getStatusTaxAttribute()
@@ -133,7 +133,7 @@ class PRDraft extends Model
 
     public function getCircularByAttribute()
     {
-        $data = PRDraft::where('id',$this->id)->first();
+        $data = DB::table('tb_pr_draft')->where('id',$this->id)->first();
 
         $territory = DB::table('users')
             ->select('id_territory')
@@ -141,7 +141,7 @@ class PRDraft extends Model
             ->first()
             ->id_territory;
 
-        $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')
+        $cek_group = DB::table('tb_pr_draft')->join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')
             ->join('roles', 'roles.id', '=', 'role_user.role_id')
             ->select('roles.name', 'roles.group')->where('tb_pr_draft.id', $this->id)
             ->first();
@@ -164,7 +164,7 @@ class PRDraft extends Model
                 ->orWhere('tb_pr_activity.status', 'FINALIZED');
         });
 
-        $sign = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+        $sign = DB::table('users')->join('role_user', 'role_user.user_id', '=', 'users.nik')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                 ->select(
                     'users.name', 
