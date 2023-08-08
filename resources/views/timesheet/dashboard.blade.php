@@ -143,7 +143,7 @@
                     <div class="col-md-6 col-xs-12 pull-right">
                       <b>Search Anything</b>
                       <div class="input-group pull-right">
-                        <input id="searchBarMandays" type="text" class="form-control" placeholder="ex: Search Name...">
+                        <input id="searchBarMandays" type="text" class="form-control" placeholder="ex: Search Name..." onkeyup="searchCustom('tbSummaryMandays','searchBarMandays')">
                         <div class="input-group-btn">
                           <button type="button" id="btnShowEntry" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                             Show 10 
@@ -202,7 +202,7 @@
                       <div class="col-md-6 col-xs-12 pull-right">
                         <b>Search Anything</b>
                           <div class="input-group pull-right">
-                            <input id="searchBarSbe" type="text" class="form-control" placeholder="ex: Search Name..">
+                            <input id="searchBarSbe" type="text" class="form-control" onkeyup="searchCustom('tbSummarySbe','searchBarSbe')" placeholder="ex: Search Name..">
                             <div class="input-group-btn">
                               <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 Show 10 
@@ -457,50 +457,51 @@
       }
 
       isTbSummary = false
-      var tbSummary = $("#tbSummaryMandays").DataTable({
-        "ajax":{
-          type:"GET",
-          url:"{{url('/timesheet/sumPointMandays')}}",
-        },
-        columns: [
-          { title: 
-            'Name',
-            render: function (data, type, row, meta){
-              return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
-            } 
-          },
-          { title: 'Planned',
-            data:'planned'
-          },
-          { title: 'Actual', 
-            data:'actual'
-          },
-          { title: 'Threshold',
-            data:'threshold' 
-          },
-          { title: 'Billable', 
-            data:'billable'
-          },
-          { title: '%Billable', 
-            data:'percentage_billable'
-          },
-          { title: 'Deviation', 
-            data:'deviation'
-          },
-        ],
-        lengthChange: false,
-        initComplete: function () {
-          isTbSummary = true
-          $("#filterSumPoint").find("i").css("color","#80ff80")
-          $("#filterSumPoint").find("span").text("ready to filter")
-          $('#loadingIndicator').hide();
-          $.each($("#selectShowColumnTicket li input"),function(index,item){
-            var column = $("#tablePerformance").DataTable().column(index)
-            // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-            $(item).prop('checked', column.visible())
-          })
-        }
-      })
+      // var tbSummary = $("#tbSummaryMandays").DataTable({
+      //   "ajax":{
+      //     type:"GET",
+      //     url:"{{url('/timesheet/sumPointMandays')}}",
+      //   },
+      //   columns: [
+      //     { title: 
+      //       'Name',
+      //       render: function (data, type, row, meta){
+      //         return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
+      //       } 
+      //     },
+      //     { title: 'Planned',
+      //       data:'planned'
+      //     },
+      //     { title: 'Actual', 
+      //       data:'actual'
+      //     },
+      //     { title: 'Threshold',
+      //       data:'threshold' 
+      //     },
+      //     { title: 'Billable', 
+      //       data:'billable'
+      //     },
+      //     { title: '%Billable', 
+      //       data:'percentage_billable'
+      //     },
+      //     { title: 'Deviation', 
+      //       data:'deviation'
+      //     },
+      //   ],
+      //   lengthChange: false,
+      //   responsive:true,
+      //   initComplete: function () {
+      //     isTbSummary = true
+      //     $("#filterSumPoint").find("i").css("color","#80ff80")
+      //     $("#filterSumPoint").find("span").text("ready to filter")
+      //     $('#loadingIndicator').hide();
+      //     $.each($("#selectShowColumnTicket li input"),function(index,item){
+      //       var column = $("#tablePerformance").DataTable().column(index)
+      //       // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+      //       $(item).prop('checked', column.visible())
+      //     })
+      //   },
+      // }).columns.adjust();
 
       $.ajax({
         type:"GET",
@@ -523,6 +524,79 @@
             data:result,
             multiple:true
           })
+        }
+      })
+
+      var datatableSummary = ""
+      function initializeDataTable(tabId) {
+        console.log("aheey")
+        datatableSummary = $(tabId).find('#tbSummaryMandays').DataTable({
+          responsive: true,
+          "ajax":{
+            type:"GET",
+            url:"{{url('/timesheet/sumPointMandays')}}",
+          },
+          columns: [
+            { title: 
+              'Name',
+              render: function (data, type, row, meta){
+                return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
+              } 
+            },
+            { title: 'Planned',
+              data:'planned'
+            },
+            { title: 'Actual', 
+              data:'actual'
+            },
+            { title: 'Threshold',
+              data:'threshold' 
+            },
+            { title: 'Billable', 
+              data:'billable'
+            },
+            { title: '%Billable', 
+              data:'percentage_billable'
+            },
+            { title: 'Deviation', 
+              data:'deviation'
+            },
+          ],
+          lengthChange: false,
+          initComplete: function () {
+            isTbSummary = true
+            $("#filterSumPoint").find("i").css("color","#80ff80")
+            $("#filterSumPoint").find("span").text("ready to filter")
+            $('#loadingIndicator').hide();
+            $.each($("#selectShowColumnTicket li input"),function(index,item){
+              var column = $("#tablePerformance").DataTable().column(index)
+              // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+              $(item).prop('checked', column.visible())
+            })
+          },
+        })
+
+        return datatableSummary = datatableSummary 
+      }
+
+      // Initialize the DataTable for the active tab
+      var activeTab = $('.tab-pane.active');
+      var idTab = $('.tab-pane.active').attr('id');
+
+      if (idTab == 'table') {
+        initializeDataTable(activeTab);
+
+        // datatableSummary.columns.adjust().draw()
+      }
+
+      // When a tab becomes active, reinitialize the DataTable and adjust columns
+      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var tabId = $(e.target).attr('href');
+        if (tabId == '#table') {
+          if (!$.fn.DataTable.isDataTable('#tbSummaryMandays')) {
+            initializeDataTable(activeTab)
+            datatableSummary.columns.adjust().draw()
+          }
         }
       })
 
@@ -629,7 +703,7 @@
         },
         {
           id:"Undone",
-          text:"Undone"
+          text:"Not-Done"
         },
       ],
       multiple:true
@@ -715,7 +789,7 @@
       }
 
       $.each($('#selectSchedule').val(),function(key,val){
-        if(selectSchedule == 'schedule=[]') {
+        if(selectSchedule == 'schedule[]=') {
           selectSchedule = selectSchedule + val
         }else{
           selectSchedule = selectSchedule + '&schedule[]=' + val
@@ -740,19 +814,7 @@
     }
 
     var colors = [
-      "#FF0000", "#00FF00", "#0000FF", "#FF00FF", "#00FFFF", // Add more colors as needed
-      "#FFA500", "#800080", "#008000", "#800000", "#000080", "#008080",
-      "#A52A2A", "#FFC0CB", "#000000", "#FFFFFF", "#FFD700", "#808080",
-      "#FF4500", "#008B8B", "#556B2F", "#483D8B", "#D2691E", "#DC143C",
-      "#4169E1", "#ADFF2F", "#B8860B", "#8B008B", "#9932CC", "#FF1493",
-      "#00BFFF", "#FF69B4", "#4B0082", "#7FFF00", "#7CFC00", "#FF6347",
-      "#40E0D0", "#9370DB", "#6B8E23", "#BA55D3", "#FF8C00", "#20B2AA",
-      "#7B68EE", "#FF00FF", "#228B22", "#F08080", "#87CEEB", "#FFFFE0",
-      "#2E8B57", "#FFD700", "#FF4500", "#BDB76B", "#9932CC", "#8B4513",
-      "#48D1CC", "#9370DB", "#FF1493", "#00CED1", "#C71585", "#FF8C00",
-      "#2F4F4F", "#8A2BE2", "#FFA07A", "#F0E68C", "#DB7093", "#FFB6C1",
-      "#66CDAA", "#FF69B4", "#F4A460", "#3CB371", "#BA55D3", "#FA8072",
-      "#87CEFA", "#9400D3", "#ADFF2F", "#FF00FF", "#808000", "#800080"
+      "#008000","#FF0000","#00FFFF","#FF4500","#FFA500","#FFD700","#FFFF00","#ADFF2F","#00FF00","#32CD32","#00FF7F","#00CED1","#1E90FF","#4169E1","#0000FF","#8A2BE2","#9932CC","#8B008B","#FF00FF","#FF69B4","#FF1493","#FFB6C1","#FFC0CB","#DC143C","#A52A2A","#D2691E","#B22222","#FFDAB9","#FF8C00","#FF7F50","#FF4500","#FF6347","#FF0000","#800000","#8B4513","#A0522D","#F0E68C","#DAA520","#BDB76B","#556B2F","#006400","#2E8B57","#3CB371","#20B2AA","#00FF7F","#008080","#00CED1","#00FFFF","#40E0D0","#7FFFD4","#4682B4","#5F9EA0","#6495ED","#1E90FF","#4169E1","#0000FF","#8A2BE2","#9932CC","#800080","#9370DB"
     ];
     //chart
     const ctx  = document.getElementById('cummulativeMandaysChart');
@@ -838,7 +900,6 @@
         })
 
         $.each(value.label,function(index,valueLabel){
-            
             var borderColorArr = [colors[i++]]
             var backgroundColorArr = [colors[j++]]
             if (index == 'Prosentase') {

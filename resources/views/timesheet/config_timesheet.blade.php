@@ -68,8 +68,17 @@
                   </button></div>
                 </div>
                 <div class="box-body">
-                  <div class="table-responsive">
-                    <table id="tbConfDef" class="table table-striped"></table>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="table-responsive">
+                        <table id="tbConfDefTask" class="table table-striped"></table>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="table-responsive">
+                        <table id="tbConfDefPhase" class="table table-striped"></table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -149,6 +158,7 @@
             <div class="modal-body">
             <form action="" id="modal_phase" name="modal_phase">
                 @csrf
+                <input type="" id="phase_id" class="phase_id" name="" hidden>
                 <div class="form-group">
                   <label>Phase*</label>
                   <input class="form-control" name="inputPhase" id="inputPhase" placeholder="Enter Phase" onkeyup="validateInput(this)"/>
@@ -180,6 +190,7 @@
             <div class="modal-body">
             <form action="" id="modal_task" name="modal_task">
                 @csrf
+                <input type="" id="task_id" class="task_id" name="" hidden>
                 <div class="form-group">
                   <label>Task*</label>
                   <input class="form-control" name="inputTask" id="inputTask" placeholder="Enter Task" onkeyup="validateInput(this)"/>
@@ -224,10 +235,63 @@
       console.log(item)
     })
 
-    $("#tbConfDef").DataTable({
+    $("#tbConfDefTask").DataTable({
       "ajax":{
         "type":"GET",
-        "url":"{{url('/timesheet/getAllPhaseTask')}}",
+        "url":"{{url('/timesheet/getAllPhaseTask')}}?type=Task",
+      },
+      "columns": [
+        { title: 'title',
+          data: 'title'
+        },
+        { title: 'Name',
+          data: 'name',
+          width:'10%'  
+        },
+        { title: 'Description',
+          data: 'description',
+          width:'60%'  
+        },
+        { title: 
+          'Action',
+          visible:false,
+          render: function (data, type, row, meta){
+            return '<a onclick="updateTask('+ row.id +')" id="editTask" class="btn btn-sm btn-warning" style="cursor:pointer;">Edit</a> <a onclick="deleteTask('+ row.id +')" class="btn btn-sm btn-danger" style="cursor:pointer" id="deleteTask">Delete</a>'
+          },
+        },
+      ],
+      lengthChange: false,
+      columnDefs: [{ visible: false, targets: 0 }],
+      order: [[1, 'asc']],
+      lengthChange: false,
+      drawCallback: function (settings) {
+        var api = this.api();
+        var rows = api.rows({ page: 'current' }).nodes();
+        var last = null;
+
+        api
+        .column(0, { page: 'current' })
+        .data()
+        .each(function (group, i) {
+            if (last !== group) {
+                $(rows)
+                    .eq(i)
+                    .before('<tr class="group"><td colspan="3"><b>' + group + '</b></td></tr>');
+                last = group;
+            }
+        });
+
+        if(accesable.includes("action_task")){
+          var column = $("#tbConfDefTask").DataTable().column(3)
+          column.visible(true);
+        }  
+      },
+    })
+
+    $("#tbConfDefPhase").DataTable({
+      "ajax":{
+        "type":"GET",
+        "url":"{{url('/timesheet/getAllPhaseTask')}}?type=Phase",
       },
       "columns": [
         { title: 'title',
@@ -238,6 +302,13 @@
         },
         { title: 'Description',
           data: 'description' 
+        },
+        { title: 
+          'Action',
+          visible:false,
+          render: function (data, type, row, meta){
+            return '<a onclick="updatePhase('+ row.id +')" id="editPhase" class="btn btn-sm btn-warning" style="cursor:pointer">Edit</a> <a onclick="deletePhase('+ row.id +')" class="btn btn-sm btn-danger" style="cursor:pointer" id="deletePhase">Delete</a>'
+          } 
         },
       ],
       lengthChange: false,
@@ -256,12 +327,156 @@
               if (last !== group) {
                   $(rows)
                       .eq(i)
-                      .before('<tr class="group"><td colspan="2"><b>' + group + '</b></td></tr>');
+                      .before('<tr class="group"><td colspan="3"><b>' + group + '</b></td></tr>');
                   last = group;
               }
           });
+
+          if(accesable.includes("action_phase")){
+            var column = $("#tbConfDefPhase").DataTable().column(3)
+            column.visible(true);
+          } 
       },
     })
+
+    function updatePhase(id){
+      $("#ModalAddPhase").modal("show")
+      $.ajax({
+        type:"GET",
+        url:"{{url('/timesheet/getAllPhase')}}?id="+id,
+        success:function(result){
+          $("#phase_id").val(result[0].id)
+          $("#inputPhase").val(result[0].text)
+          $("#inputPhaseDesc").val(result[0].description)
+        }
+      })
+      $(".modal-title").text("Update Phase")
+      $("#ModalAddPhase").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+    }
+
+    function updateTask(id){
+      $("#ModalAddTask").modal("show")
+      $.ajax({
+        type:"GET",
+        url:"{{url('/timesheet/getAllTask')}}?id="+id,
+        success:function(result){
+          $("#task_id").val(result[0].id)
+          $("#inputTask").val(result[0].text)
+          $("#inputTaskDesc").val(result[0].description)
+        }
+      })
+      $(".modal-title").text("Update Task")
+      $("#ModalAddTask").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+    }
+
+    $('#ModalAddPhase').on('hidden.bs.modal', function () {
+      $(".modal-title").text("Add Phase")
+      $("#phase_id").val("")
+      $("#inputPhase").val("")
+      $("#inputPhaseDesc").val("")
+      $("#ModalAddPhase").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
+    })
+
+    $('#ModalAddTask').on('hidden.bs.modal', function () {
+      $(".modal-title").text("Add Task")
+      $("#task_id").val("")
+      $("#inputTask").val("")
+      $("#inputTaskDesc").val("")
+      $("#ModalAddTask").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
+    })
+
+    function deletePhase(id){
+      Swal.fire({
+        title: 'Are you sure?',  
+        text: "Deleting this phase",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          $.ajax({
+            type: "POST",
+            url: "{{url('/timesheet/deleteTaskPhase')}}",
+            data:{
+              _token:'{{ csrf_token() }}',
+              id:id,
+              type:"phase"
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+              })
+              Swal.showLoading()
+            },
+            success: function(result) {
+              Swal.fire(
+                  'Successfully!',
+                  'Delete phase.',
+                  'success'
+              ).then((result) => {
+                location.reload()
+              })
+            }
+          })          
+        }
+      })
+    }
+
+    function deleteTask(id){
+      Swal.fire({
+        title: 'Are you sure?',  
+        text: "Deleting this task",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          $.ajax({
+            type: "GET",
+            url: "{{url('/timesheet/deleteTaskPhase')}}",
+            data:{
+              id:id,
+              type:"task"
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+              })
+              Swal.showLoading()
+            },
+            success: function(result) {
+              Swal.fire(
+                  'Successfully!',
+                  'Delete task.',
+                  'success'
+              ).then((result) => {
+                location.reload()
+              })
+            }
+          })          
+        }
+      })
+    }
 
     function getConfigbyDivision(){
       $.ajax({
@@ -480,6 +695,7 @@
       }else{
         formData = new FormData
         formData.append("_token","{{ csrf_token() }}")
+        formData.append("id",$("#task_id").val())
         formData.append("inputTask",$("#inputTask").val())
         formData.append("inputTaskDesc",$("#inputTaskDesc").val())    
 
@@ -496,7 +712,7 @@
 
         swalSuccess = {
             icon: 'success',
-            title: 'Add task config has been successfully!',
+            title: 'Save task config has been successfully!',
             text: 'Click Ok to reload page',
         } 
 
@@ -514,6 +730,7 @@
       }else{
         formData = new FormData
         formData.append("_token","{{ csrf_token() }}")
+        formData.append("id",$("#phase_id").val())
         formData.append("inputPhase",$("#inputPhase").val())
         formData.append("inputPhaseDesc",$("#inputPhaseDesc").val())    
 
@@ -530,13 +747,14 @@
 
         swalSuccess = {
             icon: 'success',
-            title: 'Add phase config has been successfully!',
+            title: 'Save phase config has been successfully!',
             text: 'Click Ok to reload page',
         } 
 
         createPost(swalFireCustom,formData,swalSuccess,url="/timesheet/storePhaseConfig")
       }
     }
+
 
     function saveConfig(){
       var arrConfig = [], unit = '', phase = '', task = '', isReadyStore = false    

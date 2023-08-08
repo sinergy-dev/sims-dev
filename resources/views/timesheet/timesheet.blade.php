@@ -1745,38 +1745,45 @@
 
                       // loadData()
                       // Call the refetchEvents method to reload the events
-                      if (isNaN($("#id_activity").val()) == true) {
-                        $('#calendar').fullCalendar('clientEvents', $("#id_activity").val())[0];
-                        $('#calendar').fullCalendar('removeEvents', $("#id_activity").val())
+                      console.log(newEvents)
+                      if ($("#id_activity").val() != "") {
+                        if (isNaN($("#id_activity").val()) == true) {
+                          console.log("ini buat calender dari google")
+                          $('#calendar').fullCalendar('clientEvents', $("#id_activity").val())[0];
+                          $('#calendar').fullCalendar('removeEvents', $("#id_activity").val())
+                        }else{
+                          console.log("kok kesini jugaaa")
+
+                          $.each(newEvents, function(index, event) {
+                            $('#calendar').fullCalendar('clientEvents', event.id)[0];
+                            $('#calendar').fullCalendar('removeEvents', event.id)
+                            $('#calendar').fullCalendar('renderEvent', event);
+                          })
+
+                          if (window.location.href.split("/")[3].split("?")[1] != undefined) {
+                            if (window.location.href.split("/")[3].split("?")[1].split("=")[0] == "id") {
+                              history.replaceState(null, '', "{{url('timesheet')}}")
+                            }
+                          }
+                        }
                       }
                       
                       if(localStorage.getItem('isUpdate') == 'false') {
+                          console.log("kesini ajee")
+
                         $.each(newEvents, function(index, event) {
                           $('#calendar').fullCalendar('renderEvent', event, true);
-                          $('#calendar').fullCalendar('refetchEvents');
+                          // $('#calendar').fullCalendar('refetchEvents');
                           // $('#calendar').fullCalendar('renderEvent', event, true);
                         })
-                      }else{
-                        $.each(newEvents, function(index, event) {
-                          $('#calendar').fullCalendar('clientEvents', event.id)[0];
-                          $('#calendar').fullCalendar('removeEvents', event.id)
-                          $('#calendar').fullCalendar('renderEvent', event);
-                        })
-
-                        if (window.location.href.split("/")[3].split("?")[1] != undefined) {
-                          if (window.location.href.split("/")[3].split("?")[1].split("=")[0] == "id") {
-                            history.replaceState(null, '', "{{url('timesheet')}}")
-                          }
-                        }
                       }
                       $("#ModalAddTimesheet").modal('hide')
                       // Render the updated event on the calendar
                   }else{
-                    var newEvents = []
-                    $.each(results,function(idx,value){
-                      
-                      newEvents.push({"title":value.activity,"start":value.start_date,"end":value.end_date,"id":value.id,"remarks":value.status})
-                    })   
+                      var newEvents = []
+                      $.each(results,function(idx,value){
+                        newEvents.push({"title":value.activity,"start":value.start_date,"end":value.end_date,"id":value.id,"remarks":value.status})
+                      })   
 
                       loadData()
                       newEvents.forEach(function(event) {  
