@@ -23,6 +23,7 @@ use App\PRProductCompare;
 use App\PRProductDraft;
 use App\PRNotes;
 use App\PRNotesDetail;
+use App\PRDraftComparison;
 use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
@@ -127,6 +128,7 @@ class PrDraftController extends Controller
     public function getFilterDraft(Request $request)
     {
         $getData = PRDraft::leftJoin('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id')->leftJoin('users', 'users.nik', '=', 'tb_pr_draft.issuance');
+        // return $getData->get();
         // $getData = PRDraft
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first()->id_territory;
@@ -136,6 +138,7 @@ class PrDraftController extends Controller
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'SOL Manager' || $cek_role->name == 'PMO Manager') {
             if (!in_array(null, $request->type_of_letter)) {
                 if(in_array("EPR", $request->type_of_letter)){
+                    // return 'true';
                     $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
                 }
 
@@ -144,6 +147,7 @@ class PrDraftController extends Controller
                 }
 
                 if(in_array("IPR", $request->type_of_letter)){
+                    // return 'false';
                     if ($cek_role->name == 'SOL Manager') {
                         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
                         $getData->orWhere(function ($query) use ($listGroup){
@@ -160,6 +164,7 @@ class PrDraftController extends Controller
                     
                 }
             } else {
+                // return 'disini';
                 if ($cek_role->name == 'SOL Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
                     $getData->orWhere(function ($query) use ($listGroup){
@@ -257,6 +262,7 @@ class PrDraftController extends Controller
                             ->orWhere('tb_pr_draft.status', 'CIRCULAR')
                             ->orWhere('tb_pr_draft.status', 'SAVED')
                             ->orWhere('tb_pr_draft.status', 'DRAFT');
+                        // $query->whereRaw("(`tb_pr_draft`.`status` = 'VERIFIED' OR `tb_pr_draft`.`status` = 'COMPARING'  OR `tb_pr_draft`.`status` = 'CIRCULAR' OR `tb_pr_draft`.`status` = 'SAVED'  OR `tb_pr_draft`.`status` = 'DRAFT')");
                     });
                 } elseif (in_array("DO", $request->status)) {
                     $getData->where(function($query){
@@ -270,32 +276,6 @@ class PrDraftController extends Controller
                 }
             } 
         } 
-        // else {
-        //     // return 'false';
-        //     if ($request->status == 'NA') {
-        //         $getData->where(function($query){
-        //             $query->where('tb_pr_draft.status', 'REJECT')
-        //                 ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
-        //         });
-        //     } elseif ($request->status == 'OG') {
-        //         $getData->where(function($query){
-        //             $query->where('tb_pr_draft.status', 'VERIFIED')
-        //                 ->orWhere('tb_pr_draft.status', 'COMPARING')
-        //                 ->orWhere('tb_pr_draft.status', 'CIRCULAR')
-        //                 ->orWhere('tb_pr_draft.status', 'SAVED')
-        //                 ->orWhere('tb_pr_draft.status', 'DRAFT');
-        //         });
-        //     } elseif ($request->status == 'DO') {
-        //         $getData->where(function($query){
-        //             $query->where('tb_pr_draft.status', 'FINALIZED')
-        //                 ->orWhere('tb_pr_draft.status', 'SENDED');
-        //         });
-        //     } else {
-        //         $getData->whereIn('tb_pr_draft.status', $request->status);
-        //     }
-        // }
-
-        
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'SOL Manager' || $cek_role->name == 'PMO Manager') {
             if (!in_array(null, $request->user)) {
@@ -347,19 +327,6 @@ class PrDraftController extends Controller
             $getData->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
         }
 
-        // $date = ;
-        // $get_date_max = $getData->orderBy('tb_pr_draft.created_at','ASC')->first()->created_at;
-        // $get_date_min = $getData->orderBy('tb_pr_draft.created_at','DESC')->first()->created_at;
-        // $get_date_min = DB::table($date, 'temp')->selectRaw("SUBSTR(MIN(`temp`.`created_at`),1,10) AS `startDate`")->get();
-        // echo "<pre>";
-        // print_r($getData->orderBy('tb_pr_draft.created_at','ASC')->pluck('tb_pr_draft.created_at'));
-        // print_r($getData->orderBy('tb_pr_draft.created_at','ASC')->pluck('tb_pr_draft.created_at')->first());
-        // echo "<br>";
-        // print_r($getData->orderBy('tb_pr_draft.created_at','ASC')->pluck('tb_pr_draft.created_at')->last());
-        // echo "</pre>";
-        // return "-";
-        // return [$get_date_max,$get_date_max];
-
         $searchFields = ['tb_pr.no_pr', 'tb_pr_draft.status', 'tb_pr_draft.to', 'tb_pr.to', 'tb_pr_draft.title', 'tb_pr.title', 'name', 'tb_pr_draft.status'];
 
         if($request->search != ""){
@@ -375,7 +342,176 @@ class PrDraftController extends Controller
         sort($date);
         
         return collect([
-            "data" => $getData->get()->makeHidden(['comparison']),
+            // "data" => $getData->whereYear('tb_pr.date',date('Y'))->get()
+            "data" => $getData->get()
+            // "data_type_letter" => $getData->pluck('tb_pr_draft.type_of_letter')->unique()->values()->map(function ($item, $key){
+            //     return array("id" => $item, "text" => $item);
+            // }),
+            // "dataStatus" => $getData->orderByRaw('FIELD(tb_pr_draft.status, "SAVED", "DRAFT", "VERIFIED","COMPARING", "CIRCULAR", "FINALIZED", "SENDED", "REJECT", "UNAPPROVED")')->pluck('tb_pr_draft.status')->unique()->values()->map(function ($item, $key){
+            //     return array("id" => $item, "text" => $item);
+            // }),
+            // "dataUser" => $getData->pluck('users.name')->unique()->values()->map(function ($item, $key){
+            //     return array("id" => $item, "text" => $item);
+            // }),
+            // "startDate" => current($date),
+            // "endDate" => end($date)
+        ]);
+    }
+
+    public function getDropdownFilterPr(Request $request)
+    {
+        $getData = DB::table('tb_pr_draft')->leftJoin('users', 'users.nik', '=', 'tb_pr_draft.issuance');
+        $date = $getData->pluck('tb_pr_draft.created_at')->toArray();
+        sort($date);
+
+
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'SOL Manager' || $cek_role->name == 'PMO Manager') {
+            // if (!in_array(null, $request->type_of_letter)) {
+            //     // if(in_array("EPR", $request->type_of_letter)){
+            //     //     $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
+            //     // }
+
+            //     if (!in_array(null, $request->user)) {
+            //         $getData->whereIn('users.name', $request->user);
+            //     }
+
+            //     if(in_array("IPR", $request->type_of_letter)){
+            //         if ($cek_role->name == 'SOL Manager') {
+            //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+            //             $getData->orWhere(function ($query) use ($listGroup){
+            //                 $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //                 ->where('tb_pr_draft.type_of_letter', 'IPR');
+            //             });
+            //         } else if ($cek_role->name == 'PMO Manager') {
+            //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+            //             $getData->orWhere(function ($query) use ($listGroup){
+            //                 $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //                 ->where('tb_pr_draft.type_of_letter', 'IPR');
+            //             });
+            //         }
+                    
+            //     }
+            // } else {
+            //     if ($cek_role->name == 'SOL Manager') {
+            //         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+            //         $getData->orWhere(function ($query) use ($listGroup){
+            //             $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //             ->where('tb_pr_draft.type_of_letter', 'IPR');
+            //         });
+            //         $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
+            //     } else if ($cek_role->name == 'PMO Manager') {
+            //         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+            //         $getData->orWhere(function ($query) use ($listGroup){
+            //             $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //             ->where('tb_pr_draft.type_of_letter', 'IPR');
+            //         });
+            //         $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
+            //     } 
+
+            //     if (!in_array(null, $request->user)) {
+            //         $getData->whereIn('users.name', $request->user);
+            //     }
+                
+            // }
+
+            
+            // if ($getData->pluck('tb_pr_draft.type_of_letter')->unique()->values() == 'IPR') {
+            //     if ($cek_role->name == 'SOL Manager') {
+            //         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+            //         $getData->orWhere(function ($query) use ($listGroup){
+            //             $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //             ->where('tb_pr_draft.type_of_letter', 'IPR');
+            //         });
+            //     } else if ($cek_role->name == 'PMO Manager') {
+            //         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+            //         $getData->orWhere(function ($query) use ($listGroup){
+            //             $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //             ->where('tb_pr_draft.type_of_letter', 'IPR');
+            //         });
+            //     }
+
+            // } else if($getData->pluck('tb_pr_draft.type_of_letter')->unique()->values() == 'EPR'){
+            //     if ($cek_role->name == 'SOL Manager') {
+            //         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+            //         $getData->orWhere(function ($query) use ($listGroup){
+            //             $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //             ->where('tb_pr_draft.type_of_letter', 'EPR');
+            //         });
+            //         // $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
+            //     } else if ($cek_role->name == 'PMO Manager') {
+            //         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+            //         $getData->orWhere(function ($query) use ($listGroup){
+            //             $query->whereIn('tb_pr_draft.issuance',$listGroup)
+            //             ->where('tb_pr_draft.type_of_letter', 'EPR');
+            //         });
+            //         // $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
+            //     }
+
+                
+            // }
+
+
+
+        } elseif($cek_role->name == 'Sales Manager'){
+            $listTerritoryName = User::select('name')->where('id_territory',$territory)->pluck('name');
+            $listTerritoryNik = User::select('nik')->where('id_territory',$territory)->pluck('nik');
+
+            $getData->whereIn('users.name',$listTerritoryName);
+
+
+        } else if ($cek_role->name == 'MSM Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+            $listGroupName = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('users.name');
+
+            // if (!in_array(null, $request->user)) {
+            //     $getData->whereIn('users.name', $request->user);
+            // } else {
+            //     $getData->whereIn('users.name', $listGroupName);
+            // }
+
+            $getData->whereIn('users.name',$listGroupName);
+
+
+        } else if ($cek_role->name == 'HR Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+            $listGroupName = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('users.name');
+
+            // if (!in_array(null, $request->user)) {
+            //     $getData->whereIn('users.name', $request->user);
+            // } else {
+            //     $getData->whereIn('users.name', $listGroupName);
+            // }
+
+            $getData->whereIn('users.name',$listGroupName);
+        } else if ($cek_role->name == 'SID Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
+            $listGroupName = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('users.name');
+            // if (!in_array(null, $request->type_of_letter)) {
+            //     $getData->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter)->whereIn('tb_pr_draft.issuance',$listGroup);
+            // }
+
+            // if (!in_array(null, $request->user)) {
+            //     $getData->whereIn('users.name', $request->user);
+            // } else {
+            //     $getData->whereIn('users.name', $listGroupName);
+            // }
+
+            $getData->whereIn('users.name',$listGroupName);
+        } else {
+            // if (!in_array(null, $request->type_of_letter)) {
+            //     $getData->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter)->where('users.name', Auth::User()->name);
+            // }
+
+             $getData->whereIn('users.name',Auth::User()->name);
+        }
+
+
+        return collect([
             "data_type_letter" => $getData->pluck('tb_pr_draft.type_of_letter')->unique()->values()->map(function ($item, $key){
                 return array("id" => $item, "text" => $item);
             }),
@@ -388,6 +524,7 @@ class PrDraftController extends Controller
             "startDate" => current($date),
             "endDate" => end($date)
         ]);
+
     }
 
     public function getFilterCount(Request $request)
@@ -659,45 +796,57 @@ class PrDraftController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        $cek_status = PR::join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->select('status_draft_pr')->get();
+        // $cek_status = PR::join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->select('status_draft_pr')->get();
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'PMO Manager' || $cek_role->name == 'SOL Manager') {
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')
-            // ->where('status', '!=', 'SAVED')
-            ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
-            ->get()->makeHidden(['comparison']);
+            // if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
+                $getDataEPR = PRDraft::where('type_of_letter', 'EPR')
+                ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
+                ->whereYear('tb_pr_draft.updated_at',date('Y'))
+                ->where('status','!=','SENDED')
+                ->get()->makeHidden(['status_pr']);
+            // } else {
+            //     $getDataEPR = PRDraft::where('type_of_letter', 'EPR')
+            //     // ->where('status', '!=', 'SAVED')
+            //     ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
+            //     ->whereYear('tb_pr_draft.updated_at',date('Y'))
+            //     ->get()->makeHidden(['status_pr']);
+            // }
+            
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->get()->makeHidden(['comparison']);
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         } else {
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->get()->makeHidden(['comparison']);
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         }
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
             $getData = PRDraft::where('type_of_letter', 'IPR')
             // ->where('status', '!=', 'SAVED')
             ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
-            ->get()->makeHidden(['comparison']);
+            ->whereYear('tb_pr_draft.updated_at',date('Y'))
+            ->where('status','!=','SENDED')
+            ->get()->makeHidden(['comparison','status_pr']);
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->get()->makeHidden(['comparison']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         } else if ($cek_role->name == 'PMO Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         } else if ($cek_role->name == 'MSM Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         } else if ($cek_role->name == 'HR Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         } else if ($cek_role->name == 'SOL Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         } else if ($cek_role->name == 'SID Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         } else {
-            $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
         }
 
         // return $nik;
@@ -1744,7 +1893,7 @@ class PrDraftController extends Controller
             
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver');
 
-            $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+            $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
 
             // $nik = Auth::User()->nik;
             $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
@@ -1845,7 +1994,7 @@ class PrDraftController extends Controller
 
         $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver');
 
-        $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+        $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -1894,7 +2043,7 @@ class PrDraftController extends Controller
 
         return $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
 
-        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
 
         $email_cc = User::select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
@@ -2076,14 +2225,14 @@ class PrDraftController extends Controller
 
             $type = $get_draft_pr->type_of_letter;
 
-            $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name as name', 'roles.group')->where('tb_pr_draft.id', $request['no_pr'])->first();
+            $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name as name', 'roles.group','roles.slug')->where('tb_pr_draft.id', $request['no_pr'])->first();
 
             if ($cek_group->group == 'pmo') {
                 $posti = 'PMO';
             } elseif ($cek_group->group == 'msm') {
                 $posti = 'MSM';
             } elseif ($cek_group->group == 'hr') {
-                if ($cek_group->name == 'HR Warehouse') {
+                if ($cek_group->slug == 'hr.warehouse') {
                     $posti = 'WHO';
                 } else {
                     $posti = 'HRD';
@@ -2313,28 +2462,35 @@ class PrDraftController extends Controller
         		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
         		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
 
-            $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
-                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
-                ->select('dokumen_name', 'dokumen_location', 'link_drive')
-                ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
-                ->where(function($query){
-                    $query->where('dokumen_name', 'SBE')
-                        ->orWhere('dokumen_name', 'SPK')
-                        ->orWhere('dokumen_name', 'COGS')
-                        ->orWhere('dokumen_name', 'Cogs')
-                        ->orWhere('dokumen_name', 'cogs');
-                })
-                ->get();
-
             $dokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', 'tb_pr_document_compare.id_compare_pr')
                 ->select('dokumen_name', 'dokumen_location', 'link_drive', 'tb_pr_document.id as id_dokumen')
                 ->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected');
 
             if ($data->type_of_letter == 'IPR') {
+
+                $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive')
+                ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
+                ->where(function($query){
+                    $query->where('dokumen_name', '!=', 'Penawaran Harga');
+                })
+                ->get();
+
                 $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
                 $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
             } else {
+
+                $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive')
+                ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
+                ->where(function($query){
+                    $query->where('dokumen_name', '!=', 'Quote Supplier');
+                })
+                ->get();
+
                 $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
                 $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at', 'asc')->get();
             }
@@ -2671,7 +2827,7 @@ class PrDraftController extends Controller
 
     public function getPembanding(Request $request)
     {
-    	$getPembanding = PRDraft::where('id', $request->no_pr)->get();
+    	$getPembanding = PRDraftComparison::where('id', $request->no_pr)->get();
     	return $getPembanding;
     }
 
@@ -2905,7 +3061,7 @@ class PrDraftController extends Controller
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
             // $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr))->first();
-            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
             $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
             $email_cc = User::select('email')
@@ -3147,7 +3303,7 @@ class PrDraftController extends Controller
 
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
-            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
 
             $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
@@ -3261,7 +3417,7 @@ class PrDraftController extends Controller
 
         $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
 
-        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -4093,23 +4249,32 @@ class PrDraftController extends Controller
                 ->select('dokumen_name', 'dokumen_location', 'link_drive', 'tb_pr_document.id as id_dokumen', 'id_draft_pr')
                 ->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected');
 
-            $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+            
+
+            if ($data->type_of_letter == 'IPR') {
+
+                $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
                 ->select('dokumen_name', 'dokumen_location', 'link_drive', 'id_draft_pr')
                 ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
                 ->where(function($query){
-                    $query->where('dokumen_name', 'SBE')
-                        ->orWhere('dokumen_name', 'SPK')
-                        ->orWhere('dokumen_name', 'COGS')
-                        ->orWhere('dokumen_name', 'Cogs')
-                        ->orWhere('dokumen_name', 'cogs');
+                    $query->where('dokumen_name', '!=','Penawaran Harga');
                 })
                 ->get();
 
-            if ($data->type_of_letter == 'IPR') {
                 $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`, MAX(`temp`.`id_draft_pr`) as `id_draft_pr`');
                 $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive', 'id_draft_pr')->orderBy('id','desc')->get();
             } else {
+
+                $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive', 'id_draft_pr')
+                ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
+                ->where(function($query){
+                    $query->where('dokumen_name', '!=','Quote Supplier');
+                })
+                ->get();
+
                 $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`, MAX(`temp`.`id_draft_pr`) as `id_draft_pr`');
                 $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive', 'id_draft_pr')->orderBy('created_at', 'asc')->get();
             }
@@ -4147,6 +4312,7 @@ class PrDraftController extends Controller
 
                 // return $optParams;
                 // return $service->files->listFiles($optParams)->getFiles();
+                // var_dump($service->files->listFiles($optParams)->getFiles());
                 $dokumen_file = $service->files->listFiles($optParams)->getFiles()[0]->getWebContentLink();
 
                 if (explode(".", $dokumen->dokumen_location)[1] == 'pdf') {
