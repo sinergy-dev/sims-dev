@@ -714,7 +714,7 @@ class PrController extends Controller
         $update->description = $request['edit_description'];
         $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
-        $amount = str_replace(',', '', $request['edit_amount']);
+        $amount = str_replace('.', '', $request['edit_amount']);
         $update->status = $request['edit_status'];
         $update->amount = $amount;
 
@@ -729,7 +729,7 @@ class PrController extends Controller
         $filter_pr = DB::table('tb_pr')
                         ->join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                         ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'status', 'amount')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'status', 'amount','id_draft_pr','isRupiah')
                         ->where('result', '!=', 'R')
                         ->whereYear('tb_pr.created_at', $request->data)
                         ->get();
@@ -743,7 +743,7 @@ class PrController extends Controller
 
         $data = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                                 ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount', 'status','id_draft_pr')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount', 'status','id_draft_pr','isRupiah')
                                 ->where('result', '!=', 'R')
                                 ->where('date','like',$tahun."%")
                                 ->get();
