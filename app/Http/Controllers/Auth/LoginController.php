@@ -37,12 +37,13 @@ class LoginController extends Controller
 
     public function logout(Request $request){
         
-        $log = new HistoryAuth;
-        $log->nik = $request->nik;
-        $log->information = "Log Out";
-        $log->datetime = Carbon::now()->toDateTimeString();
-        $log->ip_address = $request->getClientIp();
-        $log->save();
+        // $log = new HistoryAuth;
+        // $log->nik = $request->nik;
+        // $log->information = "Log Out";
+        // $log->datetime = Carbon::now()->toDateTimeString();
+        // $log->ip_address = $request->getClientIp();
+        // $log->save();
+        syslog(LOG_ERR, $request->getClientIp());
         $this->performeLogout($request);
 
         return redirect()->route('login');
@@ -76,12 +77,12 @@ class LoginController extends Controller
         syslog(LOG_ERR, Auth::User()->is_default_password);
 
         syslog(LOG_ERR, $request->getClientIp());
-        $log = new HistoryAuth;
-        $log->nik = $user->nik;
-        $log->information = "Log In";
-        $log->datetime = Carbon::now()->toDateTimeString();
-        $log->ip_address = $request->getClientIp();
-        $log->save();
+        // $log = new HistoryAuth;
+        // $log->nik = $user->nik;
+        // $log->information = "Log In";
+        // $log->datetime = Carbon::now()->toDateTimeString();
+        // $log->ip_address = $request->getClientIp();
+        // $log->save();
     }
 
     public function redirectToProvider() {
