@@ -1855,10 +1855,12 @@ PMO
 
     		if (ganttstatus == "custom") {
     			width = "900px"
-    			marginRight = ""
+	    		marginRight = "margin-right: 152px;"
+
     		}else{
 	    		width = "500px"
-	    		marginRight = "margin-right: 152px;"
+    			marginRight = ""
+	    		
     		}
     	}else{
     		if (status == "Defined") {
