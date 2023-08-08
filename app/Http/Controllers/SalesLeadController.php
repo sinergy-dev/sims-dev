@@ -1802,7 +1802,7 @@ class SalesLeadController extends Controller
 
     public function showSbe(Request $request)
     {
-        return SbeRelation::select('id', 'lead_id', 'price_sbe', 'tag_sbe')->where('lead_id', $request->lead_id)->get();
+        return SbeRelation::select('id', 'lead_id', 'price_sbe', 'tag_sbe')->where('lead_id', $request->lead_id)->orderBy('created_at','desc')->get();
     }
 
     public function changelog_sd(Request $request)
