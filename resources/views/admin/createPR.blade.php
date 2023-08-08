@@ -115,7 +115,7 @@
             <div class="col-md-2 col-xs-12">
               <b>Range Date PR : </b>
 
-              <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate">
+              <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate" disabled>
                 <i class="fa fa-calendar"></i> Date range picker
                 <span>
                   <i class="fa fa-caret-down"></i>
@@ -1114,6 +1114,18 @@
           {
             "id": "pack",
             "text": "Pack"
+          },
+          {
+            "id": "core",
+            "text": "Core"
+          },
+          {
+            "id": "bh",
+            "text": "bh"
+          },
+          {
+            "id": "mandays",
+            "text": "Mandays"
           }
         ]
       }
@@ -1345,7 +1357,7 @@
             { 
               render: function (data, type, row, meta){
                 if (isNaN(row.nominal) == true) {
-                  return '-'          
+                  return formatter.format(row.nominal.replace(/\./g,'').replace(',','.').replace(' ',''))       
                 }else{
                   return formatter.format(row.nominal)          
                 }
@@ -1497,6 +1509,8 @@
               'processing': 'Loading...'
           },
           initComplete: function () {
+            InitiateFilterParam()
+            $("#inputRangeDate").prop('disabled',false)
             $.each($("#selectShowColumnTicket li input"),function(index,item){
               var column = $("#draftPr").DataTable().column(index)
               // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
@@ -1518,79 +1532,160 @@
     function InitiateFilterParam(arrStatusBack,arrTypeBack){
       Pace.restart();
       Pace.track(function() {
-        var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
+        // var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
 
-        var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
+        // var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
         
+        // $.ajax({
+        //   url:"{{url('/admin/getFilterDraft')}}" + temp,
+        //   type:"GET",
+        //   success:function(result){
+        //     var arrStatus = result.dataStatus;
+        //     var selectOptionStatus = [];
+
+        //     var selectOptionStatus = [
+        //       {
+        //         text:"Grouped Status", 
+        //         children:[
+        //           {
+        //             id:"NA",
+        //             text:"Need Attention",
+        //           },
+        //           {
+        //             id:"OG",
+        //             text:"On Going",
+        //           },
+        //           {
+        //             id:"DO",
+        //             text:"Done",
+        //           }
+        //         ]
+        //       },{
+        //         text:"All Status", 
+        //         children:arrStatus
+        //       }
+        //     ]
+
+        //     if (arrStatusBack == undefined) {
+        //       $("#inputFilterStatus").select2({
+        //         placeholder: " Select Status",
+        //         allowClear: true,
+        //         multiple:true,
+        //         data:selectOptionStatus,
+        //       })
+        //     }else{
+        //       $("#inputFilterStatus").select2({
+        //         placeholder: " Select Status",
+        //         allowClear: true,
+        //         multiple:true,
+        //         data:selectOptionStatus,
+        //       }).val(arrStatusBack).change()
+        //     }
+            
+
+        //     // $("#inputFilterUser").select2().val("");
+        //     var arrUser = result.dataUser
+        //     $("#inputFilterUser").select2({
+        //       placeholder: " Select User",
+        //       allowClear: true,
+        //       multiple:true,
+        //       data:arrUser,
+        //     })
+
+        //     if (arrTypeBack == undefined) {
+        //       $("#inputFilterTypePr").select2({
+        //         placeholder: "Select a Type",
+        //         allowClear: true,
+        //         data:result.data_type_letter,
+        //         multiple:true
+        //       })
+        //     }else{
+        //       $("#inputFilterTypePr").select2({
+        //         placeholder: "Select a Type",
+        //         allowClear: true,
+        //         data:result.data_type_letter,
+        //         multiple:true
+        //       }).val(arrTypeBack).change()
+        //     }
+        //   }
+        // })
+
+        console.log(arrStatusBack)
+        console.log(arrTypeBack)
+
         $.ajax({
-          url:"{{url('/admin/getFilterDraft')}}" + temp,
+          url:"{{url('/admin/getDropdownFilterPr')}}",
           type:"GET",
           success:function(result){
             var arrStatus = result.dataStatus;
-            var selectOptionStatus = [];
+            // var selectOptionStatus = [];
 
-            var selectOptionStatus = [
-              {
-                text:"Grouped Status", 
-                children:[
-                  {
-                    id:"NA",
-                    text:"Need Attention",
-                  },
-                  {
-                    id:"OG",
-                    text:"On Going",
-                  },
-                  {
-                    id:"DO",
-                    text:"Done",
-                  }
-                ]
-              },{
-                text:"All Status", 
-                children:arrStatus
-              }
-            ]
+            // var selectOptionStatus = [
+            //   {
+            //     text:"Grouped Status", 
+            //     children:[
+            //       {
+            //         id:"NA",
+            //         text:"Need Attention",
+            //       },
+            //       {
+            //         id:"OG",
+            //         text:"On Going",
+            //       },
+            //       {
+            //         id:"DO",
+            //         text:"Done",
+            //       }
+            //     ]
+            //   },{
+            //     text:"All Status", 
+            //     children:arrStatus
+            //   }
+            // ]
 
             if (arrStatusBack == undefined) {
               $("#inputFilterStatus").select2({
                 placeholder: " Select Status",
-                allowClear: true,
+                // allowClear: true,
                 multiple:true,
-                data:selectOptionStatus,
+                data:arrStatus,
+                closeOnSelect:true,
               })
             }else{
               $("#inputFilterStatus").select2({
                 placeholder: " Select Status",
-                allowClear: true,
+                // allowClear: true,
                 multiple:true,
-                data:selectOptionStatus,
+                data:arrStatus,
+                closeOnSelect:true,
               }).val(arrStatusBack).change()
             }
-            
 
             // $("#inputFilterUser").select2().val("");
             var arrUser = result.dataUser
             $("#inputFilterUser").select2({
               placeholder: " Select User",
-              allowClear: true,
+              // allowClear: true,
               multiple:true,
               data:arrUser,
+              closeOnSelect:true,
             })
 
             if (arrTypeBack == undefined) {
               $("#inputFilterTypePr").select2({
                 placeholder: "Select a Type",
-                allowClear: true,
+                // allowClear: true,
                 data:result.data_type_letter,
-                multiple:true
+                multiple:true,
+                closeOnSelect:true,
               })
             }else{
               $("#inputFilterTypePr").select2({
                 placeholder: "Select a Type",
-                allowClear: true,
+                // allowClear: true,
                 data:result.data_type_letter,
-                multiple:true
+                multiple:true,
+                closeOnSelect:true,
               }).val(arrTypeBack).change()
             }
           }
@@ -1598,78 +1693,80 @@
       })
     }  
 
-    function showFilterData(temp){
+    function showFilterData(temp,arrStatusBack,arrTypeBack){
       Pace.restart();
       Pace.track(function() {
+        // var table = $("#draftPr").DataTable()
+        // table.destroy()
         $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
+        InitiateFilterParam(arrStatusBack,arrTypeBack)
+        // $.ajax({
+        //   url:"{{url('/admin/getFilterDraft')}}" + temp,
+        //   type:"GET",
+        //   success:function(result){
+        //     var parameterStatus = new URLSearchParams(temp);
+        //     if (parameterStatus.getAll('status[]')[0] == "") {
+        //       $("#inputFilterStatus").empty();
 
-        $.ajax({
-          url:"{{url('/admin/getFilterDraft')}}" + temp,
-          type:"GET",
-          success:function(result){
-            var parameterStatus = new URLSearchParams(temp);
-            if (parameterStatus.getAll('status[]')[0] == "") {
-              $("#inputFilterStatus").empty();
+        //       var arrGrouped = []
+        //       arrGrouped.push({
+        //         id:"NA",
+        //         text:"Need Attention",
+        //       },
+        //       {
+        //         id:"OG",
+        //         text:"On Going",
+        //       },
+        //       {
+        //         id:"DO",
+        //         text:"Done",
+        //       })
 
-              var arrGrouped = []
-              arrGrouped.push({
-                id:"NA",
-                text:"Need Attention",
-              },
-              {
-                id:"OG",
-                text:"On Going",
-              },
-              {
-                id:"DO",
-                text:"Done",
-              })
+        //       var arrStatus = result.dataStatus;
+        //       var selectOptionStatus = [];
 
-              var arrStatus = result.dataStatus;
-              var selectOptionStatus = [];
+        //       var selectOptionStatus = [
+        //         {
+        //           text:"Grouped Status", 
+        //           children:arrGrouped
+        //         },{
+        //           text:"All Status", 
+        //           children:arrStatus
+        //         }
+        //       ]
 
-              var selectOptionStatus = [
-                {
-                  text:"Grouped Status", 
-                  children:arrGrouped
-                },{
-                  text:"All Status", 
-                  children:arrStatus
-                }
-              ]
+        //       $("#inputFilterStatus").select2({
+        //         placeholder: " Select Status",
+        //         // allowClear: true,
+        //         multiple:true,
+        //         data:selectOptionStatus,
+        //       })
+        //     }
 
-              $("#inputFilterStatus").select2({
-                placeholder: " Select Status",
-                // allowClear: true,
-                multiple:true,
-                data:selectOptionStatus,
-              })
-            }
+        //     if (parameterStatus.getAll('user[]')[0] == "") {
+        //       $("#inputFilterUser").empty();
 
-            if (parameterStatus.getAll('user[]')[0] == "") {
-              $("#inputFilterUser").empty();
+        //       $("#inputFilterUser").select2({
+        //         placeholder: " Select User",
+        //         // allowClear: true,
+        //         multiple:true,
+        //         data:result.dataUser,
+        //       })
+        //     }
 
-              $("#inputFilterUser").select2({
-                placeholder: " Select User",
-                // allowClear: true,
-                multiple:true,
-                data:result.dataUser,
-              })
-            }
+        //     if (parameterStatus.getAll('type_of_letter[]')[0] == "") {
+        //       // $("#inputFilterTypePr").empty();
 
-            if (parameterStatus.getAll('type_of_letter[]')[0] == "") {
-              // $("#inputFilterTypePr").empty();
-
-              $("#inputFilterTypePr").select2({
-                placeholder: " Select a Type",
-                // allowClear: true,
-                multiple:true,
-                data:result.data_type_letter,
-              })
-            }
+        //       $("#inputFilterTypePr").select2({
+        //         placeholder: " Select a Type",
+        //         // allowClear: true,
+        //         multiple:true,
+        //         data:result.data_type_letter,
+        //       })
+        //     }
             
-          }
-        })
+        //   }
+        // })
       })
     }  
 
@@ -1726,46 +1823,78 @@
       }
 
       var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
-
       showFilterData(temp)
       DashboardCounterFilter(temp)
 
-      if (!tempStatus || !tempType ) {
-        localStorage.setItem('isTemp',true)
-      }
+      // if (tempStatus || tempType) {
+      //   localStorage.setItem('isTemp',true)
+      //   // localStorage.setItem("arrFilterBack",true)
+      // }else{
+      //   localStorage.setItem('isTemp',false)
+      //   // localStorage.removeItem("arrFilterBack",true)
+      // }
 
       return localStorage.setItem("arrFilter", temp) 
     }
 
-    window.onload = function() {
-      localStorage.setItem('isTemp',false)
-      if (localStorage.getItem('isTemp') === 'true') {
-        // var returnArray = searchCustom()
-        // localStorage.setItem("arrFilter", returnArray);
-      }
-      localStorage.setItem('isTemp',false)
+    // window.onload = function() {
+    //   console.log(localStorage.getItem("arrFilter"))
+    //   localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
 
-      localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilterBack"))
-      if(localStorage.getItem("arrFilterBack") != 'undefined' && localStorage.getItem("arrFilterBack") != 'null'){
-        // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
-        DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
-        var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
-        var arrStatus = [], arrType = []
+    //   var arrStatus = [], arrType = [], arr = []
+    //   if (localStorage.getItem("arrFilter")) {
+    //     // 
+    //     arr = localStorage.getItem("arrFilter").split("?")[1].split("&")
 
-        $.each(arr,function(item,value){
-          if(value.indexOf("status") != -1){
-              arrStatus.push(value.split("=")[1])
-          }
+    //     if (localStorage.getItem("arrFilter").split("?")[1].split("&")[0].split('=')[1] != '') {
+    //         $.each(arr,function(item,value){
+    //         if(value.indexOf("type") != -1){
+    //           // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
+    //           arrType.push(value.split("=")[1])
+    //         }
+    //       })
+    //     }
 
-          if(value.indexOf("type") != -1){
-              arrType.push(value.split("=")[1])
-          }
-        })
-        InitiateFilterParam(arrStatus,arrType)
-      }else{
-        InitiateFilterParam(arrStatus,arrType)
-      }     
-    }
+    //     if(localStorage.getItem("arrFilter").split("?")[1].split("&")[1].split('=')[1] != ''){
+    //         $.each(arr,function(item,value){
+    //         if(value.indexOf("status") != -1){
+    //           // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
+    //           arrStatus.push(value.split("=")[1])
+    //         }
+    //       })
+    //     }
+
+    //   }
+
+      // if (localStorage.getItem('isTemp') === 'true') {
+      //   localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
+      //   // var returnArray = searchCustom()
+      //   // localStorage.setItem("arrFilter", returnArray);
+      // }else{
+      //   localStorage.removeItem("arrFilterBack")
+      // }
+
+      // console.log(localStorage.getItem("arrFilterBack")+"testt")
+      // if(localStorage.getItem("arrFilterBack") != undefined && localStorage.getItem("arrFilterBack") != null && localStorage.getItem("arrFilterBack") != ''){
+      //   // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
+      //   // DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
+      //   var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
+      //   var arrStatus = [], arrType = []
+
+      //   $.each(arr,function(item,value){
+      //     if(value.indexOf("status") != -1){
+      //         arrStatus.push(value.split("=")[1])
+      //     }
+
+      //     if(value.indexOf("type") != -1){
+      //         arrType.push(value.split("=")[1])
+      //     }
+      //   })
+      //   InitiateFilterParam(arrStatus,arrType)
+      // }else{
+      //   InitiateFilterParam()
+      // }     
+    // }
 
     $('#clearFilterTable').click(function(){
       localStorage.setItem('isTemp',false)
@@ -2805,9 +2934,7 @@
 
     function btnCancel(id){
       Swal.fire({
-        title: 'Are you sure to',
-        html:
-        '<b style="font-size:14px">cancel this PR?</b><br>',
+        title: 'Are you sure to cancel this pr?',
         icon: 'warning',
         input: 'textarea',
         // inputLabel: 'Cancelation reason',
@@ -2821,8 +2948,16 @@
         confirmButtonText: 'Yes',
         cancelButtonText: 'No',
       }).then((result) => {
-        if (result.value) {
-            $.ajax({
+        if (result.value == "") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please fill the reason to cancel this pr!'
+          }).then(() => {
+            btnCancel(id)
+          })
+        }else if (result.value != undefined) {
+          $.ajax({
             type: "POST",
             url: "{{url('/admin/cancelDraftPr')}}",
             data: {
@@ -2858,7 +2993,7 @@
               })
               
             }
-          })         
+          })
         }
       })
     }
@@ -4784,6 +4919,7 @@
     }
 
     currentTab = 0
+    var isStartScroll = false
     function nextPrevUnFinished(n,valueEdit){
       if(localStorage.getItem('status_draft_pr') == 'pembanding'){
         url = "{{url('/admin/getDetailPr')}}"
@@ -4826,6 +4962,8 @@
             },
             success: function(result) {
               $.each(result,function(value,item){
+                isStartScroll = false
+
                 $("#prevBtnAdd").css("display", "none");
                 localStorage.setItem('isEditProduct',true)
                 localStorage.setItem('id_product',item.id_product)
@@ -4883,6 +5021,7 @@
         //     $("#inputTo").prev('.input-group-addon').css("background-color","red");
         //   }
         // }else 
+        isStartScroll = true
         if ($("#selectType").val() == "") {
           $("#selectType").closest('.form-group').addClass('has-error')
           $("#selectType").closest('select').next('span').show();
@@ -4987,6 +5126,8 @@
           })          
         }         
       }else if (currentTab == 1) {
+        isStartScroll = true
+        
         if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
           if (n == 1) {
             if ($("#inputNameProduct").val() == "") {
@@ -5708,8 +5849,6 @@
     }
 
     function addTable(n,status){ 
-      
-
       if (window.location.href.split("/")[6] == undefined) {
         if (localStorage.getItem('status_pr') == 'revision') {
           url = "{{url('/admin/getProductPembanding')}}"
@@ -5774,6 +5913,8 @@
           })    
 
           $("#tbodyProducts").append(append)
+
+          scrollTopModal()
 
           $("#bottomProducts").empty()
 
@@ -5905,6 +6046,21 @@
         }
       })
     }
+
+    function scrollTopModal(){
+      var savedScrollPosition = localStorage.getItem('scrollPosition');
+      var scrollableElement = document.getElementById('ModalDraftPr');
+      scrollableElement.scrollTop = savedScrollPosition;
+    }
+
+    $("#ModalDraftPr").on('scroll', function() {
+      if (isStartScroll == true) {
+        var scrollPosition = $("#ModalDraftPr").scrollTop();
+        localStorage.setItem('scrollPosition', scrollPosition);
+      }
+      // Update the scroll position variable with the latest scroll position
+      // If a saved scroll position exists, set the scroll position to the saved value
+    })
 
     var isFilledPenawaranHarga = true
     var isFilledDocPendukung = true
