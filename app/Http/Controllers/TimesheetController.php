@@ -973,6 +973,7 @@ class TimesheetController extends Controller
         }
 
         $getLeavingPermitByName = collect($getLeavingPermit)->groupBy('name');
+
         $getPermitByName        = collect($getPermit)->groupBy('name');
         $arrSumPoint = collect();
 
@@ -1026,7 +1027,7 @@ class TimesheetController extends Controller
                     "actual"=>$valueSumPoint,
                     "planned"=>collect($sumMandays)->first()->planned,
                     "threshold"=>collect($sumMandays)->first()->threshold,
-                    "billable"=>$valueSumPoint - $billable,
+                    "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
                     "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
                 ]); 
@@ -2930,10 +2931,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $sumMandays = $sumMandays;
                 }else{
-                    $sumMandays = $sumMandays->whereIn('schedule',$request->selectSchedule);                    
+                    $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
@@ -3000,10 +3001,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $sumMandays = $sumMandays;
                 }else{
-                    $sumMandays = $sumMandays->whereIn('schedule',$request->selectSchedule);                    
+                    $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
@@ -3070,10 +3071,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $sumMandays = $sumMandays;
                 }else{
-                    $sumMandays = $sumMandays->whereIn('schedule',$request->selectSchedule);                    
+                    $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
@@ -3097,11 +3098,27 @@ class TimesheetController extends Controller
             if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
 
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where(function ($query) use ($arrayMonth) {
-                                            foreach ($arrayMonth as $month) {
-                                                $query->orWhereRaw("MONTH(start_date) = $month");
-                                            }
-                                        });
+                    $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik');
+
+                        // ->selectRaw('MONTH(start_date) AS month_number')->where(function ($query) use ($arrayMonth) {
+                        //     foreach ($arrayMonth as $month) {
+                        //         $query->orWhereRaw("MONTH(start_date) = $month");
+                        //     }
+                        // });
+
+                    // $sumMandays
+
+                if ($request->schedule[0] === null) {
+                    $sumMandays = $sumMandays;
+                }else{
+                    $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
+                }
+
+                if ($request->status[0] === null) {
+                    $sumMandays = $sumMandays->where('status','Done');
+                }else{
+                    $sumMandays = $sumMandays->whereIn('status',$request->status);                    
+                }
 
                 if ($request->pic[0] === null) {
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
@@ -3127,25 +3144,13 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereIn('task',$request->task);                    
                 }
 
-                if ($request->status[0] === null) {
-                    $sumMandays = $sumMandays->where('status','Done');
-                }else{
-                    $sumMandays = $sumMandays->whereIn('status',$request->status);                    
-                }
-
                 if (is_null($request->year)) {
                     $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
                 }else{
                     $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
-                    $sumMandays = $sumMandays;
-                }else{
-                    $sumMandays = $sumMandays->whereIn('schedule',$request->selectSchedule);                    
-                }
-
-                $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
+                $sumMandays = $sumMandays->get();
 
                 // return $sumMandays;
 
@@ -3161,7 +3166,7 @@ class TimesheetController extends Controller
                                             foreach ($arrayMonth as $month) {
                                                 $query->orWhereRaw("MONTH(start_date) = $month");
                                             }
-                                        })->where('status','Done')->get()->makeHidden(['planned','threshold']);
+                                        })->where('status','Done')->get();
                 $isNeedOtherUser = true;
 
             }
@@ -3211,10 +3216,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $sumMandays = $sumMandays;
                 }else{
-                    $sumMandays = $sumMandays->whereIn('schedule',$request->selectSchedule);                    
+                    $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
@@ -3281,10 +3286,10 @@ class TimesheetController extends Controller
                     $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $sumMandays = $sumMandays;
                 }else{
-                    $sumMandays = $sumMandays->whereIn('schedule',$request->selectSchedule);                    
+                    $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
                 }
 
                 $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
@@ -3350,7 +3355,7 @@ class TimesheetController extends Controller
             foreach ($mergedKeys as $key) {
                 $sumArrayPermitByName[$key] = (isset($getPermitByName[$key]) ? $getPermitByName[$key] : 0) + (isset($getLeavingPermitByName[$key]) ? $getLeavingPermitByName[$key] : 0);
             }
-            
+
             $sumPointMandays = collect();
             foreach($sumPointByUser as $key_point => $valueSumPoint){
                 $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
@@ -3358,9 +3363,9 @@ class TimesheetController extends Controller
                     "name"=>$key_point,
                     "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
                     "actual"=>$valueSumPoint,
-                    "planned"=>collect($sumMandays)->first()->planned,
-                    "threshold"=>collect($sumMandays)->first()->threshold,
-                    "billable"=>$valueSumPoint - $billable,
+                    "planned"=>$countPlanned,
+                    "threshold"=>$countThresholdFinal,
+                    "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
                     "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
                 ]); 
@@ -3389,8 +3394,8 @@ class TimesheetController extends Controller
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"       =>$value_group->nik,
                         "actual"    =>"-",
-                        "planned"   =>collect($sumMandays)->first()->planned,
-                        "threshold" =>"-",
+                        "planned"   =>$countPlanned,
+                        "threshold" =>$countThresholdFinal,
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
                         "deviation" =>"-"
@@ -3460,10 +3465,10 @@ class TimesheetController extends Controller
                     $data = $data->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $data = $data;
                 }else{
-                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                    $data = $data->whereIn('schedule',$request->schedule);                    
                 }
 
                 $data = $data->get()->groupBy('name');
@@ -3555,10 +3560,10 @@ class TimesheetController extends Controller
                     $data = $data->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $data = $data;
                 }else{
-                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                    $data = $data->whereIn('schedule',$request->schedule);                    
                 }
 
                 $data = $data->get()->groupBy('name');
@@ -3650,10 +3655,10 @@ class TimesheetController extends Controller
                     $data = $data->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $data = $data;
                 }else{
-                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                    $data = $data->whereIn('schedule',$request->schedule);                    
                 }
 
                 $data = $data->get()->groupBy('name');
@@ -3745,10 +3750,10 @@ class TimesheetController extends Controller
                     $data = $data->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $data = $data;
                 }else{
-                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                    $data = $data->whereIn('schedule',$request->schedule );                    
                 }
 
                 $data = $data->get()->groupBy('name');
@@ -3840,10 +3845,10 @@ class TimesheetController extends Controller
                     $data = $data->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $data = $data;
                 }else{
-                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                    $data = $data->whereIn('schedule',$request->schedule);                    
                 }
 
                 $data = $data->get()->groupBy('name');
@@ -3935,10 +3940,10 @@ class TimesheetController extends Controller
                     $data = $data->whereYear('start_date',$request->year);                    
                 }
 
-                if (is_null($request->selectSchedule)) {
+                if ($request->schedule[0] === null) {
                     $data = $data;
                 }else{
-                    $data = $data->whereIn('schedule',$request->selectSchedule);                    
+                    $data = $data->whereIn('schedule',$request->schedule);                    
                 }
 
                 $data = $data->get()->groupBy('name');
