@@ -833,6 +833,18 @@
         {
           "id": "pack",
           "text": "Pack"
+        },
+        {
+          "id": "core",
+          "text": "Core"
+        },
+        {
+          "id": "bh",
+          "text": "bh"
+        },
+        {
+          "id": "mandays",
+          "text": "Mandays"
         }
       ]
     }
