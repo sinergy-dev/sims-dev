@@ -332,23 +332,15 @@
                   // key will be "ada" the first time and "alan" the second time
                 var key = childSnapshot.key;
                   // childData will be the actual contents of the child
+                  // console.log(key)
                 var data = childSnapshot.val();
                 if(data.status == "unread"){
                     firebase.database().ref('notif/web-notif/' + key).once('value').then(function(snapshot) {
                         // 
                         var data = snapshot.val()
-                        if (data.id_pid == null || data.date_time == null) {
-                            id_pid = ""
-                            date_time = ""
-
-                        }else{
-                            id_pid = data.id_pid 
-                            date_time = data.date_time
-
-                        }
 
                         if (!data.module == false) {
-                            firebase.database().ref('notif/web-notif/' + index).set({
+                            firebase.database().ref('notif/web-notif/' + key).set({
                                 to: data.to,
                                 id_pr: data.id_pr,
                                 title: data.title,
@@ -371,6 +363,16 @@
                                 showed : "true",
                                 id_pid : id_pid
                             });
+                        }
+
+                        if (data.id_pid == null || data.date_time == null) {
+                            id_pid = ""
+                            date_time = ""
+
+                        }else{
+                            id_pid = data.id_pid 
+                            date_time = data.date_time
+
                         }
                     })
                 }               
