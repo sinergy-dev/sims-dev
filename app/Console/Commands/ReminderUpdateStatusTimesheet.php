@@ -52,9 +52,10 @@ class ReminderUpdateStatusTimesheet extends Command
         // print_r($data);
 
         foreach ($getEmail as $key => $data) {
-            Mail::to($data->email)->send(new ReminderUpdateTimesheet(collect([
-                "to" => $data->name,
-                "data" => DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('end_date','start_date','id','users.name','activity')->where('schedule','Planned')->where('status',null)->where('end_date',date('Y-m-d'))->where('tb_timesheet.nik',$data->nik)->get()
+            Mail::to($data->email)->send(new ReminderUpdateTimesheet(
+                $all = collect([
+                    "to" => $data->name,
+                    "data" => DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('end_date','start_date','id','users.name','activity')->where('schedule','Planned')->where('status',null)->where('end_date',date('Y-m-d'))->where('tb_timesheet.nik',$data->nik)->get()
                 ])
             ));
         }
