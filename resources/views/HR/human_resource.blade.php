@@ -1973,6 +1973,7 @@ Human Resources
 		                            <option value="">-- Select Status --</option>
 		                            <option value="Tetap">Karyawan Tetap</option>
 		                            <option value="Kontrak">Karyawan Kontrak</option>
+		                            <option value="Magang">Karyawan Magang</option>
 		                        </select>
 		                    </div>
 		                </div>
@@ -2204,6 +2205,7 @@ Human Resources
 		                            <option value="">-- Select Status --</option>
 		                            <option value="Tetap">Karyawan Tetap</option>
 		                            <option value="Kontrak">Karyawan Kontrak</option>
+		                            <option value="Magang">Karyawan Magang</option>
 		                        </select>
 		                    </div>
 		                </div>
@@ -2806,6 +2808,8 @@ Human Resources
 	               	$("#status_karyawan_update").val("Karyawan Tetap").prop("readonly", true);
 	               }else if (value.status_kerja == 'Kontrak') {
 	               	$("#status_karyawan_update").val("Karyawan Kontrak").prop("readonly", true);
+	               }else if (value.status_kerja == 'Magang') {
+	               	$("#status_karyawan_update").val("Karyawan Magang").prop("readonly", true);
 	               }else{
 	               	$("#status_karyawan_update").val("").prop("readonly", true);
 	               }
@@ -2996,6 +3000,8 @@ Human Resources
 	               	$("#status_karyawan_update").val("Karyawan Tetap");
 	               }else if (value.status_kerja == 'Kontrak') {
 	               	$("#status_karyawan_update").val("Karyawan Kontrak");
+	               }else if (value.status_kerja == 'Magang') {
+	               	$("#status_karyawan_update").val("Karyawan Magang");
 	               }else{
 	               	$("#status_karyawan_update").val("");
 	               }
@@ -4185,6 +4191,8 @@ Human Resources
 			$("#status_karyawan_update").val("Karyawan Tetap");
 		}else if (id.value == 'Kontrak') {
 			$("#status_karyawan_update").val("Karyawan Kontrak");
+		}else if (id.value == 'Magang') {
+			$("#status_karyawan_update").val("Karyawan Magang");
 		}else{
 			$("#status_karyawan_update").val("");
 		}
