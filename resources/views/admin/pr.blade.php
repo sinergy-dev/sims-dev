@@ -107,7 +107,7 @@
         </select>
       </div>
       <div class="pull-right">
-          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px;color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Request</button>
+          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px;color: white; display: none"><i class="fa fa-plus"> </i>&nbsp Number Purchase Request</button>
           <button class="btn btn-warning" onclick="exportPr('{{action('PrController@downloadExcelPr')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i>Excel</button>
       </div>
     </div>
@@ -482,8 +482,10 @@
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
 
-    function edit_pr(no,to,attention,title,description,amount,project_id,status,type,date,position) {
-      console.log(type)
+    var formatter = new Intl.NumberFormat(['ban', 'id']);
+
+    function edit_pr(no,to,attention,title,description,amount,project_id,status,type,date,position,isRupiah) {
+      console.log(amount)
       $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
       $('#edit_to').val(to);
@@ -511,8 +513,9 @@
       if (amount == "null") {
         '';
       } else {
-        $("#edit_amount").mask('000,000,000,000.00', {reverse: true})
-        $('#edit_amount').val(amount.toString()).trigger("input")
+        $("#edit_amount").mask('#.##0,00', {reverse: true})
+        $('#edit_amount').val(formatter.format(amount.toString()))
+        
       }
 
       if (project_id == "null") {
@@ -542,8 +545,19 @@
           json.data.forEach(function(data,index){
             data.btn_show_pdf = ""
             if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done' || "{{Auth::User()->id_position}}" == "PROCUREMENT") {
-              var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date+ '","' + data.position + '"'
-              data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
+              var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date+ '","' + data.position + '","' + data.isRupiah + '"'
+              if (data.status == 'Done') {
+                data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>";
+                // data.btn_edit = "<button class='btn btn-sm btn-primary onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>";
+              } else {
+                data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' disabled>&nbsp Show Pdf</a>";
+              }
+              
+              // if (data.status == 'Done') {
+              //   data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>"
+              // }else{
+              //   data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><button style='margin-left:5px' class='btn btn-sm btn-success' disabled>&nbsp Show Pdf</button>"
+              // }
             } else {
               if (data.status == 'Done') {
                 data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>"
