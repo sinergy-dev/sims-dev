@@ -36,7 +36,7 @@
           <div class="left">
             <div class="content">
               <div class="header">
-                <div class="logo text-center"><img src="{{asset('/img/siplogin.png')}}" width="123" height="60" alt="Klorofil Logo"></div>
+                <div class="logo text-center"><img src="{{asset('/img/siplogin.webp')}}" width="123" height="60" alt="Klorofil Logo"></div>
                 <p class="lead">Sinergy Integrated Management System</p>
               </div>
               <div style="display: {{ $errors->has('email_company') ? 'none' : '' }}">
@@ -102,16 +102,16 @@
             <div class="overlay" id="overlay">
               <div class="slideshow">
                  <div class="slide_three slide">
-                   <img src="{{asset('/img/futuredatacenter.png')}}" width="100%" height="100%" alt="Klorofil Logo">
+                   <img src="{{asset('/img/futuredatacenter.webp')}}" width="100%" height="100%" alt="Klorofil Logo">
                 </div>
                 <div class="slide_one slide">
-                   <img src="{{asset('/img/data-center.jpg')}}" width="100%" height="100%" alt="Klorofil Logo">
+                   <img src="{{asset('/img/data-center.webp')}}" width="100%" height="100%" alt="Klorofil Logo">
                 </div>
                 <div class="slide_two slide">
-                   <img src="{{asset('/img/data-center2.jpg')}}" width="100%" height="100%" alt="Klorofil Logo">
+                   <img src="{{asset('/img/data-center2.webp')}}" width="100%" height="100%" alt="Klorofil Logo">
                 </div>
                 <div class="slide_one slide">
-                   <img src="{{asset('/img/data-center.jpg')}}" width="100%" height="100%" alt="Klorofil Logo">
+                   <img src="{{asset('/img/data-center.webp')}}" width="100%" height="100%" alt="Klorofil Logo">
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@
 
 <style type="text/css">
 	body {
-    background-image: url("../img/bg4.jpg");
+    background-image: url("../img/bg4.webp");
     height: 100%;
 
     background-position: center;
