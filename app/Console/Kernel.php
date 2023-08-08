@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('ReminderCreateProjectCharter:daily')->daily()->at('07:30');
 
-        $schedule->command('UpdateStatusTimesheet:daily')->daily()->at('23:59:59');
+        // $schedule->command('UpdateStatusTimesheet:daily')->daily()->at('23:59:59');
 
         $schedule->command('ReminderUpdateStatusTimesheet:daily')->daily()->at('07:00');
 
