@@ -4314,7 +4314,8 @@ class ReportController extends Controller
                     ->Leftjoin('users as sales','sales.nik','=','sales_lead_register.nik')
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->Leftjoin('users as presales','presales.nik','=','sales_lead_register.nik')                    
-                    ->select("sales_lead_register.lead_id")    
+                    ->select("sales_lead_register.lead_id")   
+                    ->where('result','WIN') 
                     ->where('sales_lead_register.created_at','>=',$request->start_date)
                     ->where('sales_lead_register.created_at','<=',$request->end_date);
 
@@ -4450,7 +4451,8 @@ class ReportController extends Controller
                     ->Leftjoin('users as sales','sales.nik','=','sales_lead_register.nik')
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->Leftjoin('users as presales','presales.nik','=','sales_lead_register.nik')                    
-                    ->select("sales_lead_register.lead_id")    
+                    ->select("sales_lead_register.lead_id") 
+                    ->where('result','WIN')    
                     ->where('sales_lead_register.created_at','>=',$request->start_date)
                     ->where('sales_lead_register.created_at','<=',$request->end_date);
 
@@ -4463,9 +4465,43 @@ class ReportController extends Controller
             $query_product->orwhereIn('tb_product_tag_relation_alias.id_technology_tag',$request->Tagstechno);
         }
 
+        // if (isset($request->TagsPersona)) {
+        //     $query_product->whereIn('sales.nik',$request->TagsPersona)
+        //     ->orWhereIn('presales.nik',$request->TagsPersona)->get();
+        // }
+
         if (isset($request->TagsPersona)) {
-            $query_product->whereIn('sales.nik',$request->TagsPersona)
-            ->orWhereIn('presales.nik',$request->TagsPersona)->get();
+            // $query_product->where(function ($query_main) use ($request){
+            //     $query_main->where(function ($query) use ($request){
+            //         foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+            //             $query->orWhere('sales.nik',$value);
+            //         }
+            //     });
+
+            //     $query_main->orWhere(function ($query) use ($request){
+            //         foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+            //             $query->orWhere('presales.nik',$value);
+            //         }
+            //     });
+            // });
+
+            $query_product->where(function ($query) use ($request){
+                foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+                    if(str_contains($value, "-s")) {
+
+                        $query->orWhere('sales.nik',trim($value,'-s'));
+                    }
+                }
+            });
+
+            $query_product->Where(function ($query) use ($request){
+                foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+                    if (str_contains($value, "-p")) {
+                        $query->orWhere('presales.nik',trim($value,'-p'));
+
+                    }
+                }
+            });
         }
 
         $query_all = $query_product->get()->sortBy('lead_id');
