@@ -41,7 +41,7 @@
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
-		<center><img src="{{ asset('img/timesheet.png')}}" style="width: 50%; height: 50%"></center>
+		<center><img src="{{ asset('image/timesheet.png')}}" style="width: 50%; height: 50%"></center>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -72,7 +72,7 @@
 					@endforeach
 				</table>
 			</div>
-			<p>
+			<p style="font-size: 16px">
 				To access the application, please click this following button.
 			</p>
 			<center><a href="" target="_blank"><button class="button"> Timesheet </button></a></center>
