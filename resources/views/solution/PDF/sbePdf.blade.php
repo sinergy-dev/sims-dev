@@ -149,7 +149,7 @@
               </div>
             @endif
           </div>
-          <div style="float: right;margin-left: 150px;margin-bottom: 60px;">
+          <div style="float: right;margin-left: 150px;margin-bottom: 80px;">
             @foreach($datas as $data_config)
               <table class="table-bordered">
                   @if($keys == "Implementation")
