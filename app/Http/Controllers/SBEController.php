@@ -518,6 +518,10 @@ class SBEController extends Controller
         $updateConfig->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
         $updateConfig->save();
 
+        $updateNominalSbe = Sbe::where('id',$request->id_sbe)->first();
+        $updateNominalSbe->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
+        $updateNominalSbe->save();
+
         $storeActivity = new SbeActivity();
         $storeActivity->id_sbe = $request->id_sbe;
         $storeActivity->operator = Auth::User()->nik;
