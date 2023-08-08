@@ -1295,6 +1295,57 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/sbe/getConfigChoosed','SBEController@getConfigChoosed');
 	Route::post('/sbe/resetVersion','SBEController@resetVersion');
 	Route::post('/sbe/deleteDetailItem','SBEController@deleteDetailItem');
+
+
+	// Route::get('testDataTable','TestController@testDataTable');
+	Route::get('testFullCalendar','TestController@indexCalendar');
+	Route::get('getListCalendar','TestController@getListCalendar');
+	// Route::get('getListCalendarEvent','TestController@getListCalendarEvent');
+
+	Route::get('timesheet','TimesheetController@timesheet');
+	Route::get('timesheet/dashboard','TimesheetController@timesheet_dashboard');
+	Route::get('timesheet/config','TimesheetController@timesheet_config');
+
+	Route::post('timesheet/addConfig','TimesheetController@addConfig');
+	Route::get('getListCalendarEvent','TimesheetController@getListCalendarEvent');
+	Route::post('timesheet/storePhaseConfig','TimesheetController@storePhaseConfig');
+	Route::post('timesheet/storeTaskConfig','TimesheetController@storeTaskConfig');
+	Route::post('timesheet/assignPidConfig','TimesheetController@assignPidConfig');
+	Route::post('timesheet/storeLockDuration','TimesheetController@storeLockDuration');
+	Route::get('timesheet/getAllPid','TimesheetController@getAllPid');
+	Route::get('timesheet/getAllTask','TimesheetController@getAllTask');
+	Route::get('timesheet/getAllPhase','TimesheetController@getAllPhase');
+	Route::get('timesheet/getLockDurationByDivision','TimesheetController@getLockDurationByDivision');
+	Route::get('timesheet/getRoles','TimesheetController@getRoles');
+	Route::get('timesheet/getAllUser','TimesheetController@getAllUser');
+	Route::get('timesheet/getConfigByDivision','TimesheetController@getConfigByDivision');
+	Route::get('timesheet/getPidByPic','TimesheetController@getPidByPic');
+	Route::get('timesheet/getTaskByDivision','TimesheetController@getTaskByDivision');
+	Route::get('timesheet/getPhaseByDivision','TimesheetController@getPhaseByDivision');
+	Route::post('timesheet/addTimesheet','TimesheetController@addTimesheet');
+	Route::get('timesheet/getLeadId','TimesheetController@getLeadId');
+	Route::get('timesheet/getAllPhaseTask','TimesheetController@getAllPhaseTask');
+	Route::get('timesheet/getAllActivityByUser','TimesheetController@getAllActivityByUser');
+	Route::get('timesheet/getAllAssignPidByDivision','TimesheetController@getAllAssignPidByDivision');
+	Route::get('timesheet/getTaskPhaseByDivisionForTable','TimesheetController@getTaskPhaseByDivisionForTable');
+	Route::post('timesheet/storePermit','TimesheetController@storePermit');
+	Route::get('timesheet/sumPointMandays','TimesheetController@sumPointMandays');
+	Route::get('timesheet/getNameByNik','TimesheetController@getNameByNik');
+	Route::get('timesheet/getLevelChart','TimesheetController@getLevelChart');
+	Route::get('timesheet/getStatusChart','TimesheetController@getStatusChart');
+	Route::get('timesheet/getScheduleChart','TimesheetController@getScheduleChart');
+	Route::get('timesheet/getRemainingChart','TimesheetController@getRemainingChart');
+	Route::get('timesheet/getCummulativeMandaysChart','TimesheetController@getCummulativeMandaysChart');
+	Route::get('timesheet/getHoliday','TimesheetController@getHoliday');
+	Route::get('timesheet/getPercentage','TimesheetController@getPercentage');
+	Route::get('timesheet/sumPointSbe','TimesheetController@sumPointSbe');
+	Route::get('timesheet/getFilterSumPointMandays','TimesheetController@getFilterSumPointMandays');
+	Route::get('timesheet/getFilterCummulativeMandaysChart','TimesheetController@getFilterCummulativeMandaysChart');
+	Route::get('timesheet/getFilterRemainingChart','TimesheetController@getFilterRemainingChart');
+	Route::get('timesheet/getFilterStatusChart','TimesheetController@getFilterStatusChart');
+	Route::get('timesheet/getFilterLevelChart','TimesheetController@getFilterLevelChart');
+	Route::get('timesheet/getFilterScheduleChart','TimesheetController@getFilterScheduleChart');
+	Route::get('timesheet/deleteTaskPhase','TimesheetController@deleteTaskPhase');
 	
 
 });
@@ -1352,54 +1403,7 @@ Route::get('testGCal','TestController@testGCal');
 Route::get('downloadSbePdf','TestController@downloadSbePdf');
 Route::get('testMailSBE','TestController@testMailSBE');
 
-// Route::get('testDataTable','TestController@testDataTable');
-Route::get('testFullCalendar','TestController@indexCalendar');
-Route::get('getListCalendar','TestController@getListCalendar');
-// Route::get('getListCalendarEvent','TestController@getListCalendarEvent');
 
-Route::get('timesheet','TimesheetController@timesheet');
-Route::get('timesheet/dashboard','TimesheetController@timesheet_dashboard');
-Route::get('timesheet/config','TimesheetController@timesheet_config');
-
-Route::post('timesheet/addConfig','TimesheetController@addConfig');
-Route::get('getListCalendarEvent','TimesheetController@getListCalendarEvent');
-Route::post('timesheet/storePhaseConfig','TimesheetController@storePhaseConfig');
-Route::post('timesheet/storeTaskConfig','TimesheetController@storeTaskConfig');
-Route::post('timesheet/assignPidConfig','TimesheetController@assignPidConfig');
-Route::post('timesheet/storeLockDuration','TimesheetController@storeLockDuration');
-Route::get('timesheet/getAllPid','TimesheetController@getAllPid');
-Route::get('timesheet/getAllTask','TimesheetController@getAllTask');
-Route::get('timesheet/getAllPhase','TimesheetController@getAllPhase');
-Route::get('timesheet/getLockDurationByDivision','TimesheetController@getLockDurationByDivision');
-Route::get('timesheet/getRoles','TimesheetController@getRoles');
-Route::get('timesheet/getAllUser','TimesheetController@getAllUser');
-Route::get('timesheet/getConfigByDivision','TimesheetController@getConfigByDivision');
-Route::get('timesheet/getPidByPic','TimesheetController@getPidByPic');
-Route::get('timesheet/getTaskByDivision','TimesheetController@getTaskByDivision');
-Route::get('timesheet/getPhaseByDivision','TimesheetController@getPhaseByDivision');
-Route::post('timesheet/addTimesheet','TimesheetController@addTimesheet');
-Route::get('timesheet/getLeadId','TimesheetController@getLeadId');
-Route::get('timesheet/getAllPhaseTask','TimesheetController@getAllPhaseTask');
-Route::get('timesheet/getAllActivityByUser','TimesheetController@getAllActivityByUser');
-Route::get('timesheet/getAllAssignPidByDivision','TimesheetController@getAllAssignPidByDivision');
-Route::get('timesheet/getTaskPhaseByDivisionForTable','TimesheetController@getTaskPhaseByDivisionForTable');
-Route::post('timesheet/storePermit','TimesheetController@storePermit');
-Route::get('timesheet/sumPointMandays','TimesheetController@sumPointMandays');
-Route::get('timesheet/getNameByNik','TimesheetController@getNameByNik');
-Route::get('timesheet/getLevelChart','TimesheetController@getLevelChart');
-Route::get('timesheet/getStatusChart','TimesheetController@getStatusChart');
-Route::get('timesheet/getScheduleChart','TimesheetController@getScheduleChart');
-Route::get('timesheet/getRemainingChart','TimesheetController@getRemainingChart');
-Route::get('timesheet/getCummulativeMandaysChart','TimesheetController@getCummulativeMandaysChart');
-Route::get('timesheet/getHoliday','TimesheetController@getHoliday');
-Route::get('timesheet/getPercentage','TimesheetController@getPercentage');
-Route::get('timesheet/sumPointSbe','TimesheetController@sumPointSbe');
-Route::get('timesheet/getFilterSumPointMandays','TimesheetController@getFilterSumPointMandays');
-Route::get('timesheet/getFilterCummulativeMandaysChart','TimesheetController@getFilterCummulativeMandaysChart');
-Route::get('timesheet/getFilterRemainingChart','TimesheetController@getFilterRemainingChart');
-Route::get('timesheet/getFilterStatusChart','TimesheetController@getFilterStatusChart');
-Route::get('timesheet/getFilterLevelChart','TimesheetController@getFilterLevelChart');
-Route::get('timesheet/getFilterScheduleChart','TimesheetController@getFilterScheduleChart');
 
 
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');
