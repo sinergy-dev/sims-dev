@@ -16,7 +16,7 @@ class SbeConfig extends Model
 
     public function getDetailConfigAttribute()
     {
-    	$data = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$this->id)->get()->groupby('item');
+    	$data = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$this->id)->orderBy('item','asc')->get()->groupby('item');
       // $data = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$this->id)->orderBy('tb_sbe_config.id','asc')->get()->groupby('item');
 
       // $sums = $data->sum(function ($group) {
@@ -75,13 +75,16 @@ class SbeConfig extends Model
     			->selectRaw('item')
     			->selectRaw('SUM(total_nominal) AS `total_nominal`')
     			->where('tb_sbe_config.id',$this->id)
-    			->groupby('item')->orderBy('total_nominal','desc')->get();
+    			->groupby('item')->get();
+
+      // $data = $data->toArray();
 
     	// return collect([
      //        'data'=>$data,
      //        'grand_total'=>DB::table('tb_sbe_config')->where('tb_sbe_config.id',$this->id)->first()->nominal
      //    ]);
 
-    	return $data;
+    	// return array_reverse($data);
+      return $data;
     }
 }
