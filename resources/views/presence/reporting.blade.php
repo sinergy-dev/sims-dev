@@ -225,40 +225,39 @@ Presence Report
 			}
 
 	    	window.location = url;
-	  	}
+	  }
 
-	  	$.ajax({
-	        url:"{{url('/presence/getUser')}}",
-	        type:"GET",
-	        success:function(result){
-	        	var settings = {
-			        "groupDataArray": result,
-			        "groupItemName": "text",
-			        "groupArrayName": "children",
-			        "itemName": "text",
-			        "valueName": "nik",
-			        "callable": function (items) {
-			        	selectedUser = []
-			        	filterUser = []
-			        	$.each(items,function(key,value){
-			        			if (!filterUser.includes(value.nik)) {
-			            		filterUser.push(value.nik)
-			            		selectedUser = selectedUser + '&nik[]=' + value.nik
-			        			}
-			        	})
+	  $.ajax({
+      url:"{{url('/presence/getUser')}}",
+      type:"GET",
+      success:function(result){
+      	var settings = {
+	        "groupDataArray": result,
+	        "groupItemName": "text",
+	        "groupArrayName": "children",
+	        "itemName": "text",
+	        "valueName": "nik",
+	        "callable": function (items) {
+	        	selectedUser = []
+	        	filterUser = []
+	        	$.each(items,function(key,value){
+	        			if (!filterUser.includes(value.nik)) {
+	            		filterUser.push(value.nik)
+	            		selectedUser = selectedUser + '&nik[]=' + value.nik
+	        			}
+	        	})
 
-			        	// var string = JSON.stringify(selectedUser)
-			        	// string.replace (/"/g,'')
-								$("#table_report").empty();
-			        	table_presence()
-			        }
-			    };
+	        	// var string = JSON.stringify(selectedUser)
+	        	// string.replace (/"/g,'')
+						$("#table_report").empty();
+	        	table_presence()
+	        }
+	    };
 
-    			$("#transfer3").transfer(settings);
-    			// table_presence(selectDate = true,selectPerson = true)
-
-	    	}
-		})
+			$("#transfer3").transfer(settings);
+			// table_presence(selectDate = true,selectPerson = true)
+  	}
+	})
 
 	  function table_presence()
 	  {
