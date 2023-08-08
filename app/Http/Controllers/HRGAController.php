@@ -3310,6 +3310,10 @@ class HRGAController extends Controller
                         ->where('date_off', '>=', $request->start_date)
                         ->where('date_off', '<=', $request->end_date)
                         ->get();
+                } elseif($div == 'PMO' && $pos == 'MANAGER'){
+                    $cuti = $cuti
+                        ->where('users.id_division','PMO')
+                        ->get();
                 }else{
                     $cuti = $cuti
                         ->where('users.nik',$nik)
