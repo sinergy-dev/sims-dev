@@ -822,14 +822,16 @@
               arrRoles.push(unit)
           })
 
-          // $(item).find("#selectPhase").each(function(idxP,itemsPhase){
-          //     if ($(itemsPhase).val() == '') {
-          //       $(itemsPhase).closest("div").find("span").show()
-          //       $(itemsPhase).closest("div").addClass("has-error")
-          //     }else{
-          //       phase = $(itemsPhase).select2("val")
-          //     }
-          // })
+          $(item).find("#selectPhase").each(function(idxP,itemsPhase){
+              // if ($(itemsPhase).val() == '') {
+              //   $(itemsPhase).closest("div").find("span").show()
+              //   $(itemsPhase).closest("div").addClass("has-error")
+              // }else{
+              //   phase = $(itemsPhase).select2("val")
+              // }
+
+              phase = $(itemsPhase).select2("val")
+          })
 
           $(item).find("#selectTask").each(function(idx,itemsTask){
               if ($(itemsTask).val() == '') {
