@@ -1405,8 +1405,10 @@
       var eventObj = $('#calendar').fullCalendar('clientEvents', eventId)[0];
 
       if (eventObj.status == null) {
+        $("#ModalAddTimesheet").modal("show")
+
         Swal.fire({
-          title: 'Harap sabar, menyiapkan data...',
+          title: 'Harap menunggu,sedang menyiapkan data...',
           allowEscapeKey: false,
           allowOutsideClick: false,
           confirmButtonText:'',
@@ -1428,36 +1430,37 @@
 
               $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
               $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
+
+              $(".modal-title").text("Update Timesheet")
+              $("#ModalAddTimesheet").find(".modal-title").prev('button').hide()
+              $("#ModalAddTimesheet").find('.modal-footer').find(".btn-danger").hide()
+              $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+              
+              $('#selectSchedule').val(eventObj.schedule).trigger('change')
+              // $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
+              // $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
+              $('#selectSchedule').prop("disabled",true)
+              $('#daterange-input').prop("disabled",true)
+              $('#selectType').prop("disabled",true)
+              $('#selectLead').prop("disabled",true)
+              $('#selectTask').prop("disabled",true)
+              $('#selectPhase').prop("disabled",true)
+              $('#selectLevel').prop("disabled",true)
+              $('#selectDuration').prop("disabled",false)
+              $('#selectStatus').prop("disabled",false) 
+              $("#id_activity").val(eventObj.id)
+              //staff
+              $('#selectType').val(eventObj.type).trigger('change')
+              $('#selectLead').val(eventObj.pid).trigger('change')
+              $('#selectLevel').val(eventObj.level).trigger('change')
+              $('#textareaActivity').val(eventObj.title).trigger('change')
+              $('#selectDuration').val(eventObj.duration).trigger('change')
+              $('#selectStatus').val(eventObj.status).trigger('change')
             }, 150); // Delayed execution after 2000ms (2 seconds)
           }
         });
 
-        $(".modal-title").text("Update Timesheet")
-        $("#ModalAddTimesheet").find(".modal-title").prev('button').hide()
-        $("#ModalAddTimesheet").find('.modal-footer').find(".btn-danger").hide()
-        $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
-        $("#ModalAddTimesheet").modal("show")
         
-        $('#selectSchedule').val(eventObj.schedule).trigger('change')
-        // $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
-        // $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
-        $('#selectSchedule').prop("disabled",true)
-        $('#daterange-input').prop("disabled",true)
-        $('#selectType').prop("disabled",true)
-        $('#selectLead').prop("disabled",true)
-        $('#selectTask').prop("disabled",true)
-        $('#selectPhase').prop("disabled",true)
-        $('#selectLevel').prop("disabled",true)
-        $('#selectDuration').prop("disabled",false)
-        $('#selectStatus').prop("disabled",false) 
-        $("#id_activity").val(eventObj.id)
-        //staff
-        $('#selectType').val(eventObj.type).trigger('change')
-        $('#selectLead').val(eventObj.pid).trigger('change')
-        $('#selectLevel').val(eventObj.level).trigger('change')
-        $('#textareaActivity').val(eventObj.title).trigger('change')
-        $('#selectDuration').val(eventObj.duration).trigger('change')
-        $('#selectStatus').val(eventObj.status).trigger('change')
       }
     }
 
