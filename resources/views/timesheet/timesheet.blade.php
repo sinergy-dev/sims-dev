@@ -1044,6 +1044,12 @@
                 return calEvent.start.isSame(disabledDate, 'day');
               })) {
                 $("#ModalInfo").modal("show")
+                if (calEvent.remarks == 'Sick' || calEvent.remarks == 'Permit') {
+                  $("#btn_delete_permit").show()
+                  $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
+                }else{
+                  $("#btn_delete_permit").hide()
+                }
                 $(".modal-title").text("Information")
                 $("#tbInfo").empty()
                 var append = ""
