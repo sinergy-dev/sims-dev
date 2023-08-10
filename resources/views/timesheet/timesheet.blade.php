@@ -590,11 +590,11 @@
         //   // right: 'month,agendaWeek,agendaDay'
         // }, 
         defaultView: 'month',
-        defaultDate: '2023-08-01', // Set the initial visible date
-        validRange: {
-          start: '2023-08-01',
-          end: '2023-08-31'
-        },
+        // defaultDate: '2023-08-01', // Set the initial visible date
+        // validRange: {
+        //   start: '2023-08-01',
+        //   end: '2023-08-31'
+        // },
         dayClick: function(date, jsEvent, view) {
           var position = "{{Auth::User()->id_position}}"
           if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
