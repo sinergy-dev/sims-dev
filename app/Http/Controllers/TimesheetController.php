@@ -400,11 +400,18 @@ class TimesheetController extends Controller
 
     public function storeLockDuration(Request $request)
     {
-    	if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->division == Auth::User()->id_division) {
-    		$lock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
-    	} else {
-    		$lock = new TimesheetLockDuration();
-    	}
+        if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->exists()) {
+            // if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->division == Auth::User()->id_division) {
+                $lock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
+            // } 
+        } else {
+            $lock = new TimesheetLockDuration();
+        }
+    	// if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->division == Auth::User()->id_division) {
+    	// 	$lock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
+    	// } else {
+    	// 	$lock = new TimesheetLockDuration();
+    	// }
     	
     	$lock->lock_duration = $request->selectLock;
     	$lock->division = Auth::User()->id_division;
