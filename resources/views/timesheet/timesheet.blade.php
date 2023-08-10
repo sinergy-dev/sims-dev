@@ -744,8 +744,12 @@
                     return calEvent.start.isSame(disabledDate, 'day');
                   })) {
                     $("#ModalInfo").modal("show")
-                    console.log(calEvent)
-                    $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
+                    if (calEvent.remarks == 'Sick' || calEvent.remarks == 'Permit') {
+                      $("#btn_delete_permit").show()
+                      $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
+                    }else{
+                      $("#btn_delete_permit").hide()
+                    }
                     $(".modal-title").text("Information")
                     $("#tbInfo").empty()
                     var append = ""
@@ -760,170 +764,210 @@
 
                     $("#tbInfo").append(append)
                   }else{
-                    setDuration()
-                    setTask(calEvent.task)
-                    setPhase(calEvent.phase)
-                    setLevel()
-                    setStatus()
-                    setType()
-                    setSchedule()
-
                     $("#ModalAddTimesheet").modal("show")
+
+                    Swal.fire({
+                      title: 'Harap sabar, menyiapkan data...',
+                      allowEscapeKey: false,
+                      allowOutsideClick: false,
+                      confirmButtonText:'',
+                      showConfirmButton:false,
+                      didOpen: () => {
+                        // Delayed task using setTimeout
+                        setTimeout(() => {
+                          // Close the loading indicator
+                          Swal.close();
+
+                          // Perform your delayed task here
+                          setDuration()
+                          setTask(calEvent.task)
+                          setPhase(calEvent.phase)
+                          setLevel()
+                          setStatus()
+                          setType()
+                          setSchedule()
+
+                          $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                          if (calEvent.refer) {
+                            $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
+                          }else{
+                            $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                          }
+
+                          if (calEvent.refer) {
+                            console.log(calEvent.refer)
+                            console.log(calEvent.id)
+                            $("#id_activity").val(calEvent.id)
+                            $('#selectSchedule').prop("disabled",true)
+                            $('#selectSchedule').val('Planned').trigger('change')
+                            $('#daterange-input').prop("disabled",true)    
+                            $('#textareaActivity').val(calEvent.title).trigger('change') 
+
+                            if(nik != "{{Auth::User()->nik}}"){
+                              //spv/manager
+                              var momentDate = moment(calEvent.start); // Replace with your own moment date
+                              // Get today's date
+                              var today = moment();
+                              var isSameDateToday = momentDate.isSame(today, 'day');
+                              if (isSameDateToday) {
+                                $('#selectType').prop("disabled",true)
+                                $('#selectLead').prop("disabled",true)
+                                $('#selectTask').prop("disabled",true)
+                                $('#selectPhase').prop("disabled",true)
+                                $('#selectLevel').prop("disabled",true)
+                                $('#textareaActivity').prop("disabled",true)
+                                $('#selectDuration').prop("disabled",true)
+                                $('#selectStatus').prop("disabled",true)
+                                $("#ModalAddTimesheet").find('.modal-footer').hide()
+                              }else{
+                                $('#selectType').prop("disabled",false)
+                                $('#selectLead').prop("disabled",false)
+                                $('#selectTask').prop("disabled",false)
+                                $('#selectPhase').prop("disabled",false)
+                                $('#selectLevel').prop("disabled",false)
+                                $('#textareaActivity').prop("disabled",false)
+                                $('#selectDuration').prop("disabled",false)
+                                $('#selectStatus').prop("disabled",false)
+                                $("#ModalAddTimesheet").find('.modal-footer').show()
+                              }
+                              // $('#selectType').prop("disabled",true)
+                              // $('#selectLead').prop("disabled",true)
+                              // $('#selectTask').prop("disabled",true)
+                              // $('#selectPhase').prop("disabled",true)
+                              // $('#selectLevel').prop("disabled",true)
+                              // $('#textareaActivity').prop("disabled",true)
+                              // $('#selectDuration').prop("disabled",true)
+                              // $('#selectStatus').prop("disabled",true)
+                              // $("#ModalAddTimesheet").find('.modal-footer').hide()
+                            }else{
+                              var momentDate = moment(calEvent.start); // Replace with your own moment date
+                              // Get today's date
+                              var today = moment();
+                              // Compare the date components
+                              var isSameDateToday = momentDate.isSame(today, 'day');
+                              if (isSameDateToday) {
+                                $('#selectType').prop("disabled",false)
+                                $('#selectLead').prop("disabled",false)
+                                $('#selectTask').prop("disabled",false)
+                                $('#selectPhase').prop("disabled",false)
+                                $('#selectLevel').prop("disabled",false)
+                                $('#textareaActivity').prop("disabled",false)
+                                $('#selectDuration').prop("disabled",false)
+                                $('#selectStatus').prop("disabled",false)
+                                $("#ModalAddTimesheet").find('.modal-footer').show()
+                              }else{
+                                $("#ModalAddTimesheet").find('.modal-footer').hide()
+                                $('#selectType').prop("disabled",true)
+                                $('#selectLead').prop("disabled",true)
+                                $('#selectTask').prop("disabled",true)
+                                $('#selectPhase').prop("disabled",true)
+                                $('#selectLevel').prop("disabled",true)
+                                $('#textareaActivity').prop("disabled",true)
+                                $('#selectDuration').prop("disabled",true)
+                                $('#selectStatus').prop("disabled",true)
+                              }
+                              // $('#selectType').prop("disabled",true)
+                              // $('#selectLead').prop("disabled",true)
+                              // $('#selectTask').prop("disabled",true)
+                              // $('#selectPhase').prop("disabled",true)
+                              // $('#selectLevel').prop("disabled",true)
+                              // $('#textareaActivity').prop("disabled",true)
+                            }                         
+                          }else{
+                            $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                            $('#selectSchedule').prop("disabled",true)
+                            // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                            // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                            $('#daterange-input').prop("disabled",true)
+
+
+                            //supervisor
+                            if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
+                              $('#selectType').prop("disabled",false)
+                              $('#selectLead').prop("disabled",false)
+                              $('#selectTask').prop("disabled",false)
+                              $('#selectPhase').prop("disabled",false)
+                              $('#selectLevel').prop("disabled",false)
+                              $('#textareaActivity').prop("disabled",false)
+                              $('#selectDuration').prop("disabled",false)
+                              $('#selectStatus').prop("disabled",false)  
+                              $("#ModalAddTimesheet").find('.modal-footer').show()
+                            }else{
+                              var momentDate = moment(calEvent.start); // Replace with your own moment date
+                              // Get today's date
+                              var today = moment();
+                              // Compare the date components
+                              var isSameDateToday = momentDate.isSame(today, 'day');
+                              if (isSameDateToday) {
+                                $('#selectDuration').prop("disabled",false)
+                                $('#selectStatus').prop("disabled",false)
+                                $("#ModalAddTimesheet").find('.modal-footer').show()
+                              }else{
+                                $("#ModalAddTimesheet").find('.modal-footer').hide()
+                                $('#selectDuration').prop("disabled",true)
+                                $('#selectStatus').prop("disabled",true)
+                              }
+                              // $('#selectType').prop("disabled",true)
+                              // $('#selectLead').prop("disabled",true)
+                              // $('#selectTask').prop("disabled",true)
+                              // $('#selectPhase').prop("disabled",true)
+                              // $('#selectLevel').prop("disabled",true)
+                              // $('#textareaActivity').prop("disabled",true)
+                            }
+
+                            $("#id_activity").val(calEvent.id)
+
+                            //staff
+                            $('#selectType').val(calEvent.type).trigger('change')
+                            $('#selectLead').val(calEvent.pid).trigger('change')
+                            $('#selectLevel').val(calEvent.level).trigger('change')
+                            $('#textareaActivity').val(calEvent.title).trigger('change')
+                            $('#selectDuration').val(calEvent.duration).trigger('change')
+                            $('#selectStatus').val(calEvent.status).trigger('change')
+                          }
+                        }, 150); // Delayed execution after 2000ms (2 seconds)
+                      }
+                    });
+                    
                     $(".modal-title").text("Update Timesheet")
                     $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
 
-
-                    if (calEvent.refer) {
-                      console.log(calEvent.refer)
-                      console.log(calEvent.id)
-                      $("#id_activity").val(calEvent.id)
-                      $('#selectSchedule').prop("disabled",true)
-                      $('#selectSchedule').val('Planned').trigger('change')
-                      $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                      $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
-                      $('#daterange-input').prop("disabled",true)    
-                      $('#textareaActivity').val(calEvent.title).trigger('change') 
-
-                      if(nik != "{{Auth::User()->nik}}"){
-                        //spv/manager
-                        var momentDate = moment(calEvent.start); // Replace with your own moment date
-                        // Get today's date
-                        var today = moment();
-                        var isSameDateToday = momentDate.isSame(today, 'day');
-                        if (isSameDateToday) {
-                          $('#selectType').prop("disabled",true)
-                          $('#selectLead').prop("disabled",true)
-                          $('#selectTask').prop("disabled",true)
-                          $('#selectPhase').prop("disabled",true)
-                          $('#selectLevel').prop("disabled",true)
-                          $('#textareaActivity').prop("disabled",true)
-                          $('#selectDuration').prop("disabled",true)
-                          $('#selectStatus').prop("disabled",true)
-                          $("#ModalAddTimesheet").find('.modal-footer').hide()
-                        }else{
-                          $('#selectType').prop("disabled",false)
-                          $('#selectLead').prop("disabled",false)
-                          $('#selectTask').prop("disabled",false)
-                          $('#selectPhase').prop("disabled",false)
-                          $('#selectLevel').prop("disabled",false)
-                          $('#textareaActivity').prop("disabled",false)
-                          $('#selectDuration').prop("disabled",false)
-                          $('#selectStatus').prop("disabled",false)
-                          $("#ModalAddTimesheet").find('.modal-footer').show()
-                        }
-                        // $('#selectType').prop("disabled",true)
-                        // $('#selectLead').prop("disabled",true)
-                        // $('#selectTask').prop("disabled",true)
-                        // $('#selectPhase').prop("disabled",true)
-                        // $('#selectLevel').prop("disabled",true)
-                        // $('#textareaActivity').prop("disabled",true)
-                        // $('#selectDuration').prop("disabled",true)
-                        // $('#selectStatus').prop("disabled",true)
-                        // $("#ModalAddTimesheet").find('.modal-footer').hide()
-                      }else{
-                        var momentDate = moment(calEvent.start); // Replace with your own moment date
-                        // Get today's date
-                        var today = moment();
-                        // Compare the date components
-                        var isSameDateToday = momentDate.isSame(today, 'day');
-                        if (isSameDateToday) {
-                          $('#selectType').prop("disabled",false)
-                          $('#selectLead').prop("disabled",false)
-                          $('#selectTask').prop("disabled",false)
-                          $('#selectPhase').prop("disabled",false)
-                          $('#selectLevel').prop("disabled",false)
-                          $('#textareaActivity').prop("disabled",false)
-                          $('#selectDuration').prop("disabled",false)
-                          $('#selectStatus').prop("disabled",false)
-                          $("#ModalAddTimesheet").find('.modal-footer').show()
-                        }else{
-                          $("#ModalAddTimesheet").find('.modal-footer').hide()
-                          $('#selectType').prop("disabled",true)
-                          $('#selectLead').prop("disabled",true)
-                          $('#selectTask').prop("disabled",true)
-                          $('#selectPhase').prop("disabled",true)
-                          $('#selectLevel').prop("disabled",true)
-                          $('#textareaActivity').prop("disabled",true)
-                          $('#selectDuration').prop("disabled",true)
-                          $('#selectStatus').prop("disabled",true)
-                        }
-                        // $('#selectType').prop("disabled",true)
-                        // $('#selectLead').prop("disabled",true)
-                        // $('#selectTask').prop("disabled",true)
-                        // $('#selectPhase').prop("disabled",true)
-                        // $('#selectLevel').prop("disabled",true)
-                        // $('#textareaActivity').prop("disabled",true)
-                      }                         
-                    }else{
-                      $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                      $('#selectSchedule').prop("disabled",true)
-                      $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                      $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                      $('#daterange-input').prop("disabled",true)
-
-
-                      //supervisor
-                      if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
-                        $('#selectType').prop("disabled",false)
-                        $('#selectLead').prop("disabled",false)
-                        $('#selectTask').prop("disabled",false)
-                        $('#selectPhase').prop("disabled",false)
-                        $('#selectLevel').prop("disabled",false)
-                        $('#textareaActivity').prop("disabled",false)
-                        $('#selectDuration').prop("disabled",false)
-                        $('#selectStatus').prop("disabled",false)  
-                        $("#ModalAddTimesheet").find('.modal-footer').show()
-                      }else{
-                        var momentDate = moment(calEvent.start); // Replace with your own moment date
-                        // Get today's date
-                        var today = moment();
-                        // Compare the date components
-                        var isSameDateToday = momentDate.isSame(today, 'day');
-                        if (isSameDateToday) {
-                          $('#selectDuration').prop("disabled",false)
-                          $('#selectStatus').prop("disabled",false)
-                          $("#ModalAddTimesheet").find('.modal-footer').show()
-                        }else{
-                          $("#ModalAddTimesheet").find('.modal-footer').hide()
-                          $('#selectDuration').prop("disabled",true)
-                          $('#selectStatus').prop("disabled",true)
-                        }
-                        // $('#selectType').prop("disabled",true)
-                        // $('#selectLead').prop("disabled",true)
-                        // $('#selectTask').prop("disabled",true)
-                        // $('#selectPhase').prop("disabled",true)
-                        // $('#selectLevel').prop("disabled",true)
-                        // $('#textareaActivity').prop("disabled",true)
-                      }
-
-                      $("#id_activity").val(calEvent.id)
-
-                      //staff
-                      $('#selectType').val(calEvent.type).trigger('change')
-                      $('#selectLead').val(calEvent.pid).trigger('change')
-                      $('#selectLevel').val(calEvent.level).trigger('change')
-                      $('#textareaActivity').val(calEvent.title).trigger('change')
-                      $('#selectDuration').val(calEvent.duration).trigger('change')
-                      $('#selectStatus').val(calEvent.status).trigger('change')
-                    }
+                    
                   }
                 } else {
                   if(calEvent.schedule == "Planned"){
-                    setDuration()
-                    setTask(calEvent.task)
-                    setPhase(calEvent.phase)
-                    setLevel()
-                    setStatus()
-                    setType()
-                    setSchedule()
+                    Swal.fire({
+                      title: 'Harap menunggu, sedang menyiapkan data...',
+                      allowEscapeKey: false,
+                      allowOutsideClick: false,
+                      confirmButtonText:'',
+                      showConfirmButton:false,
+                      didOpen: () => {
+                        // Delayed task using setTimeout
+                        setTimeout(() => {
+                          // Close the loading indicator
+                          Swal.close();
+
+                          // Perform your delayed task here
+                          setDuration()
+                          setTask(calEvent.task)
+                          setPhase(calEvent.phase)
+                          setLevel()
+                          setStatus()
+                          setType()
+                          setSchedule()
+                        }, 150); // Delayed execution after 2000ms (2 seconds)
+                      }
+                    });
+                    
 
                     var momentDate = moment(calEvent.start);
                     var currentDate = moment();
                     if (momentDate > currentDate) {
                       $('#selectSchedule').val(calEvent.schedule).trigger('change')
                       $('#selectSchedule').prop("disabled",true)
-                      $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                      $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                      // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                      // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
                       $('#daterange-input').prop("disabled",true)
 
                       //supervisor
@@ -975,6 +1019,7 @@
                       $('#selectStatus').val(calEvent.status).trigger('change')
 
                       $("#ModalAddTimesheet").modal("show")
+
                       $(".modal-title").text("Update Timesheet")
                       $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
                     }
@@ -1013,124 +1058,259 @@
 
                 $("#tbInfo").append(append)
               }else{
-                setDuration()
-                setTask(calEvent.task)
-                setPhase(calEvent.phase)
-                setLevel()
-                setStatus()
-                setType()
-                setSchedule()
+                Swal.fire({
+                  title: 'Harap sabar, menyiapkan data...',
+                  allowEscapeKey: false,
+                  allowOutsideClick: false,
+                  confirmButtonText:'',
+                  showConfirmButton:false,
+                  didOpen: () => {
+                    // Delayed task using setTimeout
+                    setTimeout(() => {
+                      // Close the loading indicator
+                      Swal.close();
 
-                if(calEvent.schedule == "Planned"){
-                  var momentDate = moment(calEvent.start);
-                  var currentDate = moment();
-                  $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                  $('#selectSchedule').prop("disabled",true)
-                  $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                  $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                  $('#daterange-input').prop("disabled",true)
-                  $("#id_activity").val(calEvent.id)
+                      // Perform your delayed task here
+                      setDuration()
+                      setTask(calEvent.task)
+                      setPhase(calEvent.phase)
+                      setLevel()
+                      setStatus()
+                      setType()
+                      setSchedule()
 
-                  //staff
-                  $('#selectType').val(calEvent.type).trigger('change')
-                  $('#selectLead').val(calEvent.pid).trigger('change')
-                  $('#selectLevel').val(calEvent.level).trigger('change')
-                  $('#textareaActivity').val(calEvent.title).trigger('change')
-                  $('#selectDuration').val(calEvent.duration).trigger('change')
-                  $('#selectStatus').val(calEvent.status).trigger('change')
+                      $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                      if (calEvent.refer) {
+                        $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'));
+                      }else{
+                        $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                      }
 
-                  if (momentDate > currentDate) {
-                       //supervisor
-                    if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
-                      if(nik != "{{Auth::User()->nik}}"){
+                      if(calEvent.schedule == "Planned"){
+                        var momentDate = moment(calEvent.start);
+                        var currentDate = moment();
+                        $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                        $('#selectSchedule').prop("disabled",true)
+                        // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                        // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                        $('#daterange-input').prop("disabled",true)
+                        $("#id_activity").val(calEvent.id)
+
+                        //staff
+                        $('#selectType').val(calEvent.type).trigger('change')
+                        $('#selectLead').val(calEvent.pid).trigger('change')
+                        $('#selectLevel').val(calEvent.level).trigger('change')
+                        $('#textareaActivity').val(calEvent.title).trigger('change')
+                        $('#selectDuration').val(calEvent.duration).trigger('change')
+                        $('#selectStatus').val(calEvent.status).trigger('change')
+
+                        if (momentDate > currentDate) {
+                             //supervisor
+                          if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
+                            if(nik != "{{Auth::User()->nik}}"){
+                              
+                              $('#selectType').prop("disabled",true)
+                              $('#selectLead').prop("disabled",true)
+                              $('#selectTask').prop("disabled",true)
+                              $('#selectPhase').prop("disabled",true)
+                              $('#selectLevel').prop("disabled",true)
+                              $('#textareaActivity').prop("disabled",true)
+                              $('#selectDuration').prop("disabled",true)
+                              $('#selectStatus').prop("disabled",true)  
+                              $("#ModalAddTimesheet").find('.modal-footer').hide()
+                            }else{
+                              $("#ModalAddTimesheet").find('.modal-footer').show()
+                              $('#selectDuration').prop("disabled",true)
+                              $('#selectStatus').prop("disabled",true)
+                              
+                              $('#selectType').prop("disabled",false)
+                              $('#selectLead').prop("disabled",false)
+                              $('#selectTask').prop("disabled",false)
+                              $('#selectPhase').prop("disabled",false)
+                              $('#selectLevel').prop("disabled",false)
+                              $('#textareaActivity').prop("disabled",false)
+                            }
+                          }else{
+                            $("#ModalAddTimesheet").find('.modal-footer').show()
+                            $('#selectDuration').prop("disabled",true)
+                            $('#selectStatus').prop("disabled",true)
+                            
+                            $('#selectType').prop("disabled",false)
+                            $('#selectLead').prop("disabled",false)
+                            $('#selectTask').prop("disabled",false)
+                            $('#selectPhase').prop("disabled",false)
+                            $('#selectLevel').prop("disabled",false)
+                            $('#textareaActivity').prop("disabled",false)
+                          }
+                          $("#ModalAddTimesheet").modal("show")
+                          $(".modal-title").text("Update Timesheet")
+                          $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+                        }else if(momentDate < currentDate){
+                          $("#ModalAddTimesheet").modal("show")
+                          $(".modal-title").text("Detail Timesheet")
+                          $('#selectType').prop("disabled",true)
+                          $('#selectLead').prop("disabled",true)
+                          $('#selectTask').prop("disabled",true)
+                          $('#selectPhase').prop("disabled",true)
+                          $('#selectLevel').prop("disabled",true)
+                          $('#textareaActivity').prop("disabled",true)
+                          $('#selectDuration').prop("disabled",true)
+                          $('#selectStatus').prop("disabled",true)  
+                          $("#ModalAddTimesheet").find('.modal-footer').hide()
+                        }
+                      }else{
                         
+                        $("#ModalAddTimesheet").modal("show")
+                        $(".modal-title").text("Detail Timesheet")
+                        $("#ModalAddTimesheet").find('.modal-footer').hide()
+                        $('#selectSchedule').prop("disabled",true)
                         $('#selectType').prop("disabled",true)
                         $('#selectLead').prop("disabled",true)
                         $('#selectTask').prop("disabled",true)
                         $('#selectPhase').prop("disabled",true)
                         $('#selectLevel').prop("disabled",true)
                         $('#textareaActivity').prop("disabled",true)
-                        $('#selectDuration').prop("disabled",true)
-                        $('#selectStatus').prop("disabled",true)  
-                        $("#ModalAddTimesheet").find('.modal-footer').hide()
-                      }else{
-                        $("#ModalAddTimesheet").find('.modal-footer').show()
+
+                        if (calEvent.refer) {
+                          $('#selectSchedule').val('Planned').trigger('change') 
+                          // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                          // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
+                          $('#daterange-input').prop("disabled",true)    
+                          $('#textareaActivity').val(calEvent.title).trigger('change')   
+                        }else{
+                          $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                          // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                          // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                          $('#daterange-input').prop("disabled",true)
+                          $('#selectType').val(calEvent.type).trigger('change')
+                          $('#selectLead').val(calEvent.pid).trigger('change')
+                          $('#selectTask').val(calEvent.task).trigger('change')
+                          $('#selectPhase').val(calEvent.phase).trigger('change')
+                          $('#selectLevel').val(calEvent.level).trigger('change')
+                          $('#textareaActivity').val(calEvent.title)
+                          $('#selectDuration').val(calEvent.duration).trigger('change')
+                          $('#selectStatus').val(calEvent.status).trigger('change')
+                        }
                         $('#selectDuration').prop("disabled",true)
                         $('#selectStatus').prop("disabled",true)
-                        
-                        $('#selectType').prop("disabled",false)
-                        $('#selectLead').prop("disabled",false)
-                        $('#selectTask').prop("disabled",false)
-                        $('#selectPhase').prop("disabled",false)
-                        $('#selectLevel').prop("disabled",false)
-                        $('#textareaActivity').prop("disabled",false)
+                        // Disable the day click event for disallowed dates
+                        return false;
                       }
-                    }else{
-                      $("#ModalAddTimesheet").find('.modal-footer').show()
-                      $('#selectDuration').prop("disabled",true)
-                      $('#selectStatus').prop("disabled",true)
-                      
-                      $('#selectType').prop("disabled",false)
-                      $('#selectLead').prop("disabled",false)
-                      $('#selectTask').prop("disabled",false)
-                      $('#selectPhase').prop("disabled",false)
-                      $('#selectLevel').prop("disabled",false)
-                      $('#textareaActivity').prop("disabled",false)
-                    }
-                    $("#ModalAddTimesheet").modal("show")
-                    $(".modal-title").text("Update Timesheet")
-                    $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
-                  }else if(momentDate < currentDate){
-                    $("#ModalAddTimesheet").modal("show")
-                    $(".modal-title").text("Detail Timesheet")
-                    $('#selectType').prop("disabled",true)
-                    $('#selectLead').prop("disabled",true)
-                    $('#selectTask').prop("disabled",true)
-                    $('#selectPhase').prop("disabled",true)
-                    $('#selectLevel').prop("disabled",true)
-                    $('#textareaActivity').prop("disabled",true)
-                    $('#selectDuration').prop("disabled",true)
-                    $('#selectStatus').prop("disabled",true)  
-                    $("#ModalAddTimesheet").find('.modal-footer').hide()
+            
+                    }, 150); // Delayed execution after 2000ms (2 seconds)
                   }
-                }else{
-                  
-                  $("#ModalAddTimesheet").modal("show")
-                  $(".modal-title").text("Detail Timesheet")
-                  $("#ModalAddTimesheet").find('.modal-footer').hide()
-                  $('#selectSchedule').prop("disabled",true)
-                  $('#selectType').prop("disabled",true)
-                  $('#selectLead').prop("disabled",true)
-                  $('#selectTask').prop("disabled",true)
-                  $('#selectPhase').prop("disabled",true)
-                  $('#selectLevel').prop("disabled",true)
-                  $('#textareaActivity').prop("disabled",true)
+                });
 
-                  if (calEvent.refer) {
-                    $('#selectSchedule').val('Planned').trigger('change') 
-                    $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                    $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
-                    $('#daterange-input').prop("disabled",true)    
-                    $('#textareaActivity').val(calEvent.title).trigger('change')   
-                  }else{
-                    $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                    $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                    $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                    $('#daterange-input').prop("disabled",true)
-                    $('#selectType').val(calEvent.type).trigger('change')
-                    $('#selectLead').val(calEvent.pid).trigger('change')
-                    $('#selectTask').val(calEvent.task).trigger('change')
-                    $('#selectPhase').val(calEvent.phase).trigger('change')
-                    $('#selectLevel').val(calEvent.level).trigger('change')
-                    $('#textareaActivity').val(calEvent.title)
-                    $('#selectDuration').val(calEvent.duration).trigger('change')
-                    $('#selectStatus').val(calEvent.status).trigger('change')
-                  }
-                  $('#selectDuration').prop("disabled",true)
-                  $('#selectStatus').prop("disabled",true)
-                  // Disable the day click event for disallowed dates
-                  return false;
-                }
+                // if(calEvent.schedule == "Planned"){
+                //   var momentDate = moment(calEvent.start);
+                //   var currentDate = moment();
+                //   $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                //   $('#selectSchedule').prop("disabled",true)
+                //   // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                //   // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
+                //   $('#daterange-input').prop("disabled",true)
+                //   $("#id_activity").val(calEvent.id)
+
+                //   //staff
+                //   $('#selectType').val(calEvent.type).trigger('change')
+                //   $('#selectLead').val(calEvent.pid).trigger('change')
+                //   $('#selectLevel').val(calEvent.level).trigger('change')
+                //   $('#textareaActivity').val(calEvent.title).trigger('change')
+                //   $('#selectDuration').val(calEvent.duration).trigger('change')
+                //   $('#selectStatus').val(calEvent.status).trigger('change')
+
+                //   if (momentDate > currentDate) {
+                //        //supervisor
+                //     if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
+                //       if(nik != "{{Auth::User()->nik}}"){
+                        
+                //         $('#selectType').prop("disabled",true)
+                //         $('#selectLead').prop("disabled",true)
+                //         $('#selectTask').prop("disabled",true)
+                //         $('#selectPhase').prop("disabled",true)
+                //         $('#selectLevel').prop("disabled",true)
+                //         $('#textareaActivity').prop("disabled",true)
+                //         $('#selectDuration').prop("disabled",true)
+                //         $('#selectStatus').prop("disabled",true)  
+                //         $("#ModalAddTimesheet").find('.modal-footer').hide()
+                //       }else{
+                //         $("#ModalAddTimesheet").find('.modal-footer').show()
+                //         $('#selectDuration').prop("disabled",true)
+                //         $('#selectStatus').prop("disabled",true)
+                        
+                //         $('#selectType').prop("disabled",false)
+                //         $('#selectLead').prop("disabled",false)
+                //         $('#selectTask').prop("disabled",false)
+                //         $('#selectPhase').prop("disabled",false)
+                //         $('#selectLevel').prop("disabled",false)
+                //         $('#textareaActivity').prop("disabled",false)
+                //       }
+                //     }else{
+                //       $("#ModalAddTimesheet").find('.modal-footer').show()
+                //       $('#selectDuration').prop("disabled",true)
+                //       $('#selectStatus').prop("disabled",true)
+                      
+                //       $('#selectType').prop("disabled",false)
+                //       $('#selectLead').prop("disabled",false)
+                //       $('#selectTask').prop("disabled",false)
+                //       $('#selectPhase').prop("disabled",false)
+                //       $('#selectLevel').prop("disabled",false)
+                //       $('#textareaActivity').prop("disabled",false)
+                //     }
+                //     $("#ModalAddTimesheet").modal("show")
+                //     $(".modal-title").text("Update Timesheet")
+                //     $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+                //   }else if(momentDate < currentDate){
+                //     $("#ModalAddTimesheet").modal("show")
+                //     $(".modal-title").text("Detail Timesheet")
+                //     $('#selectType').prop("disabled",true)
+                //     $('#selectLead').prop("disabled",true)
+                //     $('#selectTask').prop("disabled",true)
+                //     $('#selectPhase').prop("disabled",true)
+                //     $('#selectLevel').prop("disabled",true)
+                //     $('#textareaActivity').prop("disabled",true)
+                //     $('#selectDuration').prop("disabled",true)
+                //     $('#selectStatus').prop("disabled",true)  
+                //     $("#ModalAddTimesheet").find('.modal-footer').hide()
+                //   }
+                // }else{
+                  
+                //   $("#ModalAddTimesheet").modal("show")
+                //   $(".modal-title").text("Detail Timesheet")
+                //   $("#ModalAddTimesheet").find('.modal-footer').hide()
+                //   $('#selectSchedule').prop("disabled",true)
+                //   $('#selectType').prop("disabled",true)
+                //   $('#selectLead').prop("disabled",true)
+                //   $('#selectTask').prop("disabled",true)
+                //   $('#selectPhase').prop("disabled",true)
+                //   $('#selectLevel').prop("disabled",true)
+                //   $('#textareaActivity').prop("disabled",true)
+
+                //   if (calEvent.refer) {
+                //     $('#selectSchedule').val('Planned').trigger('change') 
+                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
+                //     $('#daterange-input').prop("disabled",true)    
+                //     $('#textareaActivity').val(calEvent.title).trigger('change')   
+                //   }else{
+                //     $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
+                //     $('#daterange-input').prop("disabled",true)
+                //     $('#selectType').val(calEvent.type).trigger('change')
+                //     $('#selectLead').val(calEvent.pid).trigger('change')
+                //     $('#selectTask').val(calEvent.task).trigger('change')
+                //     $('#selectPhase').val(calEvent.phase).trigger('change')
+                //     $('#selectLevel').val(calEvent.level).trigger('change')
+                //     $('#textareaActivity').val(calEvent.title)
+                //     $('#selectDuration').val(calEvent.duration).trigger('change')
+                //     $('#selectStatus').val(calEvent.status).trigger('change')
+                //   }
+                //   $('#selectDuration').prop("disabled",true)
+                //   $('#selectStatus').prop("disabled",true)
+                //   // Disable the day click event for disallowed dates
+                //   return false;
+                // }
         
               }
             }
@@ -1225,13 +1405,32 @@
       var eventObj = $('#calendar').fullCalendar('clientEvents', eventId)[0];
 
       if (eventObj.status == null) {
-        setDuration()
-        setTask(eventObj.task)
-        setPhase(eventObj.phase)
-        setLevel()
-        setStatus()
-        setType()
-        setSchedule()
+        Swal.fire({
+          title: 'Harap sabar, menyiapkan data...',
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          confirmButtonText:'',
+          showConfirmButton:false,
+          didOpen: () => {
+            // Delayed task using setTimeout
+            setTimeout(() => {
+              // Close the loading indicator
+              Swal.close();
+
+              // Perform your delayed task here
+              setDuration()
+              setTask(eventObj.task)
+              setPhase(eventObj.phase)
+              setLevel()
+              setStatus()
+              setType()
+              setSchedule()
+
+              $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
+              $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
+            }, 150); // Delayed execution after 2000ms (2 seconds)
+          }
+        });
 
         $(".modal-title").text("Update Timesheet")
         $("#ModalAddTimesheet").find(".modal-title").prev('button').hide()
@@ -1240,8 +1439,8 @@
         $("#ModalAddTimesheet").modal("show")
         
         $('#selectSchedule').val(eventObj.schedule).trigger('change')
-        $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
-        $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
+        // $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
+        // $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
         $('#selectSchedule').prop("disabled",true)
         $('#daterange-input').prop("disabled",true)
         $('#selectType').prop("disabled",true)
