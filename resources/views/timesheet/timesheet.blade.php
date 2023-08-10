@@ -642,7 +642,7 @@
                     $("#ModalAddTimesheet").modal("show")
 
                     Swal.fire({
-                      title: 'Harap sabar, menyiapkan data...',
+                      title: 'Harap menunggu,sedang menyiapkan data...',
                       allowEscapeKey: false,
                       allowOutsideClick: false,
                       confirmButtonText:'',
@@ -767,7 +767,7 @@
                     $("#ModalAddTimesheet").modal("show")
 
                     Swal.fire({
-                      title: 'Harap sabar, menyiapkan data...',
+                      title: 'Harap menunggu,sedang menyiapkan data...',
                       allowEscapeKey: false,
                       allowOutsideClick: false,
                       confirmButtonText:'',
@@ -1059,7 +1059,7 @@
                 $("#tbInfo").append(append)
               }else{
                 Swal.fire({
-                  title: 'Harap sabar, menyiapkan data...',
+                  title: 'Harap menunggu,sedang menyiapkan data...',
                   allowEscapeKey: false,
                   allowOutsideClick: false,
                   confirmButtonText:'',
