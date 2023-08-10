@@ -86,61 +86,80 @@
           </div>
         </div>
 
-        <div class="box box-primary">
-          <div class="box-header">
-            <h3 class="box-title">
-              Lock Activity Duration
-            </h3>
-          </div>
-          <div class="box-body">
-            <div class="form-group">
-              <label>Lock Duration*</label>
-              <select class="form-control select2" id="selectLock" name="selectLock" placeholder="Select Lock Duration">
-                <option value="1">1 Week</option>
-                <option value="2">2 Week</option>
-                <option value="3">3 Week</option>
-                <option value="4">1 Month</option>
-              </select>
+        <div class="row">
+          <div class="col-md-6 col-xs-12">
+            <div class="box box-primary">
+              <div class="box-header">
+                <h3 class="box-title">
+                  Lock Activity Duration
+                </h3>
+              </div>
+              <div class="box-body">
+                <div class="form-group">
+                  <label>Lock Duration*</label>
+                  <select class="form-control select2" id="selectLock" name="selectLock" placeholder="Select Lock Duration">
+                    <option value="1">1 Week</option>
+                    <option value="2">2 Week</option>
+                    <option value="3">3 Week</option>
+                    <option value="4">1 Month</option>
+                    <option value="5">5 Week</option>
+                    <option value="6">6 Week</option>
+                    <option value="7">7 Week</option>
+                    <option value="8">2 Month</option>
+                  </select>
+                </div>
+              </div>
+              <div class="box-footer">
+                <div class="pull-right">
+                    <button class="btn btn-sm btn-danger" id="btn_cancel_lock" style="display:none">Cancel</button>
+                    <button class="btn btn-sm btn-primary" type="button" onclick="saveDuration()" id="btn_save_lock" style="display:none;">Save</button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="box-footer">
-            <div class="pull-right">
-                <button class="btn btn-sm btn-danger" id="btn_cancel_lock" style="display:none">Cancel</button>
-                <button class="btn btn-sm btn-primary" type="button" onclick="saveDuration()" id="btn_save_lock" style="display:none;">Save</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="box box-primary" id="box_assign_pid" style="display:none">
-          <div class="box-header">
-            <h3 class="box-title">
-              Assign PID
-            </h3>
-          </div>
-          <div class="box-body">
-            <div class="form-group">
-              <label>Name*</label>
-              <select class="form-control select2" id="selectPICAssign" name="selectPICAssign" onchange="validateInput(this)"><option></option></select>
-              <span class="help-block" style="display:none">Please Select PIC!</span>
-            </div>
-            <div class="form-group">
-              <label>PID*</label>
-              <select class="form-control select2" multiple id="selectPIDAssign" multiple="multiple" name="selectPIDAssign" onchange="validateInput(this)"><option></option></select>
-              <span class="help-block" style="display:none">Please Select PID!</span>
-            </div>
-            <div class="form-group">
-              <label>Role*</label>
-              <select class="form-control select2" id="selectRoleAssign" name="selectRoleAssign" placeholder="Select Role" onchange="validateInput(this)">
-                <option value="Main">Main</option>
-                <option value="Support">Support</option>
-              </select>
-              <span class="help-block" style="display:none">Please Select Role!</span>
-            </div>
-          </div>
-          <div class="box-footer">
-            <div class="pull-right">
-                <button class="btn btn-sm btn-danger">Cancel</button>
-                <button class="btn btn-sm btn-primary" type="button" onclick="savePIC()">Save</button>
+          <div class="col-md-6 col-xs-12">
+            <div class="box box-primary" id="box_assign_pid" style="display:none">
+              <div class="box-header">
+                <h3 class="box-title">
+                  Assign PID
+                </h3>
+              </div>
+              <div class="box-body">
+                <div class="form-group">
+                  <label>Assign For*</label>
+                  <select class="form-control select2" id="selectAssignFor" name="selectAssignFor" onchange="validateInput(this)">
+                    <option></option>
+                    <option value="All">All</option>
+                    <option value="Pid">Pic</option>
+                  </select>
+                  <span class="help-block" style="display:none">Please Select Assign for!</span>
+                </div>
+                <div class="form-group">
+                  <label>Name*</label>
+                  <select class="form-control select2" id="selectPICAssign" name="selectPICAssign" onchange="validateInput(this)"><option></option></select>
+                  <span class="help-block" style="display:none">Please Select PIC!</span>
+                </div>
+                <div class="form-group">
+                  <label>PID*</label>
+                  <select class="form-control select2" multiple id="selectPIDAssign" multiple="multiple" name="selectPIDAssign" onchange="validateInput(this)"></select>
+                  <span class="help-block" style="display:none">Please Select PID!</span>
+                </div>
+                <div class="form-group">
+                  <label>Role*</label>
+                  <select class="form-control select2" id="selectRoleAssign" name="selectRoleAssign" placeholder="Select Role" onchange="validateInput(this)">
+                    <option></option>
+                    <option value="Main">Main</option>
+                    <option value="Support">Support</option>
+                  </select>
+                  <span class="help-block" style="display:none">Please Select Role!</span>
+                </div>
+              </div>
+              <div class="box-footer">
+                <div class="pull-right">
+                    <button class="btn btn-sm btn-danger">Cancel</button>
+                    <button class="btn btn-sm btn-primary" type="button" onclick="savePIC()">Save</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -256,7 +275,8 @@
           'Action',
           visible:false,
           render: function (data, type, row, meta){
-            return '<a onclick="updateTask('+ row.id +')" id="editTask" class="btn btn-sm btn-warning" style="cursor:pointer;">Edit</a> <a onclick="deleteTask('+ row.id +')" class="btn btn-sm btn-danger" style="cursor:pointer" id="deleteTask">Delete</a>'
+            return '<a onclick="updateTask('+ row.id +')" id="editTask" class="btn btn-sm btn-warning" style="cursor:pointer;">Edit</a>'
+             // <a onclick="deleteTask('+ row.id +')" class="btn btn-sm btn-danger" style="cursor:pointer" id="deleteTask">Delete</a>'
           },
         },
       ],
@@ -307,7 +327,8 @@
           'Action',
           visible:false,
           render: function (data, type, row, meta){
-            return '<a onclick="updatePhase('+ row.id +')" id="editPhase" class="btn btn-sm btn-warning" style="cursor:pointer">Edit</a> <a onclick="deletePhase('+ row.id +')" class="btn btn-sm btn-danger" style="cursor:pointer" id="deletePhase">Delete</a>'
+            return '<a onclick="updatePhase('+ row.id +')" id="editPhase" class="btn btn-sm btn-warning" style="cursor:pointer">Edit</a>'
+             // <a onclick="deletePhase('+ row.id +')" class="btn btn-sm btn-danger" style="cursor:pointer" id="deletePhase">Delete</a>'
           } 
         },
       ],
@@ -398,10 +419,9 @@
       }).then((result) => {
         if (result.value) {
           $.ajax({
-            type: "POST",
+            type: "GET",
             url: "{{url('/timesheet/deleteTaskPhase')}}",
             data:{
-              _token:'{{ csrf_token() }}',
               id:id,
               type:"phase"
             },
@@ -494,7 +514,7 @@
                 appendBox = appendBox + '  <span class="help-block" style="display:none">Please Select Unit!</span>'
                 appendBox = appendBox + '</div>'
                 appendBox = appendBox + '<div class="form-group">'
-                appendBox = appendBox + '  <label>Phase*</label>'
+                appendBox = appendBox + '  <label>Phase</label>'
                 appendBox = appendBox + '  <select class="form-control selectPhase" data-value="'+ idx +'" id="selectPhase" multiple="multiple" onchange="validateInput(this)" name="selectPhase"></select>'
                 appendBox = appendBox + '  <span class="help-block" style="display:none">Please Select Phase!</span>'
                 appendBox = appendBox + '</div>'
@@ -519,7 +539,7 @@
                 appendBox = appendBox + '  <span class="help-block" style="display:none">Please Select Unit!</span>'
                 appendBox = appendBox + '</div>'
                 appendBox = appendBox + '<div class="form-group">'
-                appendBox = appendBox + '  <label>Phase*</label>'
+                appendBox = appendBox + '  <label>Phase</label>'
                 appendBox = appendBox + '  <select class="form-control selectPhase" id="selectPhase" multiple="multiple" onchange="validateInput(this)" name="selectPhase"></select>'
                 appendBox = appendBox + '  <span class="help-block" style="display:none">Please Select Phase!</span>'
                 appendBox = appendBox + '</div>'
@@ -666,11 +686,43 @@
     $.ajax({
       url: "{{'/timesheet/getAllUser'}}",
       type: 'GET',success:function(result){
-          $("#selectPICAssign").select2({
-              placeholder:"Select PIC",
-              data:result,
-          })
+        $("#selectPICAssign").select2({
+            placeholder:"Select PIC",
+            data:result,
+        })
       }
+    })
+
+    $("#selectAssignFor").select2({
+      placeholder:"Select Assign For",
+    }).on('select2:select', function (e) {
+      var data = e.params.data;
+      console.log(data);
+      if (data.id == 'All') {
+        $("#selectPICAssign").prop("disabled",true)
+        $("#selectPICAssign").next().next().hide()
+        $("#selectPICAssign").closest("div").removeClass("has-error")
+        $("#selectPICAssign").val("").trigger("change")
+
+        $("#selectPIDAssign").prop("disabled",true)
+        $("#selectPIDAssign").next().next().hide()
+        $("#selectPIDAssign").closest("div").removeClass("has-error")
+        $("#selectPIDAssign").val("").trigger("change")
+
+        $("#selectRoleAssign").prop("disabled",true)
+        $("#selectRoleAssign").next().next().hide()
+        $("#selectRoleAssign").closest("div").removeClass("has-error")
+        $("#selectRoleAssign").val("").trigger("change")
+
+      }else{
+        $("#selectPICAssign").prop("disabled",false)
+        $("#selectPIDAssign").prop("disabled",false)
+        $("#selectRoleAssign").prop("disabled",false)
+      }
+    });
+
+    $("#selectRoleAssign").select2({
+      placeholder:"Select Role"
     })
 
     function validateInput(val){
@@ -757,7 +809,7 @@
 
 
     function saveConfig(){
-      var arrConfig = [], unit = '', phase = '', task = '', isReadyStore = false    
+      var arrConfig = [], unit = '', phase = '', task = '', isReadyStore = false, arrRoles = []    
       $(".box-add-config").each(function(idxI,item){
           $(item).find("#selectUnit").each(function(idx,itemsUnit){
               if ($(itemsUnit).val() == '') {
@@ -767,16 +819,17 @@
                 unit = itemsUnit.value
               }
 
+              arrRoles.push(unit)
           })
 
-          $(item).find("#selectPhase").each(function(idxP,itemsPhase){
-              if ($(itemsPhase).val() == '') {
-                $(itemsPhase).closest("div").find("span").show()
-                $(itemsPhase).closest("div").addClass("has-error")
-              }else{
-                phase = $(itemsPhase).select2("val")
-              }
-          })
+          // $(item).find("#selectPhase").each(function(idxP,itemsPhase){
+          //     if ($(itemsPhase).val() == '') {
+          //       $(itemsPhase).closest("div").find("span").show()
+          //       $(itemsPhase).closest("div").addClass("has-error")
+          //     }else{
+          //       phase = $(itemsPhase).select2("val")
+          //     }
+          // })
 
           $(item).find("#selectTask").each(function(idx,itemsTask){
               if ($(itemsTask).val() == '') {
@@ -793,6 +846,7 @@
         formData = new FormData
         formData.append("_token","{{ csrf_token() }}")
         formData.append("arrConfig",JSON.stringify(arrConfig))
+        formData.append("roles",JSON.stringify(arrRoles))
         // formData.append("selectPhase",$("#selectPhase").val())
         // formData.append("inputTaskDesc",$("#inputTaskDesc").val())    
 
@@ -843,18 +897,32 @@
     }
 
     function savePIC(){
-      if ($("#selectPICAssign").val() == "") {
-         $("#selectPICAssign").closest("div").find("span").show()
-         $("#selectPICAssign").closest("div").addClass("has-error")
-      }else if($("#selectPIDAssign").val() == ""){
-        $("#selectPIDAssign").closest("div").find("span").show()
-        $("#selectPIDAssign").closest("div").addClass("has-error")
-      }else if($("#selectRoleAssign").val() == ""){
-        $("#selectRoleAssign").closest("div").find("span").show()
-        $("#selectRoleAssign").closest("div").addClass("has-error")
+      if ($("#selectAssignFor").val() == "") {
+         $("#selectAssignFor").closest("div").find("span").show()
+         $("#selectAssignFor").closest("div").addClass("has-error")
       }else{
+        if ($("#selectAssignFor").val() == 'Pid') {
+          if ($("#selectPICAssign").val() == "") {
+             $("#selectPICAssign").closest("div").find("span").show()
+             $("#selectPICAssign").closest("div").addClass("has-error")
+          }else if($("#selectPIDAssign").val() == ""){
+            $("#selectPIDAssign").closest("div").find("span").show()
+            $("#selectPIDAssign").closest("div").addClass("has-error")
+          }else if($("#selectRoleAssign").val() == ""){
+            $("#selectRoleAssign").closest("div").find("span").show()
+            $("#selectRoleAssign").closest("div").addClass("has-error")
+          }else{
+            storeAssign()
+          }
+        }else{
+          storeAssign()
+        }
+      }
+
+      function storeAssign(){
         formData = new FormData
         formData.append("_token","{{ csrf_token() }}")
+        formData.append("selectAssignFor",$("#selectAssignFor").val())
         formData.append("selectPICAssign",$("#selectPICAssign").val())
         formData.append("selectPIDAssign",JSON.stringify($("#selectPIDAssign").val()))
         formData.append("selectRoleAssign",$("#selectRoleAssign").val())        
@@ -877,7 +945,7 @@
         } 
 
         createPost(swalFireCustom,formData,swalSuccess,url="/timesheet/assignPidConfig")
-      }
+      }  
     }
 
     function createPost(swalFireCustom,data,swalSuccess,url){
