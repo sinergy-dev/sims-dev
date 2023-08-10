@@ -302,6 +302,7 @@
                 </table>
             </form>
             <div class="modal-footer">
+                <button class="btn btn-sm btn-danger" id="btn_delete_permit">Delete</button>
                 <button class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -409,6 +410,7 @@
                   $.each(results.data,function(idx,value){
                     if (value.remarks != null) {
                       events.push({
+                        id:value.id,
                         title:value.activity,
                         start:value.start_date,
                         end:value.end_date,
@@ -516,7 +518,6 @@
           }
         })
 
-        console.log(lock_activity[0].lock_activity )
         var today = new Date(); // Get today's date
         var startOfWeek = new Date(today); // Create a new date object representing the start of the week
         if (lock_activity[0].lock_activity == 1) {
@@ -603,7 +604,26 @@
           if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
             return false
           }else{
-            
+            // $("#id_activity").val('')
+            // $('#selectSchedule').val('').trigger('change')
+            // $('#selectType').val('').trigger('change').prop("disabled",false)
+            // $('#selectLead').val('').trigger('change').prop("disabled",false)
+            // $('#selectTask').val('').trigger('change').prop("disabled",false)
+            // $('#selectPhase').val('').trigger('change').prop("disabled",false)
+            // $('#selectLevel').val('').trigger('change').prop("disabled",false)
+            // $('#textareaActivity').val('').prop("disabled",false)
+            // $('#selectDuration').val('').trigger('change').prop("disabled",false)
+            // $('#selectStatus').val('').trigger('change').prop("disabled",false)
+
+            // $("#ModalAddTimesheet").find('.modal-footer').show()
+
+            // $(".modal-title").text("Add Timesheet")
+            // if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning")) {
+            //   $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
+            // }
+            // $('#daterange-input').val('').prop("disabled",false)
+            // $('#selectSchedule').val('').prop("disabled",false)
+
             var clickedDate = moment(date).format("YYYY-MM-DD"); 
             // Check if the clicked date is in the allowedDates array
             var isAllowedDate = datesInWeek.some(function(date) {
@@ -619,13 +639,39 @@
                     // Disable day click for the disabled dates
                     return false;
                   }else{
-                    setDuration()
-                    setTask()
-                    setPhase()
-                    setLevel()
-                    setStatus()
-                    setType()
-                    setSchedule(date)
+                    $("#ModalAddTimesheet").modal("show")
+
+                    Swal.fire({
+                      title: 'Harap sabar, menyiapkan data...',
+                      allowEscapeKey: false,
+                      allowOutsideClick: false,
+                      confirmButtonText:'',
+                      showConfirmButton:false,
+                      didOpen: () => {
+                        // Delayed task using setTimeout
+                        setTimeout(() => {
+                          // Close the loading indicator
+                          Swal.close();
+
+                          // Perform your delayed task here
+                          setDuration()
+                          setTask()
+                          setPhase()
+                          setLevel()
+                          setStatus()
+                          setType()
+                          setSchedule(date)
+                        }, 150); // Delayed execution after 2000ms (2 seconds)
+                      }
+                    });
+
+                    // setDuration()
+                    // setTask()
+                    // setPhase()
+                    // setLevel()
+                    // setStatus()
+                    // setType()
+                    // setSchedule(date)
 
                     $("#id_activity").val('')
                     $('#selectSchedule').val('').trigger('change')
@@ -638,7 +684,6 @@
                     $('#selectDuration').val('').trigger('change').prop("disabled",false)
                     $('#selectStatus').val('').trigger('change').prop("disabled",false)
 
-                    $("#ModalAddTimesheet").modal("show")
                     $("#ModalAddTimesheet").find('.modal-footer').show()
 
                     $(".modal-title").text("Add Timesheet")
@@ -699,6 +744,8 @@
                     return calEvent.start.isSame(disabledDate, 'day');
                   })) {
                     $("#ModalInfo").modal("show")
+                    console.log(calEvent)
+                    $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
                     $(".modal-title").text("Information")
                     $("#tbInfo").empty()
                     var append = ""
@@ -1239,6 +1286,33 @@
             text: 'Permit'
         }],
       })
+    }
+
+    function deletePermit(id){
+      swalFireCustom = {
+        title: 'Are you sure?',
+        text: "Delete Permit this User!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }
+
+        swalSuccess = {
+            icon: 'success',
+            title: 'Delete Permit Successfully!',
+            text: 'Click Ok to reload page',
+        } 
+
+        formData = new FormData
+        formData.append("_token","{{ csrf_token() }}")
+        formData.append("id",id)        
+
+        var postParam = 'delete_permit'
+
+        createPost(swalFireCustom,formData,swalSuccess,url="/timesheet/deletePermit",postParam)
     }
 
     function storePermit(){
@@ -1871,16 +1945,23 @@
                       // Render the updated event on the calendar
                   }else{
                       var newEvents = []
-                      $.each(results,function(idx,value){
-                        newEvents.push({"title":value.activity,"start":value.start_date,"end":value.end_date,"id":value.id,"remarks":value.status})
-                      })   
 
-                      loadData()
-                      newEvents.forEach(function(event) {  
-                          $('#calendar').fullCalendar('renderEvent', event, true);
-                          $('#calendar').fullCalendar('refetchEvents');
-                      })              
-                    $("#ModalPermit").modal('hide')
+                      if (postParam == 'permit') {
+                        $.each(results,function(idx,value){
+                          newEvents.push({"title":value.activity,"start":value.start_date,"end":value.end_date,"id":value.id,"remarks":value.status})
+                        }) 
+
+                        newEvents.forEach(function(event) {  
+                            $('#calendar').fullCalendar('renderEvent', event, true);
+                            $('#calendar').fullCalendar('refetchEvents');
+                        })
+
+                        $("#ModalPermit").modal('hide')
+                      }else{
+                        $("#ModalInfo").modal('hide')
+                      }
+
+                      loadData()              
                   }
                 }
               })
