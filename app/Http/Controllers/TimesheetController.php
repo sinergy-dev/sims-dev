@@ -665,7 +665,7 @@ class TimesheetController extends Controller
 
         $hidden = ['planned','threshold'];
 
-    	$data = Timesheet::where('nik',$request->nik)->where('date_add','>=',$startDate)->orWhere('date_add','<=',$endDate)->orderby('id','asc')->get()->makeHidden($hidden);
+    	$data = Timesheet::where('nik',$request->nik)->orderby('id','asc')->get()->makeHidden($hidden);
 
     	$getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
