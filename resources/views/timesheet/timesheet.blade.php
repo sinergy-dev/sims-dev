@@ -1135,6 +1135,12 @@
             element.css('color', '#00c0ef');
           }else{
             element.find('.fc-time').remove();
+
+            if (event.schedule == "Unplanned") {
+              element.find('.fc-title').html('<span class="badge" style="color:red;background-color:white">U</span> ' + event.title);
+            }else{
+              element.find('.fc-title').html('<span class="badge" style="color:green;background-color:white">P</span> ' + event.title);
+            }
             element.css('color', '#FFFFFF');
             if (event.status == 'Done') {
               element.css('background-color', '#00a65a'); // Set background color
