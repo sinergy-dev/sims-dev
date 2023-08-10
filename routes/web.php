@@ -1347,6 +1347,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('timesheet/getFilterScheduleChart','TimesheetController@getFilterScheduleChart');
 	Route::get('timesheet/deleteTaskPhase','TimesheetController@deleteTaskPhase');
 	Route::get('timesheet/exportExcel','TimesheetController@exportExcel');
+	Route::post('timesheet/deletePermit','TimesheetController@deletePermit');
 	
 
 });
