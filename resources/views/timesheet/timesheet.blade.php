@@ -61,10 +61,51 @@
       <div class="col-md-3 col-xs-12">
         <div class="box box-solid">
           <div class="box-header with-border">
-            <h4 class="box-title">Event Status Dictionary</h4>
+            <h4 class="box-title">Event Color Definition</h4>
           </div>
           <div class="box-body">
-            <div id="external-events">
+            <table class="table">
+              <tr>
+                <th>Status</th>
+                <th>Definition</th>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #3c8dbc;color:white;">New</span></td>
+                <td>New event created</td>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #00a65a;color:white;">Done</span></td>
+                <td>Event done</td>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #f56954;color:white;">Cancel</span></td>
+                <td>Canceled event</td>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #00c0ef;color:white;">Reschedule</span></td>
+                <td>Rescheduled event</td>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #f39c12;color:white;">Not-Done</span></td>
+                <td>Not done event</td>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #605ca8;color:white;">Sick</span></td>
+                <td>Sick</td>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #605ca8;color:white;">Permite</span></td>
+                <td>Permite</td>
+              </tr>
+              <tr>
+                <td><span class="badge" style="background-color: #605ca8;color:white;">Leaving Permite</span></td>
+                <td>Leaving permite</td>
+              </tr>
+            </table>
+            <div class="table">
+              
+            </div>
+        <!--     <div id="external-events">
               <div class="external-event" style="position: relative;background-color: #3c8dbc;color: white;cursor: text;">New</div>
               <div class="external-event" style="position: relative;background-color: #00a65a;color: white; z-index: auto; left: 0px; top: 0px;cursor: text;">Done</div>
               <div class="external-event" style="position: relative;background-color: #f56954;color: white; z-index: auto; left: 0px; top: 0px;cursor: text;">Cancel</div>
@@ -73,7 +114,7 @@
               <div class="external-event" style="position: relative;background-color: #605ca8;color: white;cursor: text;">Sick</div>
               <div class="external-event" style="position: relative;background-color: #605ca8;color: white;cursor: text;">Permite</div>
               <div class="external-event" style="position: relative;background-color: #605ca8;color: white;cursor: text;">Leaving Permite</div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -320,11 +361,13 @@
 
       calendar = $('#calendar').fullCalendar({
         timezone:'Asia/Jakarta',
-        header: {
-          left: 'prev,next today myCustomButton',
-          center: 'title',
-          right: 'month,agendaWeek,agendaDay'
-        } 
+        // header: {
+        //   left: 'prev,next today myCustomButton',
+        //   center: 'title',
+        //   // right: 'month'
+        //   // ,agendaWeek,agendaDay'
+        // } 
+        defaultView: 'month'
       });
       loadData()
     })
@@ -349,109 +392,110 @@
             nik:nik
           },
           success:function(results){
-            
-            Pace.restart();
-            Pace.track(function(){
-              $.ajax({
-                type:"GET",
-                url:"{{url('/getListCalendarEvent')}}",
-                data:{
-                  nik:nik
-                },
-                success:function(result){
-                  var events = [], disabledDates = []
-                  if (results.data.length > 0) {
-                    $.each(results.data,function(idx,value){
-                      if (value.remarks != null) {
+            // Pace.restart();
+            // Pace.track(function(){
+            $.ajax({
+              type:"GET",
+              url:"{{url('/getListCalendarEvent')}}",
+              data:{
+                nik:nik
+              },
+              success:function(result){
+                var events = [], disabledDates = []
+                if (results.data.length > 0) {
+                  $.each(results.data,function(idx,value){
+                    if (value.remarks != null) {
+                      events.push({
+                        title:value.activity,
+                        start:value.start_date,
+                        end:value.end_date,
+                        activity:value.activity,
+                        remarks:value.remarks
+                      })   
+
+                      disabledDates.push(moment.utc(value.start_date, 'YYYY-MM-DD'))
+                    }else{
                         events.push({
                           title:value.activity,
                           start:value.start_date,
-                          end:value.end_date,
-                          activity:value.activity,
-                          remarks:value.remarks
-                        })   
+                          // end:value.end_date,
+                          end:moment(value.end_date).endOf('day'),
+                          // moment(value.end_date).endOf('day')
+                          id:value.id,
+                          type:value.type,
+                          task:value.task,
+                          schedule:value.schedule,
+                          pid:value.pid,
+                          phase:value.phase,
+                          level:value.level,
+                          duration:value.duration,
+                          status:value.status,
+                        }) 
+                          
+                    }
+                  })
+                }
 
-                        disabledDates.push(moment.utc(value.start_date, 'YYYY-MM-DD'))
-                      }else{
-                          events.push({
-                            title:value.activity,
-                            start:value.start_date,
-                            // end:value.end_date,
-                            end:moment(value.end_date).endOf('day'),
-                            // moment(value.end_date).endOf('day')
-                            id:value.id,
-                            type:value.type,
-                            task:value.task,
-                            schedule:value.schedule,
-                            pid:value.pid,
-                            phase:value.phase,
-                            level:value.level,
-                            duration:value.duration,
-                            status:value.status,
-                          }) 
-                            
+                var lock_activity = [{"lock_activity":results.lock_duration}]
+                $("#title_lock_duration").text(results.lock_duration + " Week")
+
+                var arrayData = []
+                
+                if (result != "") {
+                  result.items.map(item => {
+                    // if (item.creator != undefined) {
+                    //   if (Object.keys(item.creator).length == 2) {
+                    //     if (item.creator.self == true) {
+                    //       const events = arrayData.push({
+                    //         id:item.id,
+                    //         title: item.summary,
+                    //         start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
+                    //         end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                    //         activity: item.summary,
+                    //         refer:"gcal",
+                    //       })
+                    //     }
+                    //   }
+                    // }
+                 
+
+                    $.each(item.attendees,function(index,itemX){
+                      if (itemX.responseStatus == "accepted") {
+                        if (itemX.email == email) {
+                          const events = arrayData.push({
+                            id:item.id,
+                            title: item.summary,
+                            start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
+                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                            activity: item.summary,
+                            refer:"gcal"
+                          })
+                        }
                       }
                     })
-                  }
-
-                  var lock_activity = [{"lock_activity":results.lock_duration}]
-                  var arrayData = []
-                  
-                  if (result != "") {
-                    result.items.map(item => {
-                      // if (item.creator != undefined) {
-                      //   if (Object.keys(item.creator).length == 2) {
-                      //     if (item.creator.self == true) {
-                      //       const events = arrayData.push({
-                      //         id:item.id,
-                      //         title: item.summary,
-                      //         start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
-                      //         end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
-                      //         activity: item.summary,
-                      //         refer:"gcal",
-                      //       })
-                      //     }
-                      //   }
-                      // }
-                   
-
-                      $.each(item.attendees,function(index,itemX){
-                        if (itemX.responseStatus == "accepted") {
-                          if (itemX.email == email) {
-                            const events = arrayData.push({
-                              id:item.id,
-                              title: item.summary,
-                              start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
-                              end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
-                              activity: item.summary,
-                              refer:"gcal"
-                            })
-                          }
-                        }
-                      })
-                    })
-                  }
-
-                  var filteredData = arrayData.filter(function(obj1) {
-                    return !events.some(function(obj2) {
-                      return obj1.title === obj2.title
-                    });
-                  });
-                  var arrayCalconcatDb = events.concat(filteredData)
-
-
-                  // var uniqueArray = arrayCalconcatDb.filter((obj, index, self) =>
-                  //   index === self.findIndex((item) => item.refer === obj.refer)
-                  // );
-
-                  
-                  return showEvents(arrayCalconcatDb,lock_activity,disabledDates)
-                },
-                complete:function(){
-                  Pace.stop();
+                  })
                 }
-              })
+
+                var filteredData = arrayData.filter(function(obj1) {
+                  return !events.some(function(obj2) {
+                    return obj1.title === obj2.title
+                  });
+                });
+                var arrayCalconcatDb = events.concat(filteredData)
+
+
+                // var uniqueArray = arrayCalconcatDb.filter((obj, index, self) =>
+                //   index === self.findIndex((item) => item.refer === obj.refer)
+                // );
+
+                
+                return showEvents(arrayCalconcatDb,lock_activity,disabledDates)
+              },
+              complete:function(){
+                Pace.stop();
+              }
             })
+            // })
           }
         })
       })
@@ -469,6 +513,7 @@
           }
         })
 
+        console.log(lock_activity[0].lock_activity )
         var today = new Date(); // Get today's date
         var startOfWeek = new Date(today); // Create a new date object representing the start of the week
         if (lock_activity[0].lock_activity == 1) {
@@ -480,12 +525,27 @@
         }else if(lock_activity[0].lock_activity == 3){
           var daysToSubtract = today.getDay() + 14; // Add 7 to ensure we get to the first day of the next two-week period
           var incDate = 21
-        }else{
-          startOfWeek.setDate(1) //lock activity 1 month
-          var incDate = 30
+        }else if(lock_activity[0].lock_activity == 4){
+          var daysToSubtract = today.getDay() + 21;
+          // startOfWeek.setDate(1)
+          var incDate = 31
+        }else if(lock_activity[0].lock_activity == 5){
+          // startOfWeek.setDate(1) //lock activity 1 month
+          var daysToSubtract = today.getDay() + 28;
+          var incDate = 38
+        }else if(lock_activity[0].lock_activity == 6){
+          // startOfWeek.setDate(1) //lock activity 1 month
+          var daysToSubtract = today.getDay() + 35;
+          var incDate = 45
+        }else if(lock_activity[0].lock_activity == 7){
+          // startOfWeek.setDate(1) //lock activity 1 month
+          var daysToSubtract = today.getDay() + 42;
+          var incDate = 52
+        }else if(lock_activity[0].lock_activity == 8){
+          // startOfWeek.setDate(1) //lock activity 1 month
+          var daysToSubtract = today.getDay() + 49;
+          var incDate = 59
         }
-
-        $("#title_lock_duration").text(lock_activity[0].lock_activity + " Week")
 
         // Set the date to the first day of the two-week or three-week period
         var startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysToSubtract);
@@ -524,11 +584,17 @@
       calendar.fullCalendar('destroy');
       $('#calendar').fullCalendar({
         timezone: 'Asia/Jakarta',
-        header: {
-          left: 'prev,next today myCustomButton',
-          center: 'title',
-          right: 'month,agendaWeek,agendaDay'
-        }, 
+        // header: {
+        //   left: 'prev,next today myCustomButton',
+        //   center: 'title',
+        //   // right: 'month,agendaWeek,agendaDay'
+        // }, 
+        defaultView: 'month',
+        defaultDate: '2023-08-01', // Set the initial visible date
+        validRange: {
+          start: '2023-08-01',
+          end: '2023-08-31'
+        },
         dayClick: function(date, jsEvent, view) {
           var position = "{{Auth::User()->id_position}}"
           if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
@@ -1296,7 +1362,7 @@
 
     function setDuration(){
       var arrDuration = []
-      for (var i = 1; i <= 480; i++) {
+      for (var i = 1; i <= 1440; i++) {
         if (i % 5 === 0) {
           // Action to perform on every multiple of 5
           arrDuration.push({id:i,text:i+" menit"})
@@ -1336,14 +1402,23 @@
         // Set the placeholder attribute to the desired value
         $("#selectLead").attr('placeholder','Select Project Id')
       }
+
       $.ajax({
         type:"GET",
         url:"{{url('/timesheet/getPidByPic')}}",
         success:function(result){
-          $("#selectLead").select2({
+          console.log(result)
+          if (result[0] == 'Alert') {
+            $("#selectLead").closest("div").find("span").show()
+            $("#selectLead").closest("div").addClass("has-error")
+            $("#selectLead").closest("div").find(".help-block").text(result[1]) 
+          }else{
+            $("#selectLead").select2({
               placeholder:"Select Project Id",
               data:result,
-          })
+            })
+          }
+          
         }
       })
     }
@@ -1751,6 +1826,12 @@
                           console.log("ini buat calender dari google")
                           $('#calendar').fullCalendar('clientEvents', $("#id_activity").val())[0];
                           $('#calendar').fullCalendar('removeEvents', $("#id_activity").val())
+
+                          $.each(newEvents, function(index, event) {
+                            $('#calendar').fullCalendar('renderEvent', event, true);
+                            // $('#calendar').fullCalendar('refetchEvents');
+                            // $('#calendar').fullCalendar('renderEvent', event, true);
+                          })
                         }else{
                           console.log("kok kesini jugaaa")
 
