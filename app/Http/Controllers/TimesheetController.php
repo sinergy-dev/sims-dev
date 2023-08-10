@@ -29,6 +29,13 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 use Mail;
 
 
@@ -235,14 +242,43 @@ class TimesheetController extends Controller
 
     public function assignPidConfig(Request $request)
     {
-    	foreach (json_decode($request->selectPIDAssign,true) as $key => $value) {
-    		$assign = new TimesheetPid();
-	    	$assign->nik = $request->selectPICAssign;
-	    	$assign->pid = $value;
-	    	$assign->role = $request->selectRoleAssign;
-	    	$assign->date_add = Carbon::now()->toDateTimeString();
-	    	$assign->save();
-    	}
+        if ($request->selectAssignFor == "Pid") {
+           foreach (json_decode($request->selectPIDAssign,true) as $key => $value) {
+                $assign = new TimesheetPid();
+                $assign->nik = $request->selectPICAssign;
+                $assign->pid = $value;
+                $assign->role = $request->selectRoleAssign;
+                $assign->date_add = Carbon::now()->toDateTimeString();
+                $assign->save();
+            }
+
+            $getDivision = User::select('id_division')->distinct()->where('nik',$request->selectPICAssign)->first();
+
+            $update = TimesheetConfig::where('division',$getDivision->id_division)->first();
+            if (isset($update)) {
+                $update->status_assign_pid = 'Pid';
+                $update->update(); 
+            }       
+        }else{
+            $update = TimesheetConfig::where('division',Auth::User()->id_division)->get();
+            if (count($update) != 0) {
+                foreach($update as $updates){
+                    $updates = TimesheetConfig::where('division',$updates->division)->first();
+                    $updates->status_assign_pid = 'All';
+                    $updates->update();
+                }
+            }else{
+                $assign = new TimesheetConfig();
+                $assign->roles = null;
+                $assign->phase = null;
+                $assign->task = null;
+                $assign->date_add = Carbon::now()->toDateTimeString();
+                $assign->division = Auth::User()->id_division;
+                $assign->status_assign_pid = "All";
+
+                $assign->save();
+            }
+        }
     }
 
     public function addTimesheet(Request $request)
@@ -272,6 +308,7 @@ class TimesheetController extends Controller
                         $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
                     } else {
                         $addTimesheet = new Timesheet();
+                        $addTimesheet->date_add = Carbon::now()->toDateTimeString();
                     }
 
                     // $addTimesheet = new Timesheet();
@@ -290,7 +327,6 @@ class TimesheetController extends Controller
                     $addTimesheet->status = $request->selectStatus;
                     $addTimesheet->duration = $request->selectDuration;
                     $addTimesheet->type = $request->selectType;
-                    $addTimesheet->date_add = Carbon::now()->toDateTimeString();
                     $getPoint = (int)$request->selectDuration/480;
                     $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
                     $addTimesheet->month = date("n");
@@ -305,6 +341,7 @@ class TimesheetController extends Controller
                     $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
                 } else {
                     $addTimesheet = new Timesheet();
+                    $addTimesheet->date_add = Carbon::now()->toDateTimeString();
                 }
                 $addTimesheet->nik = Auth::User()->nik;
                 $addTimesheet->schedule = $request->selectSchedule;
@@ -320,7 +357,6 @@ class TimesheetController extends Controller
                 $addTimesheet->status = $request->selectStatus;
                 $addTimesheet->duration = $request->selectDuration;
                 $addTimesheet->type = $request->selectType;
-                $addTimesheet->date_add = Carbon::now()->toDateTimeString();
                 $getPoint = (int)$request->selectDuration/480;
                 $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
                 $addTimesheet->month = date("n");
@@ -335,6 +371,7 @@ class TimesheetController extends Controller
                 $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
             } else {
                 $addTimesheet = new Timesheet();
+                $addTimesheet->date_add = Carbon::now()->toDateTimeString();
             }
             $addTimesheet->nik = Auth::User()->nik;
             $addTimesheet->schedule = $request->selectSchedule;
@@ -348,7 +385,6 @@ class TimesheetController extends Controller
             $addTimesheet->status = $request->selectStatus;
             $addTimesheet->duration = $request->selectDuration;
             $addTimesheet->type = $request->selectType;
-            $addTimesheet->date_add = Carbon::now()->toDateTimeString();
             $getPoint = (int)$request->selectDuration/480;
             $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
             $addTimesheet->month = date("n");
@@ -379,25 +415,28 @@ class TimesheetController extends Controller
     public function addConfig(Request $request)
     {
     	// return $request->arrConfig;
-        $delete = TimesheetConfig::where('division',Auth::User()->id_division);
-        $delete->delete();
+        // $delete = TimesheetConfig::where('division',Auth::User()->id_division);
+        // $delete->delete();
+        $delete = TimesheetConfig::where('division',Auth::User()->id_division)->whereNotIn('roles',json_decode($request->roles));
+        if(isset($delete)){
+            $delete->delete();
+        }
 
     	foreach (json_decode($request->arrConfig,true) as $key => $value) {
     		// return gettype($value['phase']);
 	    	// foreach ($value['phase'] as $key => $phase) {
 	    		// foreach ($value['task'] as $key => $task) {
-
     				if (DB::table('tb_timesheet_config')->select('roles')->where('roles',$value['unit'])->exists()) {
-    					$addConfig = TimesheetConfig::where('roles',$value['unit'])->first();
+                        $addConfig = TimesheetConfig::where('roles',$value['unit'])->first();
     				} else {
-    					$addConfig = new TimesheetConfig();
+                        $addConfig = new TimesheetConfig();
     				}
 
-    				$arrPhase = array($value['phase']);
-		    		$arrTask = array($value['task']);
-		    		$addConfig->roles = $value['unit'];
-		    		$addConfig->phase = json_encode($value['phase'],JSON_NUMERIC_CHECK);
-		    		$addConfig->task = json_encode($value['task'],JSON_NUMERIC_CHECK);
+    				$arrPhase            = array($value['phase']);
+		    		$arrTask             = array($value['task']);
+		    		$addConfig->roles    = $value['unit'];
+		    		$addConfig->phase    = json_encode($value['phase'],JSON_NUMERIC_CHECK);
+		    		$addConfig->task     = json_encode($value['task'],JSON_NUMERIC_CHECK);
 		    		$addConfig->date_add = Carbon::now()->toDateTimeString();
 			    	$addConfig->division = Auth::User()->id_division;
 			    	$addConfig->save();
@@ -415,15 +454,43 @@ class TimesheetController extends Controller
     }
 
     public function getPidByPic(Request $request)
-    {
-    	$getPidByPic = DB::table('tb_timesheet_pid')->select('pid as id','pid as text')->where('nik',Auth::User()->nik)->orderby('id','desc')->get();
+    {        
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','role_user.role_id')->where('user_id', $nik)->first(); 
 
-    	return $getPidByPic;
+        $cekPidStatus = TimesheetConfig::where('division',Auth::User()->id_division)->first();
+
+        if (isset($cekPidStatus)) {
+            if ($cekPidStatus->status_assign_pid == 'All') {
+                $getPidByPic = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('users','users.nik','sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`opp_name`) AS text"))->where('id_company','1')->orderby('tb_id_project.id_pro','desc')->get();
+
+                return $getPidByPic;
+            }else if ($cekPidStatus->status_assign_pid == 'Pid') {
+                $getPidByPic = DB::table('tb_timesheet_pid')->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`opp_name`) AS text"))->where('tb_timesheet_pid.nik',Auth::User()->nik)->orderby('id','desc')->get();
+
+                return $getPidByPic;
+            }
+        }else{
+
+            $getPidByPic = DB::table('tb_timesheet_pid')->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`opp_name`) AS text"))->where('tb_timesheet_pid.nik',Auth::User()->nik)->orderby('id','desc')->get();
+
+            if (count($getPidByPic) == 0) {
+                $getPidByPic = ['Alert','Please Ask your Manager/Spv to assign pid!'];
+                return $getPidByPic;
+            }else{
+                return $getPidByPic;
+            }
+        }
+        // if ($cek_role->group == 'hr' || $cek_role->group == 'pmo') {
+            
+        // } else {
+            
+        // }
     }
 
     public function getLeadId(Request $request)
     {
-    	return $getLeadId = DB::table('sales_lead_register')->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')->select('sales_solution_design.lead_id as id','sales_solution_design.lead_id as text')->where('sales_solution_design.nik',Auth::User()->nik)->get();
+    	return $getLeadId = DB::table('sales_lead_register')->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')->select('sales_solution_design.lead_id as id',DB::raw("CONCAT(`sales_solution_design`.`lead_id`,' - ',`opp_name`) AS text"))->where('sales_solution_design.nik',Auth::User()->nik)->get();
     }
 
 
@@ -547,9 +614,9 @@ class TimesheetController extends Controller
             $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("SID") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
         } else if($getGroupRoles == 'presales'){
             $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("SOL") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
-        } else if($getGroupRoles == 'hr'){
-            $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("HR") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
-        } else {
+        }else if($getGroupRoles == 'hr'){
+            $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,`name` AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where('group',$getGroupRoles)->distinct()->get();
+        }  else {
             $getRoles = DB::table('roles')->select('id as id','name as text')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get();
         }
 
@@ -560,7 +627,7 @@ class TimesheetController extends Controller
     {
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first()->group; 
 
-        return $getUser = User::select('users.nik as id', 'users.name as text')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group',$cek_role)->where('roles.name',"not like","%Manager%")->get();
+        return $getUser = User::select('users.nik as id', 'users.name as text')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group',$cek_role)->where('roles.name',"not like","%Manager%")->where('status_karyawan','!=','dummy')->get();
 
     	// return $getUser = User::select('nik as id', 'name as text')->where('id_division',Auth::User()->id_division)->get();
     }
@@ -593,10 +660,12 @@ class TimesheetController extends Controller
 
     public function getAllActivityByUser(Request $request)
     {
-    	$startDate = Carbon::now()->startOfYear()->format("Y-m-d");
-        $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
+    	$startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+        $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
 
-    	$data = Timesheet::where('nik',$request->nik)->orderby('id','asc')->get()->makeHidden(['planned']);;
+        $hidden = ['planned','threshold'];
+
+    	$data = Timesheet::where('nik',$request->nik)->where('date_add','>=',$startDate)->orWhere('date_add','<=',$endDate)->orderby('id','asc')->get()->makeHidden($hidden);
 
     	$getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
@@ -1294,7 +1363,7 @@ class TimesheetController extends Controller
 
         if (count($sumMandays) == 1) {
             $planned = $sumMandays->map(function ($item, $key) {
-                $planned = $item['planned'];
+                $planned = $item['plannedMonth'];
                 $actual = $item['point_mandays'];
                 $name = $item['name'];
                 return [$planned,$actual,$name];
@@ -5267,5 +5336,209 @@ class TimesheetController extends Controller
         }
 
         return $hasil2;
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        $appendedAttributesToHide = ['planned','threshold'];
+
+        $arrayMonth = collect();
+        $arrSumPoint = collect();
+        foreach($request->month as $month){
+            $date = Carbon::parse($month);
+            // Get the numeric representation of the month (1 to 12)
+            $numericMonth = $date->month;
+            // return $numericMonth;
+            $arrayMonth->push($numericMonth);
+        }
+
+        $dataTimesheet = Timesheet::Rightjoin('users','users.nik','=','tb_timesheet.nik')
+            ->Leftjoin('tb_timesheet_phase','tb_timesheet_phase.id','=','tb_timesheet.phase')
+            ->Leftjoin('tb_timesheet_task','tb_timesheet_task.id','=','tb_timesheet.task')
+            ->select('users.nik','users.name','tb_timesheet.start_date','tb_timesheet.date_add','tb_timesheet.level','tb_timesheet_task.task','tb_timesheet_phase.phase','tb_timesheet.schedule','tb_timesheet.point_mandays','tb_timesheet.status','tb_timesheet.activity','tb_timesheet.end_date','tb_timesheet.type', DB::raw("(CASE WHEN (pid = 'null') THEN '-' WHEN (pid is null) THEN '-' ELSE pid END) as pid"))
+            ->where(function ($query) use ($arrayMonth) {
+                foreach ($arrayMonth as $month) {
+                    $query->orWhereRaw("MONTH(start_date) = $month");
+                }
+            });
+
+        $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+            ->join('roles', 'roles.id', '=', 'role_user.role_id')
+            ->select('users.name','users.nik')
+            ->where('roles.group',$cek_role->group)
+            ->where('roles.name','not like','%Manager')
+            ->where('users.status_delete','-');
+
+        $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group',$cek_role->group)->pluck('nik');
+
+        if ($request->pic[0] === null) {
+            $dataTimesheet = $dataTimesheet->whereIn('tb_timesheet.nik',$listGroup);
+
+            $getUserByGroup = $getUserByGroup->get();
+
+        }else{
+            $dataTimesheet = $dataTimesheet->whereIn('tb_timesheet.nik',$request->pic);
+
+            $getUserByGroup = $getUserByGroup
+                                ->whereIn('nik',$request->pic)    
+                                ->get();
+        }
+
+        if ($request->task[0] === null) {
+            $dataTimesheet = $dataTimesheet;
+        }else{
+            $dataTimesheet = $dataTimesheet->whereIn('task',$request->task);                    
+        }
+
+        if ($request->status[0] === null) {
+            $dataTimesheet = $dataTimesheet->where('status','Done');
+        }else{
+            $dataTimesheet = $dataTimesheet->whereIn('status',$request->status);                    
+        }
+
+        if (is_null($request->year)) {
+            $dataTimesheet = $dataTimesheet->whereYear('start_date',date('Y'));
+        }else{
+            $dataTimesheet = $dataTimesheet->whereYear('start_date',$request->year);                    
+        }
+
+        if ($request->schedule[0] === null) {
+            $dataTimesheet = $dataTimesheet;
+        }else{
+            $dataTimesheet = $dataTimesheet->whereIn('schedule',$request->schedule);                    
+        }
+
+        $dataTimesheet = $dataTimesheet->get()->makeHidden($appendedAttributesToHide);
+
+        $collectByName = collect();
+
+        foreach($dataTimesheet as $data){
+            $collectByName->push([
+                "name"             =>$data->name,
+                "activity"         =>$data->activity,
+                "type"             =>$data->type,
+                "pid"              =>$data->pid,
+                "level"            =>isset($data->level)?$data->level:"-",
+                "phase"            =>isset($data->phase)?$data->phase:"-",
+                "task"             =>isset($data->task)?$data->task:"-",
+                "point_mandays"    =>isset($data->point_mandays)?$data->point_mandays:0,
+                "status"           =>isset($data->status)?$data->status:"New",
+                "date_add"         =>$data->date_add,
+                "start_date"       =>$data->start_date,
+                "end_date"         =>$data->end_date,
+                "schedule"         =>$data->schedule,
+            ]);
+        }
+
+        // foreach($getUserByGroup as $user){
+        //     $collectByName->push([
+        //         "name"             =>$user->name,
+        //         "activity"         =>"-",
+        //         "level"            =>"-",
+        //         "phase"            =>"-",
+        //         "task"             =>"-",
+        //         "point_mandays"    =>"-",
+        //         "status"           =>"-",
+        //         "date_add"         =>"-",
+        //         "start_date"       =>"-",
+        //         "end_date"         =>"-",
+        //         "schedule"         =>"-"
+        //     ]);
+        // }
+
+        $collectByName = $collectByName->sortBy('name')->groupby('name');
+
+        $indexSheet = 0;
+
+        // $timesheetSheet = new Worksheet($spreadsheet,'Export Timesheet');
+        // $spreadsheet->addSheet($timesheetSheet);
+        // $spreadsheet->removeSheetByIndex(0);
+        // $sheet = $spreadsheet->getActiveSheet(0);
+
+        // $sheet->mergeCells('A1:H1');
+        $spreadsheet = new Spreadsheet();
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        // $sheet->getStyle('A1:I1')->applyFromArray($titleStyle);
+        // $sheet->setCellValue('A1','Report Timesheet');
+
+        // $headerContent = ["No", "Activity", "Level", "Phase","Task","Duration",'Status','Date Add',"Schedule"];
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+
+        
+        foreach ($collectByName as $key => $item) {
+            $name = substr($key,0,30);
+
+            $spreadsheet->addSheet(new Worksheet($spreadsheet,$name));
+            // $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
+            $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
+
+            // $detailSheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+            // $detailSheet->setCellValue('A1','Timesheet ' . $key);
+            // $detailSheet->mergeCells('A1:J1');
+
+            $headerContent = ["No", "Name","Activity", "Type", "PID/Lead ID", "Level", "Phase","Task","Duration","Status","Date Add","Start Date","End Date","Schedule"];
+            $detailSheet->getStyle('A1:N1')->applyFromArray($headerStyle);
+            $detailSheet->fromArray($headerContent,NULL,'A1');
+
+            $collectByName[$key]->map(function($item,$key) use ($detailSheet){
+                // $item->date = date_format(date_create($item->date),'d-M-Y');
+
+                $detailSheet->fromArray(array_merge([$key + 1],array_values($item)),NULL,'A' . ($key + 2));
+            });
+
+            $detailSheet->getColumnDimension('A')->setAutoSize(true);
+            $detailSheet->getColumnDimension('B')->setAutoSize(true);
+            $detailSheet->getColumnDimension('C')->setAutoSize(true);
+            $detailSheet->getColumnDimension('D')->setAutoSize(true);
+            $detailSheet->getColumnDimension('E')->setAutoSize(true);
+            $detailSheet->getColumnDimension('F')->setAutoSize(true);
+            $detailSheet->getColumnDimension('G')->setAutoSize(true);
+            $detailSheet->getColumnDimension('H')->setAutoSize(true);
+            $detailSheet->getColumnDimension('I')->setAutoSize(true);
+            $detailSheet->getColumnDimension('J')->setAutoSize(true);
+            $detailSheet->getColumnDimension('K')->setAutoSize(true);
+            $detailSheet->getColumnDimension('L')->setAutoSize(true);
+
+            $indexSheet = $indexSheet + 1;
+        }
+
+        // return $indexSheet;
+        
+        
+        if ($indexSheet == '0') {
+            return 'Staff belum ada yang input timesheet';
+        } else {
+
+            $firstWorksheet = $spreadsheet->getSheet(0);
+
+            // Remove the first worksheet from the workbook
+            $spreadsheet->removeSheetByIndex(0);
+            $spreadsheet->setActiveSheetIndex(0);
+
+            $fileName = 'Timesheet ' . $cek_role->group . ' '. date('Y') . '.xlsx';
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="' . $fileName . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            ob_end_clean();
+            return $writer->save("php://output");
+        }
+        
     }
 }
