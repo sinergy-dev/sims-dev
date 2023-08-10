@@ -673,7 +673,7 @@ class TimesheetController extends Controller
 
     	$holiday = $this->getWorkDays($startDate,$endDate)["holiday"]->values();
 
-    	$getPermit = TimesheetPermit::select('start_date','end_date','status as remarks','activity')->where('nik',$request->nik)->get();
+    	$getPermit = TimesheetPermit::select('start_date','end_date','status as remarks','activity','id')->where('nik',$request->nik)->get();
 
     	$array = array_merge($data->toArray(),$getLeavingPermit->toArray(),$holiday->toArray(),$getPermit->toArray());
 
@@ -868,6 +868,12 @@ class TimesheetController extends Controller
         }
 
         return $storeAll;
+    }
+
+    public function deletePermit(Request $request)
+    {
+        $delete = TimesheetPermit::where('id',$request->id)->first();
+        $delete->delete();
     }
 
     public function getNameByNik(Request $request)
