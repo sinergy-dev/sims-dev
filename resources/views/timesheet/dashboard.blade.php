@@ -177,6 +177,7 @@
                           <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummaryMandays')" type="button" class="btn btn-default btn-flat">
                             <i class="fa fa-fw fa-refresh"></i>
                           </button>
+                          <button style="margin-left: 10px;display: none;" id="btn_export_sum_mandays" onclick="customFilter('{{action('TimesheetController@exportExcel')}}','export')" class="btn btn-md btn-success"><i class="fa fa-file-excel-o"></i> Export</button>
                         </span>
                       </div>
                     </div>
@@ -810,7 +811,11 @@
 
       var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
 
-      showDataFilter(arrFilter,arrMonth)
+      if (id == "export") {
+        window.location = val + arrFilter;
+      }else{
+        showDataFilter(arrFilter,arrMonth)
+      }
     }
 
     var colors = [
