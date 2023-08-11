@@ -775,17 +775,16 @@
                           // Close the loading indicator
                           Swal.close();
                           if ($.fn.select2 !== undefined) {
+                            setHoliday()
                             var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
                             if (isSelect2Initialized == false) {
                               setSchedule(date)
-                              setHoliday()
-                            }else{
                               setDuration()
                               setLevel()
                               setStatus()
                               setType()
-                              setTask(calEvent.task)
-                              setPhase(calEvent.phase)
+                              setTask()
+                              setPhase()
                             }
                           }
                         }, 100); // Delayed execution after 2000ms (2 seconds)
@@ -847,6 +846,8 @@
                       $('#textareaActivity').val(calEvent.title).trigger('change')
                       $('#selectDuration').val(calEvent.duration).trigger('change')
                       $('#selectStatus').val(calEvent.status).trigger('change')
+                      $('#selectTask').val(calEvent.task).trigger('change')
+                      $('#selectPhase').val(calEvent.phase).trigger('change')
 
                       $("#ModalAddTimesheet").modal("show")
 
@@ -908,17 +909,16 @@
 
                       // Perform your delayed task here
                       if ($.fn.select2 !== undefined) {
+                        setHoliday()
                         var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
                         if (isSelect2Initialized == false) {
                           setSchedule()
-                          setHoliday()
-                        }else{
                           setDuration()
                           setLevel()
                           setStatus()
                           setType()
-                          setTask(calEvent.task)
-                          setPhase(calEvent.phase)
+                          setTask()
+                          setPhase()
                         }
                       }
 
@@ -942,6 +942,8 @@
                         $('#selectLead').val(calEvent.pid).trigger('change')
                         $('#selectLevel').val(calEvent.level).trigger('change')
                         $('#textareaActivity').val(calEvent.title).trigger('change')
+                        $('#selectTask').val(calEvent.task).trigger('change')
+                        $('#selectPhase').val(calEvent.phase).trigger('change')
                         $('#selectDuration').val(calEvent.duration).trigger('change')
                         $('#selectStatus').val(calEvent.status).trigger('change')
 
@@ -1053,6 +1055,8 @@
                   $('#textareaActivity').val(calEvent.title).trigger('change')
                   $('#selectDuration').val(calEvent.duration).trigger('change')
                   $('#selectStatus').val(calEvent.status).trigger('change')
+                  $('#selectTask').val(calEvent.task).trigger('change')
+                  $('#selectPhase').val(calEvent.phase).trigger('change')
 
                   if (momentDate > currentDate) {
                        //supervisor
@@ -1243,9 +1247,8 @@
           setLevel()
           setStatus()
           setType()
-        }else{
-          setTask(task)
-          setPhase(phase)
+          setTask()
+          setPhase()
         }
       }
       
@@ -1361,6 +1364,8 @@
         $('#textareaActivity').val(title).trigger('change')
         $('#selectDuration').val(duration).trigger('change')
         $('#selectStatus').val(status).trigger('change')
+        $('#selectTask').val(task).trigger('change')
+        $('#selectPhase').val(phase).trigger('change')
       }
     }
 
@@ -1682,11 +1687,11 @@
               placeholder:"Select Task",
               data:result,
           })
-          if (val != null) {
-            selectTask.val(val).trigger('change')
-          }else{
-            selectTask
-          }
+          // if (val != null) {
+          //   selectTask.val(val).trigger('change')
+          // }else{
+          //   selectTask
+          // }
           
         }
       })
@@ -1702,11 +1707,11 @@
             placeholder:"Select Phase",
             data:result,
           })
-          if (val != null) {
-            selectPhase.val(val).trigger('change')
-          }else{
-            selectPhase
-          }
+          // if (val != null) {
+          //   selectPhase.val(val).trigger('change')
+          // }else{
+          //   selectPhase
+          // }
         }
       })
     }
