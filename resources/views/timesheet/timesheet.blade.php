@@ -350,7 +350,6 @@
     $(document).ready(function(){
       var accesable = @json($feature_item);
       
-
       accesable.forEach(function(item,index){
         $("#" + item).show()
       })
@@ -604,26 +603,6 @@
           if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
             return false
           }else{
-            // $("#id_activity").val('')
-            // $('#selectSchedule').val('').trigger('change')
-            // $('#selectType').val('').trigger('change').prop("disabled",false)
-            // $('#selectLead').val('').trigger('change').prop("disabled",false)
-            // $('#selectTask').val('').trigger('change').prop("disabled",false)
-            // $('#selectPhase').val('').trigger('change').prop("disabled",false)
-            // $('#selectLevel').val('').trigger('change').prop("disabled",false)
-            // $('#textareaActivity').val('').prop("disabled",false)
-            // $('#selectDuration').val('').trigger('change').prop("disabled",false)
-            // $('#selectStatus').val('').trigger('change').prop("disabled",false)
-
-            // $("#ModalAddTimesheet").find('.modal-footer').show()
-
-            // $(".modal-title").text("Add Timesheet")
-            // if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning")) {
-            //   $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
-            // }
-            // $('#daterange-input').val('').prop("disabled",false)
-            // $('#selectSchedule').val('').prop("disabled",false)
-
             var clickedDate = moment(date).format("YYYY-MM-DD"); 
             // Check if the clicked date is in the allowedDates array
             var isAllowedDate = datesInWeek.some(function(date) {
@@ -652,26 +631,22 @@
                         setTimeout(() => {
                           // Close the loading indicator
                           Swal.close();
-
-                          // Perform your delayed task here
-                          setDuration()
-                          setTask()
-                          setPhase()
-                          setLevel()
-                          setStatus()
-                          setType()
-                          setSchedule(date)
-                        }, 150); // Delayed execution after 2000ms (2 seconds)
+                          if ($.fn.select2 !== undefined) {
+                            setHoliday()
+                            var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
+                            if (isSelect2Initialized == false) {
+                              setSchedule(date)
+                              setDuration()
+                              setLevel()
+                              setStatus()
+                              setType()
+                              setTask()
+                              setPhase()
+                            }
+                          }
+                        }, 100); // Delayed execution after 2000ms (2 seconds)
                       }
                     });
-
-                    // setDuration()
-                    // setTask()
-                    // setPhase()
-                    // setLevel()
-                    // setStatus()
-                    // setType()
-                    // setSchedule(date)
 
                     $("#id_activity").val('')
                     $('#selectSchedule').val('').trigger('change')
@@ -690,7 +665,7 @@
                     if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning")) {
                       $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
                     }
-                    $('#daterange-input').val('').prop("disabled",false)
+                    $('#daterange-input').val('').prop("disabled",true)
                     $('#selectSchedule').val('').prop("disabled",false)
             
                   }
@@ -764,8 +739,7 @@
 
                     $("#tbInfo").append(append)
                   }else{
-                    $("#ModalAddTimesheet").modal("show")
-
+                    // $("#ModalAddTimesheet").modal("show")
                     Swal.fire({
                       title: 'Harap menunggu,sedang menyiapkan data...',
                       allowEscapeKey: false,
@@ -777,162 +751,15 @@
                         setTimeout(() => {
                           // Close the loading indicator
                           Swal.close();
-
+                          openModalAddTimesheet(calEvent.id,calEvent.title,calEvent.schedule,calEvent.type,calEvent.pid,calEvent.level,calEvent.duration,calEvent.status,calEvent.start,calEvent.end,calEvent.refer,calEvent.task,calEvent.phase)
                           // Perform your delayed task here
-                          setDuration()
-                          setTask(calEvent.task)
-                          setPhase(calEvent.phase)
-                          setLevel()
-                          setStatus()
-                          setType()
-                          setSchedule()
-
-                          $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                          if (calEvent.refer) {
-                            $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
-                          }else{
-                            $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                          }
-
-                          if (calEvent.refer) {
-                            console.log(calEvent.refer)
-                            console.log(calEvent.id)
-                            $("#id_activity").val(calEvent.id)
-                            $('#selectSchedule').prop("disabled",true)
-                            $('#selectSchedule').val('Planned').trigger('change')
-                            $('#daterange-input').prop("disabled",true)    
-                            $('#textareaActivity').val(calEvent.title).trigger('change') 
-
-                            if(nik != "{{Auth::User()->nik}}"){
-                              //spv/manager
-                              var momentDate = moment(calEvent.start); // Replace with your own moment date
-                              // Get today's date
-                              var today = moment();
-                              var isSameDateToday = momentDate.isSame(today, 'day');
-                              if (isSameDateToday) {
-                                $('#selectType').prop("disabled",true)
-                                $('#selectLead').prop("disabled",true)
-                                $('#selectTask').prop("disabled",true)
-                                $('#selectPhase').prop("disabled",true)
-                                $('#selectLevel').prop("disabled",true)
-                                $('#textareaActivity').prop("disabled",true)
-                                $('#selectDuration').prop("disabled",true)
-                                $('#selectStatus').prop("disabled",true)
-                                $("#ModalAddTimesheet").find('.modal-footer').hide()
-                              }else{
-                                $('#selectType').prop("disabled",false)
-                                $('#selectLead').prop("disabled",false)
-                                $('#selectTask').prop("disabled",false)
-                                $('#selectPhase').prop("disabled",false)
-                                $('#selectLevel').prop("disabled",false)
-                                $('#textareaActivity').prop("disabled",false)
-                                $('#selectDuration').prop("disabled",false)
-                                $('#selectStatus').prop("disabled",false)
-                                $("#ModalAddTimesheet").find('.modal-footer').show()
-                              }
-                              // $('#selectType').prop("disabled",true)
-                              // $('#selectLead').prop("disabled",true)
-                              // $('#selectTask').prop("disabled",true)
-                              // $('#selectPhase').prop("disabled",true)
-                              // $('#selectLevel').prop("disabled",true)
-                              // $('#textareaActivity').prop("disabled",true)
-                              // $('#selectDuration').prop("disabled",true)
-                              // $('#selectStatus').prop("disabled",true)
-                              // $("#ModalAddTimesheet").find('.modal-footer').hide()
-                            }else{
-                              var momentDate = moment(calEvent.start); // Replace with your own moment date
-                              // Get today's date
-                              var today = moment();
-                              // Compare the date components
-                              var isSameDateToday = momentDate.isSame(today, 'day');
-                              if (isSameDateToday) {
-                                $('#selectType').prop("disabled",false)
-                                $('#selectLead').prop("disabled",false)
-                                $('#selectTask').prop("disabled",false)
-                                $('#selectPhase').prop("disabled",false)
-                                $('#selectLevel').prop("disabled",false)
-                                $('#textareaActivity').prop("disabled",false)
-                                $('#selectDuration').prop("disabled",false)
-                                $('#selectStatus').prop("disabled",false)
-                                $("#ModalAddTimesheet").find('.modal-footer').show()
-                              }else{
-                                $("#ModalAddTimesheet").find('.modal-footer').hide()
-                                $('#selectType').prop("disabled",true)
-                                $('#selectLead').prop("disabled",true)
-                                $('#selectTask').prop("disabled",true)
-                                $('#selectPhase').prop("disabled",true)
-                                $('#selectLevel').prop("disabled",true)
-                                $('#textareaActivity').prop("disabled",true)
-                                $('#selectDuration').prop("disabled",true)
-                                $('#selectStatus').prop("disabled",true)
-                              }
-                              // $('#selectType').prop("disabled",true)
-                              // $('#selectLead').prop("disabled",true)
-                              // $('#selectTask').prop("disabled",true)
-                              // $('#selectPhase').prop("disabled",true)
-                              // $('#selectLevel').prop("disabled",true)
-                              // $('#textareaActivity').prop("disabled",true)
-                            }                         
-                          }else{
-                            $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                            $('#selectSchedule').prop("disabled",true)
-                            // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                            // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                            $('#daterange-input').prop("disabled",true)
-
-
-                            //supervisor
-                            if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
-                              $('#selectType').prop("disabled",false)
-                              $('#selectLead').prop("disabled",false)
-                              $('#selectTask').prop("disabled",false)
-                              $('#selectPhase').prop("disabled",false)
-                              $('#selectLevel').prop("disabled",false)
-                              $('#textareaActivity').prop("disabled",false)
-                              $('#selectDuration').prop("disabled",false)
-                              $('#selectStatus').prop("disabled",false)  
-                              $("#ModalAddTimesheet").find('.modal-footer').show()
-                            }else{
-                              var momentDate = moment(calEvent.start); // Replace with your own moment date
-                              // Get today's date
-                              var today = moment();
-                              // Compare the date components
-                              var isSameDateToday = momentDate.isSame(today, 'day');
-                              if (isSameDateToday) {
-                                $('#selectDuration').prop("disabled",false)
-                                $('#selectStatus').prop("disabled",false)
-                                $("#ModalAddTimesheet").find('.modal-footer').show()
-                              }else{
-                                $("#ModalAddTimesheet").find('.modal-footer').hide()
-                                $('#selectDuration').prop("disabled",true)
-                                $('#selectStatus').prop("disabled",true)
-                              }
-                              // $('#selectType').prop("disabled",true)
-                              // $('#selectLead').prop("disabled",true)
-                              // $('#selectTask').prop("disabled",true)
-                              // $('#selectPhase').prop("disabled",true)
-                              // $('#selectLevel').prop("disabled",true)
-                              // $('#textareaActivity').prop("disabled",true)
-                            }
-
-                            $("#id_activity").val(calEvent.id)
-
-                            //staff
-                            $('#selectType').val(calEvent.type).trigger('change')
-                            $('#selectLead').val(calEvent.pid).trigger('change')
-                            $('#selectLevel').val(calEvent.level).trigger('change')
-                            $('#textareaActivity').val(calEvent.title).trigger('change')
-                            $('#selectDuration').val(calEvent.duration).trigger('change')
-                            $('#selectStatus').val(calEvent.status).trigger('change')
-                          }
-                        }, 150); // Delayed execution after 2000ms (2 seconds)
+                          
+                        }, 100); // Delayed execution after 2000ms (2 seconds)
                       }
                     });
-                    
+
                     $(".modal-title").text("Update Timesheet")
                     $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
-
-                    
                   }
                 } else {
                   if(calEvent.schedule == "Planned"){
@@ -947,16 +774,21 @@
                         setTimeout(() => {
                           // Close the loading indicator
                           Swal.close();
-
-                          // Perform your delayed task here
-                          setDuration()
-                          setTask(calEvent.task)
-                          setPhase(calEvent.phase)
-                          setLevel()
-                          setStatus()
-                          setType()
-                          setSchedule()
-                        }, 150); // Delayed execution after 2000ms (2 seconds)
+                          if ($.fn.select2 !== undefined) {
+                            var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
+                            if (isSelect2Initialized == false) {
+                              setSchedule(date)
+                              setHoliday()
+                            }else{
+                              setDuration()
+                              setLevel()
+                              setStatus()
+                              setType()
+                              setTask(calEvent.task)
+                              setPhase(calEvent.phase)
+                            }
+                          }
+                        }, 100); // Delayed execution after 2000ms (2 seconds)
                       }
                     });
                     
@@ -966,8 +798,6 @@
                     if (momentDate > currentDate) {
                       $('#selectSchedule').val(calEvent.schedule).trigger('change')
                       $('#selectSchedule').prop("disabled",true)
-                      // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                      // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
                       $('#daterange-input').prop("disabled",true)
 
                       //supervisor
@@ -1077,13 +907,20 @@
                       Swal.close();
 
                       // Perform your delayed task here
-                      setDuration()
-                      setTask(calEvent.task)
-                      setPhase(calEvent.phase)
-                      setLevel()
-                      setStatus()
-                      setType()
-                      setSchedule()
+                      if ($.fn.select2 !== undefined) {
+                        var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
+                        if (isSelect2Initialized == false) {
+                          setSchedule()
+                          setHoliday()
+                        }else{
+                          setDuration()
+                          setLevel()
+                          setStatus()
+                          setType()
+                          setTask(calEvent.task)
+                          setPhase(calEvent.phase)
+                        }
+                      }
 
                       $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
                       if (calEvent.refer) {
@@ -1097,8 +934,6 @@
                         var currentDate = moment();
                         $('#selectSchedule').val(calEvent.schedule).trigger('change')
                         $('#selectSchedule').prop("disabled",true)
-                        // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                        // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
                         $('#daterange-input').prop("disabled",true)
                         $("#id_activity").val(calEvent.id)
 
@@ -1179,14 +1014,10 @@
 
                         if (calEvent.refer) {
                           $('#selectSchedule').val('Planned').trigger('change') 
-                          // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                          // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
                           $('#daterange-input').prop("disabled",true)    
                           $('#textareaActivity').val(calEvent.title).trigger('change')   
                         }else{
                           $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                          // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                          // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
                           $('#daterange-input').prop("disabled",true)
                           $('#selectType').val(calEvent.type).trigger('change')
                           $('#selectLead').val(calEvent.pid).trigger('change')
@@ -1203,120 +1034,114 @@
                         return false;
                       }
             
-                    }, 150); // Delayed execution after 2000ms (2 seconds)
+                    }, 100); // Delayed execution after 2000ms (2 seconds)
                   }
                 });
 
-                // if(calEvent.schedule == "Planned"){
-                //   var momentDate = moment(calEvent.start);
-                //   var currentDate = moment();
-                //   $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                //   $('#selectSchedule').prop("disabled",true)
-                //   // $('#daterange-input').data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                //   // $('#daterange-input').data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'));
-                //   $('#daterange-input').prop("disabled",true)
-                //   $("#id_activity").val(calEvent.id)
+                if(calEvent.schedule == "Planned"){
+                  var momentDate = moment(calEvent.start);
+                  var currentDate = moment();
+                  $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                  $('#selectSchedule').prop("disabled",true)
+                  $('#daterange-input').prop("disabled",true)
+                  $("#id_activity").val(calEvent.id)
 
-                //   //staff
-                //   $('#selectType').val(calEvent.type).trigger('change')
-                //   $('#selectLead').val(calEvent.pid).trigger('change')
-                //   $('#selectLevel').val(calEvent.level).trigger('change')
-                //   $('#textareaActivity').val(calEvent.title).trigger('change')
-                //   $('#selectDuration').val(calEvent.duration).trigger('change')
-                //   $('#selectStatus').val(calEvent.status).trigger('change')
+                  //staff
+                  $('#selectType').val(calEvent.type).trigger('change')
+                  $('#selectLead').val(calEvent.pid).trigger('change')
+                  $('#selectLevel').val(calEvent.level).trigger('change')
+                  $('#textareaActivity').val(calEvent.title).trigger('change')
+                  $('#selectDuration').val(calEvent.duration).trigger('change')
+                  $('#selectStatus').val(calEvent.status).trigger('change')
 
-                //   if (momentDate > currentDate) {
-                //        //supervisor
-                //     if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
-                //       if(nik != "{{Auth::User()->nik}}"){
+                  if (momentDate > currentDate) {
+                       //supervisor
+                    if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
+                      if(nik != "{{Auth::User()->nik}}"){
                         
-                //         $('#selectType').prop("disabled",true)
-                //         $('#selectLead').prop("disabled",true)
-                //         $('#selectTask').prop("disabled",true)
-                //         $('#selectPhase').prop("disabled",true)
-                //         $('#selectLevel').prop("disabled",true)
-                //         $('#textareaActivity').prop("disabled",true)
-                //         $('#selectDuration').prop("disabled",true)
-                //         $('#selectStatus').prop("disabled",true)  
-                //         $("#ModalAddTimesheet").find('.modal-footer').hide()
-                //       }else{
-                //         $("#ModalAddTimesheet").find('.modal-footer').show()
-                //         $('#selectDuration').prop("disabled",true)
-                //         $('#selectStatus').prop("disabled",true)
+                        $('#selectType').prop("disabled",true)
+                        $('#selectLead').prop("disabled",true)
+                        $('#selectTask').prop("disabled",true)
+                        $('#selectPhase').prop("disabled",true)
+                        $('#selectLevel').prop("disabled",true)
+                        $('#textareaActivity').prop("disabled",true)
+                        $('#selectDuration').prop("disabled",true)
+                        $('#selectStatus').prop("disabled",true)  
+                        $("#ModalAddTimesheet").find('.modal-footer').hide()
+                      }else{
+                        $("#ModalAddTimesheet").find('.modal-footer').show()
+                        $('#selectDuration').prop("disabled",true)
+                        $('#selectStatus').prop("disabled",true)
                         
-                //         $('#selectType').prop("disabled",false)
-                //         $('#selectLead').prop("disabled",false)
-                //         $('#selectTask').prop("disabled",false)
-                //         $('#selectPhase').prop("disabled",false)
-                //         $('#selectLevel').prop("disabled",false)
-                //         $('#textareaActivity').prop("disabled",false)
-                //       }
-                //     }else{
-                //       $("#ModalAddTimesheet").find('.modal-footer').show()
-                //       $('#selectDuration').prop("disabled",true)
-                //       $('#selectStatus').prop("disabled",true)
+                        $('#selectType').prop("disabled",false)
+                        $('#selectLead').prop("disabled",false)
+                        $('#selectTask').prop("disabled",false)
+                        $('#selectPhase').prop("disabled",false)
+                        $('#selectLevel').prop("disabled",false)
+                        $('#textareaActivity').prop("disabled",false)
+                      }
+                    }else{
+                      $("#ModalAddTimesheet").find('.modal-footer').show()
+                      $('#selectDuration').prop("disabled",true)
+                      $('#selectStatus').prop("disabled",true)
                       
-                //       $('#selectType').prop("disabled",false)
-                //       $('#selectLead').prop("disabled",false)
-                //       $('#selectTask').prop("disabled",false)
-                //       $('#selectPhase').prop("disabled",false)
-                //       $('#selectLevel').prop("disabled",false)
-                //       $('#textareaActivity').prop("disabled",false)
-                //     }
-                //     $("#ModalAddTimesheet").modal("show")
-                //     $(".modal-title").text("Update Timesheet")
-                //     $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
-                //   }else if(momentDate < currentDate){
-                //     $("#ModalAddTimesheet").modal("show")
-                //     $(".modal-title").text("Detail Timesheet")
-                //     $('#selectType').prop("disabled",true)
-                //     $('#selectLead').prop("disabled",true)
-                //     $('#selectTask').prop("disabled",true)
-                //     $('#selectPhase').prop("disabled",true)
-                //     $('#selectLevel').prop("disabled",true)
-                //     $('#textareaActivity').prop("disabled",true)
-                //     $('#selectDuration').prop("disabled",true)
-                //     $('#selectStatus').prop("disabled",true)  
-                //     $("#ModalAddTimesheet").find('.modal-footer').hide()
-                //   }
-                // }else{
+                      $('#selectType').prop("disabled",false)
+                      $('#selectLead').prop("disabled",false)
+                      $('#selectTask').prop("disabled",false)
+                      $('#selectPhase').prop("disabled",false)
+                      $('#selectLevel').prop("disabled",false)
+                      $('#textareaActivity').prop("disabled",false)
+                    }
+                    $("#ModalAddTimesheet").modal("show")
+                    $(".modal-title").text("Update Timesheet")
+                    $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+                  }else if(momentDate < currentDate){
+                    $("#ModalAddTimesheet").modal("show")
+                    $(".modal-title").text("Detail Timesheet")
+                    $('#selectType').prop("disabled",true)
+                    $('#selectLead').prop("disabled",true)
+                    $('#selectTask').prop("disabled",true)
+                    $('#selectPhase').prop("disabled",true)
+                    $('#selectLevel').prop("disabled",true)
+                    $('#textareaActivity').prop("disabled",true)
+                    $('#selectDuration').prop("disabled",true)
+                    $('#selectStatus').prop("disabled",true)  
+                    $("#ModalAddTimesheet").find('.modal-footer').hide()
+                  }
+                }else{
                   
-                //   $("#ModalAddTimesheet").modal("show")
-                //   $(".modal-title").text("Detail Timesheet")
-                //   $("#ModalAddTimesheet").find('.modal-footer').hide()
-                //   $('#selectSchedule').prop("disabled",true)
-                //   $('#selectType').prop("disabled",true)
-                //   $('#selectLead').prop("disabled",true)
-                //   $('#selectTask').prop("disabled",true)
-                //   $('#selectPhase').prop("disabled",true)
-                //   $('#selectLevel').prop("disabled",true)
-                //   $('#textareaActivity').prop("disabled",true)
+                  $("#ModalAddTimesheet").modal("show")
+                  $(".modal-title").text("Detail Timesheet")
+                  $("#ModalAddTimesheet").find('.modal-footer').hide()
+                  $('#selectSchedule').prop("disabled",true)
+                  $('#selectType').prop("disabled",true)
+                  $('#selectLead').prop("disabled",true)
+                  $('#selectTask').prop("disabled",true)
+                  $('#selectPhase').prop("disabled",true)
+                  $('#selectLevel').prop("disabled",true)
+                  $('#textareaActivity').prop("disabled",true)
 
-                //   if (calEvent.refer) {
-                //     $('#selectSchedule').val('Planned').trigger('change') 
-                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.end, 'YYYY-MM-DD'))
-                //     $('#daterange-input').prop("disabled",true)    
-                //     $('#textareaActivity').val(calEvent.title).trigger('change')   
-                //   }else{
-                //     $('#selectSchedule').val(calEvent.schedule).trigger('change')
-                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                //     // $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(calEvent.start, 'YYYY-MM-DD'))
-                //     $('#daterange-input').prop("disabled",true)
-                //     $('#selectType').val(calEvent.type).trigger('change')
-                //     $('#selectLead').val(calEvent.pid).trigger('change')
-                //     $('#selectTask').val(calEvent.task).trigger('change')
-                //     $('#selectPhase').val(calEvent.phase).trigger('change')
-                //     $('#selectLevel').val(calEvent.level).trigger('change')
-                //     $('#textareaActivity').val(calEvent.title)
-                //     $('#selectDuration').val(calEvent.duration).trigger('change')
-                //     $('#selectStatus').val(calEvent.status).trigger('change')
-                //   }
-                //   $('#selectDuration').prop("disabled",true)
-                //   $('#selectStatus').prop("disabled",true)
-                //   // Disable the day click event for disallowed dates
-                //   return false;
-                // }
+                  if (calEvent.refer) {
+                    $('#selectSchedule').val('Planned').trigger('change') 
+                    $('#daterange-input').prop("disabled",true)    
+                    $('#textareaActivity').val(calEvent.title).trigger('change')   
+                  }else{
+                    $('#selectSchedule').val(calEvent.schedule).trigger('change')
+                    $('#daterange-input').prop("disabled",true)
+                    $('#selectType').val(calEvent.type).trigger('change')
+                    $('#selectLead').val(calEvent.pid).trigger('change')
+                    $('#selectTask').val(calEvent.task).trigger('change')
+                    $('#selectPhase').val(calEvent.phase).trigger('change')
+                    $('#selectLevel').val(calEvent.level).trigger('change')
+                    $('#textareaActivity').val(calEvent.title)
+                    $('#selectDuration').val(calEvent.duration).trigger('change')
+                    $('#selectStatus').val(calEvent.status).trigger('change')
+                  }
+                  $('#selectDuration').prop("disabled",true)
+                  $('#selectStatus').prop("disabled",true)
+                  // Disable the day click event for disallowed dates
+                  return false;
+                }
         
               }
             }
@@ -1406,13 +1231,146 @@
       }
     }
 
+    function openModalAddTimesheet(id,title,schedule,type,pid,level,duration,status,start,end,refer,task,phase){
+      $("#ModalAddTimesheet").modal('show')
+
+      if ($.fn.select2 !== undefined) {
+        setHoliday()
+        var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
+        if (isSelect2Initialized == false) {
+          setSchedule()
+          setDuration()
+          setLevel()
+          setStatus()
+          setType()
+        }else{
+          setTask(task)
+          setPhase(phase)
+        }
+      }
+      
+      $('#daterange-input').daterangepicker().data('daterangepicker').setStartDate(moment(start, 'YYYY-MM-DD'))
+      if (refer) {
+        $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(end, 'YYYY-MM-DD'))
+      }else{
+        $('#daterange-input').daterangepicker().data('daterangepicker').setEndDate(moment(start, 'YYYY-MM-DD'))
+      }
+
+      if (refer) {
+        $("#id_activity").val(id)
+        $('#selectSchedule').prop("disabled",true)
+        $('#selectSchedule').val('Planned').trigger('change')
+        $('#daterange-input').prop("disabled",true)    
+        $('#textareaActivity').val(title).trigger('change') 
+
+        if(nik != "{{Auth::User()->nik}}"){
+          //spv/manager
+          var momentDate = moment(start); // Replace with your own moment date
+          // Get today's date
+          var today = moment();
+          var isSameDateToday = momentDate.isSame(today, 'day');
+          if (isSameDateToday) {
+            $('#selectType').prop("disabled",true)
+            $('#selectLead').prop("disabled",true)
+            $('#selectTask').prop("disabled",true)
+            $('#selectPhase').prop("disabled",true)
+            $('#selectLevel').prop("disabled",true)
+            $('#textareaActivity').prop("disabled",true)
+            $('#selectDuration').prop("disabled",true)
+            $('#selectStatus').prop("disabled",true)
+            $("#ModalAddTimesheet").find('.modal-footer').hide()
+          }else{
+            $('#selectType').prop("disabled",false)
+            $('#selectLead').prop("disabled",false)
+            $('#selectTask').prop("disabled",false)
+            $('#selectPhase').prop("disabled",false)
+            $('#selectLevel').prop("disabled",false)
+            $('#textareaActivity').prop("disabled",false)
+            $('#selectDuration').prop("disabled",false)
+            $('#selectStatus').prop("disabled",false)
+            $("#ModalAddTimesheet").find('.modal-footer').show()
+          }
+        }else{
+          var momentDate = moment(start); // Replace with your own moment date
+          // Get today's date
+          var today = moment();
+          // Compare the date components
+          var isSameDateToday = momentDate.isSame(today, 'day');
+          if (isSameDateToday) {
+            $('#selectType').prop("disabled",false)
+            $('#selectLead').prop("disabled",false)
+            $('#selectTask').prop("disabled",false)
+            $('#selectPhase').prop("disabled",false)
+            $('#selectLevel').prop("disabled",false)
+            $('#textareaActivity').prop("disabled",false)
+            $('#selectDuration').prop("disabled",false)
+            $('#selectStatus').prop("disabled",false)
+            $("#ModalAddTimesheet").find('.modal-footer').show()
+          }else{
+            $("#ModalAddTimesheet").find('.modal-footer').hide()
+            $('#selectType').prop("disabled",true)
+            $('#selectLead').prop("disabled",true)
+            $('#selectTask').prop("disabled",true)
+            $('#selectPhase').prop("disabled",true)
+            $('#selectLevel').prop("disabled",true)
+            $('#textareaActivity').prop("disabled",true)
+            $('#selectDuration').prop("disabled",true)
+            $('#selectStatus').prop("disabled",true)
+          }
+        }                         
+      }else{
+        $('#selectSchedule').val(schedule).trigger('change')
+        $('#selectSchedule').prop("disabled",true)
+        $('#daterange-input').prop("disabled",true)
+
+
+        //supervisor
+        if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
+          $('#selectType').prop("disabled",false)
+          $('#selectLead').prop("disabled",false)
+          $('#selectTask').prop("disabled",false)
+          $('#selectPhase').prop("disabled",false)
+          $('#selectLevel').prop("disabled",false)
+          $('#textareaActivity').prop("disabled",false)
+          $('#selectDuration').prop("disabled",false)
+          $('#selectStatus').prop("disabled",false)  
+          $("#ModalAddTimesheet").find('.modal-footer').show()
+        }else{
+          var momentDate = moment(start); // Replace with your own moment date
+          // Get today's date
+          var today = moment();
+          // Compare the date components
+          var isSameDateToday = momentDate.isSame(today, 'day');
+          if (isSameDateToday) {
+            $('#selectDuration').prop("disabled",false)
+            $('#selectStatus').prop("disabled",false)
+            $("#ModalAddTimesheet").find('.modal-footer').show()
+          }else{
+            $("#ModalAddTimesheet").find('.modal-footer').hide()
+            $('#selectDuration').prop("disabled",true)
+            $('#selectStatus').prop("disabled",true)
+          }
+        }
+
+        $("#id_activity").val(id)
+
+        //staff
+        $('#selectType').val(type).trigger('change')
+        $('#selectLead').val(pid).trigger('change')
+        $('#selectLevel').val(level).trigger('change')
+        $('#textareaActivity').val(title).trigger('change')
+        $('#selectDuration').val(duration).trigger('change')
+        $('#selectStatus').val(status).trigger('change')
+      }
+    }
+
     function showModalEventById(){
       var eventId = window.location.href.split("/")[3].split("?")[1].split("=")[1]
       var eventObj = $('#calendar').fullCalendar('clientEvents', eventId)[0];
 
       if (eventObj.status == null) {
         $("#ModalAddTimesheet").modal("show")
-
+    
         Swal.fire({
           title: 'Harap menunggu,sedang menyiapkan data...',
           allowEscapeKey: false,
@@ -1424,15 +1382,20 @@
             setTimeout(() => {
               // Close the loading indicator
               Swal.close();
-
               // Perform your delayed task here
-              setDuration()
-              setTask(eventObj.task)
-              setPhase(eventObj.phase)
-              setLevel()
-              setStatus()
-              setType()
-              setSchedule()
+              if ($.fn.select2 !== undefined) {
+                var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
+                if (isSelect2Initialized == false) {
+                  setSchedule()
+                  setDuration()
+                  setLevel()
+                  setStatus()
+                  setType()
+                }else{
+                  setTask(eventObj.task)
+                  setPhase(eventObj.phase)
+                }
+              }
 
               $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
               $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
@@ -1443,8 +1406,6 @@
               $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
               
               $('#selectSchedule').val(eventObj.schedule).trigger('change')
-              // $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
-              // $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
               $('#selectSchedule').prop("disabled",true)
               $('#daterange-input').prop("disabled",true)
               $('#selectType').prop("disabled",true)
@@ -1462,11 +1423,9 @@
               $('#textareaActivity').val(eventObj.title).trigger('change')
               $('#selectDuration').val(eventObj.duration).trigger('change')
               $('#selectStatus').val(eventObj.status).trigger('change')
-            }, 150); // Delayed execution after 2000ms (2 seconds)
+            }, 100); // Delayed execution after 2000ms (2 seconds)
           }
         });
-
-        
       }
     }
 
@@ -1837,6 +1796,43 @@
       })
     }
 
+    function setHoliday(){
+      var disabledDates = [], disDate = ''
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getHoliday')}}",
+        success:function(result){
+          $.each(result,function (idx,value) {
+            disabledDates.push(value.start_date)
+          })
+          return disDate = disabledDates
+        }
+      })
+
+      function isDateDisabled(date, disabledDate) {
+        if (disabledDate.indexOf('/') !== -1) {
+          // Date range format: start_date/end_date
+          var range = disabledDate.split('/');
+          return (date >= range[0] && date <= range[1]);
+        } else {
+          // Single date format
+          return (date === disabledDate);
+        }
+      }
+
+      $('#daterange-input').daterangepicker({
+        isInvalidDate: function(date) {
+          var formattedDate = date.format('YYYY-MM-DD');
+          for (var i = 0; i < disDate.length; i++) {
+            if (isDateDisabled(formattedDate, disDate[i])) {
+              return true;
+            }
+          }
+          return false;
+        }
+      })
+    } 
+
     function setSchedule(date){
       $("#selectSchedule").select2({
         placeholder:"Select Schedule",
@@ -1850,17 +1846,6 @@
         }],
       }).on('change', function() {
         var selectedOption = $(this).val();
-        var disabledDates = [], disDate = ''
-        $.ajax({
-          type:"GET",
-          url:"{{url('timesheet/getHoliday')}}",
-          success:function(result){
-            $.each(result,function (idx,value) {
-              disabledDates.push(value.start_date)
-            })
-            return disDate = disabledDates
-          }
-        })
         // Perform action based on the selected option
         if (selectedOption === 'Planned') {
           $("#selectDuration").prev("span").remove()
@@ -1871,38 +1856,37 @@
           $("#selectStatus").prop("disabled",true)
           // Action for Option 1
           $("#daterange-input").prop("disabled",false)
-          if (date) {
-              $('#daterange-input').daterangepicker({
-              // startDate: moment().subtract(29, 'days'),
-              minDate: tomorrow,
-              startDate: tomorrow,
-              endDate: tomorrow,
-              isInvalidDate: function(date) {
-                var formattedDate = date.format('YYYY-MM-DD');
-                for (var i = 0; i < disDate.length; i++) {
-                  if (isDateDisabled(formattedDate, disDate[i])) {
-                    return true;
-                  }
-                }
-                return false;
-              }
-              // maxDate: endDate
-            })
-          }else{
-            $('#daterange-input').daterangepicker()
-          }
-          
+          $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
+            $(this).data('daterangepicker').minDate = tomorrow; // Update minDate
+            $(this).data('daterangepicker').startDate = tomorrow;   // Update maxDate
+            $(this).data('daterangepicker').endDate = tomorrow;   // Update maxDate
+          });
+          // if (date) {
+          //   //   $('#daterange-input').daterangepicker({
+          //   //   minDate: tomorrow,
+          //   //   startDate: tomorrow,
+          //   //   endDate: tomorrow,
+          //   // })
 
-          function isDateDisabled(date, disabledDate) {
-            if (disabledDate.indexOf('/') !== -1) {
-              // Date range format: start_date/end_date
-              var range = disabledDate.split('/');
-              return (date >= range[0] && date <= range[1]);
-            } else {
-              // Single date format
-              return (date === disabledDate);
-            }
-          }
+          //   $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
+          //     $(this).data('daterangepicker').minDate = tomorrow; // Update minDate
+          //     $(this).data('daterangepicker').startDate = tomorrow;   // Update maxDate
+          //     $(this).data('daterangepicker').endDate = tomorrow;   // Update maxDate
+          //   });
+          // }else{
+          //   $('#daterange-input').daterangepicker()
+          // }
+
+          // function isDateDisabled(date, disabledDate) {
+          //   if (disabledDate.indexOf('/') !== -1) {
+          //     // Date range format: start_date/end_date
+          //     var range = disabledDate.split('/');
+          //     return (date >= range[0] && date <= range[1]);
+          //   } else {
+          //     // Single date format
+          //     return (date === disabledDate);
+          //   }
+          // }
           
         } else if (selectedOption === 'Unplanned') {
           $("#selectDuration").prev("label").after("<span>*</span>")
@@ -1910,11 +1894,16 @@
           $("#selectDuration").prop("disabled",false)
           $("#selectStatus").prop("disabled",false)
           $("#daterange-input").prop("disabled",true)
-          $('#daterange-input').daterangepicker({
-            // startDate: moment().subtract(29, 'days'),
-            startDate: date,
-            endDate: date,
-          })
+          $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
+            $(this).data('daterangepicker').startDate = date;   // Update maxDate
+            $(this).data('daterangepicker').endDate = date;   // Update maxDate
+          });
+          // 
+          // $('#daterange-input').daterangepicker({
+          //   // startDate: moment().subtract(29, 'days'),
+          //   startDate: date,
+          //   endDate: date,
+          // })
         }
       });
     }
