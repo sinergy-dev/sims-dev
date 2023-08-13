@@ -633,18 +633,25 @@
                           Swal.close();
                           if ($.fn.select2 !== undefined) {
                             setHoliday()
+                            setSchedule(date,'add')
+                            setDuration()
+                            setLevel()
+                            setStatus()
+                            setType()
+                            setTask()
+                            setPhase()
                             var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
                             if (isSelect2Initialized == false) {
-                              setSchedule(date)
-                              setDuration()
-                              setLevel()
-                              setStatus()
-                              setType()
-                              setTask()
-                              setPhase()
+                              // setSchedule(date)
+                              // setDuration()
+                              // setLevel()
+                              // setStatus()
+                              // setType()
+                              // setTask()
+                              // setPhase()
                             }
                           }
-                        }, 100); // Delayed execution after 2000ms (2 seconds)
+                        }, 50); // Delayed execution after 2000ms (2 seconds)
                       }
                     });
 
@@ -751,6 +758,7 @@
                         setTimeout(() => {
                           // Close the loading indicator
                           Swal.close();
+                          console.log(calEvent.start)
                           openModalAddTimesheet(calEvent.id,calEvent.title,calEvent.schedule,calEvent.type,calEvent.pid,calEvent.level,calEvent.duration,calEvent.status,calEvent.start,calEvent.end,calEvent.refer,calEvent.task,calEvent.phase)
                           // Perform your delayed task here
                           
@@ -776,15 +784,16 @@
                           Swal.close();
                           if ($.fn.select2 !== undefined) {
                             setHoliday()
+                            setSchedule(date)
+                            setDuration()
+                            setLevel()
+                            setStatus()
+                            setType()
+                            setTask()
+                            setPhase()
                             var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
                             if (isSelect2Initialized == false) {
-                              setSchedule(date)
-                              setDuration()
-                              setLevel()
-                              setStatus()
-                              setType()
-                              setTask()
-                              setPhase()
+                              
                             }
                           }
                         }, 100); // Delayed execution after 2000ms (2 seconds)
@@ -816,7 +825,6 @@
                           $("#ModalAddTimesheet").find('.modal-footer').show()
                           $('#selectDuration').prop("disabled",true)
                           $('#selectStatus').prop("disabled",true)
-                          
                           $('#selectType').prop("disabled",false)
                           $('#selectLead').prop("disabled",false)
                           $('#selectTask').prop("disabled",false)
@@ -840,6 +848,7 @@
                       $("#id_activity").val(calEvent.id)
 
                       //staff
+                      $('#selectSchedule').val(calEvent.schedule).trigger('change')
                       $('#selectType').val(calEvent.type).trigger('change')
                       $('#selectLead').val(calEvent.pid).trigger('change')
                       $('#selectLevel').val(calEvent.level).trigger('change')
@@ -910,15 +919,16 @@
                       // Perform your delayed task here
                       if ($.fn.select2 !== undefined) {
                         setHoliday()
+                        setSchedule()
+                        setDuration()
+                        setLevel()
+                        setStatus()
+                        setType()
+                        setTask()
+                        setPhase()
                         var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
                         if (isSelect2Initialized == false) {
-                          setSchedule()
-                          setDuration()
-                          setLevel()
-                          setStatus()
-                          setType()
-                          setTask()
-                          setPhase()
+                          
                         }
                       }
 
@@ -1238,17 +1248,18 @@
     function openModalAddTimesheet(id,title,schedule,type,pid,level,duration,status,start,end,refer,task,phase){
       $("#ModalAddTimesheet").modal('show')
 
+      console.log(start)
       if ($.fn.select2 !== undefined) {
         setHoliday()
+        setSchedule(start)
+        setDuration()
+        setLevel()
+        setStatus()
+        setType()
+        setTask()
+        setPhase()
         var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
         if (isSelect2Initialized == false) {
-          setSchedule()
-          setDuration()
-          setLevel()
-          setStatus()
-          setType()
-          setTask()
-          setPhase()
         }
       }
       
@@ -1326,7 +1337,6 @@
         $('#selectSchedule').prop("disabled",true)
         $('#daterange-input').prop("disabled",true)
 
-
         //supervisor
         if("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%SPV')->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name','like','%MANAGER')->exists()}}"){
           $('#selectType').prop("disabled",false)
@@ -1349,7 +1359,9 @@
             $('#selectStatus').prop("disabled",false)
             $("#ModalAddTimesheet").find('.modal-footer').show()
           }else{
-            $("#ModalAddTimesheet").find('.modal-footer').hide()
+            //awalnya untuk staff di hide, tapi sesuai banyaknya permintaan jadi diaktifkan
+            // $("#ModalAddTimesheet").find('.modal-footer').hide()
+            $("#ModalAddTimesheet").find('.modal-footer').show()
             $('#selectDuration').prop("disabled",true)
             $('#selectStatus').prop("disabled",true)
           }
@@ -1358,6 +1370,15 @@
         $("#id_activity").val(id)
 
         //staff
+        $('#selectType').prop("disabled",false)
+        $('#selectLead').prop("disabled",false)
+        $('#selectTask').prop("disabled",false)
+        $('#selectPhase').prop("disabled",false)
+        $('#selectLevel').prop("disabled",false)
+        $('#textareaActivity').prop("disabled",false)
+        $('#selectDuration').prop("disabled",false)
+        $('#selectStatus').prop("disabled",false) 
+
         $('#selectType').val(type).trigger('change')
         $('#selectLead').val(pid).trigger('change')
         $('#selectLevel').val(level).trigger('change')
@@ -1617,16 +1638,19 @@
 
     function setDuration(){
       var arrDuration = []
-      for (var i = 1; i <= 1440; i++) {
-        if (i % 5 === 0) {
+      const range = Array.from({ length: 1440 });
+      // Loop through the array using forEach
+      range.forEach((_, index) => {
+        if (index % 5 === 0 && index != 0) {
           // Action to perform on every multiple of 5
-          arrDuration.push({id:i,text:i+" menit"})
-          $("#selectDuration").select2({
-              placeholder:"Select Duration",
-              data:arrDuration,
-          })
+          arrDuration.push({id:index,text:index+" menit"})
         }
-      }
+      });
+
+      $("#selectDuration").select2({
+          placeholder:"Select Duration",
+          data:arrDuration,
+      })
     }
 
     function setLeadId(){
@@ -1838,7 +1862,7 @@
       })
     } 
 
-    function setSchedule(date){
+    function setSchedule(date,param){
       $("#selectSchedule").select2({
         placeholder:"Select Schedule",
         data: [{
@@ -1852,6 +1876,7 @@
       }).on('change', function() {
         var selectedOption = $(this).val();
         // Perform action based on the selected option
+        console.log(date)
         if (selectedOption === 'Planned') {
           $("#selectDuration").prev("span").remove()
           $("#selectStatus").prev("span").remove()
@@ -1861,26 +1886,36 @@
           $("#selectStatus").prop("disabled",true)
           // Action for Option 1
           $("#daterange-input").prop("disabled",false)
-          $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
-            $(this).data('daterangepicker').minDate = tomorrow; // Update minDate
-            $(this).data('daterangepicker').startDate = tomorrow;   // Update maxDate
-            $(this).data('daterangepicker').endDate = tomorrow;   // Update maxDate
-          });
-          // if (date) {
-          //   //   $('#daterange-input').daterangepicker({
-          //   //   minDate: tomorrow,
-          //   //   startDate: tomorrow,
-          //   //   endDate: tomorrow,
-          //   // })
+          // $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
+          //   $(this).data('daterangepicker').minDate = tomorrow; // Update minDate
+          //   $(this).data('daterangepicker').startDate = tomorrow;   // Update maxDate
+          //   $(this).data('daterangepicker').endDate = tomorrow;   // Update maxDate
+          // });
+          if (param == 'add') {
+            $('#daterange-input').daterangepicker({
+              minDate: tomorrow,
+              startDate: tomorrow,
+              endDate: tomorrow,
+            })
+          }else{
+            $('#daterange-input').daterangepicker({
+              minDate: date,
+              startDate: date,
+              endDate: date,
+            })
+          }
+          if (date)  {
+            
 
-          //   $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
-          //     $(this).data('daterangepicker').minDate = tomorrow; // Update minDate
-          //     $(this).data('daterangepicker').startDate = tomorrow;   // Update maxDate
-          //     $(this).data('daterangepicker').endDate = tomorrow;   // Update maxDate
-          //   });
-          // }else{
-          //   $('#daterange-input').daterangepicker()
-          // }
+            // $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
+            //   $(this).data('daterangepicker').minDate = tomorrow; // Update minDate
+            //   $(this).data('daterangepicker').startDate = tomorrow;   // Update maxDate
+            //   $(this).data('daterangepicker').endDate = tomorrow;   // Update maxDate
+            // });
+          }
+          else{
+            
+          }
 
           // function isDateDisabled(date, disabledDate) {
           //   if (disabledDate.indexOf('/') !== -1) {
@@ -1894,21 +1929,22 @@
           // }
           
         } else if (selectedOption === 'Unplanned') {
+          console.log(date)
           $("#selectDuration").prev("label").after("<span>*</span>")
           $("#selectStatus").prev("label").after("<span>*</span>")
           $("#selectDuration").prop("disabled",false)
           $("#selectStatus").prop("disabled",false)
           $("#daterange-input").prop("disabled",true)
-          $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
-            $(this).data('daterangepicker').startDate = date;   // Update maxDate
-            $(this).data('daterangepicker').endDate = date;   // Update maxDate
-          });
+          // $('#daterange-input').on('apply.daterangepicker', function(ev, picker) {
+          //   $(this).data('daterangepicker').startDate = date;   // Update maxDate
+          //   $(this).data('daterangepicker').endDate = date;   // Update maxDate
+          // });
           // 
-          // $('#daterange-input').daterangepicker({
-          //   // startDate: moment().subtract(29, 'days'),
-          //   startDate: date,
-          //   endDate: date,
-          // })
+          $('#daterange-input').daterangepicker({
+            // startDate: moment().subtract(29, 'days'),
+            startDate: date,
+            endDate: date,
+          })
         }
       });
     }
