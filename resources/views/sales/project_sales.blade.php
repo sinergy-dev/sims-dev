@@ -225,7 +225,7 @@ Lead Register
 										</div>
 
 										<div style="display: inline;" class="col-md-6">
-											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif2" onchange="searchCustom()" multiple>
+											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif2_dir" onchange="searchCustom()" multiple>
 												@foreach($year as $years)
 						              @if($years->year < $year_now-1)
 						              {{-- @if($years->year < $year_now) --}}
@@ -586,7 +586,7 @@ Lead Register
 @section('scriptImport')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script>
+<!-- <script src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script> -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
@@ -1579,9 +1579,19 @@ Lead Register
   	multiple:true
   })
 
-  $("#year_dif2").select2({
-  	multiple:true
-  })
+  $('#year_dif_dir').change(function() {
+  	$("#year_dif2_dir").select2({
+	  	multiple:true
+	  })
+
+	  $('#year_dif2_dir option').prop('disabled', false);
+		$('#year_dif_dir').val().forEach(function(value) {
+	    $('#year_dif2_dir option[value="' + value + '"]').prop('disabled', true);
+	  });
+
+	  // Trigger change to refresh Select2
+	  // $('#year_dif2_dir').trigger('change');
+  });
 
 	var countLead = []
 	var sumAmount = []
@@ -1871,8 +1881,7 @@ Lead Register
 	    }
 		})
 
-
-		if ("Auth::User()->id_position" == 'DIRECTOR') {
+		if ("{{Auth::User()->id_position}}" == 'DIRECTOR') {
 			if ($("#year_dif_dir").val() == '') {
 				temp = temp + '&year[]='+ new Date().getFullYear()
 			}else{
@@ -1882,6 +1891,7 @@ Lead Register
 			    }else{
 			      temp = temp + '&year[]='+ value
 			    }
+
 				})
 			}
 
@@ -1909,8 +1919,6 @@ Lead Register
 				})
 			}
 		}
-
-		
 
 		// if ($("#year_dif").val() == '') {
 		// 	temp = temp + '&year[]='+ new Date().getFullYear()
@@ -1987,6 +1995,8 @@ Lead Register
 		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
 
 		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
+
+		console.log("sekali")
 
 		dashboardCountFilter(tempFiltered)
 	}
