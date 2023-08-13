@@ -209,16 +209,47 @@ Lead Register
 	  				<div class="box-body" id="filter-body">
 	  					<div class="form-group">
 								<label>Tahun</label>
-								<select class="select2 form-control" style="width:100%" id="year_dif" onchange="searchCustom()" multiple>
-									@foreach($year as $years)
-			              @if($years->year < $year_now-1)
-			              {{-- @if($years->year < $year_now) --}}
-			                <option value="{{$years->year}}">{{$years->year}}</option>
-			              @endif
-			            @endforeach
-		              <option selected value="{{date('Y')-1}}">{{date("Y")-1}}</option>
-			            <option selected value="{{$year_now}}">{{$year_now}}</option>
-								</select>
+								<div id="filter_year_for_dir" style="display:none">
+									<div class="row">
+										<div style="display: inline;" class="col-md-6">
+											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif_dir" onchange="searchCustom()" multiple>
+												@foreach($year as $years)
+						              @if($years->year < $year_now-1)
+						              {{-- @if($years->year < $year_now) --}}
+						                <option value="{{$years->year}}">{{$years->year}}</option>
+						              @endif
+						            @endforeach
+					              <option selected value="{{date('Y')-1}}">{{date("Y")-1}}</option>
+						            <option value="{{$year_now}}">{{$year_now}}</option>
+											</select>
+										</div>
+
+										<div style="display: inline;" class="col-md-6">
+											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif2" onchange="searchCustom()" multiple>
+												@foreach($year as $years)
+						              @if($years->year < $year_now-1)
+						              {{-- @if($years->year < $year_now) --}}
+						                <option value="{{$years->year}}">{{$years->year}}</option>
+						              @endif
+						            @endforeach
+						            <option value="{{date('Y')-1}}">{{date("Y")-1}}</option>
+						            <option selected value="{{$year_now}}">{{$year_now}}</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div id="filter_year_for_oth" style="display:none">
+									<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif" onchange="searchCustom()" multiple>
+										@foreach($year as $years)
+				              @if($years->year < $year_now-1)
+				              {{-- @if($years->year < $year_now) --}}
+				                <option value="{{$years->year}}">{{$years->year}}</option>
+				              @endif
+				            @endforeach
+			              <option selected value="{{date('Y')-1}}">{{date("Y")-1}}</option>
+				            <option selected value="{{$year_now}}">{{$year_now}}</option>
+									</select>
+								</div>
 							</div>
 							<div class="form-group" id="filter-com" style="display:none;">								
 							</div>
@@ -287,7 +318,7 @@ Lead Register
 							</dir>			    		
 			    	</div>			    	
 			    	<div class="table-responsive">
-			    		<table id="tableLead" class="table table-bordered table-striped dataTables_wrapper" role="grid" aria-describedby="example1_info">
+			    		<table id="tableLead" class="table table-bordered table-striped display nowrap" role="grid" aria-describedby="example1_info">
 			        	<thead>
 									<tr>
 										<th>Lead ID</th>
@@ -555,6 +586,7 @@ Lead Register
 @section('scriptImport')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
@@ -1539,15 +1571,26 @@ Lead Register
 		}
 	})
 
+  $("#year_dif_dir").select2({
+  	multiple:true
+  })
+
   $("#year_dif").select2({
+  	multiple:true
+  })
+
+  $("#year_dif2").select2({
   	multiple:true
   })
 
 	var countLead = []
 	var sumAmount = []
 	
-	$(document).ready(function(){  	
-		var year = $('#year_dif').val();
+	$(document).ready(function(){  
+		var year 			= $('#year_dif').val();
+		var year_dir 	= $('#year_dif_dir').val();
+		var year2_dir = $('#year_dif2_dir').val();
+
 		var tempYear = '?year[]='
 		
     var i = 0
@@ -1685,7 +1728,7 @@ Lead Register
 			success:function(result){
 				$.each(result,function(key,value){
 					prependFilterCom = prependFilterCom + '<div>'
-				  	prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" name="cb-filter" value="'+value.id_company+'"> '
+				  	prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'"> '
 				    prependFilterCom = prependFilterCom + value.company
 				  prependFilterCom = prependFilterCom + '</div>'
 				})
@@ -1756,7 +1799,7 @@ Lead Register
 			success:function(result){
 				$.each(result,function(key,value){
 					prependFilterStatus = prependFilterStatus + '<div>'
-				  	prependFilterStatus = prependFilterStatus + '<input type="checkbox" class="cb-result" name="cb-filter" value="'+value.result_value+'" id="filter_lead_' + key + '"> '
+				  	prependFilterStatus = prependFilterStatus + '<input type="checkbox" class="cb-result" name="cb-filter" value="'+value.result_value+'" id="filter_lead_' + value.result_modif + '"> '
 				    prependFilterStatus = prependFilterStatus + '<span>' + value.result_modif + '</span>'
 				  prependFilterStatus = prependFilterStatus + '</div>'
 				})
@@ -1764,19 +1807,38 @@ Lead Register
 				$("#filter-result").append(prependFilterStatus)
 				$(".cb-result").click(function(){
 					searchCustom()
-
 				})
+
+				filterFromDashboard()	
 			}
 		})
 
-		$.each(year,function(item,value){
-			if (tempYear == '?year[]=') {
-	      tempYear = tempYear + value
-	    }else{
-	      tempYear = tempYear + '&year[]=' + value
-	    }
-		})
+		if ("Auth::User()->id_position" == 'DIRECTOR') {
+			$.each(year_dir,function(item,value){
+				if (tempYear == '?year[]=') {
+		      tempYear = tempYear + value
+		    }else{
+		      tempYear = tempYear + '&year[]=' + value
+		    }
+			})
 
+			$.each(year2_dir,function(item,value){
+				if (tempYear == '?year[]=') {
+		      tempYear = tempYear + value
+		    }else{
+		      tempYear = tempYear + '&year[]=' + value
+		    }
+			})
+		}else{
+			$.each(year,function(item,value){
+				if (tempYear == '?year[]=') {
+		      tempYear = tempYear + value
+		    }else{
+		      tempYear = tempYear + '&year[]=' + value
+		    }
+			})
+		}
+		
 		dashboardCount(tempYear)
 	  
   })	
@@ -1809,17 +1871,58 @@ Lead Register
 	    }
 		})
 
-		if ($("#year_dif").val() == '') {
-			temp = temp + '&year[]='+ new Date().getFullYear()
+
+		if ("Auth::User()->id_position" == 'DIRECTOR') {
+			if ($("#year_dif_dir").val() == '') {
+				temp = temp + '&year[]='+ new Date().getFullYear()
+			}else{
+				$.each($("#year_dif_dir").val(),function(key,value){
+					if (temp == 'year[]=') {
+			      temp = temp + value
+			    }else{
+			      temp = temp + '&year[]='+ value
+			    }
+				})
+			}
+
+			if ($("#year_dif2_dir").val() == '') {
+				temp = temp + '&year[]='+ new Date().getFullYear()
+			}else{
+				$.each($("#year_dif2_dir").val(),function(key,value){
+					if (temp == 'year[]=') {
+			      temp = temp + value
+			    }else{
+			      temp = temp + '&year[]='+ value
+			    }
+				})
+			}
 		}else{
-			$.each($("#year_dif").val(),function(key,value){
-				if (temp == 'year[]=') {
-		      temp = temp + value
-		    }else{
-		      temp = temp + '&year[]='+ value
-		    }
-			})
+			if ($("#year_dif").val() == '') {
+				temp = temp + '&year[]='+ new Date().getFullYear()
+			}else{
+				$.each($("#year_dif").val(),function(key,value){
+					if (temp == 'year[]=') {
+			      temp = temp + value
+			    }else{
+			      temp = temp + '&year[]='+ value
+			    }
+				})
+			}
 		}
+
+		
+
+		// if ($("#year_dif").val() == '') {
+		// 	temp = temp + '&year[]='+ new Date().getFullYear()
+		// }else{
+		// 	$.each($("#year_dif").val(),function(key,value){
+		// 		if (temp == 'year[]=') {
+		//       temp = temp + value
+		//     }else{
+		//       temp = temp + '&year[]='+ value
+		//     }
+		// 	})
+		// }
 
 		$.each($("#filter_presales").val(),function(key,value){
 			if (tempPresales == 'presales_name[]=') {
@@ -1888,6 +1991,38 @@ Lead Register
 		dashboardCountFilter(tempFiltered)
 	}
 
+	function filterFromDashboard(){
+		if (window.location.href.split("=")[1]) {	
+			$(".cb-result").each(function(item,value){
+				if (window.location.href.split("=")[1] == 'ALL') {
+			    $("#filter_lead_"+value.value).prop("checked", true)
+				}else{
+					if(value.value == window.location.href.split("=")[1]){
+						if (window.location.href.split("=")[1] == "OPEN") {
+			    		$("#filter_lead_null").prop("checked", true)
+						}else {
+			    		$("#filter_lead_"+value.value).prop("checked", true)
+						}
+			    }
+				}
+			})
+
+			$(".cb-company").each(function(item,value){
+				if (value.value = 1) {
+					$("#1").prop("checked", true)
+				}
+			})
+
+			var currentDate = moment();
+			// Get the current year
+			var currentYear = currentDate.year();
+			$('#year_dif').val('').trigger('change')
+			$('#year_dif').val(currentYear).trigger('change')
+
+			searchCustom("tableLead")
+		}
+	}
+
 	//dashboard count
 	function initMoneyHeader(){
 		$("#sum_amount_0").mask('000.000.000.000.000', {reverse: true})
@@ -1936,13 +2071,13 @@ Lead Register
 
 						resultComplete = result		
 
-						$("#filter_lead_0").next().text("INITIAL (" + result.initial + ")")
-						$("#filter_lead_1").next().text("OPEN (" + result.open + ")")
-						$("#filter_lead_2").next().text("SD (" + result.sd + ")")
-						$("#filter_lead_3").next().text("TP (" + result.tp + ")")
-						$("#filter_lead_4").next().text("WIN (" + result.win + ")")
-						$("#filter_lead_5").next().text("LOSE (" + result.lose + ")")
-						$("#filter_lead_6").next().text("CANCEL (" + result.cancel + ")")	
+						$("#filter_lead_INITIAL").next().text("INITIAL (" + result.initial + ")")
+						$("#filter_lead_OPEN").next().text("OPEN (" + result.open + ")")
+						$("#filter_lead_SD").next().text("SD (" + result.sd + ")")
+						$("#filter_lead_TP").next().text("TP (" + result.tp + ")")
+						$("#filter_lead_WIN").next().text("WIN (" + result.win + ")")
+						$("#filter_lead_LOSE").next().text("LOSE (" + result.lose + ")")
+						$("#filter_lead_CANCEL").next().text("CANCEL (" + result.cancel + ")")	
 
 					initMoneyHeader()
 
@@ -1959,13 +2094,13 @@ Lead Register
 					});
 				},
 				complete:function(){
-					$("#filter_lead_0").next().text("INITIAL (" + resultComplete.initial + ")")
-					$("#filter_lead_1").next().text("OPEN (" + resultComplete.open + ")")
-					$("#filter_lead_2").next().text("SD (" + resultComplete.sd + ")")
-					$("#filter_lead_3").next().text("TP (" + resultComplete.tp + ")")
-					$("#filter_lead_4").next().text("WIN (" + resultComplete.win + ")")
-					$("#filter_lead_5").next().text("LOSE (" + resultComplete.lose + ")")
-					$("#filter_lead_6").next().text("CANCEL (" + resultComplete.cancel + ")")
+					$("#filter_lead_INITIAL").next().text("INITIAL (" + resultComplete.initial + ")")
+					$("#filter_lead_OPEN").next().text("OPEN (" + resultComplete.open + ")")
+					$("#filter_lead_SD").next().text("SD (" + resultComplete.sd + ")")
+					$("#filter_lead_TP").next().text("TP (" + resultComplete.tp + ")")
+					$("#filter_lead_WIN").next().text("WIN (" + resultComplete.win + ")")
+					$("#filter_lead_LOSE").next().text("LOSE (" + resultComplete.lose + ")")
+					$("#filter_lead_CANCEL").next().text("CANCEL (" + resultComplete.cancel + ")")
 				}
 			})
 		})
@@ -1997,13 +2132,13 @@ Lead Register
 						$("#"+sumAmount[4]).text(result.amount_win)
 						$("#"+sumAmount[5]).text(result.amount_lose)
 
-						$("#filter_lead_0").next().text("INITIAL (" + result.initial_unfiltered + ")")
-						$("#filter_lead_1").next().text("OPEN (" + result.open_unfiltered + ")")
-						$("#filter_lead_2").next().text("SD (" + result.sd_unfiltered + ")")
-						$("#filter_lead_3").next().text("TP (" + result.tp_unfiltered + ")")
-						$("#filter_lead_4").next().text("WIN (" + result.win_unfiltered + ")")
-						$("#filter_lead_5").next().text("LOSE (" + result.lose_unfiltered + ")")
-						$("#filter_lead_6").next().text("CANCEL (" + result.cancel_unfiltered + ")")	
+						$("#filter_lead_INITIAL").next().text("INITIAL (" + result.initial_unfiltered + ")")
+						$("#filter_lead_OPEN").next().text("OPEN (" + result.open_unfiltered + ")")
+						$("#filter_lead_SD").next().text("SD (" + result.sd_unfiltered + ")")
+						$("#filter_lead_TP").next().text("TP (" + result.tp_unfiltered + ")")
+						$("#filter_lead_WIN").next().text("WIN (" + result.win_unfiltered + ")")
+						$("#filter_lead_LOSE").next().text("LOSE (" + result.lose_unfiltered + ")")
+						$("#filter_lead_CANCEL").next().text("CANCEL (" + result.cancel_unfiltered + ")")	
 					})
 					initRemoveMask()
 
@@ -2012,7 +2147,7 @@ Lead Register
 					    $(this).prop('Counter', 0).animate({
 					      Counter: $(this).text()
 					    }, {
-					      duration: 5000,
+					      duration: 500,
 					      step: function (func) {
 					         $(this).text(parseFloat(func).toFixed(size));
 					      }
