@@ -88,39 +88,65 @@
               </div>
             </div>
 
-            <div class="form-group" id="form_filter_pic" style="display:none">
+            <!-- <div class="form-group" id="form_filter_pic" style="display:none">
               <label>Filter by PIC</label>
               <select type="select" class="select2 form-control" id="selectPic" name="selectPic" onchange="customFilter(this.value,'selectPic')">
-                <!-- <option></option> -->
               </select>
             </div>
 
             <div class="form-group">
               <label>Filter by Status</label>
               <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus" onchange="customFilter(this.value,'selectStatus')">
-                <!-- <option></option> -->
               </select>
             </div>
 
             <div class="form-group">
               <label>Filter by Task</label>
               <select type="select" class="select2 form-control" id="selectTask" name="selectTask" onchange="customFilter(this.value,'selectTask')">
-                <!-- <option></option> -->
               </select>
             </div>
 
             <div class="form-group">
               <label>Filter by Year</label>
-              <select type="select" class="select2 form-control" id="selectYear" name="selectYear" onchange="customFilter(this.value,'selectYear')"><option value=""></option></select>
+              <select type="select" class="select2 form-control" id="selectYear" name="selectYear" onchange="customFilter(this.value,'selectYear')"></select>
             </div>
 
             <div class="form-group">
               <label>Filter by Schedule</label>
               <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule" onchange="customFilter(this.value,'selectSchedule')">
-                <!-- <option></option> -->
+              </select>
+            </div> -->
+
+            <div class="form-group" id="form_filter_pic" style="display:none">
+              <label>Filter by PIC</label>
+              <select type="select" class="select2 form-control" id="selectPic" name="selectPic">
               </select>
             </div>
 
+            <div class="form-group">
+              <label>Filter by Status</label>
+              <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus">
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Filter by Task</label>
+              <select type="select" class="select2 form-control" id="selectTask" name="selectTask">
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Filter by Year</label>
+              <select type="select" class="select2 form-control" id="selectYear" name="selectYear"><option></option></select>
+            </div>
+
+            <div class="form-group">
+              <label>Filter by Schedule</label>
+              <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule">
+              </select>
+            </div>
+
+            <button id="" class="btn btn-sm btn-primary btn-block" onclick="customFilter()"><i class="fa fa-filter"></i> Filter</button>
             <button id="" class="btn btn-sm btn-info btn-block" onclick="resetFilter()"><i class="fa fa-refresh"></i> Reset</button>
           </div>
         </div>
@@ -224,7 +250,7 @@
                                   </button>
                                 </span>
                                 <span class="input-group-btn">
-                                  <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                 <!--  <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                     Displayed Column
                                     <span class="fa fa-caret-down"></span>
                                   </button>
@@ -235,7 +261,7 @@
                                     <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="4"><span class="text">Billable</span></li>
                                     <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="5"><span class="text">%Billable</span></li>
                                     <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="6"><span class="text">Deviation</span></li>
-                                  </ul>
+                                  </ul> -->
                                   <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummarySbe')" type="button" class="btn btn-default btn-flat">
                                     <i class="fa fa-fw fa-refresh"></i>
                                   </button>
@@ -257,7 +283,7 @@
                     </div>
                     <div class="box-body">
                       <div class="row">
-                        <div class="col-md-6 col-xs-12 pull-right">
+                        <div class="col-md-12 col-xs-12 pull-right">
                             <b>Search Anything</b>
                             <div class="input-group pull-right">
                               <input id="searchBarAssignPID" onkeyup="searchCustom('tbAssignPID','searchBarAssignPID')" type="text" class="form-control" placeholder="ex: search Name...">
@@ -647,7 +673,8 @@
             appendMonth = appendMonth +  '<div class="form-group">'
               appendMonth = appendMonth + '<div class="checkbox">'
               appendMonth = appendMonth + '  <label>'
-              appendMonth = appendMonth + '  <input type="checkbox" id="cbMonth" class="cbMonth" value="'+ values +'" onchange="customFilter(this)">'
+              // appendMonth = appendMonth + '  <input type="checkbox" id="cbMonth" class="cbMonth" value="'+ values +'" onchange="customFilter(this)">'
+              appendMonth = appendMonth + '  <input type="checkbox" id="cbMonth" class="cbMonth" value="'+ values +'">'
               appendMonth = appendMonth + values
               appendMonth = appendMonth + '  </label>'
               appendMonth = appendMonth + '</div>'
@@ -801,7 +828,6 @@
           selectSchedule = selectSchedule + '&schedule[]=' + val
         }
       })
-      
 
       if ($(".cbMonth").is(":checked") == false) {
         arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -815,6 +841,8 @@
       }
 
       var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
+
+      console.log(arrFilter)
 
       if (id == "export") {
         window.location = val + arrFilter;
