@@ -54,7 +54,11 @@
     <div class="col-md-12">
       <div class="alert alert-warning alert-dismissible" id="alertForRemaining" style="display:none">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-        <h4><i class="icon fa fa-info-circle"></i> Hai <span>{name}</span>! Your mandays this month is <span>{percentage}</span>%, Happy Working!!  &#9994; <a href="{{url('timesheet/dashboard')}}" style="cursor: pointer;">See My Dashboard</a></h4>
+        <h4>
+        <i class="icon fa fa-info-circle"></i> Hai <span>{name}</span>! Your mandays this month is <span>{percentage}</span>%, Happy Working!!  &#9994; <a href="{{url('timesheet/dashboard')}}" style="cursor: pointer;">See My Dashboard</a><br>
+        <i class="icon fa fa-info-circle"></i> <span>Actual Planned Mandays for Today : <span></span></span><br>
+        <i class="icon fa fa-info-circle"></i> <span>Actual UnPlanned Mandays for Today : </span><span></span>
+        </h4>
       </div>
     </div>
   </div>
@@ -2181,6 +2185,7 @@
                       }
                       $("#ModalAddTimesheet").modal('hide')
                       // Render the updated event on the calendar
+                      showAlertRemaining()
                   }else{
                       var newEvents = []
 
@@ -2210,6 +2215,7 @@
     }
 
     function showAlertRemaining(){
+      $("#alertForRemaining").hide()
       $.ajax({
         type:"GET",
         url:"{{url('timesheet/getPercentage')}}",
@@ -2217,6 +2223,8 @@
           $("#alertForRemaining").show()
           $($("#alertForRemaining").find("span")[0]).text(result.name)
           $($("#alertForRemaining").find("span")[1]).text(result.percentage)
+          $($("#alertForRemaining").find("span")[3]).text(result.plannedToday !== null?result.plannedToday:'0')
+          $($("#alertForRemaining").find("span")[5]).text(result.unplannedToday !== null?result.unplannedToday:'0')
         }
       })
     }
