@@ -56,8 +56,8 @@
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         <h4>
         <i class="icon fa fa-info-circle"></i> Hai <span>{name}</span>! Your mandays this month is <span>{percentage}</span>%, Happy Working!!  &#9994; <a href="{{url('timesheet/dashboard')}}" style="cursor: pointer;">See My Dashboard</a><br>
-        <i class="icon fa fa-info-circle"></i> <span>Actual Planned Mandays for Today : <span></span></span><br>
-        <i class="icon fa fa-info-circle"></i> <span>Actual UnPlanned Mandays for Today : </span><span></span>
+        <i class="icon fa fa-info-circle"></i> <span>Planned schedule for today : <span></span></span><br>
+        <i class="icon fa fa-info-circle"></i> <span>Unplanned schedule for today : </span><span></span>
         </h4>
       </div>
     </div>
@@ -2223,8 +2223,8 @@
           $("#alertForRemaining").show()
           $($("#alertForRemaining").find("span")[0]).text(result.name)
           $($("#alertForRemaining").find("span")[1]).text(result.percentage)
-          $($("#alertForRemaining").find("span")[3]).text(result.plannedToday !== null?result.plannedToday:'0')
-          $($("#alertForRemaining").find("span")[5]).text(result.unplannedToday !== null?result.unplannedToday:'0')
+          $($("#alertForRemaining").find("span")[3]).text(result.plannedToday !== null?result.plannedToday + ' Mandays':'0' + ' Mandays')
+          $($("#alertForRemaining").find("span")[5]).text(result.unplannedToday !== null?result.unplannedToday + ' Mandays':'0' + ' Mandays')
         }
       })
     }
