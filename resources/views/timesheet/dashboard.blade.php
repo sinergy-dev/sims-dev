@@ -194,96 +194,101 @@
                 </div>
               </div>
 
-              <div class="box box-primary" id="box_sbe" style="display:none;">
-                <div class="box-header bg-primary with-border">
-                  <h3 class="box-title" style="color: white;">Summary of SBE</h3>
-                </div>
-                <div class="box-body">
-                  <div class="row">
-                      <div class="col-md-6 col-xs-12 pull-right">
-                        <b>Search Anything</b>
-                          <div class="input-group pull-right">
-                            <input id="searchBarSbe" type="text" class="form-control" onkeyup="searchCustom('tbSummarySbe','searchBarSbe')" placeholder="ex: Search Name..">
-                            <div class="input-group-btn">
-                              <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                Show 10 
-                                <span class="fa fa-caret-down"></span>
-                              </button>
-                              <ul class="dropdown-menu" id="selectShowEntryTicket">
-                                <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                                <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                                <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                                <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-                              </ul>
-                            </div>
-                            <span class="input-group-btn">
-                              <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbSummarySbe','searchBarSbe')" type="button" class="btn btn-default btn-flat">
-                                <i class="fa fa-fw fa-remove"></i>
-                              </button>
-                            </span>
-                            <span class="input-group-btn">
-                              <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                Displayed Column
-                                <span class="fa fa-caret-down"></span>
-                              </button>
-                              <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="1"><span class="text">Planned</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="2"><span class="text">Actual</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="3"><span class="text">Threshold</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="4"><span class="text">Billable</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="5"><span class="text">%Billable</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="6"><span class="text">Deviation</span></li>
-                              </ul>
-                              <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummarySbe')" type="button" class="btn btn-default btn-flat">
-                                <i class="fa fa-fw fa-refresh"></i>
-                              </button>
-                            </span>
+              <div class="row">
+                <div class="col-md-6 col-xs-12">
+                  <div class="box box-primary" id="box_sbe" style="display:none;">
+                    <div class="box-header bg-primary with-border">
+                      <h3 class="box-title" style="color: white;">Summary of SBE</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="row">
+                          <div class="col-md-12 col-xs-12 pull-right">
+                            <b>Search Anything</b>
+                              <div class="input-group pull-right">
+                                <input id="searchBarSbe" type="text" class="form-control" onkeyup="searchCustom('tbSummarySbe','searchBarSbe')" placeholder="ex: Search Name..">
+                                <div class="input-group-btn">
+                                  <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    Show 10 
+                                    <span class="fa fa-caret-down"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" id="selectShowEntryTicket">
+                                    <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                                  </ul>
+                                </div>
+                                <span class="input-group-btn">
+                                  <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbSummarySbe','searchBarSbe')" type="button" class="btn btn-default btn-flat">
+                                    <i class="fa fa-fw fa-remove"></i>
+                                  </button>
+                                </span>
+                                <span class="input-group-btn">
+                                  <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    Displayed Column
+                                    <span class="fa fa-caret-down"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="1"><span class="text">Planned</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="2"><span class="text">Actual</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="3"><span class="text">Threshold</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="4"><span class="text">Billable</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="5"><span class="text">%Billable</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="6"><span class="text">Deviation</span></li>
+                                  </ul>
+                                  <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummarySbe')" type="button" class="btn btn-default btn-flat">
+                                    <i class="fa fa-fw fa-refresh"></i>
+                                  </button>
+                                </span>
+                              </div>
                           </div>
                       </div>
-                  </div>
-                  <div class="table-responsive">
-                    <table class="table" id="tbSummarySbe">
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-              <div class="box box-primary" id="box_pid" style="display:none">
-                <div class="box-header bg-primary with-border">
-                  <h3 class="box-title" style="color: white;">Assign PID</h3>
-                </div>
-                <div class="box-body">
-                  <div class="row">
-                    <div class="col-md-6 col-xs-12 pull-right">
-                        <b>Search Anything</b>
-                        <div class="input-group pull-right">
-                          <input id="searchBarAssignPID" onkeyup="searchCustom('tbAssignPID','searchBarAssignPID')" type="text" class="form-control" placeholder="ex: search Name...">
-                          <div class="input-group-btn">
-                            <button type="button" id="btnShowEntry" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                              Show 10 
-                              <span class="fa fa-caret-down"></span>
-                            </button>
-                            <ul class="dropdown-menu" id="selectShowEntry">
-                              <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                              <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                              <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                              <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-                            </ul>
-                          </div>
-                          <span class="input-group-btn">
-                            <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbAssignPID','searchBarAssignPID')" type="button" class="btn btn-default btn-flat">
-                              <i class="fa fa-fw fa-remove"></i>
-                            </button>
-                            <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbAssignPID')" type="button" class="btn btn-default btn-flat">
-                              <i class="fa fa-fw fa-refresh"></i>
-                            </button>
-                          </span>
-                        </div>
+                      <div class="table-responsive">
+                        <table class="table" id="tbSummarySbe">
+                        </table>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <table class="table" id="tbAssignPID">
-                    </table>
+                </div>
+                <div class="col-md-6 col-xs-12">
+                  <div class="box box-primary" id="box_pid" style="display:none">
+                    <div class="box-header bg-primary with-border">
+                      <h3 class="box-title" style="color: white;">Assign PID</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="row">
+                        <div class="col-md-6 col-xs-12 pull-right">
+                            <b>Search Anything</b>
+                            <div class="input-group pull-right">
+                              <input id="searchBarAssignPID" onkeyup="searchCustom('tbAssignPID','searchBarAssignPID')" type="text" class="form-control" placeholder="ex: search Name...">
+                              <div class="input-group-btn">
+                                <button type="button" id="btnShowEntry" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                  Show 10 
+                                  <span class="fa fa-caret-down"></span>
+                                </button>
+                                <ul class="dropdown-menu" id="selectShowEntry">
+                                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                                </ul>
+                              </div>
+                              <span class="input-group-btn">
+                                <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbAssignPID','searchBarAssignPID')" type="button" class="btn btn-default btn-flat">
+                                  <i class="fa fa-fw fa-remove"></i>
+                                </button>
+                                <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbAssignPID')" type="button" class="btn btn-default btn-flat">
+                                  <i class="fa fa-fw fa-refresh"></i>
+                                </button>
+                              </span>
+                            </div>
+                        </div>
+                      </div>
+                      <div>
+                        <table class="table" id="tbAssignPID">
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
