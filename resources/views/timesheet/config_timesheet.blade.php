@@ -367,7 +367,7 @@
         url:"{{url('/timesheet/getAllPhase')}}?id="+id,
         success:function(result){
           $("#phase_id").val(result[0].id)
-          $("#inputPhase").val(result[0].text)
+          $("#inputPhase").val(result[0].text).prop('disabled',true)
           $("#inputPhaseDesc").val(result[0].description)
         }
       })
@@ -382,7 +382,7 @@
         url:"{{url('/timesheet/getAllTask')}}?id="+id,
         success:function(result){
           $("#task_id").val(result[0].id)
-          $("#inputTask").val(result[0].text)
+          $("#inputTask").val(result[0].text).prop('disabled',true)
           $("#inputTaskDesc").val(result[0].description)
         }
       })
@@ -393,7 +393,7 @@
     $('#ModalAddPhase').on('hidden.bs.modal', function () {
       $(".modal-title").text("Add Phase")
       $("#phase_id").val("")
-      $("#inputPhase").val("")
+      $("#inputPhase").val("").prop('disabled',false)
       $("#inputPhaseDesc").val("")
       $("#ModalAddPhase").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
     })
@@ -401,7 +401,7 @@
     $('#ModalAddTask').on('hidden.bs.modal', function () {
       $(".modal-title").text("Add Task")
       $("#task_id").val("")
-      $("#inputTask").val("")
+      $("#inputTask").val("").prop('disabled',false)
       $("#inputTaskDesc").val("")
       $("#ModalAddTask").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
     })
