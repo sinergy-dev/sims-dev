@@ -1362,6 +1362,18 @@ class TimesheetController extends Controller
            $getAllLeavingPermit->push($value['date']);
         }
 
+        $actualPlanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
+                ->where('tb_timesheet.nik',$nik)
+                ->where('schedule','Planned')
+                ->where('status','Done')
+                ->where('start_date',date("Y-m-d"))->first();
+
+        $actualUnplanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
+                ->where('tb_timesheet.nik',$nik)
+                ->where('schedule','Unplanned')
+                ->where('status','Done')
+                ->where('start_date',date("Y-m-d"))->first();
+
         $getAllLeavingPermit = $getAllLeavingPermit->toArray();
 
         $all = array_merge($allWorkdays);
@@ -1369,7 +1381,6 @@ class TimesheetController extends Controller
         $differenceArray = array_diff($all, $getAllPermit->toArray());
         $differenceArrayMerged = array_merge($differenceArray);
         // $differenceArray2 = array_diff($differenceArrayMerged, $getAllLeavingPermit);
-
         // $billable = count($differenceArray2);
 
         $isEndMonth = 'false';
@@ -1389,9 +1400,9 @@ class TimesheetController extends Controller
 
             $percentage = number_format($planned[0][1]/$planned[0][0]*100,  2, '.', '');
 
-            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth]);
+            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>$actualPlanned->point_mandays,'unplannedToday'=>$actualUnplanned->point_mandays]);
         } else {
-            return collect(['percentage'=>'0','name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth]);
+            return collect(['percentage'=>'0','name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>'0','unplannedToday'=>'0']);
         } 
     }
 
