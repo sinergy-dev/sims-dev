@@ -1279,6 +1279,8 @@
     function showDataFilter(arrFilter,arrMonth){
       if (isTbSummary == true) {
         $("#loadingIndicator").show()
+        $("#filterSumPoint").find("i").css("color","red")
+        $("#filterSumPoint").find("span").text("not ready to filter...")
         Pace.restart();
         Pace.track(function(){
           $("#tbSummaryMandays").DataTable().ajax.url("{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter).load();
