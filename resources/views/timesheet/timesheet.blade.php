@@ -541,17 +541,19 @@
           var daysToSubtract = today.getDay() + 28;
           var incDate = 38
         }else if(lock_activity[0].lock_activity == 6){
-          // startOfWeek.setDate(1) //lock activity 1 month
           var daysToSubtract = today.getDay() + 35;
           var incDate = 45
         }else if(lock_activity[0].lock_activity == 7){
-          // startOfWeek.setDate(1) //lock activity 1 month
           var daysToSubtract = today.getDay() + 42;
           var incDate = 52
         }else if(lock_activity[0].lock_activity == 8){
-          // startOfWeek.setDate(1) //lock activity 1 month
+          // startOfWeek.setDate(1) //lock activity 2 month
           var daysToSubtract = today.getDay() + 49;
           var incDate = 59
+        }else if(lock_activity[0].lock_activity == 12){
+          // startOfWeek.setDate(1) //lock activity 3 month
+          var daysToSubtract = today.getDay() + 77;
+          var incDate = 87
         }
 
         // Set the date to the first day of the two-week or three-week period
@@ -616,12 +618,13 @@
             if (isAllowedDate) {
               var isClickedDate = moment(date)
                 if (isClickedDate.isSameOrBefore(moment())) {
-                  if (disabledDates.some(function(disabledDate) {
-                    return date.isSame(disabledDate, 'day');
-                  })) {
-                    // Disable day click for the disabled dates
-                    return false;
-                  }else{
+                  // if (disabledDates.some(function(disabledDate) {
+                  //   return date.isSame(disabledDate, 'day');
+                  // })) {
+                  //   // Disable day click for the disabled dates
+                  //   return false;
+                  // }else{
+
                     $("#ModalAddTimesheet").modal("show")
 
                     Swal.fire({
@@ -681,20 +684,20 @@
             
                   }
                   
-                } else {
-                  Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    text: 'Sorry, you won`t be permitted to create timesheet on the disabled date. Please create a timesheet in enabled date!',
-                    confirmButtonText: 'OK'
-                  }).then((result) => {
-                    // Handle the user's interaction with the alert if needed
-                    if (result.isConfirmed) {
-                      // The user clicked the 'OK' button
+                // } else {
+                //   Swal.fire({
+                //     icon: 'warning',
+                //     title: 'Warning',
+                //     text: 'Sorry, you won`t be permitted to create timesheet on the disabled date. Please create a timesheet in enabled date!',
+                //     confirmButtonText: 'OK'
+                //   }).then((result) => {
+                //     // Handle the user's interaction with the alert if needed
+                //     if (result.isConfirmed) {
+                //       // The user clicked the 'OK' button
                       
-                    }
-                  });
-                }
+                //     }
+                //   });
+                // }
             } else {
               // Disable the day click event for disallowed dates
               return false;
@@ -1467,7 +1470,7 @@
       //   maxDate:currentDate
       // })
       $("#inputPermitDate").datepicker({
-        daysOfWeekDisabled: [0,6],
+        // daysOfWeekDisabled: [0,6],
         endDate:currentDate,
         multidate: true,
       })

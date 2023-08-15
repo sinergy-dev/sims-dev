@@ -3440,6 +3440,36 @@ class TimesheetController extends Controller
                         ->where('roles.name','not like','%Manager')
                         ->where('users.status_delete','-');
 
+        if ($request->task[0] === null) {
+            $data = $data;
+        }else{
+            $data = $data->whereIn('task',$request->task);                    
+        }
+
+        if ($request->phase[0] === null) {
+            $data = $data;
+        }else{
+            $data = $data->whereIn('phase',$request->phase);                    
+        }
+
+        if ($request->status[0] === null) {
+            $data = $data->where('status','Done');
+        }else{
+            $data = $data->whereIn('status',$request->status);                    
+        }
+
+        if (is_null($request->year)) {
+            $data = $data->whereYear('start_date',date('Y'));
+        }else{
+            $data = $data->whereYear('start_date',$request->year);                    
+        }
+
+        if ($request->schedule[0] === null) {
+            $data = $data;
+        }else{
+            $data = $data->whereIn('schedule',$request->schedule);                    
+        }
+
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
@@ -3454,30 +3484,6 @@ class TimesheetController extends Controller
                                 ->whereNotIn('nik', $data->get()->pluck('nik'))
                                 ->whereIn('nik',$request->pic)    
                                 ->get();
-                }
-
-                if ($request->task[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('task',$request->task);                    
-                }
-
-                if ($request->status[0] === null) {
-                    $data = $data->where('status','Done');
-                }else{
-                    $data = $data->whereIn('status',$request->status);                    
-                }
-
-                if (is_null($request->year)) {
-                    $data = $data->whereYear('start_date',date('Y'));
-                }else{
-                    $data = $data->whereYear('start_date',$request->year);                    
-                }
-
-                if ($request->schedule[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('schedule',$request->schedule);                    
                 }
 
                 $data = $data->get()->groupBy('name');
@@ -3931,29 +3937,29 @@ class TimesheetController extends Controller
                                 ->get();
                 } 
 
-                if ($request->task[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('task',$request->task);                    
-                }
+                // if ($request->task[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('task',$request->task);                    
+                // }
 
-                if ($request->status[0] === null) {
-                    $data = $data->where('status','Done');
-                }else{
-                    $data = $data->whereIn('status',$request->status);                    
-                }
+                // if ($request->status[0] === null) {
+                //     $data = $data->where('status','Done');
+                // }else{
+                //     $data = $data->whereIn('status',$request->status);                    
+                // }
 
-                if (is_null($request->year)) {
-                    $data = $data->whereYear('start_date',date('Y'));
-                }else{
-                    $data = $data->whereYear('start_date',$request->year);                    
-                }
+                // if (is_null($request->year)) {
+                //     $data = $data->whereYear('start_date',date('Y'));
+                // }else{
+                //     $data = $data->whereYear('start_date',$request->year);                    
+                // }
 
-                if ($request->schedule[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('schedule',$request->schedule);                    
-                }
+                // if ($request->schedule[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('schedule',$request->schedule);                    
+                // }
 
                 $data = $data->get()->groupBy('name');
 
@@ -4899,6 +4905,12 @@ class TimesheetController extends Controller
             $data = $data->whereIn('task',$request->task);                    
         }
 
+        if ($request->phase[0] === null) {
+            $data = $data;
+        }else{
+            $data = $data->whereIn('phase',$request->phase);                    
+        }
+
         if ($request->status[0] === null) {
             $data = $data->where('status','Done');
         }else{
@@ -5033,6 +5045,12 @@ class TimesheetController extends Controller
             $data = $data;
         }else{
             $data = $data->whereIn('task',$request->task);                    
+        }
+
+        if ($request->phase[0] === null) {
+            $data = $data;
+        }else{
+            $data = $data->whereIn('phase',$request->phase);                    
         }
 
         if ($request->status[0] === null) {
@@ -5172,6 +5190,12 @@ class TimesheetController extends Controller
             $data = $data;
         }else{
             $data = $data->whereIn('task',$request->task);                    
+        }
+
+        if ($request->phase[0] === null) {
+            $data = $data;
+        }else{
+            $data = $data->whereIn('phase',$request->phase);                    
         }
 
         if ($request->status[0] === null) {
