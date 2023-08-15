@@ -593,6 +593,9 @@
             { title: 'Deviation', 
               data:'deviation'
             },
+            { title: 'Total Activity', 
+              data:'total_task'
+            },
           ],
           lengthChange: false,
           "pageLength": 50,
