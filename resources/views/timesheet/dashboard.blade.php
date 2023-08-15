@@ -868,7 +868,7 @@
         })
       }
 
-      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
+      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
 
       console.log(arrFilter)
 
