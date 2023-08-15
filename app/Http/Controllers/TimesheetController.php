@@ -3047,32 +3047,6 @@ class TimesheetController extends Controller
                 
                 $isNeedOtherUser = false;
             }
-
-            if ($request->task[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('task',$request->task);                    
-            }
-
-            if ($request->status[0] === null) {
-                $sumMandays = $sumMandays->where('status','Done');
-            }else{
-                $sumMandays = $sumMandays->whereIn('status',$request->status);                    
-            }
-
-            if (is_null($request->year)) {
-                $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
-            }else{
-                $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
-            }
-
-            if ($request->schedule[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
-            }
-
-            $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
         }elseif ($cek_role->group == 'DPG') {
             if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
@@ -3117,32 +3091,6 @@ class TimesheetController extends Controller
 
                 $isNeedOtherUser = false;
             }
-
-            if ($request->task[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('task',$request->task);                    
-            }
-
-            if ($request->status[0] === null) {
-                $sumMandays = $sumMandays->where('status','Done');
-            }else{
-                $sumMandays = $sumMandays->whereIn('status',$request->status);                    
-            }
-
-            if (is_null($request->year)) {
-                $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
-            }else{
-                $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
-            }
-
-            if ($request->schedule[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
-            }
-
-            $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
@@ -3187,32 +3135,6 @@ class TimesheetController extends Controller
 
                 $isNeedOtherUser = false;
             }
-
-            if ($request->task[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('task',$request->task);                    
-            }
-
-            if ($request->status[0] === null) {
-                $sumMandays = $sumMandays->where('status','Done');
-            }else{
-                $sumMandays = $sumMandays->whereIn('status',$request->status);                    
-            }
-
-            if (is_null($request->year)) {
-                $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
-            }else{
-                $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
-            }
-
-            if ($request->schedule[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
-            }
-
-            $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
         }elseif ($cek_role->group == 'bcd') {
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
 
@@ -3258,32 +3180,6 @@ class TimesheetController extends Controller
                 
                 $isNeedOtherUser = false;
             }
-
-            if ($request->schedule[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
-            }
-
-            if ($request->status[0] === null) {
-                $sumMandays = $sumMandays->where('status','Done');
-            }else{
-                $sumMandays = $sumMandays->whereIn('status',$request->status);                    
-            }
-
-            if ($request->task[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('task',$request->task);                    
-            }
-
-            if (is_null($request->year)) {
-                $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
-            }else{
-                $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
-            }
-
-            $sumMandays = $sumMandays->get();
         }elseif ($cek_role->group == 'hr') {
             if ($cek_role->name == 'HR Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
@@ -3328,32 +3224,6 @@ class TimesheetController extends Controller
                 $isNeedOtherUser = false;
 
             }
-
-            if ($request->task[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('task',$request->task);                    
-            }
-
-            if ($request->status[0] === null) {
-                $sumMandays = $sumMandays->where('status','Done');
-            }else{
-                $sumMandays = $sumMandays->whereIn('status',$request->status);                    
-            }
-
-            if (is_null($request->year)) {
-                $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
-            }else{
-                $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
-            }
-
-            if ($request->schedule[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
-            }
-
-            $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
@@ -3400,33 +3270,39 @@ class TimesheetController extends Controller
                 $isNeedOtherUser = false;
 
             }
-
-            if ($request->task[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('task',$request->task);                    
-            }
-
-            if ($request->status[0] === null) {
-                $sumMandays = $sumMandays->where('status','Done');
-            }else{
-                $sumMandays = $sumMandays->whereIn('status',$request->status);                    
-            }
-
-            if (is_null($request->year)) {
-                $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
-            }else{
-                $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
-            }
-
-            if ($request->schedule[0] === null) {
-                $sumMandays = $sumMandays;
-            }else{
-                $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
-            }
-
-            $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
         }
+
+        if ($request->task[0] === null) {
+            $sumMandays = $sumMandays;
+        }else{
+            $sumMandays = $sumMandays->whereIn('task',$request->task);                    
+        }
+
+        if ($request->phase[0] === null) {
+            $sumMandays = $sumMandays;
+        }else{
+            $sumMandays = $sumMandays->whereIn('phase',$request->phase);                    
+        }
+
+        if ($request->status[0] === null) {
+            $sumMandays = $sumMandays->where('status','Done');
+        }else{
+            $sumMandays = $sumMandays->whereIn('status',$request->status);                    
+        }
+
+        if (is_null($request->year)) {
+            $sumMandays = $sumMandays->whereYear('start_date',date('Y'));
+        }else{
+            $sumMandays = $sumMandays->whereYear('start_date',$request->year);                    
+        }
+
+        if ($request->schedule[0] === null) {
+            $sumMandays = $sumMandays;
+        }else{
+            $sumMandays = $sumMandays->whereIn('schedule',$request->schedule);                    
+        }
+
+        $sumMandays = $sumMandays->get()->makeHidden(['planned','threshold']);
 
         $getLeavingPermitByName = collect($getLeavingPermit)->groupBy('name');
         $getPermitByName        = collect($getPermit)->groupBy('name');
