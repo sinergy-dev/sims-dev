@@ -667,8 +667,8 @@ class TimesheetController extends Controller
 
     public function getAllActivityByUser(Request $request)
     {
-    	$startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
-        $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
+    	$startDate = Carbon::now()->startOfYear()->format("Y-m-d");
+        $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
 
         $hidden = ['planned','threshold'];
 
