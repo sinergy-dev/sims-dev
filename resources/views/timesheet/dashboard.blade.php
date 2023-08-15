@@ -136,6 +136,12 @@
             </div>
 
             <div class="form-group">
+              <label>Filter by Phase</label>
+              <select type="select" class="select2 form-control" id="selectPhase" name="selectPhase">
+              </select>
+            </div>
+
+            <div class="form-group">
               <label>Filter by Year</label>
               <select type="select" class="select2 form-control" id="selectYear" name="selectYear"><option></option></select>
             </div>
@@ -203,7 +209,7 @@
                           <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummaryMandays')" type="button" class="btn btn-default btn-flat">
                             <i class="fa fa-fw fa-refresh"></i>
                           </button>
-                          <button style="margin-left: 10px;display: none;" id="btn_export_sum_mandays" onclick="customFilter('{{action('TimesheetController@exportExcel')}}','export')" class="btn btn-md btn-success"><i class="fa fa-file-excel-o"></i> Export</button>
+                          <a style="margin-left: 10px;display: none;" id="btn_export_sum_mandays" target="_blank" onclick="customFilter('{{action('TimesheetController@exportExcel')}}','export')" class="btn btn-md btn-success"><i class="fa fa-file-excel-o"></i> Export</a>
                         </span>
                       </div>
                     </div>
@@ -559,6 +565,18 @@
         }
       })
 
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getPhaseByDivision')}}",
+        success:function(result) {
+          $("#selectPhase").select2({
+            placeholder:"Select Phase",
+            data:result,
+            multiple:true
+          })
+        }
+      })
+
       var datatableSummary = ""
       function initializeDataTable(tabId) {
         console.log("aheey")
@@ -776,7 +794,7 @@
     })
 
     function customFilter(val,id=""){
-      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectYear = 'year=', selectSchedule = 'schedule[]='
+      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectPhase = 'phase[]=', selectYear = 'year=', selectSchedule = 'schedule[]='
 
       arrFilterMonth = []
       arrMonth = []
@@ -814,6 +832,14 @@
           selectTask = selectTask + val
         }else{
           selectTask = selectTask + '&task[]=' + val
+        }
+      })
+
+      $.each($('#selectPhase').val(),function(key,val){
+        if(selectTask == 'phase[]=') {
+          selectTask = selectTask + val
+        }else{
+          selectTask = selectTask + '&phase[]=' + val
         }
       })
 
