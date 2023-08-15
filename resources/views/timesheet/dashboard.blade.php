@@ -176,10 +176,10 @@
                             <span class="fa fa-caret-down"></span>
                           </button>
                           <ul class="dropdown-menu" id="selectShowEntry">
-                            <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                            <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                            <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                            <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',10)">10</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',25)">25</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',50)">50</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',100)">100</a></li>
                           </ul>
                         </div>
                         <span class="input-group-btn">
@@ -238,10 +238,10 @@
                                     <span class="fa fa-caret-down"></span>
                                   </button>
                                   <ul class="dropdown-menu" id="selectShowEntryTicket">
-                                    <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                                    <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                                    <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                                    <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',10)">10</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',25)">25</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',50)">50</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',100)">100</a></li>
                                   </ul>
                                 </div>
                                 <span class="input-group-btn">
@@ -293,10 +293,10 @@
                                   <span class="fa fa-caret-down"></span>
                                 </button>
                                 <ul class="dropdown-menu" id="selectShowEntry">
-                                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',10)">10</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',25)">25</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',50)">50</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',100)">100</a></li>
                                 </ul>
                               </div>
                               <span class="input-group-btn">
@@ -595,10 +595,9 @@
             },
           ],
           lengthChange: false,
+          "pageLength": 50,
           initComplete: function () {
             isTbSummary = true
-            $("#filterSumPoint").find("i").css("color","#80ff80")
-            $("#filterSumPoint").find("span").text("ready to filter")
             $('#loadingIndicator').hide();
             $.each($("#selectShowColumnTicket li input"),function(index,item){
               var column = $("#tablePerformance").DataTable().column(index)
@@ -1347,11 +1346,17 @@
 
     $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
       // AJAX reload is complete
+      $("#filterSumPoint").find("i").css("color","#80ff80")
+      $("#filterSumPoint").find("span").text("ready to filter")
       $("#loadingIndicator").hide()
     });
 
     function resetFilter(){
       location.reload()    
+    }
+
+    function changeNumberEntries(id_table,num){
+      $('#'+id_table).DataTable().page.len(num).draw()
     }
 </script>
 @endsection
