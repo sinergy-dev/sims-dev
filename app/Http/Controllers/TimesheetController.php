@@ -634,7 +634,7 @@ class TimesheetController extends Controller
     {
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first()->group; 
 
-        return $getUser = User::select('users.nik as id', 'users.name as text')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group',$cek_role)->where('roles.name',"not like","%Manager%")->where('status_karyawan','!=','dummy')->get();
+        return $getUser = User::select('users.nik as id', 'users.name as text')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group',$cek_role)->where('roles.name',"not like","%Manager%")->where('roles.name','not like','%MSM Helpdesk%')->where('status_karyawan','!=','dummy')->get();
 
     	// return $getUser = User::select('nik as id', 'name as text')->where('id_division',Auth::User()->id_division)->get();
     }
@@ -825,9 +825,14 @@ class TimesheetController extends Controller
         } else {
             $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
-            $dataPhase = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase', function ($join) {
-                $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_phase.id AS JSON), "$")'), '=', DB::raw('1'));
-            })
+            // $dataPhase = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase', function ($join) {
+            //     $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_phase.id AS JSON), "$")'), '=', DB::raw('1'));
+            // })
+
+            $dataPhase = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase',function ($join) {
+                    $join->on('tb_timesheet_config.phase', 'LIKE', DB::raw("CONCAT('%', tb_timesheet_phase.id, '%')"));
+                })
+
             ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase as title','tb_timesheet_phase.description')->where('group',$getGroupRoles)->distinct()->get();
         }
 
@@ -1040,6 +1045,7 @@ class TimesheetController extends Controller
                                         ->where('users.status_delete','-')
                                         ->whereNotIn('nik', $sumMandays->pluck('nik'))
                                         ->get();
+
                 $isStaff = false;
 
             } else {
@@ -1117,7 +1123,7 @@ class TimesheetController extends Controller
                     "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
                 ]); 
             }  
-            
+
             $collection = collect($sumPointMandays);        
             $uniqueCollection = $collection->groupBy('name')->map->first();
 
@@ -2392,7 +2398,7 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
@@ -2553,6 +2559,7 @@ class TimesheetController extends Controller
                         ->select('users.name')
                         ->where('roles.group',$cek_role->group)
                         ->where('roles.name','not like','%Manager')
+                        ->where('roles.name','not like','%MSM Helpdesk')
                         ->where('users.status_delete','-')
                         ->whereNotIn('nik', $data->get()->pluck('nik'))
                         ->get();
@@ -2685,7 +2692,7 @@ class TimesheetController extends Controller
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-            $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
+                $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
                 if (count($data) == 0) {
                     foreach($getUserByGroup as $name_pic){
@@ -2868,7 +2875,7 @@ class TimesheetController extends Controller
                 }
             }
         }elseif ($cek_role->group == 'msm') {
-            if ($cek_role->name == 'MSM Manager') {
+            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
@@ -3346,7 +3353,9 @@ class TimesheetController extends Controller
                     $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                     $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
 
-                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                    $getUserByGroup     = $getUserByGroup
+                                        ->where('roles.name','not like','%MSM Helpdesk%')
+                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
                                         ->get();
                 }else{
                     $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
