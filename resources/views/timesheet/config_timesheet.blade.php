@@ -106,6 +106,7 @@
                     <option value="6">6 Week</option>
                     <option value="7">7 Week</option>
                     <option value="8">2 Month</option>
+                    <option value="12">3 Month</option>
                   </select>
                 </div>
               </div>
