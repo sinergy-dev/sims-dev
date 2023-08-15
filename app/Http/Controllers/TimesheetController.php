@@ -398,6 +398,65 @@ class TimesheetController extends Controller
         return $storeAll;
     }
 
+    public function uploadCSV(Request $request){
+        $directory = "timesheet/";
+        $nameFile = "template_timesheet.csv";
+        $folderName = 'Test Timesheet';
+
+        $this->uploadToLocal($request->file('csv_file'),$directory,$nameFile);
+
+        $result = $this->readCSV($directory . "/" . $nameFile);
+
+        if ($result == 'Format tidak sesuai' ) {
+            return 'Format tidak sesuai';
+            return collect([
+                "text" => 'Format tidak sesuai',
+                "status" => 'Error',
+            ]);
+        } else if ($result == 'Tidak ada produk') {
+            return collect([
+                "text" => 'Format tidak sesuai',
+                "status" => 'Error',
+            ]);
+        } else {
+            if(count($result) >= 1){
+                foreach ($result as $key => $value) {
+                    $insertTimesheet[] = ['nik' => Auth::User()->nik, 'schedule' => $value[1], 'serial_number' => $value[3], 'part_number' => $value[4], 'qty' => $value[5], 'unit' => $value[6], 'nominal_product' => preg_replace("/[^0-9]/", "", substr($value[7], 0, strpos($value[7], ",")))
+                    ];
+                }
+     
+                if(!empty($insertTimesheet)){
+                    Timesheet::insert($insertTimesheet);
+                }
+
+                // if ($request->status == 'pembanding') {
+                //     $id_product = PrProduct::select('id as id_product')->limit(count($result))->orderBy('id', 'desc')->get()->sortBy('id')->map(function($item) use ($request){
+                //         $item->id_compare_pr = $request->no_pr;
+                //         $item->added = Carbon::now()->toDateTimeString();
+                //         return $item;
+                //     })->values()->toArray();
+                //     PRProductCompare::insert($id_product);
+                // } else {
+                //     $id_product = PrProduct::select('id as id_product')->limit(count($result))->orderBy('id', 'desc')->get()->sortBy('id')->map(function($item) use ($request){
+                //         $item->id_draft_pr = $request->no_pr;
+                //         $item->added = Carbon::now()->toDateTimeString();
+                //         return $item;
+                //     })->values()->toArray();
+                //     PRProductDraft::insert($id_product);
+                // }
+            } else {
+                return 'Tidak ada activity';
+            }
+        }
+        
+
+        return $result;
+    }
+
+    public function uploadToLocal($file,$directory,$nameFile){
+        $file->move($directory,$nameFile);
+    }
+
     public function storeLockDuration(Request $request)
     {
         if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->exists()) {
@@ -3557,29 +3616,29 @@ class TimesheetController extends Controller
                                 ->get();
                 }
 
-                if ($request->task[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('task',$request->task);                    
-                }
+                // if ($request->task[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('task',$request->task);                    
+                // }
 
-                if ($request->status[0] === null) {
-                    $data = $data->where('status','Done');
-                }else{
-                    $data = $data->whereIn('status',$request->status);                    
-                }
+                // if ($request->status[0] === null) {
+                //     $data = $data->where('status','Done');
+                // }else{
+                //     $data = $data->whereIn('status',$request->status);                    
+                // }
 
-                if (is_null($request->year)) {
-                    $data = $data->whereYear('start_date',date('Y'));
-                }else{
-                    $data = $data->whereYear('start_date',$request->year);                    
-                }
+                // if (is_null($request->year)) {
+                //     $data = $data->whereYear('start_date',date('Y'));
+                // }else{
+                //     $data = $data->whereYear('start_date',$request->year);                    
+                // }
 
-                if ($request->schedule[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('schedule',$request->schedule);                    
-                }
+                // if ($request->schedule[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('schedule',$request->schedule);                    
+                // }
 
                 $data = $data->get()->groupBy('name');
 
@@ -3652,29 +3711,29 @@ class TimesheetController extends Controller
                                 ->get();
                 } 
 
-                if ($request->task[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('task',$request->task);                    
-                }
+                // if ($request->task[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('task',$request->task);                    
+                // }
 
-                if ($request->status[0] === null) {
-                    $data = $data->where('status','Done');
-                }else{
-                    $data = $data->whereIn('status',$request->status);                    
-                }
+                // if ($request->status[0] === null) {
+                //     $data = $data->where('status','Done');
+                // }else{
+                //     $data = $data->whereIn('status',$request->status);                    
+                // }
 
-                if (is_null($request->year)) {
-                    $data = $data->whereYear('start_date',date('Y'));
-                }else{
-                    $data = $data->whereYear('start_date',$request->year);                    
-                }
+                // if (is_null($request->year)) {
+                //     $data = $data->whereYear('start_date',date('Y'));
+                // }else{
+                //     $data = $data->whereYear('start_date',$request->year);                    
+                // }
 
-                if ($request->schedule[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('schedule',$request->schedule);                    
-                }
+                // if ($request->schedule[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('schedule',$request->schedule);                    
+                // }
 
                 $data = $data->get()->groupBy('name');
 
@@ -3747,29 +3806,29 @@ class TimesheetController extends Controller
                                 ->get();
                 } 
 
-                if ($request->task[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('task',$request->task);                    
-                }
+                // if ($request->task[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('task',$request->task);                    
+                // }
 
-                if ($request->status[0] === null) {
-                    $data = $data->where('status','Done');
-                }else{
-                    $data = $data->whereIn('status',$request->status);                    
-                }
+                // if ($request->status[0] === null) {
+                //     $data = $data->where('status','Done');
+                // }else{
+                //     $data = $data->whereIn('status',$request->status);                    
+                // }
 
-                if (is_null($request->year)) {
-                    $data = $data->whereYear('start_date',date('Y'));
-                }else{
-                    $data = $data->whereYear('start_date',$request->year);                    
-                }
+                // if (is_null($request->year)) {
+                //     $data = $data->whereYear('start_date',date('Y'));
+                // }else{
+                //     $data = $data->whereYear('start_date',$request->year);                    
+                // }
 
-                if ($request->schedule[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('schedule',$request->schedule );                    
-                }
+                // if ($request->schedule[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('schedule',$request->schedule );                    
+                // }
 
                 $data = $data->get()->groupBy('name');
 
@@ -3842,29 +3901,29 @@ class TimesheetController extends Controller
                                 ->get();
                 } 
 
-                if ($request->task[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('task',$request->task);                    
-                }
+                // if ($request->task[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('task',$request->task);                    
+                // }
 
-                if ($request->status[0] === null) {
-                    $data = $data->where('status','Done');
-                }else{
-                    $data = $data->whereIn('status',$request->status);                    
-                }
+                // if ($request->status[0] === null) {
+                //     $data = $data->where('status','Done');
+                // }else{
+                //     $data = $data->whereIn('status',$request->status);                    
+                // }
 
-                if (is_null($request->year)) {
-                    $data = $data->whereYear('start_date',date('Y'));
-                }else{
-                    $data = $data->whereYear('start_date',$request->year);                    
-                }
+                // if (is_null($request->year)) {
+                //     $data = $data->whereYear('start_date',date('Y'));
+                // }else{
+                //     $data = $data->whereYear('start_date',$request->year);                    
+                // }
 
-                if ($request->schedule[0] === null) {
-                    $data = $data;
-                }else{
-                    $data = $data->whereIn('schedule',$request->schedule);                    
-                }
+                // if ($request->schedule[0] === null) {
+                //     $data = $data;
+                // }else{
+                //     $data = $data->whereIn('schedule',$request->schedule);                    
+                // }
 
                 $data = $data->get()->groupBy('name');
 
