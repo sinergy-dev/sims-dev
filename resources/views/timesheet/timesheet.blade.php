@@ -1648,7 +1648,7 @@
       const range = Array.from({ length: 1440 });
       // Loop through the array using forEach
       range.forEach((_, index) => {
-        if (index % 5 === 0 && index != 0) {
+        if (index % 5 === 0 && index != 0 && index == 1440) {
           // Action to perform on every multiple of 5
           arrDuration.push({id:index,text:index+" menit"})
         }
