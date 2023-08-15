@@ -5512,9 +5512,6 @@ class TimesheetController extends Controller
         //         "schedule"         =>"-"
         //     ]);
         // }
-
-        $collectByName = $collectByName->sortBy('name')->groupby('name');
-
         $indexSheet = 0;
 
         // $timesheetSheet = new Worksheet($spreadsheet,'Export Timesheet');
@@ -5543,11 +5540,10 @@ class TimesheetController extends Controller
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
 
-        
-        foreach ($collectByName as $key => $item) {
-            $name = substr($key,0,30);
+        if (Auth::User()->id_division == 'MSM') {
+            $collectByName = $collectByName->sortBy('name');
 
-            $spreadsheet->addSheet(new Worksheet($spreadsheet,$name));
+            $spreadsheet->addSheet(new Worksheet($spreadsheet,"Timesheet MSM"));
             // $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
             $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
 
@@ -5559,9 +5555,8 @@ class TimesheetController extends Controller
             $detailSheet->getStyle('A1:N1')->applyFromArray($headerStyle);
             $detailSheet->fromArray($headerContent,NULL,'A1');
 
-            $collectByName[$key]->map(function($item,$key) use ($detailSheet){
+            $collectByName->map(function($item,$key) use ($detailSheet){
                 // $item->date = date_format(date_create($item->date),'d-M-Y');
-
                 $detailSheet->fromArray(array_merge([$key + 1],array_values($item)),NULL,'A' . ($key + 2));
             });
 
@@ -5579,7 +5574,47 @@ class TimesheetController extends Controller
             $detailSheet->getColumnDimension('L')->setAutoSize(true);
 
             $indexSheet = $indexSheet + 1;
+        }else{
+            $collectByName = $collectByName->sortBy('name')->groupby('name');
+
+            foreach ($collectByName as $key => $item) {
+                $name = substr($key,0,30);
+
+                $spreadsheet->addSheet(new Worksheet($spreadsheet,$name));
+                // $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
+                $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
+
+                // $detailSheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+                // $detailSheet->setCellValue('A1','Timesheet ' . $key);
+                // $detailSheet->mergeCells('A1:J1');
+
+                $headerContent = ["No", "Name","Activity", "Type", "PID/Lead ID", "Level", "Phase","Task","Duration","Status","Date Add","Start Date","End Date","Schedule"];
+                $detailSheet->getStyle('A1:N1')->applyFromArray($headerStyle);
+                $detailSheet->fromArray($headerContent,NULL,'A1');
+
+                $collectByName[$key]->map(function($item,$key) use ($detailSheet){
+                    // $item->date = date_format(date_create($item->date),'d-M-Y');
+
+                    $detailSheet->fromArray(array_merge([$key + 1],array_values($item)),NULL,'A' . ($key + 2));
+                });
+
+                $detailSheet->getColumnDimension('A')->setAutoSize(true);
+                $detailSheet->getColumnDimension('B')->setAutoSize(true);
+                $detailSheet->getColumnDimension('C')->setAutoSize(true);
+                $detailSheet->getColumnDimension('D')->setAutoSize(true);
+                $detailSheet->getColumnDimension('E')->setAutoSize(true);
+                $detailSheet->getColumnDimension('F')->setAutoSize(true);
+                $detailSheet->getColumnDimension('G')->setAutoSize(true);
+                $detailSheet->getColumnDimension('H')->setAutoSize(true);
+                $detailSheet->getColumnDimension('I')->setAutoSize(true);
+                $detailSheet->getColumnDimension('J')->setAutoSize(true);
+                $detailSheet->getColumnDimension('K')->setAutoSize(true);
+                $detailSheet->getColumnDimension('L')->setAutoSize(true);
+
+                $indexSheet = $indexSheet + 1;
+            }
         }
+        
 
         // return $indexSheet;
         
