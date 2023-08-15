@@ -912,7 +912,7 @@ class TimesheetController extends Controller
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -927,7 +927,7 @@ class TimesheetController extends Controller
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
                 $isStaff = true;
 
             }
@@ -937,7 +937,7 @@ class TimesheetController extends Controller
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -952,7 +952,7 @@ class TimesheetController extends Controller
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
 
                 $isStaff = true;
             }
@@ -961,7 +961,7 @@ class TimesheetController extends Controller
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -976,7 +976,7 @@ class TimesheetController extends Controller
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
 
                 $isStaff = true;
 
@@ -987,7 +987,7 @@ class TimesheetController extends Controller
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
                 $getUserByGroup     = User::Rightjoin('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')
@@ -1001,7 +1001,7 @@ class TimesheetController extends Controller
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
-                $sumMandays         = Timesheet::Leftjoin('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->Leftjoin('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
                 $isStaff = true;
             }
         }elseif ($cek_role->group == 'hr') {
@@ -1009,7 +1009,7 @@ class TimesheetController extends Controller
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -1024,7 +1024,7 @@ class TimesheetController extends Controller
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
                 $isStaff = true;
 
             }
@@ -1034,7 +1034,7 @@ class TimesheetController extends Controller
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -1051,7 +1051,7 @@ class TimesheetController extends Controller
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
                 $getPermit          = $getPermit->where('tb_timesheet_permit.nik',$nik)->get();
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
+                $sumMandays         = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
                 $isStaff = true;
 
             }
@@ -1059,7 +1059,7 @@ class TimesheetController extends Controller
 
         $getLeavingPermitByName = collect($getLeavingPermit)->groupBy('name');
         $getPermitByName        = collect($getPermit)->groupBy('name');
-        $getTaskAvailableByName = collect($sumMandays->where('task',36)->makeHidden(['planned','threshold'])->groupBy('name'));
+        $getTaskAvailableByName = collect($sumMandays->where('task',36)->groupBy('name'));
 
         $arrSumPoint = collect();
 
@@ -1078,11 +1078,21 @@ class TimesheetController extends Controller
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
-                        "deviation" =>"-"
+                        "deviation" =>"-",
+                        "total_task"=>"-"
                     ]);
                 }
             }
         }else{
+            $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
+            $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
+            $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
+            $workdays        = count($workdays["workdays"]);
+
+            $countPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
+                return round($group->count('point_mandays'),2);
+            });
+
             $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
                 return round($group->sum('point_mandays'),2);
             });
@@ -1116,11 +1126,16 @@ class TimesheetController extends Controller
                     "name"=>$key_point,
                     "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
                     "actual"=>$valueSumPoint,
-                    "planned"=>collect($sumMandays)->first()->planned,
-                    "threshold"=>collect($sumMandays)->first()->threshold,
+                    // "planned"=>collect($sumMandays)->first()->planned,
+                    "planned"=>$workdays,
+                    // "threshold"=>collect($sumMandays)->first()->threshold,
+                    "threshold"=>$workdays*80/100,
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
-                    "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
-                    "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
+                    // "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
+                    "percentage_billable"=>number_format(($valueSumPoint - $billable)/$workdays*100,  2, '.', ''),
+                    "deviation"=>$workdays - $valueSumPoint,
+                    // "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint,
+                    // "total_task"=>'-'
                 ]); 
             }  
 
@@ -1137,7 +1152,8 @@ class TimesheetController extends Controller
                         "threshold" =>$data_uniq['threshold'],
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
-                        "deviation" =>$data_uniq['deviation']
+                        "deviation" =>$data_uniq['deviation'],
+                        "total_task"=>$countPointByUser[$key_uniq]
                     ]);
                 }
             }
@@ -1147,11 +1163,12 @@ class TimesheetController extends Controller
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"       =>$value_group->nik,
                         "actual"    =>"-",
-                        "planned"   =>collect($sumMandays)->first()->planned,
+                        "planned"   =>$workdays,
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
-                        "deviation" =>"-"
+                        "deviation" =>"-",
+                        "total_task"=>"-"
                     ]);
                 }
             }
@@ -2408,11 +2425,10 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
+                $startDate = Carbon::now();
+                $endDate = Carbon::now();
                 foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
                     $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
                     $endDate->month($valueMonth);
 
                     $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
@@ -3431,11 +3447,21 @@ class TimesheetController extends Controller
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
-                        "deviation" =>"-"
+                        "deviation" =>"-",
+                        "total_task"=>"-"
                     ]);
                 }
             }
         }else{
+            $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
+            $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
+            $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
+            $workdays        = count($workdays["workdays"]);
+
+            $countPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
+                return round($group->count('point_mandays'),2);
+            });
+
             $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
                 return round($group->sum('point_mandays'),2);
             });
@@ -3489,7 +3515,8 @@ class TimesheetController extends Controller
                         "threshold" =>$data_uniq['threshold'],
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
-                        "deviation" =>$data_uniq['deviation']
+                        "deviation" =>$data_uniq['deviation'],
+                        "total_task"=>$countPointByUser[$key_uniq]
                     ]);
                 }
             }
@@ -3503,7 +3530,8 @@ class TimesheetController extends Controller
                         "threshold" =>$countThresholdFinal,
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
-                        "deviation" =>"-"
+                        "deviation" =>"-",
+                        "total_task"=>"-"
                     ]);
                 }
             }
