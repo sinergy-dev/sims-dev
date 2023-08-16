@@ -117,6 +117,13 @@
               </select>
             </div> -->
 
+            <div class="form-group" id="filter-division-timesheet" style="display:none">
+              <label>Filter by Division</label>
+              <select type="select" class="select2 form-control" id="selectDiv" name="selectDiv">
+              <option></option>
+              </select>
+            </div>
+
             <div class="form-group" id="form_filter_pic" style="display:none">
               <label>Filter by PIC</label>
               <select type="select" class="select2 form-control" id="selectPic" name="selectPic">
@@ -160,7 +167,7 @@
       <div class="col-md-10 col-xs-9">
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
-            <li class="active"><a href="#table" data-toggle="tab">Table</a></li>
+            <li class="active" id="nav-tab-table" style="display:none;"><a href="#table" data-toggle="tab">Table</a></li>
             <li><a href="#chart" data-toggle="tab">Chart</a></li>
           </ul>
           <div class="tab-content">
@@ -329,6 +336,11 @@
               </div>
             </div>
             <div class="tab-pane" id="chart">
+              <div class="alert alert-info alert-dismissible" id="alert-for-direktor" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-info"></i> Alert!</h4>
+                Please filter <b>division</b> first to show the data!.
+              </div>
               <div class="box box-primary">
                 <div class="box-header bg-primary" style="color:white">
                   <h3 class="box-title">Cummulative Mandays (Status Done)</h3>
@@ -354,7 +366,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-level-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Level <span id="textLevel"></span></h3>
@@ -365,7 +377,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-status-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Status <span id="textStatus"></span></h3>
@@ -376,7 +388,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-schedule-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Schedule <span id="textSchedule"></span></h3>
@@ -386,6 +398,40 @@
                       <div id="definitionSchedule"></div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-task-timesheet">
+                  <div class="box box-primary">
+                    <div class="box-header bg-primary" style="color:white">
+                      <h3 class="box-title">Task <span id="textTask"></span></h3>
+                    </div>
+                    <div class="box-body">
+                      <canvas id="taskChart" width="400" height="200"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-phase-timesheet">
+                  <div class="box box-primary">
+                    <div class="box-header bg-primary" style="color:white">
+                      <h3 class="box-title">Phase <span id="textPhase"></span></h3>
+                    </div>
+                    <div class="box-body">
+                      <canvas id="phaseChart" width="400" height="200"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                 <!--  <div class="box box-primary">
+                    <div class="box-header bg-primary" style="color:white">
+                      <h3 class="box-title">Schedule <span id="textSchedule"></span></h3>
+                    </div>
+                    <div class="box-body">
+                      <canvas id="scheduleChart" width="400" height="200"></canvas>
+                      <div id="definitionSchedule"></div>
+                    </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -414,7 +460,105 @@
       accesable.forEach(function(item,index){
         $("#" + item).show()
       })
-      console.log(accesable)
+      
+      if (!accesable.includes('nav-tab-table')) {
+        $(".nav-tabs").find("li").last().addClass("active")
+        $(".tab-pane").last().addClass("active")
+        $(".tab-pane").first().removeClass("active")
+        $("#selectYear").val(moment().year()).trigger('change')
+      }else{
+        var datatableSummary = ""
+        function initializeDataTable(tabId) {
+          console.log("aheey")
+          datatableSummary = $(tabId).find('#tbSummaryMandays').DataTable({
+            responsive: true,
+            "ajax":{
+              type:"GET",
+              url:"{{url('/timesheet/sumPointMandays')}}",
+            },
+            columns: [
+              { title: 
+                'Name',
+                render: function (data, type, row, meta){
+                  return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
+                } 
+              },
+              { title: 'Planned',
+                data:'planned'
+              },
+              { title: 'Actual', 
+                data:'actual'
+              },
+              { title: 'Threshold',
+                data:'threshold' 
+              },
+              { title: 'Billable', 
+                data:'billable'
+              },
+              { title: '%Billable', 
+                data:'percentage_billable'
+              },
+              { title: 'Deviation', 
+                data:'deviation'
+              },
+              { title: 'Total Activity', 
+                data:'total_task'
+              },
+            ],
+            lengthChange: false,
+            "pageLength": 50,
+            initComplete: function () {
+              isTbSummary = true
+              $('#loadingIndicator').hide();
+              $.each($("#selectShowColumnTicket li input"),function(index,item){
+                var column = $("#tablePerformance").DataTable().column(index)
+                // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+                $(item).prop('checked', column.visible())
+              })
+            },
+          })
+
+          return datatableSummary = datatableSummary 
+        }
+
+        // Initialize the DataTable for the active tab
+        var activeTab = $('.tab-pane.active');
+        var idTab = $('.tab-pane.active').attr('id');
+
+        if (idTab == 'table') {
+          initializeDataTable(activeTab);
+
+          // datatableSummary.columns.adjust().draw()
+        }
+
+        // When a tab becomes active, reinitialize the DataTable and adjust columns
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+          var tabId = $(e.target).attr('href');
+          if (tabId == '#table') {
+            if (!$.fn.DataTable.isDataTable('#tbSummaryMandays')) {
+              initializeDataTable(activeTab)
+              datatableSummary.columns.adjust().draw()
+            }
+          }
+        })
+
+        $(document).ready(function(){
+          $("#span-remaining").text(moment().format('MMMM'))
+          $("#textLevel").text(moment().format('YYYY'))
+          $("#textStatus").text(moment().format('YYYY'))
+          $("#textTask").text(moment().format('YYYY'))
+          $("#textPhase").text(moment().format('YYYY'))
+          $("#textSchedule").text(moment().format('YYYY'))
+          $("#title_summary_year").text(moment().year())
+          duplicateCanvasRemaining("/timesheet/getRemainingChart","")
+          levelChart("/timesheet/getLevelChart","")
+          statusChart("/timesheet/getStatusChart","")
+          scheduleChart("/timesheet/getScheduleChart","")
+          // taskChart("/timesheet/getTaskChart","")
+          // phaseChart("/timesheet/getPhaseChart","")
+          cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],"timesheet/getCummulativeMandaysChart","")
+        })
+      }
       
       if (accesable.includes('box_pid')) {
         var tbSummarySbe = $("#tbSummarySbe").DataTable({
@@ -495,51 +639,6 @@
       }
 
       isTbSummary = false
-      // var tbSummary = $("#tbSummaryMandays").DataTable({
-      //   "ajax":{
-      //     type:"GET",
-      //     url:"{{url('/timesheet/sumPointMandays')}}",
-      //   },
-      //   columns: [
-      //     { title: 
-      //       'Name',
-      //       render: function (data, type, row, meta){
-      //         return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
-      //       } 
-      //     },
-      //     { title: 'Planned',
-      //       data:'planned'
-      //     },
-      //     { title: 'Actual', 
-      //       data:'actual'
-      //     },
-      //     { title: 'Threshold',
-      //       data:'threshold' 
-      //     },
-      //     { title: 'Billable', 
-      //       data:'billable'
-      //     },
-      //     { title: '%Billable', 
-      //       data:'percentage_billable'
-      //     },
-      //     { title: 'Deviation', 
-      //       data:'deviation'
-      //     },
-      //   ],
-      //   lengthChange: false,
-      //   responsive:true,
-      //   initComplete: function () {
-      //     isTbSummary = true
-      //     $("#filterSumPoint").find("i").css("color","#80ff80")
-      //     $("#filterSumPoint").find("span").text("ready to filter")
-      //     $('#loadingIndicator').hide();
-      //     $.each($("#selectShowColumnTicket li input"),function(index,item){
-      //       var column = $("#tablePerformance").DataTable().column(index)
-      //       // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-      //       $(item).prop('checked', column.visible())
-      //     })
-      //   },
-      // }).columns.adjust();
 
       $.ajax({
         type:"GET",
@@ -574,81 +673,6 @@
             data:result,
             multiple:true
           })
-        }
-      })
-
-      var datatableSummary = ""
-      function initializeDataTable(tabId) {
-        console.log("aheey")
-        datatableSummary = $(tabId).find('#tbSummaryMandays').DataTable({
-          responsive: true,
-          "ajax":{
-            type:"GET",
-            url:"{{url('/timesheet/sumPointMandays')}}",
-          },
-          columns: [
-            { title: 
-              'Name',
-              render: function (data, type, row, meta){
-                return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
-              } 
-            },
-            { title: 'Planned',
-              data:'planned'
-            },
-            { title: 'Actual', 
-              data:'actual'
-            },
-            { title: 'Threshold',
-              data:'threshold' 
-            },
-            { title: 'Billable', 
-              data:'billable'
-            },
-            { title: '%Billable', 
-              data:'percentage_billable'
-            },
-            { title: 'Deviation', 
-              data:'deviation'
-            },
-            { title: 'Total Activity', 
-              data:'total_task'
-            },
-          ],
-          lengthChange: false,
-          "pageLength": 50,
-          initComplete: function () {
-            isTbSummary = true
-            $('#loadingIndicator').hide();
-            $.each($("#selectShowColumnTicket li input"),function(index,item){
-              var column = $("#tablePerformance").DataTable().column(index)
-              // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-              $(item).prop('checked', column.visible())
-            })
-          },
-        })
-
-        return datatableSummary = datatableSummary 
-      }
-
-      // Initialize the DataTable for the active tab
-      var activeTab = $('.tab-pane.active');
-      var idTab = $('.tab-pane.active').attr('id');
-
-      if (idTab == 'table') {
-        initializeDataTable(activeTab);
-
-        // datatableSummary.columns.adjust().draw()
-      }
-
-      // When a tab becomes active, reinitialize the DataTable and adjust columns
-      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var tabId = $(e.target).attr('href');
-        if (tabId == '#table') {
-          if (!$.fn.DataTable.isDataTable('#tbSummaryMandays')) {
-            initializeDataTable(activeTab)
-            datatableSummary.columns.adjust().draw()
-          }
         }
       })
 
@@ -762,6 +786,17 @@
       multiple:true
     })
 
+    $.ajax({
+      type:"GET",
+      url:"{{url('timesheet/getListOperation')}}",
+      success:function(result) {
+        $("#selectDiv").select2({
+          placeholder:"Select Division",
+          data:result,
+        })
+      }
+    })
+
     $("#selectSchedule").select2({
       placeholder:"Select Schedule",
       data:[
@@ -794,11 +829,13 @@
     })
 
     function customFilter(val,id=""){
-      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectPhase = 'phase[]=', selectYear = 'year=', selectSchedule = 'schedule[]='
+      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectPhase = 'phase[]=', selectYear = 'year=', selectSchedule = 'schedule[]=', selectRoles = 'roles='
 
       arrFilterMonth = []
       arrMonth = []
-      cummulativeLineChart.destroy()
+      if (cummulativeLineChart){
+        cummulativeLineChart.destroy()
+      }
       $(".cbMonth").each(function(idx,values){
         if ($(values).is(":checked") == true) {
           if(arrFilterMonth == 'month[]=') {
@@ -849,6 +886,12 @@
         selectYear = selectYear + '&year=' + $('#selectYear').val()
       }
 
+      if(selectRoles == 'roles=') {
+        selectRoles = selectRoles + $('#selectDiv').val()
+      }else{
+        selectRoles = selectRoles + '&roles=' + $('#selectDiv').val()
+      }
+
       $.each($('#selectSchedule').val(),function(key,val){
         if(selectSchedule == 'schedule[]=') {
           selectSchedule = selectSchedule + val
@@ -868,7 +911,7 @@
         })
       }
 
-      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
+      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule + '&' + selectRoles
 
       console.log(arrFilter)
 
@@ -888,21 +931,10 @@
     const ctx3 = document.getElementById('levelChart');
     const ctx4 = document.getElementById('statusChart');
     const ctx5 = document.getElementById('scheduleChart');
+    const ctx6 = document.getElementById('taskChart');
+    const ctx7 = document.getElementById('phaseChart');
 
-    let cummulativeLineChart = '',levelDoughnutChart = '',statusPieChart = '',schedulePieChart = '', remainingBarChart = []
-
-    $(document).ready(function(){
-      $("#span-remaining").text(moment().format('MMMM'))
-      $("#textLevel").text(moment().format('YYYY'))
-      $("#textStatus").text(moment().format('YYYY'))
-      $("#textSchedule").text(moment().format('YYYY'))
-      $("#title_summary_year").text(moment().year())
-      duplicateCanvasRemaining("/timesheet/getRemainingChart","")
-      levelChart("/timesheet/getLevelChart","")
-      statusChart("/timesheet/getStatusChart","")
-      scheduleChart("/timesheet/getScheduleChart","")
-      cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],"timesheet/getCummulativeMandaysChart","")
-    })
+    let cummulativeLineChart = '',levelPieChart = '',statusPieChart = '',schedulePieChart = '',taskPieChart = '',phasePieChart = '', remainingBarChart = []
 
     function cummulativeChart(labelChartLineByFilter,url,param){
       $.ajax({
@@ -922,7 +954,6 @@
                 cummulativeArr.push({"label":value.name,"data":array_result,"backgroundColor":bgColorArr_idx,"borderWidth":1,"tension":0.5})
               }
             })
-              
           })
 
 
@@ -954,7 +985,6 @@
     }    
 
     function remainingChart(idCtx,value){
-      
       var datasetRemaining = [], arrConfig = [], labels = []
       remainingBarChart = []
       if (typeof(value) == "object") {
@@ -1169,7 +1199,7 @@
         url:"{{url('/')}}/"+url+param,
         success:function(result){
           const myChart3 = new Chart(ctx3, {
-              type: 'doughnut',
+              type: 'pie',
               data: {
                 labels: [
                   'A',
@@ -1217,7 +1247,7 @@
               }
           });
 
-          return levelDoughnutChart = myChart3
+          return levelPieChart = myChart3
         }
       })
     }
@@ -1332,7 +1362,118 @@
       })
     }
 
+    function taskChart(url,param){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/')}}/"+url+param,
+        success:function(result){
+          const myChart6 = new Chart(ctx6, {
+              type: 'pie',
+              data: {
+                labels: [
+                  'Planned',
+                  'Unplanned',
+                ],
+                datasets: [{
+                  label: 'My First Dataset',
+                  data: result,
+                  backgroundColor: [
+                    '#3c8dbc',
+                    '#00c0ef',
+                  ],
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  },
+              plugins: {
+                tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        var label = context.label || '';
+
+                        if (label) {
+                          label += ': ';
+                        }
+
+                        label += context.formattedValue + "%";
+
+                        return label;
+                      }
+                  }
+                }
+              }
+            },
+          })
+
+          return phasePieChart = myChart6
+        } 
+      })
+    }
+
+    function phaseChart(url,param){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/')}}/"+url+param,
+        success:function(result){
+          const myChart7 = new Chart(ctx7, {
+              type: 'pie',
+              data: {
+                labels: [
+                  'Planned',
+                  'Unplanned',
+                ],
+                datasets: [{
+                  label: 'My First Dataset',
+                  data: result,
+                  backgroundColor: [
+                    '#3c8dbc',
+                    '#00c0ef',
+                  ],
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  },
+              plugins: {
+                tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        var label = context.label || '';
+
+                        if (label) {
+                          label += ': ';
+                        }
+
+                        label += context.formattedValue + "%";
+
+                        return label;
+                      }
+                  }
+                }
+              }
+            },
+          })
+
+          return taskPieChart = myChart7
+        } 
+      })
+    }
+
     function showDataFilter(arrFilter,arrMonth){
+      var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
+
       if (isTbSummary == true) {
         $("#loadingIndicator").show()
         $("#filterSumPoint").find("i").css("color","red")
@@ -1344,21 +1485,25 @@
       }
 
       //cummulative mandays chart update
-      cummulativeLineChart.destroy()
+      if (cummulativeLineChart) {
+        cummulativeLineChart.destroy()
+      }
       cummulativeChart(arrMonth,"timesheet/getFilterCummulativeMandaysChart",arrFilter)
 
       //level mandays chart update
-      levelDoughnutChart.destroy()
-      levelChart("/timesheet/getFilterLevelChart",arrFilter)
+      if (accesable.includes('nav-tab-table')) {
+        levelPieChart.destroy()
+        levelChart("/timesheet/getFilterLevelChart",arrFilter)
 
-      //status mandays chart update
-      statusPieChart.destroy()
-      statusChart("/timesheet/getFilterStatusChart",arrFilter)
+        //status mandays chart update
+        statusPieChart.destroy()
+        statusChart("/timesheet/getFilterStatusChart",arrFilter)
 
-      //schedule mandays chart update
-      schedulePieChart.destroy()
-      scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
-
+        //schedule mandays chart update
+        schedulePieChart.destroy()
+        scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
+      }
+      
       //remaining chart update
       const yearRegex = /\b\d{4}\b/; // Matches a 4-digit number
       const yearMatch = arrFilter.match(yearRegex);
