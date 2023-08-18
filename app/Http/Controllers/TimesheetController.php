@@ -1629,7 +1629,7 @@ class TimesheetController extends Controller
 
             $hasil2 = [0,0,0,0,0];
             foreach ($hasil as $key => $value) {
-                $hasil2[$key] = ($value/$pie)*100;
+                $hasil2[$key] = round(($value/$pie)*100,2);
             }
         }
         
@@ -1861,7 +1861,7 @@ class TimesheetController extends Controller
         }else{
             foreach ($task as $value) {
                 $label->push($value->task_name);
-                $hasil->push(($value->total_aktivitas/$count_task)*100);   
+                $hasil->push(round(($value->total_aktivitas/$count_task)*100,2));   
             }
         }
     
@@ -2068,7 +2068,7 @@ class TimesheetController extends Controller
         }else{
             foreach ($phase as $value) {
                 $label->push($value->phase_name);
-                $hasil->push(($value->total_aktivitas/$count_phase)*100);   
+                $hasil->push(round(($value->total_aktivitas/$count_phase)*100,2));   
             }
         }
 
@@ -2181,7 +2181,7 @@ class TimesheetController extends Controller
 
             $hasil2 = [0,0,0,0];
             foreach ($hasil as $key => $value) {
-                $hasil2[$key] = ($value/$pie)*100;
+                $hasil2[$key] = round(($value/$pie)*100,2);
             }
         }
 
@@ -2288,7 +2288,7 @@ class TimesheetController extends Controller
 
             $hasil2 = [0,0];
             foreach ($hasil as $key => $value) {
-                $hasil2[$key] = ($value/$pie)*100;
+                $hasil2[$key] = round(($value/$pie)*100,2);
             }
         }
 
@@ -5634,7 +5634,7 @@ class TimesheetController extends Controller
         }
 
         if ($request->status[0] === null) {
-            $data = $data->where('status','Done');
+            $data = $data;
         }else{
             $data = $data->whereIn('status',$request->status);                    
         }
@@ -5727,7 +5727,7 @@ class TimesheetController extends Controller
 
             $hasil2 = [0,0,0,0];
             foreach ($hasil as $key => $value) {
-                $hasil2[$key] = ($value/$pie)*100;
+                $hasil2[$key] = round(($value/$pie)*100,2);
             }
         }
 
@@ -5874,7 +5874,7 @@ class TimesheetController extends Controller
             foreach ($hasil as $key => $value) {
                 // return $hasil2[$key];
                 if ($value !== 0) {
-                    $hasil2->push(($value/$pie)*100);
+                    $hasil2->push(round(($value/$pie)*100,2));
                 }else{
                     $hasil2->push(0);   
                 }
@@ -6023,7 +6023,7 @@ class TimesheetController extends Controller
 
             $hasil2 = [0,0];
             foreach ($hasil as $key => $value) {
-                $hasil2[$key] = ($value/$pie)*100;
+                $hasil2[$key] = round(($value/$pie)*100,2);
             }
         }
 
@@ -6162,7 +6162,7 @@ class TimesheetController extends Controller
         }else{
             foreach ($task as $value) {
                 $label->push($value->task_name);
-                $hasil->push(($value->total_aktivitas/$count_task)*100);   
+                $hasil->push(round(($value->total_aktivitas/$count_task)*100,2));   
             }
         }
 
@@ -6301,7 +6301,7 @@ class TimesheetController extends Controller
         }else{
             foreach ($phase as $value) {
                 $label->push($value->phase_name);
-                $hasil->push(($value->total_aktivitas/$count_phase)*100);   
+                $hasil->push(round(($value->total_aktivitas/$count_phase)*100,2));   
             }
         }
 
