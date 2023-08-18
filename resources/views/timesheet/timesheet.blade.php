@@ -333,10 +333,10 @@
 @section('script')
   <script type="text/javascript"> 
     var nik = "{{Auth::User()->nik}}"
-    if (window.location.href.split("/")[3].split("=")[1] == undefined) {
+    if (window.location.href.split("/")[4].split("=")[1] == undefined) {
       nik = nik
-    }else if (window.location.href.split("/")[3].split("?")[1].split("=")[0] == "nik"){
-      nik = window.location.href.split("/")[3].split("=")[1]
+    }else if (window.location.href.split("/")[4].split("?")[1].split("=")[0] == "nik"){
+      nik = window.location.href.split("/")[4].split("=")[1]
     }
 
     var email = '', name = ''
@@ -1254,8 +1254,6 @@
 
     function openModalAddTimesheet(id,title,schedule,type,pid,level,duration,status,start,end,refer,task,phase){
       $("#ModalAddTimesheet").modal('show')
-
-      console.log(start)
       if ($.fn.select2 !== undefined) {
         setHoliday()
         setSchedule(start)
@@ -1265,6 +1263,7 @@
         setType()
         setTask()
         setPhase()
+        $('#selectLead').val(pid).trigger('change')  
         var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
         if (isSelect2Initialized == false) {
         }
@@ -1375,7 +1374,6 @@
         }
 
         $("#id_activity").val(id)
-
         //staff
         $('#selectType').prop("disabled",false)
         $('#selectLead').prop("disabled",false)
@@ -1387,7 +1385,6 @@
         $('#selectStatus').prop("disabled",false) 
 
         $('#selectType').val(type).trigger('change')
-        $('#selectLead').val(pid).trigger('change')
         $('#selectLevel').val(level).trigger('change')
         $('#textareaActivity').val(title).trigger('change')
         $('#selectDuration').val(duration).trigger('change')
@@ -1485,6 +1482,7 @@
             id: 'Permit',
             text: 'Permit'
         }],
+        dropdownParent: $("#ModalPermit")
       })
     }
 
@@ -1645,10 +1643,10 @@
 
     function setDuration(){
       var arrDuration = []
-      const range = Array.from({ length: 1440 });
+      const range = Array.from({ length: 1445 });
       // Loop through the array using forEach
       range.forEach((_, index) => {
-        if (index % 5 === 0 && index != 0 || index == 1440) {
+        if (index % 5 === 0 && index != 0 || index % 5 === 0 && index == 1440) {
           // Action to perform on every multiple of 5
           arrDuration.push({id:index,text:index+" menit"})
         }
@@ -1657,6 +1655,7 @@
       $("#selectDuration").select2({
           placeholder:"Select Duration",
           data:arrDuration,
+          dropdownParent: $("#ModalAddTimesheet")
       })
     }
 
@@ -1675,6 +1674,7 @@
           $("#selectLead").select2({
               placeholder:"Select Lead Id",
               data:result,
+              dropdownParent: $("#ModalAddTimesheet")
           })
         }
       })
@@ -1702,6 +1702,7 @@
             $("#selectLead").select2({
               placeholder:"Select Project Id",
               data:result,
+              dropdownParent: $("#ModalAddTimesheet")
             })
           }
           
@@ -1717,6 +1718,7 @@
           var selectTask =  $("#selectTask").select2({
               placeholder:"Select Task",
               data:result,
+              dropdownParent: $("#ModalAddTimesheet")
           })
           // if (val != null) {
           //   selectTask.val(val).trigger('change')
@@ -1737,6 +1739,7 @@
           var selectPhase =  $("#selectPhase").select2({
             placeholder:"Select Phase",
             data:result,
+            dropdownParent: $("#ModalAddTimesheet")
           })
           // if (val != null) {
           //   selectPhase.val(val).trigger('change')
@@ -1772,6 +1775,7 @@
             text:"E"
           },
         ],
+        dropdownParent: $("#ModalAddTimesheet")
       })
     }
 
@@ -1796,6 +1800,7 @@
             text:"Not-Done"
           },
         ],
+        dropdownParent: $("#ModalAddTimesheet")
       })
     }
 
@@ -1813,6 +1818,7 @@
             id: 'Approach',
             text: 'Approach'
         }],
+        dropdownParent: $("#ModalAddTimesheet")
       }).on('change', function() {
         var selectedOption = $(this).val();
         // Perform action based on the selected option
@@ -1880,6 +1886,7 @@
             id: 'Unplanned',
             text: 'Unplanned'
         }],
+        dropdownParent: $("#ModalAddTimesheet")
       }).on('change', function() {
         var selectedOption = $(this).val();
         // Perform action based on the selected option
