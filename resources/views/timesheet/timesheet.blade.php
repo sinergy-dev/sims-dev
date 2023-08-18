@@ -1242,8 +1242,8 @@
       $('#calendar').fullCalendar('addEventSource', events)
       $('#calendar').fullCalendar('rerenderEvents')
   
-      if (window.location.href.split("/")[3].split("?")[1] != undefined) {
-         if (window.location.href.split("/")[3].split("?")[1].split("=")[0] == "id") {
+      if (window.location.href.split("/")[4].split("?")[1] != undefined) {
+         if (window.location.href.split("/")[4].split("?")[1].split("=")[0] == "id") {
           Pace.restart()
           Pace.track(function(){
             showModalEventById()
@@ -1395,7 +1395,7 @@
     }
 
     function showModalEventById(){
-      var eventId = window.location.href.split("/")[3].split("?")[1].split("=")[1]
+      var eventId = window.location.href.split("/")[4].split("?")[1].split("=")[1]
       var eventObj = $('#calendar').fullCalendar('clientEvents', eventId)[0];
 
       if (eventObj.status == null) {
@@ -2176,8 +2176,8 @@
                             $('#calendar').fullCalendar('renderEvent', event);
                           })
 
-                          if (window.location.href.split("/")[3].split("?")[1] != undefined) {
-                            if (window.location.href.split("/")[3].split("?")[1].split("=")[0] == "id") {
+                          if (window.location.href.split("/")[4].split("?")[1] != undefined) {
+                            if (window.location.href.split("/")[4].split("?")[1].split("=")[0] == "id") {
                               history.replaceState(null, '', "{{url('timesheet')}}")
                             }
                           }

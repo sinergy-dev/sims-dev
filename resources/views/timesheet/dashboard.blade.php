@@ -554,8 +554,8 @@
           levelChart("/timesheet/getLevelChart","")
           statusChart("/timesheet/getStatusChart","")
           scheduleChart("/timesheet/getScheduleChart","")
-          // taskChart("/timesheet/getTaskChart","")
-          // phaseChart("/timesheet/getPhaseChart","")
+          taskChart("/timesheet/getTaskChart","")
+          phaseChart("/timesheet/getPhaseChart","")
           cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],"timesheet/getCummulativeMandaysChart","")
         })
       }
@@ -821,7 +821,7 @@
       text:currentYear
     })
 
-    arrFilterYear.push({id:2022,text:2022})
+    arrFilterYear.push({id:moment().year()-1,text:moment().year()-1})
 
     $("#selectYear").select2({
       placeholder:"Select Year",
@@ -1367,20 +1367,18 @@
         type:"GET",
         url:"{{url('/')}}/"+url+param,
         success:function(result){
+          arrColor = []
+          $.each(result.label,function(itemKey,value){
+            arrColor.push(colors[itemKey])
+          })
           const myChart6 = new Chart(ctx6, {
               type: 'pie',
               data: {
-                labels: [
-                  'Planned',
-                  'Unplanned',
-                ],
+                labels: result.label,
                 datasets: [{
-                  label: 'My First Dataset',
-                  data: result,
-                  backgroundColor: [
-                    '#3c8dbc',
-                    '#00c0ef',
-                  ],
+                  label: result.label,
+                  data: result.data,
+                  backgroundColor: arrColor,
                   hoverOffset: 4
                 }]
               },
@@ -1410,7 +1408,7 @@
             },
           })
 
-          return phasePieChart = myChart6
+          return taskPieChart = myChart6
         } 
       })
     }
@@ -1420,20 +1418,18 @@
         type:"GET",
         url:"{{url('/')}}/"+url+param,
         success:function(result){
+          arrColor = []
+          $.each(result.label,function(itemKey,value){
+            arrColor.push(colors[itemKey])
+          })
           const myChart7 = new Chart(ctx7, {
               type: 'pie',
               data: {
-                labels: [
-                  'Planned',
-                  'Unplanned',
-                ],
+                labels: result.label,
                 datasets: [{
-                  label: 'My First Dataset',
-                  data: result,
-                  backgroundColor: [
-                    '#3c8dbc',
-                    '#00c0ef',
-                  ],
+                  label: result.label,
+                  data: result.data,
+                  backgroundColor: arrColor,
                   hoverOffset: 4
                 }]
               },
@@ -1463,7 +1459,7 @@
             },
           })
 
-          return taskPieChart = myChart7
+          return phasePieChart = myChart7
         } 
       })
     }
@@ -1502,6 +1498,14 @@
         //schedule mandays chart update
         schedulePieChart.destroy()
         scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
+
+        //task chart update
+        taskPieChart.destroy()
+        taskChart("/timesheet/getFilterTaskChart",arrFilter)
+
+        //phase chart update
+        phasePieChart.destroy()
+        phaseChart("/timesheet/getFilterPhaseChart",arrFilter)
       }
       
       //remaining chart update
