@@ -1524,7 +1524,7 @@ class TimesheetController extends Controller
 
             $percentage = number_format($planned[0][1]/$planned[0][0]*100,  2, '.', '');
 
-            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>$actualPlanned->point_mandays,'unplannedToday'=>$actualUnplanned->point_mandays]);
+            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>round($actualPlanned->point_mandays,2),'unplannedToday'=>round($actualUnplanned->point_mandays,2)]);
         } else {
             return collect(['percentage'=>'0','name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>'0','unplannedToday'=>'0']);
         } 
