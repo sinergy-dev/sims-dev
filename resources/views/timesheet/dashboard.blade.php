@@ -130,19 +130,19 @@
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="filter-status-timesheet" style="display:none">
               <label>Filter by Status</label>
               <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus">
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="filter-task-timesheet" style="display:none">
               <label>Filter by Task</label>
               <select type="select" class="select2 form-control" id="selectTask" name="selectTask">
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="filter-phase-timesheet" style="display:none">
               <label>Filter by Phase</label>
               <select type="select" class="select2 form-control" id="selectPhase" name="selectPhase">
               </select>
@@ -153,7 +153,7 @@
               <select type="select" class="select2 form-control" id="selectYear" name="selectYear"><option></option></select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="filter-schedule-timesheet" style="display:none">
               <label>Filter by Schedule</label>
               <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule">
               </select>
@@ -480,7 +480,7 @@
               { title: 
                 'Name',
                 render: function (data, type, row, meta){
-                  return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
+                  return '<a href="{{url("/timesheet/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
                 } 
               },
               { title: 'Planned',
