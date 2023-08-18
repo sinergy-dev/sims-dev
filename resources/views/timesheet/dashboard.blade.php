@@ -763,26 +763,28 @@
     })
    
     //filter
+    var dataStatus = [
+      {
+        id:"Done",
+        text:"Done"
+      },
+      {
+        id:"Cancel",
+        text:"Cancel"
+      },
+      {
+        id:"Reschedule",
+        text:"Reschedule"
+      },
+      {
+        id:"Undone",
+        text:"Not-Done"
+      },
+    ]
+
     $("#selectStatus").select2({
+      data:dataStatus,
       placeholder:"Select Status",
-      data:[
-        {
-          id:"Done",
-          text:"Done"
-        },
-        {
-          id:"Cancel",
-          text:"Cancel"
-        },
-        {
-          id:"Reschedule",
-          text:"Reschedule"
-        },
-        {
-          id:"Undone",
-          text:"Not-Done"
-        },
-      ],
       multiple:true
     })
 
@@ -797,18 +799,20 @@
       }
     })
 
+    var dataSchedule = [
+      {
+        id:"Planned",
+        text:"Planned"
+      },
+      {
+        id:"Unplanned",
+        text:"Unplanned"
+      },
+    ]
+
     $("#selectSchedule").select2({
       placeholder:"Select Schedule",
-      data:[
-        {
-          id:"Planned",
-          text:"Planned"
-        },
-        {
-          id:"Unplanned",
-          text:"Unplanned"
-        },
-      ],
+      data:dataSchedule,
       multiple:true
     })
 
