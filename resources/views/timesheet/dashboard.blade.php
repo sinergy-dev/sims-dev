@@ -821,7 +821,7 @@
       text:currentYear
     })
 
-    arrFilterYear.push({id:2022,text:2022})
+    arrFilterYear.push({id:moment().year()-1,text:moment().year()-1})
 
     $("#selectYear").select2({
       placeholder:"Select Year",
