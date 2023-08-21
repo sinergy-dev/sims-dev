@@ -528,6 +528,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getFilterCom', 'HRGAController@getFilterCom');
 	Route::get('/get_history_cuti', 'HRGAController@get_history_cuti');
 	Route::get('/getCutiException','HRGAController@getCutiException');
+	Route::post('/storeCutiAddition','HRGAController@storeCutiAddition');
 
 	Route::get('/index_delivery_person', 'HRGAController@index_delivery_person');
 	Route::get('/detail_delivery_person/{id_messenger}', 'HRGAController@detail_delivery_person');
