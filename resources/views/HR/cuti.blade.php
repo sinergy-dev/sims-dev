@@ -155,9 +155,12 @@ Leaving Permitte
               <i class="fa fa-file-pdf-o" style="margin-right: 5px"></i>Preview PDF
             </button>
           </a>  -->
-          <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
-            <i class="fa fa-wrench" style="margin-right: 5px"></i>Total Cuti
+          <button class="btn btn-sm bg-purple" id="btnConfigPublicHoliday" style="margin-left: 10px;display: none;" data-toggle="modal" data-target="#config_cuti">
+            <i class="fa fa-wrench" style="margin-right: 5px"></i>Cuti Config
           </button>
+         <!--  <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
+            <i class="fa fa-wrench" style="margin-right: 5px"></i>Total Cuti
+          </button> -->
           <select class="btn btn-sm bg-blue pull-left" style="width: 70px; margin-right: 10px; display: none;" id="filter_com">
             <option value="all">All</option>
             <option value="1">SIP</option>
@@ -561,6 +564,32 @@ Leaving Permitte
         </div>
     </div>
 
+    <div class="modal fade" id="config_cuti" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Config Cuti</h4>
+            </div>
+            <div class="modal-body">
+              <form method="POST" action="{{url('/setting_total_cuti')}}">
+              <div class="form-group">
+                  <label>Masukkan Tanggal Cuti Tambahan Tahun ini (optional)</label>
+                  <input type="" name="cuti_tambahan" id="cuti_tambahan" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control" id="description_addition_cuti" style="resize: vertical;"></textarea>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+                  <button type="submit" class="btn btn-success" onclick="submitConfigCuti()"><i class="fa fa-check"></i>&nbsp Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
 
     <div class="modal fade" id="reason_decline" role="dialog">
         <div class="modal-dialog modal-sm">
@@ -667,6 +696,67 @@ Leaving Permitte
       }
     })
 
+    $("#cuti_tambahan").datepicker({
+      multidate: true,
+    })
+
+    function submitConfigCuti(){
+      date_tambahan = []
+      date_tambahan.push($("#cuti_tambahan").val().split(','))
+      formData = new FormData
+      formData.append("_token","{{ csrf_token() }}") 
+      formData.append("cuti_tambahan",JSON.stringify($("#cuti_tambahan").val().split(',')))
+      formData.append("description",$("#description_addition_cuti").val())
+
+      swalFireCustom = {
+        title: 'Are you sure?',
+        text: "Save this Additional Public Holiday!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }
+
+      Swal.fire(swalFireCustom).then((resultFire) => {
+        if (resultFire.value) {
+          $.ajax({
+            type:"POST",
+            url:"{{url('/storeCutiAddition')}}",
+            processData: false,
+            contentType: false,
+            data:formData,
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+              })
+              Swal.showLoading()
+            },
+            success: function(results)
+            {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Adding Public Holiday Succesfully!',
+                  text: 'Click Ok to reload page',
+                }).then((result,data) => {
+                  if (result.value) {
+                    location.reload()              
+                  }
+                })
+            }
+          })
+        }
+      }) 
+    }
+
     $.ajax({
       type:"GET",
       url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
@@ -764,7 +854,6 @@ Leaving Permitte
     });
 
     $(".add_cuti").click(function(){
-      console.log(this.value)
       $.ajax({
         type:"GET",
         url:"getCutiUsers",
@@ -789,6 +878,10 @@ Leaving Permitte
             disableDate.push(moment(value).format("L"))
           })
 
+          $.each(hari_libur_nasiona_tambahan,function(key,value){
+            disableDate.push(value)
+          })
+
           if(result.shiftingUser){
             var daysOfWeekDisabled = ""
             var daysOfWeekHighlighted = []
@@ -796,6 +889,8 @@ Leaving Permitte
             var daysOfWeekDisabled = "0,6"
             var daysOfWeekHighlighted = [0,6]
           }
+
+          // console.log(disableDate.indexOf(moment(date).format("L")))
 
           $('#date_start').datepicker({
             weekStart: 1,
@@ -817,6 +912,13 @@ Leaving Permitte
                 return {
                   enabled: false,
                   tooltip: 'Cuti Pribadi',
+                };
+              } 
+
+              if ($.inArray(moment(date).format("YYYY-MM-DD"), disableDate) !== -1) {
+                return {
+                  enabled: false,
+                  classes: 'hari_libur',
                 };
               }
             },
@@ -2064,6 +2166,7 @@ Leaving Permitte
     });
 
     var hari_libur_nasional = []
+    var hari_libur_nasiona_tambahan = []
     var hari_libur_nasional_2 = []
     var hari_libur_nasional_tooltip = []
 
@@ -2072,6 +2175,7 @@ Leaving Permitte
       url:"{{url('getCutiException')}}",
       success:function(resultException){
         liburNasionalException = resultException
+        hari_libur_nasiona_tambahan = liburNasionalException
         $.ajax({
           type:"GET",
           url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
@@ -2082,12 +2186,13 @@ Leaving Permitte
                   hari_libur_nasional.push(moment(value.start.date).format("L"))
                   hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
                   hari_libur_nasional_tooltip.push(value.summary)
-
                 }
               }
             })
           }
         })
+
+        console.log(hari_libur_nasiona_tambahan)
       }
     })
 
