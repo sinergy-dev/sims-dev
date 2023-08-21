@@ -88,39 +88,78 @@
               </div>
             </div>
 
-            <div class="form-group" id="form_filter_pic" style="display:none">
+            <!-- <div class="form-group" id="form_filter_pic" style="display:none">
               <label>Filter by PIC</label>
               <select type="select" class="select2 form-control" id="selectPic" name="selectPic" onchange="customFilter(this.value,'selectPic')">
-                <!-- <option></option> -->
               </select>
             </div>
 
             <div class="form-group">
               <label>Filter by Status</label>
               <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus" onchange="customFilter(this.value,'selectStatus')">
-                <!-- <option></option> -->
               </select>
             </div>
 
             <div class="form-group">
               <label>Filter by Task</label>
               <select type="select" class="select2 form-control" id="selectTask" name="selectTask" onchange="customFilter(this.value,'selectTask')">
-                <!-- <option></option> -->
               </select>
             </div>
 
             <div class="form-group">
               <label>Filter by Year</label>
-              <select type="select" class="select2 form-control" id="selectYear" name="selectYear" onchange="customFilter(this.value,'selectYear')"><option value=""></option></select>
+              <select type="select" class="select2 form-control" id="selectYear" name="selectYear" onchange="customFilter(this.value,'selectYear')"></select>
             </div>
 
             <div class="form-group">
               <label>Filter by Schedule</label>
               <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule" onchange="customFilter(this.value,'selectSchedule')">
-                <!-- <option></option> -->
+              </select>
+            </div> -->
+
+            <div class="form-group" id="filter-division-timesheet" style="display:none">
+              <label>Filter by Division</label>
+              <select type="select" class="select2 form-control" id="selectDiv" name="selectDiv">
+              <option></option>
               </select>
             </div>
 
+            <div class="form-group" id="form_filter_pic" style="display:none">
+              <label>Filter by PIC</label>
+              <select type="select" class="select2 form-control" id="selectPic" name="selectPic">
+              </select>
+            </div>
+
+            <div class="form-group" id="filter-status-timesheet" style="display:none">
+              <label>Filter by Status</label>
+              <select type="select" class="select2 form-control" id="selectStatus" name="selectStatus">
+              </select>
+            </div>
+
+            <div class="form-group" id="filter-task-timesheet" style="display:none">
+              <label>Filter by Task</label>
+              <select type="select" class="select2 form-control" id="selectTask" name="selectTask">
+              </select>
+            </div>
+
+            <div class="form-group" id="filter-phase-timesheet" style="display:none">
+              <label>Filter by Phase</label>
+              <select type="select" class="select2 form-control" id="selectPhase" name="selectPhase">
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Filter by Year</label>
+              <select type="select" class="select2 form-control" id="selectYear" name="selectYear"><option></option></select>
+            </div>
+
+            <div class="form-group" id="filter-schedule-timesheet" style="display:none">
+              <label>Filter by Schedule</label>
+              <select type="select" class="select2 form-control" id="selectSchedule" name="selectSchedule">
+              </select>
+            </div>
+
+            <button id="" class="btn btn-sm btn-primary btn-block" onclick="customFilter()"><i class="fa fa-filter"></i> Filter</button>
             <button id="" class="btn btn-sm btn-info btn-block" onclick="resetFilter()"><i class="fa fa-refresh"></i> Reset</button>
           </div>
         </div>
@@ -128,7 +167,7 @@
       <div class="col-md-10 col-xs-9">
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
-            <li class="active"><a href="#table" data-toggle="tab">Table</a></li>
+            <li class="active" id="nav-tab-table" style="display:none;"><a href="#table" data-toggle="tab">Table</a></li>
             <li><a href="#chart" data-toggle="tab">Chart</a></li>
           </ul>
           <div class="tab-content">
@@ -150,10 +189,10 @@
                             <span class="fa fa-caret-down"></span>
                           </button>
                           <ul class="dropdown-menu" id="selectShowEntry">
-                            <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                            <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                            <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                            <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',10)">10</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',25)">25</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',50)">50</a></li>
+                            <li><a href="#" onclick="changeNumberEntries('tbSummaryMandays',100)">100</a></li>
                           </ul>
                         </div>
                         <span class="input-group-btn">
@@ -177,6 +216,7 @@
                           <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummaryMandays')" type="button" class="btn btn-default btn-flat">
                             <i class="fa fa-fw fa-refresh"></i>
                           </button>
+                          <a style="margin-left: 10px;display: none;" id="btn_export_sum_mandays" target="_blank" onclick="customFilter('{{action('TimesheetController@exportExcel')}}','export')" class="btn btn-md btn-success"><i class="fa fa-file-excel-o"></i> Export</a>
                         </span>
                       </div>
                     </div>
@@ -193,96 +233,101 @@
                 </div>
               </div>
 
-              <div class="box box-primary" id="box_sbe" style="display:none;">
-                <div class="box-header bg-primary with-border">
-                  <h3 class="box-title" style="color: white;">Summary of SBE</h3>
-                </div>
-                <div class="box-body">
-                  <div class="row">
-                      <div class="col-md-6 col-xs-12 pull-right">
-                        <b>Search Anything</b>
-                          <div class="input-group pull-right">
-                            <input id="searchBarSbe" type="text" class="form-control" onkeyup="searchCustom('tbSummarySbe','searchBarSbe')" placeholder="ex: Search Name..">
-                            <div class="input-group-btn">
-                              <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                Show 10 
-                                <span class="fa fa-caret-down"></span>
-                              </button>
-                              <ul class="dropdown-menu" id="selectShowEntryTicket">
-                                <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                                <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                                <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                                <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-                              </ul>
-                            </div>
-                            <span class="input-group-btn">
-                              <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbSummarySbe','searchBarSbe')" type="button" class="btn btn-default btn-flat">
-                                <i class="fa fa-fw fa-remove"></i>
-                              </button>
-                            </span>
-                            <span class="input-group-btn">
-                              <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                Displayed Column
-                                <span class="fa fa-caret-down"></span>
-                              </button>
-                              <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="1"><span class="text">Planned</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="2"><span class="text">Actual</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="3"><span class="text">Threshold</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="4"><span class="text">Billable</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="5"><span class="text">%Billable</span></li>
-                                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="6"><span class="text">Deviation</span></li>
-                              </ul>
-                              <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummarySbe')" type="button" class="btn btn-default btn-flat">
-                                <i class="fa fa-fw fa-refresh"></i>
-                              </button>
-                            </span>
+              <div class="row">
+                <div class="col-md-6 col-xs-12">
+                  <div class="box box-primary" id="box_sbe" style="display:none;">
+                    <div class="box-header bg-primary with-border">
+                      <h3 class="box-title" style="color: white;">Summary of SBE</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="row">
+                          <div class="col-md-12 col-xs-12 pull-right">
+                            <b>Search Anything</b>
+                              <div class="input-group pull-right">
+                                <input id="searchBarSbe" type="text" class="form-control" onkeyup="searchCustom('tbSummarySbe','searchBarSbe')" placeholder="ex: Search Name..">
+                                <div class="input-group-btn">
+                                  <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    Show 10 
+                                    <span class="fa fa-caret-down"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" id="selectShowEntryTicket">
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',10)">10</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',25)">25</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',50)">50</a></li>
+                                    <li><a href="#" onclick="changeNumberEntries('tbSummarySbe',100)">100</a></li>
+                                  </ul>
+                                </div>
+                                <span class="input-group-btn">
+                                  <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbSummarySbe','searchBarSbe')" type="button" class="btn btn-default btn-flat">
+                                    <i class="fa fa-fw fa-remove"></i>
+                                  </button>
+                                </span>
+                                <span class="input-group-btn">
+                                 <!--  <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    Displayed Column
+                                    <span class="fa fa-caret-down"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="1"><span class="text">Planned</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="2"><span class="text">Actual</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="3"><span class="text">Threshold</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="4"><span class="text">Billable</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="5"><span class="text">%Billable</span></li>
+                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="6"><span class="text">Deviation</span></li>
+                                  </ul> -->
+                                  <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummarySbe')" type="button" class="btn btn-default btn-flat">
+                                    <i class="fa fa-fw fa-refresh"></i>
+                                  </button>
+                                </span>
+                              </div>
                           </div>
                       </div>
-                  </div>
-                  <div class="table-responsive">
-                    <table class="table" id="tbSummarySbe">
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-              <div class="box box-primary" id="box_pid" style="display:none">
-                <div class="box-header bg-primary with-border">
-                  <h3 class="box-title" style="color: white;">Assign PID</h3>
-                </div>
-                <div class="box-body">
-                  <div class="row">
-                    <div class="col-md-6 col-xs-12 pull-right">
-                        <b>Search Anything</b>
-                        <div class="input-group pull-right">
-                          <input id="searchBarAssignPID" onkeyup="searchCustom('tbAssignPID','searchBarAssignPID')" type="text" class="form-control" placeholder="ex: search Name...">
-                          <div class="input-group-btn">
-                            <button type="button" id="btnShowEntry" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                              Show 10 
-                              <span class="fa fa-caret-down"></span>
-                            </button>
-                            <ul class="dropdown-menu" id="selectShowEntry">
-                              <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                              <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                              <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                              <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-                            </ul>
-                          </div>
-                          <span class="input-group-btn">
-                            <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbAssignPID','searchBarAssignPID')" type="button" class="btn btn-default btn-flat">
-                              <i class="fa fa-fw fa-remove"></i>
-                            </button>
-                            <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbAssignPID')" type="button" class="btn btn-default btn-flat">
-                              <i class="fa fa-fw fa-refresh"></i>
-                            </button>
-                          </span>
-                        </div>
+                      <div class="table-responsive">
+                        <table class="table" id="tbSummarySbe">
+                        </table>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <table class="table" id="tbAssignPID">
-                    </table>
+                </div>
+                <div class="col-md-6 col-xs-12">
+                  <div class="box box-primary" id="box_pid" style="display:none">
+                    <div class="box-header bg-primary with-border">
+                      <h3 class="box-title" style="color: white;">Assign PID</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="row">
+                        <div class="col-md-12 col-xs-12 pull-right">
+                            <b>Search Anything</b>
+                            <div class="input-group pull-right">
+                              <input id="searchBarAssignPID" onkeyup="searchCustom('tbAssignPID','searchBarAssignPID')" type="text" class="form-control" placeholder="ex: search Name...">
+                              <div class="input-group-btn">
+                                <button type="button" id="btnShowEntry" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                  Show 10 
+                                  <span class="fa fa-caret-down"></span>
+                                </button>
+                                <ul class="dropdown-menu" id="selectShowEntry">
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',10)">10</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',25)">25</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',50)">50</a></li>
+                                  <li><a href="#" onclick="changeNumberEntries('tbAssignPID',100)">100</a></li>
+                                </ul>
+                              </div>
+                              <span class="input-group-btn">
+                                <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" onclick="clearFilterTable('tbAssignPID','searchBarAssignPID')" type="button" class="btn btn-default btn-flat">
+                                  <i class="fa fa-fw fa-remove"></i>
+                                </button>
+                                <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbAssignPID')" type="button" class="btn btn-default btn-flat">
+                                  <i class="fa fa-fw fa-refresh"></i>
+                                </button>
+                              </span>
+                            </div>
+                        </div>
+                      </div>
+                      <div>
+                        <table class="table" id="tbAssignPID">
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -291,6 +336,11 @@
               </div>
             </div>
             <div class="tab-pane" id="chart">
+              <div class="alert alert-info alert-dismissible" id="alert-for-direktor" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-info"></i> Alert!</h4>
+                Please filter <b>division</b> first to show the data!.
+              </div>
               <div class="box box-primary">
                 <div class="box-header bg-primary" style="color:white">
                   <h3 class="box-title">Cummulative Mandays (Status Done)</h3>
@@ -316,7 +366,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-level-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Level <span id="textLevel"></span></h3>
@@ -327,7 +377,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-status-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Status <span id="textStatus"></span></h3>
@@ -338,7 +388,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-schedule-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Schedule <span id="textSchedule"></span></h3>
@@ -348,6 +398,40 @@
                       <div id="definitionSchedule"></div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-task-timesheet">
+                  <div class="box box-primary">
+                    <div class="box-header bg-primary" style="color:white">
+                      <h3 class="box-title">Task <span id="textTask"></span></h3>
+                    </div>
+                    <div class="box-body">
+                      <canvas id="taskChart" width="400" height="200"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-xs-12" style="display: none;" id="box-phase-timesheet">
+                  <div class="box box-primary">
+                    <div class="box-header bg-primary" style="color:white">
+                      <h3 class="box-title">Phase <span id="textPhase"></span></h3>
+                    </div>
+                    <div class="box-body">
+                      <canvas id="phaseChart" width="400" height="200"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                 <!--  <div class="box box-primary">
+                    <div class="box-header bg-primary" style="color:white">
+                      <h3 class="box-title">Schedule <span id="textSchedule"></span></h3>
+                    </div>
+                    <div class="box-body">
+                      <canvas id="scheduleChart" width="400" height="200"></canvas>
+                      <div id="definitionSchedule"></div>
+                    </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -376,7 +460,105 @@
       accesable.forEach(function(item,index){
         $("#" + item).show()
       })
-      console.log(accesable)
+      
+      if (!accesable.includes('nav-tab-table')) {
+        $(".nav-tabs").find("li").last().addClass("active")
+        $(".tab-pane").last().addClass("active")
+        $(".tab-pane").first().removeClass("active")
+        $("#selectYear").val(moment().year()).trigger('change')
+      }else{
+        var datatableSummary = ""
+        function initializeDataTable(tabId) {
+          console.log("aheey")
+          datatableSummary = $(tabId).find('#tbSummaryMandays').DataTable({
+            responsive: true,
+            "ajax":{
+              type:"GET",
+              url:"{{url('/timesheet/sumPointMandays')}}",
+            },
+            columns: [
+              { title: 
+                'Name',
+                render: function (data, type, row, meta){
+                  return '<a href="{{url("/timesheet/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
+                } 
+              },
+              { title: 'Planned',
+                data:'planned'
+              },
+              { title: 'Actual', 
+                data:'actual'
+              },
+              { title: 'Threshold',
+                data:'threshold' 
+              },
+              { title: 'Billable', 
+                data:'billable'
+              },
+              { title: '%Billable', 
+                data:'percentage_billable'
+              },
+              { title: 'Deviation', 
+                data:'deviation'
+              },
+              { title: 'Total Activity', 
+                data:'total_task'
+              },
+            ],
+            lengthChange: false,
+            "pageLength": 50,
+            initComplete: function () {
+              isTbSummary = true
+              $('#loadingIndicator').hide();
+              $.each($("#selectShowColumnTicket li input"),function(index,item){
+                var column = $("#tablePerformance").DataTable().column(index)
+                // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+                $(item).prop('checked', column.visible())
+              })
+            },
+          })
+
+          return datatableSummary = datatableSummary 
+        }
+
+        // Initialize the DataTable for the active tab
+        var activeTab = $('.tab-pane.active');
+        var idTab = $('.tab-pane.active').attr('id');
+
+        if (idTab == 'table') {
+          initializeDataTable(activeTab);
+
+          // datatableSummary.columns.adjust().draw()
+        }
+
+        // When a tab becomes active, reinitialize the DataTable and adjust columns
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+          var tabId = $(e.target).attr('href');
+          if (tabId == '#table') {
+            if (!$.fn.DataTable.isDataTable('#tbSummaryMandays')) {
+              initializeDataTable(activeTab)
+              datatableSummary.columns.adjust().draw()
+            }
+          }
+        })
+
+        $(document).ready(function(){
+          $("#span-remaining").text(moment().format('MMMM'))
+          $("#textLevel").text(moment().format('YYYY'))
+          $("#textStatus").text(moment().format('YYYY'))
+          $("#textTask").text(moment().format('YYYY'))
+          $("#textPhase").text(moment().format('YYYY'))
+          $("#textSchedule").text(moment().format('YYYY'))
+          $("#title_summary_year").text(moment().year())
+          duplicateCanvasRemaining("/timesheet/getRemainingChart","")
+          levelChart("/timesheet/getLevelChart","")
+          statusChart("/timesheet/getStatusChart","")
+          scheduleChart("/timesheet/getScheduleChart","")
+          taskChart("/timesheet/getTaskChart","")
+          phaseChart("/timesheet/getPhaseChart","")
+          cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],"timesheet/getCummulativeMandaysChart","")
+        })
+      }
       
       if (accesable.includes('box_pid')) {
         var tbSummarySbe = $("#tbSummarySbe").DataTable({
@@ -457,51 +639,6 @@
       }
 
       isTbSummary = false
-      // var tbSummary = $("#tbSummaryMandays").DataTable({
-      //   "ajax":{
-      //     type:"GET",
-      //     url:"{{url('/timesheet/sumPointMandays')}}",
-      //   },
-      //   columns: [
-      //     { title: 
-      //       'Name',
-      //       render: function (data, type, row, meta){
-      //         return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
-      //       } 
-      //     },
-      //     { title: 'Planned',
-      //       data:'planned'
-      //     },
-      //     { title: 'Actual', 
-      //       data:'actual'
-      //     },
-      //     { title: 'Threshold',
-      //       data:'threshold' 
-      //     },
-      //     { title: 'Billable', 
-      //       data:'billable'
-      //     },
-      //     { title: '%Billable', 
-      //       data:'percentage_billable'
-      //     },
-      //     { title: 'Deviation', 
-      //       data:'deviation'
-      //     },
-      //   ],
-      //   lengthChange: false,
-      //   responsive:true,
-      //   initComplete: function () {
-      //     isTbSummary = true
-      //     $("#filterSumPoint").find("i").css("color","#80ff80")
-      //     $("#filterSumPoint").find("span").text("ready to filter")
-      //     $('#loadingIndicator').hide();
-      //     $.each($("#selectShowColumnTicket li input"),function(index,item){
-      //       var column = $("#tablePerformance").DataTable().column(index)
-      //       // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-      //       $(item).prop('checked', column.visible())
-      //     })
-      //   },
-      // }).columns.adjust();
 
       $.ajax({
         type:"GET",
@@ -527,76 +664,15 @@
         }
       })
 
-      var datatableSummary = ""
-      function initializeDataTable(tabId) {
-        console.log("aheey")
-        datatableSummary = $(tabId).find('#tbSummaryMandays').DataTable({
-          responsive: true,
-          "ajax":{
-            type:"GET",
-            url:"{{url('/timesheet/sumPointMandays')}}",
-          },
-          columns: [
-            { title: 
-              'Name',
-              render: function (data, type, row, meta){
-                return '<a href="{{url("/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
-              } 
-            },
-            { title: 'Planned',
-              data:'planned'
-            },
-            { title: 'Actual', 
-              data:'actual'
-            },
-            { title: 'Threshold',
-              data:'threshold' 
-            },
-            { title: 'Billable', 
-              data:'billable'
-            },
-            { title: '%Billable', 
-              data:'percentage_billable'
-            },
-            { title: 'Deviation', 
-              data:'deviation'
-            },
-          ],
-          lengthChange: false,
-          initComplete: function () {
-            isTbSummary = true
-            $("#filterSumPoint").find("i").css("color","#80ff80")
-            $("#filterSumPoint").find("span").text("ready to filter")
-            $('#loadingIndicator').hide();
-            $.each($("#selectShowColumnTicket li input"),function(index,item){
-              var column = $("#tablePerformance").DataTable().column(index)
-              // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-              $(item).prop('checked', column.visible())
-            })
-          },
-        })
-
-        return datatableSummary = datatableSummary 
-      }
-
-      // Initialize the DataTable for the active tab
-      var activeTab = $('.tab-pane.active');
-      var idTab = $('.tab-pane.active').attr('id');
-
-      if (idTab == 'table') {
-        initializeDataTable(activeTab);
-
-        // datatableSummary.columns.adjust().draw()
-      }
-
-      // When a tab becomes active, reinitialize the DataTable and adjust columns
-      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var tabId = $(e.target).attr('href');
-        if (tabId == '#table') {
-          if (!$.fn.DataTable.isDataTable('#tbSummaryMandays')) {
-            initializeDataTable(activeTab)
-            datatableSummary.columns.adjust().draw()
-          }
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getPhaseByDivision')}}",
+        success:function(result) {
+          $("#selectPhase").select2({
+            placeholder:"Select Phase",
+            data:result,
+            multiple:true
+          })
         }
       })
 
@@ -641,7 +717,8 @@
             appendMonth = appendMonth +  '<div class="form-group">'
               appendMonth = appendMonth + '<div class="checkbox">'
               appendMonth = appendMonth + '  <label>'
-              appendMonth = appendMonth + '  <input type="checkbox" id="cbMonth" class="cbMonth" value="'+ values +'" onchange="customFilter(this)">'
+              // appendMonth = appendMonth + '  <input type="checkbox" id="cbMonth" class="cbMonth" value="'+ values +'" onchange="customFilter(this)">'
+              appendMonth = appendMonth + '  <input type="checkbox" id="cbMonth" class="cbMonth" value="'+ values +'">'
               appendMonth = appendMonth + values
               appendMonth = appendMonth + '  </label>'
               appendMonth = appendMonth + '</div>'
@@ -686,41 +763,56 @@
     })
    
     //filter
+    var dataStatus = [
+      {
+        id:"Done",
+        text:"Done"
+      },
+      {
+        id:"Cancel",
+        text:"Cancel"
+      },
+      {
+        id:"Reschedule",
+        text:"Reschedule"
+      },
+      {
+        id:"Undone",
+        text:"Not-Done"
+      },
+    ]
+
     $("#selectStatus").select2({
+      data:dataStatus,
       placeholder:"Select Status",
-      data:[
-        {
-          id:"Done",
-          text:"Done"
-        },
-        {
-          id:"Cancel",
-          text:"Cancel"
-        },
-        {
-          id:"Reschedule",
-          text:"Reschedule"
-        },
-        {
-          id:"Undone",
-          text:"Not-Done"
-        },
-      ],
       multiple:true
     })
 
+    $.ajax({
+      type:"GET",
+      url:"{{url('timesheet/getListOperation')}}",
+      success:function(result) {
+        $("#selectDiv").select2({
+          placeholder:"Select Division",
+          data:result,
+        })
+      }
+    })
+
+    var dataSchedule = [
+      {
+        id:"Planned",
+        text:"Planned"
+      },
+      {
+        id:"Unplanned",
+        text:"Unplanned"
+      },
+    ]
+
     $("#selectSchedule").select2({
       placeholder:"Select Schedule",
-      data:[
-        {
-          id:"Planned",
-          text:"Planned"
-        },
-        {
-          id:"Unplanned",
-          text:"Unplanned"
-        },
-      ],
+      data:dataSchedule,
       multiple:true
     })
 
@@ -733,7 +825,7 @@
       text:currentYear
     })
 
-    arrFilterYear.push({id:2022,text:2022})
+    arrFilterYear.push({id:moment().year()-1,text:moment().year()-1})
 
     $("#selectYear").select2({
       placeholder:"Select Year",
@@ -741,11 +833,13 @@
     })
 
     function customFilter(val,id=""){
-      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectYear = 'year=', selectSchedule = 'schedule[]='
+      var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectPhase = 'phase[]=', selectYear = 'year=', selectSchedule = 'schedule[]=', selectRoles = 'roles='
 
       arrFilterMonth = []
       arrMonth = []
-      cummulativeLineChart.destroy()
+      if (cummulativeLineChart){
+        cummulativeLineChart.destroy()
+      }
       $(".cbMonth").each(function(idx,values){
         if ($(values).is(":checked") == true) {
           if(arrFilterMonth == 'month[]=') {
@@ -782,10 +876,24 @@
         }
       })
 
+      $.each($('#selectPhase').val(),function(key,val){
+        if(selectTask == 'phase[]=') {
+          selectTask = selectTask + val
+        }else{
+          selectTask = selectTask + '&phase[]=' + val
+        }
+      })
+
       if(selectYear == 'year=') {
         selectYear = selectYear + $('#selectYear').val()
       }else{
         selectYear = selectYear + '&year=' + $('#selectYear').val()
+      }
+
+      if(selectRoles == 'roles=') {
+        selectRoles = selectRoles + $('#selectDiv').val()
+      }else{
+        selectRoles = selectRoles + '&roles=' + $('#selectDiv').val()
       }
 
       $.each($('#selectSchedule').val(),function(key,val){
@@ -795,7 +903,6 @@
           selectSchedule = selectSchedule + '&schedule[]=' + val
         }
       })
-      
 
       if ($(".cbMonth").is(":checked") == false) {
         arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -808,9 +915,15 @@
         })
       }
 
-      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectTask + '&' + selectYear + '&' + selectSchedule
+      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule + '&' + selectRoles
 
-      showDataFilter(arrFilter,arrMonth)
+      console.log(arrFilter)
+
+      if (id == "export") {
+        window.location = val + arrFilter;
+      }else{
+        showDataFilter(arrFilter,arrMonth)
+      }
     }
 
     var colors = [
@@ -822,21 +935,10 @@
     const ctx3 = document.getElementById('levelChart');
     const ctx4 = document.getElementById('statusChart');
     const ctx5 = document.getElementById('scheduleChart');
+    const ctx6 = document.getElementById('taskChart');
+    const ctx7 = document.getElementById('phaseChart');
 
-    let cummulativeLineChart = '',levelDoughnutChart = '',statusPieChart = '',schedulePieChart = '', remainingBarChart = []
-
-    $(document).ready(function(){
-      $("#span-remaining").text(moment().format('MMMM'))
-      $("#textLevel").text(moment().format('YYYY'))
-      $("#textStatus").text(moment().format('YYYY'))
-      $("#textSchedule").text(moment().format('YYYY'))
-      $("#title_summary_year").text(moment().year())
-      duplicateCanvasRemaining("/timesheet/getRemainingChart","")
-      levelChart("/timesheet/getLevelChart","")
-      statusChart("/timesheet/getStatusChart","")
-      scheduleChart("/timesheet/getScheduleChart","")
-      cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],"timesheet/getCummulativeMandaysChart","")
-    })
+    let cummulativeLineChart = '',levelPieChart = '',statusPieChart = '',schedulePieChart = '',taskPieChart = '',phasePieChart = '', remainingBarChart = []
 
     function cummulativeChart(labelChartLineByFilter,url,param){
       $.ajax({
@@ -856,7 +958,6 @@
                 cummulativeArr.push({"label":value.name,"data":array_result,"backgroundColor":bgColorArr_idx,"borderWidth":1,"tension":0.5})
               }
             })
-              
           })
 
 
@@ -888,7 +989,6 @@
     }    
 
     function remainingChart(idCtx,value){
-      
       var datasetRemaining = [], arrConfig = [], labels = []
       remainingBarChart = []
       if (typeof(value) == "object") {
@@ -1103,7 +1203,7 @@
         url:"{{url('/')}}/"+url+param,
         success:function(result){
           const myChart3 = new Chart(ctx3, {
-              type: 'doughnut',
+              type: 'pie',
               data: {
                 labels: [
                   'A',
@@ -1151,7 +1251,7 @@
               }
           });
 
-          return levelDoughnutChart = myChart3
+          return levelPieChart = myChart3
         }
       })
     }
@@ -1266,9 +1366,118 @@
       })
     }
 
+    function taskChart(url,param){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/')}}/"+url+param,
+        success:function(result){
+          arrColor = []
+          $.each(result.label,function(itemKey,value){
+            arrColor.push(colors[itemKey])
+          })
+          const myChart6 = new Chart(ctx6, {
+              type: 'pie',
+              data: {
+                labels: result.label,
+                datasets: [{
+                  label: result.label,
+                  data: result.data,
+                  backgroundColor: arrColor,
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  },
+              plugins: {
+                tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        var label = context.label || '';
+
+                        if (label) {
+                          label += ': ';
+                        }
+
+                        label += context.formattedValue + "%";
+
+                        return label;
+                      }
+                  }
+                }
+              }
+            },
+          })
+
+          return taskPieChart = myChart6
+        } 
+      })
+    }
+
+    function phaseChart(url,param){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/')}}/"+url+param,
+        success:function(result){
+          arrColor = []
+          $.each(result.label,function(itemKey,value){
+            arrColor.push(colors[itemKey])
+          })
+          const myChart7 = new Chart(ctx7, {
+              type: 'pie',
+              data: {
+                labels: result.label,
+                datasets: [{
+                  label: result.label,
+                  data: result.data,
+                  backgroundColor: arrColor,
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  },
+              plugins: {
+                tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        var label = context.label || '';
+
+                        if (label) {
+                          label += ': ';
+                        }
+
+                        label += context.formattedValue + "%";
+
+                        return label;
+                      }
+                  }
+                }
+              }
+            },
+          })
+
+          return phasePieChart = myChart7
+        } 
+      })
+    }
+
     function showDataFilter(arrFilter,arrMonth){
+      var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
+
       if (isTbSummary == true) {
         $("#loadingIndicator").show()
+        $("#filterSumPoint").find("i").css("color","red")
+        $("#filterSumPoint").find("span").text("not ready to filter...")
         Pace.restart();
         Pace.track(function(){
           $("#tbSummaryMandays").DataTable().ajax.url("{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter).load();
@@ -1276,21 +1485,33 @@
       }
 
       //cummulative mandays chart update
-      cummulativeLineChart.destroy()
+      if (cummulativeLineChart) {
+        cummulativeLineChart.destroy()
+      }
       cummulativeChart(arrMonth,"timesheet/getFilterCummulativeMandaysChart",arrFilter)
 
       //level mandays chart update
-      levelDoughnutChart.destroy()
-      levelChart("/timesheet/getFilterLevelChart",arrFilter)
+      if (accesable.includes('nav-tab-table')) {
+        levelPieChart.destroy()
+        levelChart("/timesheet/getFilterLevelChart",arrFilter)
 
-      //status mandays chart update
-      statusPieChart.destroy()
-      statusChart("/timesheet/getFilterStatusChart",arrFilter)
+        //status mandays chart update
+        statusPieChart.destroy()
+        statusChart("/timesheet/getFilterStatusChart",arrFilter)
 
-      //schedule mandays chart update
-      schedulePieChart.destroy()
-      scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
+        //schedule mandays chart update
+        schedulePieChart.destroy()
+        scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
 
+        //task chart update
+        taskPieChart.destroy()
+        taskChart("/timesheet/getFilterTaskChart",arrFilter)
+
+        //phase chart update
+        phasePieChart.destroy()
+        phaseChart("/timesheet/getFilterPhaseChart",arrFilter)
+      }
+      
       //remaining chart update
       const yearRegex = /\b\d{4}\b/; // Matches a 4-digit number
       const yearMatch = arrFilter.match(yearRegex);
@@ -1307,11 +1528,17 @@
 
     $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
       // AJAX reload is complete
+      $("#filterSumPoint").find("i").css("color","#80ff80")
+      $("#filterSumPoint").find("span").text("ready to filter")
       $("#loadingIndicator").hide()
     });
 
     function resetFilter(){
       location.reload()    
+    }
+
+    function changeNumberEntries(id_table,num){
+      $('#'+id_table).DataTable().page.len(num).draw()
     }
 </script>
 @endsection

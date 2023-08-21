@@ -443,8 +443,9 @@ Dashboard
 			}
 
 			$.each(colors[0], function(key, value){
-		  	prepend = prepend + '<div class="col-lg-3 col-xs-6">'
+		  	prepend = prepend + '<div class="col-lg-3 col-xs-6" onclick="clickableDiv('+"'"+ value.url +"'"+')">'
 				prepend = prepend + '<div class="small-box '+value.color+'">'
+          // prepend = prepend + '<a href="/' + value.url +'" style="text-decoration: none;">'
 		     	prepend = prepend + '<div class="inner">'
 		       	prepend = prepend + '<h3 class="counter">'+value.count+'</h3>'
 		       	prepend = prepend + '<p>'+value.name+'</p>'
@@ -454,6 +455,7 @@ Dashboard
 		     	prepend = prepend + '</div>'
 		     	// prepend = prepend + '<a href="' + '{{action("ReportController@view_open")}}' + '" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
 		     	prepend = prepend + '<a href="/' + value.url +'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
+          // prepend = prepend +  '</a>'
 		   	prepend = prepend + '</div>'
 		 		prepend = prepend + '</div>'
 		  })
@@ -461,18 +463,64 @@ Dashboard
     	$("#BoxId").prepend(prepend)
 
     	$('.counter').each(function () {
+        // var counterValue = 0;
+        // var targetValue = 100; // Change this to your desired final value
+        // var animationDuration = 2000; // Animation duration in milliseconds
+        // var intervalDuration = 20; // Interval duration for smooth animation
+
+        // var interval = setInterval(function() {
+        //     counterValue += Math.ceil(targetValue / (animationDuration / intervalDuration));
+        //     if (counterValue >= targetValue) {
+        //         counterValue = targetValue;
+        //         clearInterval(interval);
+        //     }
+        //     $(this).text(counterValue);
+        // }, intervalDuration);
 		    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
 		    $(this).prop('Counter', 0).animate({
 		      Counter: $(this).text()
 		    }, {
-		      duration: 5000,
+		      duration: 1000,
 		      step: function (func) {
 		         $(this).text(parseFloat(func).toFixed(size));
 		      }
 		    });
 			});
+
+      // var counterValue = 0;
+      // var targetValue = $(".counter").text().split(".")[1] ? $(this).text().split(".")[1].length : 0; // Change this to your desired final value
+      // var animationDuration = 2000; // Animation duration in milliseconds
+      // var intervalDuration = 20; // Interval duration for smooth animation
+
+      // var interval = setInterval(function() {
+      //     counterValue += Math.ceil(targetValue / (animationDuration / intervalDuration));
+      //     if (counterValue >= targetValue) {
+      //         counterValue = targetValue;
+      //         clearInterval(interval);
+      //     }
+      //     $(".counter").text(counterValue);
+      // }, intervalDuration);
+
+      var counterValue = $(".counter").text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
+      var targetValue = $(".counter").text().split(".")[1] ? $(this).text().split(".")[1].length : 0; // Change this to your desired final value
+      var animationDuration = 2000; // Animation duration in milliseconds
+      var intervalDuration = 20; // Interval duration for smooth animation
+
+      var interval = setInterval(function() {
+          counterValue += Math.ceil(targetValue / (animationDuration / intervalDuration));
+          if (counterValue >= targetValue) {
+              counterValue = targetValue;
+              clearInterval(interval);
+          }
+          $(".counter").text(counterValue);
+      }, intervalDuration);
     }
 	})
+
+  function clickableDiv(url){
+    window.location = "{{url('/project/index')}}/?=" + url.split('/')[1]
+    // localStorage.setItem('status_lead',url.split('/')[1])
+  }
 
 	if (accesable.includes('salesWinTerritory')) {
 		var top_win_sip_ter =  JSON.parse('@json($top_win_sip_ter)')

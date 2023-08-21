@@ -612,7 +612,6 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/delete/{id}', 'HRGAController@destroy');
 	Route::get('/edit/{id}', 'HRGAController@edit');
 	Route::post('/barang/update', 'HRGAController@update');
-	// Route::get('/timesheet','EngineerController@timesheet');
 	Route::post('/store_task','EngineerController@store_task');
 	Route::post('/done_task','EngineerController@done_task');
 
@@ -1303,7 +1302,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('getListCalendar','TestController@getListCalendar');
 	// Route::get('getListCalendarEvent','TestController@getListCalendarEvent');
 
-	Route::get('timesheet','TimesheetController@timesheet');
+	Route::get('timesheet/timesheet','TimesheetController@timesheet');
 	Route::get('timesheet/dashboard','TimesheetController@timesheet_dashboard');
 	Route::get('timesheet/config','TimesheetController@timesheet_config');
 
@@ -1335,6 +1334,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('timesheet/getLevelChart','TimesheetController@getLevelChart');
 	Route::get('timesheet/getStatusChart','TimesheetController@getStatusChart');
 	Route::get('timesheet/getScheduleChart','TimesheetController@getScheduleChart');
+	Route::get('timesheet/getTaskChart','TimesheetController@getTaskChart');
+	Route::get('timesheet/getPhaseChart','TimesheetController@getPhaseChart');
 	Route::get('timesheet/getRemainingChart','TimesheetController@getRemainingChart');
 	Route::get('timesheet/getCummulativeMandaysChart','TimesheetController@getCummulativeMandaysChart');
 	Route::get('timesheet/getHoliday','TimesheetController@getHoliday');
@@ -1346,7 +1347,14 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('timesheet/getFilterStatusChart','TimesheetController@getFilterStatusChart');
 	Route::get('timesheet/getFilterLevelChart','TimesheetController@getFilterLevelChart');
 	Route::get('timesheet/getFilterScheduleChart','TimesheetController@getFilterScheduleChart');
+	Route::get('timesheet/getFilterTaskChart','TimesheetController@getFilterTaskChart');
+	Route::get('timesheet/getFilterPhaseChart','TimesheetController@getFilterPhaseChart');
+
 	Route::get('timesheet/deleteTaskPhase','TimesheetController@deleteTaskPhase');
+	Route::get('timesheet/exportExcel','TimesheetController@exportExcel');
+	Route::post('timesheet/deletePermit','TimesheetController@deletePermit');
+	Route::post('timesheet/uploadCSV','TimesheetController@uploadCSV');
+	Route::get('timesheet/getListOperation','TimesheetController@getListOperation');
 	
 
 });
