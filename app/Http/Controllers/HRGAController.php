@@ -1473,6 +1473,8 @@ class HRGAController extends Controller
         return DB::table('tb_cuti_adjustment')->pluck('date');
     }
 
+    //gantii backend
+
     //store cuti lama
     // public function store_cuti(Request $request)
     // {
