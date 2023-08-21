@@ -155,8 +155,8 @@ Leaving Permitte
               <i class="fa fa-file-pdf-o" style="margin-right: 5px"></i>Preview PDF
             </button>
           </a>  -->
-          <button class="btn btn-sm bg-purple" id="btnConfigPublicHoliday" style="margin-left: 10px;display: none;" data-toggle="modal" data-target="#config_cuti">
-            <i class="fa fa-wrench" style="margin-right: 5px"></i>Cuti Config
+          <button class="btn btn-sm bg-purple" id="btnConfigPublicHoliday" style="margin-left: 10px;display: none;">
+            <i class="fa fa-plus" style="margin-right: 5px"></i>Public Holiday (tambahan)
           </button>
          <!--  <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
             <i class="fa fa-wrench" style="margin-right: 5px"></i>Total Cuti
@@ -574,7 +574,7 @@ Leaving Permitte
             <div class="modal-body">
               <form method="POST" action="{{url('/setting_total_cuti')}}">
               <div class="form-group">
-                  <label>Masukkan Tanggal Cuti Tambahan Tahun ini (optional)</label>
+                  <label>Masukkan Tanggal Cuti (Public Holiday) Tambahan Tahun ini</label>
                   <input type="" name="cuti_tambahan" id="cuti_tambahan" class="form-control">
               </div>
               <div class="form-group">
@@ -694,10 +694,6 @@ Leaving Permitte
         $(column2).text('Time Off');
         console.log('dinar dindut')
       }
-    })
-
-    $("#cuti_tambahan").datepicker({
-      multidate: true,
     })
 
     function submitConfigCuti(){
@@ -1044,6 +1040,55 @@ Leaving Permitte
               )
           }
       })
+    })
+
+    $("#btnConfigPublicHoliday").click(function(){
+      var disableDate = []
+
+      $.each(hari_libur_nasiona_tambahan,function(key,value){
+        disableDate.push(value)
+      })
+
+      $.each(hari_libur_nasional,function(key,value){
+        disableDate.push(value)
+      })
+
+      $('#cuti_tambahan').datepicker({
+        weekStart: 1,
+        // daysOfWeekDisabled: daysOfWeekDisabled,
+        // daysOfWeekHighlighted: daysOfWeekHighlighted,
+        todayHighlight: true,
+        multidate: true,
+        datesDisabled: disableDate,
+        beforeShowDay: function(date){
+          var index = hari_libur_nasional.indexOf(moment(date).format("L"))
+          if(index > 0){
+            return {
+              // enabled: false,
+              tooltip: hari_libur_nasional_tooltip[index],
+              classes: 'hari_libur'
+            };
+          } else if(disableDate.indexOf(moment(date).format("L")) > 0) {
+            return {
+              enabled: false,
+              tooltip: 'Cuti Pribadi',
+            };
+          } 
+
+          if ($.inArray(moment(date).format("YYYY-MM-DD"), disableDate) !== -1) {
+            return {
+              enabled: false,
+              classes: 'hari_libur',
+            };
+          }
+        },
+      })
+
+      // $("#cuti_tambahan").datepicker({
+      //   multidate: true,
+      // })
+
+      $("#config_cuti").modal("show")
     })
 
     $(document).on('click',"button[class^='approve_date']",function(e) {
@@ -2172,7 +2217,7 @@ Leaving Permitte
 
     $.ajax({
       type:"GET",
-      url:"{{url('getCutiException')}}",
+      url:"{{url('/getPublicHolidayAdjustment')}}",
       success:function(resultException){
         liburNasionalException = resultException
         hari_libur_nasiona_tambahan = liburNasionalException
