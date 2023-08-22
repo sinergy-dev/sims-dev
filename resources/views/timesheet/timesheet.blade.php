@@ -316,8 +316,8 @@
 </section> 
 @endsection
 @section('scriptImport')
-  <!-- <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script> -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+  <!-- <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script> -->
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   {{--  Calendar  --}}
@@ -1589,15 +1589,33 @@
         type:"GET",
         url:"{{url('/timesheet/getLeadId')}}",
         success:function(result){
-          $("#selectLead").select2({
+          function isSelect2Loaded() {      
+            var Select2 = $("#selectLead").select2({
               placeholder:"Select Lead Id",
               data:result,
               dropdownParent: $("#ModalAddTimesheet")
-          })
+            })
 
-          if (pid != null) {
-            $("#selectLead").val(pid).trigger("change")
+            return typeof Select2 !== 'undefined';
           }
+
+          $(document).ready(function() {
+              if (isSelect2Loaded()) {
+                  // Select2 script has been loaded
+                  // You can proceed with using Select2
+                  $("#selectLead").select2({
+                    placeholder:"Select Lead Id",
+                    data:result,
+                    dropdownParent: $("#ModalAddTimesheet")
+                  })
+
+                  if (pid != undefined) {
+                    $("#selectLead").val(pid).trigger("change")
+                  }
+              } else {
+                  console.error('Select2 script is not loaded.');
+              }
+          });          
         }
       })
     }
@@ -1607,28 +1625,48 @@
         type:"GET",
         url:"{{url('/timesheet/getPidByPic')}}",
         success:function(result){
-          if ($("#selectLead").data('select2')) {
-            $("#selectLead").select2('destroy');
-            $("#selectLead").empty()
-            // Select2 is initialized, so destroy it
-            // Set the placeholder attribute to the desired value
-            $("#selectLead").attr('placeholder','Select Project Id')
-          }
-
           if (result[0] == 'Alert') {
             $("#selectLead").closest("div").find("span").show()
             $("#selectLead").closest("div").addClass("has-error")
             $("#selectLead").closest("div").find(".help-block").text(result[1]) 
           }else{
-            $("#selectLead").select2({
-              placeholder:"Select Project Id",
-              data:result,
-              dropdownParent: $("#ModalAddTimesheet")
-            })
-
-            if (pid != null) {
-              $("#selectLead").val(pid).trigger("change")
+            if ($("#selectLead").data('select2')) {
+              $("#selectLead").select2('destroy');
+              $("#selectLead").empty()
+              // Select2 is initialized, so destroy it
+              // Set the placeholder attribute to the desired value
+              $("#selectLead").attr('placeholder','Select Project Id')
             }
+
+            function isSelect2Loaded() {      
+              var Select2 = $("#selectLead").select2({
+                placeholder:"Select Project Id",
+                data:result,
+                dropdownParent: $("#ModalAddTimesheet")
+              })
+
+              return typeof Select2 !== 'undefined';
+            }
+
+            $(document).ready(function() {
+                if (isSelect2Loaded()) {
+                    // Select2 script has been loaded
+                    // You can proceed with using Select2
+                    $("#selectLead").select2({
+                      placeholder:"Select Project Id",
+                      data:result,
+                      dropdownParent: $("#ModalAddTimesheet")
+                    })
+
+                    if (pid != undefined) {
+                      $("#selectLead").val(pid).trigger("change")
+                    }
+                } else {
+                    console.error('Select2 script is not loaded.');
+                }
+            });
+
+
           }
         }
       })
