@@ -143,6 +143,8 @@
               &nbsp&nbsp<h3 class="box-title name_change"></h3>
             </div>
             <div class="pull-right">
+              <button class="btn btn-sm btn-success" onclick="importCsv()" id="uploadTimesheet" style="display:none">Upload CSV</button>
+
               <button class="btn btn-sm bg-orange" onclick="addPermit()">Permit</button>
             </div>
           </div>
@@ -308,6 +310,31 @@
             <div class="modal-footer">
                 <button class="btn btn-sm btn-danger" id="btn_delete_permit">Delete</button>
                 <button class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="ModalImport" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">import CSV!</h4>
+            </div>
+            <div class="modal-body">
+            <form action="" id="" name="">
+                @csrf
+                <div style="display: flex;">
+                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('timesheet/template_timesheet.csv')}}" style="cursor:pointer;">link</a></span>
+                </div>
+                <input type="file" name="inputCsv" class="form-control">
+            </form>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                <button class="btn btn-sm btn-success" onclick="uploadCsv()">Upload</button>
             </div>
           </div>
       </div>
@@ -2199,6 +2226,71 @@
         }
       })
     }
+
+    function importCsv(url){
+      $("#ModalImport").modal("show")
+      // '{{action('TimesheetController@uploadCSV')}}'
+      // window.open(url, "_blank");
+    }
+
+    function uploadCsv(){
+      var data = new FormData();
+      data.append('csv_file',$('#uploadCsv').prop('files')[0]);
+      data.append('_token','{{ csrf_token() }}');
+
+      $.ajax({
+        type:"POST",
+        url:"{{url('/timesheet/uploadCSV')}}",
+        processData: false,
+        contentType: false,
+        data:data,
+        beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+          })
+          Swal.showLoading()
+        },
+        success: function(results)
+        {
+            Swal.fire({
+              icon: 'success',
+              title: 'Create Timesheet Succesfully!',
+              text: 'Click Ok to reload page',
+            }).then((result,data) => {
+              if (result.value) {
+                loadData()              
+              }
+            })
+        }
+      })
+    }
+
+    $('input[type="file"][name="inputCsv"]').change(function(){
+      var f=this.files[0]
+      var filePath = f;
+
+      var ext = filePath.name.split(".");
+      ext = ext[ext.length-1].toLowerCase();      
+      var arrayExtensions = ["csv"];
+
+
+      if (arrayExtensions.lastIndexOf(ext) == -1) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Invalid file type, just allow csv file',
+        }).then((result) => {
+          this.value = ''
+        })
+      }
+    })
     
   </script>
 @endsection

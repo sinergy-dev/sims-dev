@@ -18,6 +18,7 @@ use Excel;
 use GuzzleHttp\Client;
 use App\Messenger;
 use App\DetailMessenger;
+use App\PublicHolidayAdjustment;
 use PDF;
 use Log;
 
@@ -1468,9 +1469,11 @@ class HRGAController extends Controller
         
     }
 
-    public function getCutiException(){
-        return DB::table('tb_cuti_exception')->pluck('date');
+    public function getPublicHolidayAdjustment(){
+        return DB::table('tb_cuti_adjustment')->pluck('date');
     }
+
+    //gantii backend
 
     //store cuti lama
     // public function store_cuti(Request $request)
@@ -4148,6 +4151,19 @@ class HRGAController extends Controller
         /*$pdf = PDF::loadView('HR.cuti_pdf', compact('cuti_index', 'cuti_list', 'year'));
         return $pdf->download('report_cuti-'.date("d-m-Y").'.pdf');*/
         return view('HR.cuti_pdf', compact('cuti_index', 'cuti_list', 'year'));
+    }
+
+    public function storeCutiAddition(Request $request){
+        $date = json_decode($request->cuti_tambahan,true);
+        foreach ($date as $value) {
+            $format_date           = strtotime($value);
+            $store                 = new PublicHolidayAdjustment();
+            $store->date           = date("Y-m-d",$format_date);
+            $store->description    = $request->description;
+            $store->reason         = '-';
+            $store->date_add       = Carbon::now()->toDateTimeString();
+            $store->save();
+        }
     }
 
 }
