@@ -3969,8 +3969,21 @@ class TimesheetController extends Controller
         $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $bulan_angka = [1,2,3,4,5,6,7,8,9,10,11,12];
 
+        $arrayMonth = collect();
+        foreach($request->month as $month){
+            $date = Carbon::parse($month);
+            // Get the numeric representation of the month (1 to 12)
+            $numericMonth = $date->month;
+            // return $numericMonth;
+            $arrayMonth->push($numericMonth);
+        }      
+
         $data = DB::table('tb_timesheet')
-                ->join('users','tb_timesheet.nik','users.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'name','end_date','status','users.nik')->selectRaw('MONTH(start_date) AS month_number');
+                ->join('users','tb_timesheet.nik','users.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'name','end_date','status','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where(function ($query) use ($arrayMonth) {
+                    foreach ($arrayMonth as $month) {
+                        $query->orWhereRaw("MONTH(start_date) = $month");
+                    }
+                });
 
         $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
         $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
