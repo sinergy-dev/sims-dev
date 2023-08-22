@@ -2039,16 +2039,16 @@
           formData.append("id_activity","") 
         }
 
-        swalFireCustom = {
-          title: 'Are you sure?',
-          text: "Save this Timesheet!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-        }
+        // swalFireCustom = {
+        //   title: 'Are you sure?',
+        //   text: "Save this Timesheet!",
+        //   icon: 'warning',
+        //   showCancelButton: true,
+        //   confirmButtonColor: '#3085d6',
+        //   cancelButtonColor: '#d33',
+        //   confirmButtonText: 'Yes',
+        //   cancelButtonText: 'No',
+        // }
 
         if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").length) {
           swalSuccess = {
@@ -2067,11 +2067,11 @@
 
         var postParam = 'timesheet'
 
-        createPost(swalFireCustom,formData,swalSuccess,url="/timesheet/addTimesheet",postParam)
+        createPost(formData,swalSuccess,url="/timesheet/addTimesheet",postParam)
       }
     }
 
-    function createPost(swalFireCustom,data,swalSuccess,url,postParam){
+    function createPost(data,swalSuccess,url,postParam){
       var isUpdate = false
       if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").length) {
         isUpdate = isUpdate
@@ -2081,135 +2081,135 @@
         localStorage.setItem('isUpdate',isUpdate)
       }
 
-      Swal.fire(swalFireCustom).then((resultFire) => {
-        if (resultFire.value) {
-          $.ajax({
-            type:"POST",
-            url:"{{url('/')}}"+url,
-            processData: false,
-            contentType: false,
-            data:data,
-            beforeSend:function(){
-              Swal.fire({
-                  title: 'Please Wait..!',
-                  text: "It's sending..",
-                  allowOutsideClick: false,
-                  allowEscapeKey: false,
-                  allowEnterKey: false,
-                  customClass: {
-                      popup: 'border-radius-0',
-                  },
-              })
-              Swal.showLoading()
-            },
-            success: function(results)
-            {
-              Swal.fire(swalSuccess).then((result,data) => {
-                if (result.value) {
-                  if (postParam == 'timesheet') {
-                    var newEvents = []
-                    $.each(results, function(index, datas) {
-                      newEvents.push({
-                        title:datas.activity,
-                        start:datas.start_date,
-                        end:datas.end_date,
-                        id:datas.id,
-                        type:datas.type,
-                        task:datas.task,
-                        schedule:datas.schedule,
-                        pid:datas.pid,
-                        phase:datas.phase,
-                        level:datas.level,
-                        duration:datas.duration,
-                        status:datas.status,
+      // Swal.fire(swalFireCustom).then((resultFire) => {
+        // if (resultFire.value) {
+      $.ajax({
+        type:"POST",
+        url:"{{url('/')}}"+url,
+        processData: false,
+        contentType: false,
+        data:data,
+        beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+          })
+          Swal.showLoading()
+        },
+        success: function(results)
+        {
+          Swal.fire(swalSuccess).then((result,data) => {
+            if (result.value) {
+              if (postParam == 'timesheet') {
+                var newEvents = []
+                $.each(results, function(index, datas) {
+                  newEvents.push({
+                    title:datas.activity,
+                    start:datas.start_date,
+                    end:datas.end_date,
+                    id:datas.id,
+                    type:datas.type,
+                    task:datas.task,
+                    schedule:datas.schedule,
+                    pid:datas.pid,
+                    phase:datas.phase,
+                    level:datas.level,
+                    duration:datas.duration,
+                    status:datas.status,
+                  })
+                })
+                // var newEvents = {
+                //   title:results.activity,
+                //   start:results.start_date,
+                //   end:moment(results.end_date).endOf('day'),
+                //   id:results.id,
+                //   type:results.type,
+                //   task:results.task,
+                //   schedule:results.schedule,
+                //   pid:results.pid,
+                //   phase:results.phase,
+                //   level:results.level,
+                //   duration:results.duration,
+                //   status:results.status,
+                // }
+
+                
+
+                  // loadData()
+                  // Call the refetchEvents method to reload the events
+                  console.log(newEvents)
+                  if ($("#id_activity").val() != "") {
+                    if (isNaN($("#id_activity").val()) == true) {
+                      console.log("ini buat calender dari google")
+                      $('#calendar').fullCalendar('clientEvents', $("#id_activity").val())[0];
+                      $('#calendar').fullCalendar('removeEvents', $("#id_activity").val())
+
+                      $.each(newEvents, function(index, event) {
+                        $('#calendar').fullCalendar('renderEvent', event, true);
+                        // $('#calendar').fullCalendar('refetchEvents');
+                        // $('#calendar').fullCalendar('renderEvent', event, true);
                       })
-                    })
-                    // var newEvents = {
-                    //   title:results.activity,
-                    //   start:results.start_date,
-                    //   end:moment(results.end_date).endOf('day'),
-                    //   id:results.id,
-                    //   type:results.type,
-                    //   task:results.task,
-                    //   schedule:results.schedule,
-                    //   pid:results.pid,
-                    //   phase:results.phase,
-                    //   level:results.level,
-                    //   duration:results.duration,
-                    //   status:results.status,
-                    // }
+                    }else{
+                      console.log("kok kesini jugaaa")
 
-                    
+                      $.each(newEvents, function(index, event) {
+                        $('#calendar').fullCalendar('clientEvents', event.id)[0];
+                        $('#calendar').fullCalendar('removeEvents', event.id)
+                        $('#calendar').fullCalendar('renderEvent', event);
+                      })
 
-                      // loadData()
-                      // Call the refetchEvents method to reload the events
-                      console.log(newEvents)
-                      if ($("#id_activity").val() != "") {
-                        if (isNaN($("#id_activity").val()) == true) {
-                          console.log("ini buat calender dari google")
-                          $('#calendar').fullCalendar('clientEvents', $("#id_activity").val())[0];
-                          $('#calendar').fullCalendar('removeEvents', $("#id_activity").val())
-
-                          $.each(newEvents, function(index, event) {
-                            $('#calendar').fullCalendar('renderEvent', event, true);
-                            // $('#calendar').fullCalendar('refetchEvents');
-                            // $('#calendar').fullCalendar('renderEvent', event, true);
-                          })
-                        }else{
-                          console.log("kok kesini jugaaa")
-
-                          $.each(newEvents, function(index, event) {
-                            $('#calendar').fullCalendar('clientEvents', event.id)[0];
-                            $('#calendar').fullCalendar('removeEvents', event.id)
-                            $('#calendar').fullCalendar('renderEvent', event);
-                          })
-
-                          if (window.location.href.split("/")[4].split("?")[1] != undefined) {
-                            if (window.location.href.split("/")[4].split("?")[1].split("=")[0] == "id") {
-                              history.replaceState(null, '', "{{url('timesheet')}}")
-                            }
-                          }
+                      if (window.location.href.split("/")[4].split("?")[1] != undefined) {
+                        if (window.location.href.split("/")[4].split("?")[1].split("=")[0] == "id") {
+                          history.replaceState(null, '', "{{url('timesheet')}}")
                         }
                       }
-                      
-                      if(localStorage.getItem('isUpdate') == 'false') {
-                          console.log("kesini ajee")
-
-                        $.each(newEvents, function(index, event) {
-                          $('#calendar').fullCalendar('renderEvent', event, true);
-                          // $('#calendar').fullCalendar('refetchEvents');
-                          // $('#calendar').fullCalendar('renderEvent', event, true);
-                        })
-                      }
-                      $("#ModalAddTimesheet").modal('hide')
-                      // Render the updated event on the calendar
-                      showAlertRemaining()
-                  }else{
-                      var newEvents = []
-
-                      if (postParam == 'permit') {
-                        $.each(results,function(idx,value){
-                          newEvents.push({"title":value.activity,"start":value.start_date,"end":value.end_date,"id":value.id,"remarks":value.status})
-                        }) 
-
-                        newEvents.forEach(function(event) {  
-                            $('#calendar').fullCalendar('renderEvent', event, true);
-                            $('#calendar').fullCalendar('refetchEvents');
-                        })
-
-                        $("#ModalPermit").modal('hide')
-                      }else{
-                        $("#ModalInfo").modal('hide')
-                      }
-
-                      loadData()              
+                    }
                   }
-                }
-              })
+                  
+                  if(localStorage.getItem('isUpdate') == 'false') {
+                      console.log("kesini ajee")
+
+                    $.each(newEvents, function(index, event) {
+                      $('#calendar').fullCalendar('renderEvent', event, true);
+                      // $('#calendar').fullCalendar('refetchEvents');
+                      // $('#calendar').fullCalendar('renderEvent', event, true);
+                    })
+                  }
+                  $("#ModalAddTimesheet").modal('hide')
+                  // Render the updated event on the calendar
+                  showAlertRemaining()
+              }else{
+                  var newEvents = []
+
+                  if (postParam == 'permit') {
+                    $.each(results,function(idx,value){
+                      newEvents.push({"title":value.activity,"start":value.start_date,"end":value.end_date,"id":value.id,"remarks":value.status})
+                    }) 
+
+                    newEvents.forEach(function(event) {  
+                        $('#calendar').fullCalendar('renderEvent', event, true);
+                        $('#calendar').fullCalendar('refetchEvents');
+                    })
+
+                    $("#ModalPermit").modal('hide')
+                  }else{
+                    $("#ModalInfo").modal('hide')
+                  }
+
+                  loadData()              
+              }
             }
           })
         }
       })
+        // }
+      // })
     }
 
     function showAlertRemaining(){
