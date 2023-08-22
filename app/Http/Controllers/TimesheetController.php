@@ -15,6 +15,7 @@ use App\Cuti;
 use App\CutiDetil;
 use App\Sbe;
 use App\SbeConfig;
+use App\PublicHolidayAdjustment;
 
 use DatePeriod;
 use DateInterval;
@@ -1007,6 +1008,8 @@ class TimesheetController extends Controller
 
         $getPermit = TimesheetPermit::select('tb_timesheet_permit.start_date','tb_timesheet_permit.nik','users.name')->join('users','users.nik','=','tb_timesheet_permit.nik');
 
+        $getPublicHolidayAdjustment = PublicHolidayAdjustment::select('date')->whereYear('date',date('Y'))->count();
+
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
@@ -1175,7 +1178,7 @@ class TimesheetController extends Controller
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"       =>$value_group->nik,
                         "actual"    =>"-",
-                        "planned"   =>$workdays,
+                        "planned"   =>$workdays - $getPublicHolidayAdjustment,
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
@@ -1228,7 +1231,7 @@ class TimesheetController extends Controller
                     "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
                     "actual"=>$valueSumPoint,
                     // "planned"=>collect($sumMandays)->first()->planned,
-                    "planned"=>$workdays,
+                    "planned"=>$workdays - $getPublicHolidayAdjustment,
                     // "threshold"=>collect($sumMandays)->first()->threshold,
                     "threshold"=>$workdays*80/100,
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
@@ -1264,7 +1267,7 @@ class TimesheetController extends Controller
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"       =>$value_group->nik,
                         "actual"    =>"-",
-                        "planned"   =>$workdays,
+                        "planned"   =>$workdays - $getPublicHolidayAdjustment,
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
@@ -3535,6 +3538,7 @@ class TimesheetController extends Controller
                             ->whereYear('date_off',date('Y'))
                             ->orderby('date','desc');
 
+        $getPublicHolidayAdjustment = PublicHolidayAdjustment::select('date')->whereYear('date',date('Y'))->count();
 
         $getPermit = TimesheetPermit::select('tb_timesheet_permit.start_date','tb_timesheet_permit.nik','users.name')->join('users','users.nik','=','tb_timesheet_permit.nik')->whereIn(\DB::raw('MONTH(start_date)'),$arrayMonth);
 
@@ -3860,7 +3864,7 @@ class TimesheetController extends Controller
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"       =>$value_group->nik,
                         "actual"    =>"-",
-                        "planned"   =>$workdays,
+                        "planned"   =>$workdays - $getPublicHolidayAdjustment,
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
@@ -3911,7 +3915,7 @@ class TimesheetController extends Controller
                     "name"=>$key_point,
                     "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
                     "actual"=>$valueSumPoint,
-                    "planned"=>$countPlanned,
+                    "planned"=>$countPlanned - $getPublicHolidayAdjustment,
                     "threshold"=>$countThresholdFinal,
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
@@ -3943,7 +3947,7 @@ class TimesheetController extends Controller
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"       =>$value_group->nik,
                         "actual"    =>"-",
-                        "planned"   =>$countPlanned,
+                        "planned"   =>$countPlanned - $getPublicHolidayAdjustment,
                         "threshold" =>$countThresholdFinal,
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
