@@ -99,8 +99,8 @@
                 <td>Sick</td>
               </tr>
               <tr>
-                <td><span class="badge" style="background-color: #605ca8;color:white;">Permite</span></td>
-                <td>Permite</td>
+                <td><span class="badge" style="background-color: #605ca8;color:white;">Permit</span></td>
+                <td>Permit</td>
               </tr>
               <tr>
                 <td><span class="badge" style="background-color: #605ca8;color:white;">Leaving Permite</span></td>
