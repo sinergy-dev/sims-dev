@@ -330,7 +330,7 @@
                 <div style="display: flex;">
                   <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('timesheet/template_timesheet.csv')}}" style="cursor:pointer;">link</a></span>
                 </div>
-                <input type="file" name="inputCsv" class="form-control">
+                <input type="file" name="inputCsv" id="inputCsv" class="form-control">
             </form>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
@@ -2235,7 +2235,7 @@
 
     function uploadCsv(){
       var data = new FormData();
-      data.append('csv_file',$('#uploadCsv').prop('files')[0]);
+      data.append('csv_file',$('#inputCsv').prop('files')[0]);
       data.append('_token','{{ csrf_token() }}');
 
       $.ajax({
