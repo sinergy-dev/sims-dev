@@ -920,7 +920,8 @@
       console.log(arrFilter)
 
       if (id == "export") {
-        window.location = val + arrFilter;
+        window.open(val + arrFilter, "_blank")
+        // window.location = val + arrFilter;
       }else{
         showDataFilter(arrFilter,arrMonth)
       }
