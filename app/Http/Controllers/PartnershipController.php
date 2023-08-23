@@ -389,9 +389,9 @@ class PartnershipController extends Controller
                 if ($data['expired_date'] == 'Lifetime') {
                     $store->expired_date        = 'Lifetime';
                 } else {
-                    $edate                      = strtotime($data['expired_date']); 
-                    $edate                      = date("Y-m-d",$edate);
-                    $store->expired_date        = $edate;
+                    // $edate                      = strtotime($data['expired_date']); 
+                    // $edate                      = date("Y-m-d",$edate);
+                    $store->expired_date        = $data['expired_date'];
                 }
                 if ($request->file('imageData') === null) {
                 }else{
@@ -420,7 +420,7 @@ class PartnershipController extends Controller
                 $tambah_log->save();
             }
         }
-        return redirect()->back();
+        // return redirect()->back();
     }
 
     public function addCert(Request $request)
