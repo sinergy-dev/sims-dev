@@ -198,6 +198,13 @@
                   <label>PID/Lead ID</label>
                   <select class="form-control" name="selectLead" id="selectLead" placeholder="Select Project Id" onchange="validateInput(this)"><option></option></select>
                   <span class="help-block" style="display:none">Please select Lead ID!</span>
+                  <small>Nomor PID tidak tersedia? <a style="cursor: not-allowed;" id="idAddPid">tambahkan disini</a></small>
+                  <div class="row" id="divPid" style="display: none;">
+                    <div class="col-lg-11 col-xs-11">
+                      <input type="inputPid" name="inputPid" id="inputPid" class="form-control">
+                    </div>
+                    <div class="col-lg-1 col-xs-1" style="padding-left:0px!important;"><i class="fa fa-2x fa-times pull-left" style="color:red" onclick="closePidAdjustment()"></i></div>                    
+                  </div>
                 </div>
 
                 <div class="row">
@@ -1812,6 +1819,8 @@
         var selectedOption = $(this).val();
         // Perform action based on the selected option
         if (selectedOption === 'Project') {
+          $("#idAddPid").attr("onclick","clickPIDAdjustment()")
+          $("#idAddPid").css("cursor","pointer")
           setPid()
         } else if (selectedOption === 'Internal') {
           $("#selectLead").val(null)
@@ -1821,8 +1830,13 @@
           }
           $("#selectLead").next().hide()
           $("#selectLead").closest("div").removeClass("has-error")
+          $("#idAddPid").removeAttr("onclick","clickPIDAdjustment()")
+          $("#idAddPid").css("cursor","not-allowed")
+
         } else if (selectedOption === 'Approach') {
           setLeadId()
+          $("#idAddPid").removeAttr("onclick","")
+          $("#idAddPid").css("cursor","not-allowed")
         }
       })
     }
@@ -2025,8 +2039,12 @@
         formData.append("selectSchedule",$("#selectSchedule").val())
         formData.append("startDate",startDate)
         formData.append("endDate",endDate)    
-        formData.append("selectType",$("#selectType").val())        
-        formData.append("selectLead",$("#selectLead").val())        
+        formData.append("selectType",$("#selectType").val())   
+        if ($("#inputPid").val() != "") {
+          formData.append("selectLead",$("#inputPid").val())        
+        } else {
+          formData.append("selectLead",$("#selectLead").val())        
+        }    
         formData.append("selectTask",$("#selectTask").val())  
         formData.append("selectPhase",$("#selectPhase").val())        
         formData.append("selectLevel",$("#selectLevel").val())        
@@ -2291,6 +2309,15 @@
         })
       }
     })
+
+    function clickPIDAdjustment(){
+      $("#divPid").show()
+    }
+
+    function closePidAdjustment(){
+      $("#divPid").hide()
+      $("#inputPid").val("")
+    }
     
   </script>
 @endsection
