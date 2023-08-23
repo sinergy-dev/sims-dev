@@ -1483,25 +1483,55 @@ Partnership
    //    	formData.append('nama_file', nama_file);
 			// }
 
-			var cert_eng = [], lifetimeArr = []
-			$(".cbLifetimeAddCert").each(function(index,itemLifeTime){
-    			if ($(itemLifeTime).is(':checked')) {
-      			lifetimeArr.push("Lifetime")
-      		}else{
-      			lifetimeArr.push($(itemLifeTime).closest("div").closest("td").find("input#expired_date").val())
-      		}
-    	})
+			var cert_eng = [], lifetimeArr = [], lifetime = ''
+			if ($(".cbLifetimeAddCert").length > 1) {
+				// $(".cbLifetimeAddCert").each(function(index,itemLifeTime){
+				// 	if ($(itemLifeTime).is(':checked')) {
+    //   			lifetimeArr.push("Lifetime")
+    //   		}else{
+    //   			lifetimeArr.push($(itemLifeTime).closest("div").closest("td").find("input#expired_date").val())
+    //   		}
+	   //  	})
 
-      $('#tbListCert .new-list').each(function(index,item) {
-        cert_eng.push({
-          cert_type:$(this).find("#cert_type").val(),
-          cert_name:$(this).find('#cert_name').val(),
-          expired_date:JSON.stringify(lifetimeArr),
-          nama_file:$(this).find('#certificate_eng').val(),
-          cert_person:$(this).find('#select2-person').val(),
-          // certificate_eng:$(this).find('#certificate_eng').prop('files')[0],
-        })
-      });
+	    	$('#tbListCert .new-list').each(function(index,item) {
+	    		if ($(item).find(".cbLifetimeAddCert") == true) {
+	    				cert_eng.push({
+			          cert_type:$(item).find("#cert_type").val(),
+			          cert_name:$(item).find('#cert_name').val(),
+			          expired_date:"Lifetime",
+			          nama_file:$(item).find('#certificate_eng').val(),
+			          cert_person:$(item).find('#select2-person').val(),
+			          // certificate_eng:$(item).find('#certificate_eng').prop('files')[0],
+			        })
+	    			}else{
+	    				cert_eng.push({
+			          cert_type:$(item).find("#cert_type").val(),
+			          cert_name:$(item).find('#cert_name').val(),
+			          expired_date:$(item).find(".cbLifetimeAddCert").closest("div").closest("td").find("input#expired_date").val(),
+			          nama_file:$(item).find('#certificate_eng').val(),
+			          cert_person:$(item).find('#select2-person').val(),
+			          // certificate_eng:$(this).find('#certificate_eng').prop('files')[0],
+			        })	
+	    			}
+	      });
+			}else{
+				if ($(".cbLifetimeAddCert").is(':checked')) {
+    			lifetime = "Lifetime"
+    		}else{
+    			lifetime = $(".cbLifetimeAddCert").closest("div").closest("td").find("input#expired_date").val()
+    		}
+
+    		$('#tbListCert .new-list').each(function(index,item) {
+	        cert_eng.push({
+	          cert_type:$(this).find("#cert_type").val(),
+	          cert_name:$(this).find('#cert_name').val(),
+	          expired_date:lifetime,
+	          nama_file:$(this).find('#certificate_eng').val(),
+	          cert_person:$(this).find('#select2-person').val(),
+	          // certificate_eng:$(this).find('#certificate_eng').prop('files')[0],
+	        })
+	      });
+			}
 
       $('#tbListCert .new-list').each(function() {
 				// console.log(fileupload)
