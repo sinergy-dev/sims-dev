@@ -35,6 +35,20 @@
     .date-range-highlight {
       background-color: #C3D3D6; /* Replace with your desired color */
     }
+
+    .custom-date-button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 3px 10px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .fc-day-content {
+      /* Adjust the height of the date cell */
+      min-height: 100px; /* Set a minimum height for the date cell */
+    }
   </style>
 @endsection
 @section('content')
@@ -52,12 +66,12 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <div class="alert alert-warning alert-dismissible" id="alertForRemaining" style="display:none">
+      <div class="alert alert-warning alert-dismissible" id="alertForRemaining">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         <h4>
         <i class="icon fa fa-info-circle"></i> Hai <span>{name}</span>! Your mandays this month is <span>{percentage}</span>%, Happy Working!!  &#9994; <a href="{{url('timesheet/dashboard')}}" style="cursor: pointer;">See My Dashboard</a><br>
-        <i class="icon fa fa-info-circle"></i> <span>Planned schedule for today : <span></span></span><br>
-        <i class="icon fa fa-info-circle"></i> <span>Unplanned schedule for today : </span><span></span>
+        <i class="icon fa fa-info-circle"></i> <span>Planned schedule for <small style="color:white;">today</small> : <span></span></span><br>
+        <i class="icon fa fa-info-circle"></i> <span>Unplanned schedule for <small style="color:white;">today</small> : </span><span></span>
         </h4>
       </div>
     </div>
@@ -397,7 +411,7 @@
       }
 
       if(nik == "{{Auth::User()->nik}}"){
-        showAlertRemaining()
+        showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD'))
       }
 
       calendar = $('#calendar').fullCalendar({
@@ -624,11 +638,21 @@
       //1 month
       //startOfWeek.setDate(1) //lock activity 1 month
       // var incDate = 30
+      var isCustomButtonClick = false;
+
       calendar.fullCalendar('destroy');
       $('#calendar').fullCalendar({
+        // customButtons: {
+        //   myCustomButton: {
+        //     text: 'custom!',
+        //     click: function() {
+        //       alert('clicked the custom button!');
+        //     }
+        //   }
+        // },
         timezone: 'Asia/Jakarta',
         // header: {
-        //   left: 'prev,next today myCustomButton',
+        //   left: 'myCustomButton',
         //   center: 'title',
         //   // right: 'month,agendaWeek,agendaDay'
         // }, 
@@ -638,104 +662,147 @@
         //   start: '2023-08-01',
         //   end: '2023-08-31'
         // },
-        dayClick: function(date, jsEvent, view) {
-          var position = "{{Auth::User()->id_position}}"
-          if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
-            return false
-          }else{
-            var clickedDate = moment(date).format("YYYY-MM-DD"); 
-            // Check if the clicked date is in the allowedDates array
-            var isAllowedDate = datesInWeek.some(function(date) {
-              return date.isSame(clickedDate, 'day');
-            });
+        dayRender: function (date, cell) {
+          var customButton = $('<button class="custom-date-button"><i class="fa fa-info-circle"></i></button>');
+          $(cell).append(customButton);
 
-            if (isAllowedDate) {
-              var isClickedDate = moment(date)
-                if (isClickedDate.isSameOrBefore(moment())) {
-                  // if (disabledDates.some(function(disabledDate) {
-                  //   return date.isSame(disabledDate, 'day');
-                  // })) {
-                  //   // Disable day click for the disabled dates
-                  //   return false;
-                  // }else{
+          // customButton.on('click', function(e) {
+          //   var dateString = date.format('YYYY-MM-DD');
+          //   alert('Custom button clicked for date: ' + dateString);
+          //   e.stopPropagation();
+          // });
 
-                    $("#ModalAddTimesheet").modal("show")
+          // $(cell).attr('data-date', date.format('YYYY-MM-DD'));
 
-                    Swal.fire({
-                      title: 'Harap menunggu,sedang menyiapkan data...',
-                      allowEscapeKey: false,
-                      allowOutsideClick: false,
-                      confirmButtonText:'',
-                      showConfirmButton:false,
-                      didOpen: () => {
-                        // Delayed task using setTimeout
-                        setTimeout(() => {
-                          // Close the loading indicator
-                          Swal.close();
-                          if ($.fn.select2 !== undefined) {
-                            setHoliday()
-                            setSchedule(date,'add')
-                            setDuration()
-                            setLevel()
-                            setStatus()
-                            setType()
-                            setTask()
-                            setPhase()
-                            var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
-                            if (isSelect2Initialized == false) {
-                              // setSchedule(date)
-                              // setDuration()
-                              // setLevel()
-                              // setStatus()
-                              // setType()
-                              // setTask()
-                              // setPhase()
+          // var currentDate = moment.utc(date);
+
+          // // Your condition to determine whether dayClick should be prevented
+          // if (disabledDates.some(function(disableDate) {            
+          //     return currentDate.isSame(disableDate, 'day');
+          // })) {
+          //     cell.css('background-color', '#EEE');
+          // }
+          // if (datesInWeek.some(function(dates) {            
+          //     return currentDate.isSame(moment(dates).endOf('day'), 'day');
+          // })) {
+          //   cell.addClass('date-range-highlight');
+          // }
+          // // if (datesInWeek.includes(date)) {
+          // //   cell.addClass('date-range-highlight');
+          // // }
+
+          // var todays = new Date()
+          // var today = moment().startOf('day'); // Get the current date
+          // var cellDate = moment(date).startOf('day'); // Get the date being rendered
+
+          // if (cellDate.isAfter(todays)) {
+          //   cell.css('background-color', '#EEE'); // Set background color for days after today
+          //   cell.addClass('disabled-day'); // Add a class to indicate disabled days
+          // }
+        },
+        dayClick: function(date, jsEvent, view) { 
+          if (!$(jsEvent.target).hasClass('fc-day-top')) {   
+            var position = "{{Auth::User()->id_position}}"
+            if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
+              return false
+            }else{
+              var clickedDate = moment(date).format("YYYY-MM-DD"); 
+              // Check if the clicked date is in the allowedDates array
+              var isAllowedDate = datesInWeek.some(function(date) {
+                return date.isSame(clickedDate, 'day');
+              });
+
+              if (isAllowedDate) {
+                var isClickedDate = moment(date)
+                  if (isClickedDate.isSameOrBefore(moment())) {
+                    // if (disabledDates.some(function(disabledDate) {
+                    //   return date.isSame(disabledDate, 'day');
+                    // })) {
+                    //   // Disable day click for the disabled dates
+                    //   return false;
+                    // }else{
+
+                      $("#ModalAddTimesheet").modal("show")
+
+                      Swal.fire({
+                        title: 'Harap menunggu,sedang menyiapkan data...',
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        confirmButtonText:'',
+                        showConfirmButton:false,
+                        didOpen: () => {
+                          // Delayed task using setTimeout
+                          setTimeout(() => {
+                            // Close the loading indicator
+                            Swal.close();
+                            if ($.fn.select2 !== undefined) {
+                              setHoliday()
+                              setSchedule(date,'add')
+                              setDuration()
+                              setLevel()
+                              setStatus()
+                              setType()
+                              setTask()
+                              setPhase()
+                              var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
+                              if (isSelect2Initialized == false) {
+                                // setSchedule(date)
+                                // setDuration()
+                                // setLevel()
+                                // setStatus()
+                                // setType()
+                                // setTask()
+                                // setPhase()
+                              }
                             }
-                          }
-                        }, 50); // Delayed execution after 2000ms (2 seconds)
+                          }, 50); // Delayed execution after 2000ms (2 seconds)
+                        }
+                      });
+
+                      $("#id_activity").val('')
+                      $('#selectSchedule').val('').trigger('change')
+                      $('#selectType').val('').trigger('change').prop("disabled",false)
+                      $('#selectLead').val('').trigger('change').prop("disabled",false)
+                      $('#selectTask').val('').trigger('change').prop("disabled",false)
+                      $('#selectPhase').val('').trigger('change').prop("disabled",false)
+                      $('#selectLevel').val('').trigger('change').prop("disabled",false)
+                      $('#textareaActivity').val('').prop("disabled",false)
+                      $('#selectDuration').val('').trigger('change').prop("disabled",false)
+                      $('#selectStatus').val('').trigger('change').prop("disabled",false)
+
+                      $("#ModalAddTimesheet").find('.modal-footer').show()
+
+                      $(".modal-title").text("Add Timesheet")
+                      if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning")) {
+                        $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
                       }
-                    });
-
-                    $("#id_activity").val('')
-                    $('#selectSchedule').val('').trigger('change')
-                    $('#selectType').val('').trigger('change').prop("disabled",false)
-                    $('#selectLead').val('').trigger('change').prop("disabled",false)
-                    $('#selectTask').val('').trigger('change').prop("disabled",false)
-                    $('#selectPhase').val('').trigger('change').prop("disabled",false)
-                    $('#selectLevel').val('').trigger('change').prop("disabled",false)
-                    $('#textareaActivity').val('').prop("disabled",false)
-                    $('#selectDuration').val('').trigger('change').prop("disabled",false)
-                    $('#selectStatus').val('').trigger('change').prop("disabled",false)
-
-                    $("#ModalAddTimesheet").find('.modal-footer').show()
-
-                    $(".modal-title").text("Add Timesheet")
-                    if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning")) {
-                      $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
+                      $('#daterange-input').val('').prop("disabled",true)
+                      $('#selectSchedule').val('').prop("disabled",false)
+              
                     }
-                    $('#daterange-input').val('').prop("disabled",true)
-                    $('#selectSchedule').val('').prop("disabled",false)
-            
-                  }
-                  
-                // } else {
-                //   Swal.fire({
-                //     icon: 'warning',
-                //     title: 'Warning',
-                //     text: 'Sorry, you won`t be permitted to create timesheet on the disabled date. Please create a timesheet in enabled date!',
-                //     confirmButtonText: 'OK'
-                //   }).then((result) => {
-                //     // Handle the user's interaction with the alert if needed
-                //     if (result.isConfirmed) {
-                //       // The user clicked the 'OK' button
-                      
-                //     }
-                //   });
-                // }
-            } else {
-              // Disable the day click event for disallowed dates
-              return false;
-            }  
+                    
+                  // } else {
+                  //   Swal.fire({
+                  //     icon: 'warning',
+                  //     title: 'Warning',
+                  //     text: 'Sorry, you won`t be permitted to create timesheet on the disabled date. Please create a timesheet in enabled date!',
+                  //     confirmButtonText: 'OK'
+                  //   }).then((result) => {
+                  //     // Handle the user's interaction with the alert if needed
+                  //     if (result.isConfirmed) {
+                  //       // The user clicked the 'OK' button
+                        
+                  //     }
+                  //   });
+                  // }
+              } else {
+                // Disable the day click event for disallowed dates
+                return false;
+              }  
+            }
+          }else{
+            showAlertRemaining(date.format())
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
           }
         },
         eventClick: function(calEvent, jsEvent, view) {
@@ -1109,35 +1176,6 @@
               }
             }
         },
-        dayRender: function (date, cell) {
-          var currentDate = moment.utc(date);
-
-          // Your condition to determine whether dayClick should be prevented
-          if (disabledDates.some(function(disableDate) {            
-              return currentDate.isSame(disableDate, 'day');
-          })) {
-              cell.css('background-color', '#EEE');
-          }
-          if (datesInWeek.some(function(dates) {            
-              return currentDate.isSame(moment(dates).endOf('day'), 'day');
-          })) {
-            cell.addClass('date-range-highlight');
-          }
-
-          // if (datesInWeek.includes(date)) {
-          //   cell.addClass('date-range-highlight');
-          // }
-
-          var todays = new Date()
-          var today = moment().startOf('day'); // Get the current date
-          var cellDate = moment(date).startOf('day'); // Get the date being rendered
-
-          if (cellDate.isAfter(todays)) {
-            cell.css('background-color', '#EEE'); // Set background color for days after today
-            cell.addClass('disabled-day'); // Add a class to indicate disabled days
-            
-          }
-        },
         eventRender: function (event, element, view) {
           // Change event color
           if (event.remarks != null) {
@@ -1181,6 +1219,7 @@
            // Set text color
         } 
       })
+
       $('#calendar').fullCalendar('addEventSource', events)
       $('#calendar').fullCalendar('rerenderEvents')
   
@@ -2201,7 +2240,7 @@
                   }
                   $("#ModalAddTimesheet").modal('hide')
                   // Render the updated event on the calendar
-                  showAlertRemaining()
+                  showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD'))
               }else{
                   var newEvents = []
 
@@ -2230,15 +2269,15 @@
       // })
     }
 
-    function showAlertRemaining(){
-      $("#alertForRemaining").hide()
+    function showAlertRemaining(date){
       $.ajax({
         type:"GET",
-        url:"{{url('timesheet/getPercentage')}}",
+        url:"{{url('timesheet/getPercentage')}}?date="+date,
         success:function(result){
-          $("#alertForRemaining").show()
           $($("#alertForRemaining").find("span")[0]).text(result.name)
           $($("#alertForRemaining").find("span")[1]).text(result.percentage)
+          $($("#alertForRemaining").find("small")[0]).text(moment.utc(date).format("L"))
+          $($("#alertForRemaining").find("small")[1]).text(moment.utc(date).format("L"))
           $($("#alertForRemaining").find("span")[3]).text(result.plannedToday !== null?result.plannedToday + ' Mandays':'0' + ' Mandays')
           $($("#alertForRemaining").find("span")[5]).text(result.unplannedToday !== null?result.unplannedToday + ' Mandays':'0' + ' Mandays')
         }
