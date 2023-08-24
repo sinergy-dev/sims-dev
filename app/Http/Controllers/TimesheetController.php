@@ -6330,7 +6330,7 @@ class TimesheetController extends Controller
     public function exportExcel(Request $request)
     {
         $nik = Auth::User()->nik;
-        $cek_role = DB::table('role_user')->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
         $appendedAttributesToHide = ['planned','threshold'];
 
@@ -6344,10 +6344,11 @@ class TimesheetController extends Controller
             $arrayMonth->push($numericMonth);
         }
 
-        $dataTimesheet = Timesheet::Rightjoin('users','users.nik','=','tb_timesheet.nik')
+        $dataTimesheet = DB::table('tb_timesheet')->join('users','users.nik','=','tb_timesheet.nik')
             ->Leftjoin('tb_timesheet_phase','tb_timesheet_phase.id','=','tb_timesheet.phase')
             ->Leftjoin('tb_timesheet_task','tb_timesheet_task.id','=','tb_timesheet.task')
             ->select('users.nik','users.name','tb_timesheet.start_date','tb_timesheet.date_add','tb_timesheet.level','tb_timesheet_task.task','tb_timesheet_phase.phase','tb_timesheet.schedule','tb_timesheet.point_mandays','tb_timesheet.status','tb_timesheet.activity','tb_timesheet.end_date','tb_timesheet.type', DB::raw("(CASE WHEN (pid = 'null') THEN '-' WHEN (pid is null) THEN '-' ELSE pid END) as pid"))
+            ->selectRaw("DATE_FORMAT(tb_timesheet.date_add, '%Y-%m-%d') AS formatted_date_add")
             ->where(function ($query) use ($arrayMonth) {
                 foreach ($arrayMonth as $month) {
                     $query->orWhereRaw("MONTH(start_date) = $month");
@@ -6400,7 +6401,9 @@ class TimesheetController extends Controller
             $dataTimesheet = $dataTimesheet->whereIn('schedule',$request->schedule);                    
         }
 
-        $dataTimesheet = $dataTimesheet->get()->makeHidden($appendedAttributesToHide);
+        $dataTimesheet = $dataTimesheet->get();
+
+        // return $dataTimesheet;
 
         $collectByName = collect();
 
@@ -6415,13 +6418,14 @@ class TimesheetController extends Controller
                 "task"             =>isset($data->task)?$data->task:"-",
                 "point_mandays"    =>isset($data->point_mandays)?$data->point_mandays:0,
                 "status"           =>isset($data->status)?$data->status:"New",
-                "date_add"         =>$data->date_add,
+                "date_add"         =>$data->formatted_date_add,
                 "start_date"       =>$data->start_date,
                 "end_date"         =>$data->end_date,
                 "schedule"         =>$data->schedule,
             ]);
         }
 
+        // return $collectByName;
         // foreach($getUserByGroup as $user){
         //     $collectByName->push([
         //         "name"             =>$user->name,
@@ -6466,7 +6470,7 @@ class TimesheetController extends Controller
         $headerStyle['font']['bold'] = true;
 
         if (Auth::User()->id_division == 'MSM') {
-            $collectByName = $collectByName->sortBy('name');
+            $collectByName = $collectByName->sortBy('name')->sortBy('date_add');
 
             $spreadsheet->addSheet(new Worksheet($spreadsheet,"Timesheet MSM"));
             // $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
@@ -6497,10 +6501,19 @@ class TimesheetController extends Controller
             $detailSheet->getColumnDimension('J')->setAutoSize(true);
             $detailSheet->getColumnDimension('K')->setAutoSize(true);
             $detailSheet->getColumnDimension('L')->setAutoSize(true);
+            $detailSheet->getColumnDimension('M')->setAutoSize(true);
+            $detailSheet->getColumnDimension('N')->setAutoSize(true);
+
+            $detailSheet->setAutoFilter(
+                $spreadsheet->getActiveSheet()
+                    ->calculateWorksheetDimension()
+            );
 
             $indexSheet = $indexSheet + 1;
         }else{
-            $collectByName = $collectByName->sortBy('name')->groupby('name');
+            $collectByName = $collectByName->sortBy('date_add')->sortKeys()->groupBy('name');
+
+            $collectByName = $collectByName->sortKeys();
 
             foreach ($collectByName as $key => $item) {
                 $name = substr($key,0,30);
@@ -6514,6 +6527,8 @@ class TimesheetController extends Controller
                 // $detailSheet->mergeCells('A1:J1');
 
                 $headerContent = ["No", "Name","Activity", "Type", "PID/Lead ID", "Level", "Phase","Task","Duration","Status","Date Add","Start Date","End Date","Schedule"];
+
+                $detailSheet->getStyle('C')->getAlignment()->setWrapText(true);
                 $detailSheet->getStyle('A1:N1')->applyFromArray($headerStyle);
                 $detailSheet->fromArray($headerContent,NULL,'A1');
 
@@ -6535,14 +6550,17 @@ class TimesheetController extends Controller
                 $detailSheet->getColumnDimension('J')->setAutoSize(true);
                 $detailSheet->getColumnDimension('K')->setAutoSize(true);
                 $detailSheet->getColumnDimension('L')->setAutoSize(true);
+                $detailSheet->getColumnDimension('M')->setAutoSize(true);
+                $detailSheet->getColumnDimension('N')->setAutoSize(true);
+
+                $detailSheet->setAutoFilter(
+                    $spreadsheet->getActiveSheet()
+                        ->calculateWorksheetDimension()
+                );
 
                 $indexSheet = $indexSheet + 1;
             }
         }
-        
-
-        // return $indexSheet;
-        
         
         if ($indexSheet == '0') {
             return 'Staff belum ada yang input timesheet';
