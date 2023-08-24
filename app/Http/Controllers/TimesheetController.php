@@ -1495,13 +1495,13 @@ class TimesheetController extends Controller
                 ->where('tb_timesheet.nik',$nik)
                 ->where('schedule','Planned')
                 ->where('status','Done')
-                ->where('start_date',date("Y-m-d"))->first();
+                ->where('start_date',$request->date)->first();
 
         $actualUnplanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
                 ->where('tb_timesheet.nik',$nik)
                 ->where('schedule','Unplanned')
                 ->where('status','Done')
-                ->where('start_date',date("Y-m-d"))->first();
+                ->where('start_date',$request->date)->first();
 
         $getAllLeavingPermit = $getAllLeavingPermit->toArray();
 
@@ -1533,6 +1533,25 @@ class TimesheetController extends Controller
         } else {
             return collect(['percentage'=>'0','name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>'0','unplannedToday'=>'0']);
         } 
+    }
+
+    public function getPointMandaysbyNik(Request $request)
+    {
+        $nik = Auth::User()->nik;
+
+        $actualPlanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
+                ->where('tb_timesheet.nik',$nik)
+                ->where('schedule','Planned')
+                ->where('status','Done')
+                ->where('start_date',$request->start_date)->first();
+
+        $actualUnplanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
+                ->where('tb_timesheet.nik',$nik)
+                ->where('schedule','Unplanned')
+                ->where('status','Done')
+                ->where('start_date',$request->start_date)->first();
+
+        return collect(['plannedToday'=>round($actualPlanned->point_mandays,2),'unplannedToday'=>round($actualUnplanned->point_mandays,2)]);
     }
 
     public function getLevelChart(Request $request)
