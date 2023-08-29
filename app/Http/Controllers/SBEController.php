@@ -370,15 +370,19 @@ class SBEController extends Controller
     public function getDataSbe(Request $request)
     {
         $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        $data = Sbe::join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_solution_design.nik')->select('tb_sbe.lead_id','tb_sbe.status','opp_name','users.name as presales','tb_sbe.nominal','tb_sbe.id');
+        $data = Sbe::join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_solution_design.nik')->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')->select('tb_sbe.lead_id','tb_sbe.status','opp_name','users.name as presales','tb_sbe.nominal','tb_sbe.id');
 
         if ($cek_role->name == 'SOL Staff') {
             $data->where('sales_solution_design.nik',$nik)->get();
-        } elseif($cek_role->group == 'sales'){
+        } elseif($cek_role->name == 'Sales Staff'){
             $data->where('sales_lead_register.nik',$nik)->get();
+        } else if($cek_role->name == 'Sales Manager'){
+            $data->where('u_sales.id_territory',$ter)->get();
         }else {
             $data->get();
         }
@@ -405,7 +409,9 @@ class SBEController extends Controller
 
         $status = DB::table('tb_sbe')->select('status')->where('id',$request->id_sbe)->get();
 
-        $presales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->select('sales_solution_design.nik')->where('id',$request->id_sbe)->first()->nik;
+        $presales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->select('sales_solution_design.nik')->where('id',$request->id_sbe)->get()->pluck('nik');
+
+        $presales = $presales->toArray();
 
         $getLeadId = DB::table('tb_sbe')->select('lead_id')->where('id',$request->id_sbe)->first()->lead_id;
 
