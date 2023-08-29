@@ -76,9 +76,7 @@
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 			<p style="font-size: 20px">
-				@if($detail->status == 'DRAFT' || $detail->status == 'UNAPPROVED')
-					<b>Hi {{$kirim_user->name_receiver}}</b>
-				@elseif($detail->status == 'VERIFIED' || $detail->status == 'FINALIZED' || $detail->status == 'REJECT')
+				@if($detail->status == 'VERIFIED' || $detail->status == 'FINALIZED' || $detail->status == 'REJECT')
 					<b>Hi {{$detail->name_issuance}}</b>
 				@else
 					<b>Hi Team</b>
