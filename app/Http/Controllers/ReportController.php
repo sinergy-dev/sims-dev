@@ -2355,6 +2355,7 @@ class ReportController extends Controller
                      DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result','!=','hmm')
+                ->where('status_karyawan','!=','dummy')
                 // ->whereIn('year',$year)
                 // ->where('year', $year)
                 ->orderBy('created_at', 'desc'); 
@@ -2406,6 +2407,7 @@ class ReportController extends Controller
                 ->where('users.id_territory', $ter)
                 ->where('result','!=','hmm')
                 ->where('sales_solution_design.status',NULL)
+                ->where('status_karyawan','!=','dummy')
                 ->orWhere('sales_solution_design.status','closed')
                 ->orderBy('created_at','desc')
                 ->get();
@@ -2422,6 +2424,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.closing_date','tb_territory.name_territory','sales_solution_design.nik as nik_presales','sales_solution_design.priority','sales_tender_process.win_prob', 'sales_lead_register.deal_price', 'sales_lead_register.year')
                 ->where('sales_solution_design.nik', $nik)
                 ->where('result','!=','hmm')
+                ->where('status_karyawan','!=','dummy')
                 ->where('sales_solution_design.status',NULL)
                 ->orWhere('sales_solution_design.status','closed')
                 ->orderBy('created_at','desc')
@@ -2438,6 +2441,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.closing_date','tb_territory.name_territory','sales_solution_design.nik as nik_presales','sales_solution_design.priority','sales_tender_process.win_prob', 'sales_lead_register.deal_price', 'sales_lead_register.year')
                 ->where('result','!=','hmm')
                 ->where('sales_solution_design.status',NULL)
+                ->where('status_karyawan','!=','dummy')
                 ->orWhere('sales_solution_design.status','closed')
                 ->orderBy('created_at','desc')
                 ->get();
@@ -3664,6 +3668,7 @@ class ReportController extends Controller
         					)
         					->where('id_company','1')
         					->groupBy('sales_solution_design.nik')
+                            ->where('status_karyawan','!=','dummy')
         					->get();
 
         // return $top_win_presales;
