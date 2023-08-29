@@ -229,7 +229,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-            } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'BCD' && $pos == 'ADMIN') {
+            } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'BCD' && $pos == 'STAFF') {
                 $count_lead = $total_lead->where('users.id_company','1')
                             ->count('lead_id');
 
@@ -1453,14 +1453,16 @@ class SalesLeadController extends Controller
         $searchFields = ['sales_lead_register.lead_id', 'opp_name', 'brand_name', 'name', 'id_territory', 'deal_price', 'amount', 'name_presales'];
 
         if($ter != null || $cek_role->name_role != 'Operations Director'){
-            $leads->where('u_sales.id_company','1');
+            // $leads->where('u_sales.id_company','1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leads = $leads->where('nik_presales', $nik);
             } else if ($div == 'SALES' && $pos == 'MANAGER') {
                 $leads = $leads->where('u_sales.id_territory', $ter);
             } else if ($div == 'SALES' && $pos == 'STAFF') {
                 $leads = $leads->where('u_sales.nik', $nik);
-            }       
+            } elseif ($cek_role->name_role == 'BCD Partnership Channel' || $cek_role->name_role == 'SOL Manager') {
+                $leads->where('u_sales.id_company','1');
+            }
         } 
 
         if ($div == 'SALES') {
