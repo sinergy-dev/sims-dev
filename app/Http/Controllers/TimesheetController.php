@@ -3559,7 +3559,7 @@ class TimesheetController extends Controller
                             ->whereYear('date_off',date('Y'))
                             ->orderby('date','desc');
 
-        $getPublicHolidayAdjustment = PublicHolidayAdjustment::select('date')->whereYear('date',date('Y'))->count();
+        $getPublicHolidayAdjustment = PublicHolidayAdjustment::select('date')->whereIn(\DB::raw('MONTH(date)'),$arrayMonth)->whereYear('date',date('Y'))->count();
 
         $getPermit = TimesheetPermit::select('tb_timesheet_permit.start_date','tb_timesheet_permit.nik','users.name')->join('users','users.nik','=','tb_timesheet_permit.nik')->whereIn(\DB::raw('MONTH(start_date)'),$arrayMonth);
 
@@ -3940,7 +3940,7 @@ class TimesheetController extends Controller
                     "threshold"=>$countThresholdFinal,
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
-                    "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint
+                    "deviation"=>number_format($countPlanned - $valueSumPoint, 2, '.', '')
                 ]); 
             }  
             
