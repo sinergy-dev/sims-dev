@@ -799,19 +799,14 @@ class PrDraftController extends Controller
         // $cek_status = PR::join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->select('status_draft_pr')->get();
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'PMO Manager' || $cek_role->name == 'SOL Manager') {
-            // if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
-                $getDataEPR = PRDraft::where('type_of_letter', 'EPR')
-                ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
-                ->whereYear('tb_pr_draft.updated_at',date('Y'))
-                ->where('status','!=','SENDED')
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereYear('tb_pr_draft.updated_at',date('Y'));
+            if ($cek_role->name == 'BCD Procurement') {
+                $getDataEPR = $getDataEPR->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')")
                 ->get()->makeHidden(['status_pr']);
-            // } else {
-            //     $getDataEPR = PRDraft::where('type_of_letter', 'EPR')
-            //     // ->where('status', '!=', 'SAVED')
-            //     ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
-            //     ->whereYear('tb_pr_draft.updated_at',date('Y'))
-            //     ->get()->makeHidden(['status_pr']);
-            // }
+            } else {
+                $getDataEPR = $getDataEPR->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL' AND `status` != 'SENDED')")
+                ->get()->makeHidden(['status_pr']);
+            }
             
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
@@ -821,12 +816,15 @@ class PrDraftController extends Controller
         }
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
-            $getData = PRDraft::where('type_of_letter', 'IPR')
-            // ->where('status', '!=', 'SAVED')
-            ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
-            ->whereYear('tb_pr_draft.updated_at',date('Y'))
-            ->where('status','!=','SENDED')
-            ->get()->makeHidden(['comparison','status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereYear('tb_pr_draft.updated_at',date('Y'));
+            if ($cek_role->name == 'BCD Procurement') {
+                $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED')")
+                ->get()->makeHidden(['comparison','status_pr']);
+            } else {
+                $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'SAVED')")
+                ->get()->makeHidden(['comparison','status_pr']);
+            }
+            
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
             $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
@@ -1893,7 +1891,7 @@ class PrDraftController extends Controller
             
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver');
 
-            $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
+            $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
             // $nik = Auth::User()->nik;
             $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
@@ -1994,7 +1992,7 @@ class PrDraftController extends Controller
 
         $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver');
 
-        $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
+        $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -3061,7 +3059,7 @@ class PrDraftController extends Controller
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
             // $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr))->first();
-            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
             $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
             $email_cc = User::select('email')
@@ -3303,7 +3301,7 @@ class PrDraftController extends Controller
 
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
-            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
             $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
@@ -3417,7 +3415,7 @@ class PrDraftController extends Controller
 
         $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
 
-        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
