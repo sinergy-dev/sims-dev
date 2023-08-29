@@ -130,9 +130,9 @@ Report Range
           <div class="box-body">
               <div class="row">
                 <div class="col-md-12">
-                  <div style="border:solid red;width: fit-content;max-width: fit-content;background-color: red;margin-bottom: 10px;border-radius: 5px;float: left;">
+                  <!-- <div style="border:solid red;width: fit-content;max-width: fit-content;background-color: red;margin-bottom: 10px;border-radius: 5px;float: left;">
                     <b style="font-size: 20px;padding:15px;color: white;">Total Deal Price : Rp <span id="total_deal_prices" class="money"> </span>,-</b>
-                  </div>
+                  </div> -->
                   <div id="coba" style="float:right;">                    
                   </div>
                   <div id="" style="float:right;margin-right: 5px;"> 
