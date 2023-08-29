@@ -318,7 +318,7 @@ Lead Register
 							</dir>			    		
 			    	</div>			    	
 			    	<div class="table-responsive">
-			    		<table id="tableLead" class="table table-bordered table-striped display nowrap" role="grid" aria-describedby="example1_info">
+			    		<table id="tableLead" class="table table-bordered table-striped display dataTables_wrapper" role="grid" aria-describedby="example1_info">
 			        	<thead>
 									<tr>
 										<th>Lead ID</th>
@@ -632,14 +632,14 @@ Lead Register
         	}
         },
         { "data": "brand_name","width":"100px"},
-        { "data": "opp_name"},
+        { "data": "opp_name","width":"550px"},
         { 
         	render: function (data,type,row){
         		return row.created_at.substring(0,10)
         	}	
         },
         { "data": "closing_date"},
-        { "data": "name"},
+        { "data": "name","width":"100px"},
         { "data": "name_presales"},
         {
 	        render: function ( data, type, row ) {
