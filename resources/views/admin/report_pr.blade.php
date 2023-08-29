@@ -582,7 +582,7 @@ Report Purchase Request
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.nominal)
             },
-            "orderData" : [4],
+            "orderData" : [5],
           },
           {
             "data":"nominal",
