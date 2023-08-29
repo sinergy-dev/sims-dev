@@ -1843,6 +1843,7 @@ Human Resources
 		                            <option value="SID" data-target="SID" id="SID">SID</option>
 		                            <option value="BCD" data-target="BCD" id="BCD">BCD</option>
 		                            <option value="MSM" data-target="MSM" id="MSM">MSM</option>
+		                            <option value="DP" data-target="DP" id="DP">DP</option>
 		                            <option value="DIR" data-target="DIR" id="DIR">NONE</option>
 		                        </select>
 		                        @if ($errors->has('division'))
@@ -3648,6 +3649,8 @@ Human Resources
             	append = append + "<option value='PROCUREMENT'> PROCUREMENT </option>";
             	append = append + "<option value='STAFF'> STAFF </option>";
             	append = append + "<option value='ADMIN'> ADMIN </option>";
+            } else if (result[1] == 'DP') {
+            	append = append + "<option value='DP'> DP </option>";
             } else {
             	append = append + "<option value='MANAGER'> MANAGER </option>";
             	append = append + "<option value='STAFF'> STAFF </option>";
@@ -4257,6 +4260,7 @@ Human Resources
             append = append + "<option value='PMO'>" + "PMO" + "</option>";	
             append = append + "<option value='SID'>" + "SID" + "</option>";	
             append = append + "<option value='BCD'>" + "BCD" + "</option>";	
+            append = append + "<option value='DP'>" + "DP" + "</option>";	
             append = append + "<option value='MSM'>" + "MSM" + "</option>";	        	
             append = append + "<option value='NONE'>" + "NONE" + "</option>";	
 			
@@ -4353,6 +4357,10 @@ Human Resources
             append = append + "<option value='ENGINEER CO-SPV'>" + "ENGINEER CO-SPV" + "</option>";
             append = append + "<option value='ENGINEER STAFF'>" + " ENGINEER STAFF" + "</option>";
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+
+        }else if (id.value == 'DP'){
+        
+            append = append + "<option value='DP'>" + "DP" + "</option>";
 
         }else{
         
