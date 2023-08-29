@@ -374,7 +374,11 @@ SBE Detail
                             }
                         }
 
-                        if (!accesable.includes('radioConfig') || result.presales != "{{Auth::User()->nik}}") {
+                        console.log("{{Auth::User()->nik}}")
+
+                        var nik = '"' + "{{Auth::User()->nik}}" + '"'
+                        if (!accesable.includes('radioConfig') || result.presales.includes(nik)) {
+                            console.log("hah")
                             $("#btnResetConfig").hide()
                             $("#btnSaveConf").hide()
                             $("input[type='radio']").prop("disabled",true)
@@ -385,6 +389,8 @@ SBE Detail
                                 })
                             })
                         }else{
+                            console.log("hooh")
+
                             if (result.getNotes.length > 0) {
                                 $("#temporaryFunction").closest(".row").siblings().first().show()
                                 $("#temporaryFunction").closest(".row").siblings().first().find(".alert").find("span").text(result.getNotes[0].notes)
