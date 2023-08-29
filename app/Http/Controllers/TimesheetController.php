@@ -776,7 +776,7 @@ class TimesheetController extends Controller
 
         $hidden = ['planned','threshold'];
 
-    	$data = DB::table('tb_timesheet')->where('nik',$request->nik)->orderby('id','asc')->get();
+    	$data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','point_mandays','month','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"))->where('tb_timesheet.nik',$request->nik)->orderby('id','asc')->get();
 
     	$getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
