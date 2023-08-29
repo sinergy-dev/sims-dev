@@ -1684,6 +1684,11 @@ class HRController extends Controller
                 ->orWhere('id_position','STAFF')
                 ->orWhere('id_position','ADMIN')
                 ->get(),$request->id_assign);
+        }  else if ($request->id_assign == 'DP') {
+            return array(DB::table('tb_position')
+                ->select('name_position')
+                ->where('id_position','DP')
+                ->get(),$request->id_assign);
         } else if ($request->id_assign == 'PMO') {
             return array(DB::table('tb_position')
                 ->select('name_position')
