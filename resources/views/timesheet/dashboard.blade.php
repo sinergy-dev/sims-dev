@@ -501,7 +501,7 @@
               { title: 'Deviation', 
                 data:'deviation'
               },
-              { title: 'Total Activity', 
+              { title: 'Activity Total', 
                 data:'total_task'
               },
             ],
