@@ -1855,7 +1855,7 @@
 
         if (accesable.includes('btnSirkulasi','btnPembanding','btnShowPdf') || accesable.includes('btnShowPdf')) {
           $.each(accesable,function(value,item){
-            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
               if(result.pr.status == 'FINALIZED'){
                 $("#btnFinalize").prop('disabled',false)
                 $("#btnSirkulasi").prop('disabled',true)
