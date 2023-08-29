@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('tittle')
-Recort Log History
+Record Log History
 @endsection
 @section('head_css')
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
