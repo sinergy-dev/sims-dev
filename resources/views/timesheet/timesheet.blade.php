@@ -45,10 +45,14 @@
       z-index: 999;
     }
 
-    .fc-day-content {
-      /* Adjust the height of the date cell */
-      min-height: 100px; /* Set a minimum height for the date cell */
+    .fc-row .fc-content-skeleton {
+      min-height: 150px;
+      padding-bottom: 50px;
     }
+
+/*    .fc-day-grid-container .fc-day {
+      height: 60px;
+    }*/
   </style>
 @endsection
 @section('content')
@@ -117,8 +121,8 @@
                 <td>Permit</td>
               </tr>
               <tr>
-                <td><span class="badge" style="background-color: #605ca8;color:white;">Leaving Permite</span></td>
-                <td>Leaving permite</td>
+                <td><span class="badge" style="background-color: #605ca8;color:white;">Leaving Permit</span></td>
+                <td>Leaving permit</td>
               </tr>
             </table>
             <div class="table">
@@ -411,7 +415,9 @@
       }
 
       if(nik == "{{Auth::User()->nik}}"){
-        showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD'))
+        showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
+      }else{
+        $("#alertForRemaining").hide()
       }
 
       calendar = $('#calendar').fullCalendar({
@@ -428,7 +434,7 @@
     })
 
     $("#btn_back_timesheet_spv").click(function(){
-      window.location.href = '{{url("timesheet")}}';
+      window.location.href = '{{url("timesheet/timesheet")}}';
       // location.reload()
     })
 
@@ -583,25 +589,25 @@
         }else if(lock_activity[0].lock_activity == 4){
           var daysToSubtract = today.getDay() + 21;
           // startOfWeek.setDate(1)
-          var incDate = 31
+          var incDate = 28
         }else if(lock_activity[0].lock_activity == 5){
           // startOfWeek.setDate(1) //lock activity 1 month
           var daysToSubtract = today.getDay() + 28;
-          var incDate = 38
+          var incDate = 35
         }else if(lock_activity[0].lock_activity == 6){
           var daysToSubtract = today.getDay() + 35;
-          var incDate = 45
+          var incDate = 42
         }else if(lock_activity[0].lock_activity == 7){
           var daysToSubtract = today.getDay() + 42;
-          var incDate = 52
+          var incDate = 49
         }else if(lock_activity[0].lock_activity == 8){
           // startOfWeek.setDate(1) //lock activity 2 month
           var daysToSubtract = today.getDay() + 49;
-          var incDate = 59
+          var incDate = 56
         }else if(lock_activity[0].lock_activity == 12){
           // startOfWeek.setDate(1) //lock activity 3 month
           var daysToSubtract = today.getDay() + 77;
-          var incDate = 87
+          var incDate = 84
         }
 
         // Set the date to the first day of the two-week or three-week period
@@ -674,26 +680,26 @@
 
           // $(cell).attr('data-date', date.format('YYYY-MM-DD'));
 
-          // var currentDate = moment.utc(date);
+          var currentDate = moment.utc(date);
 
           // // Your condition to determine whether dayClick should be prevented
-          // if (disabledDates.some(function(disableDate) {            
-          //     return currentDate.isSame(disableDate, 'day');
-          // })) {
-          //     cell.css('background-color', '#EEE');
-          // }
-          // if (datesInWeek.some(function(dates) {            
-          //     return currentDate.isSame(moment(dates).endOf('day'), 'day');
-          // })) {
+          if (disabledDates.some(function(disableDate) {            
+              return currentDate.isSame(disableDate, 'day');
+          })) {
+              cell.css('background-color', '#EEE');
+          }
+          if (datesInWeek.some(function(dates) {            
+              return currentDate.isSame(moment(dates).endOf('day'), 'day');
+          })) {
+            cell.addClass('date-range-highlight');
+          }
+          // if (datesInWeek.includes(date)) {
           //   cell.addClass('date-range-highlight');
           // }
-          // // if (datesInWeek.includes(date)) {
-          // //   cell.addClass('date-range-highlight');
-          // // }
 
           // var todays = new Date()
-          // var today = moment().startOf('day'); // Get the current date
-          // var cellDate = moment(date).startOf('day'); // Get the date being rendered
+          // // var today = moment().startOf('day'); // Get the current date
+          // // var cellDate = moment(date).startOf('day'); // Get the date being rendered
 
           // if (cellDate.isAfter(todays)) {
           //   cell.css('background-color', '#EEE'); // Set background color for days after today
@@ -701,6 +707,7 @@
           // }
         },
         dayClick: function(date, jsEvent, view) { 
+          // console.log($(jsEvent.target).next('fc-day-header').find('.custom-date-button'))
           if (!$(jsEvent.target).hasClass('fc-day-top')) {   
             var position = "{{Auth::User()->id_position}}"
             if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
@@ -2240,7 +2247,7 @@
                   }
                   $("#ModalAddTimesheet").modal('hide')
                   // Render the updated event on the calendar
-                  showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD'))
+                  showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
               }else{
                   var newEvents = []
 
