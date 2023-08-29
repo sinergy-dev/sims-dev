@@ -492,8 +492,8 @@
                           level:value.level,
                           duration:value.duration,
                           status:value.status,
+                          status_pid:value.status_pid
                         }) 
-                          
                     }
                   })
                 }
@@ -874,7 +874,7 @@
                           // Close the loading indicator
                           Swal.close();
                           console.log(calEvent.start)
-                          openModalAddTimesheet(calEvent.id,calEvent.title,calEvent.schedule,calEvent.type,calEvent.pid,calEvent.level,calEvent.duration,calEvent.status,calEvent.start,calEvent.end,calEvent.refer,calEvent.task,calEvent.phase)
+                          openModalAddTimesheet(calEvent.id,calEvent.title,calEvent.schedule,calEvent.type,calEvent.pid,calEvent.level,calEvent.duration,calEvent.status,calEvent.start,calEvent.end,calEvent.refer,calEvent.task,calEvent.phase,calEvent.status_pid)
                           // Perform your delayed task here
                           
                         }, 100); // Delayed execution after 2000ms (2 seconds)
@@ -1071,7 +1071,13 @@
                         //staff
                         $('#selectType').val(calEvent.type).trigger('change')
                         if (calEvent.type == "Project") {
-                          setPid(calEvent.pid)
+                          // setPid(calEvent.pid)
+                          if (calEvent.status_pid == 'true') {
+                            setPid(calEvent.pid)
+                          }else{
+                            $("#divPid").show()
+                            $("#inputPid").val(calEvent.pid)
+                          }
                         }else if(calEvent.type == "Approach"){
                           setLeadId(calEvent.pid)
                         }
@@ -1157,7 +1163,14 @@
                           $('#daterange-input').prop("disabled",true)
                           $('#selectType').val(calEvent.type).trigger('change')
                           if (calEvent.type == "Project") {
-                            setPid(calEvent.pid)
+                            // setPid(calEvent.pid)
+                            if (calEvent.status_pid == 'true') {
+                              setPid(calEvent.pid)
+                            }else{
+                              $("#divPid").show()
+                              $("#inputPid").prop("disabled",true)
+                              $("#inputPid").val(calEvent.pid)
+                            }
                           }else if(calEvent.type == "Approach"){
                             setLeadId(calEvent.pid)
                           }
@@ -1240,7 +1253,7 @@
       }
     }
 
-    function openModalAddTimesheet(id,title,schedule,type,pid,level,duration,status,start,end,refer,task,phase){
+    function openModalAddTimesheet(id,title,schedule,type,pid,level,duration,status,start,end,refer,task,phase,status_pid){
       $("#ModalAddTimesheet").modal('show')
       if ($.fn.select2 !== undefined) {
         setHoliday()
@@ -1373,7 +1386,12 @@
 
         $('#selectType').val(type).trigger('change')
         if (type == "Project") {
-          setPid(pid)
+          if (status_pid == 'true') {
+            setPid(pid)
+          }else{
+            $("#divPid").show()
+            $("#inputPid").val(pid)
+          }
         }else if(type == "Approach"){
           setLeadId(pid)
         }
@@ -1441,7 +1459,13 @@
               //staff
               $('#selectType').val(eventObj.type).trigger('change')
               if (eventObj.type == "Project") {
-                setPid(eventObj.pid)
+                if (eventObj.status_pid == 'true') {
+                  setPid(eventObj.pid)
+                }else{
+                  $("#divPid").show()
+                  $("#inputPid").prop("disabled",true)
+                  $("#inputPid").val(eventObj.pid)
+                }
               }else if(eventObj.type == "Approach"){
                 setLeadId(eventObj.pid)
               }
@@ -2361,9 +2385,28 @@
     }
 
     function closePidAdjustment(){
-      $("#divPid").hide()
-      $("#inputPid").val("")
+      Swal.fire({
+        icon: 'warning',
+        title: 'Are you sure!',
+        text: 'If you close this input, you will lose your PID!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+      }).then((result,data) => {
+        if (result.value) {
+          $("#divPid").hide()
+          $("#inputPid").val("")       
+        }else{
+          Swal.close()
+        }
+      }) 
     }
+
+    $('#ModalAddTimesheet').on('hidden.bs.modal', function () {
+      $("#divPid").hide()
+    })
     
   </script>
 @endsection
