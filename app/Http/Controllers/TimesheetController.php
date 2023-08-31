@@ -435,13 +435,194 @@ class TimesheetController extends Controller
             ]);
         } else {
             if(count($result) >= 1){
+                $nik = Auth::User()->nik;
+                $roles = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', $nik)->first(); 
+
+                if ($roles->group == 'presales') {
+                    $rolesAlias = 'SOL';
+                }else if ($roles->group == 'DPG') {
+                    $rolesAlias = 'SID';
+                }else{
+                    $rolesAlias = $roles->group;
+                }
+
                 foreach ($result as $key => $value) {
-                    $start_date = Carbon::createFromFormat('d/m/Y', $value[2])->format('Y-m-d');
-                    $end_date = Carbon::createFromFormat('d/m/Y', $value[9])->format('Y-m-d');
+                    $task = DB::table('tb_timesheet_task')->select('id')->where('task','LIKE','%'.$value[10].'%')->first();
+
+                    if (isset($task)) {
+                        $task = $task->id;
+
+                        $taskRoles = TimesheetConfig::where('roles',$roles->id)->first();
+                        if (isset($taskRoles)) {
+                            if ($taskRoles->task != null) {
+                                if (!in_array((int)$task,json_decode($taskRoles->task))) {
+                                    $arraytask = json_decode($taskRoles->task);
+                                    $arraytask[] = (int)$task;
+
+                                    $updatetask = TimesheetConfig::where('roles',$roles->id)->first();
+                                    $updatetask->task = $arraytask;
+                                    $updatetask->update();
+                                }
+                            }else{
+                                $arraytask[] = $task;
+
+                                $updatetask = TimesheetConfig::where('roles',$roles->id)->first();                                
+                                $updatetask->task = json_encode($arraytask,JSON_NUMERIC_CHECK);
+                                $updatetask->update();
+                            }
+                        }else{
+                            $arraytask[] = $task;
+
+                            $addConfig           = new TimesheetConfig();
+                            $addConfig->roles    = $roles->id;
+                            $addConfig->task     = json_encode($arraytask,JSON_NUMERIC_CHECK);
+                            $addConfig->date_add = Carbon::now()->toDateTimeString();
+                            $addConfig->division = Auth::User()->id_division;
+                            $addConfig->save();
+                        }
+                    }else{
+                        if ($value[10] == '-' || $value[10] == '') {
+                            $task = null;
+                        }else{
+                            $store          = new TimesheetTask();
+                            $store->task    = $value[10];
+                            $store->save();
+
+                            $task = $store->id;
+
+                            $taskRoles = TimesheetConfig::where('roles',$roles->id)->first();
+                            if (isset($taskRoles)) {
+                                if ($taskRoles->task != null) {
+                                    if (!in_array((int)$task,json_decode($taskRoles->task))) {
+                                        $arraytask = json_decode($taskRoles->task);
+                                        $arraytask[] = (int)$task;
+
+                                        $updatetask = TimesheetConfig::where('roles',$roles->id)->first();
+                                        $updatetask->task = $arraytask;
+                                        $updatetask->update();
+                                    }
+                                }else{
+                                    $arraytask[] = $task;
+
+                                    $updatetask = TimesheetConfig::where('roles',$roles->id)->first();                                
+                                    $updatetask->task = json_encode($arraytask,JSON_NUMERIC_CHECK);
+                                    $updatetask->update();
+                                }
+                            }else{
+                                $arraytask[] = $task;
+
+                                $addConfig           = new TimesheetConfig();
+                                $addConfig->roles    = $roles->id;
+                                $addConfig->task     = json_encode($arraytask,JSON_NUMERIC_CHECK);
+                                $addConfig->date_add = Carbon::now()->toDateTimeString();
+                                $addConfig->division = Auth::User()->id_division;
+                                $addConfig->save();
+                            }
+                        }
+                        
+                    }
+
+                    $phase = DB::table('tb_timesheet_phase')->select('id')->where('phase','LIKE','%'.$value[11].'%')->first();
+
+                    if (isset($phase)) {
+                        $phase = $phase->id;
+
+                        $phaseRoles = TimesheetConfig::where('roles',$roles->id)->first();
+                        if (isset($phaseRoles)) {
+                            if ($phaseRoles->phase != null) {
+                                if (!in_array((int)$phase,json_decode($phaseRoles->phase))) {
+                                    $arrayphase = json_decode($phaseRoles->phase);
+                                    $arrayphase[] = (int)$phase;
+
+                                    $updatephase = TimesheetConfig::where('roles',$roles->id)->first();
+                                    $updatephase->phase = $arrayphase;
+                                    $updatephase->update();
+                                }
+                            }else{
+                                $arrayphase[] = $phase;
+
+                                $updatephase = TimesheetConfig::where('roles',$roles->id)->first();                                
+                                $updatephase->phase = json_encode($arrayphase,JSON_NUMERIC_CHECK);
+                                $updatephase->update();
+                            }
+                        }else{
+                            $arrayphase[] = $phase;
+
+                            $addConfig           = new TimesheetConfig();
+                            $addConfig->roles    = $roles->id;
+                            $addConfig->phase    = json_encode($arrayphase,JSON_NUMERIC_CHECK);
+                            $addConfig->date_add = Carbon::now()->toDateTimeString();
+                            $addConfig->division = Auth::User()->id_division;
+                            $addConfig->save();
+                        }
+                    }else{
+                        if ($value[11] == '-' || $value[11] == '') {
+                            $phase = null;
+                        }else{
+                            $store        = new TimesheetPhase();
+                            $store->phase = "[". strtoupper($rolesAlias) ."]". $value[11];
+                            $store->save();
+
+                            $phase = $store->id;
+
+                            $phaseRoles = TimesheetConfig::where('roles',$roles->id)->first();
+                            if (isset($phaseRoles)) {
+                                if ($phaseRoles->phase != null) {
+                                    if (!in_array((int)$phase, json_decode($phaseRoles->phase))) {
+                                        $arrayphase = json_decode($phaseRoles->phase);
+                                        $arrayphase[] = (int)$phase;
+
+                                        $updatephase = TimesheetConfig::where('roles',$roles->id)->first();
+                                        $updatephase->phase = $arrayphase;
+                                        $updatetphase->update();
+                                    }
+                                }else{
+                                    $arrayphase[] = $phase;
+
+                                    $updatephase = TimesheetConfig::where('roles',$roles->id)->first();
+                                    $updatephase->phase = json_encode($arrayphase,JSON_NUMERIC_CHECK);
+                                    $updatephase->update();
+                                }
+                            }else{
+                                $arrayphase[] = $phase;
+
+                                $addConfig           = new TimesheetConfig();
+                                $addConfig->roles    = $roles->id;
+                                $addConfig->phase    = json_encode($arrayphase,JSON_NUMERIC_CHECK);
+                                $addConfig->date_add = Carbon::now()->toDateTimeString();
+                                $addConfig->division = Auth::User()->id_division;
+                                $addConfig->save();
+                            }
+                        }
+                    }
+
+                    $startDate = strtotime($value[2]);
+                    $startformatDate =  Carbon::createFromTimestamp($startDate)->format('Y-m-d');
+
+                    $endDate = strtotime($value[9]);
+                    $endformatDate =  Carbon::createFromTimestamp($endDate)->format('Y-m-d');
+
+                    // $start_date = Carbon::createFromFormat('d/m/Y', $value[2])->format('Y-m-d');
+                    // $end_date = Carbon::createFromFormat('d/m/Y', $value[9])->format('Y-m-d');
                     $getPoint = (int)$value['7']/800;
                     $point_mandays = number_format($getPoint, 2, '.', '');
-                    $insertTimesheet[] = ['nik' => Auth::User()->nik, 'schedule' => $value[1], 'start_date' => $start_date, 'type' => $value[3], 'pid' => $value[4], 'level' => $value[5], 'activity' => $value[6], 'duration' => $value[7], 'status' => $value[8], 'end_date' => $end_date, 'point_mandays' => $point_mandays, 'date_add' => Carbon::now()->toDateTimeString()
+                    $insertTimesheet[] = [
+                        'nik' => Auth::User()->nik, 
+                        'schedule' => $value[1], 
+                        'start_date' => $startformatDate, 
+                        'type' => $value[3], 
+                        'pid' => $value[4], 
+                        'level' => $value[5], 
+                        'activity' => $value[6], 
+                        'duration' => $value[7], 
+                        'status' => $value[8], 
+                        'task' => $task, 
+                        'phase' => $phase, 
+                        'end_date' => $endformatDate, 
+                        'point_mandays' => $point_mandays, 
+                        'date_add' => Carbon::now()->toDateTimeString()
                     ];
+
                 }
      
                 if(!empty($insertTimesheet)){
