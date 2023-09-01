@@ -442,6 +442,8 @@ class TimesheetController extends Controller
                     $rolesAlias = 'SOL';
                 }else if ($roles->group == 'DPG') {
                     $rolesAlias = 'SID';
+                }else if ($roles->group == 'bcd') {
+                    $rolesAlias = $roles->name;
                 }else{
                     $rolesAlias = $roles->group;
                 }
