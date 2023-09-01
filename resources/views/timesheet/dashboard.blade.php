@@ -402,7 +402,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-4 col-xs-12" style="display: none;" id="box-task-timesheet">
+                <div class="col-md-6 col-xs-12" style="display: none;" id="box-task-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Task <span id="textTask"></span></h3>
@@ -412,7 +412,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 col-xs-12" style="display: none;" id="box-phase-timesheet">
+                <div class="col-md-6 col-xs-12" style="display: none;" id="box-phase-timesheet">
                   <div class="box box-primary">
                     <div class="box-header bg-primary" style="color:white">
                       <h3 class="box-title">Phase <span id="textPhase"></span></h3>
@@ -422,19 +422,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4">
-                 <!--  <div class="box box-primary">
-                    <div class="box-header bg-primary" style="color:white">
-                      <h3 class="box-title">Schedule <span id="textSchedule"></span></h3>
-                    </div>
-                    <div class="box-body">
-                      <canvas id="scheduleChart" width="400" height="200"></canvas>
-                      <div id="definitionSchedule"></div>
-                    </div>
-                  </div> -->
-                </div>
               </div>
-
             </div>
           </div>
         </div>
