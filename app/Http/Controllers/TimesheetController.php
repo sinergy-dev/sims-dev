@@ -1651,7 +1651,13 @@ class TimesheetController extends Controller
         $getData = User::select('nik','name')->where('nik',$nik)->get();
         $getLeavingPermit = $getLeavingPermit->where('nik',$nik)->get();
         $getPermit = $getPermit->where('nik',$nik)->get();
-        $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')->whereMonth('start_date',date('m'))->groupby('tb_timesheet.nik')->get();
+
+        $date = Carbon::parse($request->date);
+        $monthNumber = $date->month;
+
+        $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')
+        ->whereMonth('start_date',$monthNumber)
+        ->groupby('tb_timesheet.nik')->get();
 
         // return count($sumMandays);
 
@@ -1710,7 +1716,7 @@ class TimesheetController extends Controller
 
             $percentage = number_format($planned[0][1]/$planned[0][0]*100,  2, '.', '');
 
-            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>round($actualPlanned->point_mandays,2),'unplannedToday'=>round($actualUnplanned->point_mandays,2)]);
+            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>number_format($actualPlanned->point_mandays,2, '.', ''),'unplannedToday'=>number_format($actualUnplanned->point_mandays,2, '.', '')]);
         } else {
             return collect(['percentage'=>'0','name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>'0','unplannedToday'=>'0']);
         } 
