@@ -67,7 +67,7 @@
 						<td>{{$data->activity}}</td>
 						<td>{{$data->start_date}}</td>
 						<td>{{$data->end_date}}</td>
-						<td><a href="{{url('/timesheet')}}?id={{$data->id}}" target="_blank">Update Me!</a></td>
+						<td><a href="{{url('/timesheet/timesheet')}}?id={{$data->id}}" target="_blank">Update Me!</a></td>
 					</tr>
 					@endforeach
 				</table>
