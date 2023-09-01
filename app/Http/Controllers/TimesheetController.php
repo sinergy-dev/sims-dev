@@ -442,12 +442,16 @@ class TimesheetController extends Controller
                     $rolesAlias = 'SOL';
                 }else if ($roles->group == 'DPG') {
                     $rolesAlias = 'SID';
+                }else if ($roles->group == 'bcd') {
+                    $rolesAlias = $roles->name;
                 }else{
                     $rolesAlias = $roles->group;
                 }
 
                 foreach ($result as $key => $value) {
-                    $task = DB::table('tb_timesheet_task')->select('id')->where('task','LIKE','%'.$value[10].'%')->first();
+                    $task = DB::table('tb_timesheet_task')->select('id')
+                        ->where('task','LIKE','%'.$value[10].'%')
+                        ->first();
 
                     if (isset($task)) {
                         $task = $task->id;
@@ -522,7 +526,9 @@ class TimesheetController extends Controller
                         
                     }
 
-                    $phase = DB::table('tb_timesheet_phase')->select('id')->where('phase','LIKE','%'.$value[11].'%')->first();
+                    $phase = DB::table('tb_timesheet_phase')->select('id')
+                        ->where('phase','LIKE','%['.$rolesAlias.']%')
+                        ->where('phase','LIKE','%'.$value[11].'%')->first();
 
                     if (isset($phase)) {
                         $phase = $phase->id;
