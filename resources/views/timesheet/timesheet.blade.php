@@ -1316,27 +1316,36 @@
           var today = moment();
           // Compare the date components
           var isSameDateToday = momentDate.isSame(today, 'day');
-          if (isSameDateToday) {
-            $('#selectType').prop("disabled",false)
-            $('#selectLead').prop("disabled",false)
-            $('#selectTask').prop("disabled",false)
-            $('#selectPhase').prop("disabled",false)
-            $('#selectLevel').prop("disabled",false)
-            $('#textareaActivity').prop("disabled",false)
-            $('#selectDuration').prop("disabled",false)
-            $('#selectStatus').prop("disabled",false)
-            $("#ModalAddTimesheet").find('.modal-footer').show()
-          }else{
-            $("#ModalAddTimesheet").find('.modal-footer').hide()
-            $('#selectType').prop("disabled",true)
-            $('#selectLead').prop("disabled",true)
-            $('#selectTask').prop("disabled",true)
-            $('#selectPhase').prop("disabled",true)
-            $('#selectLevel').prop("disabled",true)
-            $('#textareaActivity').prop("disabled",true)
-            $('#selectDuration').prop("disabled",true)
-            $('#selectStatus').prop("disabled",true)
-          }
+          $('#selectType').prop("disabled",false)
+          $('#selectLead').prop("disabled",false)
+          $('#selectTask').prop("disabled",false)
+          $('#selectPhase').prop("disabled",false)
+          $('#selectLevel').prop("disabled",false)
+          $('#textareaActivity').prop("disabled",false)
+          $('#selectDuration').prop("disabled",false)
+          $('#selectStatus').prop("disabled",false)
+          $("#ModalAddTimesheet").find('.modal-footer').show()
+          // if (isSameDateToday) {
+          //   $('#selectType').prop("disabled",false)
+          //   $('#selectLead').prop("disabled",false)
+          //   $('#selectTask').prop("disabled",false)
+          //   $('#selectPhase').prop("disabled",false)
+          //   $('#selectLevel').prop("disabled",false)
+          //   $('#textareaActivity').prop("disabled",false)
+          //   $('#selectDuration').prop("disabled",false)
+          //   $('#selectStatus').prop("disabled",false)
+          //   $("#ModalAddTimesheet").find('.modal-footer').show()
+          // }else{
+          //   $("#ModalAddTimesheet").find('.modal-footer').hide()
+          //   $('#selectType').prop("disabled",true)
+          //   $('#selectLead').prop("disabled",true)
+          //   $('#selectTask').prop("disabled",true)
+          //   $('#selectPhase').prop("disabled",true)
+          //   $('#selectLevel').prop("disabled",true)
+          //   $('#textareaActivity').prop("disabled",true)
+          //   $('#selectDuration').prop("disabled",true)
+          //   $('#selectStatus').prop("disabled",true)
+          // }
         }                         
       }else{
         $('#selectSchedule').val(schedule).trigger('change')
