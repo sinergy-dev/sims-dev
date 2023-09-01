@@ -2370,6 +2370,7 @@
               text: 'Click Ok to reload page',
             }).then((result,data) => {
               if (result.value) {
+                $("#ModalImport").modal("hide")
                 loadData()              
               }
             })
