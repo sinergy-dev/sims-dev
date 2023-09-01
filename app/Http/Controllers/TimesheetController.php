@@ -574,7 +574,7 @@ class TimesheetController extends Controller
 
                                         $updatephase = TimesheetConfig::where('roles',$roles->id)->first();
                                         $updatephase->phase = $arrayphase;
-                                        $updatetphase->update();
+                                        $updatephase->update();
                                     }
                                 }else{
                                     $arrayphase[] = $phase;
