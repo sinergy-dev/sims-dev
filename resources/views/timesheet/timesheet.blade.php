@@ -540,7 +540,9 @@
 
                 var filteredData = arrayData.filter(function(obj1) {
                   return !events.some(function(obj2) {
-                    return obj1.title === obj2.title
+                    if (obj2.title) {
+                      return obj2.title.includes(obj1.title)
+                    }
                   });
                 });
                 var arrayCalconcatDb = events.concat(filteredData)
