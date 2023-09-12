@@ -566,7 +566,7 @@ class TimesheetController extends Controller
                             $phase = null;
                         }else{
                             $store        = new TimesheetPhase();
-                            $store->phase = "[". strtoupper($rolesAlias) ."]". $value[11];
+                            $store->phase = "[". strtoupper($rolesAlias) ."] ". $value[11];
                             $store->save();
 
                             $phase = $store->id;
@@ -1426,7 +1426,7 @@ class TimesheetController extends Controller
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     // "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/$workdays*100,  2, '.', ''),
-                    "deviation"=>$workdays - $valueSumPoint,
+                    "deviation"=>number_format($workdays - $valueSumPoint,  2, '.', ''),
                     // "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint,
                     // "total_task"=>'-'
                 ]); 
