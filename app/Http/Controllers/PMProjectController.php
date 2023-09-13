@@ -296,8 +296,8 @@ class PMProjectController extends Controller
 
     public function getPMStaff()
     {
-    	$getPMStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_position` = 'PM' OR `id_position` = 'PM SPV' AND `name` != 'Christopher Kevin Siswanto')")->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
-        $getPCStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_position` = 'SERVICE PROJECT' AND `name` != 'Christopher Kevin Siswanto')")->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
+    	$getPMStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_position` = 'PM' OR `id_position` = 'PM SPV')")->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
+        $getPCStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_position` = 'SERVICE PROJECT')")->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPMStaff->merge($getPCStaff));
     }
