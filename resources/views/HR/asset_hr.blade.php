@@ -799,8 +799,8 @@ GA Asset
                       <td width="20%">Name</td>
                       <td width="20%">Category</td>
                       <td width="20%">Merk</td>
-                      <td width="10%">Qty</td>
-                      <td width="30%">Description</td>
+                      <!-- <td width="10%">Qty</td> -->
+                      <td width="40%">Description</td>
                       <td><button class="btn btn-xs btn-success" type="button" id="btnAddRowReq" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" ><i class="fa fa-plus"></i></button></td>
                     </tr>
                   </thead>
@@ -815,9 +815,9 @@ GA Asset
                       <td>
                         <input name="merk_barang_request[]" id="merk_barang_request" class="form-control" placeholder="Input Merk"></input>
                       </td>
-                      <td>
+                      <!-- <td>
                         <input name="qty_barang_request[]" id="qty_barang_request" class="form-control" placeholder="Qty" required></input>
-                      </td>
+                      </td> -->
                       <td>
                         <textarea class="form-control" id="link_barang_request" name="link_barang_request[]" placeholder="Input Specification,*Suggest link for buy" required></textarea>
                       </td>
@@ -1383,7 +1383,7 @@ GA Asset
       append =  append + '<td><select class="form-control category_asset_request" id="category_asset_request" data-rowid="'+i+'" name="category_asset_request" required></select>'
       append =  append + '<input id="cat_req_id" name="cat_req_id[]" data-rowid="'+i+'" hidden></td>'
       append =  append + '<td><input name="merk_barang_request[]" id="merk_barang_request" data-rowid="'+i+'" class="form-control"></input></td>'
-      append =  append + '<td><input name="qty_barang_request[]" id="qty_barang_request" data-rowid="'+i+'" class="form-control" required></input></td>'
+      // append =  append + '<td><input name="qty_barang_request[]" id="qty_barang_request" data-rowid="'+i+'" class="form-control" required></input></td>'
       append =  append + '<td><textarea id="link_barang_request" name="link_barang_request[]" data-rowid="'+i+'" class="form-control" required></textarea></td>'
       append =  append + '<td><button class="btn btn-xs btn-danger remove" data-rowid="'+i+'" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>'
       append =  append + '</td>'
