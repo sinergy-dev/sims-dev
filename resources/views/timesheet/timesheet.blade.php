@@ -1028,32 +1028,12 @@
         var currDate = moment().startOf('day');
       }
       
-      //1 week
-      // startOfWeek.setDate(today.getDate() - today.getDay()); // Set the date to the first day of the week (Sunday)
-      // var daysToSubtract = today.getDay(); // Add 7 to ensure we get to the first day of the next two-week period
-      // var incDate = 7
-
-      //2 week
-      // var daysToSubtract = today.getDay() + 7; // Add 7 to ensure we get to the first day of the next two-week period
-      // var incDate = 14
-
-
-      //3 week
-      // var daysToSubtract = today.getDay() + 14; // Add 7 to ensure we get to the first day of the next two-week period
-      // var incDate = 21
-
-
-      //1 month
-      //startOfWeek.setDate(1) //lock activity 1 month
-      // var incDate = 30
       var isCustomButtonClick = false;
 
       calendar.fullCalendar('destroy');
       var eventRenderDataPlanned = {};
       var eventRenderDataUnplanned = {};
       var eventRenderEmoji = {};
-
-
       // Calculate the sums for each day
       events.forEach(function(event) {
         if (event.start && event.unplanned !== undefined) {
@@ -1094,8 +1074,6 @@
           eventRenderEmoji[startDate] = emoji.code_feeling;
         }
       })
-
-      console.log(eventRenderEmoji)
 
       $('#calendar').fullCalendar({
         // customButtons: {
@@ -2676,7 +2654,8 @@
             processData: false,
             contentType: false,
             data:data,
-            success:function(result){
+            success: function(results)
+            {
               loadData()
             }
           })
@@ -2768,7 +2747,7 @@
                         $("#ModalInfo").modal('hide')
                       }
 
-                      loadData()    
+                      loadData()  
                     }
                   }else if(postParam == "delete_activity"){
                       Swal.close()

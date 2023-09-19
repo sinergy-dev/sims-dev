@@ -216,11 +216,11 @@ Lead Register
 												@foreach($year as $years)
 						              @if($years->year < $year_now-1)
 						              {{-- @if($years->year < $year_now) --}}
-						                <option value="{{$years->year}}">{{$years->year}}</option>
+						                <option id="{{$years->year}}" value="{{$years->year}}">{{$years->year}}</option>
 						              @endif
 						            @endforeach
-					              <option selected value="{{date('Y')-1}}">{{date("Y")-1}}</option>
-						            <option value="{{$year_now}}">{{$year_now}}</option>
+					              <option id="{{date('Y')-1}}" value="{{date('Y')-1}}">{{date("Y")-1}}</option>
+						            <option id="{{$year_now}}" selected value="{{$year_now}}">{{$year_now}}</option>
 											</select>
 										</div>
 
@@ -229,11 +229,11 @@ Lead Register
 												@foreach($year as $years)
 						              @if($years->year < $year_now-1)
 						              {{-- @if($years->year < $year_now) --}}
-						                <option value="{{$years->year}}">{{$years->year}}</option>
+						                <option id="{{$years->year}}" value="{{$years->year}}">{{$years->year}}</option>
 						              @endif
 						            @endforeach
-						            <option value="{{date('Y')-1}}">{{date("Y")-1}}</option>
-						            <option selected value="{{$year_now}}">{{$year_now}}</option>
+						            <option id="{{date('Y')-1}}" value="{{date('Y')-1}}">{{date("Y")-1}}</option>
+						            <option id="{{$year_now}}" value="{{$year_now}}">{{$year_now}}</option>
 											</select>
 										</div>
 									</div>
@@ -1583,12 +1583,6 @@ Lead Register
   	$("#year_dif2_dir").select2({
 	  	multiple:true
 	  })
-
-	  $('#year_dif2_dir option').prop('disabled', false);
-		$('#year_dif_dir').val().forEach(function(value) {
-	    $('#year_dif2_dir option[value="' + value + '"]').prop('disabled', true);
-	  });
-
 	  // Trigger change to refresh Select2
 	  // $('#year_dif2_dir').trigger('change');
   });
@@ -1600,6 +1594,11 @@ Lead Register
 		var year 			= $('#year_dif').val();
 		var year_dir 	= $('#year_dif_dir').val();
 		var year2_dir = $('#year_dif2_dir').val();
+
+		$('#year_dif2_dir option').prop('disabled', false);
+		$('#year_dif_dir').val().forEach(function(value) {
+	    $('#year_dif2_dir option[value="' + value + '"]').prop('disabled', true);
+	  });
 
 		var tempYear = '?year[]='
 		
@@ -1892,6 +1891,7 @@ Lead Register
 			      temp = temp + '&year[]='+ value
 			    }
 
+					$("#year_dif2_dir option[value="+ value +"]").prop('disabled',true);
 				})
 			}
 
@@ -1904,6 +1904,8 @@ Lead Register
 			    }else{
 			      temp = temp + '&year[]='+ value
 			    }
+
+					$("#year_dif_dir option[value="+ value +"]").prop('disabled',true);
 				})
 			}
 		}else{
@@ -2006,10 +2008,13 @@ Lead Register
 			$(".cb-result").each(function(item,value){
 				if (window.location.href.split("=")[1] == 'ALL') {
 			    $("#filter_lead_"+value.value).prop("checked", true)
+			    $("#filter_lead_INITIAL").prop("checked", true)
 				}else{
 					if(value.value == window.location.href.split("=")[1]){
 						if (window.location.href.split("=")[1] == "OPEN") {
-			    		$("#filter_lead_null").prop("checked", true)
+			    		$("#filter_lead_OPEN").prop("checked", true)
+			    		$("#filter_lead_SD").prop("checked", true)
+			    		$("#filter_lead_TP").prop("checked", true)
 						}else {
 			    		$("#filter_lead_"+value.value).prop("checked", true)
 						}

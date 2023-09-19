@@ -4679,8 +4679,8 @@ class SalesController extends Controller{
         //     return array("data" => $pid);  
         
         // }
-        elseif ($div == 'FINANCE' || $pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER' && $ter == 'OPERATION'){
-            
+        elseif ($div == 'FINANCE' || $pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER' && $ter == 'OPERATION' || $div == 'BCD' && $pos == 'MANAGER'){
+
             if ($request->id == "SIP") {
                 
                 $pid = DB::table('tb_id_project')

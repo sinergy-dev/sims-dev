@@ -260,18 +260,6 @@
                                   </button>
                                 </span>
                                 <span class="input-group-btn">
-                                 <!--  <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    Displayed Column
-                                    <span class="fa fa-caret-down"></span>
-                                  </button>
-                                  <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="1"><span class="text">Planned</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="2"><span class="text">Actual</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="3"><span class="text">Threshold</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="4"><span class="text">Billable</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="5"><span class="text">%Billable</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="6"><span class="text">Deviation</span></li>
-                                  </ul> -->
                                   <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummarySbe')" type="button" class="btn btn-default btn-flat">
                                     <i class="fa fa-fw fa-refresh"></i>
                                   </button>
@@ -332,6 +320,7 @@
               <div class="row" id="box_definition" style="display:none;">
               </div>
             </div>
+
             <div class="tab-pane" id="chart">
               <div class="alert alert-info alert-dismissible" id="alert-for-direktor" style="display:none">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>

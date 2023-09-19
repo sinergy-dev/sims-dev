@@ -168,9 +168,9 @@ Detail Asset Transaction
                 <td>{{$data->keterangan}}</td>
                 <td>
                  @if($data->tgl_pengembalian == "")
-                  <span class="label label-danger">SUDAH DI AMBIL</span>
+                  <span class="label label-danger">ALREADY TAKEN</span>
                   @else
-                  <span class="label label-success">SUDAH KEMBALI</span>
+                  <span class="label label-success">ALREADY BACK</span>
                   @endif
                 </td>
               </tr>

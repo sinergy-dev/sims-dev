@@ -146,7 +146,7 @@ GA Asset
                       <tr>
                           <td>{{$data->code_name}}<input type="" name="id_barang_update" hidden></td>
                           <td>{{$data->nama_barang}}</td>
-                          <td>{{$data->description}}</td>
+                          <td>{{$data->description}} - {{$data->serial_number}}</td>
                           <td>
                               @foreach(explode(',', $data->name) as $key => $latest_pinjam) 
                                 {{$latest_pinjam}}
@@ -273,7 +273,7 @@ GA Asset
                         <td>{{$data->name}}</td>
                         <td>{{$data->created_at}}</td>
                         <td>{{$data->note}}</td>
-                        <td>{!!$data->keterangan!!}</td>
+                        <td>{!!nl2br($data->keterangan)!!}</td>
                         <td>
                           <label class="label label-info">Request</label>
                         </td>
@@ -335,8 +335,8 @@ GA Asset
                       <tr>
                         <td>{{$data->no_transac}}</td>
                         <td> - </td>
-                        <td>{{$data->note}}</td>
-                        <td>{!!$data->keterangan!!}</td>
+                        <td>{{$data->note}} - {{$data->serial_number}}</td>
+                        <td>{!! nl2br($data->keterangan) !!}</td>
                         <td> - </td> 
                         <td><label class="label label-warning">PENDING</label></td>                     
                         <td>
@@ -368,7 +368,7 @@ GA Asset
                         <td>{{$data->no_transac}}</td>
                         <td>{{$data->code_name}}</td>
                         <td>{{$data->nama_barang}}</td>
-                        <td>{{$data->description}}</td>
+                        <td>{{$data->description}} - {{$data->serial_number}}</td>
                         <td>{{$data->keterangan}}</td> 
                         <td><label class="label label-success">BORROWING</label></td>                     
                         <td>
@@ -469,7 +469,7 @@ GA Asset
 
                       <div class="col-md-6 form-group">
                         <label>Merk</label>
-                        <input type="" class="form-control" name="merk_barang" id="merk_barang" placeholder="input merk">
+                        <input type="" class="form-control" name="merk_barang" id="merk_barang" placeholder="Input Merk">
                       </div>
                     </div> 
                   </div>
@@ -478,12 +478,12 @@ GA Asset
                     <div class="col-md-12">
                       <div class="col-md-6 form-group">
                         <label for="sow">Name</label>
-                        <input name="nama_barang" id="nama_barang" placeholder="input name" class="form-control" required>
+                        <input name="nama_barang" id="nama_barang" placeholder="Input Product Name" class="form-control" required>
                       </div>
 
                       <div class="col-md-6 form-group">
                         <label for="sow">Serial Number</label>
-                        <input name="asset_sn" id="asset_sn" class="form-control" placeholder="input serial number">
+                        <input name="asset_sn" id="asset_sn" class="form-control" placeholder="Input Serial Number">
                       </div>                   
                     </div>
                   </div>
@@ -492,12 +492,12 @@ GA Asset
                     <div class="col-md-12">
                       <div class="col-md-6 form-group">
                         <label for="sow">Type</label>
-                        <input name="type_asset" id="type_asset" placeholder="input type asset" class="form-control">
+                        <input name="type_asset" id="type_asset" placeholder="Input Type Asset" class="form-control">
                       </div>
                       
                       <div class="col-md-6 form-group">
                         <label for="sow">Note</label>
-                        <textarea name="note" id="note" placeholder="input note" class="form-control" ></textarea>            
+                        <textarea name="note" id="note" placeholder="Input Note" class="form-control" ></textarea>            
                       </div>            
                     </div>
                   </div>
@@ -506,12 +506,12 @@ GA Asset
                     <div class="col-md-12">
                       <div class="col-md-6 form-group">
                         <label for="sow">Purchase Price</label>
-                        <input name="purchase_price" id="purchase_price" class="form-control money" placeholder="input price asset" required>
+                        <input name="purchase_price" id="purchase_price" class="form-control money" placeholder="Input Price Asset" required>
                       </div>
 
                       <div class="col-md-6 form-group">
                         <label for="sow">Specification</label>
-                        <textarea name="keterangan" id="keterangan" placeholder="input Specification" class="form-control" required=""></textarea>
+                        <textarea name="keterangan" id="keterangan" placeholder="Input Specification" class="form-control" required=""></textarea>
                       </div>
                     </div>
                   </div>
@@ -520,12 +520,12 @@ GA Asset
                     <div class="col-md-12">
                       <div class="col-md-6 form-group">
                         <label for="sow">Date of Purchase</label>
-                        <input type="text" name="asset_date" id="asset_date" placeholder="input date" class="form-control" required>
+                        <input type="text" name="asset_date" id="asset_date" placeholder="Input Date" class="form-control" required>
                       </div>
 
                       <div class="col-md-6 form-group">
                         <label for="sow">Location</label>
-                        <textarea name="lokasi" id="lokasi" class="form-control" placeholder="input location"></textarea>
+                        <textarea name="lokasi" id="lokasi" class="form-control" placeholder="Input Location"></textarea>
                       </div>
                     </div>
                   </div>
@@ -799,27 +799,27 @@ GA Asset
                       <td width="20%">Name</td>
                       <td width="20%">Category</td>
                       <td width="20%">Merk</td>
-                      <td width="10%">Qty</td>
-                      <td width="30%">Description</td>
+                      <!-- <td width="10%">Qty</td> -->
+                      <td width="40%">Description</td>
                       <td><button class="btn btn-xs btn-success" type="button" id="btnAddRowReq" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" ><i class="fa fa-plus"></i></button></td>
                     </tr>
                   </thead>
                   <tbody id="tbody_request">
                     <tr>
                       <td>
-                        <input name="nama_barang_request[]" id="nama_barang_request" class="form-control" placeholder="input name" required></input>
+                        <input name="nama_barang_request[]" id="nama_barang_request" class="form-control" placeholder="Input Product Name" required></input>
                       </td>
                       <td>
                         <select class="form-control" id="category_asset_request" name="category_asset_request" data-rowid="1" required> <input id="cat_req_id" name="cat_req_id[]" data-rowid="1" hidden></select>
                       </td>
                       <td>
-                        <input name="merk_barang_request[]" id="merk_barang_request" class="form-control" placeholder="input merk"></input>
+                        <input name="merk_barang_request[]" id="merk_barang_request" class="form-control" placeholder="Input Merk"></input>
                       </td>
+                      <!-- <td>
+                        <input name="qty_barang_request[]" id="qty_barang_request" class="form-control" placeholder="Qty" required></input>
+                      </td> -->
                       <td>
-                        <input name="qty_barang_request[]" id="qty_barang_request" class="form-control" placeholder="qty" required></input>
-                      </td>
-                      <td>
-                        <textarea class="form-control" id="link_barang_request" name="link_barang_request[]" placeholder="input specification,*suggest link for buy" required></textarea>
+                        <textarea class="form-control" id="link_barang_request" name="link_barang_request[]" placeholder="Input Specification,*Suggest link for buy" required></textarea>
                       </td>
                       <td>
                         <button class="btn btn-xs btn-danger remove" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>
@@ -1383,7 +1383,7 @@ GA Asset
       append =  append + '<td><select class="form-control category_asset_request" id="category_asset_request" data-rowid="'+i+'" name="category_asset_request" required></select>'
       append =  append + '<input id="cat_req_id" name="cat_req_id[]" data-rowid="'+i+'" hidden></td>'
       append =  append + '<td><input name="merk_barang_request[]" id="merk_barang_request" data-rowid="'+i+'" class="form-control"></input></td>'
-      append =  append + '<td><input name="qty_barang_request[]" id="qty_barang_request" data-rowid="'+i+'" class="form-control" required></input></td>'
+      // append =  append + '<td><input name="qty_barang_request[]" id="qty_barang_request" data-rowid="'+i+'" class="form-control" required></input></td>'
       append =  append + '<td><textarea id="link_barang_request" name="link_barang_request[]" data-rowid="'+i+'" class="form-control" required></textarea></td>'
       append =  append + '<td><button class="btn btn-xs btn-danger remove" data-rowid="'+i+'" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>'
       append =  append + '</td>'

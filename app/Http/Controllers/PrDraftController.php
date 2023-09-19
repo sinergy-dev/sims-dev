@@ -804,7 +804,7 @@ class PrDraftController extends Controller
                 $getDataEPR = $getDataEPR->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')")
                 ->get()->makeHidden(['status_pr']);
             } else {
-                $getDataEPR = $getDataEPR->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL' AND `status` != 'SENDED')")
+                $getDataEPR = $getDataEPR->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'UNAPPROVED')")
                 ->get()->makeHidden(['status_pr']);
             }
             
@@ -821,7 +821,7 @@ class PrDraftController extends Controller
                 $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED')")
                 ->get()->makeHidden(['comparison','status_pr']);
             } else {
-                $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'SAVED')")
+                $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'SAVED' AND `status` != 'UNAPPROVED')")
                 ->get()->makeHidden(['comparison','status_pr']);
             }
             

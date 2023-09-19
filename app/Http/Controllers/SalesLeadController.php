@@ -834,6 +834,19 @@ class SalesLeadController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
                     // ->where('sales_lead_register.result','CANCEL');
 
+        $total_hold = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+
         $presales = false;
 
         if ($div == 'SALES' && $pos == 'STAFF') {
@@ -845,6 +858,7 @@ class SalesLeadController extends Controller
             $total_win->where('sales_lead_register.result',"WIN")->where('sales_lead_register.nik',$nik);
             $total_lose->where('sales_lead_register.result',"LOSE")->where('sales_lead_register.nik',$nik);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('sales_lead_register.nik',$nik);
+            $total_hold->where('sales_lead_register.result',"HOLD")->where('sales_lead_register.nik',$nik);
         } elseif ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
             $total_lead->where('sales_lead_register.result',"OPEN")->where('users.id_company','1');
             $total_open->where('sales_lead_register.result',"")->where('users.id_company','1');
@@ -854,6 +868,7 @@ class SalesLeadController extends Controller
             $total_win->where('sales_lead_register.result',"WIN")->where('users.id_company','1');
             $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_company','1');
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_company','1');
+            $total_hold->where('sales_lead_register.result',"HOLD")->where('users.id_company','1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $presales = true;
             } else {
@@ -868,6 +883,7 @@ class SalesLeadController extends Controller
             $total_win->where('sales_lead_register.result',"WIN")->where('users.id_territory',$ter);
             $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_territory',$ter);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_territory',$ter);
+            $total_hold->where('sales_lead_register.result',"HOLD")->where('users.id_territory',$ter);
         } elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('nik_presales',$nik);
             $total_open->where('sales_lead_register.result',"")->where('nik_presales',$nik);
@@ -877,6 +893,7 @@ class SalesLeadController extends Controller
             $total_win->where('sales_lead_register.result',"WIN")->where('nik_presales',$nik);
             $total_lose->where('sales_lead_register.result',"LOSE")->where('nik_presales',$nik);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('nik_presales',$nik);
+            $total_hold->where('sales_lead_register.result',"HOLD")->where('nik_presales',$nik);
         } else {
             $total_lead->where('sales_lead_register.result',"!=","hmm");
             $total_open->where('sales_lead_register.result',"");
@@ -886,6 +903,7 @@ class SalesLeadController extends Controller
             $total_win->where('sales_lead_register.result',"WIN");
             $total_lose->where('sales_lead_register.result',"LOSE");
             $total_cancel->where('sales_lead_register.result',"CANCEL");
+            $total_hold->where('sales_lead_register.result',"HOLD");
         }        
 
         // Year
@@ -898,6 +916,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('year',$request->year);
             $total_initial->whereIn('year',$request->year);
             $total_cancel->whereIn('year',$request->year);
+            $total_hold->whereIn('year',$request->year);
         }
 
         // Territory
@@ -910,6 +929,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('id_territory',$request->territory);
             $total_initial->whereIn('id_territory',$request->territory);
             $total_cancel->whereIn('id_territory',$request->territory);
+            $total_hold->whereIn('id_territory',$request->territory);
         }
 
 
@@ -923,6 +943,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('id_company',$request->company);
             $total_initial->whereIn('id_company',$request->company);
             $total_cancel->whereIn('id_company',$request->company);
+            $total_hold->whereIn('id_company',$request->company);
         }
 
         if (!in_array(null,$request->sales_name)) {
@@ -934,6 +955,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('sales_lead_register.nik',$request->sales_name);
             $total_initial->whereIn('sales_lead_register.nik',$request->sales_name);
             $total_cancel->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_hold->whereIn('sales_lead_register.nik',$request->sales_name);
             
         }
 
@@ -946,6 +968,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('nik_presales',$request->presales_name);  
             $total_initial->whereIn('nik_presales',$request->presales_name);  
             $total_cancel->whereIn('nik_presales',$request->presales_name);  
+            $total_hold->whereIn('nik_presales',$request->presales_name);  
         }
 
         if (!in_array(null,$request->product_tag)) {
@@ -957,6 +980,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('id_product_tag',$request->product_tag); 
             $total_initial->whereIn('id_product_tag',$request->product_tag); 
             $total_cancel->whereIn('id_product_tag',$request->product_tag); 
+            $total_hold->whereIn('id_product_tag',$request->product_tag); 
         }
 
         if (!in_array(null,$request->tech_tag)) {
@@ -968,6 +992,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('id_tech',$request->tech_tag);
             $total_initial->whereIn('id_tech',$request->tech_tag);
             $total_cancel->whereIn('id_tech',$request->tech_tag);
+            $total_hold->whereIn('id_tech',$request->tech_tag);
         }
         
         if (!in_array(null,$request->customer)) {
@@ -979,6 +1004,7 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('tb_contact.id_customer',$request->customer);
             $total_initial->whereIn('tb_contact.id_customer',$request->customer);
             $total_cancel->whereIn('tb_contact.id_customer',$request->customer);
+            $total_hold->whereIn('tb_contact.id_customer',$request->customer);
         }
 
         $total_initial_unfiltered = $total_initial->where('sales_lead_register.result',"OPEN")->count();
@@ -988,6 +1014,7 @@ class SalesLeadController extends Controller
         $total_win_unfiltered = $total_win->where('sales_lead_register.result',"WIN")->count();
         $total_lose_unfiltered = $total_lose->where('sales_lead_register.result',"LOSE")->count();
         $total_cancel_unfiltered = $total_cancel->where('sales_lead_register.result',"CANCEL")->count();
+        $total_hold_unfiltered = $total_hold->where('sales_lead_register.result',"HOLD")->count();
 
         if(!in_array(null,$request->result)){
             if (in_array("null", $request->result)) {
@@ -1088,6 +1115,8 @@ class SalesLeadController extends Controller
         
         $count_cancel = $total_cancel->where('result','CANCEL')->count('sales_lead_register.lead_id');
 
+        $count_hold = $total_hold->where('result','HOLD')->count('sales_lead_register.lead_id');
+
         $sum_amount_lead = $total_lead->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) AS amount_lead'))->first();
 
         $sum_amount_open = $total_open->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_open'))->first();
@@ -1100,32 +1129,66 @@ class SalesLeadController extends Controller
 
         $sum_amount_lose = $total_lose->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_lose'))->first();
 
-        // return $count_tp;
+        $sum_amount_cancel = $total_cancel->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_cancel'))->first();
 
-        return collect([
-            'lead'=>$count_lead,
-            'initial'=>$count_initial,
-            'open'=>$count_open,
-            'sd'=>$count_sd,
-            'tp'=>$count_tp,
-            'win'=>$count_win,
-            'lose'=>$count_lose,
-            'cancel'=>$count_cancel,
-            'initial_unfiltered'=>$total_initial_unfiltered,
-            'open_unfiltered'=>$total_open_unfiltered,
-            'sd_unfiltered'=>$total_sd_unfiltered,
-            'tp_unfiltered'=>$total_tp_unfiltered,
-            'win_unfiltered'=>$total_win_unfiltered,
-            'lose_unfiltered'=>$total_lose_unfiltered,
-            'cancel_unfiltered'=>$total_cancel_unfiltered,
-            'amount_lead'=>$sum_amount_lead->amount_lead,
-            'amount_open'=>$sum_amount_open->amount_open,
-            'amount_sd'=>$sum_amount_sd->amount_sd,
-            'amount_tp'=>$sum_amount_tp->amount_tp,
-            'amount_win'=>$sum_amount_win->amount_win,
-            'amount_lose'=>$sum_amount_lose->amount_lose,
-            'presales'=>$presales
-        ]);
+        $sum_amount_hold = $total_hold->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_hold'))->first();
+
+        // return $count_hold;
+
+        if (in_array("null", $request->result) && in_array("WIN", $request->result)) {
+            return collect([
+                'lead'=>$count_initial+$count_open+$count_sd+$count_tp+$count_win+$count_lose+$count_cancel+$count_hold,
+                // 'lead'=>$count_initial,
+                'initial'=>0,
+                'open'=>0,
+                'sd'=>0,
+                'tp'=>0,
+                'win'=>0,
+                'lose'=>0,
+                'cancel'=>0,
+                'initial_unfiltered'=>$total_initial_unfiltered,
+                'open_unfiltered'=>$total_open_unfiltered,
+                'sd_unfiltered'=>$total_sd_unfiltered,
+                'tp_unfiltered'=>$total_tp_unfiltered,
+                'win_unfiltered'=>$total_win_unfiltered,
+                'lose_unfiltered'=>$total_lose_unfiltered,
+                'cancel_unfiltered'=>$total_cancel_unfiltered,
+                'amount_lead'=>$sum_amount_open->amount_open+$sum_amount_sd->amount_sd+$sum_amount_tp->amount_tp+$sum_amount_win->amount_win+$sum_amount_lose->amount_lose+$sum_amount_cancel->amount_cancel+$sum_amount_hold->amount_hold,
+                'amount_open'=>0,
+                'amount_sd'=>0,
+                'amount_tp'=>0,
+                'amount_win'=>0,
+                'amount_lose'=>0,
+                'presales'=>$presales
+            ]);
+        } else {
+            return collect([
+                'lead'=>$count_lead,
+                'initial'=>$count_initial,
+                'open'=>$count_open,
+                'sd'=>$count_sd,
+                'tp'=>$count_tp,
+                'win'=>$count_win,
+                'lose'=>$count_lose,
+                'cancel'=>$count_cancel,
+                'initial_unfiltered'=>$total_initial_unfiltered,
+                'open_unfiltered'=>$total_open_unfiltered,
+                'sd_unfiltered'=>$total_sd_unfiltered,
+                'tp_unfiltered'=>$total_tp_unfiltered,
+                'win_unfiltered'=>$total_win_unfiltered,
+                'lose_unfiltered'=>$total_lose_unfiltered,
+                'cancel_unfiltered'=>$total_cancel_unfiltered,
+                'amount_lead'=>$sum_amount_lead->amount_lead,
+                'amount_open'=>$sum_amount_open->amount_open,
+                'amount_sd'=>$sum_amount_sd->amount_sd,
+                'amount_tp'=>$sum_amount_tp->amount_tp,
+                'amount_win'=>$sum_amount_win->amount_win,
+                'amount_lose'=>$sum_amount_lose->amount_lose,
+                'presales'=>$presales
+            ]);
+        }
+
+        
     }
 
     public function update_lead_register(Request $request)

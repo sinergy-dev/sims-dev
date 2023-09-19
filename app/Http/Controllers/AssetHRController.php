@@ -251,7 +251,8 @@ class AssetHRController extends Controller
                         ->get();
 
         $pinjam_request = DB::table('tb_asset_hr_transaction')
-                        ->select('keterangan','note','no_transac','id_transaction')
+                        ->join('tb_asset_hr','tb_asset_hr.id_barang','tb_asset_hr_transaction.id_transaction')
+                        ->select('keterangan','tb_asset_hr_transaction.note','no_transac','id_transaction','serial_number')
                         ->where('nik_peminjam',Auth::User()->nik)
                         ->where('tb_asset_hr_transaction.status','PENDING')
                         ->where('tgl_pengembalian',NULL)
@@ -262,7 +263,7 @@ class AssetHRController extends Controller
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','users.name','tb_asset_hr_request.nik','tb_asset_hr_request.status','tb_asset_hr_request.created_at')
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','users.name','tb_asset_hr_request.nik','tb_asset_hr_request.status','tb_asset_hr_request.created_at','qty')
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
@@ -270,7 +271,7 @@ class AssetHRController extends Controller
 
             $current_borrowed = DB::table('tb_asset_hr_transaction')
                         ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
-                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction', 'keterangan')
+                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction', 'keterangan','serial_number')
                         ->where('tb_asset_hr_transaction.status','ACCEPT')
                         ->where('tgl_pengembalian',NULL)
                         ->get();
@@ -285,7 +286,7 @@ class AssetHRController extends Controller
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name', 'tb_asset_hr_request.nik','tb_asset_hr_request.created_at')
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name', 'tb_asset_hr_request.nik','tb_asset_hr_request.created_at','qty')
                            ->where('tb_asset_hr_request.nik',Auth::User()->nik)
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
@@ -482,7 +483,7 @@ class AssetHRController extends Controller
             DB::raw("CASE WHEN (serial_number is null) THEN CONCAT(`nama_barang`,' - ',`merk`) ELSE CONCAT(`nama_barang`,' - ',`merk`,'(',`serial_number`,')') END AS `text`"),
             DB::raw("`id_barang` AS `id`"))
             ->where('status','AVAILABLE')
-            ->where('kategori',$category)->get()); 
+            ->where('kategori',$category)->orderBy('id','desc')->get()); 
     }
 
     public function getCategoryPinjam(Request $request){
@@ -579,7 +580,7 @@ class AssetHRController extends Controller
                 'nik'               => Auth::User()->nik,
                 'kategori_request'  => $request['cat_req_id'][$i],
                 'nama'              => $request['nama_barang_request'][$i],
-                'qty'               => $request['qty_barang_request'][$i],
+                'qty'               => '1',
                 'status'            => "REQUEST",
                 'link'              => $link_barang[$i],
                 'merk'              => $merk_barang,
@@ -982,9 +983,9 @@ class AssetHRController extends Controller
                     ->where('tb_asset_hr_transaction.id_transaction',$store->id_transaction)
                     ->first();
 
-            $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+            $to = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email')->where('roles.name','HR GA')->get();
 
-            $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+            $users = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name')->where('roles.name','HR GA')->first();
 
             Mail::to($to)->send(new RequestAssetHr('reqPinjam',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
         }      
@@ -1020,9 +1021,11 @@ class AssetHRController extends Controller
                 ->where('tb_asset_hr_transaction.id_transaction',$store->id_transaction)
                 ->first();
 
-        $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
 
-        $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+
+        $to = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email')->where('roles.name','HR GA')->get();
+
+        $users = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name')->where('roles.name','HR GA')->first();
 
         Mail::to($to)->send(new RequestAssetHr('reqPinjam',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));      
         
