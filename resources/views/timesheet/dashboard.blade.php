@@ -82,7 +82,7 @@
             <h3 class="box-title"><i class="fa fa-filter"></i> Filter</h3>
           </div>
           <div class="box-body">
-            <div class="form-group">
+            <div class="form-group" id="filter-month-timesheet" style="display:none;">
               <label>Filter by Month</label>
               <div id="monthFilter">
               </div>
@@ -167,12 +167,13 @@
       <div class="col-md-10 col-xs-9">
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
-            <li class="active" id="nav-tab-table" style="display:none;"><a href="#table" data-toggle="tab">Table</a></li>
+            <li class="active" id="nav-tab-table"><a href="#table" data-toggle="tab">Table</a></li>
             <li><a href="#chart" data-toggle="tab">Chart</a></li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="table">
-              <div class="box box-primary" id="box_mandays" >
+
+              <div class="box box-primary" id="box_mandays" style="display:none">
                 <div class="box-header bg-primary with-border">
                   <h3 class="box-title" style="color: white;">Summary of Mandays <span id="title_summary_year"></span></h3>
                   <span id="filterSumPoint" class="pull-right"><i class="fa fa-circle" style="color: red;"></i> <span style="color: white">not ready to filter..</span></span>
@@ -263,18 +264,6 @@
                                   </button>
                                 </span>
                                 <span class="input-group-btn">
-                                 <!--  <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    Displayed Column
-                                    <span class="fa fa-caret-down"></span>
-                                  </button>
-                                  <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="1"><span class="text">Planned</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="2"><span class="text">Actual</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="3"><span class="text">Threshold</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="4"><span class="text">Billable</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="5"><span class="text">%Billable</span></li>
-                                    <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable('tbSummarySbe',this)" data-column="6"><span class="text">Deviation</span></li>
-                                  </ul> -->
                                   <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" onclick="reloadTable('tbSummarySbe')" type="button" class="btn btn-default btn-flat">
                                     <i class="fa fa-fw fa-refresh"></i>
                                   </button>
@@ -335,6 +324,7 @@
               <div class="row" id="box_definition" style="display:none;">
               </div>
             </div>
+
             <div class="tab-pane" id="chart">
               <div class="alert alert-info alert-dismissible" id="alert-for-direktor" style="display:none">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -449,15 +439,14 @@
         $("#" + item).show()
       })
       
-      if (!accesable.includes('nav-tab-table')) {
-        $(".nav-tabs").find("li").last().addClass("active")
-        $(".tab-pane").last().addClass("active")
-        $(".tab-pane").first().removeClass("active")
+      if ($("#tbSummaryMandays").is(":visible") == false) {
+        // $(".nav-tabs").find("li").last().addClass("active")
+        // $(".tab-pane").last().addClass("active")
+        // $(".tab-pane").first().removeClass("active")
         $("#selectYear").val(moment().year()).trigger('change')
       }else{
         var datatableSummary = ""
         function initializeDataTable(tabId) {
-          console.log("aheey")
           datatableSummary = $(tabId).find('#tbSummaryMandays').DataTable({
             responsive: true,
             "ajax":{
@@ -518,26 +507,29 @@
 
           // datatableSummary.columns.adjust().draw()
         }
+      }
 
-        // When a tab becomes active, reinitialize the DataTable and adjust columns
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-          var tabId = $(e.target).attr('href');
-          if (tabId == '#table') {
-            if (!$.fn.DataTable.isDataTable('#tbSummaryMandays')) {
-              initializeDataTable(activeTab)
-              datatableSummary.columns.adjust().draw()
-            }
+      // When a tab becomes active, reinitialize the DataTable and adjust columns
+      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var tabId = $(e.target).attr('href');
+        if (tabId == '#table') {
+          if (!$.fn.DataTable.isDataTable('#tbSummaryMandays')) {
+            initializeDataTable(activeTab)
+            datatableSummary.columns.adjust().draw()
           }
-        })
+        }
+      })
 
-        $(document).ready(function(){
-          $("#span-remaining").text(moment().format('MMMM'))
-          $("#textLevel").text(moment().format('YYYY'))
-          $("#textStatus").text(moment().format('YYYY'))
-          $("#textTask").text(moment().format('YYYY'))
-          $("#textPhase").text(moment().format('YYYY'))
-          $("#textSchedule").text(moment().format('YYYY'))
-          $("#title_summary_year").text(moment().year())
+      $(document).ready(function(){
+        $("#span-remaining").text(moment().format('MMMM'))
+        $("#textLevel").text(moment().format('YYYY'))
+        $("#textStatus").text(moment().format('YYYY'))
+        $("#textTask").text(moment().format('YYYY'))
+        $("#textPhase").text(moment().format('YYYY'))
+        $("#textSchedule").text(moment().format('YYYY'))
+        $("#title_summary_year").text(moment().year())
+
+        if ($("#tbSummaryMandays").is(":visible") == true) {
           duplicateCanvasRemaining("/timesheet/getRemainingChart","")
           levelChart("/timesheet/getLevelChart","")
           statusChart("/timesheet/getStatusChart","")
@@ -545,8 +537,8 @@
           taskChart("/timesheet/getTaskChart","")
           phaseChart("/timesheet/getPhaseChart","")
           cummulativeChart(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],"timesheet/getCummulativeMandaysChart","")
-        })
-      }
+        }
+      })
       
       if (accesable.includes('box_pid')) {
         var tbSummarySbe = $("#tbSummarySbe").DataTable({
