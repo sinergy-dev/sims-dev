@@ -353,7 +353,7 @@
             <form action="" id="" name="">
                 @csrf
                 <div style="display: flex;">
-                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('timesheet/template_timesheet.csv')}}" style="cursor:pointer;">link</a></span>
+                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('timesheet/template_upload_timesheet.csv')}}" style="cursor:pointer;">link</a></span>
                 </div>
                 <input type="file" name="inputCsv" id="inputCsv" class="form-control">
             </form>
