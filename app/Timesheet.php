@@ -17,7 +17,7 @@ class Timesheet extends Model
 {
     protected $table = 'tb_timesheet';
     protected $primaryKey = 'id';
-    protected $fillable = ['nik','schedule', 'date','type','pid','task','phase','level','activity','duration','status','date_add','point_mandays','month'];
+    protected $fillable = ['nik','schedule', 'date','type','pid','task','phase','level','activity','duration','status','date_add','point_mandays'];
     public $timestamps = false;
 
     protected $appends = ['planned', 'threshold', 'plannedMonth'];
