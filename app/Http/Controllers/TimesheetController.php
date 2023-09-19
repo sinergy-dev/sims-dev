@@ -16,6 +16,7 @@ use App\CutiDetil;
 use App\Sbe;
 use App\SbeConfig;
 use App\PublicHolidayAdjustment;
+use App\Feelings;
 
 use DatePeriod;
 use DateInterval;
@@ -226,6 +227,11 @@ class TimesheetController extends Controller
         }
     }
 
+    public function deleteAllActivityByDate(Request $request)
+    {
+        $delete = Timesheet::where('start_date',$request->startDate)->where('nik',$request->nik)->delete();
+    }
+
     public function storeTaskConfig(Request $request)
     {
         if (isset($request->id)) {
@@ -289,11 +295,16 @@ class TimesheetController extends Controller
 
         $sol = ['id' => 'presales', 'text' => 'SOL'];
         $sid = ['id' => 'DPG', 'text' => 'SID'];
-        $hr = ['id' => 'hr', 'text' => 'HR'];
+        $hr = ['id' => 'hr', 'text' => 'HFM'];
 
         return $getListOperation->push($sol)->push($sid)->push($hr);
 
         // return $getListOperation;
+    }
+
+    public function deleteActivity(Request $request)
+    {
+        $delete = Timesheet::where('id',$request->id_activity)->delete();
     }
 
     public function addTimesheet(Request $request)
@@ -308,60 +319,42 @@ class TimesheetController extends Controller
         // $toDate = Carbon::parse($startDateInput)->addDays(1);
         // $fromDate = Carbon::parse($request->endDate)->addDays(1);
         Carbon::setTestNow();
-
-        $toDate = Carbon::createFromFormat('Y-m-d', $request->endDate, 'Asia/Jakarta');
-        $fromDate = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta');
-  
-        $days = $toDate->diffInDays($fromDate);
         // $allDaysPlanned = $days+1;
 
-        if ($request->selectSchedule == 'Planned') {
-            if ($days > 0) {
-                for ($i=0; $i <= $days; $i++) { 
+        if ($request->isGCal == 'true') {
+            $toDate = Carbon::createFromFormat('Y-m-d', $request->endDate, 'Asia/Jakarta');
+            $fromDate = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta');
+      
+            $days = $toDate->diffInDays($fromDate);
+            if ($request->selectSchedule == 'Planned') {
+                if ($days > 0) {
+                    for ($i=0; $i <= $days; $i++) { 
 
+                        if (isset($request->id_activity)) {
+                            $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
+                        } else {
+                            $addTimesheet = new Timesheet();
+                            $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+                        }
+
+                        // $addTimesheet = new Timesheet();
+                        $addTimesheet->nik = Auth::User()->nik;
+                        $addTimesheet->schedule = $request->selectSchedule;
+                        $startDatePlanned = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta')->addDays($i);
+                    }
+                }else{
                     if (isset($request->id_activity)) {
                         $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
                     } else {
                         $addTimesheet = new Timesheet();
                         $addTimesheet->date_add = Carbon::now()->toDateTimeString();
                     }
-
-                    // $addTimesheet = new Timesheet();
                     $addTimesheet->nik = Auth::User()->nik;
                     $addTimesheet->schedule = $request->selectSchedule;
-                    $startDatePlanned = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta')->addDays($i);
-
+                    $startDatePlanned = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta');
                     // return Carbon::parse($startDate);
-                    $addTimesheet->start_date = $startDatePlanned;
-                    $addTimesheet->end_date = $startDatePlanned;
-                    $addTimesheet->pid = $request->selectLead;
-                    $addTimesheet->task = $request->selectTask;
-                    $addTimesheet->phase = $request->selectPhase;
-                    $addTimesheet->level = $request->selectLevel;
-                    $addTimesheet->activity = $request->textareaActivity;
-                    $addTimesheet->status = $request->selectStatus;
-                    $addTimesheet->duration = $request->selectDuration;
-                    $addTimesheet->type = $request->selectType;
-                    $getPoint = (int)$request->selectDuration/480;
-                    $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
-                    $addTimesheet->month = date("n");
-                    $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-                    // $addTimesheet->workdays = count($workdays);
-                    $addTimesheet->save();
+                }
 
-                    $storeAll[] = $addTimesheet;
-                }
-            }else{
-                if (isset($request->id_activity)) {
-                    $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
-                } else {
-                    $addTimesheet = new Timesheet();
-                    $addTimesheet->date_add = Carbon::now()->toDateTimeString();
-                }
-                $addTimesheet->nik = Auth::User()->nik;
-                $addTimesheet->schedule = $request->selectSchedule;
-                $startDatePlanned = Carbon::createFromFormat('Y-m-d', $request->startDate, 'Asia/Jakarta');
-                // return Carbon::parse($startDate);
                 $addTimesheet->start_date = $startDatePlanned;
                 $addTimesheet->end_date = $startDatePlanned;
                 $addTimesheet->pid = $request->selectLead;
@@ -374,43 +367,122 @@ class TimesheetController extends Controller
                 $addTimesheet->type = $request->selectType;
                 $getPoint = (int)$request->selectDuration/480;
                 $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
-                $addTimesheet->month = date("n");
+                // $addTimesheet->month = date("n");
                 $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
                 // $addTimesheet->workdays = count($workdays);
                 $addTimesheet->save();
 
                 $storeAll[] = $addTimesheet;
+            } else {
+                if (isset($request->id_activity)) {
+                    $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
+                } else {
+                    $addTimesheet = new Timesheet();
+                    $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+                }
+                $addTimesheet->nik = Auth::User()->nik;
+                $addTimesheet->schedule = $request->selectSchedule;
+                $addTimesheet->start_date = $request->startDate;
+                $addTimesheet->end_date = $request->endDate;
+                $addTimesheet->pid = $request->selectLead;
+                $addTimesheet->task = $request->selectTask;
+                $addTimesheet->phase = $request->selectPhase;
+                $addTimesheet->level = $request->selectLevel;
+                $addTimesheet->activity = $request->textareaActivity;
+                $addTimesheet->status = $request->selectStatus;
+                $addTimesheet->duration = $request->selectDuration;
+                $addTimesheet->type = $request->selectType;
+                $getPoint = (int)$request->selectDuration/480;
+                $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+                // $addTimesheet->month = date("n");
+                $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
+                // $addTimesheet->workdays = count($workdays);
+                $addTimesheet->save();
+
+                $storeAll [] = $addTimesheet;
             }
         } else {
-            if (isset($request->id_activity)) {
-                $addTimesheet = Timesheet::where('id',$request->id_activity)->first();
-            } else {
-                $addTimesheet = new Timesheet();
-                $addTimesheet->date_add = Carbon::now()->toDateTimeString();
-            }
-            $addTimesheet->nik = Auth::User()->nik;
-            $addTimesheet->schedule = $request->selectSchedule;
-            $addTimesheet->start_date = $request->startDate;
-            $addTimesheet->end_date = $request->endDate;
-            $addTimesheet->pid = $request->selectLead;
-            $addTimesheet->task = $request->selectTask;
-            $addTimesheet->phase = $request->selectPhase;
-            $addTimesheet->level = $request->selectLevel;
-            $addTimesheet->activity = $request->textareaActivity;
-            $addTimesheet->status = $request->selectStatus;
-            $addTimesheet->duration = $request->selectDuration;
-            $addTimesheet->type = $request->selectType;
-            $getPoint = (int)$request->selectDuration/480;
-            $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
-            $addTimesheet->month = date("n");
-            $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-            // $addTimesheet->workdays = count($workdays);
-            $addTimesheet->save();
+            // return $request->arrTimesheet;
+            $arrTimesheet = json_decode($request->arrTimesheet,true);
+            // return $arrTimesheet;
+            $toDate = Carbon::createFromFormat('Y-m-d', $arrTimesheet[0]['startDate'], 'Asia/Jakarta');
+            $fromDate = Carbon::createFromFormat('Y-m-d', $arrTimesheet[0]['endDate'], 'Asia/Jakarta');
+      
+            $days = $toDate->diffInDays($fromDate);
+            // foreach ($arrTimesheet as $value) {
+            //     // return $value['selectSchedule'];
+            //     // if ($value['selectSchedule'] == 'Planned') {
+            if ($days > 0) {
+                $i=0; 
+                do{
+                    foreach ($arrTimesheet as $value) {
 
-            $storeAll [] = $addTimesheet;
+                        if (isset($value['id_activity'])) {
+                            $addTimesheet = Timesheet::where('id',$value['id_activity'])->first();
+                        } else {
+                            $addTimesheet = new Timesheet();
+                            $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+                        }
+                        $startDatePlanned = Carbon::createFromFormat('Y-m-d', $value['startDate'], 'Asia/Jakarta')->addDays($i);
+                        $addTimesheet->start_date = $startDatePlanned;
+                        $addTimesheet->end_date = $startDatePlanned;
+                        $addTimesheet->nik = Auth::User()->nik;
+                        $addTimesheet->schedule = $value['selectSchedule'];
+                        $addTimesheet->pid = $value['selectLead'];
+                        $addTimesheet->task = $value['selectTask'];
+                        $addTimesheet->phase = $value['selectPhase'];
+                        $addTimesheet->level = $value['selectLevel'];
+                        $addTimesheet->activity = $value['textareaActivity'];
+                        $addTimesheet->status = $value['selectStatus'];
+                        $addTimesheet->duration = $value['selectDuration'];
+                        $addTimesheet->type = $value['selectType'];
+                        $getPoint = (int)$value['selectDuration']/480;
+                        $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+                        $addTimesheet->save();
+
+                        // $storeAll [] = $addTimesheet;
+
+                        $i++;
+                    }
+                }while($i <= $days);
+            }else{
+                foreach ($arrTimesheet as $value) {
+
+                    if (isset($value['id_activity'])) {
+                        $addTimesheet = Timesheet::where('id',$value['id_activity'])->first();
+                    } else {
+                        $addTimesheet = new Timesheet();
+                        $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+                    }
+                    $startDatePlanned = Carbon::createFromFormat('Y-m-d', $value['startDate'], 'Asia/Jakarta');
+                    $addTimesheet->start_date = $startDatePlanned;
+                    $addTimesheet->end_date = $startDatePlanned;
+                    $addTimesheet->nik = Auth::User()->nik;
+                    $addTimesheet->schedule = $value['selectSchedule'];
+                    $addTimesheet->pid = $value['selectLead'];
+                    $addTimesheet->task = $value['selectTask'];
+                    $addTimesheet->phase = $value['selectPhase'];
+                    $addTimesheet->level = $value['selectLevel'];
+                    $addTimesheet->activity = $value['textareaActivity'];
+                    $addTimesheet->status = $value['selectStatus'];
+                    $addTimesheet->duration = $value['selectDuration'];
+                    $addTimesheet->type = $value['selectType'];
+                    $getPoint = (int)$value['selectDuration']/480;
+                    $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+                    $addTimesheet->save();
+
+                    // $storeAll [] = $addTimesheet;
+                }
+   
+            }
         }
 
-        return $storeAll;
+        // return $storeAll;
+    }
+
+    public function getActivitybyDate(Request $request)
+    {
+        return $data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','point_mandays','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),'tb_timesheet.id')->where('tb_timesheet.start_date',$request->start_date)->where('tb_timesheet.nik',$request->nik)->orderby('id','asc')->get();
     }
 
     public function uploadCSV(Request $request){
@@ -963,7 +1035,26 @@ class TimesheetController extends Controller
 
         $hidden = ['planned','threshold'];
 
-    	$data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','point_mandays','month','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"))->where('tb_timesheet.nik',$request->nik)->orderby('id','asc')->get();
+        $plannedDone = DB::table('tb_timesheet')
+                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as planned"))
+                   ->where('schedule', 'Planned');
+
+        $unPlannedDone = DB::table('tb_timesheet')
+                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as unplanned"))
+                   ->where('schedule', 'Unplanned');
+
+        $emoji = DB::table('tb_feelings')
+                   ->select('code_feeling','date_add')->where('nik',$request->nik)->get();
+
+    	$data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')
+            ->LeftjoinSub($unPlannedDone, 'unplanned_done', function ($join) {
+                $join->on('tb_timesheet.id', '=', 'unplanned_done.id');
+            })
+            ->LeftjoinSub($plannedDone, 'planned_done', function ($join) {
+                $join->on('tb_timesheet.id', '=', 'planned_done.id');
+            })->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as point_mandays"),'tb_timesheet.id','planned','unplanned')
+            ->where('tb_timesheet.nik',$request->nik)
+            ->orderby('id','asc')->get();
 
     	$getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
@@ -976,7 +1067,7 @@ class TimesheetController extends Controller
     	$array = array_merge($data->toArray(),$getLeavingPermit->toArray(),$holiday->toArray(),$getPermit->toArray());
 
     	return collect(["data"=>$array,
-    		"lock_duration"=>empty($getLock->lock_duration)?(empty(DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration) ? "1" : DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration):$getLock->lock_duration]);
+    		"lock_duration"=>empty($getLock->lock_duration)?(empty(DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration) ? "1" : DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration):$getLock->lock_duration,"emoji"=>$emoji]);
     }
 
     public function getWorkDays($startDate,$endDate){
@@ -1028,24 +1119,37 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
-            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
-        } elseif ($cek_role->name == 'SOL Manager') {
-            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
-        } elseif ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
-            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
-        } elseif ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
-        } elseif ($cek_role->name == 'PMO SPV' || $cek_role->name == 'PMO Manager') {
-            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
-        } elseif ($cek_role->name == 'HR Manager') {
-            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
-        } else {
-            $getPidByNik = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('pid')->where('tb_timesheet_pid.nik',Auth::User()->nik)->get();
-            $getPid = TimesheetPid::whereIn('pid',$getPidByNik)->get();
-            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('pid','users.name','role')->whereIn('pid',$getPidByNik)->get();
+        if (isset($request->roles)) {
+            // return "boh";
+            if ($request->roles == 'DPG') {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division','TECHNICAL')->get();
+            }else if ($request->roles == 'presales') {
+                // code...
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division','TECHNICAL PRESALES')->get();
+            }else {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',$request->roles)->get();
+            }
+            
+        }else{
+            if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+            } elseif ($cek_role->name == 'SOL Manager') {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+            } elseif ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+            } elseif ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+            } elseif ($cek_role->name == 'PMO SPV' || $cek_role->name == 'PMO Manager') {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+            } elseif ($cek_role->name == 'HR Manager') {
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+            } else {
+                $getPidByNik = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('pid')->where('tb_timesheet_pid.nik',Auth::User()->nik)->get();
+                $getPid = TimesheetPid::whereIn('pid',$getPidByNik)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('pid','users.name','role')->whereIn('pid',$getPidByNik)->get();
+            }
         }
-    	
+        
     	return array("data"=>$data);
     }
 
@@ -1372,7 +1476,8 @@ class TimesheetController extends Controller
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
                         "deviation" =>"-",
-                        "total_task"=>"-"
+                        "total_task"=>"-",
+                        "status"    =>"Go Ahead"
                     ]);
                 }
             }
@@ -1382,8 +1487,15 @@ class TimesheetController extends Controller
             $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
             $workdays        = count($workdays["workdays"]);
 
+            $workdaysThisMonth = $this->getWorkDays(Carbon::now()->startOfMonth()->format("Y-m-d"),Carbon::now()->endOfMonth()->format("Y-m-d"),"workdays");
+            $countThisMonth    = count($workdaysThisMonth["workdays"]); 
+
             $countPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
                 return round($group->count('point_mandays'),2);
+            });
+
+            $countPointThisMonth = $sumMandays->where('month_number',date("n"))->groupBy('name')->map(function ($group) {
+                return round($group->sum('point_mandays'),2);
             });
 
             $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
@@ -1411,6 +1523,7 @@ class TimesheetController extends Controller
                 $sumArrayPermitByName[$key] = (isset($getPermitByName[$key]) ? $getPermitByName[$key] : 0) + (isset($getTaskAvailableByName[$key]) ? $getTaskAvailableByName[$key] : 0);
             }
 
+            $status = '';
             $sumPointMandays = collect();
             foreach($sumPointByUser as $key_point => $valueSumPoint){
                 $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
@@ -1427,8 +1540,6 @@ class TimesheetController extends Controller
                     // "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/$workdays*100,  2, '.', ''),
                     "deviation"=>$workdays - $valueSumPoint,
-                    // "deviation"=>collect($sumMandays)->first()->planned - $valueSumPoint,
-                    // "total_task"=>'-'
                 ]); 
             }  
 
@@ -1437,6 +1548,13 @@ class TimesheetController extends Controller
 
             foreach($uniqueCollection->all() as $key_uniq => $data_uniq){
                 if ($data_uniq['name'] == $key_uniq) {
+                    $countByName = isset($countPointThisMonth[$key_uniq])?$countPointThisMonth[$key_uniq]:0;
+                    if (($countThisMonth - $getPublicHolidayAdjustment) >= $countByName) {
+                        $status = "Go Ahead";
+                    }else if(($countThisMonth - $getPublicHolidayAdjustment) < $countByName){
+                        $status = "Overtime";
+                    }
+
                     $arrSumPoint->push([
                         "name"      =>$data_uniq['name'],
                         "nik"       =>$data_uniq['nik'],
@@ -1446,7 +1564,10 @@ class TimesheetController extends Controller
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
                         "deviation" =>$data_uniq['deviation'],
-                        "total_task"=>$countPointByUser[$key_uniq]
+                        "total_task"=>$countPointByUser[$key_uniq],
+                        "status"    =>$status,
+                        "this_month"=>$countThisMonth,
+                        "countByName"=>$countByName
                     ]);
                 }
             }
@@ -1461,7 +1582,8 @@ class TimesheetController extends Controller
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
                         "deviation" =>"-",
-                        "total_task"=>"-"
+                        "total_task"=>"-",
+                        "status"    =>$status
                     ]);
                 }
             }
@@ -1481,12 +1603,12 @@ class TimesheetController extends Controller
                 ->where('tb_sbe.status','Fixed')
                 ->where('tb_sbe_config.status','Choosed')
                 ->get();
-        
+
         $appendedAttributesToHide = ['link_document','detail_config','get_function','detail_all_config_choosed'];
 
         $getSbe->makeHidden($appendedAttributesToHide);
 
-        $groupByProject = $getSbe->groupBy('id_project');
+        $groupByProject = $getSbe->groupBy('id_project');        
 
         // return $groupByProject;
 
@@ -1499,57 +1621,150 @@ class TimesheetController extends Controller
         }
         $sumPointByProject = $getSumPointByProject->groupby('pid');
 
-        foreach($groupByProject as $key_pid => $value){
-            foreach($sumPointByProject as $key_group => $value_group){
-                if ($key_group == $key_pid) {
-                    foreach($value as $value_pid){
-                        if ($value_pid['project_type'] == 'Implementation') {
-                            // return "oke";
-                            if ($value_pid['item'] == 'PM Maintenance') {
-                                if (isset($getSumPointByProject[$key_group]['PMO'])) {
-                                    // return "okee";
+        $sumPointMandays = collect();
+
+        if (isset($request->roles)) {
+            if ($request->roles == 'pmo' || $request->roles == 'DPG' || $request->roles == 'msm') {
+                foreach($groupByProject as $key_pid => $value){
+                    foreach($sumPointByProject as $key_group => $value_group){
+                        if ($key_group == $key_pid) {
+                            foreach($value as $value_pid){
+                                if ($value_pid['project_type'] == 'Implementation') {
+                                    // return "oke";
+                                    if ($value_pid['item'] == 'PM Maintenance') {
+                                        if (isset($getSumPointByProject[$key_group]['PMO'])) {
+                                            // return "okee";
+                                            $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        }else{
+                                            $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                        }
+                                    }else{
+                                        if (isset($sumPointByProject[$key_group]['DPG'])) {
+                                            $sumPointByProject[$key_group]["DPG"]["sumMandays"] = $sumPointByProject[$key_group]["DPG"]["sumMandays"] + (int)$value_pid['qty'];
+                                        }else{
+                                            $sumPointByProject[$key_group]->put("DPG",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("DPG",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                        }
+                                    }
+                                }else if($value_pid['project_type'] == 'Supply Only'){
+                                    // return $sumPointByProject["PMO"]["sumMandays"] + $value_pid['qty']; 
+                                    if (isset($sumPointByProject[$key_group]['PMO'])) {
+                                        // return "okee 5";
+
+                                        $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    }else{
+                                        $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
+                                    }
+                                }else if($value_pid['project_type'] == 'Maintenance'){
+                                    if ($value_pid['item'] == 'PM Maintenance') {
+                                        if (isset($sumPointByProject[$key_group]['PMO'])) {
+                                            $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        }else{
+                                            $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                        }
+                                    }else{
+                                        if (isset($sumPointByProject[$key_group]['MSM'])) {
+                                            $sumPointByProject[$key_group]["MSM"]["sumMandays"] = $sumPointByProject[$key_group]["MSM"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        }else{
+                                            $sumPointByProject[$key_group]->put("MSM",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("MSM",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                        }
+                                    }
+                                }   
+                            }
+                        }
+                    }
+                }
+
+                $upper_role_name = strtoupper($request->roles);
+
+                foreach($sumPointByProject as $key_pid => $value_project){
+                    if (isset($value_project[$upper_role_name][0])) {
+                        foreach($value_project[$upper_role_name][0] as $data){
+                            $sumPointMandays->push([
+                                "name"          =>$data['name'],
+                                "nik"           =>$data['nik'],
+                                "planned"       =>$value_project[$upper_role_name]['sumMandays'],
+                                "actual"        =>$data['actual'],
+                                "pid"           =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project']
+                            ]);
+                        }
+                    }else{
+                        $sumPointMandays = $sumPointMandays;
+                    } 
+                }
+            }else{
+                $sumPointMandays = $sumPointMandays;
+            }
+        }else{
+            foreach($groupByProject as $key_pid => $value){
+                foreach($sumPointByProject as $key_group => $value_group){
+                    if ($key_group == $key_pid) {
+                        foreach($value as $value_pid){
+                            if ($value_pid['project_type'] == 'Implementation') {
+                                // return "oke";
+                                if ($value_pid['item'] == 'PM Maintenance') {
+                                    if (isset($getSumPointByProject[$key_group]['PMO'])) {
+                                        // return "okee";
+                                        $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    }else{
+                                        $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                    }
+                                }else{
+                                    if (isset($sumPointByProject[$key_group]['DPG'])) {
+                                        $sumPointByProject[$key_group]["DPG"]["sumMandays"] = $sumPointByProject[$key_group]["DPG"]["sumMandays"] + (int)$value_pid['qty'];
+                                    }else{
+                                        $sumPointByProject[$key_group]->put("DPG",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("DPG",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                    }
+                                }
+                            }else if($value_pid['project_type'] == 'Supply Only'){
+                                // return $sumPointByProject["PMO"]["sumMandays"] + $value_pid['qty']; 
+                                if (isset($sumPointByProject[$key_group]['PMO'])) {
+                                    // return "okee 5";
+
                                     $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
                                 }else{
-                                    $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group),"name_project"=>$value_pid['name_project']]));
+                                    $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
                                 }
-                            }else{
-                                if (isset($sumPointByProject[$key_group]['DPG'])) {
-                                    $sumPointByProject[$key_group]["DPG"]["sumMandays"] = $sumPointByProject[$key_group]["DPG"]["sumMandays"] + (int)$value_pid['qty'];
+                            }else if($value_pid['project_type'] == 'Maintenance'){
+                                if ($value_pid['item'] == 'PM Maintenance') {
+                                    if (isset($sumPointByProject[$key_group]['PMO'])) {
+                                        $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    }else{
+                                        $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                    }
                                 }else{
-                                    $sumPointByProject[$key_group]->put("DPG",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("DPG",$key_group),"name_project"=>$value_pid['name_project']]));
+                                    if (isset($sumPointByProject[$key_group]['MSM'])) {
+                                        $sumPointByProject[$key_group]["MSM"]["sumMandays"] = $sumPointByProject[$key_group]["MSM"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    }else{
+                                        $sumPointByProject[$key_group]->put("MSM",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("MSM",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                    }
                                 }
-                            }
-                        }else if($value_pid['project_type'] == 'Supply Only'){
-                            // return $sumPointByProject["PMO"]["sumMandays"] + $value_pid['qty']; 
-                            if (isset($sumPointByProject[$key_group]['PMO'])) {
-                                // return "okee 5";
-
-                                $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
-                            }else{
-                                $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
-                            }
-                        }else if($value_pid['project_type'] == 'Maintenance'){
-                            if ($value_pid['item'] == 'PM Maintenance') {
-                                if (isset($sumPointByProject[$key_group]['PMO'])) {
-                                    $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
-                                }else{
-                                    $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group),"name_project"=>$value_pid['name_project']]));
-                                }
-                            }else{
-                                if (isset($sumPointByProject[$key_group]['MSM'])) {
-                                    $sumPointByProject[$key_group]["MSM"]["sumMandays"] = $sumPointByProject[$key_group]["MSM"]["sumMandays"] + (int)$value_pid['qty']; 
-                                }else{
-                                    $sumPointByProject[$key_group]->put("MSM",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("MSM",$key_group),"name_project"=>$value_pid['name_project']]));
-                                }
-                            }
-                        }   
+                            }   
+                        }
                     }
                 }
             }
+
+            $nik = Auth::User()->nik;
+            $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first();
+
+            $upper_role_name = strtoupper($cek_role->group);
+
+            foreach($sumPointByProject as $key_pid => $value_project){
+                if (isset($value_project[$upper_role_name][0])) {
+                    foreach($value_project[$upper_role_name][0] as $data){
+                        $sumPointMandays->push([
+                            "name"          =>$data['name'],
+                            "nik"           =>$data['nik'],
+                            "planned"       =>$value_project[$upper_role_name]['sumMandays'],
+                            "actual"        =>$data['actual'],
+                            "pid"           =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project']
+                        ]);
+                    }
+                }else{
+                    $sumPointMandays = $sumPointMandays;
+                } 
+            }
         }
-
-
-
         // $sumPointSbeFinal = collect();
         // foreach($sumPointByProject as $value_final){
         //     $sumPointSbeFinal->push(["pid"=>$value_final[0]["pid"],collect(["PMO"=>])=>$]);
@@ -1557,47 +1772,25 @@ class TimesheetController extends Controller
         // $cobaMSM = $this->sumPointMandaysSbe("DPG","006/RTAA/SIP/I/2022");
         // return $cobaMSM;
         // return array("data"=>$sumPointByProject);
-        $nik = Auth::User()->nik;
-        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first();
-
-        $sumPointMandays = collect();
-
-        foreach($sumPointByProject as $key_pid => $value_project){
-            if (isset($value_project[$cek_role->group][0])) {
-                foreach($value_project[$cek_role->group][0] as $data){
-                    $sumPointMandays->push([
-                        "name"          =>$data['name'],
-                        "nik"           =>$data['nik'],
-                        "planned"       =>$value_project[$cek_role->group]['sumMandays'],
-                        "actual"        =>$data['actual'],
-                        "pid"           =>$value_project[0]['pid'] . " - " . $value_project[$cek_role->group]['name_project']
-                    ]);
-                }
-            }else{
-                $sumPointMandays = $sumPointMandays;
-            } 
-        }
-
+        
         return array("data"=>$sumPointMandays);
-        // return $getAll->unique();
-        // return $getSbe->makeHidden($appendedAttributesToHide)->groupBy('id_project');
     }
 
-    public function sumPointMandaysSbe($role,$pid)
+    public function sumPointMandaysSbe($role,$pid,$cek_role_name)
     {
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
         // return $role;
         if ($role == 'PMO') {
-            if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
+            if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV' || isset($cek_role_name)) {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             } else {
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
+                $sumMandays  = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
-        }elseif ($role == 'DPG') {
-            if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
+        }else if ($role == 'DPG') {
+            if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV' || isset($cek_role_name)) {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
@@ -1605,7 +1798,7 @@ class TimesheetController extends Controller
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
         }elseif ($role == 'MSM') {
-            if ($cek_role->name == 'SOL Manager') {
+            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV' || isset($cek_role_name)) {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             } else {
@@ -4071,7 +4264,7 @@ class TimesheetController extends Controller
             $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
             $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
             $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
-            $workdays  = count($workdays["workdays"]);
+            $workdays        = count($workdays["workdays"]);
 
             if ($isNeedOtherUser == false) {
                 foreach($getUserByGroup as $value_group){
@@ -4123,7 +4316,16 @@ class TimesheetController extends Controller
             }
 
             $sumPointMandays = collect();
+            
+            $status = '';
             foreach($sumPointByUser as $key_point => $valueSumPoint){
+                $countByName = isset($valueSumPoint[$key_point])?$valueSumPoint[$key_point]:0;
+                if (($countPlanned - $getPublicHolidayAdjustment) >= $countByName) {
+                    $status = "Go Ahead";
+                }else if(($countPlanned - $getPublicHolidayAdjustment) < $countByName){
+                    $status = "Overtime";
+                }
+
                 $billable = isset($sumArrayPermitByName[$key_point])?$sumArrayPermitByName[$key_point]:0;
                 $sumPointMandays->push([
                     "name"=>$key_point,
@@ -4133,7 +4335,8 @@ class TimesheetController extends Controller
                     "threshold"=>$countThresholdFinal,
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
-                    "deviation"=>number_format($countPlanned - $valueSumPoint, 2, '.', '')
+                    "deviation"=>number_format($countPlanned - $valueSumPoint, 2, '.', ''),
+                    "status" => $status
                 ]); 
             }  
             
@@ -4151,7 +4354,9 @@ class TimesheetController extends Controller
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
                         "deviation" =>$data_uniq['deviation'],
-                        "total_task"=>$countPointByUser[$key_uniq]
+                        "total_task"=>$countPointByUser[$key_uniq],
+                        "status"    =>$data_uniq['status']
+
                     ]);
                 }
             }
@@ -4166,7 +4371,8 @@ class TimesheetController extends Controller
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
                         "deviation" =>"-",
-                        "total_task"=>"-"
+                        "total_task"=>"-",
+                        "status"    =>"Go Ahead"
                     ]);
                 }
             }
@@ -4802,13 +5008,7 @@ class TimesheetController extends Controller
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup);
                 $getUserByGroupOD = $getUserByGroupOD->whereNotIn('nik', $data->get()->pluck('nik'))
                                     ->get();
-            }else{
-                $data = $data->whereIn('tb_timesheet.nik',$request->pic);
-                $getUserByGroupOD = $getUserByGroupOD
-                            ->whereNotIn('nik', $data->get()->pluck('nik'))
-                            ->whereIn('nik',$request->pic)    
-                            ->get();
-            } 
+            }
 
             // if ($request->task[0] === null) {
             //     $data = $data;
@@ -4837,7 +5037,7 @@ class TimesheetController extends Controller
             $data = $data->get()->groupBy('name');
 
             if (count($data) == 0) {
-                foreach(User::select('name')->whereIn('nik',$request->pic)->get() as $name_pic){
+                foreach(User::select('name')->whereIn('nik',$listGroup)->get() as $name_pic){
                     $arrayName = array($name_pic->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                     $arrCummulativeMandays->push(['name'=>$name_pic->name,'month_array'=>$arrayName]);
                 }
@@ -6793,6 +6993,35 @@ class TimesheetController extends Controller
             ob_end_clean();
             return $writer->save("php://output");
         }
-        
+    }
+
+    public function isFillFeeling(){
+
+        $checkFeeling = Feelings::whereDate('date_add', Carbon::today())->where('nik',Auth::User()->nik)->first();
+
+        // return $checkFeeling;
+        if ($checkFeeling == null) {
+            return collect(["false"]);
+        } else {
+            return $checkFeeling->code_feeling;
+        }
+    }
+
+    public function storeFeeling(Request $request){
+        $store               = new Feelings();
+        $store->nik          = Auth::User()->nik;
+        $store->code_feeling = $request->code_feeling;
+        $store->date_add     = date("Y-m-d h:i:s");
+        $store->save();
+    }
+
+    public function updateDateEvent(Request $request){
+        $update               = Timesheet::where('id',$request->id)->first();
+        $update->nik          = Auth::User()->nik;
+        $update->start_date   = $request->dates;
+        $update->end_date     = $request->dates;
+        $update->save();
+
+        return $update;
     }
 }
