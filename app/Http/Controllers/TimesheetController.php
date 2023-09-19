@@ -415,7 +415,7 @@ class TimesheetController extends Controller
 
     public function uploadCSV(Request $request){
         $directory = "timesheet/";
-        $nameFile = "template_timesheet.csv";
+        $nameFile = "template_upload_timesheet.csv";
         $folderName = 'Test Timesheet';
 
         $this->uploadToLocal($request->file('csv_file'),$directory,$nameFile);
@@ -1040,6 +1040,9 @@ class TimesheetController extends Controller
             $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
         } elseif ($cek_role->name == 'HR Manager') {
             $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+        } else if ($cek_role->name == 'Operations Director'){
+            $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')
+                    ->get();
         } else {
             $getPidByNik = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('pid')->where('tb_timesheet_pid.nik',Auth::User()->nik)->get();
             $getPid = TimesheetPid::whereIn('pid',$getPidByNik)->get();
