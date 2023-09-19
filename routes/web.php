@@ -37,6 +37,8 @@ Route::get('/testEmailTrap',function(){
 
 Route::get('testCutiEmail','TestController@mailCuti');
 Route::get('testFilter','TestController@testFilter');
+Route::get('getWin','TestController@getWin');
+
 
 Route::get('testEmailReminder','TestController@testEmailReminder');
 Route::get('testContribute', 'TestController@testContribute');
