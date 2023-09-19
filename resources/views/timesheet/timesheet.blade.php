@@ -703,95 +703,114 @@
         icon: 'question',
         html:
           '<div style="display:inline;">'+
-          '  <input id="radio1" type="radio" name="radio" value="radio1" hidden>'+
+          '  <input id="radio1" type="radio" name="radio" value="radio1" hidden onclick="selectEmoji('+"'angry'"+')">'+
           '  <label for="radio1" id="circle">'+
           '   <span class="emoji angry" role="img" aria-label="angry"></span>' +
           '  </label>'+
           '</div>'+
           '<div style="display:inline;">'+
-          '  <input id="radio2" type="radio" name="radio" value="radio2" hidden>'+
+          '  <input id="radio2" type="radio" name="radio" value="radio2" hidden onclick="selectEmoji('+"'vommit'"+')">'+
           '  <label for="radio2" id="circle">'+
               '<span class="emoji vommit" role="img" aria-label="vommit"></span>' +
           '  </label>'+
           '</div>'+
           '<div style="display:inline;">'+
-          '  <input id="radio3" type="radio" name="radio" value="radio3" hidden>'+
+          '  <input id="radio3" type="radio" name="radio" value="radio3" hidden onclick="selectEmoji('+"'normal'"+')">'+
           '  <label for="radio3" id="circle">'+
           '     <span class="emoji normal" role="img" aria-label="normal"></span>' +
           '  </label>'+
           '</div>'+
           '<div style="display:inline;">'+
-          '  <input id="radio4" type="radio" name="radio" value="radio4" hidden>'+
+          '  <input id="radio4" type="radio" name="radio" value="radio4" hidden onclick="selectEmoji('+"'happy'"+')">'+
           '  <label for="radio4" id="circle">'+
           '     <span class="emoji happy" role="img" aria-label="happy"></span>' +
           '  </label>'+
           '</div>'+
           '<div style="display:inline;">'+
-          '  <input id="radio5" type="radio" name="radio" value="radio5" hidden>'+
+          '  <input id="radio5" type="radio" name="radio" value="radio5" hidden onclick="selectEmoji('+"'very-happy'"+')">'+
           '  <label for="radio5" id="circle">'+
           '     <span class="emoji very-happy" role="img" aria-label="very-happy"></span>'+
           '  </label>'+
           '</div>',
         showCloseButton: true,
         showCancelButton: true,
+        showConfirmButton:false,
         focusConfirm: false,
         confirmButtonText:
           '<i class="fa fa-thumbs-up"></i> Save!',
         cancelButtonText:
           'Ask me, later!',
       }).then((result) => {
-        if ($('input[type="radio"]:checked').length == 0) {
-          console.log(result)
-          if (result.isDismissed) {
-            swalSuccess = {
-              icon: 'success',
-              title: 'Okkay, see you later!👋',
-              text: 'Click Ok to reload page',
-            } 
-
+        if (result.isDismissed) {
+          if ($('input[type="radio"]:checked').length == 0){
             formData = new FormData
             formData.append("_token","{{ csrf_token() }}")
-            formData.append("code_feeling","-")        
+            formData.append("code_feeling","-")    
+            createPost(swalFireCustom="",formData,swalSuccess="",url="/timesheet/storeFeeling",postParam="")
+          }          
 
-            var postParam = 'store_emoji'
-
-            createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
-          }else{
-            howWasYou()
-          }
-        }else{
-          if (result.value) {
-            swalSuccess = {
-              icon: 'success',
-              title: 'Keep spirit and enjoy the day!🤟',
-              text: 'Click Ok to reload page',
-            } 
-
-            formData = new FormData
-            formData.append("_token","{{ csrf_token() }}")
-            formData.append("code_feeling",$('input[type="radio"]:checked').next("label").find(".emoji").attr("aria-label"))        
-
-            var postParam = 'store_emoji'
-
-            createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
-          }else{
-            console.log("testtt")
-            swalSuccess = {
-              icon: 'success',
-              title: 'Okkay, see you later!👋',
-              text: 'Click Ok to reload page',
-            } 
-
-            formData = new FormData
-            formData.append("_token","{{ csrf_token() }}")
-            formData.append("code_feeling","-")        
-
-            var postParam = 'store_emoji'
-
-            createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
-          }
         }
+        // if ($('input[type="radio"]:checked').length == 0) {
+        //   console.log(result)
+        //   if (result.isDismissed) {
+        //     swalSuccess = {
+        //       icon: 'success',
+        //       title: 'Okkay, see you later!👋',
+        //       text: 'Click Ok to reload page',
+        //     } 
+
+        //     formData = new FormData
+        //     formData.append("_token","{{ csrf_token() }}")
+        //     formData.append("code_feeling","-")        
+
+        //     var postParam = 'store_emoji'
+
+        //     createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
+        //   }else{
+        //     howWasYou()
+        //   }
+        // }else{
+        //   if (result.value) {
+        //     swalSuccess = {
+        //       icon: 'success',
+        //       title: 'Keep spirit and enjoy the day!🤟',
+        //       text: 'Click Ok to reload page',
+        //     } 
+
+        //     formData = new FormData
+        //     formData.append("_token","{{ csrf_token() }}")
+        //     formData.append("code_feeling",$('input[type="radio"]:checked').next("label").find(".emoji").attr("aria-label"))        
+
+        //     var postParam = 'store_emoji'
+
+        //     createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
+        //   }else{
+        //     console.log("testtt")
+        //     swalSuccess = {
+        //       icon: 'success',
+        //       title: 'Okkay, see you later!👋',
+        //       text: 'Click Ok to reload page',
+        //     } 
+
+        //     formData = new FormData
+        //     formData.append("_token","{{ csrf_token() }}")
+        //     formData.append("code_feeling","-")        
+
+        //     var postParam = 'store_emoji'
+
+        //     createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
+        //   }
+        // }
       });
+    }
+
+    function selectEmoji(value){
+      console.log(value)
+      formData = new FormData
+      formData.append("_token","{{ csrf_token() }}")
+      formData.append("code_feeling",value)     
+
+      createPost(swalFireCustom="",formData,swalSuccess="",url="/timesheet/storeFeeling",postParam="")
     }
 
     $("#btn_back_timesheet_spv").click(function(){
@@ -2656,6 +2675,7 @@
             data:data,
             success: function(results)
             {
+              Swal.close()
               loadData()
             }
           })
