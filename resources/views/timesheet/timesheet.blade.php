@@ -678,7 +678,7 @@
         //   // right: 'month'
         //   // ,agendaWeek,agendaDay'
         // } 
-        defaultView: window.mobilecheck() ? "basicDay" : "month"
+        defaultView: window.mobilecheck() ? "basicDay" : "month",
       });
       loadData()
 
@@ -688,7 +688,6 @@
           type:"GET",
           url:"{{url('timesheet/isFillFeeling')}}",
           success:function(result){
-            console.log(result)
             if(result[0] == "false"){
               howWasYou()
             }
@@ -805,7 +804,6 @@
     }
 
     function selectEmoji(value){
-      console.log(value)
       formData = new FormData
       formData.append("_token","{{ csrf_token() }}")
       formData.append("code_feeling",value)     
@@ -1291,14 +1289,12 @@
                         $("#ModalAddTimesheet").find('.modal-footer').show()
                       }  
                     }else{
-                      console.log("sattuu")
                       $("#ModalAddTimesheet").modal("show")
                       $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
                       eventUpdateTimesheet(calEvent)
                     }
                   }
                 } else {
-                  console.log("duaaaa")
                   $("#ModalAddTimesheet").modal("show")
                   $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
                   eventUpdateTimesheet(calEvent)
@@ -1341,7 +1337,6 @@
                 setLevel("refer")
 
                 //cek kenapa task dan phase munculnya lama untuk data select2!!
-                console.log(calEvent.task)
                 $("#id_activity").val(calEvent.id)
                 $('#selectSchedule').prop("disabled",true)
                 $('#textareaActivity_refer').val(calEvent.title).trigger('change') 
@@ -1501,15 +1496,24 @@
               }
             }else{
               if (moment(event.start).format('YYYY-MM-DD') < moment(event.originalStartDate).format('YYYY-MM-DD')) {
-                Swal.fire({
-                  icon: 'warning',
-                  title: 'Sorry planned schedule just move on forward date!',
-                  text: 'Click Ok to reload page',
-                }).then((result,data) => {
-                  if (result.value) {
-                    revertFunc()
-                  }
-                })
+                if (moment(event.start).format('YYYY-MM-DD') <= moment().format('YYYY-MM-DD')) {
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Sorry planned schedule just move on forward date!',
+                    text: 'Click Ok to reload page',
+                  }).then((result,data) => {
+                    if (result.value) {
+                      revertFunc()
+                    }
+                  })
+                }else{
+                  formData = new FormData
+                  formData.append("_token","{{ csrf_token() }}")
+                  formData.append("dates",moment(event.start).format('YYYY-MM-DD'))
+                  formData.append("id",event.id)      
+
+                  createPost(swalFireCustom="",formData,swalSuccess="",url="/timesheet/updateDateEvent",postParam="update_dates",modalName="")
+                }
               }else{
                 formData = new FormData
                 formData.append("_token","{{ csrf_token() }}")
@@ -1519,6 +1523,14 @@
                 createPost(swalFireCustom="",formData,swalSuccess="",url="/timesheet/updateDateEvent",postParam="update_dates",modalName="")
               }
             }
+          }
+        },
+        viewRender: function(view, element) {
+          var savedScrollPosition = localStorage.getItem("savedScrollPosition") 
+          if (savedScrollPosition !== null) {
+            var calendar = $("#calendar")
+            calendar.find('.fc-scroller').scrollTop(savedScrollPosition);
+            savedScrollPosition = null;
           }
         }
       })
@@ -1796,9 +1808,6 @@
         } 
 
         var postParam = 'permit'
-
-        console.log("sudah di store")
-
         createPost(swalFireCustom,formData,swalSuccess,url="/timesheet/storePermit",postParam,modalName)
       }
     }
@@ -1972,8 +1981,6 @@
             if ($("#selectLead_"+idValue).data('select2')) {
               $("#selectLead_"+idValue).select2('destroy');
               $("#selectLead_"+idValue).empty()
-              // Select2 is initialized, so destroy it
-              // Set the placeholder attribute to the desired value
               $("#selectLead_"+idValue).attr('placeholder','Select Project Id')
             }
 
@@ -2252,7 +2259,6 @@
           // }
           
         } else if (selectedOption === 'Unplanned') {
-          console.log(date)
           $("select[name='selectDuration']").prev("label").after("<span>*</span>")
           $("select[name='selectStatus']").prev("label").after("<span>*</span>")
           $("#selectDuration").prop("disabled",false)
@@ -2603,6 +2609,8 @@
     }
 
     function createPost(swalFireCustom,data,swalSuccess,url,postParam,modalName){
+      localStorage.setItem("savedScrollPosition",$(".fc-scroller").scrollTop())
+
       if (swalFireCustom == '') {
         if (swalSuccess == '') {
           $.ajax({
@@ -2640,11 +2648,12 @@
             success: function(results)
             {
               Swal.fire(swalSuccess).then((result,data) => {
-                loadData()
                 if (result.isConfirmed) {
+                  loadData()
                   Swal.close()
                   eventUpdateTimesheet()
                 }else{
+                  loadData()
                   if (window.location.href.split("/")[4].split("?")[1]) {
                     history.replaceState(null, '', "{{url('timesheet/timesheet')}}")
                   }
@@ -2711,8 +2720,8 @@
                       loadData()  
                     }
                   }else if(postParam == "delete_activity"){
+                      loadData()
                       Swal.close()
-                      console.log(url.split("=")[1])
                       $("#fieldset_"+url.split("=")[1]).remove()
 
                       var j = 1
@@ -2724,8 +2733,6 @@
                       })
 
                       if ($(last).find('.form-group').last().find("#btn_add_activity").length == 0) {
-                        console.log("latess")
-                        $("#fieldset_0").find(".box-body").show("slow")
                         $("#fieldset_"+countable).find('.form-group').last().append('<button style="margin-left:5px" type="button" class="btn btn-primary btn-flat" id="btn_add_activity" value="'+countable+'"><i class="fa fa-plus"></i></button>')
                       }
                   }else{
@@ -2973,7 +2980,6 @@
       var range = moment().isBetween(picker.startDate, picker.endDate);
 
       if (range) {
-        console.log("hari ini")
         if (moment(picker.endDate).format("YYYY-MM-DD") != moment(moment()).format("YYYY-MM-DD")) {
           Swal.fire(
             'Date is not appropriated!',
@@ -3251,8 +3257,6 @@
         })
 
         if ($(last).find('.form-group').last().find("#btn_add_activity").length == 0) {
-          console.log("latess")
-          $("#fieldset_0").find(".box-body").show("slow")
           $("#fieldset_"+countable).find('.form-group').last().append('<button style="margin-left:5px" type="button" class="btn btn-primary btn-flat" id="btn_add_activity" value="'+countable+'"><i class="fa fa-plus"></i></button>')
         }
       }
@@ -3726,7 +3730,6 @@
     }
 
     function eventUpdateTimesheet(calEvent,id){
-      console.log(id)
       if (id != undefined || id != null || id != "") {
         id = id
         $('#daterange-timesheet').prop("disabled",true)
@@ -3734,68 +3737,47 @@
         id = ""
       }
 
-      if (localStorage.getItem("isAddTimesheet") == "true") {
-        $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
+      $.ajax({
+        type:"GET",
+        url:"{{url('timesheet/getActivitybyDate')}}",
+        data:{
+          start_date:moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD"),
+          nik:nik,
+          id:id
+        },
+        success:function(result){
+          if (result.length != 0) {
+            $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+            $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
+            showUpdateTimesheet(result,calEvent,id)
+          }else{        
+            $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
 
-        $.ajax({
-          type:"GET",
-          url:"{{url('timesheet/getActivitybyDate')}}",
-          data:{
-            start_date:moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD"),
-            nik:nik
-          },
-          success:function(result){
-            if (result.length != 0) {
-              $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
-              showUpdateTimesheet(result,calEvent)
-
-              if ($("#ModalAddTimesheet").find('.modal-footer').find(".btn-danger").length == 0) {
-                $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning")
-              }
-            }else{            
-              if (moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") > moment().format("YYYY-MM-DD")) {
-                $('#scheduleInput_0').val('Planned')
-              }else if(moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") <= moment().format("YYYY-MM-DD")){
-                $('#scheduleInput_0').val('Unplanned')
-              }
-
-              $("#id_activity_0").val('')
-              $('#selectType_0').val('').trigger('change').prop("disabled",false)
-              $('#selectLead_0').val('').trigger('change').prop("disabled",false)
-              $('#selectTask_0').val('').trigger('change').prop("disabled",false)
-              $('#selectPhase_0').val('').trigger('change').prop("disabled",false)
-              $('#selectLevel_0').val('').trigger('change').prop("disabled",false)
-              $('#selectDuration_0').val('').trigger('change')
-              $('#selectStatus_0').val('').trigger('change')
-              $('#textareaActivity_0').val('').prop("disabled",false)
-              $("fieldset:not(:first)").remove()
-              if (!$("#fieldset_0").find('.form-group').last().find('#btn_add_activity').length) {
-                $("#fieldset_0").find('.form-group').last().append('<button type="button" class="btn btn-primary btn-flat" id="btn_add_activity" value="0"><i class="fa fa-plus"></i></button>')
-              }
-
-              $("#id_activity_0").closest(".box-body").show()
-              $("#id_activity_0").closest(".box-body").prev(".box-header").find("i").removeClass('fa fa-plus').addClass('fa fa-minus')
+            if (moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") > moment().format("YYYY-MM-DD")) {
+              $('#scheduleInput_0').val('Planned')
+            }else if(moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") <= moment().format("YYYY-MM-DD")){
+              $('#scheduleInput_0').val('Unplanned')
             }
-          }
-        })
-      }else{
-        $.ajax({
-          type:"GET",
-          url:"{{url('timesheet/getActivitybyDate')}}",
-          data:{
-            start_date:moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD"),
-            nik:nik,
-            id:id
-          },
-          success:function(result){
-            if (result.length != 0) {
-              $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
-              $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
-              showUpdateTimesheet(result,calEvent,id)
+
+            $("#id_activity_0").val('')
+            $('#selectType_0').val('').trigger('change').prop("disabled",false)
+            $('#selectLead_0').val('').trigger('change').prop("disabled",false)
+            $('#selectTask_0').val('').trigger('change').prop("disabled",false)
+            $('#selectPhase_0').val('').trigger('change').prop("disabled",false)
+            $('#selectLevel_0').val('').trigger('change').prop("disabled",false)
+            $('#selectDuration_0').val('').trigger('change')
+            $('#selectStatus_0').val('').trigger('change')
+            $('#textareaActivity_0').val('').prop("disabled",false)
+            $("fieldset:not(:first)").remove()
+            if (!$("#fieldset_0").find('.form-group').last().find('#btn_add_activity').length) {
+              $("#fieldset_0").find('.form-group').last().append('<button type="button" class="btn btn-primary btn-flat" id="btn_add_activity" value="0"><i class="fa fa-plus"></i></button>')
             }
+
+            $("#id_activity_0").closest(".box-body").show()
+            $("#id_activity_0").closest(".box-body").prev(".box-header").find("i").removeClass('fa fa-plus').addClass('fa fa-minus')
           }
-        })
-      }
+        }
+      })
     }
 
     function deleteEvent(startDate){
