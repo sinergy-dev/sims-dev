@@ -304,7 +304,7 @@ class TimesheetController extends Controller
 
     public function deleteActivity(Request $request)
     {
-        $delete = Timesheet::where('id',$request->id_activity)->delete();
+        $delete = Timesheet::where('id',$request->id)->delete();
     }
 
     public function addTimesheet(Request $request)
@@ -357,7 +357,11 @@ class TimesheetController extends Controller
                     $addTimesheet->phase = $request->selectPhase;
                     $addTimesheet->level = $request->selectLevel;
                     $addTimesheet->activity = $request->textareaActivity;
-                    $addTimesheet->status = $request->selectStatus;
+                    if ($request->selectStatus == '') {
+                        $addTimesheet->status = NULL;
+                    } else {
+                        $addTimesheet->status = $request->selectStatus;
+                    }
                     $addTimesheet->duration = $request->selectDuration;
                     $addTimesheet->type = $request->selectType;
                     $getPoint = (int)$request->selectDuration/480;
@@ -383,7 +387,11 @@ class TimesheetController extends Controller
                 $addTimesheet->phase = $request->selectPhase;
                 $addTimesheet->level = $request->selectLevel;
                 $addTimesheet->activity = $request->textareaActivity;
-                $addTimesheet->status = $request->selectStatus;
+                if ($request->selectStatus == '') {
+                    $addTimesheet->status = NULL;
+                } else {
+                    $addTimesheet->status = $request->selectStatus;
+                }
                 $addTimesheet->duration = $request->selectDuration;
                 $addTimesheet->type = $request->selectType;
                 $getPoint = (int)$request->selectDuration/480;
@@ -420,6 +428,11 @@ class TimesheetController extends Controller
                         $addTimesheet->level = $value['selectLevel'];
                         $addTimesheet->activity = $value['textareaActivity'];
                         $addTimesheet->status = $value['selectStatus'];
+                        if ($value['selectStatus'] == '') {
+                            $addTimesheet->status = NULL;
+                        } else {
+                            $addTimesheet->status = $value['selectStatus'];
+                        }
                         $addTimesheet->duration = $value['selectDuration'];
                         $addTimesheet->type = $value['selectType'];
                         $getPoint = (int)$value['selectDuration']/480;
@@ -450,7 +463,11 @@ class TimesheetController extends Controller
                     $addTimesheet->phase = $value['selectPhase'];
                     $addTimesheet->level = $value['selectLevel'];
                     $addTimesheet->activity = $value['textareaActivity'];
-                    $addTimesheet->status = $value['selectStatus'];
+                    if ($value['selectStatus'] == '') {
+                        $addTimesheet->status = NULL;
+                    } else {
+                        $addTimesheet->status = $value['selectStatus'];
+                    }
                     $addTimesheet->duration = $value['selectDuration'];
                     $addTimesheet->type = $value['selectType'];
                     $getPoint = (int)$value['selectDuration']/480;
@@ -467,7 +484,11 @@ class TimesheetController extends Controller
 
     public function getActivitybyDate(Request $request)
     {
-        return $data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','point_mandays','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),'tb_timesheet.id')->where('tb_timesheet.start_date',$request->start_date)->where('tb_timesheet.nik',$request->nik)->orderby('id','asc')->get();
+        if (isset($request->id)) {
+            return $data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','point_mandays','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),'tb_timesheet.id')->where('tb_timesheet.id',$request->id)->get();
+        } else {
+            return $data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','point_mandays','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),'tb_timesheet.id')->where('tb_timesheet.start_date',$request->start_date)->where('tb_timesheet.nik',$request->nik)->orderby('id','asc')->get();
+        }
     }
 
     public function uploadCSV(Request $request){
@@ -1022,11 +1043,13 @@ class TimesheetController extends Controller
 
         $plannedDone = DB::table('tb_timesheet')
                    ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as planned"))
-                   ->where('schedule', 'Planned');
+                   ->where('schedule', 'Planned')
+                   ->where('status', 'Done');
 
         $unPlannedDone = DB::table('tb_timesheet')
                    ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as unplanned"))
-                   ->where('schedule', 'Unplanned');
+                   ->where('schedule', 'Unplanned')
+                   ->where('status', 'Done');
 
         $emoji = DB::table('tb_feelings')
                    ->select('code_feeling','date_add')->where('nik',$request->nik)->get();
