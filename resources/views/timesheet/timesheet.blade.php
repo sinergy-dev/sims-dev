@@ -984,6 +984,7 @@
       })
     }
 
+    var checkDate = ""
     function showEvents(events,lock_activity,disabledDates,emoji){
       if (events) {
         $.ajax({
@@ -1125,7 +1126,7 @@
 
             var start = date
             var end = date
-            var checkDate = moment(datesInWeek[0])
+            checkDate = moment(datesInWeek[0])
             var position = "{{Auth::User()->id_position}}"
             if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
               return false
@@ -1192,7 +1193,7 @@
 
             var start = calEvent.start
             var end = calEvent.start
-            var checkDate = moment(datesInWeek[0])
+            checkDate = moment(datesInWeek[0])
 
             var clickedDate = calEvent.start 
             // Check if the clicked date is in the allowedDates array
@@ -1529,7 +1530,9 @@
          if (window.location.href.split("/")[4].split("?")[1].split("=")[0] == "id") {
           Pace.restart()
           Pace.track(function(){
-            showModalEventById()
+            $("#ModalAddTimesheet").modal("show")
+            setHoliday(moment(window.location.href.split("/")[4].split("?")[1].split("=")[2]),moment(window.location.href.split("/")[4].split("?")[1].split("=")[2]),checkDate)
+            eventUpdateTimesheet(calEvent="",id=window.location.href.split("/")[4].split("?")[1].split("=")[1].split("&")[0])
           })
         }
       }
@@ -1692,83 +1695,6 @@
         $('#selectStatus').val(status).trigger('change')
         $('#selectTask').val(task).trigger('change')
         $('#selectPhase').val(phase).trigger('change')
-      }
-    }
-
-    function showModalEventById(){
-      var eventId = window.location.href.split("/")[4].split("?")[1].split("=")[1]
-      var eventObj = $('#calendar').fullCalendar('clientEvents', eventId)[0];
-
-      if (eventObj.status == null) {
-        $("#ModalAddTimesheet").modal("show")
-    
-        Swal.fire({
-          title: 'Harap menunggu,sedang menyiapkan data...',
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          confirmButtonText:'',
-          showConfirmButton:false,
-          didOpen: () => {
-            // Delayed task using setTimeout
-            setTimeout(() => {
-              // Close the loading indicator
-              Swal.close();
-              // Perform your delayed task here
-              if ($.fn.select2 !== undefined) {
-                var isSelect2Initialized = $("#selectSchedule").hasClass("select2-hidden-accessible")
-                if (isSelect2Initialized == false) {
-                  setSchedule()
-                  setDuration()
-                  setLevel()
-                  setStatus()
-                  setType()
-                }else{
-                  setTask(eventObj.task)
-                  setPhase(eventObj.phase)
-                }
-              }
-
-              $('#daterange-input').data('daterangepicker').setStartDate(moment(eventObj.start));
-              $('#daterange-input').data('daterangepicker').setEndDate(moment(eventObj.start));
-
-              $(".modal-title").text("Update Timesheet")
-              $("#ModalAddTimesheet").find(".modal-title").prev('button').hide()
-              $("#ModalAddTimesheet").find('.modal-footer').find(".btn-danger").hide()
-              $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
-              
-              $('#selectSchedule').val(eventObj.schedule).trigger('change')
-              $('#selectSchedule').prop("disabled",true)
-              $('#daterange-input').prop("disabled",true)
-              $('#selectType').prop("disabled",true)
-              $('#selectLead').prop("disabled",true)
-              $('#selectTask').prop("disabled",true)
-              $('#selectPhase').prop("disabled",true)
-              $('#selectLevel').prop("disabled",true)
-              $('#selectDuration').prop("disabled",false)
-              $('#selectStatus').prop("disabled",false) 
-              $("#id_activity").val(eventObj.id)
-              //staff
-              $('#selectType').val(eventObj.type).trigger('change')
-              if (eventObj.type == "Project") {
-                if (eventObj.status_pid == 'true') {
-                  setPid(eventObj.pid)
-                }else{
-                  $("#divPid").show()
-                  $("#inputPid").prop("disabled",true)
-                  $("#inputPid").val(eventObj.pid)
-                }
-              }else if(eventObj.type == "Approach"){
-                setLeadId(eventObj.pid)
-              }
-              $('#selectLevel').val(eventObj.level).trigger('change')
-              $('#textareaActivity').val(eventObj.title).trigger('change')
-              $('#selectDuration').val(eventObj.duration).trigger('change')
-              $('#selectStatus').val(eventObj.status).trigger('change')
-
-              console.log("aheey")
-            }, 100); // Delayed execution after 2000ms (2 seconds)
-          }
-        });
       }
     }
 
@@ -1964,7 +1890,19 @@
       range.forEach((_, index) => {
         if (index % 5 === 0 && index != 0 || index % 5 === 0 && index == 1440) {
           // Action to perform on every multiple of 5
-          arrDuration.push({id:index,text:index+" menit"})
+          if (index % 60 == 0) {
+             arrDuration.push({id:index,text:index+" menit ("+ Math.floor(index/60) +" Jam)"})
+          }else{
+            if (index % 15 == 0) {
+              if (index > 60) {
+                arrDuration.push({id:index,text:index+" menit ("+ Math.floor(index/60) +" Jam "+ index % 60 +" Menit)"})
+              }else{
+                arrDuration.push({id:index,text:index+" menit"})
+              }
+            }else{
+              arrDuration.push({id:index,text:index+" menit"})
+            }
+          }
         }
       });
 
@@ -2707,6 +2645,9 @@
                   Swal.close()
                   eventUpdateTimesheet()
                 }else{
+                  if (window.location.href.split("/")[4].split("?")[1]) {
+                    history.replaceState(null, '', "{{url('timesheet/timesheet')}}")
+                  }
                   if (modalName) {
                     $("#"+modalName).modal("hide")
                   }  
@@ -3784,7 +3725,15 @@
       })
     }
 
-    function eventUpdateTimesheet(calEvent){
+    function eventUpdateTimesheet(calEvent,id){
+      console.log(id)
+      if (id != undefined || id != null || id != "") {
+        id = id
+        $('#daterange-timesheet').prop("disabled",true)
+      }else{
+        id = ""
+      }
+
       if (localStorage.getItem("isAddTimesheet") == "true") {
         $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
 
@@ -3835,13 +3784,14 @@
           url:"{{url('timesheet/getActivitybyDate')}}",
           data:{
             start_date:moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD"),
-            nik:nik
+            nik:nik,
+            id:id
           },
           success:function(result){
             if (result.length != 0) {
               $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
               $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
-              showUpdateTimesheet(result,calEvent)
+              showUpdateTimesheet(result,calEvent,id)
             }
           }
         })
