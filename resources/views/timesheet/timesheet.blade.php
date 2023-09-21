@@ -1407,8 +1407,21 @@
         dayRender: function (date, cell) {
           var formattedDate = date.format('YYYY-MM-DD');
 
-          if (eventRenderDataUnplanned[formattedDate] != undefined) {
-            var customButton = $('<button class="custom-date-button"><span class="badge" style="color:red;background-color:white">U '+ eventRenderDataUnplanned[formattedDate].toFixed(2) +'</span> <span class="badge" style="color:green;background-color:white">P '+ eventRenderDataPlanned[formattedDate].toFixed(2)+'</span></button>');
+          if (eventRenderDataPlanned[formattedDate] != undefined) {
+            var valuePlanned = 0, valueUnplanned = 0
+            if (isNaN(eventRenderDataPlanned[formattedDate])) {
+              valuePlanned = valuePlanned
+            }else{
+              valuePlanned = eventRenderDataPlanned[formattedDate]
+            }
+
+            if (isNaN(eventRenderDataUnplanned[formattedDate])) {
+              valueUnplanned = valueUnplanned
+            }else{
+              valueUnplanned = eventRenderDataUnplanned[formattedDate]
+            }
+
+            var customButton = $('<button class="custom-date-button"><span class="badge" style="color:red;background-color:white">U '+ valueUnplanned.toFixed(2) +'</span> <span class="badge" style="color:green;background-color:white">P '+ valuePlanned.toFixed(2)+'</span></button>');
           }
          
           if (eventRenderEmoji[formattedDate]) {
