@@ -308,7 +308,7 @@
                             </div>
                         </div>
                       </div>
-                      <div>
+                      <div class="table-responsive">
                         <table class="table" id="tbAssignPID">
                         </table>
                       </div>
