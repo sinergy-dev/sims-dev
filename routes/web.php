@@ -46,7 +46,6 @@ Route::get('testContribute', 'TestController@testContribute');
 Route::get('testRolesShow','TestController@testRole');
 
 Route::get('testPermission','TestController@testPermission');
-Route::get('permissionConfig','PermissionConfigController@testPermissionConfig');
 Route::get('/admin/getPdf', 'PrDraftController@getPdf');
 Route::get('/admin/mergePdf', 'PrDraftController@mergePdf');
 
@@ -75,6 +74,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('detail_project/{lead_id}',function($lead_id){
 		return redirect()->route('detail_project', [$lead_id]);
 	});
+	Route::get('permissionConfig','PermissionConfigController@testPermissionConfig');
 	Route::get('project/getPresales', 'SalesLeadController@getPresales');
 	Route::get('project/getSales', 'SalesLeadController@getSales');
 	Route::get('project/getCustomer', 'SalesLeadController@getCustomer');
@@ -1351,16 +1351,22 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('timesheet/getFilterScheduleChart','TimesheetController@getFilterScheduleChart');
 	Route::get('timesheet/getFilterTaskChart','TimesheetController@getFilterTaskChart');
 	Route::get('timesheet/getFilterPhaseChart','TimesheetController@getFilterPhaseChart');
-
+	Route::post('timesheet/deleteAllActivity','TimesheetController@deleteAllActivityByDate');
 	Route::get('timesheet/deleteTaskPhase','TimesheetController@deleteTaskPhase');
 	Route::get('timesheet/exportExcel','TimesheetController@exportExcel');
 	Route::post('timesheet/deletePermit','TimesheetController@deletePermit');
 	Route::post('timesheet/uploadCSV','TimesheetController@uploadCSV');
 	Route::get('timesheet/getListOperation','TimesheetController@getListOperation');
-	
+	Route::get('timesheet/getActivitybyDate','TimesheetController@getActivitybyDate');
+	Route::get('timesheet/isFillFeeling','TimesheetController@isFillFeeling');
+	Route::post('timesheet/storeFeeling','TimesheetController@storeFeeling');
+	Route::post('timesheet/deleteActivity','TimesheetController@deleteActivity');
+	Route::post('timesheet/updateDateEvent','TimesheetController@updateDateEvent');
 
 });
+
 Route::get('/authentication/{id}','TestController@authentication');
+Route::get('/getHoliday','TestController@getWorkdays');
 
 Route::get('/testFullCalendar',function(){
 	$controller = new App\Http\Controllers\Controller();
