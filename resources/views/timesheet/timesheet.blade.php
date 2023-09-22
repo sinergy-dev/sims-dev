@@ -3314,7 +3314,8 @@
                     $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
                     $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
-                    eventUpdateTimesheet()                    Swal.close();
+                    eventUpdateTimesheet()                    
+                    Swal.close();
                   }, 2000); // Delayed execution after 2000ms (2 seconds)
                 }
               });
