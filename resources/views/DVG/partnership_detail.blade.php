@@ -420,13 +420,12 @@ Partnership
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="tab_1">
-							<div>
-								<a id="btnAddCert" style="cursor:pointer;display: none;" class="pull-right"><i class="fa fa-plus"></i> &nbspCertification</a>
+							<div class="row">
+								<div class="col-md-12">
+									<a id="btnAddCert" style="cursor:pointer;display: none;margin-right: 10px;" class="pull-right"><i class="fa fa-plus"></i> &nbspCertification</a>
+								</div>
 							</div>
-							<!-- <div class="col-lg-4 col-xs-6">
-						      
-					    </div> -->
-							<div id="list-cert">
+							<div id="list-cert" style="margin-top:10px">
 								
 							</div>
 						</div>
@@ -880,51 +879,68 @@ Partnership
 		    },
 		    type: "GET",
 		    success: function(result) {
-    		$('#list-cert').empty("")
+		    	var countable = 0
+    				$('#list-cert').empty("")
   	    		append = append + "<div class='row'>"
 	    				append = append + "<div class='col-md-12'>"
-	        	$.each(result.data.cert_user,function(key,value){
-	    				append = append + "<h3><i><b>" + key +"</b></i></h3>"
-
-	    				append = append + "<div class='row'>"
-	        		$.each(value,function(key,data){
-		    					append = append + "<div class='col-md-4'>"
-		        			append = append + '<div class="box box-info">'
-								  append = append + '<div class="box-header with-border" style="height:100px">'
-									append = append + 	'<h3 class="box-title">'+ data.name_certification +'</h3>'
-									append = append + '</div>'
-									append = append + '<div class="box-body">'
-									append = append +   '<div style="float: left;width:150px">'
-									append = append + '<span><b>'+ data.name +'</b></span><br>'
-									append = append + '<span><i>Exp date</i>:<br>'+ data.expired_date +'</span>'
-									// append = append + ''
-									append = append +   '</div>'	
-									append = append + '<div style="float: right;">'
-									if(data.avatar != null){
-										append = append + ' <img class="profile-user img-responsive img-circle" src="'+data.avatar+'" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
-									}else if (data.gambar != null && data.gambar != "-") {
-										append = append + ' <img class="profile-user img-responsive img-circle" src="{{ asset("image")}}/'+data.gambar+'" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+		        	$.each(result.data.cert_user,function(key,value){
+		        		countable++
+		        		console.log(countable)
+		        		append = append + "<box>"
+									append = append + ' <div class="box-header with-border">'
+									append = append + '		<h2 class="box-title" style="font-size:20px"><b>'+ key +'</b></h3>'
+									append = append + '		<div class="box-tools pull-right">'
+									if (countable == 1) {
+										var classIcon = "fa fa-chevron-down"
+										var classHidden = "display:block"
 									}else{
-										append = append + ' <img class="profile-user img-responsive" src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+										var classIcon = "fa fa-chevron-up"
+										var classHidden = "display:none"
 									}
-									append = append + '</div>'			    
-									append = append +	'</div>'									
-									append = append +	'<div class="box-footer">'
-									append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none"><i class="fa fa-trash"></i> Delete</button>'
-									if (data.certificate != null) {
-										append = append +	'<a target="_blank" href="{{url("image/certificate_engineer/")}}/'+data.certificate+'"><button class="btn btn-xs btn-info pull-left"><i class="fa fa-download"></i> Download</button></a>'
-									} else {
-										append = append +	'<button class="btn btn-xs btn-default pull-left disabled" title="Certificate is Empty!"><i class="fa fa-download"></i> Download</button>'
-									}									
-									append = append + '<button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+","+data.expired_date+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none"><i class="fa fa-pencil"></i> Edit</button>'
-									append = append +	'</div>'
+									append = append + '			<button type="button" class="btn btn-sm btn-primary btn-dropdown-toggle" data-widget="collapse"><i class="'+ classIcon +'"></i>'
+									append = append + '			</button>'
+									append = append + '		</div>'
+									append = append + '	</div>'
+									append = append + '<div class="box-body" style="'+ classHidden +'">'
+									append = append + '	<div class="row">'
+				        		$.each(value,function(key,data){
+				    					append = append + "<div class='col-md-4'>"
+				        			append = append + '<div class="box box-info">'
+										  append = append + '<div class="box-header with-border" style="height:100px">'
+											append = append + 	'<h3 class="box-title">'+ data.name_certification +'</h3>'
+											append = append + '</div>'
+											append = append + '<div class="box-body">'
+											append = append +   '<div style="float: left;width:150px">'
+											append = append + '<span><b>'+ data.name +'</b></span><br>'
+											append = append + '<span><i>Exp date</i>:<br>'+ data.expired_date +'</span>'
+											// append = append + ''
+											append = append +   '</div>'	
+											append = append + '<div style="float: right;">'
+											if(data.avatar != null){
+												append = append + ' <img class="profile-user img-responsive img-circle" src="'+data.avatar+'" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+											}else if (data.gambar != null && data.gambar != "-") {
+												append = append + ' <img class="profile-user img-responsive img-circle" src="{{ asset("image")}}/'+data.gambar+'" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+											}else{
+												append = append + ' <img class="profile-user img-responsive" src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+											}
+											append = append + '</div>'			    
+											append = append +	'</div>'									
+											append = append +	'<div class="box-footer">'
+											append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none"><i class="fa fa-trash"></i> Delete</button>'
+											if (data.certificate != null) {
+												append = append +	'<a target="_blank" href="{{url("image/certificate_engineer/")}}/'+data.certificate+'"><button class="btn btn-xs btn-info pull-left"><i class="fa fa-download"></i> Download</button></a>'
+											} else {
+												append = append +	'<button class="btn btn-xs btn-default pull-left disabled" title="Certificate is Empty!"><i class="fa fa-download"></i> Download</button>'
+											}									
+											append = append + '<button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+","+data.expired_date+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none"><i class="fa fa-pencil"></i> Edit</button>'
+											append = append +	'</div>'
+											append = append + '</div>'
+					    				append = append + "</div>"
+				        		})
+									append = append + '	</div>'
 									append = append + '</div>'
-		    				append = append + "</div>"
-
-	        		})
-	    				append = append + "</div>"
-
-	        	})
+		        		append = append + "</box>"
+		        	})
 	    			append = append + "</div>"
 		    		append = append + "</div>"
 
@@ -1058,7 +1074,17 @@ Partnership
 				        }    
 				      })
 						})
-		    }      	
+
+						$(".btn-dropdown-toggle").click(function(){
+				    	if ($(this).closest("div").closest(".box-header").next().is(":visible")) {
+				        $(this).closest("div").closest(".box-header").next().hide()
+				        $(this).find("i").removeClass('fa fa-chevron-down').addClass('fa fa-chevron-up')
+				      }else{
+				        $(this).closest("div").closest(".box-header").next().show()
+				        $(this).find("i").removeClass('fa fa-chevron-up').addClass('fa fa-chevron-down')
+				      }
+				    }) 
+		    }     	
 		})
   }
 
