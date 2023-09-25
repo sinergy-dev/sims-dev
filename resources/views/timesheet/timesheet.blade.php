@@ -678,7 +678,8 @@
         //   // right: 'month'
         //   // ,agendaWeek,agendaDay'
         // } 
-        defaultView: window.mobilecheck() ? "basicDay" : "month",
+        // defaultView: window.mobilecheck() ? "basicDay" : "month",
+        defaultView:"month",
       });
       loadData()
 
@@ -1021,7 +1022,7 @@
         //   center: 'title',
         //   // right: 'month,agendaWeek,agendaDay'
         // }, 
-        defaultView: window.mobilecheck() ? "basicDay" : "month",
+        defaultView:"month",
         eventOrder: 'start',
         // defaultDate: '2023-08-01', // Set the initial visible date
         // validRange: {
