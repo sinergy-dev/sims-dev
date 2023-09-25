@@ -897,6 +897,8 @@
 
     var checkDate = ""
     function showEvents(events,lock_activity,disabledDates,emoji){
+      showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
+      
       if (events) {
         $.ajax({
           type:"GET",
@@ -2434,7 +2436,20 @@
           }else{
             formData.append("id_activity","") 
           }
+
+          var postParam = 'refer'
+
+          swalSuccess = {
+            icon: 'success',
+            title: 'Add Timesheet Succesfully!',
+            text: 'Click OK to reload',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK',
+          } 
         }else{
+          var postParam = 'timesheet'
+
           var arrTimesheet = []
 
           var dateRangePicker = $('#daterange-timesheet').data('daterangepicker');
@@ -2482,6 +2497,17 @@
 
           formData.append("arrTimesheet",JSON.stringify(arrTimesheet))
           formData.append("isGCal",false)
+
+          swalSuccess = {
+            icon: 'success',
+            title: 'Do you want to add timesheet again?',
+            text: 'if you do not add timesheet again, select "No" to quit',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          } 
         }
 
         // swalFireCustom = {
@@ -2495,16 +2521,6 @@
         //   cancelButtonText: 'No',
         // }
 
-        swalSuccess = {
-            icon: 'success',
-            title: 'Do you want to add timesheet again?',
-            text: 'if you do not add timesheet again, select "No" to quit',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-        } 
         // if ($("#"+modalName).find('.modal-footer').find(".btn-primary").length) {
         //   swalSuccess = {
         //       icon: 'success',
@@ -2529,7 +2545,6 @@
         //   } 
         // }
         
-        var postParam = 'timesheet'
         createPost('',formData,swalSuccess,url="/timesheet/addTimesheet",postParam,modalName)
       }
     }
@@ -2574,18 +2589,26 @@
             success: function(results)
             {
               Swal.fire(swalSuccess).then((result,data) => {
-                if (result.isConfirmed) {
+                if (postParam == 'refer') {
                   loadData()
                   Swal.close()
-                  eventUpdateTimesheet()
-                }else{
-                  loadData()
-                  if (window.location.href.split("/")[4].split("?")[1]) {
-                    history.replaceState(null, '', "{{url('timesheet/timesheet')}}")
-                  }
                   if (modalName) {
                     $("#"+modalName).modal("hide")
-                  }  
+                  }
+                }else{
+                  if (result.isConfirmed) {
+                    loadData()
+                    Swal.close()
+                    eventUpdateTimesheet()
+                  }else{
+                    loadData()
+                    if (window.location.href.split("/")[4].split("?")[1]) {
+                      history.replaceState(null, '', "{{url('timesheet/timesheet')}}")
+                    }
+                    if (modalName) {
+                      $("#"+modalName).modal("hide")
+                    }  
+                  }
                 }
               })
             }
