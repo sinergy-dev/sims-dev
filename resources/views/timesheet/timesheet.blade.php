@@ -1337,7 +1337,7 @@
               valueUnplanned = eventRenderDataUnplanned[formattedDate]
             }
 
-            var customButton = $('<button class="custom-date-button"><span class="badge" style="color:red;background-color:white">U '+ valueUnplanned.toFixed(2) +'</span> <span class="badge" style="color:green;background-color:white">P '+ valuePlanned.toFixed(2)+'</span></button>');
+            var customButton = $(!window.mobilecheck() ? '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span> <span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>' : '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span><br><span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>');
           }
          
           if (eventRenderEmoji[formattedDate]) {
