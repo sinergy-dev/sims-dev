@@ -678,7 +678,8 @@
         //   // right: 'month'
         //   // ,agendaWeek,agendaDay'
         // } 
-        defaultView: window.mobilecheck() ? "basicDay" : "month",
+        // defaultView: window.mobilecheck() ? "basicDay" : "month",
+        defaultView:"month",
       });
       loadData()
 
@@ -1023,7 +1024,7 @@
         //   center: 'title',
         //   // right: 'month,agendaWeek,agendaDay'
         // }, 
-        defaultView: window.mobilecheck() ? "basicDay" : "month",
+        defaultView:"month",
         eventOrder: 'start',
         // defaultDate: '2023-08-01', // Set the initial visible date
         // validRange: {
@@ -2834,6 +2835,7 @@
 
             $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
             $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+            eventUpdateTimesheet()
           })
         }else {
           $("input[name='scheduleInput']").val("Unplanned")
@@ -2940,6 +2942,7 @@
 
             $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
             $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+            eventUpdateTimesheet()
           })
         }else {
           $("input[name='scheduleInput']").val("Unplanned")
@@ -3219,8 +3222,7 @@
         $(this).closest("div").closest(".box-header").next().show()
         $(this).find("i").removeClass('fa fa-plus').addClass('fa fa-minus')
       }
-    });
-                    
+    });    
 
     function unplannedDate(lock_date){
       if (moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY') <= lock_date) {
@@ -3240,6 +3242,7 @@
 
               $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
               $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+              eventUpdateTimesheet()
             })
           }else {
             if ($("#ModalAddTimesheet").find(".modal-footer").find(".btn-primary").text() == "Save") {
@@ -3365,6 +3368,7 @@
 
             $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
             $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+            eventUpdateTimesheet()
           })
         }else {
           if ($("#ModalAddTimesheet").find(".modal-footer").find(".btn-primary").text() == "Save") {
@@ -3635,6 +3639,7 @@
     }
 
     function eventUpdateTimesheet(calEvent,id){
+      console.log("heyyy")
       if (id != undefined || id != null || id != "") {
         id = id
         $('#daterange-timesheet').prop("disabled",true)

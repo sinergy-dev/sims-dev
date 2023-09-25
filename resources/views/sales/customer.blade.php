@@ -469,7 +469,7 @@ Customer
                 Swal.showLoading()
                 Swal.fire(
                     'Successfully!',
-                    'Please Waiting for Rily Accept this Request!.',
+                    'Please Waiting for '+@json($roles).name +' Accept this Request!.',
                     'success'
                 ).then((result) => {
                     if (result.value) {

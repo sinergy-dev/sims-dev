@@ -2474,7 +2474,8 @@
                     no_pr:localStorage.getItem('no_pr'),
                   },
                   success:function(result){
-                    var selectedPid = result.pr.pid
+                    var selectedPid     = result.pr.pid
+                    var selectedLeadId  = result.pr.lead_id
                     // $("#selectLeadId").val(result.pr.lead_id).trigger("change")
                     // $("#selectQuoteNum").val(result.pr.quote_number).trigger("change")
 
@@ -2482,8 +2483,11 @@
                       url: "{{url('/admin/getPidAll')}}",
                       type: "GET",
                       success: function(result) {
-
                         if (selectedPid) {
+                          $("#selectPid").val(selectedPid).trigger("change")
+                        }
+
+                        if (selectedLeadId) {
                           $("#selectPid").val(selectedPid).trigger("change")
                         }
 
@@ -2491,7 +2495,8 @@
                             data: result.data,
                             placeholder: "Select Pid",
                             dropdownParent: $('#ModalDraftPr')
-                        }).on('select2:select', function() {
+                        }).on('change', function() {
+                          console.log("siniiii")
                           var data = $("#selectPid option:selected").text();
                           $("#selectLeadId").empty()
                           $.ajax({
