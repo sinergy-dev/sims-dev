@@ -749,57 +749,6 @@
           }          
 
         }
-        // if ($('input[type="radio"]:checked').length == 0) {
-        //   console.log(result)
-        //   if (result.isDismissed) {
-        //     swalSuccess = {
-        //       icon: 'success',
-        //       title: 'Okkay, see you later!👋',
-        //       text: 'Click Ok to reload page',
-        //     } 
-
-        //     formData = new FormData
-        //     formData.append("_token","{{ csrf_token() }}")
-        //     formData.append("code_feeling","-")        
-
-        //     var postParam = 'store_emoji'
-
-        //     createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
-        //   }else{
-        //     howWasYou()
-        //   }
-        // }else{
-        //   if (result.value) {
-        //     swalSuccess = {
-        //       icon: 'success',
-        //       title: 'Keep spirit and enjoy the day!🤟',
-        //       text: 'Click Ok to reload page',
-        //     } 
-
-        //     formData = new FormData
-        //     formData.append("_token","{{ csrf_token() }}")
-        //     formData.append("code_feeling",$('input[type="radio"]:checked').next("label").find(".emoji").attr("aria-label"))        
-
-        //     var postParam = 'store_emoji'
-
-        //     createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
-        //   }else{
-        //     console.log("testtt")
-        //     swalSuccess = {
-        //       icon: 'success',
-        //       title: 'Okkay, see you later!👋',
-        //       text: 'Click Ok to reload page',
-        //     } 
-
-        //     formData = new FormData
-        //     formData.append("_token","{{ csrf_token() }}")
-        //     formData.append("code_feeling","-")        
-
-        //     var postParam = 'store_emoji'
-
-        //     createPost('',formData,swalSuccess,url="/timesheet/storeFeeling",postParam)
-        //   }
-        // }
       });
     }
 
@@ -843,42 +792,6 @@
               success:function(result){
                 var events = [], disabledDates = []
                 if (results.data.length > 0) {
-                  // Object.keys(results).forEach(function(keys) {
-                  //   var valueResult = results[keys]
-
-                  //   if (valueResult.remarks != null) {
-                  //     events.push({
-                  //       id:valueResult.id,
-                  //       title:valueResult.activity,
-                  //       start:valueResult.start_date,
-                  //       end:valueResult.end_date,
-                  //       activity:valueResult.activity,
-                  //       remarks:valueResult.remarks
-                  //     })   
-
-                  //     disabledDates.push(moment.utc(valueResult.start_date, 'YYYY-MM-DD'))
-                  //   }else{
-                  //       console.log(valueResult.activity)
-
-                  //       events.push({
-                  //         title:valueResult.activity,
-                  //         start:valueResult.start_date,
-                  //         // end:valueResult.end_date,
-                  //         end:moment(valueResult.end_date).endOf('day'),
-                  //         // moment(valueResult.end_date).endOf('day')
-                  //         id:valueResult.id,
-                  //         type:valueResult.type,
-                  //         task:valueResult.task,
-                  //         schedule:valueResult.schedule,
-                  //         pid:valueResult.pid,
-                  //         phase:valueResult.phase,
-                  //         level:valueResult.level,
-                  //         duration:valueResult.duration,
-                  //         status:valueResult.status,
-                  //         status_pid:valueResult.status_pid
-                  //       }) 
-                  //   }
-                  // })
                   $.each(results.data,function(idx,value){
                     if (value.remarks != null) {
                       events.push({
@@ -3306,12 +3219,6 @@
               $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
             })
           }else {
-            $("input[name='scheduleInput']").val("Unplanned")
-            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-            $("select[name='selectDuration']").prop("disabled",false)
-            $("select[name='selectStatus']").prop("disabled",false)
-
             if ($("#ModalAddTimesheet").find(".modal-footer").find(".btn-primary").text() == "Save") {
               swalAlert = {
                 icon: "warning",
@@ -3355,7 +3262,6 @@
                       $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
                       eventUpdateTimesheet()
-                      saveTimesheet()
                       Swal.close();
                     }, 2000); // Delayed execution after 2000ms (2 seconds)
                   }
@@ -3366,20 +3272,6 @@
             })        
           }
         }else{
-          if ($('#daterange-timesheet').data('daterangepicker').startDate > moment()) {
-            $("input[name='scheduleInput']").val("Planned")
-            $("select[name='selectDuration']").prev("span").remove()
-            $("select[name='selectStatus']").prev("span").remove()
-            $("select[name='selectDuration']").prop("disabled",true)
-            $("select[name='selectStatus']").prop("disabled",true)
-          }else if ($('#daterange-timesheet').data('daterangepicker').startDate <= moment()) {
-            $("input[name='scheduleInput']").val("Unplanned")
-            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-            $("select[name='selectDuration']").prop("disabled",false)
-            $("select[name='selectStatus']").prop("disabled",false)
-          }
-
           if ($("#ModalAddTimesheet").find(".modal-footer").find(".btn-primary").text() == "Save") {
             swalAlert = {
               icon: "warning",
@@ -3422,8 +3314,7 @@
                     $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
                     $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
-                    eventUpdateTimesheet()
-                    saveTimesheet()
+                    eventUpdateTimesheet()                    
                     Swal.close();
                   }, 2000); // Delayed execution after 2000ms (2 seconds)
                 }
@@ -3453,12 +3344,6 @@
             $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
           })
         }else {
-          $("input[name='scheduleInput']").val("Unplanned")
-          $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-          $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-          $("select[name='selectDuration']").prop("disabled",false)
-          $("select[name='selectStatus']").prop("disabled",false)
-
           if ($("#ModalAddTimesheet").find(".modal-footer").find(".btn-primary").text() == "Save") {
             swalAlert = {
               icon: "warning",
@@ -3502,7 +3387,6 @@
                     $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
                     eventUpdateTimesheet()
-                    saveTimesheet()
                     Swal.close();
                   }, 2000); // Delayed execution after 2000ms (2 seconds)
                 }
@@ -3513,20 +3397,6 @@
           })        
         }
       }else{
-        if ($('#daterange-timesheet').data('daterangepicker').startDate > moment()) {
-          $("input[name='scheduleInput']").val("Planned")
-          $("select[name='selectDuration']").prev("span").remove()
-          $("select[name='selectStatus']").prev("span").remove()
-          $("select[name='selectDuration']").prop("disabled",true)
-          $("select[name='selectStatus']").prop("disabled",true)
-        }else if ($('#daterange-timesheet').data('daterangepicker').startDate <= moment()) {
-          $("input[name='scheduleInput']").val("Unplanned")
-          $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-          $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-          $("select[name='selectDuration']").prop("disabled",false)
-          $("select[name='selectStatus']").prop("disabled",false)
-        }
-
         if ($("#ModalAddTimesheet").find(".modal-footer").find(".btn-primary").text() == "Save") {
           swalAlert = {
             icon: "warning",
@@ -3570,7 +3440,6 @@
                   $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
                   eventUpdateTimesheet()
-                  saveTimesheet()
                   Swal.close();
                 }, 2000); // Delayed execution after 2000ms (2 seconds)
               }
@@ -3748,6 +3617,7 @@
         $('#daterange-timesheet').prop("disabled",true)
       }else{
         id = ""
+        $('#daterange-timesheet').prop("disabled",false)
       }
 
       $.ajax({
@@ -3763,13 +3633,35 @@
             $("#ModalAddTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
             $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
             showUpdateTimesheet(result,calEvent,id)
-          }else{        
+            if (moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") > moment(moment()._d).format("YYYY-MM-DD")) {
+              $("select[name='scheduleInput']").val('Planned')
+              $("select[name='selectDuration']").prev("span").remove()
+              $("select[name='selectStatus']").prev("span").remove()
+              $("select[name='selectDuration']").prop("disabled",true)
+              $("select[name='selectStatus']").prop("disabled",true)
+            }else if(moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") <= moment(moment()._d).format("YYYY-MM-DD")){
+              $("select[name='scheduleInput']").val('Unplanned')
+              $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+              $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+              $("select[name='selectDuration']").prop("disabled",false)
+              $("select[name='selectStatus']").prop("disabled",false)
+            }
+          }else{       
+            $("#daterange-timesheet").prop("disabled",false)
             $("#ModalAddTimesheet").find('.modal-footer').find(".btn-warning").removeClass("btn-warning").addClass("btn-primary").text('Save')
 
-            if (moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") > moment().format("YYYY-MM-DD")) {
-              $('#scheduleInput_0').val('Planned')
-            }else if(moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") <= moment().format("YYYY-MM-DD")){
-              $('#scheduleInput_0').val('Unplanned')
+            if (moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") > moment(moment()._d).format("YYYY-MM-DD")) {
+              $("#scheduleInput_0").val('Planned')
+              $("select[name='selectDuration']").prev("span").remove()
+              $("select[name='selectStatus']").prev("span").remove()
+              $("select[name='selectDuration']").prop("disabled",true)
+              $("select[name='selectStatus']").prop("disabled",true)
+            }else if(moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD") <= moment(moment()._d).format("YYYY-MM-DD")){
+              $("#scheduleInput_0").val('Unplanned')
+              $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+              $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+              $("select[name='selectDuration']").prop("disabled",false)
+              $("select[name='selectStatus']").prop("disabled",false)
             }
 
             $("#id_activity_0").val('')

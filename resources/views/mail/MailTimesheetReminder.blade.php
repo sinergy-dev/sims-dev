@@ -41,7 +41,7 @@
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
-		<center><img src="{{ asset('image/timesheet.png')}}" style="width: 50%; height: 50%"></center>
+		<center><img src="{{ asset('/image/timesheet.png')}}" style="width: 50%; height: 50%"></center>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -49,7 +49,7 @@
 				Hello {{$all['to']}}!
 			</p>
 			<p style="font-size: 16px">
-				Good Morning, Happy Working `Sip People`. And don't forget to fill out the timesheet you've created! For the last update at 23.59 PM
+				Good Morning, Happy Working `Sip People`. And don't forget to fill out the timesheet you've created!
 			</p>
 			<div style="background-color: #ececec; padding: 20px">
 				<center><b>List Schedule Planned Timesheet!</b></center>

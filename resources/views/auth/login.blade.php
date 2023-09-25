@@ -42,7 +42,8 @@
               <div style="display: {{ $errors->has('email_company') ? 'none' : '' }}">
                 <p>Login With Local Account</p>
                 <form class="form-horizontal" role="form" method="POST" action="{{ route('login') }}">
-                    {{ csrf_field() }}
+                    <!-- {{ csrf_field() }} -->
+                    @csrf
                     @if(session()->has('message'))
                         <div class="alert alert-warning notification-bar" id="alert">
                             {{ session()->get('message') }}
