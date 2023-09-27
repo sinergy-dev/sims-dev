@@ -2744,6 +2744,21 @@ class TimesheetController extends Controller
                         ->where('users.status_delete','-')
                         ->get();
 
+        $month_number = collect();
+
+        $data = $data->whereMonth('start_date',Carbon::now()->month);
+
+        $month_number = $month_number->push(Carbon::now()->month);
+
+        $startDate = Carbon::now();
+        $startDate->month;
+
+        $endDate = Carbon::now();
+        $endDate->month;
+
+        $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+        $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
+                
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
@@ -2756,20 +2771,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -2799,7 +2806,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -2808,9 +2815,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -2884,20 +2890,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -2936,9 +2934,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -3012,20 +3009,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -3055,7 +3044,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -3064,9 +3053,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -3140,20 +3128,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -3192,9 +3172,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -3269,20 +3248,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -3312,7 +3283,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -3321,9 +3292,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -3397,19 +3367,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                $startDate = Carbon::now();
-                $endDate = Carbon::now();
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate->month($valueMonth);
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -3439,7 +3402,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -3448,9 +3411,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -5109,7 +5071,36 @@ class TimesheetController extends Controller
         if (is_null($request->year)) {
             $data = $data->whereYear('start_date',date('Y'));
         }else{
-            $data = $data->whereYear('start_date',$request->year);                    
+            $data = $data->whereYear('start_date',$request->year);                 
+        }
+
+        $month_number = collect();
+        if (isset($request->month_select)) {
+            $data = $data->whereMonth('start_date',$request->month_select);
+
+            $month_number = $month_number->push($request->month_select);
+
+            $startDate = Carbon::now();
+            $startDate->month($request->month_select);
+
+            $endDate = Carbon::now();
+            $endDate->month($request->month_select);
+
+            $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+            $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
+        }else{
+            $data = $data->whereMonth('start_date',Carbon::now()->month);
+
+            $month_number = $month_number->push(Carbon::now()->month);
+
+            $startDate = Carbon::now();
+            $startDate->month;
+
+            $endDate = Carbon::now();
+            $endDate->month;
+
+            $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+            $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
         }
 
         $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
@@ -5140,20 +5131,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -5183,7 +5166,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -5192,9 +5175,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -5276,32 +5258,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    if (is_null($request->year)) {
-                        $startDate->setYear(date('Y'));
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
                     }else{
-                        $startDate->setYear($request->year);
-                    }
-                    $startDate->month($valueMonth);
-                    
-
-                    $endDate = Carbon::now();
-                    if (is_null($request->year)) {
-                        $endDate->setYear(date('Y'));
-                    }else{
-                        $endDate->setYear($request->year);
-                    }
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -5340,9 +5302,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -5424,20 +5385,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -5467,7 +5420,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -5476,9 +5429,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -5542,7 +5494,7 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'bcd') {
             if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
+                $listGroup = User::Rightjoin('role_user', 'role_user.user_id', '=', 'users.nik')->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
@@ -5552,20 +5504,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -5595,7 +5539,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -5604,9 +5548,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -5689,20 +5632,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -5732,7 +5667,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -5741,9 +5676,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -5825,20 +5759,12 @@ class TimesheetController extends Controller
 
                 $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-                foreach($arrMonth as $key_months => $valueMonth){
-                    $startDate = Carbon::now();
-                    $startDate->month($valueMonth);
-
-                    $endDate = Carbon::now();
-                    $endDate->month($valueMonth);
-
-                    $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                    $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                    foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                        if ($key_months == $key_mandays) {
-                            $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                        }
+                foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                    foreach($month_number as $key_month => $value_ArrMonth)
+                    if ($key_month == $key_mandays) {
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    }else{
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
                 }
 
@@ -5868,7 +5794,7 @@ class TimesheetController extends Controller
                     foreach($value as $datas){
                         foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                             foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                    if ($key_byUser == $datas->name) {
+                                if ($key_byUser == $datas->name) {
                                     $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                                 }
                             }
@@ -5877,9 +5803,8 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                     }
 
                     foreach($value as $datas){
@@ -5960,20 +5885,12 @@ class TimesheetController extends Controller
 
             $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-            foreach($arrMonth as $key_months => $valueMonth){
-                $startDate = Carbon::now();
-                $startDate->month($valueMonth);
-
-                $endDate = Carbon::now();
-                $endDate->month($valueMonth);
-
-                $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                $endDateFinal = $endDate->endOfMonth()->format("Y-m-d");
-
-                foreach($arrMonthMandays as $key_mandays => $valueMandays){
-                    if ($key_months == $key_mandays) {
-                        $arrMonthMandays[$key_mandays]  = $arrMonthMandays[$key_mandays]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
-                    }
+            foreach($arrMonthMandays as $key_mandays => $valueMandays){
+                foreach($month_number as $key_month => $value_ArrMonth)
+                if ($key_month == $key_mandays) {
+                    $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                }else{
+                    $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                 }
             }
 
@@ -5991,7 +5908,7 @@ class TimesheetController extends Controller
                     $arrName->push($datas->name);
                 }
 
-                foreach($getUserByGroupOD as $value_group){
+                foreach($getUserByGroup as $value_group){
                     $arrName->push($value_group->name);
                 }
 
@@ -6003,7 +5920,7 @@ class TimesheetController extends Controller
                 foreach($value as $datas){
                     foreach($hasil_prosentase as $key_prosentase => $value_prosentase){
                         foreach($arrProsentaseByUser as $key_byUser => $value_byUser){
-                                if ($key_byUser == $datas->name) {
+                            if ($key_byUser == $datas->name) {
                                 $arrProsentaseByUser[$key_byUser] = $value_byUser+$datas->point_mandays;
                             }
                         }
@@ -6012,9 +5929,8 @@ class TimesheetController extends Controller
                 }
 
                 foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                    $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key] * 100,2));
-                    $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key]) * 100,2)));
-
+                    $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                    $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
                 }
 
                 foreach($value as $datas){
