@@ -94,14 +94,14 @@ PMO
                 <div class="col-md-4 pull-right" id="search-table">
                   <div class="input-group" style="margin-left: 10px">
                     <div class="input-group-btn">
-                      <button type="button" id="btnShowPID" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                      <button type="button" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                         Show 10 entries
                       </button>
                       <ul class="dropdown-menu">
-                        <li><a href="#" onclick="$('#table-pid').DataTable().page.len(10).draw();$('#btnShowPID').html('Show 10 entries')">10</a></li>
-                        <li><a href="#" onclick="$('#table-pid').DataTable().page.len(25).draw();$('#btnShowPID').html('Show 25 entries')">25</a></li>
-                        <li><a href="#" onclick="$('#table-pid').DataTable().page.len(50).draw();$('#btnShowPID').html('Show 50 entries')">50</a></li>
-                        <li><a href="#" onclick="$('#table-pid').DataTable().page.len(100).draw();$('#btnShowPID').html('Show 100 entries')">100</a></li>
+                        <li><a href="#" onclick="changeNumberEntries('tbListProject',10)">10</a></li>
+                        <li><a href="#" onclick="changeNumberEntries('tbListProject',25)">25</a></li>
+                        <li><a href="#" onclick="changeNumberEntries('tbListProject',50)">50</a></li>
+                        <li><a href="#" onclick="changeNumberEntries('tbListProject',100)">100</a></li>
                       </ul>
                     </div>
                     <input id="searchBarList" type="text" class="form-control" placeholder="Search Anything">
@@ -723,17 +723,16 @@ PMO
     Pace.restart();
     Pace.track(function() {    
       table = $('#tbListProject').DataTable({
+          processing: true,
+          serverSide: true,
           ajax:{
             url:"{{url('/PMO/getListDataProject')}}",
             dataSrc:"data"
           },
-          // "bLengthChange": false,
           "bFilter": true,
           "bSort":true,
-          // "bPaginate": false,
           "bLengthChange": false,
           "bInfo": false,
-          // "searching": false,
           "columns": [
             {
               title: "No",
@@ -916,12 +915,6 @@ PMO
                                   }
                           		}else{
                                   return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
-                                // if (row.type_project == "Implementation + Maintenance & Managed Service") {
-                                //   if()
-                                //   return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                                // }else{
-                                //   return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
-                                // }
                             		
                           	}  
                         }else if(row.status == 'New'){
@@ -977,32 +970,6 @@ PMO
                       return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                     }
                   }
-                  // if (row.current_phase == 'New') {
-                  //   if (row.project_type == 'supply_only') {
-                  //     return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'"  +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                  //   }else{
-
-                  //     if (row.status == 'Done') {
-                  //       return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                  //     }else if (row.status == 'New') {
-                  //       if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','sales')->exists()}}") {
-                  //         return '<button class="btn btn-sm btn-primary" style="width:110px" disabled id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                  //       }else{
-                  //         return '<button class="btn btn-sm btn-primary" style="width:110px" disabled id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                  //       }
-                  //     }else if(row.status == 'Approve'){
-                  //       return '<button class="btn btn-sm btn-primary" style="width:110px" disabled id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                  //     }else if (row.status == 'Reject') {
-                  //       return '<button class="btn btn-sm btn-danger" style="width:110px;" disabled id="btnRevisionProjectCharter" name="btnRevisionProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'revision'" +')"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
-                  //     }else if (row.status == 'Draft'){
-                  //       return '<button class="btn btn-sm btn-primary" style="width:110px;" disabled id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'draft'" +')"><i class="fa fa-wrench"></i>&nbsp Project Charter</button>'
-                  //     }else{
-                  //       return '<button class="btn btn-sm btn-primary" style="width:110px" disabled id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +',' + "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
-                  //     }
-                  //   }
-                  // }else{
-                  //   return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                  // }
                 },
             }
           ],
@@ -2716,7 +2683,7 @@ PMO
     }
 
     function detailProject(id_pmo,type){
-      location.replace("{{url('/PMO/project/detail')}}/"+id_pmo+"?project_type="+type)
+      window.open("{{url('/PMO/project/detail')}}/"+id_pmo+"?project_type="+type,"_blank")
     }
 
     function deleteAssign(id){
@@ -3065,5 +3032,9 @@ PMO
         }
       }
     }); 
+
+    function changeNumberEntries(id_table,num){
+      $('#'+id_table).DataTable().page.len(num).draw()
+    }
 </script>
 @endsection
