@@ -1609,10 +1609,6 @@
         //     }
         //   }
         // })
-
-        console.log(arrStatusBack)
-        console.log(arrTypeBack)
-
         $.ajax({
           url:"{{url('/admin/getDropdownFilterPr')}}",
           type:"GET",
@@ -2496,7 +2492,6 @@
                             placeholder: "Select Pid",
                             dropdownParent: $('#ModalDraftPr')
                         }).on('change', function() {
-                          console.log("siniiii")
                           var data = $("#selectPid option:selected").text();
                           $("#selectLeadId").empty()
                           $.ajax({
@@ -2543,10 +2538,6 @@
                                 $("#inputSBE").attr("disabled",true).css("cursor","not-allowed")
                                 $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").show()
                                 $("#link_sbe").attr("href",result.linkSbe[0].link_drive)
-                              }else{
-                                $("#inputSBE").attr("disabled",false).css("cursor","")
-                                $("#inputSBE").val("")
-                                $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").hide()
                               }
                             }
                           }) 
@@ -2934,7 +2925,7 @@
         }
       })
       
-      $("#ModalDraftPr").modal('show') 
+      $("#ModalDraftPr").modal({backdrop: 'static', keyboard: false})  
     }
 
     function btnCancel(id){
@@ -3461,7 +3452,7 @@
         $("#nextBtnAdd").prop("disabled",false)
         $("#addProduct").attr('onclick','nextPrevAdd(-1)')
       }
-      $("#ModalDraftPr").modal('show') 
+      $("#ModalDraftPr").modal({backdrop: 'static', keyboard: false})  
     }
 
     $('#ModalDraftPr').on('hidden.bs.modal', function () {
@@ -4435,7 +4426,7 @@
         }
       })
         
-      $("#ModalDraftPrAdmin").modal('show')  
+      $("#ModalDraftPrAdmin").modal({backdrop: 'static', keyboard: false})  
     }
 
     function cekTable(no_pr){
