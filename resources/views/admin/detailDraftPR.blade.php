@@ -3801,7 +3801,7 @@
       $("#nextBtnAdd").prop("disabled",false)
       $("#addProduct").attr('onclick','nextPrevAddPembanding(-1)')
     }
-    $("#ModalDraftPr").modal("show")  
+    $("#ModalDraftPr").modal({backdrop: 'static', keyboard: false})  
   }
 
   function fillInput(val){
