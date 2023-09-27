@@ -4533,6 +4533,13 @@ class PrDraftController extends Controller
 
     public function getSupplier()
     {
-        return $data = DB::table('tb_pr')->select(DB::raw('`to` AS `id`,`to` AS `text`'))->whereRaw("(`to` != '' OR `to` != NULL)")->groupBy('to')->get();
+        // return $data = DB::table('tb_pr')->leftjoin('tb_pr_draft','tb_pr_draft.to','tb_pr.to')
+        // ->unionAll(DB::table('tb_pr')
+        //     ->rightJoin('tb_pr_draft', 'tb_pr.to', '=', 'tb_pr_draft.to')
+        // )->select(DB::raw('`tb_pr`.`to` AS `id`,`tb_pr`.`to` AS `text`'))->whereRaw("(`tb_pr`.`to` != '' OR `tb_pr`.`to` != NULL)")->groupBy('tb_pr.to')->distinct()->get();
+
+        $data = DB::table('tb_pr')->select(DB::raw('`tb_pr`.`to` AS `id`,`tb_pr`.`to` AS `text`'))->whereRaw("(`tb_pr`.`to` != '' OR `tb_pr`.`to` != NULL)")->groupBy('tb_pr.to');
+
+        return $data_draft_pr = DB::table('tb_pr_draft')->select(DB::raw('`tb_pr_draft`.`to` AS `id`,`tb_pr_draft`.`to` AS `text`'))->whereRaw("(`tb_pr_draft`.`to` != '' OR `tb_pr_draft`.`to` != NULL)")->groupBy('tb_pr_draft.to')->union($data)->get();
     }
 }
