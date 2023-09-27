@@ -132,8 +132,43 @@ class PMProjectController extends Controller
         return 'deleted';
     }
 
-	public function getListDataProject(){
-		$getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+	public function getListDataProject(Request $request){
+		// $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+  //                       ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
+
+  //       $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+  //                       ->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first(); 
+
+  //       $data =  PMO::LeftjoinSub($getListLeadRegister, 'project_id', function($join){
+  //                   $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
+  //               })
+		// 		->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
+		// 		->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
+
+  //       if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
+  //       	$data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array','type_project_array']);
+  //           // $data = PMO::get();
+  //       } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
+  //       	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
+		// 		->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
+		// 		->get()->makeHidden(['type_project_array','phase']);
+  //           // $data = PMO::get();
+  //       } else {
+  //       	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
+		// 		->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
+		// 		->get()->makeHidden(['type_project_array','phase']);
+
+  //           // $data = PMO::where('assign_pm', Auth::User()->nik)->get();
+  //       }
+
+  //       // $project_indicator = DB::table('tb_pmo')->join('tb_pmo_progress_report','tb_pmo.id','tb_pmo_progress_report.id_project')->select('project_indicator')->orderBy('tb_pmo_progress_report.reporting_date','desc')->first();
+
+  //       // $data = collect(["data"=>$data,"indicator_project"=>$project_indicator]);
+
+  //       // return $data;
+  //       return array("data" => $data);
+
+        $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
                         ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -142,31 +177,34 @@ class PMProjectController extends Controller
         $data =  PMO::LeftjoinSub($getListLeadRegister, 'project_id', function($join){
                     $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
                 })
-				->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
-				->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
+                ->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
+                ->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
         if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
-        	$data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array']);
-            // $data = PMO::get();
+            $data = $data->orderBy('tb_pmo.id','desc');
         } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
-        	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-				->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
-				->get()->makeHidden(['type_project_array']);
-            // $data = PMO::get();
+            $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
+                ->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc');
         } else {
-        	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-				->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
-				->get()->makeHidden(['type_project_array']);
-
-            // $data = PMO::where('assign_pm', Auth::User()->nik)->get();
+            $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
+                ->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc');
         }
+         // Get the total count before pagination
+        $totalRecords = $data->count();
+        // Apply pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 25); // Number of records per page
 
-        // $project_indicator = DB::table('tb_pmo')->join('tb_pmo_progress_report','tb_pmo.id','tb_pmo_progress_report.id_project')->select('project_indicator')->orderBy('tb_pmo_progress_report.reporting_date','desc')->first();
+        $data->skip($start)->take($length);
 
-        // $data = collect(["data"=>$data,"indicator_project"=>$project_indicator]);
+        $data = $data->get()->makeHidden(['type_project_array']);
 
-        // return $data;
-        return array("data" => $data);
+        return response()->json([
+            'draw' => $request->input('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $data,
+        ]);
 	}
 
     public function deleteDoc(Request $request)
