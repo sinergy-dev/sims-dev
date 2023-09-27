@@ -809,14 +809,12 @@
     data:arrFilterYear,
   })
 
-  function customFilter(val,id=""){
+  function customFilter(val,id="",page){
     var arrFilterMonth = "month[]=", arrMonth = [], selectPic = 'pic[]=', selectStatus = 'status[]=', selectTask = 'task[]=', selectPhase = 'phase[]=', selectYear = 'year=', selectSchedule = 'schedule[]=', selectRoles = 'roles='
 
     arrFilterMonth = []
     arrMonth = []
-    if (cummulativeLineChart){
-      cummulativeLineChart.destroy()
-    }
+
     $(".cbMonth").each(function(idx,values){
       if ($(values).is(":checked") == true) {
         if(arrFilterMonth == 'month[]=') {
@@ -892,15 +890,21 @@
       })
     }
 
-    var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule + '&' + selectRoles
-
-    console.log(arrFilter)
-
-    if (id == "export") {
-      window.open(val + arrFilter, "_blank")
-      // window.location = val + arrFilter;
+    if(id == "changePageRemaining"){
+      var arrFilter = '?month_select=' + val
+      showDataFilter(arrFilter,arrMonth,"remainingChart",val)
     }else{
-      showDataFilter(arrFilter,arrMonth)
+      if (cummulativeLineChart){
+        cummulativeLineChart.destroy()
+      }
+
+      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule + '&' + selectRoles
+      if (id == "export") {
+        window.open(val + arrFilter, "_blank")
+        // window.location = val + arrFilter;
+      }else{
+        showDataFilter(arrFilter,arrMonth,"all")
+      }
     }
   }
 
@@ -1037,11 +1041,13 @@
     // $("#remainingChart").after(duplicateCanvas)
   }
 
-  function duplicateCanvasRemaining(url,param){
+  function duplicateCanvasRemaining(url,param,position){
+    console.log(url)
     $.ajax({
       type:"GET",
       url:"{{url('/')}}/"+url+param,
       success:function(results){
+        $("#box-remaining").empty("")
         $.each(results,function(index,value){
           if (typeof(value) == "object") {
             $.each(value,function(idx,values){
@@ -1065,55 +1071,71 @@
           }
         })
 
-        var itemsPerPage = 1; // Number of items per page
-        var $myDiv = $("#box-remaining");
-        var $pagination = $('#pagination');
-        var items = $myDiv.children(); // Get the items within the div
-        var totalPages = Math.ceil(items.length / itemsPerPage);
-        // Generate pagination links
-        for (var i = 1; i <= totalPages; i++) {
-          if (i === moment().month() + 1) {
-            $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
-          }else{
-            //bedakan dengan filter year
-            if (i > moment().month() + 1) {
-              $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+        var $myDiv        = $("#box-remaining");
+        var itemsPerPage  = 1; // Number of items per page
+
+        var $pagination   = $('#pagination');
+        var items         = $myDiv.children();
+        var totalPages    = Math.ceil(items.length / itemsPerPage);
+
+        if (position) {
+          showItems(position,items,itemsPerPage);
+        }else{
+          //set current month
+          for (var i = 1; i <= totalPages; i++) {
+            if (i === moment().month() + 1) {
+              $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
             }else{
-              $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+              //bedakan dengan filter year
+              if (i > moment().month() + 1) {
+                $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+              }else{
+                $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+              }
             }
           }
-        }
-
-        //set current month
-        showItems(moment().month() + 1);
-
-        // Handle pagination link click event
-        $pagination.on('click', '.pagination-link', function(e) {
-          e.preventDefault();
-          var page = parseInt($(this).text()); // Get the clicked page number
-          const monthName = moment().month(page-1).format('MMMM')
-          $("#span-remaining").text(monthName)
-          $.each($(".pagination-link"),function(idx,value){
-            if (value.text == page) {
-              $(value).addClass('active')
-            }else{
-              $(value).removeClass('active')
-            }
-          })
-
-          showItems(page); // Display items for the clicked page
-        });
-
-        function showItems(page) {
-          var startIndex = (page - 1) * itemsPerPage;
-          var endIndex = startIndex + itemsPerPage;
+          showItems(moment().month() + 1,items,itemsPerPage);
+          // Generate pagination links
           
-          items.hide() // Hide all items
-               .slice(startIndex, endIndex) // Show only items for the current page
-               .show();
         }
       }
     })
+  }
+
+  // Handle pagination link click event
+  $("#pagination").on('click', '.pagination-link', function(e) {
+    var $myDiv        = $("#box-remaining");
+    var $pagination   = $('#pagination');
+    var itemsPerPage  = 1; // Number of items per page
+
+    var items         = $myDiv.children();
+    var totalPages    = Math.ceil(items.length / itemsPerPage);
+
+    e.preventDefault();
+    var page = parseInt($(this).text()); // Get the clicked page number
+    const monthName = moment().month(page-1).format('MMMM')
+    $("#span-remaining").text(monthName)
+    $.each($(".pagination-link"),function(idx,value){
+      if (value.text == page) {
+        customFilter(page,"changePageRemaining")
+        $(value).addClass('active')
+      }else{
+        $(value).removeClass('active')
+      }
+    })
+    
+    //destroy reinitiate remaining chart
+    showItems(page,items,itemsPerPage); 
+    // Display items for the clicked page
+  });
+
+  function showItems(page,items,itemsPerPage) {
+    var startIndex = (page - 1) * itemsPerPage;
+    var endIndex = startIndex + itemsPerPage;
+    
+    items.hide() // Hide all items
+         .slice(startIndex, endIndex) // Show only items for the current page
+         .show();
   }
   
   appendChartLevel = ""
@@ -1454,74 +1476,85 @@
     })
   }
 
-  function showDataFilter(arrFilter,arrMonth){
+  function showDataFilter(arrFilter,arrMonth,nameChart,val){
     var accesable = @json($feature_item);
     accesable.forEach(function(item,index){
       $("#" + item).show()
     })
 
-    console.log(arrMonth)
-    if (isTbSummary == true) {
-      $("#loadingIndicator").show()
-      $("#filterSumPoint").find("i").css("color","red")
-      $("#filterSumPoint").find("span").text("not ready to filter...")
-      Pace.restart();
-      Pace.track(function(){
-        $("#tbSummaryMandays").DataTable().ajax.url("{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter).load();
-        if (arrMonth.length > 1) {
-          $("#monthly_status").text("cumulative")
-        }else{
-          $("#monthly_status").text(arrMonth[0])
-        }
-      })
-    }
-
-    //filter table
-    if ($('#selectDiv').is(":visible")) {
-      $("#tbAssignPID").DataTable().ajax.url("{{url('/timesheet/getAllAssignPidByDivision')}}"+arrFilter).load();
-      $("#tbSummarySbe").DataTable().ajax.url("{{url('/timesheet/sumPointSbe')}}"+arrFilter).load();
-    }
-
-    //cummulative mandays chart update
-    if (cummulativeLineChart) {
-      cummulativeLineChart.destroy()
-    }
-    cummulativeChart(arrMonth,"timesheet/getFilterCummulativeMandaysChart",arrFilter)
-
-    //level mandays chart update
-    if (accesable.includes('nav-tab-table')) {
-      levelPieChart.destroy()
-      levelChart("/timesheet/getFilterLevelChart",arrFilter)
-
-      //status mandays chart update
-      statusPieChart.destroy()
-      statusChart("/timesheet/getFilterStatusChart",arrFilter)
-
-      //schedule mandays chart update
-      schedulePieChart.destroy()
-      scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
-
-      //task chart update
-      taskPieChart.destroy()
-      taskChart("/timesheet/getFilterTaskChart",arrFilter)
-
-      //phase chart update
-      phasePieChart.destroy()
-      phaseChart("/timesheet/getFilterPhaseChart",arrFilter)
-    }
-    
-    //remaining chart update
-    const yearRegex = /\b\d{4}\b/; // Matches a 4-digit number
-    const yearMatch = arrFilter.match(yearRegex);
-    if (yearMatch) {
-      const year = yearMatch[0];
+    if (nameChart == "remainingChart") {
+      //remaining chart update
       $.each(remainingBarChart,function(idx,value){
-        value.destroy()
+          value.destroy()
       })
-      $("#pagination").empty("")
-      $("#box-remaining").empty("")
-      duplicateCanvasRemaining("timesheet/getFilterRemainingChart",arrFilter)
-    } 
+      duplicateCanvasRemaining("timesheet/getFilterRemainingChart",arrFilter,val) 
+    }else{
+      console.log("sinii")
+      if (isTbSummary == true) {
+        $("#loadingIndicator").show()
+        $("#filterSumPoint").find("i").css("color","red")
+        $("#filterSumPoint").find("span").text("not ready to filter...")
+        Pace.restart();
+        Pace.track(function(){
+          $("#tbSummaryMandays").DataTable().ajax.url("{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter).load();
+          if (arrMonth.length > 1) {
+            $("#monthly_status").text("cumulative")
+          }else{
+            $("#monthly_status").text(arrMonth[0])
+          }
+        })
+      }
+
+      //filter table
+      if ($('#selectDiv').is(":visible")) {
+        $("#tbAssignPID").DataTable().ajax.url("{{url('/timesheet/getAllAssignPidByDivision')}}"+arrFilter).load();
+        $("#tbSummarySbe").DataTable().ajax.url("{{url('/timesheet/sumPointSbe')}}"+arrFilter).load();
+      }
+
+      //cummulative mandays chart update
+      if (cummulativeLineChart) {
+        cummulativeLineChart.destroy()
+      }
+
+      cummulativeChart(arrMonth,"timesheet/getFilterCummulativeMandaysChart",arrFilter)
+
+      //level mandays chart update
+      if (accesable.includes('nav-tab-table')) {
+        levelPieChart.destroy()
+        levelChart("/timesheet/getFilterLevelChart",arrFilter)
+
+        //status mandays chart update
+        statusPieChart.destroy()
+        statusChart("/timesheet/getFilterStatusChart",arrFilter)
+
+        //schedule mandays chart update
+        schedulePieChart.destroy()
+        scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
+
+        //task chart update
+        taskPieChart.destroy()
+        taskChart("/timesheet/getFilterTaskChart",arrFilter)
+
+        //phase chart update
+        phasePieChart.destroy()
+        phaseChart("/timesheet/getFilterPhaseChart",arrFilter)
+      }
+      
+      //remaining chart update
+      const yearRegex = /\b\d{4}\b/; // Matches a 4-digit number
+      const yearMatch = arrFilter.match(yearRegex);
+      if (yearMatch) {
+        const year = yearMatch[0];
+        $.each(remainingBarChart,function(idx,value){
+          value.destroy()
+        })
+        $("#pagination").empty("")
+        $("#box-remaining").empty("")
+        duplicateCanvasRemaining("timesheet/getFilterRemainingChart",arrFilter)
+      } 
+    }
+
+    
   }
 
   $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
