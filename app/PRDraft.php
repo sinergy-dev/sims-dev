@@ -82,7 +82,7 @@ class PRDraft extends Model
     {
     	$data = DB::table('tb_pr')->join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.amount as nominal')->where('tb_pr_draft.id', $this->id)->first();
 
-    	return empty($data->nominal)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->nominal) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->nominal):$data->nominal;
+    	return empty($data->nominal)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->nominal) ? "0" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->nominal):$data->nominal;
     }
 
     public function getStatusAttribute()
