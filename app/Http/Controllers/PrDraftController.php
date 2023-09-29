@@ -802,54 +802,74 @@ class PrDraftController extends Controller
             $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereYear('tb_pr_draft.updated_at',date('Y'));
             if ($cek_role->name == 'BCD Procurement') {
                 $getDataEPR = $getDataEPR->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')")
-                ->get()->makeHidden(['status_pr']);
+                ;
             } else {
                 $getDataEPR = $getDataEPR->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'UNAPPROVED')")
-                ->get()->makeHidden(['status_pr']);
+                ;
             }
             
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED');
         } else {
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->where('status','!=','SENDED');
         }
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
             $getData = PRDraft::where('type_of_letter', 'IPR')->whereYear('tb_pr_draft.updated_at',date('Y'));
             if ($cek_role->name == 'BCD Procurement') {
                 $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED')")
-                ->get()->makeHidden(['comparison','status_pr']);
+                ;
             } else {
                 $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'SAVED' AND `status` != 'UNAPPROVED')")
-                ->get()->makeHidden(['comparison','status_pr']);
+                ;
             }
             
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED');
         } else if ($cek_role->name == 'PMO Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
         } else if ($cek_role->name == 'MSM Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
         } else if ($cek_role->name == 'HR Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
         } else if ($cek_role->name == 'SOL Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
         } else if ($cek_role->name == 'SID Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
         } else {
-            $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->where('status','!=','SENDED')->get()->makeHidden(['status_pr']);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->where('status','!=','SENDED');
         }
 
         // return $nik;
 
-        return array("data"=>$getData->merge($getDataEPR));
+        $totalRecords = $getData->count() + $getDataEPR->count();
+        // Apply pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 100); // Number of records per page
+
+        $getData->skip($start)->take($length);
+        $getDataEPR->skip($start)->take($length);
+
+        $getDataFinal = $getData->get();
+        $getDataEPRFinal = $getDataEPR->get();
+
+        $data = $getDataFinal->merge($getDataEPRFinal);
+
+        return response()->json([
+            'draw' => $request->input('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $data,
+        ]);
+
+        // return array("data"=>$getData->merge($getDataEPR));
         
     }
 

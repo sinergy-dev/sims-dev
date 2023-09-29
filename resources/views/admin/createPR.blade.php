@@ -1296,6 +1296,8 @@
     Pace.restart();
     Pace.track(function() {
       $("#draftPr").DataTable({
+          processing:true,
+          serverSide:true,
           "ajax":{
             "type":"GET",
             "url":"{{url('/admin/getDraftPr')}}",

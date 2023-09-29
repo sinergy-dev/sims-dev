@@ -38,7 +38,8 @@ class PRDraft extends Model
         'created_at'
 	];
 
-	protected $appends = ['no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name','status_pr'];
+	// protected $appends = ['no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name','status_pr'];
+    protected $appends = ['no_pr','date','nominal', 'attention_notes', 'name','circularby'];
 
     public function getToAttribute()
     {
