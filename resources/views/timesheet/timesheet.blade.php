@@ -3171,13 +3171,13 @@
       $("#fieldset_"+countable).find("#btn_delete_activity").val(countable)
 
       if ($("#daterange-timesheet").data('daterangepicker').startDate._d > moment()) {
-        $("input[name='scheduleInput']").val("Planned")
+        $("#scheduleInput_"+countable).val("Planned")
         $("select[name='selectDuration']").prop("disabled",true)
         $("select[name='selectStatus']").prop("disabled",true)
         $("select[name='selectDuration']").prev("label").find("span").remove()
         $("select[name='selectStatus']").prev("label").find("span").remove()
       }else if ($("#daterange-timesheet").data('daterangepicker').startDate._d <= moment()) {
-        $("input[name='scheduleInput']").val("Unplanned")
+        $("#scheduleInput_"+countable).val("Unplanned")
         $("select[name='selectDuration']").prev("label").after("<span>*</span>")
         $("select[name='selectStatus']").prev("label").after("<span>*</span>")
         $("select[name='selectDuration']").prop("disabled",false)
