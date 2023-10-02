@@ -688,7 +688,7 @@ class TimesheetController extends Controller
 
                     // $start_date = Carbon::createFromFormat('d/m/Y', $value[2])->format('Y-m-d');
                     // $end_date = Carbon::createFromFormat('d/m/Y', $value[9])->format('Y-m-d');
-                    $getPoint = (int)$value['7']/800;
+                    $getPoint = (int)$value['7']/480;
                     $point_mandays = number_format($getPoint, 2, '.', '');
                     $insertTimesheet[] = [
                         'nik' => Auth::User()->nik, 
