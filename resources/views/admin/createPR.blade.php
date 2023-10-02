@@ -1696,6 +1696,7 @@
       Pace.track(function() {
         // var table = $("#draftPr").DataTable()
         // table.destroy()
+        console.log(temp)
         $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
         InitiateFilterParam(arrStatusBack,arrTypeBack)
         // $.ajax({
@@ -1770,7 +1771,7 @@
 
     function sortingByDashboard(value){
       
-      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
+      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'searchFor='
 
       if (tempStatus == 'status[]=') {
         tempStatus = tempStatus + value
@@ -1784,7 +1785,7 @@
     }
 
     function searchCustom(startDate,endDate){
-      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
+      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'searchFor='
 
       $.each($('#inputFilterStatus').val(),function(key,value){
         if (tempStatus == 'status[]=') {
