@@ -82,7 +82,10 @@ class TimesheetController extends Controller
         // Auth::User()->email;
         //calendar id nya apa aja?
         //ladinar@sinergy.co.id
-        
+
+        $currentDateTime    = Carbon::now();
+        $startOfYear        = $currentDateTime->startOfYear()->format('Y-m-d\TH:i:s\Z');
+        $endOfYear          = $currentDateTime->endOfYear()->format('Y-m-d\TH:i:s\Z');
 
         // $client = new Client();
         // $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
@@ -90,7 +93,7 @@ class TimesheetController extends Controller
             // Create a new Guzzle HTTP client
             $client = new Client();
             // Make the API request
-            $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
+            $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events?maxResults=2500" . "&timeMin=" .$startOfYear;
             $token = $this->getOauth2AccessToken();
 
             $response = $client->request(
@@ -103,8 +106,9 @@ class TimesheetController extends Controller
                     ],
                     // 'form_params' => [
                     //     'sendNotifications' => true,
+                    //     'maxResults': 2500,
                     // ],
-                ]
+                ],
             );
             // Check for successful response (status code in the range of 200-299)
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) { 

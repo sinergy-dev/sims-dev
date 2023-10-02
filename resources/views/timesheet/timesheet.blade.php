@@ -953,20 +953,20 @@
                 
                 if (result != "") {
                   result.items.map(item => {
-                    // if (item.creator != undefined) {
-                    //   if (Object.keys(item.creator).length == 2) {
-                    //     if (item.creator.self == true) {
-                    //       const events = arrayData.push({
-                    //         id:item.id,
-                    //         title: item.summary,
-                    //         start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
-                    //         end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
-                    //         activity: item.summary,
-                    //         refer:"gcal",
-                    //       })
-                    //     }
-                    //   }
-                    // }
+                    if (item.creator != undefined) {
+                      if (Object.keys(item.creator).length == 2) {
+                        if (item.creator.self == true) {
+                          const events = arrayData.push({
+                            id:item.id,
+                            title: item.summary,
+                            start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
+                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                            activity: item.summary,
+                            refer:"gcal",
+                          })
+                        }
+                      }
+                    }
                  
 
                     $.each(item.attendees,function(index,itemX){
@@ -986,13 +986,28 @@
                   })
                 }
 
-                var filteredData = arrayData.filter(function(obj1) {
+                // Initialize an empty array to store unique titles
+                // Create an object to track unique values
+                const uniqueValues = {};
+
+                // Use the filter() method to filter the array
+                const uniqueData = arrayData.filter(item => {
+                    // Check if the value is not already in the uniqueValues object
+                    if (!uniqueValues[item.title]) {
+                        // If not, mark it as seen and keep it in the result
+                        uniqueValues[item.title] = true;
+                        return true;
+                    }
+                    return false;
+                });
+
+                var filteredData = uniqueData.filter(function(obj1) {
                   return !events.some(function(obj2) {
                     return obj1.title === obj2.title
                   });
                 });
-                var arrayCalconcatDb = events.concat(filteredData)
 
+                var arrayCalconcatDb = events.concat(filteredData)
 
                 // var uniqueArray = arrayCalconcatDb.filter((obj, index, self) =>
                 //   index === self.findIndex((item) => item.refer === obj.refer)
@@ -1295,7 +1310,7 @@
                           $('#textareaActivity').prop("disabled",true)
                           $('#selectDuration').prop("disabled",true)
                           $('#selectStatus').prop("disabled",true)
-                          $("#ModalAddTimesheet").find('.modal-footer').hide()
+                          $("#ModalUpdateTimesheet").find('.modal-footer').hide()
                         }else{
                           $('#selectType').prop("disabled",false)
                           $('#selectLead').prop("disabled",false)
@@ -1303,7 +1318,7 @@
                           $('#selectPhase').prop("disabled",false)
                           $('#selectLevel').prop("disabled",false)
                           $('#textareaActivity').prop("disabled",false)
-                          $("#ModalAddTimesheet").find('.modal-footer').show()
+                          $("#ModalUpdateTimesheet").find('.modal-footer').show()
                         }
                       }else{
                         var momentDate = moment(start); // Replace with your own moment date
@@ -1317,7 +1332,7 @@
                         $('#selectPhase').prop("disabled",false)
                         $('#selectLevel').prop("disabled",false)
                         $('#textareaActivity').prop("disabled",false)
-                        $("#ModalAddTimesheet").find('.modal-footer').show()
+                        $("#ModalUpdateTimesheet").find('.modal-footer').show()
                       }  
                     }else{
                       $("#ModalAddTimesheet").modal("show")
@@ -1356,8 +1371,11 @@
 
                 $("#tbInfo").append(append)
               }else{
+
+                console.log("siniii")
                 $("#ModalUpdateTimesheet").modal("show")
                 $("#ModalUpdateTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+                $("#ModalUpdateTimesheet").find('.modal-footer').hide()
 
                 setSchedule(calEvent.start)
                 setDuration("refer")
@@ -1389,7 +1407,6 @@
                 $('#textareaActivity_refer').prop("disabled",true)
                 $('#selectDuration_refer').prop("disabled",true)
                 $('#selectStatus_refer').prop("disabled",true)
-                $("#ModalUpdateTimesheet").find('.modal-footer').hide() 
               }
             }
         },
@@ -1639,7 +1656,7 @@
             $('#textareaActivity').prop("disabled",true)
             $('#selectDuration').prop("disabled",true)
             $('#selectStatus').prop("disabled",true)
-            $("#ModalAddTimesheet").find('.modal-footer').hide()
+            $("#ModalUpdateTimesheet").find('.modal-footer').hide()
           }else{
             $('#selectType').prop("disabled",false)
             $('#selectLead').prop("disabled",false)
@@ -1649,7 +1666,7 @@
             $('#textareaActivity').prop("disabled",false)
             $('#selectDuration').prop("disabled",false)
             $('#selectStatus').prop("disabled",false)
-            $("#ModalAddTimesheet").find('.modal-footer').show()
+            $("#ModalUpdateTimesheet").find('.modal-footer').hide()
           }
         }else{
           var momentDate = moment(start); // Replace with your own moment date
@@ -1665,28 +1682,7 @@
           $('#textareaActivity').prop("disabled",false)
           $('#selectDuration').prop("disabled",false)
           $('#selectStatus').prop("disabled",false)
-          $("#ModalAddTimesheet").find('.modal-footer').show()
-          // if (isSameDateToday) {
-          //   $('#selectType').prop("disabled",false)
-          //   $('#selectLead').prop("disabled",false)
-          //   $('#selectTask').prop("disabled",false)
-          //   $('#selectPhase').prop("disabled",false)
-          //   $('#selectLevel').prop("disabled",false)
-          //   $('#textareaActivity').prop("disabled",false)
-          //   $('#selectDuration').prop("disabled",false)
-          //   $('#selectStatus').prop("disabled",false)
-          //   $("#ModalAddTimesheet").find('.modal-footer').show()
-          // }else{
-          //   $("#ModalAddTimesheet").find('.modal-footer').hide()
-          //   $('#selectType').prop("disabled",true)
-          //   $('#selectLead').prop("disabled",true)
-          //   $('#selectTask').prop("disabled",true)
-          //   $('#selectPhase').prop("disabled",true)
-          //   $('#selectLevel').prop("disabled",true)
-          //   $('#textareaActivity').prop("disabled",true)
-          //   $('#selectDuration').prop("disabled",true)
-          //   $('#selectStatus').prop("disabled",true)
-          // }
+          $("#ModalUpdateTimesheet").find('.modal-footer').show()
         }                         
       }else{
         $('#selectSchedule').val(schedule).trigger('change')
