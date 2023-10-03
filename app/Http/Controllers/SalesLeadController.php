@@ -1465,13 +1465,11 @@ class SalesLeadController extends Controller
 
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
 
-        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) as nik_presales')->selectRaw('lead_id')->groupBy('lead_id');
 
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
                         ->groupBy('lead_id');
-
-        // return $getListProductLead->get();
 
         $getListTechTag = DB::table('tb_technology_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech_tag`'))
@@ -1504,10 +1502,11 @@ class SalesLeadController extends Controller
                     'sales_lead_register.deal_price',
                     'u_sales.id_territory', 
                     'tb_pid.status',
-                    'tb_presales.name_presales', 
+                    'tb_presales.name_presales',
+                    'tb_presales.nik_presales',
+                    'product_lead.id_product_tag',
+                    'tech_tag.id_tech_tag',
                     DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif", 'id_product_tag', 'id_tech')
-                    // DB::raw("`product_lead`.`id_product_tag` AS `id_product_tag_concat`"),
-                    // DB::raw("`tech_tag`.`id_tech_tag` AS `id_tech_tag_concat`")
                 )
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result', '!=', 'hmm')
@@ -1569,20 +1568,21 @@ class SalesLeadController extends Controller
         }
 
         if (!in_array(null,$request->presales_name)) {
-            $leads->whereIn('nik_presales',$request->presales_name);   
+            foreach ($request->presales_name as $key => $value) {
+                $leads->havingRaw('FIND_IN_SET('. $value .', nik_presales)');
+            }
         }
 
         if (!in_array(null,$request->product_tag)) {
             foreach ($request->product_tag as $key => $value) {
-                $leads->selectRaw("FIND_IN_SET('" . $value . "', `product_lead`.`id_product_tag`) AS `found_product" . $key . "`");
-                $leads->havingRaw("`found_product" . $key . "` <> 0");
+                // return substr($value, 1);
+                $leads->havingRaw('FIND_IN_SET(' . $value.',id_product_tag )');
             }
         }
 
         if (!in_array(null,$request->tech_tag)) {
             foreach ($request->tech_tag as $key => $value) {
-                $leads->selectRaw("FIND_IN_SET('" . $value . "', `tech_tag`.`id_tech_tag`) AS `found_tech" . $key . "`");
-                $leads->havingRaw("`found_tech" . $key . "` <> 0");
+                $leads->havingRaw('FIND_IN_SET(' . $value.',id_tech_tag )');
             }
         }
 
@@ -1590,10 +1590,7 @@ class SalesLeadController extends Controller
             $leads->whereIn('tb_contact.id_customer',$request->customer);
         }
 
-        // return $leads->get();
-
         return array("data" => $leads->get());
-
     }
 
     public function add_changelog_progress(Request $request) 
