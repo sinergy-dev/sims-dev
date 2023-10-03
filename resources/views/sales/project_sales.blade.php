@@ -1947,16 +1947,16 @@ Lead Register
 	    if (value.substr(0,1) == 'p') {
 	    	// console.log(value.substr(1,1))
 	    	if (tempProduct == 'product_tag[]=') {
-		      tempProduct = tempProduct + value
+		      tempProduct = tempProduct + value.substring(1)
 		    }else{
-		    	tempProduct = tempProduct + '&product_tag[]='+ value.replace("p","")
+		    	tempProduct = tempProduct + '&product_tag[]='+ value.substring(1)
 		    }
 	    }
 	    if (value.substr(0,1) == 't') {
 	    	if (tempTech == 'tech_tag[]=') {
-		      tempTech = tempTech + value
+		      tempTech = tempTech + value.substring(1)
 		    }else{
-		    	tempTech = tempTech + '&tech_tag[]='+ value.replace("t","")
+		    	tempTech = tempTech + '&tech_tag[]='+ value.substring(1)
 		    }
 	    }
 	    // console.log(tempProduct)
