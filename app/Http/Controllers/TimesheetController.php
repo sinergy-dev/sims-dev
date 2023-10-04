@@ -497,7 +497,7 @@ class TimesheetController extends Controller
 
     public function uploadCSV(Request $request){
         $directory = "timesheet/";
-        $nameFile = "template_upload_timesheet.csv";
+        $nameFile = "template_upload_timesheet_csv.csv";
         $folderName = 'Test Timesheet';
 
         $this->uploadToLocal($request->file('csv_file'),$directory,$nameFile);
@@ -1552,7 +1552,7 @@ class TimesheetController extends Controller
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     // "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/$workdays*100,  2, '.', ''),
-                    "deviation"=>$workdays - $valueSumPoint,
+                    "deviation"=>number_format(($workdays - $valueSumPoint), 2, '.', ''),
                 ]); 
             }  
 
@@ -1576,7 +1576,7 @@ class TimesheetController extends Controller
                         "threshold" =>$data_uniq['threshold'],
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
-                        "deviation" =>$data_uniq['deviation'],
+                        "deviation" =>number_format($data_uniq['deviation'], 2, '.', ''),
                         "total_task"=>$countPointByUser[$key_uniq],
                         "status"    =>$status,
                         "this_month"=>$countThisMonth,
@@ -4340,7 +4340,7 @@ class TimesheetController extends Controller
                         "threshold" =>$data_uniq['threshold'],
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
-                        "deviation" =>$data_uniq['deviation'],
+                        "deviation" =>number_format($data_uniq['deviation'], 2, '.', ''),
                         "total_task"=>$countPointByUser[$key_uniq],
                         "status"    =>$data_uniq['status']
 
@@ -5107,27 +5107,29 @@ class TimesheetController extends Controller
             $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
         }
 
-        $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+        if ($request->roles != "") {
+            $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                    ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('users.name')
+                    ->where('roles.group',$request->roles)
+                    ->where('roles.name','not like','%Manager%')
+                    ->where('users.status_delete','-')
+                    ->get();
+        }else{
+            $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                     ->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('users.name')
                     ->where('roles.group',$cek_role->group)
-                    ->where('roles.name','not like','%Manager')
+                    ->where('roles.name','not like','%Manager%')
                     ->where('users.status_delete','-')
                     ->get();
+        }        
 
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
-
-                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->select('users.name')
-                        ->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('users.status_delete','-')
-                        ->get();
 
                 $data = $data->groupBy('month_number');
 
@@ -5248,14 +5250,6 @@ class TimesheetController extends Controller
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
-                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->select('users.name')
-                        ->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('users.status_delete','-')
-                        ->get();
-
                 $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
@@ -5374,14 +5368,6 @@ class TimesheetController extends Controller
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
-
-                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->select('users.name')
-                        ->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('users.status_delete','-')
-                        ->get();
 
                 $data = $data->groupBy('month_number');
 
@@ -5622,14 +5608,6 @@ class TimesheetController extends Controller
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
-                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->select('users.name')
-                        ->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('users.status_delete','-')
-                        ->get();
-
                 $data = $data->groupBy('month_number');
 
                 $arrMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
@@ -5745,17 +5723,9 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
-
-                $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->select('users.name')
-                        ->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('users.status_delete','-')
-                        ->get();
 
                 $data = $data->groupBy('month_number');
 
@@ -5870,18 +5840,10 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        } else {
+        }else {
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group',$request->roles)->pluck('nik');
 
             $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
-
-            $getUserByGroupOD = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                    ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    ->select('users.name')
-                    ->where('roles.group',$request->roles)
-                    ->where('roles.name','not like','%Manager')
-                    ->where('users.status_delete','-')
-                    ->get();
 
             $data = $data->groupBy('month_number');
 
