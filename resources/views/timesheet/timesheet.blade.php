@@ -581,7 +581,7 @@
             <form action="" id="" name="">
                 @csrf
                 <div style="display: flex;">
-                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('timesheet/template_upload_timesheet.csv')}}" style="cursor:pointer;">link</a></span>
+                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('timesheet/template_upload_timesheet_csv.csv')}}" style="cursor:pointer;">link</a></span>
                 </div>
                 <input type="file" name="inputCsv" id="inputCsv" class="form-control">
             </form>
@@ -956,7 +956,7 @@
                     if (item.creator != undefined) {
                       if (Object.keys(item.creator).length == 2) {
                         if (item.creator.self == true) {
-                          const events = arrayData.push({
+                          arrayData.push({
                             id:item.id,
                             title: item.summary,
                             start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
@@ -972,7 +972,7 @@
                     $.each(item.attendees,function(index,itemX){
                       if (itemX.responseStatus == "accepted") {
                         if (itemX.email == email) {
-                          const events = arrayData.push({
+                          arrayData.push({
                             id:item.id,
                             title: item.summary,
                             start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
@@ -1003,7 +1003,11 @@
 
                 var filteredData = uniqueData.filter(function(obj1) {
                   return !events.some(function(obj2) {
-                    return obj1.title === obj2.title
+                      if (obj1.title) {
+                        if (obj1.title.includes(obj2.title)) {
+                          return obj2.title
+                        }
+                      }
                   });
                 });
 
@@ -1275,6 +1279,7 @@
                     $("#tbInfo").append(append)
                   }else{
                     if (calEvent.refer) {
+                      console.log("sini")
                       $("#ModalUpdateTimesheet").modal("show")
                       $(".modal-title").text("Update Timesheet")
                       $("#ModalUpdateTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
@@ -1335,14 +1340,10 @@
                         $("#ModalUpdateTimesheet").find('.modal-footer').show()
                       }  
                     }else{
-                      $("#ModalAddTimesheet").modal("show")
-                      $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
                       eventUpdateTimesheet(calEvent)
                     }
                   }
                 } else {
-                  $("#ModalAddTimesheet").modal("show")
-                  $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
                   eventUpdateTimesheet(calEvent)
                 }
               // Handle the selection event for allowed dates
@@ -3636,6 +3637,22 @@
 
     function eventUpdateTimesheet(calEvent,id){
       console.log("heyyy")
+      if (calEvent != undefined) {
+        if (isNaN(calEvent.id) == true) {
+          Swal.fire({
+            icon: "error",
+            title: "Can't Update Now!",
+            text: "Please Update after time has started!",
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK',
+          })
+        }else{
+          $("#ModalAddTimesheet").modal("show")
+          $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
+        }
+      }  
+
       if (id != undefined || id != null || id != "") {
         id = id
         $('#daterange-timesheet').prop("disabled",true)
@@ -3706,7 +3723,7 @@
             $("#id_activity_0").closest(".box-body").prev(".box-header").find("i").removeClass('fa fa-plus').addClass('fa fa-minus')
           }
         }
-      })
+      })   
     }
 
     function deleteEvent(startDate){
