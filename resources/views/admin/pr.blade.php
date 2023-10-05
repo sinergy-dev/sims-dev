@@ -547,10 +547,17 @@
             if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done' || "{{Auth::User()->id_position}}" == "PROCUREMENT") {
               var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date+ '","' + data.position + '","' + data.isRupiah + '"'
               if (data.status == 'Done') {
-                data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>";
-                // data.btn_edit = "<button class='btn btn-sm btn-primary onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>";
+                if (data.id_draft_pr != null) {
+                  data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/detail/draftPR')}}/"+ data.id_draft_pr +"?hide'>&nbsp Show Pdf</a>";
+                }else{
+                  data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' disabled'>&nbsp Show Pdf</a>";
+                }
               } else {
-                data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' disabled>&nbsp Show Pdf</a>";
+                if (data.id_draft_pr != null) {
+                  data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/detail/draftPR')}}/"+ data.id_draft_pr +"?hide'>&nbsp Show Pdf</a>";
+                }else{
+                  data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' disabled'>&nbsp Show Pdf</a>";
+                }
               }
               
               // if (data.status == 'Done') {
@@ -559,10 +566,10 @@
               //   data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><button style='margin-left:5px' class='btn btn-sm btn-success' disabled>&nbsp Show Pdf</button>"
               // }
             } else {
-              if (data.status == 'Done') {
-                data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>"
-              }else{
+              if (data.id_draft_pr == null) {
                 data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><button style='margin-left:5px' class='btn btn-sm btn-success' disabled>&nbsp Show Pdf</button>"
+              }else{
+                data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/detail/draftPR')}}/"+ data.id_draft_pr +"?hide'>&nbsp Show Pdf</a>"
               }
             }
               
