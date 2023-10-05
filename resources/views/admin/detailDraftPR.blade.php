@@ -845,6 +845,10 @@
         {
           "id": "mandays",
           "text": "Mandays"
+        },
+        {
+          "id": "bln",
+          "text": "Bln"
         }
       ]
     }
@@ -1002,7 +1006,7 @@
                   $("#ModalRejectSirkulasi").modal("show")
                 })
               }
-            }               
+            }    
             
             $.each(result[0],function(value,item){
               loadActivity(value,item)
