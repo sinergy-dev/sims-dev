@@ -50,7 +50,6 @@
 @section('content')
   <section class="content-header">
     <h1>
-
      <a id="BtnBack"><button class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i>&nbspBack</button></a> Draft Purchase Request Detail
     </h1>
     <ol class="breadcrumb">
@@ -760,6 +759,14 @@
         $("#btnInitiateAddProduct").prop("disabled",true)
       }
     })
+
+    if (window.location.href.split("?")[1] == "hide") {
+      $("#btnSirkulasi").hide()
+      $("#btnFinalize").hide()
+      $("#btnRevision").hide()
+      $("#btnAddNotes").hide()
+      $("#BtnBack").hide()
+    }
   })
 
   function select2TypeProduct(value){
@@ -877,6 +884,15 @@
       localStorage.setItem('isLastStorePembanding',false)
       showDetail()
       loadDataSubmitted()   
+
+      if (window.location.href.split("?")[1] == "hide") {
+        console.log("buak sial")
+        $("#btnSirkulasi").hide()
+        $("#btnFinalize").hide()
+        $("#btnRevision").hide()
+        $("#btnAddNotes").hide()
+        $("#BtnBack").hide()
+      }
     }else if (localStorage.getItem('isEmail') == 'true') {
       $("#showDetail").empty()
       localStorage.setItem('isEmail',false)
@@ -997,10 +1013,12 @@
             if (result[2].isCircular == 'True') {   
               if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                 $("#btnSirkulasi").prop('disabled',true)
-                $("#btnRevision").show().prop('disabled',false).click(function(){
-                  $(".modal-title").text("Sirkulasi PR - Revision")
-                  $("#ModalRejectSirkulasi").modal("show")
-                })
+                if ((window.location.href.split("?")[1] == "hide") == false){
+                  $("#btnRevision").show().prop('disabled',false).click(function(){
+                    $(".modal-title").text("Sirkulasi PR - Revision")
+                    $("#ModalRejectSirkulasi").modal("show")
+                  })
+                }
               }
             }               
             
@@ -1481,7 +1499,9 @@
     $(".timeline").append(append)
   }
 
-  function pembanding(){   
+  function pembanding(){ 
+    $("#BtnBack").show()
+
     localStorage.setItem('status_tax',false)
     localStorage.setItem('isPembanding',true)
     $("#showDetail").empty()
@@ -1566,7 +1586,9 @@
     })   
 
     accesable.forEach(function(item,index){
-      $("#" + item).show()
+      if ((window.location.href.split("?")[1] == "hide") == false){
+        $("#" + item).show()
+      }
     })
 
     $('input[type="checkbox"].minimal').iCheck({
