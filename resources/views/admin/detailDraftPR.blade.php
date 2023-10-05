@@ -852,6 +852,10 @@
         {
           "id": "mandays",
           "text": "Mandays"
+        },
+        {
+          "id": "bln",
+          "text": "Bln"
         }
       ]
     }
@@ -1020,7 +1024,7 @@
                   })
                 }
               }
-            }               
+            }    
             
             $.each(result[0],function(value,item){
               loadActivity(value,item)
