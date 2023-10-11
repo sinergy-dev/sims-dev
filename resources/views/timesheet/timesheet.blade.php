@@ -4,9 +4,7 @@
 @endsection
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.min.css"> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" integrity="sha512-KXkS7cFeWpYwcoXxyfOumLyRGXMp7BTMTjwrgjMg0+hls4thG2JGzRgQtRfnAuKTn2KWTDZX4UdPg+xTs8k80Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.print.css" media="print"> -->
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
@@ -164,7 +162,6 @@
       border: 2px black solid;
       transition: width .3s;
     }
-
   </style>
 @endsection
 @section('content')
@@ -174,7 +171,6 @@
         <small>Timesheet</small>
     </h1>
     <ol class="breadcrumb">
-        <!-- <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li> -->
         <li class="active"><i class="fa fa-calendar"></i> Timesheet</li>
     </ol><br>
 </section>
@@ -253,6 +249,19 @@
             </div>
           </div>
         </div>
+
+        <div class="box box-solid">
+          <div class="box-header with-border">
+            <h4 class="box-title">Timesheet Status</h4>
+          </div>
+          <div class="box-body">
+            <div id="external-events">
+              <div class="external-event timesheet_status" style="position: relative;background-color: green;color: white;cursor: text;"></div>
+              <button class="btn btn-sm btn-danger" onclick="removeFilter()">Remove Filter</button>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div class="col-md-9 col-xs-12">
         <div class="box box-primary">
@@ -597,13 +606,11 @@
 @endsection
 @section('scriptImport')
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-  <!-- <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script> -->
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   {{--  Calendar  --}}
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data-10-year-range.js" integrity="sha512-QSV7x6aYfVs/XXIrUoerB2a7Ea9M8CaX4rY5pK/jVV0CGhYiGSHaDCKx/EPRQ70hYHiaq/NaQp8GtK+05uoSOw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js" integrity="sha512-o0rWIsZigOfRAgBxl4puyd0t6YKzeAw9em/29Ag7lhCQfaaua/mDwnpE2PVzwqJ08N7/wqrgdjc2E0mwdSY2Tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> 
@@ -695,122 +702,122 @@
           }
         })
       }
-
-      $('#daterange-timesheet').on('apply.daterangepicker',(e,picker) => {
-        var range = moment().isBetween(picker.startDate, picker.endDate);
-
-        if (range) {
-          if (moment(picker.endDate).format("YYYY-MM-DD") != moment(moment()).format("YYYY-MM-DD")) {
-            Swal.fire(
-              'Date is not appropriated!',
-              'Select range date with correct schedule type',
-              'error'
-            ).then(() => {
-              var start = moment(moment()).format('MM/DD/YYYY')
-              var end = moment(moment()).format('MM/DD/YYYY') 
-
-              $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-              $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
-              eventUpdateTimesheet()
-            })
-          }else {
-            $("input[name='scheduleInput']").val("Unplanned")
-            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-            $("select[name='selectDuration']").prop("disabled",false)
-            $("select[name='selectStatus']").prop("disabled",false)
-
-            Swal.fire({
-              title: 'Loading...',
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              confirmButtonText:'',
-              showConfirmButton:false,
-              didOpen: () => {
-                // Delayed task using setTimeout
-                setTimeout(() => {
-                  // Close the loading indicator
-                  var start = moment(picker.startDate).format('MM/DD/YYYY')
-                  var end = moment(picker.endDate).format('MM/DD/YYYY') 
-
-                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
-
-                  eventUpdateTimesheet();
-                  Swal.close();
-                }, 2000); // Delayed execution after 2000ms (2 seconds)
-              }
-            });
-          }
-        }else{
-          if (picker.startDate > moment()) {
-            $("input[name='scheduleInput']").val("Planned")
-            $("select[name='selectDuration']").prev("span").remove()
-            $("select[name='selectStatus']").prev("span").remove()
-            $("select[name='selectDuration']").prop("disabled",true)
-            $("select[name='selectStatus']").prop("disabled",true)
-
-            Swal.fire({
-              title: 'Loading...',
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              confirmButtonText:'',
-              showConfirmButton:false,
-              didOpen: () => {
-                // Delayed task using setTimeout
-                setTimeout(() => {
-                  // Close the loading indicator
-                  var start = moment(picker.startDate).format('MM/DD/YYYY')
-                  var end = moment(picker.endDate).format('MM/DD/YYYY') 
-
-                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
-
-                  eventUpdateTimesheet();
-                  Swal.close();
-                }, 2000); // Delayed execution after 2000ms (2 seconds)
-              }
-            });
-          }else if (picker.startDate <= moment()) {
-            $("input[name='scheduleInput']").val("Unplanned")
-            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-            $("select[name='selectDuration']").prop("disabled",false)
-            $("select[name='selectStatus']").prop("disabled",false)
-
-            Swal.fire({
-              title: 'Loading...',
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              confirmButtonText:'',
-              showConfirmButton:false,
-              didOpen: () => {
-                // Delayed task using setTimeout
-                setTimeout(() => {
-                  // Close the loading indicator
-                  var start = moment(picker.startDate).format('MM/DD/YYYY')
-                  var end = moment(picker.endDate).format('MM/DD/YYYY') 
-
-                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
-
-                  eventUpdateTimesheet();
-                  Swal.close();
-                }, 2000); // Delayed execution after 2000ms (2 seconds)
-              }
-            });
-          }
-        }
-      });
-
-      $('#daterange-timesheet').on('cancel.daterangepicker',(e,picker) => {
-        var start = moment(picker.startDate).format('MM/DD/YYYY')
-        var end = moment(picker.endDate).format('MM/DD/YYYY') 
-
-        $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-        $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
-      })
     })
+
+    // $('#daterange-timesheet').on('apply.daterangepicker',(e,picker) => {
+    //   var range = moment().isBetween(picker.startDate, picker.endDate);
+
+    //   if (range) {
+    //     if (moment(picker.endDate).format("YYYY-MM-DD") != moment(moment()).format("YYYY-MM-DD")) {
+    //       Swal.fire(
+    //         'Date is not appropriated!',
+    //         'Select range date with correct schedule type',
+    //         'error'
+    //       ).then(() => {
+    //         var start = moment(moment()).format('MM/DD/YYYY')
+    //         var end = moment(moment()).format('MM/DD/YYYY') 
+
+    //         $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+    //         $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+    //         eventUpdateTimesheet()
+    //       })
+    //     }else {
+    //       $("input[name='scheduleInput']").val("Unplanned")
+    //       $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+    //       $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+    //       $("select[name='selectDuration']").prop("disabled",false)
+    //       $("select[name='selectStatus']").prop("disabled",false)
+
+    //       Swal.fire({
+    //         title: 'Loading...',
+    //         allowEscapeKey: false,
+    //         allowOutsideClick: false,
+    //         confirmButtonText:'',
+    //         showConfirmButton:false,
+    //         didOpen: () => {
+    //           // Delayed task using setTimeout
+    //           setTimeout(() => {
+    //             // Close the loading indicator
+    //             var start = moment(picker.startDate).format('MM/DD/YYYY')
+    //             var end = moment(picker.endDate).format('MM/DD/YYYY') 
+
+    //             $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+    //             $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+
+    //             eventUpdateTimesheet();
+    //             Swal.close();
+    //           }, 2000); // Delayed execution after 2000ms (2 seconds)
+    //         }
+    //       });
+    //     }
+    //   }else{
+    //     if (picker.startDate > moment()) {
+    //       $("input[name='scheduleInput']").val("Planned")
+    //       $("select[name='selectDuration']").prev("span").remove()
+    //       $("select[name='selectStatus']").prev("span").remove()
+    //       $("select[name='selectDuration']").prop("disabled",true)
+    //       $("select[name='selectStatus']").prop("disabled",true)
+
+    //       Swal.fire({
+    //         title: 'Loading...',
+    //         allowEscapeKey: false,
+    //         allowOutsideClick: false,
+    //         confirmButtonText:'',
+    //         showConfirmButton:false,
+    //         didOpen: () => {
+    //           // Delayed task using setTimeout
+    //           setTimeout(() => {
+    //             // Close the loading indicator
+    //             var start = moment(picker.startDate).format('MM/DD/YYYY')
+    //             var end = moment(picker.endDate).format('MM/DD/YYYY') 
+
+    //             $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+    //             $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+
+    //             eventUpdateTimesheet();
+    //             Swal.close();
+    //           }, 2000); // Delayed execution after 2000ms (2 seconds)
+    //         }
+    //       });
+    //     }else if (picker.startDate <= moment()) {
+    //       $("input[name='scheduleInput']").val("Unplanned")
+    //       $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+    //       $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+    //       $("select[name='selectDuration']").prop("disabled",false)
+    //       $("select[name='selectStatus']").prop("disabled",false)
+
+    //       Swal.fire({
+    //         title: 'Loading...',
+    //         allowEscapeKey: false,
+    //         allowOutsideClick: false,
+    //         confirmButtonText:'',
+    //         showConfirmButton:false,
+    //         didOpen: () => {
+    //           // Delayed task using setTimeout
+    //           setTimeout(() => {
+    //             // Close the loading indicator
+    //             var start = moment(picker.startDate).format('MM/DD/YYYY')
+    //             var end = moment(picker.endDate).format('MM/DD/YYYY') 
+
+    //             $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+    //             $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+
+    //             eventUpdateTimesheet();
+    //             Swal.close();
+    //           }, 2000); // Delayed execution after 2000ms (2 seconds)
+    //         }
+    //       });
+    //     }
+    //   }
+    // });
+
+    // $('#daterange-timesheet').on('cancel.daterangepicker',(e,picker) => {
+    //   var start = moment(picker.startDate).format('MM/DD/YYYY')
+    //   var end = moment(picker.endDate).format('MM/DD/YYYY') 
+
+    //   $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+    //   $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+    // })
 
     function howWasYou(){
       Swal.fire({
@@ -888,14 +895,23 @@
     var endDate = currentDate.toLocaleDateString();
 
     function loadData(){
+      var arrFilter = localStorage.getItem("arrFilter",arrFilter)
+
+      if(arrFilter != null){
+        arrFilter = arrFilter
+        $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter On')
+        $(".timesheet_status").css("background-color","green")
+      }else{
+        arrFilter = ""
+        $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter Off')
+        $(".timesheet_status").css("background-color","red")
+      }
+
       Pace.restart();
       Pace.track(function(){
         $.ajax({
           type:"GET",
-          url:"{{'/timesheet/getAllActivityByUser'}}",
-          data:{
-            nik:nik
-          },
+          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter,
           success:function(results){
             // Pace.restart();
             // Pace.track(function(){
@@ -1002,10 +1018,12 @@
                 });
 
                 var filteredData = uniqueData.filter(function(obj1) {
+                  const found = events.some(el => el.title === obj1.title);
                   return !events.some(function(obj2) {
                       if (obj1.title) {
                         if (obj1.title.includes(obj2.title)) {
                           return obj2.title
+
                         }
                       }
                   });
@@ -1236,8 +1254,10 @@
         eventClick: function(calEvent, jsEvent, view) {
             localStorage.setItem("isAddTimesheet",false) 
             $("#daterange-timesheet").prop("disabled",true)
-            $("#daterange-timesheet").next().css({"background-color":"#eee","cursor":"not-allowed"})
-            $("#daterange-timesheet").prev().css({"background-color":"#eee","cursor":"not-allowed"})
+            $("#unplannedDate").attr("onclick",'unplannedDate('+ "'" +moment(datesInWeek[0]).format('MM/DD/YYYY') + "'" +')')
+            $("#plannedDate").attr("onclick",'plannedDate('+ "'" + moment(datesInWeek[0]).format('MM/DD/YYYY') + "'" +')')
+            // $("#daterange-timesheet").next().css({"background-color":"#eee","cursor":"not-allowed"})
+            // $("#daterange-timesheet").prev().css({"background-color":"#eee","cursor":"not-allowed"})
 
             var start = calEvent.start
             var end = calEvent.start
@@ -1279,7 +1299,6 @@
                     $("#tbInfo").append(append)
                   }else{
                     if (calEvent.refer) {
-                      console.log("sini")
                       $("#ModalUpdateTimesheet").modal("show")
                       $(".modal-title").text("Update Timesheet")
                       $("#ModalUpdateTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
@@ -1372,8 +1391,6 @@
 
                 $("#tbInfo").append(append)
               }else{
-
-                console.log("siniii")
                 $("#ModalUpdateTimesheet").modal("show")
                 $("#ModalUpdateTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
                 $("#ModalUpdateTimesheet").find('.modal-footer').hide()
@@ -2215,18 +2232,6 @@
         }
       }
 
-      // $('#daterange-input').daterangepicker({
-      //   isInvalidDate: function(date) {
-      //     var formattedDate = date.format('YYYY-MM-DD');
-      //     for (var i = 0; i < disDate.length; i++) {
-      //       if (isDateDisabled(formattedDate, disDate[i])) {
-      //         return true;
-      //       }
-      //     }
-      //     return false;
-      //   }
-      // })
-
       $('#daterange-timesheet').daterangepicker({
         startDate: start,
         endDate: end,
@@ -2240,7 +2245,124 @@
           }
           return false;
         }
+      }).change(function(){
+        var range = moment().isBetween($('#daterange-timesheet').data('daterangepicker').startDate, $('#daterange-timesheet').data('daterangepicker').endDate);
+
+        if (range) {
+          if (moment($('#daterange-timesheet').data('daterangepicker').endDate).format("YYYY-MM-DD") != moment(moment()).format("YYYY-MM-DD")) {
+            Swal.fire(
+              'Date is not appropriated!',
+              'Select range date with correct schedule type',
+              'error'
+            ).then(() => {
+              var start = moment(moment()).format('MM/DD/YYYY')
+              var end = moment(moment()).format('MM/DD/YYYY') 
+
+              $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+              $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+              eventUpdateTimesheet()
+            })
+          }else {
+            $("input[name='scheduleInput']").val("Unplanned")
+            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+            $("select[name='selectDuration']").prop("disabled",false)
+            $("select[name='selectStatus']").prop("disabled",false)
+
+            Swal.fire({
+              title: 'Loading...',
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              confirmButtonText:'',
+              showConfirmButton:false,
+              didOpen: () => {
+                // Delayed task using setTimeout
+                setTimeout(() => {
+                  // Close the loading indicator
+                  var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
+                  var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
+
+                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+
+                  eventUpdateTimesheet();
+                  Swal.close();
+                }, 2000); // Delayed execution after 2000ms (2 seconds)
+              }
+            });
+          }
+        }else{
+          if ($('#daterange-timesheet').data('daterangepicker').startDate > moment()) {
+            $("input[name='scheduleInput']").val("Planned")
+            $("select[name='selectDuration']").prev("span").remove()
+            $("select[name='selectStatus']").prev("span").remove()
+            $("select[name='selectDuration']").prop("disabled",true)
+            $("select[name='selectStatus']").prop("disabled",true)
+
+            Swal.fire({
+              title: 'Loading...',
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              confirmButtonText:'',
+              showConfirmButton:false,
+              didOpen: () => {
+                // Delayed task using setTimeout
+                setTimeout(() => {
+                  // Close the loading indicator
+                  var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
+                  var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
+
+                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+
+                  eventUpdateTimesheet();
+                  Swal.close();
+                }, 2000); // Delayed execution after 2000ms (2 seconds)
+              }
+            });
+          }else if ($('#daterange-timesheet').data('daterangepicker').startDate <= moment()) {
+            $("input[name='scheduleInput']").val("Unplanned")
+            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+            $("select[name='selectDuration']").prop("disabled",false)
+            $("select[name='selectStatus']").prop("disabled",false)
+
+            Swal.fire({
+              title: 'Loading...',
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              confirmButtonText:'',
+              showConfirmButton:false,
+              didOpen: () => {
+                // Delayed task using setTimeout
+                setTimeout(() => {
+                  // Close the loading indicator
+                  var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
+                  var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
+
+                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+
+                  eventUpdateTimesheet();
+                  Swal.close();
+                }, 2000); // Delayed execution after 2000ms (2 seconds)
+              }
+            });
+          }
+        }
       })
+
+      // $('#daterange-input').daterangepicker({
+      //   isInvalidDate: function(date) {
+      //     var formattedDate = date.format('YYYY-MM-DD');
+      //     for (var i = 0; i < disDate.length; i++) {
+      //       if (isDateDisabled(formattedDate, disDate[i])) {
+      //         return true;
+      //       }
+      //     }
+      //     return false;
+      //   }
+      // })
     } 
 
     function setSchedule(date,param){
@@ -2794,6 +2916,23 @@
                         $(items).find(".box-title").text("Activity "+ ++j)
                       })
 
+                      $.each($("fieldset"),function(index,items){
+                        $(items).attr("id","fieldset_"+index)
+                        $.each($("#"+$(items).attr("id")),function(idx,itemIdx){
+                          $(itemIdx).find("input[name='id_activity']").attr("id","id_activity_"+index)
+                          $(itemIdx).find("input[name='scheduleInput']").attr("id","scheduleInput_"+index)
+                          $(itemIdx).find("input[name='inputPid']").attr("id","inputPid_"+index)
+                          $(itemIdx).find("select[name='selectType']").attr("id","selectType_"+index)
+                          $(itemIdx).find("select[name='selectLead']").attr("id","selectLead_"+index)
+                          $(itemIdx).find("select[name='selectTask']").attr("id","selectTask_"+index)
+                          $(itemIdx).find("select[name='selectPhase']").attr("id","selectPhase_"+index)
+                          $(itemIdx).find("select[name='selectLevel']").attr("id","selectLevel_"+index)
+                          $(itemIdx).find("textarea[name='textareaActivity']").attr("id","textareaActivity_"+index)
+                          $(itemIdx).find("select[name='selectDuration']").attr("id","selectDuration_"+index)
+                          $(itemIdx).find("select[name='selectStatus']").attr("id","selectStatus_"+index)
+                        })
+                      })
+
                       if ($(last).find('.form-group').last().find("#btn_add_activity").length == 0) {
                         $("#fieldset_"+countable).find('.form-group').last().append('<button style="margin-left:5px" type="button" class="btn btn-primary btn-flat" id="btn_add_activity" value="'+countable+'"><i class="fa fa-plus"></i></button>')
                       }
@@ -3202,6 +3341,7 @@
         var countable = parseInt($(last).attr("id").split("_")[1])
 
         $.each($("fieldset:not(:first)"),function(index,items){
+          console.log($("fieldset"))
           $(items).find(".box-title").text("Activity "+ ++j)
         })
 
@@ -3775,6 +3915,13 @@
       formData.append("id",id)     
 
       createPost(swalFireCustom,formData,swalSuccess,url="/timesheet/deleteActivity?id="+btnId,postParam="delete_activity",modalName="ModalAddTimesheet")
+    }
+
+    function removeFilter(){
+      localStorage.clear()
+      loadData()
+      $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter Off')
+      $(".timesheet_status").css("background-color","red")
     }
     
   </script>
