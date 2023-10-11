@@ -77,54 +77,12 @@ Report Presales
                 </tr>
               </thead>
               <tbody id="body_sip" name="body_sip">
-               <!--  @foreach($top_win_presales as $tops)
-                  <tr>
-                      <td>{{ $no_sip++ }}</td>
-                      <td>{{ $tops->name }}</td>
-                      <td><center>{{ $tops->INITIAL }}</center></td>
-                      <td><center>{{ $tops->OPEN }}</center></td>
-                      <td><center>{{ $tops->SD }}</center></td>
-                      <td><center>{{ $tops->TP }}</center></td>
-                      <td><center>{{ $tops->WIN }}</center></td>
-                      <td><center>{{ $tops->LOSE }}</center></td>
-                      <td><center>{{ $tops->HOLD }}</center></td>
-                      <td><center>{{ $tops->CANCEL }}</center></td>
-                      <td><center>{{ $tops->SPESIAL }}</center></td>
-                      <td><center>{{ $tops->All }}</center></td>
-                  </tr>
-                @endforeach -->
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- <div class="row">
-      <div class="col-lg-12">
-        <div class="box">
-          <div class="box-header with-border">
-            <form action="" method="get" class="margin-bottom">
-              <div class="row">
-
-                <div class="col-md-2">
-                  <input type="text" id="startdate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY">
-                </div>
-                <div>
-                  <p class="pull-right" style="margin-top: 5px">&nbspto&nbsp</p>
-                </div>
-                <div class="col-md-2">
-                  <input type="text" id="enddate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY" disabled>
-                </div>
-                <div class="col-md-2">
-                  <input type="button" name="filter_submit" id="filter_submit" value="Filter" class="btn btn-primary" disabled>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div> -->
 
     <div class="row">
       <div class="col-lg-6">
@@ -305,10 +263,8 @@ Report Presales
                         </li>
                 @endforeach
               </ul>
-
               <div class="tab-content">
-                <div class="tab-pane active"  role="tabpanel" >
-                
+                <div class="tab-pane active"  role="tabpanel">
                   <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
                       <thead>
@@ -326,6 +282,7 @@ Report Presales
                   </div>
                 </div>
               </div>
+            </div>
           </div>
         </div>
       </div>
@@ -343,7 +300,7 @@ Report Presales
 <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
 <!-- bootstrap datepicker -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 @endsection
 @section('script')
 <script>

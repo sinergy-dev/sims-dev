@@ -74,28 +74,6 @@ Record Log History
 	          	</div>     
 	        </div>
 	    </div>  
-	    
-<!-- 	    <div class="col-md-6">
-	        <div class="box">
-		        <div class="box-header with-border">
-		          <h3 class="box-title"><i class="fa fa-table"></i> Last Logged In Users</h3>
-		        </div>
-		        <div class="box-body">
-		           <div class="table-responsive">
-		              <table class="table table-bordered table-striped" id="table_login_7_days" width="100%" cellspacing="0">
-		                <thead>
-		                  <tr class="header">
-		                    <th>Name</th>
-		                    <th>Email</th>                  
-		                    <th>Last Login at</th>
-		                    <th>IP Adress</th>
-		                  </tr>
-		                </thead>
-		              </table>
-		           </div>
-		        </div>       
-		    </div>
-	    </div>  --> 
 	</div>
 </section>
 @endsection
