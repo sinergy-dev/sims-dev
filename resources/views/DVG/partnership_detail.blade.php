@@ -588,7 +588,6 @@ Partnership
  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
- <!-- <script type="text/javascript" src="https://adminlte.io/themes/AdminLTE/dist/js/pages/dashboard.js"></script> -->
  <script type="text/javascript" src="{{asset('js/jquery.simplePagination.js')}}"></script>
  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
@@ -1634,7 +1633,6 @@ Partnership
 				formData.append('imgCertPartner', fileupload);
       	formData.append('nama_file', nama_file);
 			}
-
 
 			if ($("#inputTitleCert").val() == "") {
 				$("#inputTitleCert").closest('.form-group').addClass('has-error')
