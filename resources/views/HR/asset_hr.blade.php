@@ -1135,11 +1135,10 @@ GA Asset
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
-  <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/roman.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
 @endsection
@@ -1223,21 +1222,21 @@ GA Asset
     // }))
   }
 
-    $.ajax({
-      type:"GET",
-      url: "/testgetCalendarList",
-      success:function(result){
-        $('#groupCalendar').select2({
-          placeholder: "Select a category",
-          data: $.map(result.items, function (item) {
-            return {
-              id:item.id,
-              text:item.summary
-            }
-          })
-        })        
-      },
-    })
+    // $.ajax({
+    //   type:"GET",
+    //   url: "/testgetCalendarList",
+    //   success:function(result){
+    //     $('#groupCalendar').select2({
+    //       placeholder: "Select a category",
+    //       data: $.map(result.items, function (item) {
+    //         return {
+    //           id:item.id,
+    //           text:item.summary
+    //         }
+    //       })
+    //     })        
+    //   },
+    // })
 
     $("#company_asset").select2()
     $("#select-status").select2()
@@ -1406,7 +1405,7 @@ GA Asset
     var hari_libur_nasional_tooltip = []
     $.ajax({
       type:"GET",
-      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_YEY')}}",
+      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY')}}",
       success: function(result){
         $.each(result.items,function(key,value){
           hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
