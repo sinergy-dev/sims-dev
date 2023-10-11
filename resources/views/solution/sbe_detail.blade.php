@@ -3,11 +3,10 @@
 SBE Detail
 @endsection
 @section('head_css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
 	<style type="text/css">
-		/*.dataTables_filter {
-		    display: none;
-		}
-*/
         textarea{
             resize: vertical;
         }
@@ -54,11 +53,6 @@ SBE Detail
             background-color:#42855B!important;
         }
 	</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-
-  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
-
 @endsection
 @section('content')
 	<section class="content-header">
@@ -73,7 +67,6 @@ SBE Detail
     </section>
 
     <section class="content">
-        
     </section>
 
     <!--modal notes-->
@@ -106,10 +99,8 @@ SBE Detail
 @section('scriptImport')
 <!--select2-->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
-
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 @endsection
@@ -2009,7 +2000,7 @@ SBE Detail
         append = append + '            Total'
         append = append + '        </th>'
         append = append + '        <th>'
-        append = append + '           <button class="btn btn-sm btn-primary" disabled="true" id="btnAddUpdateItemsDetail" onclick="updateItemsDetail('+ val +')" style="width: 30px;"><i class="fa fa-plus"></i></button>'
+        append = append + '           <button class="btn btn-sm btn-primary" disabled="true" id="btnAddUpdateItemsDetail" onclick="updateItemsDetail('+ countable +')" style="width: 30px;"><i class="fa fa-plus"></i></button>'
         append = append + '        </th>'
         append = append + '  </tr>'
         append = append + '</thead>'
@@ -2052,7 +2043,7 @@ SBE Detail
         getDropdownDetailItems(countable,"Update")
 
 
-        $("#tableItemsUpdateConfig_"+val).find("tr").eq(0).find("td").find("#updateItemsDetail").attr("onclick","updateItemsDetail("+ val +")")
+        $("#tableItemsUpdateConfig_"+countable).find("tr").eq(0).find("td").find("#updateItemsDetail").attr("onclick","updateItemsDetail("+ countable +")")
 
         if (countable > 1) {
             if ($("#removeItemsDetailforUpdate").length < 1) {
