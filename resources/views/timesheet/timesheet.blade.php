@@ -2246,108 +2246,110 @@
           return false;
         }
       }).change(function(){
-        var range = moment().isBetween($('#daterange-timesheet').data('daterangepicker').startDate, $('#daterange-timesheet').data('daterangepicker').endDate);
+        if ($('#daterange-timesheet').data('daterangepicker')) {
+          var range = moment().isBetween($('#daterange-timesheet').data('daterangepicker').startDate, $('#daterange-timesheet').data('daterangepicker').endDate);
 
-        if (range) {
-          if (moment($('#daterange-timesheet').data('daterangepicker').endDate).format("YYYY-MM-DD") != moment(moment()).format("YYYY-MM-DD")) {
-            Swal.fire(
-              'Date is not appropriated!',
-              'Select range date with correct schedule type',
-              'error'
-            ).then(() => {
-              var start = moment(moment()).format('MM/DD/YYYY')
-              var end = moment(moment()).format('MM/DD/YYYY') 
+          if (range) {
+            if (moment($('#daterange-timesheet').data('daterangepicker').endDate).format("YYYY-MM-DD") != moment(moment()).format("YYYY-MM-DD")) {
+              Swal.fire(
+                'Date is not appropriated!',
+                'Select range date with correct schedule type',
+                'error'
+              ).then(() => {
+                var start = moment(moment()).format('MM/DD/YYYY')
+                var end = moment(moment()).format('MM/DD/YYYY') 
 
-              $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-              $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
-              eventUpdateTimesheet()
-            })
-          }else {
-            $("input[name='scheduleInput']").val("Unplanned")
-            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-            $("select[name='selectDuration']").prop("disabled",false)
-            $("select[name='selectStatus']").prop("disabled",false)
+                $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+                $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+                eventUpdateTimesheet()
+              })
+            }else {
+              $("input[name='scheduleInput']").val("Unplanned")
+              $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+              $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+              $("select[name='selectDuration']").prop("disabled",false)
+              $("select[name='selectStatus']").prop("disabled",false)
 
-            Swal.fire({
-              title: 'Loading...',
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              confirmButtonText:'',
-              showConfirmButton:false,
-              didOpen: () => {
-                // Delayed task using setTimeout
-                setTimeout(() => {
-                  // Close the loading indicator
-                  var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
-                  var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
+              Swal.fire({
+                title: 'Loading...',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                confirmButtonText:'',
+                showConfirmButton:false,
+                didOpen: () => {
+                  // Delayed task using setTimeout
+                  setTimeout(() => {
+                    // Close the loading indicator
+                    var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
+                    var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
 
-                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+                    $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+                    $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
-                  eventUpdateTimesheet();
-                  Swal.close();
-                }, 2000); // Delayed execution after 2000ms (2 seconds)
-              }
-            });
-          }
-        }else{
-          if ($('#daterange-timesheet').data('daterangepicker').startDate > moment()) {
-            $("input[name='scheduleInput']").val("Planned")
-            $("select[name='selectDuration']").prev("span").remove()
-            $("select[name='selectStatus']").prev("span").remove()
-            $("select[name='selectDuration']").prop("disabled",true)
-            $("select[name='selectStatus']").prop("disabled",true)
+                    eventUpdateTimesheet();
+                    Swal.close();
+                  }, 2000); // Delayed execution after 2000ms (2 seconds)
+                }
+              });
+            }
+          }else{
+            if ($('#daterange-timesheet').data('daterangepicker').startDate > moment()) {
+              $("input[name='scheduleInput']").val("Planned")
+              $("select[name='selectDuration']").prev("span").remove()
+              $("select[name='selectStatus']").prev("span").remove()
+              $("select[name='selectDuration']").prop("disabled",true)
+              $("select[name='selectStatus']").prop("disabled",true)
 
-            Swal.fire({
-              title: 'Loading...',
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              confirmButtonText:'',
-              showConfirmButton:false,
-              didOpen: () => {
-                // Delayed task using setTimeout
-                setTimeout(() => {
-                  // Close the loading indicator
-                  var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
-                  var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
+              Swal.fire({
+                title: 'Loading...',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                confirmButtonText:'',
+                showConfirmButton:false,
+                didOpen: () => {
+                  // Delayed task using setTimeout
+                  setTimeout(() => {
+                    // Close the loading indicator
+                    var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
+                    var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
 
-                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+                    $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+                    $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
-                  eventUpdateTimesheet();
-                  Swal.close();
-                }, 2000); // Delayed execution after 2000ms (2 seconds)
-              }
-            });
-          }else if ($('#daterange-timesheet').data('daterangepicker').startDate <= moment()) {
-            $("input[name='scheduleInput']").val("Unplanned")
-            $("select[name='selectDuration']").prev("label").after("<span>*</span>")
-            $("select[name='selectStatus']").prev("label").after("<span>*</span>")
-            $("select[name='selectDuration']").prop("disabled",false)
-            $("select[name='selectStatus']").prop("disabled",false)
+                    eventUpdateTimesheet();
+                    Swal.close();
+                  }, 2000); // Delayed execution after 2000ms (2 seconds)
+                }
+              });
+            }else if ($('#daterange-timesheet').data('daterangepicker').startDate <= moment()) {
+              $("input[name='scheduleInput']").val("Unplanned")
+              $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+              $("select[name='selectStatus']").prev("label").after("<span>*</span>")
+              $("select[name='selectDuration']").prop("disabled",false)
+              $("select[name='selectStatus']").prop("disabled",false)
 
-            Swal.fire({
-              title: 'Loading...',
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              confirmButtonText:'',
-              showConfirmButton:false,
-              didOpen: () => {
-                // Delayed task using setTimeout
-                setTimeout(() => {
-                  // Close the loading indicator
-                  var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
-                  var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
+              Swal.fire({
+                title: 'Loading...',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                confirmButtonText:'',
+                showConfirmButton:false,
+                didOpen: () => {
+                  // Delayed task using setTimeout
+                  setTimeout(() => {
+                    // Close the loading indicator
+                    var start = moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY')
+                    var end = moment($('#daterange-timesheet').data('daterangepicker').endDate).format('MM/DD/YYYY') 
 
-                  $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
-                  $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
+                    $('#daterange-timesheet').data('daterangepicker').setStartDate(start);
+                    $('#daterange-timesheet').data('daterangepicker').setEndDate(end);
 
-                  eventUpdateTimesheet();
-                  Swal.close();
-                }, 2000); // Delayed execution after 2000ms (2 seconds)
-              }
-            });
+                    eventUpdateTimesheet();
+                    Swal.close();
+                  }, 2000); // Delayed execution after 2000ms (2 seconds)
+                }
+              });
+            }
           }
         }
       })
@@ -3341,7 +3343,6 @@
         var countable = parseInt($(last).attr("id").split("_")[1])
 
         $.each($("fieldset:not(:first)"),function(index,items){
-          console.log($("fieldset"))
           $(items).find(".box-title").text("Activity "+ ++j)
         })
 
@@ -3776,7 +3777,6 @@
     }
 
     function eventUpdateTimesheet(calEvent,id){
-      console.log("heyyy")
       if (calEvent != undefined) {
         if (isNaN(calEvent.id) == true) {
           Swal.fire({
