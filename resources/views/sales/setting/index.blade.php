@@ -245,7 +245,7 @@ Lead Setting
 	<section class="content">
 		<div class="box">
 			<div class="box-header">
-				<h3 class="box-title">Data Table With Full Features</h3>
+				<h3 class="box-title">Lead Register Setting</h3>
 			</div>
 			<div class="box-body">
 				<table id="tableSetting" class="table table-bordered table-striped">
