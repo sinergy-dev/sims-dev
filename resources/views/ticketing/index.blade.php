@@ -6,14 +6,11 @@ Ticketing
 @section('head_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
-
 <link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" integrity="sha512-/Ae8qSd9X8ajHk6Zty0m8yfnKJPlelk42HTJjOHDWs1Tjr41RfsSkceZ/8yyJGLkxALGMIYd5L2oGemy/x1PLg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="{{ url('css/dataTables.bootstrap.css')}}">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <style type="text/css">
 	.table2 > tbody > tr > th, .table2 > tbody > tr > td {
 		border-color: #141414;border: 1px solid;padding: 3px;}
@@ -2370,21 +2367,18 @@ Ticketing
 @section('scriptImport')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.5/Chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.2.6/jquery.inputmask.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
-
-<script src="{{ url('js/dataTables.bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script src="{{ url('js/jquery.slimscroll.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js" integrity="sha512-2xXe2z/uA+2SyT/sTSt9Uq4jDKsT0lV4evd3eoE/oxKih8DSAsOF6LUb+ncafMJPAimWAXdu9W+yMXGrCVOzQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ url('js/jquery.emailinput.min.js')}}"></script>
 <script src="{{ url('js/roman.js')}}"></script>
-
-
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -2515,8 +2509,6 @@ Ticketing
 			type:"GET",
 			url:"{{url('ticketing/getDashboard')}}",
 			success:function(result){
-
-				// console.log(result);
 				$("#countOpen").text(result.counter_condition.OPEN);
 				$("#countProgress").text(result.counter_condition.PROGRESS);
 				$("#countPending").text(result.counter_condition.PENDING);
@@ -2752,7 +2744,6 @@ Ticketing
 					operator:"{{(Auth::check())?Auth::user()->name:'-'}}",
 				},
 				success: function(result){
-					console.log(result.banking)
 					clientBanking = result.banking
 					clientWincor = result.wincor
 					$("#inputticket").val($("#inputticket").val() + "/" + acronym_client + moment().format("/MMM/YYYY"));
@@ -2773,7 +2764,6 @@ Ticketing
 					acronym_client:acronym_client,
 				},
 				success: function(result){
-					console.log(result.banking)
 					clientBanking = result.banking
 					clientWincor = result.wincor
 					$("#inputticket").val(changeResult);
@@ -2869,7 +2859,6 @@ Ticketing
 			$("#createTicket").attr("onclick",onclick);
 			
 			getBankAtm(clientBanking);
-			console.log(clientBanking)
 		}
 	}
 
@@ -3147,7 +3136,6 @@ Ticketing
 						id:value.id,
 						text:value.client_acronym + " - " + value.client_name
 					})
-					// console.log(value.client_name)
 				});
 
 				$.each(result.severity,function(key,value){
@@ -3193,7 +3181,6 @@ Ticketing
 						$("#inputATM").select2('destroy');
 					}
 					result.unshift('Select One')
-					// console.log(result);
 					$("#inputATM").select2({
 						data:result
 					});
@@ -3363,7 +3350,6 @@ Ticketing
 							client:$("#inputClient").val()
 						},
 						success: function(result){
-							console.log(result)
 							if($("#inputTemplateEmail").val() != "Wincor Template"){
 								if($("#inputClient option:selected").text().includes("Absensi")){
 									var subject = "Open Tiket " + $("#inputAbsenLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
@@ -3655,7 +3641,6 @@ Ticketing
 								icon: 'success',
 								confirmButtonText: 'Reload',
 							}).then((result) => {
-								// console.log(resultAjax)
 								callback()
 								// getPerformanceByClient(resultAjax.client_acronym_filter)
 								// getPerformanceByFilter([resultAjax.client_id_filter],[],[],[])
@@ -3694,7 +3679,6 @@ Ticketing
 					url:"{{url('ticketing/getPerformanceAll')}}",
 					dataSrc: function (json){
 						json.data.forEach(function(data,idex){
-							console.log(data.first_activity_ticket.date)
 							data.open_time = moment(data.first_activity_ticket.date,'YYYY-MM-DD, HH:mm:ss').format('D MMMM YYYY HH:mm')
 							data.pic = data.pic + ' - ' + data.contact_pic
 							if(data.lastest_activity_ticket.activity == "OPEN"){
@@ -3825,7 +3809,6 @@ Ticketing
 					var condition_available = ["OPEN","ON PROGRESS","PENDING","CANCEL","CLOSE"]
 					this.api().columns().every( function () {
 						if(this.index() == 8){
-							// console.log('every colom data')
 							var column = this;
 							var select = $('<select class="form-control"><option value="">Show All</option></select>')
 								.appendTo( $(column.footer()).empty() )
@@ -3848,7 +3831,6 @@ Ticketing
 									var val = $.fn.dataTable.util.escapeRegex(
 										$(this).val()
 									);
-									// console.log(val);
 									column.search( val ? val : '', true, false ).draw();
 								} );
 
@@ -3911,8 +3893,6 @@ Ticketing
 
 	function getPerformanceByClient(client){
 		var client_param = jQuery.param({client: client});
-		console.log($.fn.dataTable.isDataTable("#tablePerformance"))
-
 		if($.fn.dataTable.isDataTable("#tablePerformance")){
 			if(client == "BTNI"){
 				$("#tablePerformance").DataTable().column(1).visible(false)
@@ -4010,16 +3990,13 @@ Ticketing
 	}
 
 	function changeColumnTable(data){
-		// console.log($(data).attr("data-column"))
 		var column = $("#tablePerformance").DataTable().column($(data).attr("data-column"))
-		// console.log(column.visible())
 		column.visible( ! column.visible() );
 		// $(data).prop('checked', column.visible())
 		// column.visible() ? $(data).addClass('active') : $(data).removeClass('active')
 	}
 
 	function showTicket(id){
-		console.log(id+"okebos")
 		$.ajax({
 			type:"GET",
 			url:"{{url('/ticketing/getPerformanceByTicket')}}",
@@ -4093,7 +4070,6 @@ Ticketing
 					// $("#ticketSerialArea").show()
 					$("#rowAbsen").show()
 					$("#rowGeneral").hide()
-					// console.log(result.machine_absen == null)
 					if(result.machine_absen == null){
 						swalWithCustomClass.fire(
 							'Absen Machine is not found!',
@@ -4253,7 +4229,6 @@ Ticketing
 			},
 		}).then((result) => {
 			if(result.value){
-				// console.log(reason)
 				Swal.fire({
 					title: 'Please Wait..!',
 					text: "It's sending",
@@ -4297,11 +4272,9 @@ Ticketing
 				})
 			}
 		})
-		console.log('reOpenTicket' + id_ticket)
 	}
 
 	function updateTicket(id){
-		// console.log(id);
 		if($("#ticketNote").val() == ""){
 			swalWithCustomClass.fire(
 				'Error',
@@ -4531,7 +4504,6 @@ Ticketing
 								},
 								success: function (result){
 									// Holder Cancel
-									console.log(result)
 									$(".holderCancelID").text($('#ticketID').val());
 									$(".holderCancelRefrence").text(result.ticket_data.refrence);
 									$(".holderCancelPIC").text(result.ticket_data.pic);
@@ -4912,7 +4884,6 @@ Ticketing
 								},
 								success: function (result){
 									// Holder Close
-									console.log(result.ticket_data.id_ticket)
 									if(result.ticket_data.type_ticket == "PM"){
 										$(".holderCloseProblem").siblings().first().text("Action")
 									}
@@ -5653,7 +5624,6 @@ Ticketing
 				$("#atmEditType").val(result.atm.machine_type);
 
 				if(result.atm.owner == 19){
-					console.log("dasfasdfasd")
 					var append = ""
 					$.each(result.atm.peripheral,function (key,value){
 						if(value.type == "CCTV"){
@@ -5801,7 +5771,6 @@ Ticketing
 	}
 
 	function editAtmPeriperal(id,type){
-		// console.log('this is from atm periperal')
 		var selector = ".itemPeriperalEach" + id + "-" + type
 		
 		var cancleHolderPeriperal = "$(selector).html()"
@@ -5831,8 +5800,6 @@ Ticketing
 	}
 
 	function saveAtmPeriperal(selector,holder,id,type){
-		console.log($(holder + " input.editPeripheralType").val())
-		console.log($(holder + " input.editPeripheralSerial").val())
 		swalWithCustomClass.fire({
 			title: 'Are you sure?',
 			text: "Make sure there is nothing wrong from editing this preriperal!",
@@ -5884,8 +5851,6 @@ Ticketing
 	}
 
 	function deleteAtmPeriperal(selector,holder,id,type){
-		console.log($(holder + " input.editPeripheralType").val())
-		console.log($(holder + " input.editPeripheralSerial").val())
 		swalWithCustomClass.fire({
 			title: 'Are you sure?',
 			text: "Make sure there is nothing wrong to delete this preriperal!",
@@ -6442,9 +6407,6 @@ Ticketing
 		$("#selectReportingMonth").empty()
 
 		if($("#selectReportingClient").val() !== "Select Client" && $("#selectReportingYear").val() !== "Select Year"  && $("#selectReportingMonth").val() !== "Select Month"){
-			console.log($("#selectReportingClient").val())
-			console.log($("#selectReportingYear").val())
-			console.log($("#selectReportingMonth").val())
 			$("#ReportingButtonGo").show()			
 
 			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month='
