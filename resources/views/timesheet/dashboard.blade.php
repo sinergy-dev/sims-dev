@@ -231,7 +231,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-8 col-xs-12">
+                <div class="col-md-6 col-xs-12">
                   <div class="box box-primary" id="box_sbe" style="display:none;">
                     <div class="box-header bg-primary with-border">
                       <h3 class="box-title" style="color: white;">Summary of SBE</h3>
@@ -274,7 +274,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 col-xs-12">
+                <div class="col-md-6 col-xs-12">
                   <div class="box box-primary" id="box_pid" style="display:none">
                     <div class="box-header bg-primary with-border">
                       <h3 class="box-title" style="color: white;">Assign PID</h3>
@@ -341,10 +341,11 @@
                   <h3 class="box-title">Remaining <span id="span-remaining"></span> (Status Done)</h3>
                 </div>
                 <div class="box-body">
-                  <div id="box-remaining">
-                    <!-- <canvas id="remainingChart" width="400" height="200"></canvas> -->
-                  
+                  <div class="containerBoxRemaining" style="overflow-x: scroll;width: 100%;">
+                    <div id="box-remaining">
+                    </div>
                   </div>
+
                   <div id="pagination" style="margin-top:20px" class="pull-right">
                     
                   </div>
@@ -453,7 +454,7 @@
             { title: 
               'Name',
               render: function (data, type, row, meta){
-                return '<a href="{{url("/timesheet/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer">'+ row.name +'</a>'
+                return '<a href="{{url("/timesheet/timesheet?nik=")}}'+ row.nik +'" style="cursor:pointer" target="_blank">'+ row.name +'</a>'
               } 
             },
             { title: 'Planned',
@@ -500,7 +501,6 @@
 
       if (idTab == 'table') {
         initializeDataTable(activeTab);
-
         // datatableSummary.columns.adjust().draw()
       }
     }
@@ -891,19 +891,21 @@
     }
 
     if(id == "changePageRemaining"){
-      var arrFilter = '?month_select=' + val
+      var arrFilter = '?month_select=' + val + '&' + selectRoles
       showDataFilter(arrFilter,arrMonth,"remainingChart",val)
     }else{
       if (cummulativeLineChart){
         cummulativeLineChart.destroy()
       }
 
-      var arrFilter = '?' + arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule + '&' + selectRoles
+      var arrFilter = arrFilterMonth + '&' +selectPic + '&' + selectStatus + '&' + selectPhase + '&' + selectTask + '&' + selectYear + '&' + selectSchedule + '&' + selectRoles
       if (id == "export") {
-        window.open(val + arrFilter, "_blank")
+        window.open(val + '?' + arrFilter, "_blank")
         // window.location = val + arrFilter;
       }else{
         showDataFilter(arrFilter,arrMonth,"all")
+
+        localStorage.setItem("arrFilter",arrFilter)
       }
     }
   }
@@ -1005,6 +1007,7 @@
           datasets:datasetRemaining[0].datasets
       },
       options: {
+        maintainAspectRation: false,
         scales: {
             x: {
                 stacked: true,
@@ -1034,6 +1037,12 @@
         }
       }
     });
+
+    const containerBodyRemaining = document.querySelector('#box-remaining');
+    console.log(myChart2.data.labels.length)
+    if (myChart2.data.labels.length > 7) {
+      containerBodyRemaining.style.width  = '1300px';
+    }
 
     return remainingBarChart.push(myChart2);
     // Create a new canvas element
@@ -1487,7 +1496,7 @@
       $.each(remainingBarChart,function(idx,value){
           value.destroy()
       })
-      duplicateCanvasRemaining("timesheet/getFilterRemainingChart",arrFilter,val) 
+      duplicateCanvasRemaining("timesheet/getFilterRemainingChart?",arrFilter,val) 
     }else{
       console.log("sinii")
       if (isTbSummary == true) {
@@ -1496,7 +1505,7 @@
         $("#filterSumPoint").find("span").text("not ready to filter...")
         Pace.restart();
         Pace.track(function(){
-          $("#tbSummaryMandays").DataTable().ajax.url("{{url('timesheet/getFilterSumPointMandays')}}"+arrFilter).load();
+          $("#tbSummaryMandays").DataTable().ajax.url("{{url('timesheet/getFilterSumPointMandays')}}?"+arrFilter).load();
           if (arrMonth.length > 1) {
             $("#monthly_status").text("cumulative")
           }else{
@@ -1507,8 +1516,8 @@
 
       //filter table
       if ($('#selectDiv').is(":visible")) {
-        $("#tbAssignPID").DataTable().ajax.url("{{url('/timesheet/getAllAssignPidByDivision')}}"+arrFilter).load();
-        $("#tbSummarySbe").DataTable().ajax.url("{{url('/timesheet/sumPointSbe')}}"+arrFilter).load();
+        $("#tbAssignPID").DataTable().ajax.url("{{url('/timesheet/getAllAssignPidByDivision')}}?"+arrFilter).load();
+        $("#tbSummarySbe").DataTable().ajax.url("{{url('/timesheet/sumPointSbe')}}?"+arrFilter).load();
       }
 
       //cummulative mandays chart update
@@ -1516,28 +1525,28 @@
         cummulativeLineChart.destroy()
       }
 
-      cummulativeChart(arrMonth,"timesheet/getFilterCummulativeMandaysChart",arrFilter)
+      cummulativeChart(arrMonth,"timesheet/getFilterCummulativeMandaysChart?",arrFilter)
 
       //level mandays chart update
       if (accesable.includes('nav-tab-table')) {
         levelPieChart.destroy()
-        levelChart("/timesheet/getFilterLevelChart",arrFilter)
+        levelChart("/timesheet/getFilterLevelChart?",arrFilter)
 
         //status mandays chart update
         statusPieChart.destroy()
-        statusChart("/timesheet/getFilterStatusChart",arrFilter)
+        statusChart("/timesheet/getFilterStatusChart?",arrFilter)
 
         //schedule mandays chart update
         schedulePieChart.destroy()
-        scheduleChart("/timesheet/getFilterScheduleChart",arrFilter)
+        scheduleChart("/timesheet/getFilterScheduleChart?",arrFilter)
 
         //task chart update
         taskPieChart.destroy()
-        taskChart("/timesheet/getFilterTaskChart",arrFilter)
+        taskChart("/timesheet/getFilterTaskChart?",arrFilter)
 
         //phase chart update
         phasePieChart.destroy()
-        phaseChart("/timesheet/getFilterPhaseChart",arrFilter)
+        phaseChart("/timesheet/getFilterPhaseChart?",arrFilter)
       }
       
       //remaining chart update
@@ -1550,7 +1559,7 @@
         })
         $("#pagination").empty("")
         $("#box-remaining").empty("")
-        duplicateCanvasRemaining("timesheet/getFilterRemainingChart",arrFilter)
+        duplicateCanvasRemaining("timesheet/getFilterRemainingChart?",arrFilter)
       } 
     }
 
