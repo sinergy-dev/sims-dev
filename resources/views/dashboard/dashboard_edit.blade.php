@@ -300,6 +300,7 @@ Dashboard
 	    </div>
 	  </div>
 	</div>
+
 	<div id="popUp" class="modal fade" role="dialog">
 	  <div class="modal-dialog modal-lg">
 	    <div class="modal-content modal-style">
@@ -347,6 +348,7 @@ Dashboard
 	    </div>
 	  </div>
 	</div>
+
 	<div id="changePassword" class="modal fade" role="dialog">
 	  <div class="modal-dialog modal-sm">
 	    <div class="modal-content modal-style">
@@ -366,7 +368,7 @@ Dashboard
 	        </span>
 	      </div>
 	      <div class="modal-footer">
-	        <p class="text-center">©SIMS - 2021</p>              
+	        <p class="text-center">©SIMS - 2023</p>              
 	      </div>
 	    </div>
 	  </div>
@@ -376,7 +378,6 @@ Dashboard
 @section('scriptImport')
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
 @endsection
@@ -454,7 +455,8 @@ Dashboard
 		       	prepend = prepend + '<i class="'+value.icon+'"></i>'
 		     	prepend = prepend + '</div>'
 		     	// prepend = prepend + '<a href="' + '{{action("ReportController@view_open")}}' + '" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
-		     	prepend = prepend + '<a href="/' + value.url +'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
+		     	// prepend = prepend + '<a href="/' + value.url +'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
+          prepend = prepend + '<a onclick="clickableDiv('+"'"+ value.url +"'"+')" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
           // prepend = prepend +  '</a>'
 		   	prepend = prepend + '</div>'
 		 		prepend = prepend + '</div>'
