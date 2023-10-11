@@ -29,7 +29,6 @@
         <li class="active"><i class="fa fa-gear"></i> Config</li>
     </ol><br>
 </section>
-
 <section class="content">
   <div class="row">
       <div class="col-md-12 col-xs-12">
@@ -234,16 +233,13 @@
 @endsection
 @section('scriptImport')
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-  <!-- <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script> -->
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
     {{--  Calendar  --}}
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
-
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
-
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 @section('script')
