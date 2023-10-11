@@ -4,8 +4,6 @@ PMO
 @endsection
 @section('head_css')
 	<link rel="stylesheet" href="https://docs.dhtmlx.com/gantt/codebase/dhtmlxgantt.css?v=6.0.0">
-	<!-- <link rel="stylesheet" href="http://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" 
-	type="text/css"> -->
 	<link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
 	<link  rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
@@ -1117,7 +1115,6 @@ PMO
 @section('scriptImport')
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script type="text/javascript" src="https://docs.dhtmlx.com/gantt/codebase/dhtmlxgantt.js?v=6.0.0"></script>
-<!-- <script src="http://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script> -->
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
 <script src="https://export.dhtmlx.com/gantt/api.js"></script> 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
@@ -1650,9 +1647,12 @@ PMO
 		            	$("#btnAddWeekly").prop("disabled",true)
 		            	$("#btnFinalProject").attr("disabled")
 	            	}else{
-	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+	            		console.log(table.row(0).length)
+	            		if(table.row(0).length > 0){
+		            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
+		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+		            		}	
 	            		}
 
 	            		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
@@ -3493,7 +3493,7 @@ PMO
 
 						$.each(result,function(index,item){
 							
-							if (item.position == 'PMO Staff') {
+							if (item.position == 'PMO Staff' || item.position == 'PMO SPV') {
 								position = 'Project Manager'
 								label = 'Prepared By'
 							}else if (item.position == 'PMO Manager') {

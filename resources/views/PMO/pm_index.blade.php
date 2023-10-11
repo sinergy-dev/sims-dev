@@ -3,6 +3,7 @@
 PMO
 @endsection
 @section('head_css')
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
   <style type="text/css">
       .select2{
           width:100%!important;
@@ -618,7 +619,6 @@ PMO
 @section('scriptImport')
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
@@ -720,296 +720,303 @@ PMO
         }
       }) 
 
-    Pace.restart();
-    Pace.track(function() {    
-      table = $('#tbListProject').DataTable({
-          processing: true,
-          serverSide: true,
-          ajax:{
-            url:"{{url('/PMO/getListDataProject')}}",
-            dataSrc:"data"
+    
+    var table = $('#tbListProject').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax:{
+          url:"{{url('/PMO/getListDataProject')}}",
+          dataSrc:"data",
+        },
+        "bFilter": true,
+        "bSort":true,
+        "bLengthChange": false,
+        "bInfo": false,
+        "columns": [
+          {
+            title: "No",
+            render:function(data,type,row,meta)
+            { 
+              return ++meta.row 
+            },
           },
-          "bFilter": true,
-          "bSort":true,
-          "bLengthChange": false,
-          "bInfo": false,
-          "columns": [
+          {
+            title: "Project ID",
+            data: "project_id"
+          },
+          {
+            title: "Name Project",
+            data: "name_project",
+            render:function(data, type, row)
             {
-              title: "No",
-              render:function(data,type,row,meta)
-              { 
-                return ++meta.row 
-              },
-            },
-            {
-              title: "Project ID",
-              data: "project_id"
-            },
-            {
-              title: "Name Project",
-              data: "name_project",
-              render:function(data, type, row)
-              {
-                let warning = ''
+              let warning = ''
 
-                if (row.status == 'Reject') {
-                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                    warning = '<br><small style="color:red">Please wait update from PM/PC, this project charter has been rejected</small>'
-                  }else{
-                    warning = ''
-                  }
+              if (row.status == 'Reject') {
+                if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                  warning = '<br><small style="color:red">Please wait update from PM/PC, this project charter has been rejected</small>'
                 }else{
-                  if (row.project_type != 'supply_only') {
-                    if(row.status == 'New'){
-                      if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Staff')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Project Coordinator')->exists()}}") {
-                        warning = '<br><small style="color:red">Project Charter will processed soon, please wait for further progress</small>'
-                      }else{
-                        warning = ''
-                      }
-                    }
-                  }else{
-                    warning = ''
-                  }
+                  warning = ''
                 }
-
-                if (row.sign != "-") {
-                  return row.name_project + "<br><small class='label label-info'>next approver of Project Charter on " + row.sign + "</small>" + warning 
-                }else{
-                  return row.name_project + warning 
-                }
-              },
-            },
-            {
-              title: "Project Type",
-              render:function(data,type,row)
-              {
-                return row.type_project
-                // if (row.project_type == 'maintenance') {
-                //   return 'Maintenance & Managed Service'
-                // }else if (row.project_type == 'supply_only') {
-                //   return 'Supply Only'
-                // }else{
-                //   return row.project_type.charAt(0).toUpperCase() +  row.project_type.slice(1)
-                // }
-              },
-            },
-            {
-              title: "PM/PC",
-              render:function(data,type,row)
-              {
-                // return row.type_project
-                if (row.project_type == 'maintenance') {
-                  return row.project_pc
-                }else if (row.project_type == 'supply_only' || row.project_type == 'implementation') {
-                  return row.project_pm
-                }
-              },
-            },
-            {
-                "title":"Status",
-                "data": null,
-                render:function(data, type, row)
-                {
-                  if (row.current_phase == 'New') {
-                    return '<label class="label label-info">New</label>'
-                  }else if (row.current_phase == 'Reject') {
-                    return '<label class="label label-danger">Reject</label>'
-                  }else if (row.current_phase == 'Initiating') {
-                    return '<label class="label label-primary">Initiating</label>'
-                  }else if (row.current_phase == 'Planning') {
-                    return '<label class="label label-warning">Planning</label>'
-                  }else if (row.current_phase == 'Executing') {
-                    return '<label class="label label-danger">Executing</label>'
-                  }else if (row.current_phase == 'Closing') {
-                    return '<label class="label label-success">Closing</label>'
-                  }else{
-                    return '<label class="label label-success">'+ row.current_phase +'</label>'
-                  }
-                },
-            },
-            {
-              "title":"Project Indicator",
-              render:function(data, type, row)
-              {
-                if (row.project_type == "supply_only") {
-                  return " - "
-                }else{
-                  if (row.indicator_project == "-") {
-                    return "TBA"
-                  }else{
-                    if (row.indicator_project == "onTrack") {
-                      return '<span><i class="fa fa-circle" style="color:#257a33"></i>&nbspon Track</span>'
-                    }else if (row.indicator_project == "delay") {
-                      return '<span><i class="fa fa-circle" style="color:#b52f2f"></i>&nbspDelay</span>'
+              }else{
+                if (row.project_type != 'supply_only') {
+                  if(row.status == 'New'){
+                    if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Staff')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Project Coordinator')->exists()}}") {
+                      warning = '<br><small style="color:red">Project Charter will processed soon, please wait for further progress</small>'
                     }else{
-                      return '<span><i class="fa fa-circle" style="color:#faea39"></i>&nbspMight Delay</span>'
+                      warning = ''
                     }
                   }
-                }                
+                }else{
+                  warning = ''
+                }
+              }
+
+              if (row.sign != "-") {
+                return row.name_project + "<br><small class='label label-info'>next approver of Project Charter on " + row.sign + "</small>" + warning 
+              }else{
+                return row.name_project + warning 
               }
             },
+          },
+          {
+            title: "Project Type",
+            render:function(data,type,row)
             {
-                "title":"Action",
-                "data": null,
-                render:function(data, type, row)
-                {
-                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','sales')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','BCD Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Operations Director')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','President Director')->exists()}}") {
-                      if (row.current_phase == 'New') {
-                        if (row.project_type == 'supply_only') {
-                          return '<button class="btn btn-sm bg-purple disabled" style="width:110px"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                        }else{
-                          if (row.status == 'Approve') {
-	                          	if ("{{Auth::User()->ttd}}" == "") {
-	                          		$("#alert").show()
-	                          		$("button[name='btnShowProjectCharter']").prop("disabled",true)
-	                          		// $("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
-	                          		// console.log("{{Auth::User()->ttd_digital}}")
-	                          	}
-
-	                          	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          }else if (row.status == 'Reject') {
-                            return '<button class="btn btn-sm btn-danger disabled" style="width:110px;"><i class="fa fa-wrench"></i>&nbsp Revision</button>'                            
-                          }else if (row.status == 'Done'){
-                            return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                          }else{
-                            if (row.type_project == "Implementation + Maintenance & Managed Service") {
-                              return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                            }else{
-                              return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                            }
-                            
-                          }
-                        }
-                      }else if(row.current_phase == "Waiting"){
-                        return '<button class="btn btn-sm bg-purple" style="width:110px" disabled><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                      }else{
-                        return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                      }
-                      // return 'okee'
+              return row.type_project
+              // if (row.project_type == 'maintenance') {
+              //   return 'Maintenance & Managed Service'
+              // }else if (row.project_type == 'supply_only') {
+              //   return 'Supply Only'
+              // }else{
+              //   return row.project_type.charAt(0).toUpperCase() +  row.project_type.slice(1)
+              // }
+            },
+          },
+          {
+            title: "PM/PC",
+            render:function(data,type,row)
+            {
+              // return row.type_project
+              if (row.project_type == 'maintenance') {
+                return row.project_pc
+              }else if (row.project_type == 'supply_only' || row.project_type == 'implementation') {
+                return row.project_pm
+              }
+            },
+          },
+          {
+              "title":"Status",
+              "data": null,
+              render:function(data, type, row)
+              {
+                if (row.current_phase == 'New') {
+                  return '<label class="label label-info">New</label>'
+                }else if (row.current_phase == 'Reject') {
+                  return '<label class="label label-danger">Reject</label>'
+                }else if (row.current_phase == 'Initiating') {
+                  return '<label class="label label-primary">Initiating</label>'
+                }else if (row.current_phase == 'Planning') {
+                  return '<label class="label label-warning">Planning</label>'
+                }else if (row.current_phase == 'Executing') {
+                  return '<label class="label label-danger">Executing</label>'
+                }else if (row.current_phase == 'Closing') {
+                  return '<label class="label label-success">Closing</label>'
+                }else{
+                  return '<label class="label label-success">'+ row.current_phase +'</label>'
+                }
+              },
+          },
+          {
+            "title":"Project Indicator",
+            render:function(data, type, row)
+            {
+              if (row.project_type == "supply_only") {
+                return " - "
+              }else{
+                if (row.indicator_project == "-") {
+                  return "TBA"
+                }else{
+                  if (row.indicator_project == "onTrack") {
+                    return '<span><i class="fa fa-circle" style="color:#257a33"></i>&nbspon Track</span>'
+                  }else if (row.indicator_project == "delay") {
+                    return '<span><i class="fa fa-circle" style="color:#b52f2f"></i>&nbspDelay</span>'
                   }else{
+                    return '<span><i class="fa fa-circle" style="color:#faea39"></i>&nbspMight Delay</span>'
+                  }
+                }
+              }                
+            }
+          },
+          {
+              "title":"Action",
+              "data": null,
+              render:function(data, type, row)
+              {
+                if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','sales')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','BCD Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Operations Director')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','President Director')->exists()}}") {
                     if (row.current_phase == 'New') {
-                      if (row.type_project == 'Supply Only') {
-                        if (row.status == null) {
-                          return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
-                        }else{
-                          return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                        }
+                      if (row.project_type == 'supply_only') {
+                        return '<button class="btn btn-sm bg-purple disabled" style="width:110px"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                       }else{
-                        if (row.status == null) {
-	                          	if ("{{Auth::User()->ttd}}" == "") {
-	                          		$("#alert").show()
-	                          		$("button[name='btnAddProjectCharter']").prop("disabled",true)
-	                          		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
-	                          	}
-	                          		console.log("{{Auth::User()->ttd}}" == "")
-
-                          		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                                if (row.type_project == "Implementation + Maintenance & Managed Service") {
-                                  if (row.project_type == "maintenance") {
-                                      return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                                    }else{
-                                      return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
-                                    }
-                                  }else{
-                                   return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
-                                  }
-                          		}else{
-                                  return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
-                            		
-                          	}  
-                        }else if(row.status == 'New'){
+                        if (row.status == 'Approve') {
                           	if ("{{Auth::User()->ttd}}" == "") {
-	                          	$("#alert").show()
+                          		$("#alert").show()
                           		$("button[name='btnShowProjectCharter']").prop("disabled",true)
-                          		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
+                          		// $("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
+                          		// console.log("{{Auth::User()->ttd_digital}}")
                           	}
 
-                          	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          	}else{
-                            	return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnAddProjectCharter" 	name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          	}                          
-                        }else if(row.status == 'Reject'){
-                          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            return '<button class="btn btn-sm btn-danger disabled" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
-                          }else{
-                            return '<button class="btn btn-sm btn-danger" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'revision'" +')"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
-                          }                                 
-                        }else if(row.status == 'Draft'){
-                          	if ("{{Auth::User()->ttd}}" == "") {
-	                          	$("#alert").show()
-                          		$("button[name='btnAddProjectCharter']").prop("disabled",true)
-                          		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
-	                          		console.log("uwoo")
-                          	}
-
-                          	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            	return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          	}else{
-                            	return '<button class="btn btn-sm btn-primary" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'draft'" +')"><i class="fa fa-wrench"></i>&nbsp Project Charter</button>'
-                          	} 
-                        }else if (row.status == 'Approve') {
-                          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          }else{
-                            return '<button class="btn btn-sm bg-purple" style="width:110px" disabled><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                          } 
+                          	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                        }else if (row.status == 'Reject') {
+                          return '<button class="btn btn-sm btn-danger disabled" style="width:110px;"><i class="fa fa-wrench"></i>&nbsp Revision</button>'                            
                         }else if (row.status == 'Done'){
                           return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                         }else{
-                          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          }else{
+                          if (row.type_project == "Implementation + Maintenance & Managed Service") {
                             return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
-                          } 
+                          }else{
+                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                          }
+                          
                         }
                       }
                     }else if(row.current_phase == "Waiting"){
-                        return '<button class="btn btn-sm bg-purple" style="width:110px" disabled><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                      return '<button class="btn btn-sm bg-purple" style="width:110px" disabled><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                     }else{
                       return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                     }
-                  }
-                },
-            }
-          ],
-          order: [[0, 'asc']],
-          "rowCallback": function( row, data ) {
-              if (data.status == "Approve") {
-                console.log("testtt")
-                if ("{{Auth::User()->name}}" != data.sign) {
-                  $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" disabled><i class="fa fa-eye"></i>&nbsp Project Charter</button>');
+                    // return 'okee'
                 }else{
-                  $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + data.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>');           
+                  if (row.current_phase == 'New') {
+                    if (row.type_project == 'Supply Only') {
+                      if (row.status == null) {
+                        return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
+                      }else{
+                        return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                      }
+                    }else{
+                      if (row.status == null) {
+                          	if ("{{Auth::User()->ttd}}" == "") {
+                          		$("#alert").show()
+                          		$("button[name='btnAddProjectCharter']").prop("disabled",true)
+                          		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
+                          	}
+                          		console.log("{{Auth::User()->ttd}}" == "")
+
+                        		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                              if (row.type_project == "Implementation + Maintenance & Managed Service") {
+                                if (row.project_type == "maintenance") {
+                                    return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                                  }else{
+                                    return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
+                                  }
+                                }else{
+                                 return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
+                                }
+                        		}else{
+                                return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                          		
+                        	}  
+                      }else if(row.status == 'New'){
+                        	if ("{{Auth::User()->ttd}}" == "") {
+                          	$("#alert").show()
+                        		$("button[name='btnShowProjectCharter']").prop("disabled",true)
+                        		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
+                        	}
+
+                        	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                          	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                        	}else{
+                          	return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnAddProjectCharter" 	name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                        	}                          
+                      }else if(row.status == 'Reject'){
+                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                          return '<button class="btn btn-sm btn-danger disabled" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
+                        }else{
+                          return '<button class="btn btn-sm btn-danger" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'revision'" +')"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
+                        }                                 
+                      }else if(row.status == 'Draft'){
+                        	if ("{{Auth::User()->ttd}}" == "") {
+                          	$("#alert").show()
+                        		$("button[name='btnAddProjectCharter']").prop("disabled",true)
+                        		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
+                          		console.log("uwoo")
+                        	}
+
+                        	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                          	return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                        	}else{
+                          	return '<button class="btn btn-sm btn-primary" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'draft'" +')"><i class="fa fa-wrench"></i>&nbsp Project Charter</button>'
+                        	} 
+                      }else if (row.status == 'Approve') {
+                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                          return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                        }else{
+                          return '<button class="btn btn-sm bg-purple" style="width:110px" disabled><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                        } 
+                      }else if (row.status == 'Done'){
+                        return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                      }else{
+                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                          return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                        }else{
+                          return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                        } 
+                      }
+                    }
+                  }else if(row.current_phase == "Waiting"){
+                      return '<button class="btn btn-sm bg-purple" style="width:110px" disabled><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                  }else{
+                    return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                  }
                 }
+              },
+          }
+        ],
+        order: [[0, 'asc']],
+        "rowCallback": function( row, data ) {
+            if (data.status == "Approve") {
+              console.log("testtt")
+              if ("{{Auth::User()->name}}" != data.sign) {
+                $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" disabled><i class="fa fa-eye"></i>&nbsp Project Charter</button>');
+              }else{
+                $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + data.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>');           
               }
-              // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
-              //   $("#btnFinalProject").prop("disabled",false)
-              // }
-          },
-          drawCallback: function(settings) {
-            if (accesable.includes("btnDeleteAssign")) {
-              $("button[name='btnDeleteAssign']").show()
             }
+            // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
+            //   $("#btnFinalProject").prop("disabled",false)
+            // }
+        },
+        drawCallback: function(settings) {
+          if (accesable.includes("btnDeleteAssign")) {
+            $("button[name='btnDeleteAssign']").show()
+          }
 
-            if (accesable.includes("btnAddProjectCharter")) {
-              $("button[name='btnAddProjectCharter']").prop("disabled",false)
-            }
+          if (accesable.includes("btnAddProjectCharter")) {
+            $("button[name='btnAddProjectCharter']").prop("disabled",false)
+          }
 
-            if (accesable.includes("btnShowProjectCharter")) {
-              $("button[name='btnShowProjectCharter']").prop("disabled",false)
-            }
+          if (accesable.includes("btnShowProjectCharter")) {
+            $("button[name='btnShowProjectCharter']").prop("disabled",false)
+          }
 
-            if (accesable.includes("btnRevisionProjectCharter")) {
-              $("button[name='btnRevisionProjectCharter']").prop("disabled",false)
-              // table.columns(4).visible(false);
-            }
-          },
-      });
-    })   
+          if (accesable.includes("btnRevisionProjectCharter")) {
+            $("button[name='btnRevisionProjectCharter']").prop("disabled",false)
+            // table.columns(4).visible(false);
+          }
+        },
+    });
 
-    $('#searchBarList').keyup(function(){
-      table.search($('#searchBarList').val()).draw();
+    $('#applyFilterTableSearch').click(function(){
+      $('#tbListProject').DataTable().ajax.url("{{url('/PMO/getListDataProject')}}?searchFor="+$("#searchBarList").val()).load();
+      // table.clear().search($('#searchBarList').val()).draw();
+    })  
+
+    $('#searchBarList').keypress(function(e){
+      if (e.which == 13) {
+        $('#tbListProject').DataTable().ajax.url("{{url('/PMO/getListDataProject')}}?searchFor="+$("#searchBarList").val()).load();
+
+        return false;    //<---- Add this line
+      }
     })
 
     function validationCheck(data,value){
