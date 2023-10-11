@@ -150,6 +150,7 @@ Quote Number
                   <div class="form-group">
                       <label>Position</label>
                       <select class="form-control" id="position" name="position" required>
+                          <option value="">--Choose Position--</option>
                           <option value="TAM">TAM</option>
                           <option value="DIR">DIR</option>
                           <option value="MSM">MSM</option>
@@ -157,13 +158,8 @@ Quote Number
                   </div>
 
                   <div class="form-group">
-                    <label for="">Date</label>
-                    <div class="input-group date">
-                      <div class="input-group-addon">
-                        <i class="fa fa-calendar"></i>
-                      </div>
-                      <input type="text" class="form-control pull-right date" name="date" id="date_quote">
-                    </div>
+                    <label for="">Date*</label>
+                    <input type="date" class="form-control" name="date" id="date_quote" required>
                   </div>
 
                   <div class="form-group">
@@ -195,7 +191,8 @@ Quote Number
                   </div>
                   <div class="form-group">
                     <label for="">Division</label>
-                    <select type="text" class="form-control" placeholder="Select Division" name="division" id="division" required>
+                    <select type="text" class="form-control" name="division" id="division" required>
+                        <option value="">--Choose Division--</option>
                         <option>PMO</option>
                         <option>MSM</option>
                         <option>Marketing</option>
@@ -209,7 +206,7 @@ Quote Number
                   <div class="form-group" id="pid">
                     <label for="">Project ID</label>                
                     <select type="text" class="form-control select2" name="project_id" id="project_id" style="width: 100%">
-                      <option value="">Select project id</option>
+                      <option value="">--Choose Project Id--</option>
                       @foreach($pid as $data)
                       <option value="{{$data->id_project}}">{{$data->id_project}}</option>
                       @endforeach
@@ -263,7 +260,8 @@ Quote Number
               </div>
               <div class="form-group">
                 <label for="">Position</label>
-                <select type="text" class="form-control" placeholder="Select Position" name="position" id="position" required>
+                <select type="text" class="form-control" name="position" id="position" required>
+                    <option value="">--Choose Position--</option>
                     <option value="TAM">TAM</option>
                     <option value="DIR">DIR</option>
                     <option value="MSM">MSM</option>
@@ -295,7 +293,8 @@ Quote Number
               </div>
               <div class="form-group">
                 <label for="">Division</label>
-                <select type="text" class="form-control" placeholder="Select Division" name="division" id="division" required>
+                <select type="text" class="form-control" name="division" id="division" required>
+                    <option value="">--Choose Division--</option>
                     <option>PMO</option>
                     <option>MSM</option>
                     <option>Marketing</option>
@@ -309,7 +308,7 @@ Quote Number
               <div class="form-group" id="pid">
                 <label for="">Project ID</label>                
                 <select type="text" class="form-control select2" name="project_id_backdate" id="project_id_backdate" style="width: 100%">
-                  <option value="">Select project id</option>
+                  <option value="">--Choose Project Id--</option>
                   @foreach($pid as $data)
                   <option value="{{$data->id_project}}">{{$data->id_project}}</option>
                   @endforeach
@@ -440,10 +439,8 @@ Quote Number
     var nowDate = new Date();
     var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
 
-    $('#date_quote').datepicker({
-      autoclose: true,
-      startDate: today 
-    }).attr('readonly','readonly').css('background-color','#fff');
+    var datePickerId = document.getElementById('date_quote')
+    datePickerId.min = new Date().toISOString().split("T")[0];
 
     $('#project_id').select2({
       dropdownParent:$("#modalAdd")
@@ -609,11 +606,6 @@ Quote Number
 
     var nowDate = new Date();
     var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
-
-    $('#date_quote').datepicker({
-      autoclose: true,
-      startDate: today 
-    }).attr('readonly','readonly').css('background-color','#fff');
 
     $('#date_backdate').datepicker({
       autoclose: true,
