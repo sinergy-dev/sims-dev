@@ -33,7 +33,7 @@ class QuoteController extends Controller
         $tahun = date("Y");
 
 		$datas = DB::table('tb_quote')
-                        ->join('users', 'users.nik', '=', 'tb_quote.nik')
+                        ->leftJoin('users', 'users.nik', '=', 'tb_quote.nik')
                         ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
                         ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','tb_quote.status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         ->orderBy('tb_quote.created_at', 'desc')
