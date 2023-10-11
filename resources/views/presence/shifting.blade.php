@@ -8,7 +8,7 @@ Presence Shifting
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.print.css" media="print">
-	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 	<style>
@@ -500,7 +500,6 @@ Presence Shifting
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
@@ -612,12 +611,6 @@ Presence Shifting
 						Shift: shift,
 					};
 				}
-
-				console.log(str)
-				console.log(end)
-				// console.log(end)
-
-
 				$(this).data('eventObject', eventObject);
 
 				$(this).draggable({
@@ -646,7 +639,6 @@ Presence Shifting
 		url:"{{url('presence/shifting/getOptionGrouped')}}",
 		success:function(result){
 			for(var key in result){
-				// console.log(key)
 				result[key].forEach( function ( data, key ) {
 
 				})
@@ -684,7 +676,6 @@ Presence Shifting
 		drop: function (date, allDay) { 
 
 			var originalEventObject = $(this).data('eventObject');
-			console.log(originalEventObject)
 			var name3 = $("#nickname").val();
 			var copiedEventObject = $.extend({}, originalEventObject);
 
@@ -698,10 +689,6 @@ Presence Shifting
 			var start_before = moment(waktu).format('YYYY-MM-DD') + " " + originalEventObject.startShift + ":00";
 			var end_before = moment(waktu).format('YYYY-MM-DD') + " " + originalEventObject.endShift + ":00";
 
-			// console.log(startShift2)
-						
-			// console.log(endShift2)
-			
 			var ketemu = 0;
 
 			var date = $('#calendar').fullCalendar('getCalendar').view
@@ -834,7 +821,6 @@ Presence Shifting
 						append = append + '		</a>';
 						append = append + '	</li>';
 					})
-					// console.log(append)
 					$("#ulUser").append(append);
 					$("." + globalProject).show();
 				},
