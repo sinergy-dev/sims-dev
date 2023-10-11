@@ -482,7 +482,7 @@
           </td>
         </tr>
         <tr>
-          <td  style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+          <td style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt' width="84">
             <p class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Customer</span>
             </p>
@@ -608,7 +608,7 @@
               </b>
             </p>
           </td>
-          <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+          <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt' width="150">
             <p class=MsoTocHeading style='margin-top:0in'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Main Task</span>
@@ -638,7 +638,7 @@
                   <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{$key}}</span>
                 </p>
               </td>
-              <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black; 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+              <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black; 1.0pt;padding:0in 5.4pt 0in 5.4pt' width="150">
                 <p class=MsoTocHeading style='margin-top:0in'>
                   <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{$dataMilestone['text']}}</span>
                 </p>
@@ -657,34 +657,34 @@
             @endforeach
           @endforeach
           <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Schedule Remarks</span>
-            </p>
-          </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['schedule_remarks']}}</span>
-            </p>
-          </td>
-        </tr>
-        <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Documents</span>
-            </p>
-          </td>
-          <td  colspan=5 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Documents</span>
-            </p>
-          </td>
-          <td colspan=2  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Checklist</span>
-            </p>
-          </td>
-        </tr>
+            <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+              <p class=MsoTocHeading style='margin-top:0in'>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Schedule Remarks</span>
+              </p>
+            </td>
+            <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+              <p class=MsoTocHeading style='margin-top:0in'>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['schedule_remarks']}}</span>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+              <p class=MsoTocHeading style='margin-top:0in'>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Documents</span>
+              </p>
+            </td>
+            <td  colspan=5 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+              <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Documents</span>
+              </p>
+            </td>
+            <td colspan=2  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+              <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Checklist</span>
+              </p>
+            </td>
+          </tr>
         <?php
           $no = 0
         ?>
@@ -765,10 +765,10 @@
             </p>
           </td>
           <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-left:15.5pt;text-indent:-.25in'>
+            <p class=MsoTocHeading style='margin-left:15.5pt;'>
               <!-- <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'></span> -->
               <!-- </span> -->
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{$data['lesson_learn']}}</span>
+              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;text-align:justify'>{!! nl2br($data['lesson_learn']) !!}</span>
             </p>
           </td>
         </tr>
@@ -779,8 +779,8 @@
             </p>
           </td>
           <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-left:15.5pt;text-indent:-.25in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['recommendation_future']}}</span>
+            <p class=MsoTocHeading style='margin-left:15.5pt;text-indent:'>
+              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal;text-align:justify;'>{!! nl2br($data['recommendation_future']) !!}</span>
             </p>
             <p class=MsoNormal>
               <span lang=EN-GB>&nbsp;</span>
