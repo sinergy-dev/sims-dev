@@ -559,8 +559,7 @@ ID Project
 </div>
 </div>
 
-  </section>
-
+</section>
 @endsection
 @section('scriptImport')  
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
