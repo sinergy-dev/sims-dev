@@ -593,6 +593,7 @@ class SalesLeadController extends Controller
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result','!=','hmm')
                 ->whereIn('year',$year)
+                ->where('status_karyawan','!=','dummy')
                 // ->where('year', $year)
                 ->orderBy('created_at', 'desc');
 
@@ -1530,7 +1531,7 @@ class SalesLeadController extends Controller
         if($ter != null || $cek_role->name_role != 'Operations Director'){
             // $leads->where('u_sales.id_company','1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-                $leads = $leads->where('nik_presales', $nik);
+                $leads = $leads->where('nik_presales', 'like', '%'.$nik.'%');
             } else if ($div == 'SALES' && $pos == 'MANAGER') {
                 $leads = $leads->where('u_sales.id_territory', $ter);
             } else if ($div == 'SALES' && $pos == 'STAFF') {
