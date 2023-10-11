@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
 <link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
 <link rel="stylesheet" href="{{ url('css/bootstrap-timepicker.min.css')}}">
-<link rel="stylesheet" href="{{ url('css/dataTables.bootstrap.css')}}">
 <link rel="stylesheet" href="{{ url('js/mentions/jquery.mentionsInput.css')}}" type="text/css">
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}"/>
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
@@ -612,16 +611,12 @@
 @section('scriptImport')
 <script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js' type='text/javascript'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.5/Chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.2.6/jquery.inputmask.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
-
-<script src="{{ url('js/dataTables.bootstrap.min.js')}}"></script>
 <script src="{{ url('js/jquery.slimscroll.min.js')}}"></script>
 <script src="{{ url('js/bootstrap-timepicker.min.js')}}"></script>
 <script src="{{ url('js/jquery.emailinput.min.js')}}"></script>
@@ -2949,7 +2944,6 @@
   }
 
   function sendOpenEmail(status=''){
-    
     if (status == 'sended') {
       text = 'PR has been processed'
     }else{
@@ -3206,7 +3200,6 @@
 
   $("#textAreaTOP").wysihtml5();
   
-
   function addPembanding(){
     currentTab = 0
     addDraftPrPembanding(0)
