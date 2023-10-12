@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
   <style type="text/css">
+    body {
+      zoom: 90%;
+    }
+
     .select2{
       width: 100%!important;
     }
@@ -937,26 +941,26 @@
 
                       disabledDates.push(moment.utc(value.start_date, 'YYYY-MM-DD'))
                     }else{
-                        events.push({
-                          title:value.activity,
-                          start:value.start_date,
-                          originalStartDate:value.start_date,
-                          // end:value.end_date,
-                          end:moment(value.end_date).endOf('day'),
-                          // moment(value.end_date).endOf('day')
-                          id:value.id,
-                          type:value.type,
-                          task:value.task,
-                          schedule:value.schedule,
-                          pid:value.pid,
-                          phase:value.phase,
-                          level:value.level,
-                          duration:value.duration,
-                          status:value.status,
-                          status_pid:value.status_pid,
-                          planned:value.planned,
-                          unplanned:value.unplanned
-                        }) 
+                      events.push({
+                        title:value.activity,
+                        start:value.start_date,
+                        originalStartDate:value.start_date,
+                        // end:value.end_date,
+                        end:moment(value.end_date).endOf('day'),
+                        // moment(value.end_date).endOf('day')
+                        id:value.id,
+                        type:value.type,
+                        task:value.task,
+                        schedule:value.schedule,
+                        pid:value.pid,
+                        phase:value.phase,
+                        level:value.level,
+                        duration:value.duration,
+                        status:value.status,
+                        status_pid:value.status_pid,
+                        planned:value.planned,
+                        unplanned:value.unplanned,
+                      }) 
                     }
                   })
                 }
@@ -1119,6 +1123,7 @@
       calendar.fullCalendar('destroy');
       var eventRenderDataPlanned = {};
       var eventRenderDataUnplanned = {};
+      var eventRenderDeviation = {};
       var eventRenderEmoji = {};
       // Calculate the sums for each day
       events.forEach(function(event) {
@@ -1145,6 +1150,19 @@
 
           // Accumulate the value for this day
           eventRenderDataPlanned[startDate] += parseFloat(event.planned);
+        }
+
+        if (event.start && event.planned !== undefined) {
+          // Get the start date of the event in the 'YYYY-MM-DD' format
+          var startDate = event.start;
+          // Initialize the sum for this day if it doesn't exist
+
+          if (!eventRenderDeviation[startDate]) {
+            eventRenderDeviation[startDate] = 0;
+          }
+
+          // Accumulate the value for this day
+          eventRenderDeviation[startDate] += parseFloat(event.planned+event.unplanned);
         }
       });
 
@@ -1184,6 +1202,7 @@
         //   end: '2023-08-31'
         // },
         dayClick: function(date, jsEvent, view) { 
+          console.log(date)
           // if (!$(jsEvent.target).hasClass('fc-day-top')) {   
             localStorage.setItem("isAddTimesheet",true)
             $("#daterange-timesheet").prop("disabled",false)
@@ -1474,7 +1493,7 @@
           var formattedDate = date.format('YYYY-MM-DD');
 
           if (eventRenderDataPlanned[formattedDate] != undefined) {
-            var valuePlanned = 0, valueUnplanned = 0
+            var valuePlanned = 0, valueUnplanned = 0, deviation = 0
             if (isNaN(eventRenderDataPlanned[formattedDate])) {
               valuePlanned = valuePlanned
             }else{
@@ -1487,7 +1506,13 @@
               valueUnplanned = eventRenderDataUnplanned[formattedDate]
             }
 
-            var customButton = $(!window.mobilecheck() ? '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span> <span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>' : '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span><br><span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>');
+            if (isNaN(eventRenderDeviation[formattedDate])) {
+              deviation = deviation
+            }else{
+              deviation = 1 - eventRenderDeviation[formattedDate]
+            }
+
+            var customButton = $(!window.mobilecheck() ? '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span> <span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>' + ' <span class="label" style="color:orange;background-color:white;border:solid 1px orange">D '+ deviation.toFixed(2)+'</span>' : '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span><br><span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>');
           }
          
           if (eventRenderEmoji[formattedDate]) {
@@ -1613,6 +1638,11 @@
           }
         }
       })
+
+      var view = calendar.fullCalendar('getView');
+      var currentTimeZone = view.options.timezone;
+
+      console.log('Current time zone: ' + currentTimeZone);
 
       $('#calendar').fullCalendar('addEventSource', events)
       $('#calendar').fullCalendar('rerenderEvents')
@@ -2027,6 +2057,7 @@
       var pid = pid
       var idValue = idValue
 
+      console.log(pid)
       $.ajax({
         type:"GET",
         url:"{{url('/timesheet/getPidByPic')}}",
@@ -2209,6 +2240,9 @@
     }
 
     function setHoliday(start,end,checkDate){
+      console.log(start)
+      console.log(end)
+
       var disabledDates = [], disDate = ''
       $.ajax({
         type:"GET",
@@ -3754,13 +3788,13 @@
 
         if (item.type == "Project") {
           if (item.status_pid == 'true') {
-            setPid(item.pid)
+            setPid(item.pid,index)
           }else{
-            $("#divPid").show()
-            $("#inputPid").val(item.pid)
+            $("#divPid_"+index).show()
+            $("#inputPid_"+index).val(item.pid)
           }
         }else if(item.type == "Approach"){
-          setLeadId(item.pid)
+          setLeadId(item.pid,index)
         }
 
         if ($('#selectLead_'+index).data('select2')) {
