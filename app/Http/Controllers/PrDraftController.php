@@ -508,7 +508,7 @@ class PrDraftController extends Controller
             //     $getData->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter)->where('users.name', Auth::User()->name);
             // }
 
-             $getData->whereIn('users.name',Auth::User()->name);
+             $getData->where('users.name',Auth::User()->name);
         }
 
 
@@ -4565,5 +4565,21 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr')->select(DB::raw('`tb_pr`.`to` AS `id`,`tb_pr`.`to` AS `text`'))->whereRaw("(`tb_pr`.`to` != '' OR `tb_pr`.`to` != NULL)")->groupBy('tb_pr.to');
 
         return $data_draft_pr = DB::table('tb_pr_draft')->select(DB::raw('`tb_pr_draft`.`to` AS `id`,`tb_pr_draft`.`to` AS `text`'))->whereRaw("(`tb_pr_draft`.`to` != '' OR `tb_pr_draft`.`to` != NULL)")->groupBy('tb_pr_draft.to')->union($data)->get();
+    }
+
+    public function getSupplierDetail(Request $request)
+    {
+        $data = DB::table('tb_pr')->select('email','phone','address')
+                ->where('to',$request->to)
+                ->where('address','!=',NULL)
+                ->where('phone','!=',NULL)
+                ->where('email','!=',NULL);
+
+        return $data_draft_pr = DB::table('tb_pr_draft')->select('email','phone','address')
+                ->where('to',$request->to)
+                ->where('address','!=',NULL)
+                ->where('phone','!=',NULL)
+                ->where('email','!=',NULL)
+                ->union($data)->get();
     }
 }
