@@ -39,8 +39,12 @@
     width: 12px;
   }
 
-  .icheckbox_minimal-blue{
+ /* .icheckbox_minimal-blue{
     margin-left: 147px;
+  }*/
+
+  .checkbox label{
+    padding-left: 0px!important;
   }
 
   input[type=file]::-webkit-file-upload-button{
@@ -286,9 +290,11 @@
             </div>
 
             <div class="form-group">
-              <div style="display: inline;text-align:justify;">                
-                <span style="position:absolute;"><input type="checkbox" id="cbCommit" class="minimal" value=""/></span>
-                <span style="display:flex;margin-left: 25px;display:flex;">This supplier has been committed with us to supply this product</span>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="cbCommit" class="minimal">
+                  This supplier has been committed with us to supply this product
+                </label>
               </div>
             </div>
 
