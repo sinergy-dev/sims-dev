@@ -536,6 +536,14 @@
     }
 
     function initiateSumSbe(id){
+      var isPMO = false
+      if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.group',"PMO")->exists()}}") {
+        isPMO = true
+        var colspan = 3
+      }else{
+        var colspan = 2
+      }
+
       var tbSummarySbe = $("#tbSummarySbe").DataTable({
         "ajax":{
           type:"GET",
@@ -546,6 +554,16 @@
           { title: 'Name', data:'name'},
           { title: 'Planned',data:'planned'},
           { title: 'Actual',data:'actual'},
+          {
+            title: 'Finish Date',
+            render: function (data, type, row, meta){
+              if (row.estimated_end_date == null) {
+                return '-'
+              }else{
+                return row.estimated_end_date
+              }
+            },
+          },
           // { title: 'Threshold' },
           // { title: 'Billable' },
           // { title: '%Billable' },
@@ -567,12 +585,16 @@
                 if (last !== group) {
                     $(rows)
                         .eq(i)
-                        .before('<tr class="group"><td colspan="2"><b>' + group + '</b></td><td><b>Total Mandays : '+ api.column(2).data()[i] +'</b></td></tr>');
+                        .before('<tr class="group"><td colspan="'+ colspan +'"><b>' + group + '</b></td><td><b>Total Mandays : '+ api.column(2).data()[i] +'</b></td></tr>');
                     last = group;
                 }
             });
         },
       }) 
+
+      if (!isPMO) {
+        tbSummarySbe.columns(4).visible(false)
+      }
     }
       
     function initiateAssignPid(id){
