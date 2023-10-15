@@ -1613,7 +1613,9 @@ class TimesheetController extends Controller
                 ->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','=','tb_sbe_config.id')
                 ->join('tb_sbe_detail_item','tb_sbe_detail_item.id','=','tb_sbe_detail_config.detail_item')
                 ->join('tb_id_project','tb_id_project.lead_id','=','tb_sbe.lead_id')
-                ->select('id_sbe','id_project','tb_id_project.name_project','tb_sbe_config.id as id_sbe_config','tb_sbe_detail_config.qty','tb_sbe_detail_config.item','project_type','manpower')
+                ->leftJoin('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
+                ->leftJoin('tb_pmo_project_charter','tb_pmo.id','tb_pmo_project_charter.id_project')
+                ->select('id_sbe','tb_id_project.id_project','tb_id_project.name_project','tb_sbe_config.id as id_sbe_config','tb_sbe_detail_config.qty','tb_sbe_detail_config.item','tb_sbe_config.project_type','manpower','tb_pmo_project_charter.estimated_end_date')
                 ->where('tb_sbe_detail_item.detail_item','=','Mandays')
                 ->where('tb_sbe.status','Fixed')
                 ->where('tb_sbe_config.status','Choosed')
@@ -1630,7 +1632,7 @@ class TimesheetController extends Controller
         // return $getSbe->groupBy('id_project');
         $getSumPointByProject = collect();
         foreach($groupByProject as $key_pid => $value){
-            $getSumPointByProject->push(['pid' => $key_pid]);
+            $getSumPointByProject->push(['pid' => $key_pid, 'estimated_end_date'=> $value[0]['estimated_end_date']]);
             // return $key_pid;
             // return $value['project_type']; 
         }
@@ -1695,11 +1697,12 @@ class TimesheetController extends Controller
                     if (isset($value_project[$upper_role_name][0])) {
                         foreach($value_project[$upper_role_name][0] as $data){
                             $sumPointMandays->push([
-                                "name"          =>$data['name'],
-                                "nik"           =>$data['nik'],
-                                "planned"       =>$value_project[$upper_role_name]['sumMandays'],
-                                "actual"        =>$data['actual'],
-                                "pid"           =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project']
+                                "name"                  =>$data['name'],
+                                "nik"                   =>$data['nik'],
+                                "planned"               =>$value_project[$upper_role_name]['sumMandays'],
+                                "actual"                =>$data['actual'],
+                                "pid"                   =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project'],
+                                "estimated_end_date"    =>$value_project[0]['estimated_end_date']
                             ]);
                         }
                     }else{
@@ -1768,11 +1771,12 @@ class TimesheetController extends Controller
                 if (isset($value_project[$upper_role_name][0])) {
                     foreach($value_project[$upper_role_name][0] as $data){
                         $sumPointMandays->push([
-                            "name"          =>$data['name'],
-                            "nik"           =>$data['nik'],
-                            "planned"       =>$value_project[$upper_role_name]['sumMandays'],
-                            "actual"        =>$data['actual'],
-                            "pid"           =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project']
+                            "name"                  =>$data['name'],
+                            "nik"                   =>$data['nik'],
+                            "planned"               =>$value_project[$upper_role_name]['sumMandays'],
+                            "actual"                =>$data['actual'],
+                            "pid"                   =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project'],
+                            "estimated_end_date"    =>$value_project[0]['estimated_end_date']
                         ]);
                     }
                 }else{
