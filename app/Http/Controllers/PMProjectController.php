@@ -189,18 +189,77 @@ class PMProjectController extends Controller
             $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
                 ->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc');
         }
-         // Get the total count before pagination
-        $totalRecords = $data->count();
-        // Apply pagination
-        $start = $request->input('start', 0);
-        $length = $request->input('length', 25); // Number of records per page
 
-        $data->skip($start)->take($length);
+        $searchFields = ['name_project', 'tb_pmo.project_id', 'current_phase', 'project_type', 'tb_pmo.id', 'implementation_type','project_pc','project_pm'];
 
-        $data = $data->get()->makeHidden(['type_project_array']);
+        if ($request->searchFor != "") { 
+            $data = $data->get()->makeHidden('type_project_array');
+
+            $filtered = $data->filter(function ($value, $key) use($request, $searchFields) { 
+               return stripos($value["current_phase"], $request->searchFor) !== false || 
+                    stripos($value["implementation_type"], $request->searchFor) !== false ||
+                    stripos($value["indicator_project"], $request->searchFor) !== false ||
+                    stripos($value["name_project"], $request->searchFor) !== false ||
+                    stripos($value["owner"], $request->searchFor) !== false ||
+                    stripos($value["project_id"], $request->searchFor) !== false ||
+                    stripos($value["project_pc"], $request->searchFor) !== false ||
+                    stripos($value["project_pm"], $request->searchFor) !== false ||
+                    stripos($value["project_type"], $request->searchFor) !== false ||
+                    stripos($value["status"], $request->searchFor) !== false ||
+                    stripos($value["type_project"], $request->searchFor) !== false;
+            });
+
+            $data = $filtered;
+
+            $totalRecords = $data->count();
+            // Apply pagination
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 25); // Number of records per page
+
+            $draw = $request->input('draw');
+            $data->skip($start)->take($length);
+
+            $outputArray = [];
+            foreach ($data as $item) {
+                $outputArray[] = collect([
+                    "current_phase"=>$item->current_phase,
+                    "id"=>$item->id,
+                    "implementation_type"=>$item->implementation_type,
+                    "indicator_project"=>$item->indicator_project,
+                    "name_project"=>$item->name_project,
+                    "no_po_customer"=>$item->no_po_customer,
+                    "owner"=>$item->owner,
+                    "project_id"=>$item->project_id,
+                    "project_pc"=>$item->project_pc,
+                    "project_pm"=>$item->project_pm,
+                    "project_type"=>$item->project_type,
+                    "sign"=>$item->sign,
+                    "status"=>$item->status,
+                    "type_project"=>$item->type_project,
+                ]);
+            }
+
+            $data = $outputArray;
+            // $data->where(function($data) use($request, $searchFields){
+            //     foreach ($searchFields as $data_filter) {
+            //         $data->orWhere($data_filter, 'LIKE', '%'. $request->searchFor . '%');
+            //     }
+            // });
+        }else{
+            // Get the total count before pagination
+            $totalRecords = $data->count();
+            // Apply pagination
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 25); // Number of records per page
+
+            $draw = $request->input('draw');
+
+            $data->skip($start)->take($length);
+            $data = $data->get()->makeHidden('type_project_array');
+        }
 
         return response()->json([
-            'draw' => $request->input('draw'),
+            'draw' => $draw,
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $totalRecords,
             'data' => $data,
@@ -1851,7 +1910,7 @@ class PMProjectController extends Controller
         }
 
         $isIssueRiskClear = 'true';
-        if (DB::table('tb_pmo_identified_risk')->where('id_project',$request->id_pmo)->whereRaw("(`status` = 'Active' OR `status` = 'Obsolete')")->exists() || DB::table('tb_pmo_issue')->where('id_project',$request->id_pmo)->where('status','Open')->exists()) {
+        if (DB::table('tb_pmo_identified_risk')->where('id_project',$request->id_pmo)->whereRaw("(`status` = 'Active')")->exists() || DB::table('tb_pmo_issue')->where('id_project',$request->id_pmo)->where('status','Open')->exists()) {
             $isIssueRiskClear = 'false';
         }
 
@@ -2090,6 +2149,14 @@ class PMProjectController extends Controller
         // return $request->arrInitiating;
         // return $request->arrMainMilestone;
 
+        $activity = new PMOActivity();
+        $activity->id_project = $request->id_pmo;
+        $activity->phase = 'Add Milestone';
+        $activity->operator = Auth::User()->name;
+        $activity->activity = 'Add Milestone';
+        $activity->date_time = Carbon::now()->toDateTimeString();
+        $activity->save();
+
         if (GanttTaskPmo::where('id_pmo', $request->id_pmo)->exists()) {
             $data = GanttTaskPmo::where('id_pmo', $request->id_pmo)->get();
             foreach ($data as $key => $value) {
@@ -2285,14 +2352,6 @@ class PMProjectController extends Controller
         }
         $upddate_phase->gantt_status = 'defined';
         $update_phase->save();
-
-        $activity = new PMOActivity();
-        $activity->id_project = $request->id_pmo;
-        $activity->phase = 'Add Milestone';
-        $activity->operator = Auth::User()->name;
-        $activity->activity = 'Add Milestone';
-        $activity->date_time = Carbon::now()->toDateTimeString();
-        $activity->save();
     }
 
     public function storeCustomMilestone(Request $request){
@@ -2475,7 +2534,11 @@ class PMProjectController extends Controller
         $store->reporting_date      = $request->date_report_date;
         $store->overall_progress    = $request->overall_progress;
         $store->project_summary     = $request->textareaStatusSummary;
-        $store->note                = $request->textareaNoteSummaryHealth;
+        if ($request->textareaNoteSummaryHealth == "undefined" || $request->textareaNoteSummaryHealth == undefined || $request->textareaNoteSummaryHealth == '') {
+            $store->note                = "-";
+        }else{
+            $store->note                = $request->textareaNoteSummaryHealth;
+        }
         $store->project_indicator   = $request->cbProjectIndicator;
         $store->project_health_project      = $request->cbProject;
         $store->project_health_schedule     = $request->cbSchedule;
