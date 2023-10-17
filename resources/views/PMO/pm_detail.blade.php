@@ -1602,7 +1602,7 @@ PMO
             	$(".content-title").text("Detail Project " + "[" + result.data.pid + "]")
             	
             	if (result.data.milestone == 'true') {  
-    				if (window.location.search.split("=")[1] == "supply_only") {
+    				if (window.location.search.split("=")[1].split("&")[0] == "supply_only") {
             			$("#btnAddMilestone").hide()
             		}else{
             			$("#btnAddMilestone").find("i").removeClass('fa-plus').addClass('fa-eye')
@@ -1621,7 +1621,17 @@ PMO
 		            	}
             		}
             	}else{
-    				$("#btnAddMilestone").attr("onclick","btnAddMilestone('add')")
+            		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+		    			$("#btnAddMilestone").find("i").removeClass('fa-plus').addClass('fa-eye')
+		    			$("#btnFinalProject").find("i").removeClass('fa-plus').addClass('fa-eye')
+		    			if (result.data.ganttStatus == "custom") {
+    						$("#btnAddMilestone").attr("onclick","btnshowMilestone('show','custom')")
+            			}else{
+    						$("#btnAddMilestone").attr("onclick","btnshowMilestone('show','defined')")
+            			}
+		    		}else{
+    					$("#btnAddMilestone").attr("onclick","btnAddMilestone('add')")
+		    		}
             	}
 
             	if (result.data.sendCss == 'false') {
@@ -1950,7 +1960,7 @@ PMO
 
 										append = append +' 	<div class="form-group form_group_'+index+'">'
 											append = append +' 		<div class="row">'
-											append = append +' 			<div class="col-md-5">'
+											append = append +' 			<div class="col-md-4">'
 											append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
 											append = append +' 			</div>'
 											append = append +' 			<div class="col-md-2">'
@@ -1979,6 +1989,10 @@ PMO
 												append = append +'				</div>'
 											}
 											append = append +' 			</div>'
+											append = append + '<div class="col-sm-1">				'
+											append = append + '	<div class="form-group"><button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+											append = append + '	</div>'
+											append = append + '</div>'
 											append = append +' 		</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 										append = append +' 	</div>'
@@ -2177,7 +2191,7 @@ PMO
 
 										append = append +' 	<div class="form-group form_group_'+index+'">'
 											append = append +' 		<div class="row">'
-											append = append +' 			<div class="col-md-5">'
+											append = append +' 			<div class="col-md-4">'
 											append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
 											append = append +' 			</div>'
 											append = append +' 			<div class="col-md-2">'
@@ -2206,6 +2220,10 @@ PMO
 												append = append +'				</div>'
 											}
 											append = append +' 			</div>'
+											append = append + '<div class="col-sm-1">				'
+											append = append + '	<div class="form-group"><button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+											append = append + '	</div>'
+											append = append + '</div>'
 											append = append +' 		</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 										append = append +' 	</div>'
@@ -2380,8 +2398,10 @@ PMO
  				        });
 						$(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).last().after(appendCloneForm)
 
-						if ($("#btnDeleteTask_"+index).length === 0) {
-							$("#btnAddTask_"+index).after("<button type='button' class='btn btn-sm btn-danger fa fa-trash' style='margin-left:5px;width:35px' id='btnDeleteTask_"+ index +"'></button>")
+						if (window.location.href.split("/")[6].split('?')[1].split('=')[2] == undefined) {
+							if ($("#btnDeleteTask_"+index).length === 0) {
+								$("#btnAddTask_"+index).after("<button type='button' class='btn btn-sm btn-danger fa fa-trash' style='margin-left:5px;width:35px' id='btnDeleteTask_"+ index +"'></button>")
+							}
 						}
 
 						$("#btnDeleteTask_"+index).click(function(){
@@ -2889,9 +2909,11 @@ PMO
 				        arrMainMilestone = ['Initiating','Planning','Executing','Closing']
 
 						if (window.location.href.split("/")[6].split('?')[1].split('=')[2] == "custom") {
+							console.log("wohhh")
 							$.each(arrMainMilestone,function(index,value){
 								$(".form_"+value).find(".form_group_"+value).each(function(idx,item){
 							        if (value == "Initiating") {
+
 							        	$(item).find("div.row").find("#inputLabelTask").each(function(idx,itemsTask){
 								            // arrInitiating.push({"dateMilestone":itemsDate.value})
 								            itemTaskMilestone = itemsTask.value
@@ -2923,7 +2945,6 @@ PMO
 								        	}else{
 								        		cbDocMilestone = "false"
 								        	}
-								            
 								        })
 
 							        	arrInitiating.push({"inputTaskMilestone":itemTaskMilestone,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":cbDocMilestone})
@@ -6541,6 +6562,12 @@ PMO
             {title: "Date",data:"date_time"},
         ],
 	})
+
+	function btnDeleteTaskCustom(val){
+        var whichtr = val.closest(".form-group").closest(".row").closest(".form-group");
+        console.log(whichtr)
+        whichtr.remove();  
+	}
   	
   	
 </script>
