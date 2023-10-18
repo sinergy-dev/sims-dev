@@ -9,10 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
   <style type="text/css">
-    body {
-      zoom: 90%;
-    }
-
     .select2{
       width: 100%!important;
     }
@@ -1021,6 +1017,12 @@
                     return false;
                 });
 
+                // const ids = events.map(({ title }) => title);
+                // const filtered = uniqueData.filter(({ title }) => ids.includes(title) && !ids.includes(title));
+
+                // let arrMapEvents = events.map((p) => p.title);
+                // let arrFiltered = uniqueData.filter((p) => !arrMapEvents.includes(p.title));
+
                 var filteredData = uniqueData.filter(function(obj1) {
                   const found = events.some(el => el.title === obj1.title);
                   return !events.some(function(obj2) {
@@ -1032,6 +1034,18 @@
                       }
                   });
                 });
+
+                // const filterByReference = (events, uniqueData) => {
+                //    let res = [];
+                //    res = events.filter(el => {
+                //       return uniqueData.find(element => {
+                //          return element.title === el.title;
+                //       });
+                //    });
+                //    return res;
+                // }
+
+                // var arrUnique = filterByReference(events, uniqueData)
 
                 var arrayCalconcatDb = events.concat(filteredData)
 
