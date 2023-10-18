@@ -1612,7 +1612,7 @@ PMO
                   appendRisk = appendRisk + '      <div class="col-md-4 col-xs-12">'      
                   appendRisk = appendRisk + '        <div class="form-group">'      
                   appendRisk = appendRisk + '          <label>Status*</label>'      
-                  appendRisk = appendRisk + '          <select class="form-control select2" id="selectStatusProjectCharter_'+ idx +'" data-value="'+ idx +'" onchange="validationCheck(this)">'      
+                  appendRisk = appendRisk + '          <select class="form-control select2" id="selectStatusProjectCharter" data-value="'+ idx +'" onchange="validationCheck(this)">'      
                   appendRisk = appendRisk + '            <option value="Active">Active</option>'
                   appendRisk = appendRisk + '            <option value="Obsolete">Obsolete</option>'      
                   appendRisk = appendRisk + '            <option value="Accepted">Accepted</option>'            
