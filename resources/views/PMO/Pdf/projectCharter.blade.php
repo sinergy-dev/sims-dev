@@ -270,7 +270,7 @@
         /*background-color: #008B8B;*/
         /*color: black;*/
         text-align: center;
-        line-height: 35px;
+        line-height: 20px;
       }
 
       @page {
