@@ -1120,6 +1120,10 @@
           {
             "id": "bln",
             "text": "Bln"
+          },
+          {
+            "id": "lokasi",
+            "text": "Lokasi"
           }
         ]
       }
@@ -2004,6 +2008,11 @@
         success: function(result) {
           if (status == 'revision') {
             localStorage.setItem("id_compare_pr",result.id_compare_pr)
+            if (result.pr.status_draft_pr == "pembanding") {
+              localStorage.setItem("status_pr","revision")
+            }else{
+              localStorage.setItem("status_pr","")
+            }
           }else{
             localStorage.setItem('no_pr',id_draft)
           }
@@ -2405,6 +2414,10 @@
                 $("#inputSerialNumber").val('')
                 $("#inputPartNumber").val('')
                 $("#inputTotalPrice").val('')
+
+                if ($("#selectTypeProduct").val() == '') {
+                  select2TypeProduct()
+                }
               })
 
               if (status == 'admin') {
