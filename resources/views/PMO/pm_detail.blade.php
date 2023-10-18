@@ -1868,14 +1868,14 @@ PMO
 	    		marginRight = "margin-right: 152px;"
 
     		}else{
-	    		width = "500px"
+	    		width = "800px"
     			marginRight = ""
 	    		
     		}
     	}else{
     		if (status == "Defined") {
     			url = "/PMO/getDefaultTask"
-    			width = "500px"
+    			width = "800px"
     			marginRight = ""
     		}else{
     			url = "/PMO/getPhase"
@@ -1990,7 +1990,7 @@ PMO
 											}
 											append = append +' 			</div>'
 											append = append + '<div class="col-sm-1">				'
-											append = append + '	<div class="form-group"><button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
 											append = append + '	</div>'
 											append = append + '</div>'
 											append = append +' 		</div>'
@@ -2003,7 +2003,7 @@ PMO
 
 									append = append +'</form>'
 								}else{
-									if (window.location.search.split("=")[1] == "implementation") {
+									if (window.location.search.split("=")[1].split("&")[0] == "implementation") {
 										if (isNaN(parseFloat(Object.keys(value)))) {
 											$.each(value,function(idx,values){
 												incIdx++									
@@ -2018,30 +2018,31 @@ PMO
 												$.each(values,function(idx,valuesExecuting){
 													append = append +' 	<div class="form-group">'
 
-													append = append +' 		<label>'+ valuesExecuting.text +'</label>'
-													append = append +' 		<div class="row">'
-													append = append +' 			<div class="col-md-5">'
-													append = append +' 				<div class="input-group">'
-													append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-													append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(valuesExecuting.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-													append = append +'				</div>'
-													append = append +' 			</div>'
-													append = append +' 			<div class="col-md-5">'
-													// append = append +' 				<div class="input-group">'
-													// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-													// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ valuesExecuting[0].index +'">'
-													// append = append +'				</div>'
-													append = append +' 				<div class="input-group">'
-													append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-													append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(valuesExecuting.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-													append = append +'				</div>'
-													append = append +' 			</div>'
-													append = append +' 			<div class="col-md-2">'
-													append = append +' 				<input value="'+ valuesExecuting.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
-													append = append +' 			</div>'
-													append = append +' 		</div>'
-													append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-
+														append = append +' 	<label>'+ valuesExecuting.text +'</label>'
+														append = append +' 	<div class="row">'
+															append = append +' 			<div class="col-md-4">'
+															append = append +' 				<div class="input-group">'
+															append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+															append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(valuesExecuting.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+															append = append +'				</div>'
+															append = append +' 			</div>'
+															append = append +' 			<div class="col-md-5">'
+															// append = append +' 				<div class="input-group">'
+															// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+															// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ valuesExecuting[0].index +'">'
+															// append = append +'				</div>'
+															append = append +' 				<div class="input-group">'
+															append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+															append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(valuesExecuting.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+															append = append +'				</div>'
+															append = append +' 			</div>'
+															append = append +' 			<div class="col-md-2">'
+															append = append +' 				<input value="'+ valuesExecuting.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
+															append = append +' 			</div>'
+															append = append + '			<div class="col-sm-1">				'
+																append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+															append = append + '			</div>'
+														append = append +' 	</div>'
 													append = append +' 	</div>'
 												})
 
@@ -2054,29 +2055,31 @@ PMO
 												append = append +' 	<div class="form-group">'
 													append = append +' 		<label>'+ values.text +'</label>'
 													append = append +' 		<div class="row">'
-													append = append +' 			<div class="col-md-5">'
-													append = append +' 				<div class="input-group">'
-													append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-													append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-													append = append +'				</div>'
-													append = append +' 			</div>'
-													append = append +' 			<div class="col-md-5">'
-													// append = append +' 				<div class="input-group">'
-													// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-													// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
-													// append = append +'				</div>'
-													append = append +' 				<div class="input-group">'
-													append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-													append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-													append = append +'				</div>'
-													append = append +' 			</div>'
-													append = append +' 			<div class="col-md-2">'
-													append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-													append = append +' 			</div>'
-													append = append +' 		</div>'
-													append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-												
-												append = append +' 	</div>'
+														append = append +' 			<div class="col-md-4">'
+														append = append +' 				<div class="input-group">'
+														append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+														append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+														append = append +'				</div>'
+														append = append +' 			</div>'
+														append = append +' 			<div class="col-md-5">'
+														// append = append +' 				<div class="input-group">'
+														// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+														// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
+														// append = append +'				</div>'
+														append = append +' 				<div class="input-group">'
+														append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+														append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+														append = append +'				</div>'
+														append = append +' 			</div>'
+														append = append +' 			<div class="col-md-2">'
+														append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+														append = append +' 			</div>'
+														append = append + '<div class="col-sm-1">				'
+															append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+														append = append + '</div>'												
+													append = append +' 	</div>'
+												append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+												append = append +' </div>'
 											})
 											append = append +'</form>'
 										}
@@ -2087,30 +2090,31 @@ PMO
 
 											append = append +' 		<label>'+ values.text +'</label>'
 											append = append +' 		<div class="row">'
-											append = append +' 			<div class="col-md-5">'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-5">'
-											// append = append +' 				<div class="input-group">'
-											// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-											// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
-											// append = append +'				</div>'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-											append = append +' 			</div>'
-											append = append +' 		</div>'
-											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-											
+												append = append +' 			<div class="col-md-4">'
+												append = append +' 				<div class="input-group">'
+												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-4">'
+												// append = append +' 				<div class="input-group">'
+												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
+												// append = append +'				</div>'
+												append = append +' 				<div class="input-group">'
+												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-2">'
+												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+												append = append +' 			</div>'
+												append = append + '<div class="col-sm-1">				'
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+												append = append +' </div>'	
 											append = append +' 	</div>'
-
+											append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
+											append = append +' 	</div>'
 										})
 										append = append +'</form>'
 									}
@@ -2120,27 +2124,31 @@ PMO
 									$.each(value,function(idx,values){
 									append = append +' 	<div class="form-group">'
 										append = append +' 		<label>'+ values.sub_task +'</label>'
+
 										append = append +' 		<div class="row">'
-										append = append +' 			<div class="col-md-5">'
-										append = append +' 				<div class="input-group">'
-										append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-5">'
-										// append = append +' 				<div class="input-group">'
-										// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-										// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
-										// append = append +'				</div>'
-										append = append +' 				<div class="input-group">'
-										append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-2">'
-										append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-										append = append +' 			</div>'
-										append = append +' 		</div>'
+											append = append +' 			<div class="col-md-4">'
+											append = append +' 				<div class="input-group">'
+											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
+											append = append +'				</div>'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-5">'
+											// append = append +' 				<div class="input-group">'
+											// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+											// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
+											// append = append +'				</div>'
+											append = append +' 				<div class="input-group">'
+											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
+											append = append +'				</div>'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-2">'
+											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+											append = append +' 			</div>'
+											append = append + '<div class="col-sm-1">				'
+												append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+											append = append +'</div>'
+										append = append +' 	</div>'
 										append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 									append = append +' 	</div>'
 									})
@@ -2149,7 +2157,7 @@ PMO
 								append = append +'<form class="form_'+ index +'">'
 								append = append +' 	<div class="form-group form_group_'+index+'">'
 									append = append +' 		<div class="row">'
-									append = append +' 			<div class="col-md-5">'
+									append = append +' 			<div class="col-md-4">'
 									append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
 									append = append +' 			</div>'
 									append = append +' 			<div class="col-md-2">'
@@ -2172,7 +2180,9 @@ PMO
 									append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
 									append = append +'				</div>'
 									append = append +' 			</div>'
-									append = append +' 		</div>'
+									append = append + '<div class="col-sm-1">				'
+										append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+									append = append +' </div>'
 									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 								append = append +' 	</div>'
 
@@ -2221,7 +2231,7 @@ PMO
 											}
 											append = append +' 			</div>'
 											append = append + '<div class="col-sm-1">				'
-											append = append + '	<div class="form-group"><button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
 											append = append + '	</div>'
 											append = append + '</div>'
 											append = append +' 		</div>'
@@ -2240,7 +2250,7 @@ PMO
 											append = append +' 	<div class="form-group">'
 												append = append +' 		<label>'+ values.text +'</label>'
 												append = append +' 		<div class="row">'
-												append = append +' 			<div class="col-md-5">'
+												append = append +' 			<div class="col-md-4">'
 												append = append +' 				<div class="input-group">'
 												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
 												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
@@ -2259,8 +2269,11 @@ PMO
 												append = append +' 			<div class="col-md-2">'
 												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 												append = append +' 			</div>'
+												append = append + '<div class="col-sm-1">				'
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+												append = append + '	</div>'
 												append = append +' 		</div>'
-												append = append +'		<span class="help-block" style="display:none;color:red"></span>'								
+												append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
 											append = append +' 	</div>'
 										})
 									append = append +'</form>'
@@ -2272,26 +2285,29 @@ PMO
 										append = append +' 	<div class="form-group">'
 											append = append +' 		<label>'+ values.sub_task +'</label>'
 											append = append +' 		<div class="row">'
-											append = append +' 			<div class="col-md-5">'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-5">'
-											// append = append +' 				<div class="input-group">'
-											// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-											// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
-											// append = append +'				</div>'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-											append = append +' 			</div>'
-											append = append +' 		</div>'
+												append = append +' 			<div class="col-md-4">'
+												append = append +' 				<div class="input-group">'
+												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-5">'
+												// append = append +' 				<div class="input-group">'
+												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
+												// append = append +'				</div>'
+												append = append +' 				<div class="input-group">'
+												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-2">'
+												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+												append = append +' 			</div>'
+												append = append + '<div class="col-sm-1">				'
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+												append = append +' </div>'
+											append = append +' 	</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 										append = append +' 	</div>'
 									})
@@ -2300,7 +2316,7 @@ PMO
 								append = append +'<form class="form_'+ index +'">'
 								append = append +' 	<div class="form-group form_group_'+index+'">'
 									append = append +' 		<div class="row">'
-									append = append +' 			<div class="col-md-5">'
+									append = append +' 			<div class="col-md-4">'
 									append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
 									append = append +' 			</div>'
 									append = append +' 			<div class="col-md-2">'
@@ -2323,7 +2339,9 @@ PMO
 									append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" type="checkbox" class="" style="height: 15px;width: 15px;"> Deliverable Doc.<br></label>'
 									append = append +'				</div>'
 									append = append +' 			</div>'
-									append = append +' 		</div>'
+									append = append + '<div class="col-sm-1">				'
+										append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+									append = append +'</div>'
 									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 								append = append +' 	</div>'
 
@@ -2340,10 +2358,10 @@ PMO
 					}
 					if (index == "Executing") {
 						if (status == "Defined") {
-							if (window.location.search.split("=")[1] != "supply_only") {
+							if (window.location.search.split("=")[1].split("&")[0] != "supply_only") {
 								append = append +'		<div style="display:flex;justify-content:center">'
 								let text = ''
-								if (window.location.search.split("=")[1] == 'implementation') {
+								if (window.location.search.split("=")[1].split("&")[0] == 'implementation') {
 									text = 'Solution'
 								}else{
 									text = 'PM'
@@ -2422,6 +2440,7 @@ PMO
 
     			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
 	    			$("#btnAddSolution").hide()
+	    			$(".btn-danger").prop("disabled",true)
 	    		}
 
     			if (accesable.includes('saveMilestone')) {
@@ -2445,29 +2464,29 @@ PMO
 								append = append + '<div class="form-group">'
 									append = append + '<label>'+ label.innerHTML.replace(label.innerHTML.split("-")[1].replace(" ",""),parseInt(label.innerHTML.split("-")[1].replace(" ",""))+1) +'</label>'
 									append = append + '<div class="row"> 			'
-										append = append + '<div class="col-md-5"> 				'
-											append = append + '<div class="input-group">					'
-												append = append + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>		'			
-													append = append + '<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_Executing" data-value="'+ ++countLastCloneStart +'" placeholder="Select start date" value="">'
+											append = append + '<div class="col-md-5"> 				'
+												append = append + '<div class="input-group">					'
+													append = append + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>		'			
+														append = append + '<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_Executing" data-value="'+ ++countLastCloneStart +'" placeholder="Select start date" value="">'
+												append = append + '</div> 			'
 											append = append + '</div> 			'
-										append = append + '</div> 			'
-										append = append + '<div class="col-md-5"> 				'
-											append = append + '<div class="input-group">					'
-												append = append + '<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>	'				
-													append = append + '<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_Executing" data-value="'+ ++countLastCloneEnd +'">'
+											append = append + '<div class="col-md-5"> 				'
+												append = append + '<div class="input-group">					'
+													append = append + '<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>	'				
+														append = append + '<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_Executing" data-value="'+ ++countLastCloneEnd +'">'
+												append = append + '</div> 			'
 											append = append + '</div> 			'
-										append = append + '</div> 			'
-										append = append + '<div class="col-md-2"> 				'
-											append = append + '<input value="" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_Executing" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value=""><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="false" style="display:none"> 			'
-										append = append + '</div> 		'
+											append = append + '<div class="col-md-2"> 				'
+												append = append + '<input value="" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_Executing" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value=""><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="false" style="display:none"> 			'
+											append = append + '</div> 		'
+										append = append + '</div>'
+										append = append +'<span class="help-block" style="display:none;color:red"></span>'
 									append = append + '</div>'
-									append = append +'<span class="help-block" style="display:none;color:red"></span>'
 								append = append + '</div>'
-
 							})
 						})
 
-				  		$(".form_Executing:last").find(".form-group:last-child").after(append)
+				  		$(".form_Executing:last").find(".form-group:last").after(append)
 					}else{
 						if ($("#inputSolutionMilestone").length == 0) {
 							$(".form_Executing").find(".form-group:first").before("<div class='form-group'><label>Solution Name</label><input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone'><span style='display:none;color:red' class='help-block'></span></div>")
@@ -6564,7 +6583,13 @@ PMO
 	})
 
 	function btnDeleteTaskCustom(val){
-        var whichtr = val.closest(".form-group").closest(".row").closest(".form-group");
+        var whichtr = val.closest("div").closest(".row").closest(".form-group");
+        console.log(whichtr)
+        whichtr.remove();  
+	}
+
+	function btnDeleteTaskDefined(val){
+        var whichtr = val.closest("div").closest(".row").closest(".form-group");
         console.log(whichtr)
         whichtr.remove();  
 	}
