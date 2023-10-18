@@ -93,7 +93,7 @@ class TimesheetController extends Controller
             // Create a new Guzzle HTTP client
             $client = new Client();
             // Make the API request
-            $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events?maxResults=2500" . "&timeMin=" .$startOfYear;
+            $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events?maxResults=5000" . "&timeMin=" .$startOfYear;
             $token = $this->getOauth2AccessToken();
 
             $response = $client->request(
