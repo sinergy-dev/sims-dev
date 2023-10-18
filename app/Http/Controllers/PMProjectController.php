@@ -417,6 +417,9 @@ class PMProjectController extends Controller
                 $implementation_type = substr($implementation_type,2,7);
             } elseif ($implementation_type == '["hardware","service"]') {
                 $implementation_type = substr($implementation_type,2,8);
+            } elseif ($implementation_type == '["service","license"]'){
+                // return substr($implementation_type, 12,18);
+                $implementation_type = 'license';
             }
         }
         
@@ -469,6 +472,7 @@ class PMProjectController extends Controller
 
     public function assignProject(Request $request)
     {
+        // return $request->cbImpelementType;
         $dataAll = json_decode($request->cbProjectType,true);
         foreach ($dataAll as $key => $data) {
             $store = new PMO();

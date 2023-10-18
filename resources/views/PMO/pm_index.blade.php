@@ -2552,6 +2552,7 @@ PMO
             append = append + "  <div style='padding:10px;border:solid 1px #cccc;'>"
             append = append + "    <label style='margin-right: 15px;'><input checked autocomplete='off' type='checkbox' name='cbImpelementType' class='minimal' id='' value='hardware'>Hardware</label>"
             append = append + "    <label style='margin-right: 15px;'><input checked autocomplete='off' type='checkbox' name='cbImpelementType' class='minimal' id='' value='service'>Service</label>"
+            append = append + "    <label style='margin-right: 15px;'><input checked autocomplete='off' type='checkbox' name='cbImpelementType' class='minimal' id='' value='license'>License</label>"
             append = append + "  </div>"
             append = append + "  <span class='help-block' style='display:none;'>Please Select Implementation Type!</span>"
             append = append + "</div>"

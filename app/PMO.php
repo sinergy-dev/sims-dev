@@ -12,7 +12,19 @@ class PMO extends Model
     protected $fillable = ['current_phase','project_type', 'implementation_type','project_id'];
     public $timestamps = false;
 
-    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status'];
+    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status','incrementing_number'];
+
+    public function getIncrementingNumberAttribute()
+    {
+        // Replace this logic with your desired incrementing number generation logic.
+        // For example, you can increment a counter each time a new instance is created.
+        
+        // Here, we'll use a simple static counter as an example:
+        static $counter = 1;
+        
+        // Return the current value of the counter and increment it for the next call.
+        return $counter++;
+    }
 
     public function getStatusAttribute()
     {

@@ -1362,6 +1362,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('timesheet/storeFeeling','TimesheetController@storeFeeling');
 	Route::post('timesheet/deleteActivity','TimesheetController@deleteActivity');
 	Route::post('timesheet/updateDateEvent','TimesheetController@updateDateEvent');
+	Route::get('timesheet/detailActivitybyPid','TimesheetController@detailActivitybyPid');
 
 });
 

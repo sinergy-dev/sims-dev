@@ -5,7 +5,9 @@
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css"> -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap.min.css">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
   <style type="text/css">
     .dataTables_filter{
@@ -416,15 +418,41 @@
       </div>
     </div>
     </section>
+
+    <div class="modal fade" id="modalDetailActual" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Detail Actual Activity</h4>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-12 col-xs-12">
+                  <div class="table-responsive">
+                    <table id="tbDetailActual" class="table table-bordered display no-wrap" width="100%" cellspacing="0">
+                      
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>          
+            </div>
+          </div>
+        </div>
+    </div>
 @endsection
 @section('scriptImport')
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
   <!--datatable-->
-  <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<!--   <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script> -->
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 @endsection
@@ -526,7 +554,7 @@
     })
     
     if (accesable.includes('box_pid')) {
-      if ($("#tbSummaryMandays").is(":visible") == true) {
+      if ($("#tbSummaryMandays").is(":visible")) {
         initiateSumSbe(id="{{Auth::User()->id_division}}")
         initiateAssignPid(id="{{Auth::User()->id_division}}")
       }else{
@@ -540,8 +568,10 @@
       if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.group',"PMO")->exists()}}") {
         isPMO = true
         var colspan = 3
+        var enabledClick = true
       }else{
         var colspan = 2
+        var enabledClick = false
       }
 
       var tbSummarySbe = $("#tbSummarySbe").DataTable({
@@ -552,8 +582,18 @@
         columns: [
           { title: 'PID', data:'pid'},
           { title: 'Name', data:'name'},
-          { title: 'Planned',data:'planned'},
-          { title: 'Actual',data:'actual'},
+          { title: 'Planned',data:'project_id'},
+          { title: 'Actual',
+            render: function (data, type, row, meta){
+              if (row.estimated_end_date == null) {
+                if (enabledClick) {
+                  return '<a onclick="showDetailActual('+ row.nik + ',' + "'" + row.project_id + "'" + ')" style="cursor:pointer">'+ row.actual +'</a>'
+                }else{
+                  return row.actual
+                }
+              }
+            },
+          },
           {
             title: 'Finish Date',
             render: function (data, type, row, meta){
@@ -1601,6 +1641,85 @@
 
   function changeNumberEntries(id_table,num){
     $('#'+id_table).DataTable().page.len(num).draw()
+  }
+
+  function showDetailActual(nik,pid){
+    $("#modalDetailActual").modal("show")
+
+    if ($.fn.DataTable.isDataTable('#tbDetailActual')) {
+      console.log("reload")
+      $('#tbDetailActual').DataTable().ajax.url("{{url('/timesheet/detailActivitybyPid')}}?nik="+nik+"&pid="+pid).load();
+    }else{
+      console.log("belum ada")
+
+      var table = $('#tbDetailActual').DataTable({
+        "ajax":{
+            "type":"GET",
+            "url":"{{url('/timesheet/detailActivitybyPid')}}?nik="+nik+"&pid="+pid,
+          },
+          "columns": [
+            {
+              className: 'dt-control',
+              orderable: false,
+              data: null,
+              defaultContent: '',
+              width:"1%"
+            },
+            { 
+              "title":"Date",
+              "data": "start_date"
+            },
+          ],
+      })
+
+      $('#tbDetailActual tbody').on('click', 'td.dt-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+ 
+          if (row.child.isShown()) {
+              // This row is already open - close it
+              row.child.hide();
+              tr.removeClass('shown');
+          } else {
+              // Open this row
+              row.child(format(row.data())).show();
+              tr.addClass('shown');
+          }
+      });
+
+      function format(d) {
+          // `d` is the original data object for the row
+        var append = ""
+        append = append +'<table class="table table-bordered table-striped" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' 
+        append = append +'<tr>' 
+        append = append +  '<td>Schedule</td>' 
+        append = append +  '<td>Type</td>' 
+        append = append +  '<td>PID</td>' 
+        append = append +  '<td>Task</td>' 
+        append = append +  '<td>Phase</td>' 
+        append = append +  '<td>Level</td>'
+        append = append +  '<td>Activity</td>' 
+        append = append +  '<td>Duration</td>' 
+        append = append +  '<td>Status</td>' 
+        d.activity.forEach((item) => {
+        //You can perform your desired function out here
+          append = append + '<tr>' 
+            append = append +   '<td>'+ item.schedule +'</td>' 
+            append = append +   '<td>'+ item.type +'</td>' 
+            append = append +   '<td>'+ item.pid +'</td>'
+            append = append +   '<td>'+ item.task +'</td>' 
+            append = append +   '<td>'+ item.phase +'</td>' 
+            append = append +   '<td>'+ item.level +'</td>'
+            append = append +   '<td>'+ item.activity +'</td>' 
+            append = append +   '<td>'+ item.duration +' Menit</td>' 
+            append = append +   '<td>'+ item.status +'</td>'
+          append = append + '</tr>'
+        })
+        append = append +'</table>' 
+
+        return append;
+      }
+    }    
   }
 </script>
 @endsection
