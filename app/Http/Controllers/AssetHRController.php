@@ -480,7 +480,9 @@ class AssetHRController extends Controller
     	$category = DB::table('tb_kategori_asset_hr')->where('kategori',$request->category)->first()->id;
 
         return array("results" => DB::table('tb_asset_hr')->select(
-            DB::raw("CASE WHEN (serial_number is null) THEN CONCAT(`nama_barang`,' - ',`merk`) ELSE CONCAT(`nama_barang`,' - ',`merk`,'(',`serial_number`,')') END AS `text`"),
+            // DB::raw("CASE WHEN (serial_number is null) THEN CONCAT(`nama_barang`,' - ',`merk`) ELSE CONCAT(`nama_barang`,' - ',`merk`,'(',`serial_number`,')') END AS `text`"),
+            // DB::raw("CONCAT(`nama_barang`,' - ',`merk`,'(',`serial_number`,')') AS `text`"),
+            DB::raw("`nama_barang` AS `text`"),
             DB::raw("`id_barang` AS `id`"))
             ->where('status','AVAILABLE')
             ->where('kategori',$category)->orderBy('id','desc')->get()); 
