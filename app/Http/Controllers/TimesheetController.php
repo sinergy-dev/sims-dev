@@ -10,6 +10,7 @@ use App\TimesheetPhase;
 use App\TimesheetTask;
 use App\TimesheetPid;
 use App\SalesProject;
+use App\TimesheetByDate;
 use App\User;
 use App\Cuti;
 use App\CutiDetil;
@@ -1648,7 +1649,7 @@ class TimesheetController extends Controller
                             foreach($value as $value_pid){
                                 if ($value_pid['project_type'] == 'Implementation') {
                                     // return "oke";
-                                    if ($value_pid['item'] == 'PM Maintenance') {
+                                    if (strpos($value_pid['item'], "PM")) {
                                         if (isset($getSumPointByProject[$key_group]['PMO'])) {
                                             // return "okee";
                                             $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
@@ -1672,7 +1673,7 @@ class TimesheetController extends Controller
                                         $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
                                     }
                                 }else if($value_pid['project_type'] == 'Maintenance'){
-                                    if ($value_pid['item'] == 'PM Maintenance') {
+                                    if (strpos($value_pid['item'], "PM")) {
                                         if (isset($sumPointByProject[$key_group]['PMO'])) {
                                             $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
                                         }else{
@@ -1701,6 +1702,7 @@ class TimesheetController extends Controller
                                 "nik"                   =>$data['nik'],
                                 "planned"               =>$value_project[$upper_role_name]['sumMandays'],
                                 "actual"                =>$data['actual'],
+                                "project_id"            =>$value_project[0]['pid'],
                                 "pid"                   =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project'],
                                 "estimated_end_date"    =>$value_project[0]['estimated_end_date']
                             ]);
@@ -1775,6 +1777,7 @@ class TimesheetController extends Controller
                             "nik"                   =>$data['nik'],
                             "planned"               =>$value_project[$upper_role_name]['sumMandays'],
                             "actual"                =>$data['actual'],
+                            "project_id"            =>$value_project[0]['pid'],
                             "pid"                   =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project'],
                             "estimated_end_date"    =>$value_project[0]['estimated_end_date']
                         ]);
@@ -6949,5 +6952,17 @@ class TimesheetController extends Controller
         $update->save();
 
         return $update;
+    }
+
+    public function detailActivitybyPid(Request $request)
+    {
+        $data = TimesheetByDate::leftJoin('tb_timesheet_phase','tb_timesheet_phase.id','tb_timesheet.phase')
+            ->leftJoin('tb_timesheet_task','tb_timesheet_task.id','tb_timesheet.task')
+            ->select('nik','pid','start_date')
+            ->where('nik',$request->nik)
+            ->where('pid',$request->pid)
+            ->orderby('start_date','asc')->distinct()->get();
+
+        return array("data"=>$data);
     }
 }
