@@ -4130,7 +4130,7 @@ class SalesController extends Controller{
 
         Mail::to($kirim)->send(new RequestCustomer('[SIMS-App] Request Customer Data',$data));
 
-        return redirect('customer')->with('success', 'Please Waiting for Rily Accept this Request!');
+        return redirect('customer')->with('success', 'Please Waiting for Accept this Request!');
     }
 
     public function acceptRequest(Request $request)
