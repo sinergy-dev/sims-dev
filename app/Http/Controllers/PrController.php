@@ -371,26 +371,27 @@ class PrController extends Controller
 
     public function getTotalPrByMonth()
     {
-        $data = PR::select(
-                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "IPR",1,NULL)) AS "IPR"'),
-                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "EPR",1,NULL)) AS "EPR"'), 'month'
-            )
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
-            ->whereYear('date', date('Y'))
-            ->groupBy('month');
+        $data = DB::table('tb_pr_activity')->join('tb_pr_activity as t2','t2.id_draft_pr','tb_pr_activity.id_draft_pr')->join('tb_pr','tb_pr.id_draft_pr','tb_pr_activity.id_draft_pr')->select('t2.id_draft_pr','month_formatting','type_of_letter','no_pr')->where('tb_pr_activity.status','SAVED')->where('t2.status','SENDED')->whereYear('date',date('Y'))->orderBy('month_formatting','asc');
 
-        return array("data" => $data->get());
+        // return $data->get();
+
+        $data = $data->select('month_formatting',
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "IPR",1,NULL)) AS "IPR"'),
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "EPR",1,NULL)) AS "EPR"'),
+            )->groupby('month_formatting');
+
+        return array("data"=>$data->get());
     }
 
     public function getTotalAmountByType()
     {
-        $data = PR::select(
+        $data = PR::select('month_formatting',
                 DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "IPR",amount,"")) AS "amount_IPR"'),
-                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"'), 'month'
+                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"')
             )
             ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->whereYear('date', date('Y'))
-            ->groupBy('month');
+            ->groupBy('month_formatting');
 
         return array("data" => $data->get());
     }
