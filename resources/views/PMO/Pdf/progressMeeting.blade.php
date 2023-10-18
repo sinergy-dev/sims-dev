@@ -270,7 +270,7 @@
         /*background-color: #008B8B;*/
         /*color: black;*/
         text-align: center;
-        line-height: 35px;
+        line-height: 20px;
       }
 
       @page {
@@ -1430,71 +1430,14 @@
           </td>
         </tr>
       </table>
-      <p class=MsoNormal>
-        <span lang=EN-GB>&nbsp;</span>
-      </p>
-      <!-- <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=619 style='border-collapse:collapse;border:none'>
-        <tr style='height:4.0pt'>
-          <td  vertical-align=top style='border:solid windowtext 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-              <b>
-                <span lang=EN-GB style='font-size:10.0pt;color:white'>Additional Notes and Comments</span>
-              </b>
-            </p>
-          </td>
-        </tr>
-        <tr style='height:4.0pt'>
-          <td  style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-              <b>
-                <span lang=EN-GB style='font-size:8.0pt;color:black'>&nbsp;</span>
-              </b>
-            </p>
-            <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:8.0pt'>&nbsp;</span>
-            </p>
-            <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:8.0pt'>&nbsp;</span>
-            </p>
-            <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:8.0pt'>&nbsp;</span>
-            </p>
-            <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:8.0pt'>&nbsp;</span>
-            </p>
-          </td>
-        </tr>
-      </table> -->
-      <p class=MsoNormal>
-        <span lang=EN-GB>&nbsp;</span>
-      </p>
-      <!-- <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=659 style='border-collapse:collapse;border:none'>
-        <tr style='height:4.0pt'>
-          <td vertical-align=top style='border:solid windowtext 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-              <b>
-                <span lang=EN-GB style='font-size:10.0pt;color:white'>Schedule Management</span>
-              </b>
-            </p>
-          </td>
-        </tr>
-        <tr style='height:4.0pt'>
-          <td vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:8.0pt;color:#BFBFBF'>&nbsp;</span>
-            </p>
-            <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:8.0pt;color:#BFBFBF'>[file name of WBS project timeline (.mpp) from Microsoft project]</span>
-            </p>
-            <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:#BFBFBF'>&nbsp;</span>
-            </p>
-          </td>
-        </tr>
-      </table> -->
+
       <p class=MsoBodyText>
         <span lang=EN-GB>&nbsp;</span>
       </p>
+      <p class=MsoNormal align=center style='margin-left:45px;text-align:center;text-indent:-32.6pt'>
+        <span lang=EN-GB>&nbsp;</span>
+      </p>
+
       <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=659 style='border-collapse:collapse;border:none'>
         <tr style='height:4.0pt'>
           <td  vertical-align=top style='width:247.15pt;border:solid windowtext 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
