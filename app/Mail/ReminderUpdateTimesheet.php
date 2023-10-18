@@ -31,6 +31,6 @@ class ReminderUpdateTimesheet extends Mailable
     public function build()
     {
         return $this->subject("[SIMS-App] Reminder Email - Please Update Your Timesheet's Status")
-            ->view('mail.MailTimesheetReminder');
+            ->view('mail.MailReminderTimesheet');
     }
 }
