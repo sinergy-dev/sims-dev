@@ -51,6 +51,10 @@
 			border: 1px solid;
 		}
 
+		thead, tbody {
+		    page-break-inside: auto; /* or remove this property altogether */
+		}
+
    		tr{page-break-inside:avoid;page-break-after: auto;}
 
 	</style>
