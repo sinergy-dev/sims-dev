@@ -851,6 +851,10 @@
         {
           "id": "bln",
           "text": "Bln"
+        },
+        {
+          "id": "lokasi",
+          "text": "Lokasi"
         }
       ]
     }
@@ -3541,6 +3545,10 @@
           $("#inputSerialNumber").val('')
           $("#inputPartNumber").val('')
           $("#inputTotalPrice").val('')
+
+          if ($("#selectTypeProduct").val() == '') {
+            select2TypeProduct()
+          }
         })
 
       }else if(n == 2){
