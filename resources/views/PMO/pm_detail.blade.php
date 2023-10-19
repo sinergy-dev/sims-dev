@@ -1231,7 +1231,7 @@ PMO
 	    gantt.config.resize_rows = true;
 	    gantt.config.autofit = true;
 
-	    var dp = new gantt.dataProcessor("{{url('/api/pmo')}}/?id_pmo"+window.location.href.split("/")[6].split("?")[0]);
+	    var dp = new gantt.dataProcessor("{{url('/api')}}");
 	    dp.init(gantt);
 	    dp.setTransactionMode("REST");
 
@@ -1947,7 +1947,7 @@ PMO
 					append = append +'  <div class="box-header">'
 					append = append +'   <h3 class="box-title">'+ index +'</h3>'
 					append = append + '	  <div class="box-tools">'
-					append = append + '	    <div class="pull-right"><label style="margin-right:14px;display:inline">Weight</label><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px;'+marginRight+'" readonly></div>		'
+					append = append + '	    <div class="pull-right"><label style="margin-right:10px;display:inline">Weight</label><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px;" readonly></div>		'
 					append = append + '		</div>'
 					append = append +'   </div>'
 					append = append +'<div class="box-body">'
@@ -1989,12 +1989,13 @@ PMO
 												append = append +'				</div>'
 											}
 											append = append +' 			</div>'
-											append = append + '<div class="col-sm-1">				'
-											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-											append = append + '	</div>'
+												append = append + '		<div class="col-sm-1">				'
+												if (idx != 0) {
+													append = append + '			<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+												}
+												append = append + '		</div>'
 											append = append + '</div>'
-											append = append +' 		</div>'
-											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+											append = append +	'<span class="help-block" style="display:none;color:red"></span>'
 										append = append +' 	</div>'
 									})
 									append = append + '<div  style="display:flex;justify-content:center">'
@@ -2040,7 +2041,9 @@ PMO
 															append = append +' 				<input value="'+ valuesExecuting.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
 															append = append +' 			</div>'
 															append = append + '			<div class="col-sm-1">				'
-																append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+																if (incIdx != 0) {
+																	append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+																}
 															append = append + '			</div>'
 														append = append +' 	</div>'
 													append = append +' 	</div>'
@@ -2075,7 +2078,9 @@ PMO
 														append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 														append = append +' 			</div>'
 														append = append + '<div class="col-sm-1">				'
+															if (incIdx != 0) {
 															append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+															}
 														append = append + '</div>'												
 													append = append +' 	</div>'
 												append = append +'		<span class="help-block" style="display:none;color:red"></span>'
@@ -2110,7 +2115,9 @@ PMO
 												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 												append = append +' 			</div>'
 												append = append + '<div class="col-sm-1">				'
-													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+													if (incIdx != 0) {
+														append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+													}
 												append = append +' </div>'	
 											append = append +' 	</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
@@ -2146,7 +2153,9 @@ PMO
 											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 											append = append +' 			</div>'
 											append = append + '<div class="col-sm-1">				'
-												append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+												if (idx != 0) {
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+												}
 											append = append +'</div>'
 										append = append +' 	</div>'
 										append = append +'		<span class="help-block" style="display:none;color:red"></span>'
@@ -2157,39 +2166,38 @@ PMO
 								append = append +'<form class="form_'+ index +'">'
 								append = append +' 	<div class="form-group form_group_'+index+'">'
 									append = append +' 		<div class="row">'
-									append = append +' 			<div class="col-md-4">'
-									append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
-									append = append +' 			</div>'
-									append = append +' 			<div class="col-md-2">'
-									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-									append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-									append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone" data-value="" placeholder="Start date" value="">'
-									append = append +'				</div>'
-									append = append +' 			</div>'
-									append = append +' 			<div class="col-md-2">'
-									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-									append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-									append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="" value="">'
-									append = append +'				</div>'
-									append = append +' 			</div>'
-									append = append +' 			<div class="col-md-1">'
-									append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
-									append = append +' 			</div>'
-									append = append +'			<div class="col-md-2">'
-									append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-									append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
-									append = append +'				</div>'
-									append = append +' 			</div>'
-									append = append + '<div class="col-sm-1">				'
-										append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
-									append = append +' </div>'
+										append = append +' 			<div class="col-md-4">'
+										append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
+										append = append +' 			</div>'
+										append = append +' 			<div class="col-md-2">'
+										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+										append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+										append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone" data-value="" placeholder="Start date" value="">'
+										append = append +'				</div>'
+										append = append +' 			</div>'
+										append = append +' 			<div class="col-md-2">'
+										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+										append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+										append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="" value="">'
+										append = append +'				</div>'
+										append = append +' 			</div>'
+										append = append +' 			<div class="col-md-1">'
+										append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
+										append = append +' 			</div>'
+										append = append +'			<div class="col-md-2">'
+										append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+										append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
+										append = append +'				</div>'
+										append = append +' 			</div>'
+										append = append + '<div class="col-sm-1">				'
+											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)" disabled><i class="fa fa-trash"></i></button>'
+										append = append +' </div>'
+									append = append +' 	</div>'
 									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-								append = append +' 	</div>'
-
-								append = append + '<div  style="display:flex;justify-content:center">'
-								append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
 								append = append + '</div>' 
-
+								append = append + '<div  style="display:flex;justify-content:center">'
+									append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
+								append = append + '</div>'
 								append = append +'</form>'
 							}
 						}else{
@@ -2230,11 +2238,12 @@ PMO
 												append = append +'				</div>'
 											}
 											append = append +' 			</div>'
-											append = append + '<div class="col-sm-1">				'
-											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-											append = append + '	</div>'
+												append = append + '		<div class="col-sm-1">				'
+												if (idx != 0) {
+													append = append + '			<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+												}
+												append = append + '		</div>'
 											append = append + '</div>'
-											append = append +' 		</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 										append = append +' 	</div>'
 									})
@@ -2270,7 +2279,9 @@ PMO
 												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 												append = append +' 			</div>'
 												append = append + '<div class="col-sm-1">				'
-													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+													if (incIdx != 0) {
+														append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+													}
 												append = append + '	</div>'
 												append = append +' 		</div>'
 												append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
@@ -2278,7 +2289,6 @@ PMO
 										})
 									append = append +'</form>'
 								}
-								
 							}else if (status == "Defined") {
 								append = append +'<form class="form_'+ index +'">'
 									$.each(value,function(idx,values){
@@ -2305,7 +2315,9 @@ PMO
 												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 												append = append +' 			</div>'
 												append = append + '<div class="col-sm-1">				'
-													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+													if (idx != 0) {
+														append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+													}
 												append = append +' </div>'
 											append = append +' 	</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
@@ -2315,40 +2327,39 @@ PMO
 							}else{
 								append = append +'<form class="form_'+ index +'">'
 								append = append +' 	<div class="form-group form_group_'+index+'">'
-									append = append +' 		<div class="row">'
-									append = append +' 			<div class="col-md-4">'
-									append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
-									append = append +' 			</div>'
-									append = append +' 			<div class="col-md-2">'
-									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-									append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-									append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="0" placeholder="Start date" value="">'
-									append = append +'				</div>'
-									append = append +' 			</div>'
-									append = append +' 			<div class="col-md-2">'
-									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-									append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-									append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="0" value="">'
-									append = append +'				</div>'
-									append = append +' 			</div>'
-									append = append +' 			<div class="col-md-1">'
-									append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+index+'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
-									append = append +' 			</div>'
-									append = append +'			<div class="col-md-2">'
-									append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-									append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" type="checkbox" class="" style="height: 15px;width: 15px;"> Deliverable Doc.<br></label>'
-									append = append +'				</div>'
-									append = append +' 			</div>'
-									append = append + '<div class="col-sm-1">				'
-										append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
-									append = append +'</div>'
+									append = append +' 	<div class="row">'
+										append = append +' 			<div class="col-md-4">'
+										append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
+										append = append +' 			</div>'
+										append = append +' 			<div class="col-md-2">'
+										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+										append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+										append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="0" placeholder="Start date" value="">'
+										append = append +'				</div>'
+										append = append +' 			</div>'
+										append = append +' 			<div class="col-md-2">'
+										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+										append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+										append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="0" value="">'
+										append = append +'				</div>'
+										append = append +' 			</div>'
+										append = append +' 			<div class="col-md-1">'
+										append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+index+'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
+										append = append +' 			</div>'
+										append = append +'			<div class="col-md-2">'
+										append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+										append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" type="checkbox" class="" style="height: 15px;width: 15px;"> Deliverable Doc.<br></label>'
+										append = append +'				</div>'
+										append = append +' 			</div>'
+										append = append + '<div class="col-sm-1">'
+											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)" disabled><i class="fa fa-trash"></i></button>'
+										append = append +'</div>'
+									append = append +' 	</div>'
 									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 								append = append +' 	</div>'
-
 								append = append + '<div  style="display:flex;justify-content:center">'
 								append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'" name="btnAddTask"><i class="fa fa-plus"></i>&nbspTask</button>'
 								append = append + '</div>'
-								
 								append = append +'</form>'
 							}
 						}						
@@ -2408,12 +2419,15 @@ PMO
 						var appendCloneForm = $(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).last().clone()
 						appendCloneForm.find(":input").val('').end()
 						appendCloneForm.find(':input[name="startDateMilestone"]').attr('data-value', function(i, val) {
-				            return ++incStartMil
+				            return incStartMil+=$(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).siblings().length
  				        });
 
  				        appendCloneForm.find(':input[name="finishDateMilestone"]').attr('data-value', function(i, val) {
-				            return ++incFinishMil
+				            return incFinishMil+=$(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).siblings().length
  				        });
+
+ 				        appendCloneForm.find(":button").prop("disabled",false).end()
+
 						$(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).last().after(appendCloneForm)
 
 						if (window.location.href.split("/")[6].split('?')[1].split('=')[2] == undefined) {
