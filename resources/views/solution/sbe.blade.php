@@ -112,7 +112,7 @@ SBE
               title: "Amount",
               // data: "nominal",
               render:function(data,type,row){
-                return formatter.format(row.nominal)
+                return formatter.format(row.detail_config_nominal)
               }
             },
             {
