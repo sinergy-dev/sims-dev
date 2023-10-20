@@ -2041,9 +2041,8 @@ PMO
 															append = append +' 				<input value="'+ valuesExecuting.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
 															append = append +' 			</div>'
 															append = append + '			<div class="col-sm-1">				'
-																if (incIdx != 0) {
-																	append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-																}
+																append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+																
 															append = append + '			</div>'
 														append = append +' 	</div>'
 													append = append +' 	</div>'
@@ -2153,9 +2152,7 @@ PMO
 											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 											append = append +' 			</div>'
 											append = append + '<div class="col-sm-1">				'
-												if (idx != 0) {
-													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
-												}
+												append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
 											append = append +'</div>'
 										append = append +' 	</div>'
 										append = append +'		<span class="help-block" style="display:none;color:red"></span>'
@@ -2279,9 +2276,7 @@ PMO
 												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 												append = append +' 			</div>'
 												append = append + '<div class="col-sm-1">				'
-													if (incIdx != 0) {
-														append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-													}
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
 												append = append + '	</div>'
 												append = append +' 		</div>'
 												append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
@@ -2315,9 +2310,7 @@ PMO
 												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
 												append = append +' 			</div>'
 												append = append + '<div class="col-sm-1">				'
-													if (idx != 0) {
-														append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
-													}
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
 												append = append +' </div>'
 											append = append +' 	</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
