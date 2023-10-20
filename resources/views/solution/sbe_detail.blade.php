@@ -416,7 +416,7 @@ SBE Detail
                         showEmptyConfig()
                     }else{
                         var sumTotalPrice = 0
-
+                        var i = 0
                         $.each(result,function(index,items){
                             if (index == "Implementation") {
                                 var bg_color = "#789de5"
@@ -449,9 +449,12 @@ SBE Detail
                             appendTemporary = appendTemporary + '                        </thead>'
                             appendTemporary = appendTemporary + '                        <tbody>'
                             $.each(items[0].get_function,function(index,itemsTemp){
+                                console.log(index)
+                                console.log(itemsTemp)
+
                                 appendTemporary = appendTemporary + '          <tr>'
-                                appendTemporary = appendTemporary + '              <td>'+ ++index +'</td>'
-                                appendTemporary = appendTemporary + '              <td>'+ itemsTemp.item +'</td>'
+                                appendTemporary = appendTemporary + '              <td>'+ ++i +'</td>'
+                                appendTemporary = appendTemporary + '              <td>'+ index +'</td>'
                                 appendTemporary = appendTemporary + '              <td>'+ formatter.format(itemsTemp.total_nominal) +'</td>'
                                 appendTemporary = appendTemporary + '          </tr>'
                                 appendTemporary = appendTemporary + '      </tbody>'
@@ -460,7 +463,7 @@ SBE Detail
                             appendTemporary = appendTemporary + '      <tfoot>'
                             appendTemporary = appendTemporary + '          <tr>'
                             appendTemporary = appendTemporary + '              <th colspan="2" style="text-align:right">Total Price</th>'
-                            appendTemporary = appendTemporary + '              <th>'+ formatter.format(items[0].nominal) +'</th>'
+                            appendTemporary = appendTemporary + '              <th>'+ formatter.format(items[0].detail_config_nominal) +'</th>'
                             appendTemporary = appendTemporary + '          </tr>'
                             appendTemporary = appendTemporary + '                        </tfoot>'
                             appendTemporary = appendTemporary + '                    </table>'
@@ -468,7 +471,7 @@ SBE Detail
                             appendTemporary = appendTemporary + '            </div>'
                             appendTemporary = appendTemporary + '        </div>'
 
-                            sumTotalPrice += parseInt(items[0].nominal) 
+                            sumTotalPrice += parseInt(items[0].detail_config_nominal) 
                         })
 
                         appendTemporary = appendTemporary + '     <button class="btn btn-sm btn-success pull-right" onclick="generatePDF()" id="btnGeneratePdf" style="display:none">Generate</button>'
