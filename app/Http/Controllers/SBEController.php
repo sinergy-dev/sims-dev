@@ -191,10 +191,18 @@ class SBEController extends Controller
             $storeActivity->date_add = Carbon::now()->toDateTimeString();
             $storeActivity->save();
 
+
+            $data = DB::table('tb_sbe')->join('tb_sbe_config','tb_sbe_config.id_sbe','tb_sbe.id')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe.id',$create->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+            $total_nominal = 0;
+            foreach($data as $key_point => $valueSumPoint){
+                $total_nominal += $valueSumPoint->total_nominal;
+            }
+
             $storeRelation = new SbeRelation();
             $storeRelation->lead_id = $request->inputLead;
             $storeRelation->tag_sbe = '1';
-            $storeRelation->price_sbe = $updateConfig->nominal;
+            $storeRelation->price_sbe = $total_nominal;
             $storeRelation->save();
     	}
 
@@ -247,10 +255,19 @@ class SBEController extends Controller
             $storeActivity->date_add = Carbon::now()->toDateTimeString();
             $storeActivity->save();
 
+
+            $data = DB::table('tb_sbe')->join('tb_sbe_config','tb_sbe_config.id_sbe','tb_sbe.id')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe.id',$create->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+            $total_nominal = 0;
+            foreach($data as $key_point => $valueSumPoint){
+                $total_nominal += $valueSumPoint->total_nominal;
+            }
+
+
             $storeRelation = new SbeRelation();
             $storeRelation->lead_id = $request->inputLead;
             $storeRelation->tag_sbe = '4';
-            $storeRelation->price_sbe = $updateConfig->nominal;
+            $storeRelation->price_sbe = $total_nominal;
             $storeRelation->save();
     	}
 
@@ -303,10 +320,19 @@ class SBEController extends Controller
             $storeActivity->date_add = Carbon::now()->toDateTimeString();
             $storeActivity->save();
 
+
+            $data = DB::table('tb_sbe')->join('tb_sbe_config','tb_sbe_config.id_sbe','tb_sbe.id')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe.id',$create->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+            $total_nominal = 0;
+            foreach($data as $key_point => $valueSumPoint){
+                $total_nominal += $valueSumPoint->total_nominal;
+            }
+
+
             $storeRelation = new SbeRelation();
             $storeRelation->lead_id = $request->inputLead;
             $storeRelation->tag_sbe = '2';
-            $storeRelation->price_sbe = $updateConfig->nominal;
+            $storeRelation->price_sbe = $total_nominal;
             $storeRelation->save();
     	}
 
@@ -590,9 +616,20 @@ class SBEController extends Controller
             $storeActivity->date_add = Carbon::now()->toDateTimeString();
             $storeActivity->save();
 
+
+            $data = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$value)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+            $total_nominal = 0;
+            foreach($data as $key_point => $valueSumPoint){
+                $total_nominal += $valueSumPoint->total_nominal;
+            }
+
+            // return $total_nominal;
+
+
             $storeRelation = new SbeRelation();
             $storeRelation->lead_id = $getId->lead_id;
-            $storeRelation->price_sbe = str_replace('.', '', $updateVersion->nominal);
+            $storeRelation->price_sbe = str_replace('.', '', $total_nominal);
             if ($updateVersion->project_type == 'Supply Only') {
                 $storeRelation->tag_sbe = '1';
             } elseif ($updateVersion->project_type == 'Implementation') {
@@ -689,6 +726,8 @@ class SBEController extends Controller
 
         $getAll = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_lead_register.nik')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select('tb_sbe.lead_id','users.name as owner','project_location','estimated_running','duration','opp_name','tb_sbe.nominal as grand_total','customer_legal_name')->where('id_sbe',$request->id_sbe)->first();
 
+        $getNominal = SBE::where('id',$request->id_sbe)->first()->detail_config_nominal;
+
         $getIdConfigSbe = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('id_sbe','id_config_sbe')->where('tb_sbe_config.status','Choosed')->where('id_sbe',$request->id_sbe)->get();
 
         $getConfig = SbeConfig::where('status','Choosed')->where('id_sbe',$request->id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config'])->groupby('project_type');
@@ -709,9 +748,9 @@ class SBEController extends Controller
                     ->orderByRaw('FIELD(position, "SOL Staff","SOL Manager")')
                     ->get();
 
-        collect(["data"=>$getAll,"function"=>$getFunction,"config"=>$getConfig,"sign"=>$getSign]);
+        collect(["data"=>$getAll,"function"=>$getFunction,"config"=>$getConfig,"sign"=>$getSign,"grand_total" => $getNominal]);
 
-        $pdf = PDF::loadView('solution.PDF.sbePdf', compact('getAll','getFunction','getConfig','getSign'));
+        $pdf = PDF::loadView('solution.PDF.sbePdf', compact('getAll','getFunction','getConfig','getSign','getNominal'));
         $fileName = 'SBE ' . $getAll->lead_id . '.pdf';
 
         return $pdf->stream($fileName);
