@@ -2445,8 +2445,9 @@ PMO
 						})
 
 						$("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
-							autoclose: true
-						})
+							autoclose: true,
+							orientation: "bottom"
+						});
 
 						validationDate(incStartMil)
 					})
@@ -2527,10 +2528,10 @@ PMO
 
 					$("#btnAddSolution").after("<button style='margin-left:5px' id='removeCloneExecuting' value='"+ $(this)[0].innerText.replace(" ","") +"' class='btn btn-sm btn-danger'><i class='fa fa-trash-o'></></button>")
 		
-			        // clone.insertBefore(this);
 			        $("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
-						autoclose: true
-					})
+						autoclose: true,
+						orientation: "bottom"
+					});
 
 			        let idx = 0
 			        $.each($(".form_Executing:last"),function(idx,item){
@@ -3377,8 +3378,9 @@ PMO
 				}
 
 				$("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
-					autoclose: true
-				})
+					autoclose: true,
+					orientation: "bottom"
+				});
 				
     		}
     	})
