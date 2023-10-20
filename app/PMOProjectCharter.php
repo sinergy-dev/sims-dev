@@ -51,7 +51,11 @@ class PMOProjectCharter extends Model
 
     	$data = DB::table('tb_pmo_internal_stakeholder')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_internal_stakeholder.id_project')->join('users', 'users.nik', 'tb_pmo_internal_stakeholder.nik')->select('users.name', 'tb_pmo_internal_stakeholder.role', 'users.email', 'users.phone', 'tb_pmo_internal_stakeholder.nik')->where('tb_pmo_internal_stakeholder.id_project', $get_id_pmo->id)->get();
 
-    	return $data;
+        $data_eksternal = DB::table('tb_pmo_eksternal_stakeholder')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_eksternal_stakeholder.id_project')->select('name', 'tb_pmo_eksternal_stakeholder.role', 'email', 'phone',DB::raw('CONCAT("-") AS `nik`'),)->where('tb_pmo_eksternal_stakeholder.id_project', $get_id_pmo->id)->get();
+
+        return array("data"=>$data->merge($data_eksternal));
+
+    	// return $data;
     }
 
     public function getOwnerAttribute()
