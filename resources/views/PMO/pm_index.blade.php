@@ -34,7 +34,7 @@ PMO
       }
 
       #tbInternalStakeholderRegister tr td select, #tbInternalStakeholderRegister tr td input{
-        width: 140px!important;
+        width: 175px!important;
         font-size: 12px;
       }
 
@@ -454,11 +454,10 @@ PMO
                         <tbody id="tbodyInternalStakeholderRegister"></tbody>
                       </table>
                     </div>
-                    
                     <!-- <textarea class="form-control" id="textAreaStakeholder" name="textAreaStakeholder" placeholder="Stakeholder Register"></textarea> -->
-                    <span class="help-block" style="display:none;">Please fill Internal Stakeholder Register!</span>
+                    <span class="help-block" style="display:none;">Please fill Internal Stakeholder Register!</span>  
+                    <a onclick="addOutsideStakeholder()" style="cursor:pointer"><u>Add stakeholder outside SIP</u></a>
                   </div>
-              
                 </div>
               </div> 
               <div class="tab-add" style="display:none">
@@ -628,12 +627,12 @@ PMO
 <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
     var accesable = @json($feature_item);
     accesable.forEach(function(item,index){
-      console.log(item)
       $("#" + item).show()
     })
 
@@ -650,7 +649,6 @@ PMO
     // }
 
     $('input[class="document"]').change(function(){
-      console.log("okeee")
       var f=this.files[0]
       var filePath = f;
    
@@ -862,7 +860,6 @@ PMO
                           		$("#alert").show()
                           		$("button[name='btnShowProjectCharter']").prop("disabled",true)
                           		// $("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
-                          		// console.log("{{Auth::User()->ttd_digital}}")
                           	}
 
                           	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
@@ -900,7 +897,6 @@ PMO
                           		$("button[name='btnAddProjectCharter']").prop("disabled",true)
                           		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
                           	}
-                          		console.log("{{Auth::User()->ttd}}" == "")
 
                         		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
                               if (row.type_project == "Implementation + Maintenance & Managed Service") {
@@ -939,7 +935,6 @@ PMO
                           	$("#alert").show()
                         		$("button[name='btnAddProjectCharter']").prop("disabled",true)
                         		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
-                          		console.log("uwoo")
                         	}
 
                         	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
@@ -975,7 +970,6 @@ PMO
         order: [[0, 'asc']],
         "rowCallback": function( row, data ) {
             if (data.status == "Approve") {
-              console.log("testtt")
               if ("{{Auth::User()->name}}" != data.sign) {
                 $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" disabled><i class="fa fa-eye"></i>&nbsp Project Charter</button>');
               }else{
@@ -1027,26 +1021,31 @@ PMO
           )
         }
 
-        emails = validateEmail($("#"+ $(data).attr('id')).val())
+        emails = validateEmail($(data).val())
 
-        if ($("#"+ $(data).attr('id')).val() == '-') {
-         $("#"+ $(data).attr('id')).closest('.form-group').removeClass('has-error')
-         $("#"+ $(data).attr('id')).closest('input').next('span').hide()
-         $("#"+ $(data).attr('id')).prev('.input-group-addon').css("background-color","red")
+        if ($(data).val() == '-') {
+         $(data).closest('.form-group').removeClass('has-error')
+         $(data).closest('input').next('span').hide()
+         $(data).prev('.input-group-addon').css("background-color","red")
         }else{
           switch(emails){
             case null:
-              $("#"+ $(data).attr('id')).closest('.form-group').addClass('has-error')
-              $("#"+ $(data).attr('id')).closest('input').next('span').show();
-              $("#"+ $(data).attr('id')).prev('.input-group-addon').css("background-color","red");
-              $("#"+ $(data).attr('id')).closest('input').next('span').text("Enter a Valid Email Address!")
+              $(data).closest('.form-group').addClass('has-error')
+              $(data).closest('input').next('span').show();
+              $(data).prev('.input-group-addon').css("background-color","red");
+              $(data).closest('input').next('span').text("Enter a Valid Email Address!")
             break;
             default:
-              $("#"+ $(data).attr('id')).closest('.form-group').removeClass('has-error')
-              $("#"+ $(data).attr('id')).closest('input').next('span').hide()
-              $("#"+ $(data).attr('id')).prev('.input-group-addon').css("background-color","red")
+              $(data).closest('.form-group').removeClass('has-error')
+              $(data).closest('input').next('span').hide()
+              $(data).prev('.input-group-addon').css("background-color","red")
           }
         }
+      }else if ($(data).attr('type') == "phone") {
+        $(data).inputmask({"mask": "999-999-999-999"})
+        $(data).next('span').hide();
+      }else if($(data).attr('name') == "inputNameIStakeholder"){
+        $(data).next("span").hide()
       }else{
         if (data.className.split(" ")[1] == "document" || data.className == "document") {
           var f=data.files[0]
@@ -1198,27 +1197,6 @@ PMO
           data:data,
         placeholder:"Select Status"
       })
-      // if (inc != 0) {
-      //   console.log(item+"piyee")
-
-      //   if (item) {
-      //     console.log("increment"+inc)
-
-      //     $("#selectStatusProjectCharter[data-value='"+ inc +"']").select2({
-      //       data:data,
-      //       placeholder:"Select Status"
-      //     }).val(item).trigger("change")
-      //   }else{
-      //     $("#selectStatusProjectCharter[data-value='"+ inc +"']").select2({
-      //       data:data,
-      //       placeholder:"Select Status"
-      //     })
-      //   }
-      // }else{
-      //   console.log(item+"piyee")
-
-        
-      // }
     }
 
     let currentTab = 0;
@@ -1426,11 +1404,20 @@ PMO
             }
 
             var append = ''
-            $.each(result[0].internal_stakeholder,function(index,item){
+            $.each(result[0].internal_stakeholder.data,function(index,item){
                 $('#tbodyInternalStakeholderRegister').empty("")
+                var disabled = ""
                 // incIstakeholder = ++index
                 append = append +'<tr>'
-                append = append +'  <td><select id="selectNameStakeholder" name="selectNameStakeholder" class="select2 form-control selectNameStakeholder" data-value="'+ index +'"><option></option></select></td>'
+                append = append +'  <td>'
+                if (item.nik != '-') {
+                  append = append +'    <select id="selectNameStakeholder" name="selectNameStakeholder" class="select2 form-control selectNameStakeholder" data-value="'+ index +'"><option></option></select>'
+                  disabled = "disabled"
+                }else{
+                  append = append +'    <input id="inputNameIStakeholder" name="inputNameIStakeholder" class="form-control inputNameIStakeholder" data-value="'+ index +'" value="' + item.name +'">'
+                  disabled = disabled
+                }
+                append = append +' </td>'
                 append = append +'  <td><select style="font-size:12px" id="selectRoleStakeholder" class="select2 form-control" data-value="'+ index +'">'
                 append = append + ' <option value="Project Steering Committee">Project Steering Committee</option>'
                 append = append + ' <option value="Project Owner">Project Owner</option>'
@@ -1456,8 +1443,8 @@ PMO
                 append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
                 append = append + ' <option value="Legal">Legal</option>'
                 append = append +'</select></td>'
-                append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ index +'"/></td>'
-                append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ index +'"/></td>'
+                append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control" '+ disabled +' data-value="'+ index +'"/></td>'
+                append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control" '+ disabled +' data-value="'+ index +'"/></td>'
                 append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ index +'"/></td>'
                 append = append +'</tr>'
 
@@ -1470,7 +1457,7 @@ PMO
                       data:result.data,
                       placeholder:"Select Name Stakeholder",
                       dropdownCssClass: "myFont" 
-                    }).val(item.nik).trigger('change')
+                    }).val(parseInt(item.nik)).trigger('change')
 
                     $("#selectNameStakeholder[data-value='"+ index +"']").select2({
                       data:result.data,
@@ -1479,8 +1466,6 @@ PMO
                     }).on('select2:select', function (e) {
                       let filteredEmailPhone = filterByStakeholderName(e.params.data.id)
                       // let filteredPhone = filterByStakeholderName(e.params.data.id)
-                      console.log(e.params)
-                      console.log($(this).closest("td"))
                       $(this).closest("td").next("td:nth-child(2)").next("td:nth-child(3)").find("input").val(filteredEmailPhone[0])
                       $(this).closest("td").next("td:nth-child(2)").next("td:nth-child(3)").next("td:nth-child(4)").find("input").val(filteredEmailPhone[1])
 
@@ -1503,7 +1488,6 @@ PMO
                       $.each(data,function(index,result){
                         email = result[0].email
                         phone = result[0].phone
-                        console.log(result[0].email)
                       })
                     }      
                   })
@@ -1512,7 +1496,7 @@ PMO
                 }
             }) 
 
-            $.each(result[0].internal_stakeholder,function(index,item){
+            $.each(result[0].internal_stakeholder.data,function(index,item){
               $("#inputEmailStakeholder[data-value='"+ index +"']").val(item.email)
               $("#inputPhoneStakeholder[data-value='"+ index +"']").val(item.phone)
               $("#selectRoleStakeholder[data-value='"+ index +"']").select2().val(item.role).trigger("change")
@@ -1547,7 +1531,6 @@ PMO
                     placeholder:"Select Status"
                   }).val(item.status).trigger('change')
                 }else{
-                  console.log(idx)
                   $("#tbodyIdentifiedRisk tr:not(:first-child").remove("")
 
                   appendRisk = appendRisk + '<tr>'
@@ -1689,7 +1672,6 @@ PMO
 
             $("#prevBtnAdd").before('<button type="button" class="btn btn-sm btn-primary" style="float:left" id="btnShowPC"><i class="fa fa-eye"></i> &nbspProject Charter</button>')
             $("#btnShowPC").click(function(){
-              console.log("clicked")
               btnShowProjectCharter(id_pmo,"pm")
             })
             document.getElementById("prevBtnAdd").style.display = "inline";
@@ -1764,15 +1746,15 @@ PMO
               $(".modal-title").text('Initial Identified Risk')
               $(".modal-dialog").removeClass('modal-lg')
 
-              $("#inputImpact").keyup(function(){
+              $("input[name='inputImpact']").keyup(function(){
                 if (this.value > 5) {
-                  $("#inputImpact").val("")
+                  $(this).val("")
                 }
               })
 
-              $("#inputLikelihood").keyup(function(){
+              $("input[name='inputLikelihood']").keyup(function(){
                 if (this.value > 5) {
-                  $("#inputLikelihood").val("")
+                  $(this).val("")
                 }
               })
 
@@ -2297,11 +2279,29 @@ PMO
             let arrInternalStakeHolder = []
 
             $("#tbodyInternalStakeholderRegister tr").each(function(){
-              arrInternalStakeHolder.push({
-                "nik":$(this).find("#selectNameStakeholder").val(),
-                "role":$(this).find("#selectRoleStakeholder").val(),
-                "email":$(this).find("#inputEmailStakeholder").val(),
-                "phone":$(this).find("#inputPhoneStakeholder").val()})
+                if($(this).find("td").find("#inputNameIStakeholder").length == 1){
+                  if ($(this).find("#inputNameIStakeholder").val() == "") {
+                    $(this).find("#inputNameIStakeholder").after("<span style='color:red'>Please fill Name!</span>")
+                  }else if($(this).find("#inputEmailStakeholder").val() == ""){
+                      $(this).find("#inputEmailStakeholder").after("<span style='color:red'>Please fill Email!</span>")
+                  }else if($(this).find("#inputPhoneStakeholder").val() == ""){
+                      $(this).find("#inputPhoneStakeholder").after("<span style='color:red'>Please fill Phone!</span>")
+                  }else{
+                    arrInternalStakeHolder.push({
+                      "nik":$(this).find("#inputNameIStakeholder").val(),
+                      "role":$(this).find("#selectRoleStakeholder").val(),
+                      "email":$(this).find("#inputEmailStakeholder").val(),
+                      "phone":$(this).find("#inputPhoneStakeholder").val()
+                    })
+                  }
+                }else{
+                  arrInternalStakeHolder.push({
+                    "nik":$(this).find("#selectNameStakeholder").val(),
+                    "role":$(this).find("#selectRoleStakeholder").val(),
+                    "email":$(this).find("#inputEmailStakeholder").val(),
+                    "phone":$(this).find("#inputPhoneStakeholder").val()
+                  })  
+                }
             })
 
             formData = new FormData;
@@ -2329,7 +2329,6 @@ PMO
                   currentTab = 0;
                 }
                 btnAddProjectCharter(currentTab,id_project,status);
-                console.log(status)
               }
             })
           }
@@ -2529,7 +2528,6 @@ PMO
           { 
             $.each(data,function(index,result){
               opty = result.opp_name
-              // console.log(result.opp_name)
             })
           }      
         })
@@ -2587,7 +2585,6 @@ PMO
               $('#selectPM').prop("disabled",true)
               $('#selectPC').prop("disabled",true)
             }else{
-              console.log("maintenance aja")
               $('#selectPM').prop("disabled",true)
               $('#selectPC').prop("disabled",false)
             }
@@ -2627,7 +2624,6 @@ PMO
             $('#selectPM').prop("disabled",false)
             $('#selectPC').prop("disabled",true)
           }else{
-            console.log("")
             $('#selectPC').prop("disabled",true)
           }
         }
@@ -2759,15 +2755,19 @@ PMO
       append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ incIstakeholder +'"/></td>'
       append = append +'</tr>'
 
-      $("#tbodyInternalStakeholderRegister").append(append)
+      if ($("#tbodyInternalStakeholderRegister").find("tr").length == 0) {
+        $("#tbodyInternalStakeholderRegister").append(append)
+      }else{
+        $("#tbodyInternalStakeholderRegister").find("tr").last().after(append)
+      }
 
       $.ajax({
         url:"{{url('/PMO/getUser')}}",
         type:"GET",
         success:function(result){
           $(".selectNameStakeholder").select2({
-            data:result.data,
             placeholder:"Select Name Stakeholder",
+            data:result.data,
             dropdownCssClass: "myFont" 
           }).on('select2:select', function (e) {
             let filteredEmailPhone = filterByStakeholderName(e.params.data.id)
@@ -2808,8 +2808,58 @@ PMO
       incIstakeholder++
     }
 
+    function addOutsideStakeholder(){
+      $("#tbInternalStakeholderRegister").closest(".form-group").removeClass("has-error")
+      $("#tbInternalStakeholderRegister").closest(".form-group").find("span").hide()
+
+      append = ""
+      append = 
+      append = append +'<tr>'
+      append = append +'  <td><input onkeyup="validationCheck(this)" type="text" class="form-control" id="inputNameIStakeholder" name="inputNameIStakeholder" data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><select style="font-size:12px" id="selectRoleStakeholder" class="select2 form-control" data-value="'+ incIstakeholder +'">'
+      append = append + ' <option value="Project Steering Committee">Project Steering Committee</option>'
+      append = append + ' <option value="Project Owner">Project Owner</option>'
+      append = append + ' <option value="Project Advisor">Project Advisor</option>'
+      append = append + ' <option value="Project Manager">Project Manager</option>'
+      append = append + ' <option value="Co-Project Manager">Co - Project Manager</option>'
+      append = append + ' <option value="Project Coordinator">Project Coordinator</option>'
+      append = append + ' <option value="Project Administrator">Project Administrator</option>'
+      append = append + ' <option value="Site Manager">Site Manager</option>'
+      append = append + ' <option value="HSE">HSE</option>'
+      append = append + ' <option value="Drafter">Drafter</option>'
+      append = append + ' <option value="Technical Writer">Technical Writer</option>'
+      append = append + ' <option value="Solution Architect">Solution Architect</option>'
+      append = append + ' <option value="Technical Lead Engineer">Technical Lead Engineer</option>'
+      append = append + ' <option value="IT Network Engineer">IT Network Engineer</option>'
+      append = append + ' <option value="IT Network Security Engineer">IT Network Security Engineer</option>'
+      append = append + ' <option value="IT System Engineer">IT System Engineer</option>'
+      append = append + ' <option value="Cabling Engineer">Cabling Engineer</option>'
+      append = append + ' <option value="MSM Technical Lead Engineer">MSM Technical Lead Engineer</option>'
+      append = append + ' <option value="MSM Engineer">MSM Engineer</option>'
+      append = append + ' <option value="Helpdesk">Helpdesk</option>'
+      append = append + ' <option value="Procurement">Procurement</option>'
+      append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
+      append = append + ' <option value="Legal">Legal</option>'
+      append = append +'</select></td>'
+      append = append +'  <td><input onkeyup="validationCheck(this)" type="email" id="inputEmailStakeholder" style="width:90px" class="form-control disabled" data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input onkeyup="validationCheck(this)" type="phone" id="inputPhoneStakeholder" style="width:90px" class="form-control disabled" data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'</tr>'
+
+      if ($("#tbodyInternalStakeholderRegister").find("tr").length == 0) {
+        $("#tbodyInternalStakeholderRegister").append(append)
+      }else{
+        $("#tbodyInternalStakeholderRegister").find("tr").last().after(append)
+      }
+
+      $(".select2").select2({
+        dropdownCssClass: "myFont" 
+      })
+
+      incIstakeholder++
+    }
+
     $(document).on('click', '#btnDeleteRowIStakeholder', function() {
-      console.log("error")
       $(this).closest("tr").remove();
     })
 
@@ -2948,6 +2998,18 @@ PMO
           }
         }
       })
+
+      $("#inputImpact[data-value='"+ incIdentifiedRisk +"']").keyup(function(){
+        if (this.value > 5) {
+          $(this).val("")
+        }
+      })
+
+      $("#inputLikelihood[data-value='"+ incIdentifiedRisk +"']").keyup(function(){
+        if (this.value > 5) {
+          $(this).val("")
+        }
+      })
     })  
 
     function showDatepicker(name){
@@ -2957,7 +3019,6 @@ PMO
     }
 
     $(document).on('click', '#btnRemoveIdentifiedRisk', function() {
-      console.log("error")
       $(this).closest("tr").remove();
     })
 
