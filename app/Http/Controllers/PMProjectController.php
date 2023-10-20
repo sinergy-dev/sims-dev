@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\PMOProjectCharter;
 use App\PMOInternalStakeholder;
+use App\PMOEksternalStakeholder;
 use App\PMOTechnologyUsed;
 use App\PMORisk;
 use App\PMODocument;
@@ -415,7 +416,7 @@ class PMProjectController extends Controller
             $implementation_type = json_decode($get_project_type->implementation_type);
             if ($implementation_type == '["service"]') {
                 $implementation_type = substr($implementation_type,2,7);
-            } elseif ($implementation_type == '["hardware","service"]') {
+            } elseif ($implementation_type == '["hardware","service","license"]') {
                 $implementation_type = substr($implementation_type,2,8);
             } elseif ($implementation_type == '["service","license"]'){
                 // return substr($implementation_type, 12,18);
@@ -945,20 +946,41 @@ class PMProjectController extends Controller
 
         $dataStakeholder = json_decode($request->arrInternalStakeHolder,true);
         $cek_role = PMOInternalStakeholder::where('id_project', $request->id_pmo)->get();
+        $cek_eksternal = PMOEksternalStakeholder::where('id_project', $request->id_pmo)->get();
         if (isset($cek_role)) {
             // return $cek_role;
             foreach ($cek_role as $key => $value) {
                 PMOInternalStakeholder::where('id_project',$value->id_project)->delete(); 
             }
         }
+
+        if (isset($cek_eksternal)) {
+            // return $cek_role;
+            foreach ($cek_eksternal as $key => $value) {
+                PMOEksternalStakeholder::where('id_project',$value->id_project)->delete(); 
+            }
+        }
+        
         foreach ($dataStakeholder as $key => $value) {
-            $store_stakeholder = new PMOInternalStakeholder();
-            // $store_stakeholder->id_project_charter = ;
-            $store_stakeholder->id_project = $request['id_pmo'];
-            $store_stakeholder->nik = $value['nik'];
-            $store_stakeholder->role = $value['role'];
-            $store_stakeholder->date_time = Carbon::now()->toDateTimeString();
-            $store_stakeholder->save();
+            if (is_numeric($value['nik'])) {
+                $store_stakeholder = new PMOInternalStakeholder();
+                // $store_stakeholder->id_project_charter = ;
+                $store_stakeholder->id_project = $request['id_pmo'];
+                $store_stakeholder->nik = $value['nik'];
+                $store_stakeholder->role = $value['role'];
+                $store_stakeholder->date_time = Carbon::now()->toDateTimeString();
+                $store_stakeholder->save();
+            } else {
+                $store_stakeholder = new PMOEksternalStakeholder();
+                // $store_stakeholder->id_project_charter = ;
+                $store_stakeholder->id_project = $request['id_pmo'];
+                $store_stakeholder->name = $value['nik'];
+                $store_stakeholder->email = $value['email'];
+                $store_stakeholder->phone = substr(str_replace('-', '', $value['phone']),0);
+                $store_stakeholder->role = $value['role'];
+                $store_stakeholder->date_time = Carbon::now()->toDateTimeString();
+                $store_stakeholder->save();
+            }
         }
     }
 
