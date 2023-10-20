@@ -2923,7 +2923,7 @@ PMO
       append = append + '          <label>Due Date*</label>'      
       append = append + '          <div class="input-group">'      
       append = append + '            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>'      
-      append = append + '            <input type="text" name="due_date" class="form-control" id="due_date" onclick="showDatepicker("due_date")" placeholder="Select Due Date" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"/>'      
+      append = append + '            <input type="text" name="due_date" class="form-control" id="due_date" onclick="showDatepicker(this)" placeholder="Select Due Date" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"/>'      
       append = append + '          </div><span class="help-block" style="display:none;">Please fill Due Date!</span>'      
       append = append + '        </div>'      
       append = append + '      </div>'      
@@ -2932,7 +2932,7 @@ PMO
       append = append + '          <label>Review Date*</label>'      
       append = append + '          <div class="input-group">'      
       append = append + '            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>'      
-      append = append + '            <input type="text" name="review_date" class="form-control" id="review_date" onclick="showDatepicker("review_date")" placeholder="Select Review Date" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"/>'      
+      append = append + '            <input type="text" name="review_date" class="form-control" id="review_date" onclick="showDatepicker(this)" placeholder="Select Review Date" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"/>'      
       append = append + '          </div><span class="help-block" style="display:none;">Please fill Review Date!</span>'      
       append = append + '        </div>'      
       append = append + '      </div>'      
@@ -3013,7 +3013,7 @@ PMO
     })  
 
     function showDatepicker(name){
-      $("input[name="+ name +"]").datepicker({
+      $("input[name="+ $(name).attr("name") +"]").datepicker({
         autoclose:true
       })
     }
