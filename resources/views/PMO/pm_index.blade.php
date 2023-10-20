@@ -34,7 +34,12 @@ PMO
       }
 
       #tbInternalStakeholderRegister tr td select, #tbInternalStakeholderRegister tr td input{
-        width: 175px!important;
+        width: 100%!important;
+        font-size: 12px;
+      }
+
+      #tbInternalStakeholderRegister tr td #inputEmailStakeholder, #tbInternalStakeholderRegister tr td #inputPhoneStakeholder{
+        width: 180px!important;
         font-size: 12px;
       }
 
@@ -1418,33 +1423,40 @@ PMO
                   disabled = disabled
                 }
                 append = append +' </td>'
-                append = append +'  <td><select style="font-size:12px" id="selectRoleStakeholder" class="select2 form-control" data-value="'+ index +'">'
-                append = append + ' <option value="Project Steering Committee">Project Steering Committee</option>'
-                append = append + ' <option value="Project Owner">Project Owner</option>'
-                append = append + ' <option value="Project Advisor">Project Advisor</option>'
-                append = append + ' <option value="Project Manager">Project Manager</option>'
-                append = append + ' <option value="Co-Project Manager">Co - Project Manager</option>'
-                append = append + ' <option value="Project Coordinator">Project Coordinator</option>'
-                append = append + ' <option value="Project Administrator">Project Administrator</option>'
-                append = append + ' <option value="Site Manager">Site Manager</option>'
-                append = append + ' <option value="HSE">HSE</option>'
-                append = append + ' <option value="Drafter">Drafter</option>'
-                append = append + ' <option value="Technical Writer">Technical Writer</option>'
-                append = append + ' <option value="Solution Architect">Solution Architect</option>'
-                append = append + ' <option value="Technical Lead Engineer">Technical Lead Engineer</option>'
-                append = append + ' <option value="IT Network Engineer">IT Network Engineer</option>'
-                append = append + ' <option value="IT Network Security Engineer">IT Network Security Engineer</option>'
-                append = append + ' <option value="IT System Engineer">IT System Engineer</option>'
-                append = append + ' <option value="Cabling Engineer">Cabling Engineer</option>'
-                append = append + ' <option value="MSM Technical Lead Engineer">MSM Technical Lead Engineer</option>'
-                append = append + ' <option value="MSM Engineer">MSM Engineer</option>'
-                append = append + ' <option value="Helpdesk">Helpdesk</option>'
-                append = append + ' <option value="Procurement">Procurement</option>'
-                append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
-                append = append + ' <option value="Legal">Legal</option>'
-                append = append +'</select></td>'
-                append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control" '+ disabled +' data-value="'+ index +'"/></td>'
-                append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control" '+ disabled +' data-value="'+ index +'"/></td>'
+                append = append +' <td>'
+                if (item.nik != '-') {
+                  append = append +'  <select style="font-size:12px" id="selectRoleStakeholder" class="select2 form-control" data-value="'+ index +'">'
+                    append = append + ' <option value="Project Steering Committee">Project Steering Committee</option>'
+                    append = append + ' <option value="Project Owner">Project Owner</option>'
+                    append = append + ' <option value="Project Advisor">Project Advisor</option>'
+                    append = append + ' <option value="Project Manager">Project Manager</option>'
+                    append = append + ' <option value="Co-Project Manager">Co - Project Manager</option>'
+                    append = append + ' <option value="Project Coordinator">Project Coordinator</option>'
+                    append = append + ' <option value="Project Administrator">Project Administrator</option>'
+                    append = append + ' <option value="Site Manager">Site Manager</option>'
+                    append = append + ' <option value="HSE">HSE</option>'
+                    append = append + ' <option value="Drafter">Drafter</option>'
+                    append = append + ' <option value="Technical Writer">Technical Writer</option>'
+                    append = append + ' <option value="Solution Architect">Solution Architect</option>'
+                    append = append + ' <option value="Technical Lead Engineer">Technical Lead Engineer</option>'
+                    append = append + ' <option value="IT Network Engineer">IT Network Engineer</option>'
+                    append = append + ' <option value="IT Network Security Engineer">IT Network Security Engineer</option>'
+                    append = append + ' <option value="IT System Engineer">IT System Engineer</option>'
+                    append = append + ' <option value="Cabling Engineer">Cabling Engineer</option>'
+                    append = append + ' <option value="MSM Technical Lead Engineer">MSM Technical Lead Engineer</option>'
+                    append = append + ' <option value="MSM Engineer">MSM Engineer</option>'
+                    append = append + ' <option value="Helpdesk">Helpdesk</option>'
+                    append = append + ' <option value="Procurement">Procurement</option>'
+                    append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
+                    append = append + ' <option value="Legal">Legal</option>'
+                  append = append + '</select>'
+                }else{
+                  append = append +'    <input id="inputRoleStakeholder" name="inputRoleStakeholder" class="form-control inputRoleStakeholder" data-value="'+ index +'" value="' + item.role +'">'
+                  disabled = disabled
+                }
+                append = append + '</td>'
+                append = append +'  <td><input id="inputEmailStakeholder" class="form-control" '+ disabled +' data-value="'+ index +'"/></td>'
+                append = append +'  <td><input id="inputPhoneStakeholder" class="form-control" '+ disabled +' data-value="'+ index +'"/></td>'
                 append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ index +'"/></td>'
                 append = append +'</tr>'
 
@@ -2282,6 +2294,8 @@ PMO
                 if($(this).find("td").find("#inputNameIStakeholder").length == 1){
                   if ($(this).find("#inputNameIStakeholder").val() == "") {
                     $(this).find("#inputNameIStakeholder").after("<span style='color:red'>Please fill Name!</span>")
+                  }else if($(this).find("#inputRoleStakeholder").val() == ""){
+                      $(this).find("#inputRoleStakeholder").after("<span style='color:red'>Please fill Role!</span>")
                   }else if($(this).find("#inputEmailStakeholder").val() == ""){
                       $(this).find("#inputEmailStakeholder").after("<span style='color:red'>Please fill Email!</span>")
                   }else if($(this).find("#inputPhoneStakeholder").val() == ""){
@@ -2289,7 +2303,7 @@ PMO
                   }else{
                     arrInternalStakeHolder.push({
                       "nik":$(this).find("#inputNameIStakeholder").val(),
-                      "role":$(this).find("#selectRoleStakeholder").val(),
+                      "role":$(this).find("#inputRoleStakeholder").val(),
                       "email":$(this).find("#inputEmailStakeholder").val(),
                       "phone":$(this).find("#inputPhoneStakeholder").val()
                     })
@@ -2750,8 +2764,8 @@ PMO
       append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
       append = append + ' <option value="Legal">Legal</option>'
       append = append +'</select></td>'
-      append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ incIstakeholder +'"/></td>'
-      append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input id="inputEmailStakeholder" class="form-control disabled" disabled data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input id="inputPhoneStakeholder" class="form-control disabled" disabled data-value="'+ incIstakeholder +'"/></td>'
       append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ incIstakeholder +'"/></td>'
       append = append +'</tr>'
 
@@ -2809,52 +2823,24 @@ PMO
     }
 
     function addOutsideStakeholder(){
-      $("#tbInternalStakeholderRegister").closest(".form-group").removeClass("has-error")
-      $("#tbInternalStakeholderRegister").closest(".form-group").find("span").hide()
-
       append = ""
       append = 
       append = append +'<tr>'
       append = append +'  <td><input onkeyup="validationCheck(this)" type="text" class="form-control" id="inputNameIStakeholder" name="inputNameIStakeholder" data-value="'+ incIstakeholder +'"/></td>'
-      append = append +'  <td><select style="font-size:12px" id="selectRoleStakeholder" class="select2 form-control" data-value="'+ incIstakeholder +'">'
-      append = append + ' <option value="Project Steering Committee">Project Steering Committee</option>'
-      append = append + ' <option value="Project Owner">Project Owner</option>'
-      append = append + ' <option value="Project Advisor">Project Advisor</option>'
-      append = append + ' <option value="Project Manager">Project Manager</option>'
-      append = append + ' <option value="Co-Project Manager">Co - Project Manager</option>'
-      append = append + ' <option value="Project Coordinator">Project Coordinator</option>'
-      append = append + ' <option value="Project Administrator">Project Administrator</option>'
-      append = append + ' <option value="Site Manager">Site Manager</option>'
-      append = append + ' <option value="HSE">HSE</option>'
-      append = append + ' <option value="Drafter">Drafter</option>'
-      append = append + ' <option value="Technical Writer">Technical Writer</option>'
-      append = append + ' <option value="Solution Architect">Solution Architect</option>'
-      append = append + ' <option value="Technical Lead Engineer">Technical Lead Engineer</option>'
-      append = append + ' <option value="IT Network Engineer">IT Network Engineer</option>'
-      append = append + ' <option value="IT Network Security Engineer">IT Network Security Engineer</option>'
-      append = append + ' <option value="IT System Engineer">IT System Engineer</option>'
-      append = append + ' <option value="Cabling Engineer">Cabling Engineer</option>'
-      append = append + ' <option value="MSM Technical Lead Engineer">MSM Technical Lead Engineer</option>'
-      append = append + ' <option value="MSM Engineer">MSM Engineer</option>'
-      append = append + ' <option value="Helpdesk">Helpdesk</option>'
-      append = append + ' <option value="Procurement">Procurement</option>'
-      append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
-      append = append + ' <option value="Legal">Legal</option>'
-      append = append +'</select></td>'
-      append = append +'  <td><input onkeyup="validationCheck(this)" type="email" id="inputEmailStakeholder" style="width:90px" class="form-control disabled" data-value="'+ incIstakeholder +'"/></td>'
-      append = append +'  <td><input onkeyup="validationCheck(this)" type="phone" id="inputPhoneStakeholder" style="width:90px" class="form-control disabled" data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input onkeyup="validationCheck(this)" type="text" class="form-control" id="inputRoleStakeholder" name="inputRoleStakeholder" data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input onkeyup="validationCheck(this)" type="email" id="inputEmailStakeholder" class="form-control" data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input onkeyup="validationCheck(this)" type="phone" id="inputPhoneStakeholder" class="form-control" data-value="'+ incIstakeholder +'"/></td>'
       append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ incIstakeholder +'"/></td>'
       append = append +'</tr>'
 
       if ($("#tbodyInternalStakeholderRegister").find("tr").length == 0) {
+        console.log("testtt")
         $("#tbodyInternalStakeholderRegister").append(append)
       }else{
+        console.log("brooo")
+
         $("#tbodyInternalStakeholderRegister").find("tr").last().after(append)
       }
-
-      $(".select2").select2({
-        dropdownCssClass: "myFont" 
-      })
 
       incIstakeholder++
     }
