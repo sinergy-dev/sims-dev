@@ -621,14 +621,15 @@
             var last = null;
 
             api
-            .column([0,2], { page: 'current' })
+            .column([0], { page: 'current' })
             .data()
             .each(function (group, i) {
                 if (last !== group) {
                     $(rows)
                         .eq(i)
-                        .before('<tr class="group"><td colspan="'+ colspan +'"><b>' + group + '</b></td><td><b>Total Mandays : '+ api.column(2).data()[i] +'</b></td></tr>');
+                        .before('<tr class="group"><td colspan="'+ colspan +'"><b>' + group + '</b></td><td></td></tr>');
                     last = group;
+                    // <b>Total Mandays : '+ api.column(2).data()[i] +'</b>
                 }
             });
         },
@@ -1668,9 +1669,14 @@
               "width":"10%"
             },
             { 
+              "title":"Name",
+              "data": "name",
+              "width":"50%"
+            },
+            { 
               "title":"Date",
               "data": "start_date",
-              "width":"90%"
+              "width":"40%"
             },
           ],
       })
