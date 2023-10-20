@@ -20,14 +20,18 @@ Route::prefix('implementation/{id}')->group(function () {
     Route::resource('link', 'GanttLinkController');
 });
 
-Route::prefix('pmo/{id_pmo}')->group(function () {
-    Route::resource('task', 'GanttTaskPMOController');
-});
+// Route::prefix('pmo/{id_pmo}')->group(function () {
+//     Route::resource('task', 'GanttTaskPMOController');
+// });
+
+
+Route::resource('task','GanttTaskPMOController');
 
 Route::post('/presence/checkIn', 'PresenceController@checkIn');
 Route::post('/presence/checkOut', 'PresenceController@checkOut');
 Route::get('/presence/getPresenceParameter','PresenceController@getPresenceParameter');
 Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
+Route::post('/PMO/updateProjectInformationProjectCharter','PMProjectController@updateProjectInformationProjectCharter');
 
 // Route::get('/presence/getPresenceParameter',function(){
 // 	return "abcccc";
