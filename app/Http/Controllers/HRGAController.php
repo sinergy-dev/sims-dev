@@ -22,6 +22,10 @@ use App\PublicHolidayAdjustment;
 use PDF;
 use Log;
 
+use DatePeriod;
+use DateInterval;
+use DateTime;
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -2517,23 +2521,48 @@ class HRGAController extends Controller
     }
 
     public function CutiExcel(Request $request) {
+        $dateStart = $request->date_start;
+        $dateEnd = $request->date_end;
+        $dateStartLastYear = Carbon::createFromDate($request->date_start);
+        $dateEndLastYear = Carbon::createFromDate($request->date_end);
+        $dateStartLastYear = $dateStartLastYear->copy()->subYear()->format("Y-m-d");
+        $dateEndLastYear = $dateEndLastYear->copy()->subYear()->format("Y-m-d");
         $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
         $endDate = Carbon::now()->format("Y-m-16");
+
+
+
+        $total_cuti = "12";
+        $cuti_bersama = count($this->getWorkDays($dateStart,$dateEnd)["holiday"]->values());
+
+        $getPublicHolidayAdjustment = PublicHolidayAdjustment::whereRaw('`date` BETWEEN "' . $dateStart . '" AND "' . $dateEnd . '"')->whereYear('date',date('Y'))->count();
+
+        $cuti_bersama = $cuti_bersama+$getPublicHolidayAdjustment;
+
+        $cuti_bersama_last_year = count($this->getWorkDays($dateStartLastYear,$dateEndLastYear)["holiday"]->values());
+
+        $getPublicHolidayAdjustmentLastYear = PublicHolidayAdjustment::whereRaw('`date` BETWEEN "' . $dateStart . '" AND "' . $dateEnd . '"')->whereYear('date',date('Y')-1)->count();
+
+        $cuti_bersama_last_year = $cuti_bersama_last_year+$getPublicHolidayAdjustmentLastYear;
+        $jumlah_cuti_now = 12 - $cuti_bersama;
+
+
+
         $spreadsheet = new Spreadsheet();
 
         $spreadsheet->removeSheetByIndex(0);
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'Sinergy informasi Pratama'));
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'Multi Solusindo Perkasa'));
-        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Detail Report Cuti SIP & MSP'));
+        // $spreadsheet->addSheet(new Worksheet($spreadsheet,'Detail Report Cuti SIP & MSP'));
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'Rekap Cuti SIP & MSP'));
         $sipSheet = $spreadsheet->setActiveSheetIndex(0);
         $mspSheet = $spreadsheet->setActiveSheetIndex(1);
-        $detailSheet = $spreadsheet->setActiveSheetIndex(2);
-        $rekapSheet = $spreadsheet->setActiveSheetIndex(3);
+        // $detailSheet = $spreadsheet->setActiveSheetIndex(2);
+        $rekapSheet = $spreadsheet->setActiveSheetIndex(2);
 
         $sipSheet->mergeCells('A1:H1');
         $mspSheet->mergeCells('A1:H1');
-        $detailSheet->mergeCells('A1:H1');
+        // $detailSheet->mergeCells('A1:H1');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
@@ -2573,11 +2602,12 @@ class HRGAController extends Controller
             ->select(
                 'users.name',
                 DB::raw('CONCAT(12, " Hari") AS `hak_cuti`'),
-                DB::raw('CONCAT(' . $hitung_cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
+                DB::raw('CONCAT(' . $cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
+                // DB::raw('CONCAT(' . $hitung_cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
                 DB::raw('IF(`tb_cuti_counted`.`cuti_diambil` > 0,CONCAT(`tb_cuti_counted`.`cuti_diambil`, " Hari"),"-") AS `cuti_diambil_' . date('Y') . '`'),
                 DB::raw('IF(`users`.`cuti` > 0,CONCAT(`users`.`cuti`, " Hari"),"-") AS `sisah_cuti_' . (date('Y')-1) . '`'),
                 DB::raw('IF(`users`.`cuti2` > 0,CONCAT(`users`.`cuti2`, " Hari"),"-") AS `sisah_cuti_' . date('Y') . '`'),
-                DB::raw('IF(`users`.`status_karyawan` = "belum_cuti","Belum 1 tahun",IF((`users`.`cuti` + `users`.`cuti2`) = 0,"Habis","-")) AS `status`')
+                DB::raw('IF(`users`.`status_karyawan` = "belum_cuti","Belum 1 tahun",IF((`users`.`cuti` + `users`.`cuti2`) = 0,"Habis","Cuti")) AS `status`')
             )
             ->leftJoinSub(DB::table('tb_cuti')
                 ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
@@ -2617,7 +2647,7 @@ class HRGAController extends Controller
             ->select(
                 'users.name',
                 DB::raw('CONCAT(12, " Hari") AS `hak_cuti`'),
-                DB::raw('CONCAT(' . $hitung_cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
+                DB::raw('CONCAT(' . $cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
                 DB::raw('IF(`tb_cuti_counted`.`cuti_diambil` > 0,CONCAT(`tb_cuti_counted`.`cuti_diambil`, " Hari"),"-") AS `cuti_diambil_' . date('Y') . '`'),
                 DB::raw('IF(`users`.`cuti` > 0,CONCAT(`users`.`cuti`, " Hari"),"-") AS `sisah_cuti_' . (date('Y')-1) . '`'),
                 DB::raw('IF(`users`.`cuti2` > 0,CONCAT(`users`.`cuti2`, " Hari"),"-") AS `sisah_cuti_' . date('Y') . '`'),
@@ -2654,47 +2684,47 @@ class HRGAController extends Controller
         $mspSheet->getColumnDimension('G')->setAutoSize(true);
         $mspSheet->getColumnDimension('H')->setAutoSize(true);
 
-        $detailSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
-        $detailSheet->setCellValue('A1','Detail Report Bulanan Cuti');
+        // $detailSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        // $detailSheet->setCellValue('A1','Detail Report Bulanan Cuti');
 
-        $detailCutiData = Cuti::join('users','users.nik','=','tb_cuti.nik')
-            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-            ->join('tb_position','tb_position.id_position','=','users.id_position')
-            ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->join('tb_company','tb_company.id_company','=','users.id_company')
-            ->select(
-                'users.name',
-                'code_company',
-                'tb_division.name_division',
-                DB::raw('CONCAT(COUNT(`tb_cuti_detail`.`id_cuti`), " Hari") AS `days`'),
-                DB::raw('REPLACE(GROUP_CONCAT(`date_off`),"-","/") AS `date_off`'),
-                'tb_cuti.date_req',
-                DB::raw('CONCAT("[ ",`jenis_cuti`," ]/[ ",`reason_leave`," ]") AS `detail`')
-            )
-            ->where('tb_cuti.status','v')
-            // ->whereBetween('date_off',array($request->date_start,$request->date_end))
-            // ->where('date_off','>','2021-03-16')
-            // ->where('date_off','<','2021-04-15')
-            ->whereRaw('`date_off` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
-            ->groupby('tb_cuti.id_cuti')
-            ->get();
+        // $detailCutiData = Cuti::join('users','users.nik','=','tb_cuti.nik')
+        //     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+        //     ->join('tb_position','tb_position.id_position','=','users.id_position')
+        //     ->join('tb_division','tb_division.id_division','=','users.id_division')
+        //     ->join('tb_company','tb_company.id_company','=','users.id_company')
+        //     ->select(
+        //         'users.name',
+        //         'code_company',
+        //         'tb_division.name_division',
+        //         DB::raw('CONCAT(COUNT(`tb_cuti_detail`.`id_cuti`), " Hari") AS `days`'),
+        //         DB::raw('REPLACE(GROUP_CONCAT(`date_off`),"-","/") AS `date_off`'),
+        //         'tb_cuti.date_req',
+        //         DB::raw('CONCAT("[ ",`jenis_cuti`," ]/[ ",`reason_leave`," ]") AS `detail`')
+        //     )
+        //     ->where('tb_cuti.status','v')
+        //     // ->whereBetween('date_off',array($request->date_start,$request->date_end))
+        //     // ->where('date_off','>','2021-03-16')
+        //     // ->where('date_off','<','2021-04-15')
+        //     ->whereRaw('`date_off` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+        //     ->groupby('tb_cuti.id_cuti')
+        //     ->get();
 
-        $headerContent = ["No", "Nama Karyawan","Company", "Division", "Request Cuti", "Date Off", "Tanggal Request", "[Jenis Cuti]/[keterangan]"];
-        $detailSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
-        $detailSheet->fromArray($headerContent,NULL,'A2');
+        // $headerContent = ["No", "Nama Karyawan","Company", "Division", "Request Cuti", "Date Off", "Tanggal Request", "[Jenis Cuti]/[keterangan]"];
+        // $detailSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
+        // $detailSheet->fromArray($headerContent,NULL,'A2');
 
-        $detailCutiData->map(function($item,$key) use ($detailSheet){
-            $detailSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
-        });
+        // $detailCutiData->map(function($item,$key) use ($detailSheet){
+        //     $detailSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        // });
 
-        $detailSheet->getColumnDimension('A')->setAutoSize(true);
-        $detailSheet->getColumnDimension('B')->setAutoSize(true);
-        $detailSheet->getColumnDimension('C')->setAutoSize(true);
-        $detailSheet->getColumnDimension('D')->setAutoSize(true);
-        $detailSheet->getColumnDimension('E')->setAutoSize(true);
-        $detailSheet->getColumnDimension('F')->setAutoSize(true);
-        $detailSheet->getColumnDimension('G')->setAutoSize(true);
-        $detailSheet->getColumnDimension('H')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('A')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('B')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('C')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('D')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('E')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('F')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('G')->setAutoSize(true);
+        // $detailSheet->getColumnDimension('H')->setAutoSize(true);
 
         $normalStyle = [
             'font' => [
@@ -2715,30 +2745,28 @@ class HRGAController extends Controller
         $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFC9C9C9"]];
         $headerStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
 
-        $rekapSheet->getStyle('A1:Y1')->applyFromArray($titleStyle);
-        $rekapSheet->getStyle('A2:Y2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-        $rekapSheet->getStyle('A2:Y2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-        $rekapSheet->getStyle('C2:Y2')->getAlignment()->setWrapText(true);
-        $rekapSheet->getStyle('C2:Y2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $rekapSheet->getStyle('A1:V1')->applyFromArray($titleStyle);
+        $rekapSheet->getStyle('A2:V2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $rekapSheet->getStyle('A2:V2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $rekapSheet->getStyle('C2:V2')->getAlignment()->setWrapText(true);
+        $rekapSheet->getStyle('C2:V2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $rekapSheet->setCellValue('B1','PT. SINERGY INFORMASI PRATAMA');
         $rekapSheet->setCellValue('D1','Report cuti per ' . Carbon::now()->format("d M Y"));
 
-        $headerContent = ["No","NAMA","Tanggal Mulai Masuk","Hak Cuti 2020","Sisa Cuti 2020","Hak Cuti Tahunan","Cuti Bersama","Hak Cuti 2021","Cuti yg Diminta","Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des","Tgl Kerja Kembali","TOTAL Cuti yg telah diambil","Sisa Cuti 2021","Jenis Cuti / Keterangan"];
-        $rekapSheet->getStyle('A2:Y2')->applyFromArray($headerStyle);
+        $headerContent = ["No","NAMA","Tanggal Mulai Masuk","Hak Cuti ".date('Y', strtotime("-1 year")),"Sisa Cuti ".date('Y', strtotime("-1 year")),"Hak Cuti Tahunan","Cuti Bersama","Hak Cuti ". date('Y'),"Cuti yg Diminta","Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des","Sisa Cuti ". date('Y')];
+        $rekapSheet->getStyle('A2:V2')->applyFromArray($headerStyle);
         $rekapSheet->getStyle('E2')->getFont()->getColor()->setARGB("FF0B24FB");
         $rekapSheet->getStyle('F2')->getFont()->getColor()->setARGB("FF0B24FB");
+        $rekapSheet->getStyle('U2')->getFont()->getColor()->setARGB("FF0B24FB");
+        $rekapSheet->getStyle('W2')->getFont()->getColor()->setARGB("FF0B24FB");
         $rekapSheet->getStyle('V2')->getFont()->getColor()->setARGB("FF0B24FB");
-        $rekapSheet->getStyle('X2')->getFont()->getColor()->setARGB("FF0B24FB");
-        $rekapSheet->getStyle('Y2')->getFont()->getColor()->setARGB("FF0B24FB");
 
         $rekapSheet->getStyle('G2')->getFont()->getColor()->setARGB("FFF32229");
-        $rekapSheet->getStyle('W2')->getFont()->getColor()->setARGB("FFF32229");
+        $rekapSheet->getStyle('V2')->getFont()->getColor()->setARGB("FFF32229");
         $rekapSheet->fromArray($headerContent,NULL,'A2');
 
-        $jumlah_cuti = "7";
-        $total_cuti = "12";
-        $cuti_bersama = "1";
-        $jumlah_cuti_now = "11";
+        // $jumlah_cuti = "7";
+        
         // $request_cuti = "5";
 
         $dataFiltered = DB::table('tb_cuti')
@@ -2753,7 +2781,7 @@ class HRGAController extends Controller
                 DB::raw("COUNT(`tb_cuti_detail`.`date_off`) AS `counted`")
             )->joinSub($dataFiltered,'tb_cuti_filtered',function($join){
                 $join->on('tb_cuti_filtered.id_cuti','=','tb_cuti_detail.id_cuti');
-            })->whereRaw("`tb_cuti_detail`.`date_off` BETWEEN '2021-01-01' AND '2021-12-31'")
+            })->whereRaw('`tb_cuti_detail`.`date_off` BETWEEN "' . $dateStart . '" AND "' . $dateEnd . '"')
             ->groupBy('nik');
 
         $dataLeavingPermit = User::select(
@@ -2761,11 +2789,11 @@ class HRGAController extends Controller
                 DB::raw('`roles`.`name` AS `role`'),
                 'users.name',
                 'users.date_of_entry',
-                DB::raw($jumlah_cuti . ' AS `bersih_cuti_' . date('Y', strtotime("-1 year")) . '`'),
+                DB::raw($total_cuti . ' AS `bersih_cuti_' . date('Y', strtotime("-1 year")) . '`'),
                 DB::raw('`users`.`cuti` AS `sisah_cuti_' . date('Y', strtotime("-1 year")) . '`'),
                 DB::raw($total_cuti . ' AS `total_cuti_' . date('Y') . '`'),
                 DB::raw($cuti_bersama . ' AS `cuti_bersama_' . date('Y') . '`'),
-                DB::raw($jumlah_cuti_now . ' AS `bersih_cuti_' . date('Y') . '`'),
+                DB::raw('`users`.`cuti2` AS `bersih_cuti_' . date('Y') . '`'),
                 DB::raw("IFNULL(`cuti_requested`.`counted`, 0) AS `request_cuti_" . date('Y') . "`"),
                 DB::raw("`cuti` AS `cuti_now`"),
                 DB::raw("`cuti2` AS `cuti_sisah`")
@@ -2781,7 +2809,7 @@ class HRGAController extends Controller
             // ->limit(1)
             ->get();
 
-        $cuti_processed = DB::table(function($query){
+        $cuti_processed = DB::table(function($query) use ($dateStart,$dateEnd){
                 $query->from('tb_cuti')
                     ->select(
                         DB::raw("RIGHT(`tb_cuti_detail`.`date_off`,2) AS `date_off`"),
@@ -2791,7 +2819,8 @@ class HRGAController extends Controller
                     ->join("tb_cuti_detail","tb_cuti_detail.id_cuti","=","tb_cuti.id_cuti")
                     ->where("tb_cuti.status","=","v")
                     // ->where("tb_cuti.nik","=",1170498100)
-                    ->whereRaw("`tb_cuti_detail`.`date_off` BETWEEN '2021-01-01' AND '2021-12-31'");
+                    // ->whereRaw("`tb_cuti_detail`.`date_off` BETWEEN '2021-01-01' AND '2021-12-31'");
+                    ->whereRaw('`tb_cuti_detail`.`date_off` BETWEEN "' . $dateStart . '" AND "' . $dateEnd . '"');
             }, 'tb_cuti_counted')
             ->select('tb_cuti_counted.nik','tb_cuti_counted.month')
             ->selectRaw("GROUP_CONCAT(`tb_cuti_counted`.`date_off`) AS `summarize`")
@@ -2829,7 +2858,8 @@ class HRGAController extends Controller
         // echo "<pre>";
         $dataLeavingPermit->map(function($item,$key) use ($rekapSheet,$itemStyle,$cuti_summary){
             $item_filtered = array_values($item->toArray());
-            $total_sisah = array("-","-",$item_filtered[10] + $item_filtered[11]);
+            print_r($item_filtered[10]+ $item_filtered[11]);
+            $total_sisah = array($item_filtered[10] + $item_filtered[11]);
             unset($item_filtered[0]);
             unset($item_filtered[1]);
             unset($item_filtered[10]);
@@ -2858,12 +2888,12 @@ class HRGAController extends Controller
                 'A' . ($key + 3)
             );
             $item->cuti_summary = $cuti_summary[$item->nik]->pluck('summarize');
-            $rekapSheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->applyFromArray($itemStyle);
-            $rekapSheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-            $rekapSheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $rekapSheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setWrapText(true);
-            $rekapSheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getFont()->setBold(true);
-            $rekapSheet->getStyle('J' . ($key + 3) . ':U' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
+            $rekapSheet->getStyle('A' . ($key + 3) . ':V' . ($key + 3))->applyFromArray($itemStyle);
+            $rekapSheet->getStyle('A' . ($key + 3) . ':V' . ($key + 3))->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':V' . ($key + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':V' . ($key + 3))->getAlignment()->setWrapText(true);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':V' . ($key + 3))->getFont()->setBold(true);
+            $rekapSheet->getStyle('J' . ($key + 3) . ':T' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
 
             $rekapSheet->getStyle('G' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
 
@@ -2898,40 +2928,6 @@ class HRGAController extends Controller
         $rekapSheet->getColumnDimension('T')->setWidth(8);
         $rekapSheet->getColumnDimension('U')->setWidth(8);
         $rekapSheet->getColumnDimension('V')->setWidth(8);
-        $rekapSheet->getColumnDimension('W')->setWidth(8);
-        $rekapSheet->getColumnDimension('X')->setWidth(8);
-        $rekapSheet->getColumnDimension('Y')->setWidth(8);
-
-        // $dataPresenceIndividual = $dataPresence->groupBy('name');
-
-        // $indexSheet = 0;
-        // foreach ($dataPresenceIndividual as $key => $item) {
-        //   $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
-        //   $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
-
-        //   $detailSheet->getStyle('A1:J1')->applyFromArray($titleStyle);
-        //   $detailSheet->setCellValue('A1','Presence Report ' . $key);
-        //   $detailSheet->mergeCells('A1:J1');
-
-        //   $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
-        //   $detailSheet->getStyle('A2:J2')->applyFromArray($headerStyle);
-        //   $detailSheet->fromArray($headerContent,NULL,'A2');
-
-        //   foreach ($item as $key => $eachPresence) {
-        //     $detailSheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($eachPresence))),NULL,'A' . ($key + 3));
-        //   }
-        //   $detailSheet->getColumnDimension('A')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('B')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('C')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('D')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('E')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('F')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('G')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('H')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('I')->setAutoSize(true);
-        //   $detailSheet->getColumnDimension('J')->setAutoSize(true);
-        //   $indexSheet = $indexSheet + 1;
-        // }
 
         $spreadsheet->setActiveSheetIndex(0);
 
@@ -2943,6 +2939,50 @@ class HRGAController extends Controller
         $writer = new Xlsx($spreadsheet);
         ob_end_clean();
         return $writer->save("php://output");
+    }
+
+    public function getWorkDays($startDate,$endDate){
+        $client = new Client();
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
+        $json = (string)$api_response->getBody();
+        $holiday_indonesia = json_decode($json, true);
+
+        $holiday_indonesia_final_detail = collect();
+        $holiday_indonesia_final_date = collect();
+        
+        foreach ($holiday_indonesia["items"] as $value) {
+            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && (strstr($value['summary'], "Joint"))  )){
+                $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
+                $holiday_indonesia_final_date->push($value["start"]["date"]);
+            }
+        }
+
+        $period = new DatePeriod(
+             new DateTime($startDate),
+             new DateInterval('P1D'),
+             new DateTime($endDate . '23:59:59')
+        );
+
+        $workDays = collect();
+        foreach($period as $date){
+            if(!($date->format("N") == 6 || $date->format("N") == 7)){
+                $workDays->push($date->format("Y-m-d"));
+            }
+        }
+
+        // return $period;
+
+        $workDaysMinHoliday = $workDays->diff($holiday_indonesia_final_date->unique());
+        $workDaysMinHolidayKeyed = $workDaysMinHoliday->map(function ($item, $key) {
+            // return ["date" => $item];
+            // return (object) array('date' => $item);
+            return $item;
+        });
+
+        return collect(["holiday" => $holiday_indonesia_final_detail, "workdays" => $workDaysMinHolidayKeyed]);
+        
     }
 
     //baru

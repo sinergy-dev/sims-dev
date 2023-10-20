@@ -166,20 +166,19 @@
                   </tr>
                 </thead> 
                 <?php $i = 0 ?>
-                @foreach($data_config->get_function as $datas_config)
+                @foreach($data_config->get_function as $key => $datas_config)
                 <tbody>
                     <tr>
                       <td style="text-align: center;">{{++$i}}</td>
-                      <td style="text-align: left;">{{$datas_config->item}}</td>
-                      <td style="text-align: right">IDR {{number_format($datas_config->total_nominal)}}</td>
+                      <td style="text-align: left;">{{$key}}</td>
+                      <td style="text-align: right">IDR {{number_format($datas_config['total_nominal'])}}</td>
                     </tr>
                 </tbody>
                 @endforeach
-
                 <tfoot>
                   <tr>
                     <th colspan="2" style="text-align:right;">Grand Total Cost</th>
-                    <th style="text-align:right;">IDR {{number_format($data_config->nominal)}}</th>
+                    <th style="text-align:right;">IDR {{number_format($data_config->detail_config_nominal)}}</th>
                   </tr>
                 </tfoot>   
               </table>
@@ -192,7 +191,7 @@
         <table style="width:96.5%;margin-top:-25px;">
           <tr>
             <th style="text-align:right;width: 65%;">Grand Total SBE Operational</th>
-            <th style="text-align:right">IDR {{number_format($getAll->grand_total)}}</th>
+            <th style="text-align:right">IDR {{number_format($getNominal)}}</th>
           </tr>
         </table>  
         <table style="width: 100%;text-align: center;margin-top:15px">
@@ -304,11 +303,11 @@
                     <td style="border: 0.5px solid black;text-align: right;">IDR {{number_format($datasConfigChoosed->total_nominal)}}</td>
                   </tr>
                 @endforeach
-                @foreach($data_configs->get_function as $data_config_function_nominal)
-                  @if($data_config_function_nominal->item == $datasConfigChoosed->item)
+                @foreach($data_configs->get_function as $key => $data_config_function_nominal)
+                  @if($key == $datasConfigChoosed->item)
                     <tr style="border: 0.5px solid black;">
                       <th style="border: 0.5px solid black;" colspan="5">Total Cost</th>
-                      <th style="border: 0.5px solid black;text-align: right;">IDR {{number_format($data_config_function_nominal->total_nominal)}}</th>
+                      <th style="border: 0.5px solid black;text-align: right;">IDR {{number_format($data_config_function_nominal['total_nominal'])}}</th>
                     </tr>
                   @endif
                 @endforeach
@@ -335,18 +334,18 @@
           </thead>  
           @foreach($datas as $data_config)
           <tbody>
-              @foreach($data_config->get_function as $datas_config)
+              @foreach($data_config->get_function as $key_config => $datas_config)
             <tr>
               <td style="border: 0.5px solid black;text-align: center;">{{++$j}}</td>
-              <td style="border: 0.5px solid black;text-align: left;">{{$datas_config->item}}</td>
-              <td style="border: 0.5px solid black;text-align: right;">IDR {{number_format($datas_config->total_nominal)}}</td>
+              <td style="border: 0.5px solid black;text-align: left;">{{$key_config}}</td>
+              <td style="border: 0.5px solid black;text-align: right;">IDR {{number_format($datas_config['total_nominal'])}}</td>
             </tr>
               @endforeach
           </tbody>
           <tfoot>
             <tr>
               <th colspan="2" style="text-align:right;">Grand Total Cost</th>
-              <th style="text-align:right;">IDR {{number_format($data_config->nominal)}}</th>
+              <th style="text-align:right;">IDR {{number_format($data_config->detail_config_nominal)}}</th>
             </tr>
           </tfoot>
           @endforeach

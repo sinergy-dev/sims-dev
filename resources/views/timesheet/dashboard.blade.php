@@ -463,6 +463,8 @@
     accesable.forEach(function(item,index){
       $("#" + item).show()
     })
+
+    console.log(accesable)
     
     if ($("#tbSummaryMandays").is(":visible") == false) {
       // $(".nav-tabs").find("li").last().addClass("active")
@@ -553,11 +555,13 @@
       }
     })
     
-    if (accesable.includes('box_pid')) {
+    if (accesable.includes('box_pid') || accesable.includes('box_sbe')) {
       if ($("#tbSummaryMandays").is(":visible")) {
+        console.log("sini")
         initiateSumSbe(id="{{Auth::User()->id_division}}")
         initiateAssignPid(id="{{Auth::User()->id_division}}")
       }else{
+        console.log("situ")
         initiateSumSbe(id='')
         initiateAssignPid(id='')
       }
@@ -582,15 +586,13 @@
         columns: [
           { title: 'PID', data:'pid'},
           { title: 'Name', data:'name'},
-          { title: 'Planned',data:'project_id'},
+          { title: 'Planned',data:'planned'},
           { title: 'Actual',
             render: function (data, type, row, meta){
-              if (row.estimated_end_date == null) {
-                if (enabledClick) {
-                  return '<a onclick="showDetailActual('+ row.nik + ',' + "'" + row.project_id + "'" + ')" style="cursor:pointer">'+ row.actual +'</a>'
-                }else{
-                  return row.actual
-                }
+              if (enabledClick) {
+                return '<a onclick="showDetailActual('+ row.nik + ',' + "'" + row.project_id + "'" + ')" style="cursor:pointer">'+ row.actual +'</a>'
+              }else{
+                return row.actual
               }
             },
           },
@@ -1663,11 +1665,12 @@
               orderable: false,
               data: null,
               defaultContent: '',
-              width:"1%"
+              "width":"10%"
             },
             { 
               "title":"Date",
-              "data": "start_date"
+              "data": "start_date",
+              "width":"90%"
             },
           ],
       })

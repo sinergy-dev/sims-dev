@@ -410,7 +410,12 @@ class PMProjectController extends Controller
     public function getDefaultTask(Request $request)
     {
         $get_project_type = PMO::where('id', $request->id_pmo)->first();
-        $get_technology_used = DB::table('tb_pmo')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
+        if (count($get_project_type->type_project_array) == 2) {
+            $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo-1)->first();
+        } else {
+            $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
+        }
+        
         // return $get_technology_used;
         if ($get_project_type->project_type == 'implementation') {
             $implementation_type = json_decode($get_project_type->implementation_type);

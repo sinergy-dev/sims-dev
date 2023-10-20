@@ -1649,7 +1649,7 @@ class TimesheetController extends Controller
                             foreach($value as $value_pid){
                                 if ($value_pid['project_type'] == 'Implementation') {
                                     // return "oke";
-                                    if (strpos($value_pid['item'], "PM")) {
+                                    if (strstr($value_pid['item'], "PM")) {
                                         if (isset($getSumPointByProject[$key_group]['PMO'])) {
                                             // return "okee";
                                             $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
@@ -1673,7 +1673,7 @@ class TimesheetController extends Controller
                                         $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
                                     }
                                 }else if($value_pid['project_type'] == 'Maintenance'){
-                                    if (strpos($value_pid['item'], "PM")) {
+                                    if (strstr($value_pid['item'], "PM") === TRUE) {
                                         if (isset($sumPointByProject[$key_group]['PMO'])) {
                                             $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
                                         }else{
@@ -1721,7 +1721,7 @@ class TimesheetController extends Controller
                         foreach($value as $value_pid){
                             if ($value_pid['project_type'] == 'Implementation') {
                                 // return "oke";
-                                if ($value_pid['item'] == 'PM Maintenance') {
+                                if (strstr($value_pid['item'], "PM")) {
                                     if (isset($getSumPointByProject[$key_group]['PMO'])) {
                                         // return "okee";
                                         $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
@@ -1745,7 +1745,7 @@ class TimesheetController extends Controller
                                     $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
                                 }
                             }else if($value_pid['project_type'] == 'Maintenance'){
-                                if ($value_pid['item'] == 'PM Maintenance') {
+                                if (strstr($value_pid['item'], "PM")) {
                                     if (isset($sumPointByProject[$key_group]['PMO'])) {
                                         $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
                                     }else{
@@ -1805,14 +1805,14 @@ class TimesheetController extends Controller
 
         // return $role;
         if ($role == 'PMO') {
-            if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV' || isset($cek_role_name)) {
+            if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV' || $cek_role_name != "") {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
             } else {
                 $sumMandays  = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
         }else if ($role == 'DPG') {
-            if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV' || isset($cek_role_name)) {
+            if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV' || $cek_role_name != "") {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
@@ -1820,7 +1820,7 @@ class TimesheetController extends Controller
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
         }elseif ($role == 'MSM') {
-            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV' || isset($cek_role_name)) {
+            if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV' || $cek_role_name != "") {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
             } else {

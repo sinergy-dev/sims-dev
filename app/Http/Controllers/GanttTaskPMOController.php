@@ -52,7 +52,7 @@ class GanttTaskPMOController extends Controller
         ]);
     }
  
-    public function destroy(R$id, equest $request){
+    public function destroy($id){
         $task = GanttTaskPmo::find($id);
         $task->delete();
  
@@ -72,6 +72,19 @@ class GanttTaskPMOController extends Controller
             // GanttTaskPmo::where('id', $loop->id)->update(['baseline_end'=> (new Carbon( $loop->start_date))->addDays((int) $loop->duration)]);
             GanttTaskPmo::where('id', $loop->id)->update(['baseline_end'=> $loop->end_date]);
         }
+
+        return response()->json([
+            "action"=> "updated"
+        ]);
+    }
+
+    public function updateTask(Request $request)
+    {
+        $getTask = GanttTaskPmo::where('id_pmo',$request->id_pmo)->where('text',$request->text)->first();
+        $getTask->start_date = $request->start_date;
+        $getTask->end_date = $request->end_date;
+        $getTask->text = $request->text;
+        $getTask->save();
 
         return response()->json([
             "action"=> "updated"
