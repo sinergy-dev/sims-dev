@@ -590,7 +590,7 @@
             <form action="" id="" name="">
                 @csrf
                 <div style="display: flex;">
-                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('timesheet/template_upload_timesheet_csv.csv')}}" style="cursor:pointer;">link</a></span>
+                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('https://drive.google.com/uc?export=download&id=1D0qQfoBYLNYkDSVnPjVB-liWkf3qL4mo')}}" style="cursor:pointer;">link</a></span>
                 </div>
                 <input type="file" name="inputCsv" id="inputCsv" class="form-control">
             </form>
@@ -3011,49 +3011,66 @@
     }
 
     function importCsv(url){
+      $("#inputCsv").val("")
       $("#ModalImport").modal("show")
       // '{{action('TimesheetController@uploadCSV')}}'
       // window.open(url, "_blank");
     }
 
     function uploadCsv(){
-      var data = new FormData();
-      data.append('csv_file',$('#inputCsv').prop('files')[0]);
-      data.append('_token','{{ csrf_token() }}');
+      if ($("#inputCsv").val() == "") {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Please upload your csv!',
+        })
+      }else{
+        var data = new FormData();
+        data.append('csv_file',$('#inputCsv').prop('files')[0]);
+        data.append('_token','{{ csrf_token() }}');
 
-      $.ajax({
-        type:"POST",
-        url:"{{url('/timesheet/uploadCSV')}}",
-        processData: false,
-        contentType: false,
-        data:data,
-        beforeSend:function(){
-          Swal.fire({
-              title: 'Please Wait..!',
-              text: "It's sending..",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              customClass: {
-                  popup: 'border-radius-0',
-              },
-          })
-          Swal.showLoading()
-        },
-        success: function(results)
-        {
+        $.ajax({
+          type:"POST",
+          url:"{{url('/timesheet/uploadCSV')}}",
+          processData: false,
+          contentType: false,
+          data:data,
+          beforeSend:function(){
             Swal.fire({
-              icon: 'success',
-              title: 'Create Timesheet Succesfully!',
-              text: 'Click Ok to reload page',
-            }).then((result,data) => {
-              if (result.value) {
-                $("#ModalImport").modal("hide")
-                loadData()              
-              }
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
             })
-        }
-      })
+            Swal.showLoading()
+          },
+          success: function(results)
+          {
+              if (results.status == "Error") {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error! '+ results.text,
+                  text: 'Please check again!',
+                })
+              }else{
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Create Timesheet Succesfully!',
+                  text: 'Click Ok to reload page',
+                }).then((result,data) => {
+                  if (result.value) {
+                    $("#ModalImport").modal("hide")
+                    loadData()              
+                  }
+                })
+              } 
+          }
+        })
+      }
     }
 
     $('input[type="file"][name="inputCsv"]').change(function(){
