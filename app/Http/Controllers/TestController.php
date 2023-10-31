@@ -35,8 +35,12 @@ use App\Mail\CutiKaryawan;
 
 use App\PresenceHistory;
 use App\PresenceLocationUser;
+use Illuminate\Support\Facades\Storage;
 
 use PDF;
+
+use DatePeriod;
+use DateInterval;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -779,15 +783,33 @@ class TestController extends Controller
 	}
 
 	public function addConfigFeature(Request $req){
-		$index_of = DB::table('features')->latest('index_of')->first()->index_of + 1;
+		if ($req->id_feature) {
+			$group_name = DB::table('features')->where('id',$req->id_feature)->first();
 
-		DB::table('features')->insert([
+			$groupId = DB::table('features')->select('id')->where('group',$group_name->group)->get();
+
+			foreach($groupId as $groupId){
+				DB::table('features')
+					->where('id',$groupId->id)
+					->update([
+					'icon' => $req->icon,
+					'icon_group' => $req->icon,
+				]);
+			}
+		}else{
+			$index_of = DB::table('features')->latest('index_of')->first()->index_of + 1;
+
+			DB::table('features')->insert([
 				'name' => $req->name,
 				'description' => $req->description,
 				'group' => $req->group,
 				'index_of'=> $index_of,
-				'url'=>$req->url
-		]);
+				'url'=>$req->url,
+				'icon' => $req->icon,
+				'icon_group' => $req->icon,
+			]);
+		}
+		
 
 		return "Success";
 	}
@@ -808,6 +830,14 @@ class TestController extends Controller
 	public function getFeature(Request $req){
 		return DB::table('features')->get();
 	}
+
+	public function getConfigFeature(Request $req){
+		return DB::table('features')->where('id',$req->id)->get();
+	}
+
+	public function getWorkDays(Request $request){
+        return $data = DB::table('tb_timesheet')->select('users.name')->join('users','users.nik','tb_timesheet.nik')->whereMonth('start_date','7')->groupby('tb_timesheet.nik')->get();
+    }
 
 	public function getRoleDetail(Request $req){
 		return collect([
@@ -1367,6 +1397,41 @@ class TestController extends Controller
             );
 
 		return $mail;
+	}
+
+	public function getDataIcon(Request $request){
+		// $jsonFilePath = 'app'; // Path to the JSON file within the storage directory
+
+	 //    // Check if the file exists
+	 //    if (Storage::exists($jsonFilePath)) {
+	 //        $jsonData = Storage::get($jsonFilePath);
+	 //        $decodedData = json_decode($jsonData, true);
+
+	 //        return response()->json($decodedData);
+	 //    } else {
+	 //        return response()->json(['error' => 'File not found'], 404);
+	 //    }
+
+		$directoryPath = 'app'; // Replace with the name of the directory you want to list
+
+		if (Storage::exists($directoryPath)) {
+		    $files = Storage::files($directoryPath);
+		    $directories = Storage::directories($directoryPath);
+
+		    // List files
+		    echo "Files in $directoryPath:<br>";
+		    foreach ($files as $file) {
+		        echo $file . "<br>";
+		    }
+
+		    // List subdirectories
+		    echo "<br>Subdirectories in $directoryPath:<br>";
+		    foreach ($directories as $dir) {
+		        echo $dir . "<br>";
+		    }
+		} else {
+		    echo "Directory $directoryPath does not exist.";
+		}
 	}
 
 }
