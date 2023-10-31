@@ -1626,7 +1626,7 @@ class TimesheetController extends Controller
 
         $getSbe->makeHidden($appendedAttributesToHide);
 
-        $groupByProject = $getSbe->groupBy('id_project');        
+        $groupByProject = $getSbe->groupBy('id_project');    
 
         // return $groupByProject;
 
@@ -1704,7 +1704,8 @@ class TimesheetController extends Controller
                                 "actual"                =>$data['actual'],
                                 "project_id"            =>$value_project[0]['pid'],
                                 "pid"                   =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project'],
-                                "estimated_end_date"    =>$value_project[0]['estimated_end_date']
+                                "estimated_end_date"    =>$value_project[0]['estimated_end_date'],
+                                "remaining"             =>$value_project[$upper_role_name]['sumMandays']-$data['actual']
                             ]);
                         }
                     }else{
@@ -1772,6 +1773,11 @@ class TimesheetController extends Controller
             foreach($sumPointByProject as $key_pid => $value_project){
                 if (isset($value_project[$upper_role_name][0])) {
                     foreach($value_project[$upper_role_name][0] as $data){
+                        $sum = 0;
+                        foreach($value_project[$upper_role_name][0] as $key=>$value){
+                            if(isset($value['actual']))
+                                $sum += $value['actual'];
+                        }
                         $sumPointMandays->push([
                             "name"                  =>$data['name'],
                             "nik"                   =>$data['nik'],
@@ -1779,7 +1785,8 @@ class TimesheetController extends Controller
                             "actual"                =>$data['actual'],
                             "project_id"            =>$value_project[0]['pid'],
                             "pid"                   =>$value_project[0]['pid'] . " - " . $value_project[$upper_role_name]['name_project'],
-                            "estimated_end_date"    =>$value_project[0]['estimated_end_date']
+                            "estimated_end_date"    =>$value_project[0]['estimated_end_date'],
+                            "remaining"             =>$value_project[$upper_role_name]['sumMandays']-$sum
                         ]);
                     }
                 }else{
@@ -1787,6 +1794,7 @@ class TimesheetController extends Controller
                 } 
             }
         }
+
         // $sumPointSbeFinal = collect();
         // foreach($sumPointByProject as $value_final){
         //     $sumPointSbeFinal->push(["pid"=>$value_final[0]["pid"],collect(["PMO"=>])=>$]);
@@ -1807,24 +1815,25 @@ class TimesheetController extends Controller
         if ($role == 'PMO') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV' || $cek_role_name != "") {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
+
+                $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
             } else {
-                $sumMandays  = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
+                $sumMandays  = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
         }else if ($role == 'DPG') {
             if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV' || $cek_role_name != "") {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
 
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
+                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
             } else {
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
+                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
         }elseif ($role == 'MSM') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV' || $cek_role_name != "") {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
+                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
             } else {
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','tb_timesheet.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
+                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
         }
 
@@ -1832,10 +1841,13 @@ class TimesheetController extends Controller
             return round($group->sum('point_mandays'),2);
         });
 
-
         $sumPointMandays = collect();
         foreach($sumPointByUser as $key_point => $valueSumPoint){
-            $sumPointMandays->push(["name"=>$key_point,"nik"=>collect($sumMandays)->first()->nik,"actual"=>$valueSumPoint]); 
+            foreach($sumMandays as $dataMandays){
+                if ($dataMandays->name == $key_point) {
+                    $sumPointMandays->push(["name"=>$key_point,"nik"=>$dataMandays->nik,"actual"=>$valueSumPoint]); 
+                }
+            }
         }
 
         $collection = collect($sumPointMandays);        
@@ -1846,7 +1858,7 @@ class TimesheetController extends Controller
             if ($data_uniq['name'] == $key_uniq) {
                 $arrSumPoint->push([
                     "name"      =>$data_uniq['name'],
-                    "nik"       =>collect($sumMandays)->first()->nik,
+                    "nik"       =>$data_uniq['nik'],
                     "actual"    =>$data_uniq['actual']
                 ]);
             }
@@ -6956,10 +6968,10 @@ class TimesheetController extends Controller
 
     public function detailActivitybyPid(Request $request)
     {
-        $data = TimesheetByDate::leftJoin('tb_timesheet_phase','tb_timesheet_phase.id','tb_timesheet.phase')
+        $data = TimesheetByDate::join('users','users.nik','tb_timesheet.nik')->leftJoin('tb_timesheet_phase','tb_timesheet_phase.id','tb_timesheet.phase')
             ->leftJoin('tb_timesheet_task','tb_timesheet_task.id','tb_timesheet.task')
-            ->select('nik','pid','start_date')
-            ->where('nik',$request->nik)
+            ->select('tb_timesheet.nik','pid','start_date','users.name')
+            ->where('tb_timesheet.nik',$request->nik)
             ->where('pid',$request->pid)
             ->orderby('start_date','asc')->distinct()->get();
 
