@@ -510,7 +510,11 @@ Permission Config
 					<div class="form-group">
 						<label>Description</label>
 						<textarea class="form-control" id="description-feature" placeholder="ex: Digunakan untuk absen personal"></textarea>
-					</div>					
+					</div>
+					<div class="form-group">
+						<label>Icon</label>
+						<input class="form-control" id="icon-feature" placeholder="ex: fa fa-pencil"/>
+					</div>						
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -619,6 +623,46 @@ Permission Config
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" id="modal-edit-config-feature">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Edit Feature</h4>
+				</div>
+				<div class="modal-body">
+					<input type="" name="" id="id-feature-edit" hidden="">
+					<div class="form-group">
+						<label>Name</label>
+						<input type="" name="" class="form-control text-capitalize" id="name-feature-edit" disabled placeholder="ex: 'Presence Personal'">
+					</div>
+					<div class="form-group">
+						<label>Group</label>
+						<input type="" name="" class="form-control" id="group-feature-edit" disabled placeholder="ex: 'Presence'">
+					</div>
+					<div class="form-group">
+						<label>Url</label>
+						<input type="" name="" class="form-control text-lowercase" disabled id="url-feature-edit" placeholder="ex: 'presence/personal'">
+					</div>
+					<div class="form-group">
+						<label>Description</label>
+						<textarea class="form-control" id="description-feature-edit" disabled placeholder="ex: Digunakan untuk absen personal"></textarea>
+					</div>
+					<div class="form-group">
+						<label>Icon</label>
+						<select class="form-control" id="icon-feature-edit" style="width:100%!important" placeholder="ex: fa fa-pencil"><select/>
+					</div>					
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="editConfigFeature()">Create</button>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection
 @section('scriptImport')
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -685,7 +729,7 @@ Permission Config
 				{ 
 					title: "Role",
 					data: "name_roles"
-				},
+				}				
 			],
 			lengthChange: false
 		});
@@ -744,6 +788,13 @@ Permission Config
 					title: "Url",
 					data: "url"
 				},
+				{
+					class:"text-center",
+					title: "Action",
+					render: function ( data, type, row ) {
+						return '<button class="btn btn-sm btn-default" onclick="editFeature(' + row.id + ')">Edit</button>';
+					}
+				}
 			]
 		});
 		var dataTableFeatureItem;
@@ -1112,10 +1163,30 @@ Permission Config
 					url:$("#url-feature").val(),
 					group:$("#group-feature").val(),
 					description:$("#description-feature").val(),
+					icon:$("#icon-feature").val()
 				},
 				success: function(result) {
 					// console.log(result)
 					$("#modal-config-feature").modal('hide')
+				}
+			})
+		}
+
+		function editConfigFeature(){
+			$.ajax({
+				type:"GET",
+				url:"{{url('permission/addConfigFeature')}}",
+				data:{
+					id_feature:$("#id-feature-edit").val(),
+					name:$("#name-feature-edit").val(),
+					url:$("#url-feature-edit").val(),
+					group:$("#group-feature-edit").val(),
+					description:$("#description-feature-edit").val(),
+					icon:$("#icon-feature-edit").val()
+				},
+				success: function(result) {
+					// console.log(result)
+					$("#modal-edit-config-feature").modal('hide')
 				}
 			})
 		}
@@ -1158,5 +1229,51 @@ Permission Config
 				}
 			})
 		}
+
+		function editFeature(id){
+			$.ajax({
+				type:"GET",
+				url:"{{url('permission/getConfigFeature')}}",
+				data:{
+					id:id
+				},
+				success: function(result){
+					$.each(result,function(index,item){
+						console.log(item.url)
+						$("#id-feature-edit").val(item.id)
+						$("#icon-feature-edit").val(item.icon_group).trigger('change')
+						$("#description-feature-edit").val(item.description)
+						$("#url-feature-edit").val(item.url)
+						$("#group-feature-edit").val(item.group)
+						$("#name-feature-edit").val(item.name)
+					})
+				},
+				complete: function(){
+					$("#modal-edit-config-feature").modal('show')
+				}
+			})
+		}
+
+		$.ajax({
+			type:"GET",
+			dataType:"json",
+			url:"{{asset('/public/json/iconData.json')}}",
+			success: function(result){
+				console.log("hhhhh")
+				$('#icon-feature-edit').select2({
+			        data: result,
+			        escapeMarkup: function (markup) {
+			            return markup;
+			        }
+			    });
+
+			    $('#icon-feature').select2({
+			        data: result,
+			        escapeMarkup: function (markup) {
+			            return markup;
+			        }
+			    });
+			},
+		})
 	</script>
 @endsection
