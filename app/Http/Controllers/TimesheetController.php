@@ -512,7 +512,7 @@ class TimesheetController extends Controller
             ]);
         } else if ($result == 'Tidak ada activity') {
             return collect([
-                "text" => 'Format tidak sesuai',
+                "text" => 'Tidak ada activity',
                 "status" => 'Error',
             ]);
         } else {
