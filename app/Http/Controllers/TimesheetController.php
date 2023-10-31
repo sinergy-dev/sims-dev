@@ -1043,12 +1043,12 @@ class TimesheetController extends Controller
         $hidden = ['planned','threshold'];
 
         $plannedDone = DB::table('tb_timesheet')
-                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as planned"))
+                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 WHEN (point_mandays = '') THEN 0 ELSE 0 END) as planned"))
                    ->where('schedule', 'Planned')
                    ->where('status', 'Done');
 
         $unPlannedDone = DB::table('tb_timesheet')
-                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as unplanned"))
+                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 WHEN (point_mandays = '') THEN 0 ELSE point_mandays END) as unplanned"))
                    ->where('schedule', 'Unplanned')
                    ->where('status', 'Done');
 
@@ -1061,7 +1061,7 @@ class TimesheetController extends Controller
             })
             ->LeftjoinSub($plannedDone, 'planned_done', function ($join) {
                 $join->on('tb_timesheet.id', '=', 'planned_done.id');
-            })->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),DB::raw("(CASE WHEN (point_mandays is null) THEN 0 ELSE point_mandays END) as point_mandays"),'tb_timesheet.id','planned','unplanned')
+            })->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),'tb_timesheet.id',DB::raw("(CASE WHEN (planned is null) THEN 0 ELSE planned END) as planned"),DB::raw("(CASE WHEN (unplanned is null) THEN 0 ELSE unplanned END) as unplanned"))
             ->where('tb_timesheet.nik',$request->nik)
             ->orderby('id','asc');
 
