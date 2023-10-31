@@ -35,6 +35,11 @@ Route::get('/testEmailTrap',function(){
 	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
 });
 
+Route::get('/create-storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Tautan simbolik ke folder penyimpanan telah dibuat.';
+});
+
 Route::get('testCutiEmail','TestController@mailCuti');
 Route::get('testFilter','TestController@testFilter');
 Route::get('getWin','TestController@getWin');
@@ -160,9 +165,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('permission/addConfigFeature','TestController@addConfigFeature');
 	Route::get('permission/addConfigFeatureItem','TestController@addConfigFeatureItem');
 	Route::get('permission/getRoleDetail','TestController@getRoleDetail');
+	Route::get('permission/getConfigFeature','TestController@getConfigFeature');
 	Route::get('permission/getFeatureItem','TestController@getFeatureItem');
 	Route::get('permission/getFeatureItemParameterByRoleGroup','TestController@getFeatureItemParameterByRoleGroup');
 	Route::get('permission/getFeatureItemParameterByFeatureItem','TestController@getFeatureItemParameterByFeatureItem');
+	Route::get('permission/jsonIconData', 'TestController@getDataIcon');
 
 	Route::get('/data/{id}', 'ImplementationController@get');
 	Route::get('/data_pmo', 'PMOController@getGantt');
@@ -1363,6 +1370,60 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('timesheet/deleteActivity','TimesheetController@deleteActivity');
 	Route::post('timesheet/updateDateEvent','TimesheetController@updateDateEvent');
 	Route::get('timesheet/detailActivitybyPid','TimesheetController@detailActivitybyPid');
+
+
+
+
+	Route::get('/insights','InsightsController@index');
+	Route::get('/insights/create','InsightsController@create');
+	Route::delete('/insights/delete/{id}','InsightsController@destroy');
+	Route::post('/insights/store','InsightsController@store');
+	Route::get('/insights/edit/{id}','InsightsController@edit');
+	Route::put('/insights/update/{id}','InsightsController@update');	
+	Route::post('/ckeditor/upload','InsightsController@ckstore')->name('ckeditor.upload');
+	
+	Route::get('/solution','SolutionController@index');
+	Route::post('/solution/create','SolutionController@store');
+	Route::put('/solution/update/{id}','SolutionController@update');
+	
+	Route::get('/message','QuotationController@index');
+	Route::get('/message/detail/{id}','QuotationController@show');
+	Route::delete('/message/delete/{id}','QuotationController@destroy');
+	Route::post('/message/send','QuotationController@store');
+	
+	Route::get('/tag', 'TagController@index');
+	Route::delete('/tag/delete/{id}', 'TagController@destroy');
+	Route::get('/tag/edit/{id}', 'TagController@edit');
+	Route::put('/tag/update/{id}', 'TagController@update');
+	
+	Route::get('/campaign','CampaignController@index');
+	Route::get('/campaign/create','CampaignController@create');
+	Route::post('/campaign/store','CampaignController@store');
+	Route::get('/campaign/edit/{id}','CampaignController@edit');
+	Route::put('/campaign/update/{id}','CampaignController@update');
+	Route::delete('/campaign/delete/{id}','CampaignController@destroy');
+	
+	Route::get('/category','CategoryController@index');
+	Route::post('/category/store','CategoryController@store');
+	Route::get('/category/p/edit/{id}','CategoryController@editP');
+	Route::put('/category/p/update/{id}','CategoryController@updateP');
+	Route::delete('/category/dp/{id}','CategoryController@destroyP');
+	
+	Route::get('/project-references', 'ProjectController@index');
+	Route::get('/project-references/create', 'ProjectController@create');
+	Route::post('/project-references/store', 'ProjectController@store');
+	Route::get('/project-references/edit/{id}', 'ProjectController@edit');
+	Route::delete('/project-references/destroy/{id}', 'ProjectController@destroy');
+	Route::put('/project-references/update/{id}', 'ProjectController@update');
+	
+	Route::get('/career','CareerController@index');
+	Route::get('/career/register','CareerController@register');
+	Route::delete('/career/register/{id}','CareerController@register_destroy');
+	Route::post('/career/store','CareerController@store');
+	Route::delete('/career/d/{id}','CareerController@destroy');
+	Route::put('/career/update/{id}','CareerController@update');
+	Route::get('/career/edit/{id}','CareerController@edit');
+	
 
 });
 
