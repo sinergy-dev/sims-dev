@@ -14,6 +14,7 @@ use App\Mail\CreateLeadRegister;
 use App\Mail\AssignPresales;
 use App\Mail\RaiseTender;
 use App\Mail\AddContribute;
+use App\Cuti;
 
 use App\Mail\RequestNewAssetHr;
 use App\Notifications\Testing;
@@ -63,6 +64,56 @@ use App\Mail\EmailChangeNominal;
 
 class TestController extends Controller
 {
+
+	public function getWorkDays(Request $request){
+        $client = new Client();
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
+        $json = (string)$api_response->getBody();
+        $holiday_indonesia = json_decode($json, true);
+
+        $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
+        $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
+
+        $holiday_indonesia_final_detail = collect();
+        $holiday_indonesia_final_date = collect();
+        return $holiday_indonesia;
+        
+        foreach ($holiday_indonesia["items"] as $value) {
+            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && (strstr($value['summary'], "Joint")) )){
+                $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
+                $holiday_indonesia_final_date->push($value["start"]["date"]);
+            }
+        }
+
+
+        $period = new DatePeriod(
+             new DateTime($startDate),
+             new DateInterval('P1D'),
+             new DateTime($endDate . '23:59:59')
+        );
+
+        $workDays = collect();
+        foreach($period as $date){
+            if(!($date->format("N") == 6 || $date->format("N") == 7)){
+                $workDays->push($date->format("Y-m-d"));
+            }
+        }
+
+        // return $period;
+
+        $workDaysMinHoliday = $workDays->diff($holiday_indonesia_final_date->unique());
+        $workDaysMinHolidayKeyed = $workDaysMinHoliday->map(function ($item, $key) {
+            // return ["date" => $item];
+            // return (object) array('date' => $item);
+            return $item;
+        });
+
+        return collect(["holiday" => $holiday_indonesia_final_detail, "workdays" => $workDaysMinHolidayKeyed]);
+        
+    }
+
 	public function send_mail(){
 		// $email = 'faiqoh@sinergy.co.id';
 	//       Notification::route('mail', $email)->notify(new NewLead($email));  
@@ -84,6 +135,120 @@ class TestController extends Controller
 				return new MailResult($users,$pid_info);
 
 				// return Mail::to('tito@sinergy.co.id')->send(new MailResult($users,$pid_info));
+	}
+
+	public function getWin(Request $request)
+	{
+  //       // return $getRole = DB::table('roles')->join('role_user','role_user.role_id','roles.id')->select('roles.name')->where('user_id',Auth::User()->nik)->first()->name;
+		// return Cuti::join('users','users.nik','=','tb_cuti.nik')
+  //                   ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+  //                   ->join('tb_position','tb_position.id_position','=','users.id_position')
+  //                   ->join('tb_division','tb_division.id_division','=','users.id_division')
+  //                   ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',
+  //                       DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+  //                       'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+  //                   ->orderBy('date_req','DESC')
+  //                   ->groupby('tb_cuti.id_cuti')
+  //                   ->whereYear('date_req',date('Y'))
+  //                   ->groupby('nik')->get();
+
+
+		$nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        $years = DB::table('sales_lead_register')
+        		->select('year')
+        		->where('year','!=',NULL)
+        		->groupBy('year')
+                ->orderBy('year','desc')
+                ->get();
+
+        $currentYear = Date('Y');
+
+        $presales = '';   
+
+
+		$getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`, GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->groupBy('lead_id');
+
+        $leadsnow = DB::table('sales_lead_register')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                })
+                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_territory','tb_territory.id_territory','=','u_sales.id_territory')
+                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+                ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
+                ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                ->select('sales_tender_process.win_prob',
+                    'sales_lead_register.lead_id', 
+                    'tb_contact.id_customer', 
+                    'tb_contact.code', 
+                    'sales_lead_register.opp_name',
+                    'tb_contact.customer_legal_name', 
+                    'tb_contact.brand_name', 
+                    'sales_lead_register.created_at', 
+                    'sales_lead_register.amount',
+                     'u_sales.name as name','sales_lead_register.nik',
+                     'sales_lead_register.keterangan','sales_lead_register.year', 
+                     'sales_lead_register.closing_date', 
+                     'sales_lead_register.deal_price',
+                     'u_sales.id_territory', 
+                     'tb_pid.status',
+                     'tb_presales.name_presales', 
+                     'code_company',
+                      'name_territory',
+                     'tb_presales.priority', 
+                     DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
+                ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
+                ->where('result','!=','hmm')
+                ->where('status_karyawan','!=','dummy')
+                // ->whereIn('year',$year)
+                // ->where('year', $year)
+                ->orderBy('created_at', 'desc'); 
+
+        // $total_deal_price = Sales::join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+        //                         ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+        //                         ->select(DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'))
+        //                         ->where('code_company', 'MSP')
+        //                         ->where('result','!=','hmm'); 
+
+        $total_deal_price = DB::table('sales_lead_register')
+                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+                ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                })
+                ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                ->where('result', '!=', 'hmm');
+
+        if($ter != null){
+            return $leads = $leadsnow->where('u_sales.id_company', '1')->get();
+
+            $total_deal_price = $total_deal_price->where('u_sales.id_company', '1')->first();
+            if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+                $leads = $leadsnow->where('nik_presales', $nik)->get();
+
+                // $total_deal_price = $total_deal_price->where('nik_presales', $nik)->first();
+
+            } else if ($div == 'SALES') {
+                $leads = $leadsnow->where('u_sales.id_territory', $ter)->get();
+                // $total_deal_price = $total_deal_price->where('u_sales.id_territory', $ter)->first();
+            }        
+        }else{
+            $leads = $leadsnow->get();
+            
+            $total_deal_price = $total_deal_price->sum('deal_price');
+        }  
+
+        // return $leads;
+
+
 	}
 
 	public function reportPdfTag(Request $request) {
