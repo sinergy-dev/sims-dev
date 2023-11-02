@@ -1897,6 +1897,20 @@ Ticketing
 									</div>
 								</div>
 							</div>
+							<div class="row">
+							    <div class="col-sm-4">
+							        <div class="form-group">
+							            <label>ATM Version</label>
+							            <input type="text" class="form-control" id="atmAddVersion">
+							        </div>
+							    </div>
+							    <div class="col-sm-8">
+							        <div class="form-group">
+							            <label>ATM OS</label>
+							            <input type="text" class="form-control" id="atmAddOS">
+							        </div>
+							    </div>
+							</div>
 							<div class="form-group">
 								<label>Machine Type</label>
 								<input type="text" class="form-control" id="atmAddType">
@@ -2050,6 +2064,20 @@ Ticketing
 									<input type="text" class="form-control" id="atmEditLocation">
 								</div>
 							</div>
+						</div>
+						<div class="row">
+						    <div class="col-sm-4">
+						        <div class="form-group">
+						            <label>ATM Version</label>
+						            <input type="text" class="form-control" id="atmEditVersion">
+						        </div>
+						    </div>
+						    <div class="col-sm-8">
+						        <div class="form-group">
+						            <label>ATM OS</label>
+						            <input type="text" class="form-control" id="atmEditOS">
+						        </div>
+						    </div>
 						</div>
 						<div class="row">
 							<div class="col-sm-12">
@@ -5520,6 +5548,8 @@ Ticketing
 				atmID:$("#atmAddID").val(),
 				atmSerial:$("#atmAddSerial").val(),
 				atmLocation:$("#atmAddLocation").val(),
+				atmVersion:$("#atmAddVersion").val(),
+				atmOS:$("#atmAddOS").val(),
 				atmType:atmType,
 				atmAddress:$("#atmAddAddress").val(),
 				atmActivation:$("#atmAddActivation").val(),
@@ -5690,6 +5720,8 @@ Ticketing
 				atmID:$("#atmEditID").val(),
 				atmSerial:$("#atmEditSerial").val(),
 				atmLocation:$("#atmEditLocation").val(),
+				atmVersion:$("#atmEditVersion").val(),
+				atmOS:$("#atmEditOS").val(),
 				atmAddress:$("#atmEditAddress").val(),
 				atmActivation:$("#atmEditActivation").val(),
 				atmType:$("#atmEditType").val(),
