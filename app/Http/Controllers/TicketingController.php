@@ -1087,6 +1087,8 @@ class TicketingController extends Controller
 				"activation" => $request->atmActivation == "" ? "1970-01-01" : Carbon::createFromFormat('d/m/Y',$request->atmActivation)->formatLocalized('%Y-%m-%d'),
 				"note" => $request->atmNote,
 				"machine_type" => $request->atmType,
+				"os_atm" => $request->atmOS,
+				"versi_atm" => $request->atmVersion
 			]);
 
 		$newAtm->save();
@@ -1157,6 +1159,8 @@ class TicketingController extends Controller
 				"activation" =>  Carbon::createFromFormat('d/m/Y',$request->atmActivation)->formatLocalized('%Y-%m-%d'),
 				"note" => $request->atmNote,
 				"machine_type" => $request->atmType,
+				"os_atm" => $request->atmOS,
+				"versi_atm" => $request->atmVersion
 			]);
 
 		$setAtm->save();
