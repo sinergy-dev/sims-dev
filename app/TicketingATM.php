@@ -22,6 +22,8 @@ class TicketingATM extends Model
 		'activation',
 		'note',
 		'machine_type',
+		'os_atm',
+		'versi_atm'
 	];
 
 	public function peripheral(){
