@@ -352,6 +352,8 @@ class SBEController extends Controller
             ])
         );
 
+        
+
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
