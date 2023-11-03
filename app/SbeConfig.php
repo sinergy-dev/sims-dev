@@ -84,6 +84,7 @@ class SbeConfig extends Model
         $total_nominal = array($key_point => 0);
         foreach($valueSumPoint as $datas){
           $data[$key_point] = collect([
+            "item"=>$datas->item,
             "total_nominal"=> $total_nominal[$key_point] += $datas->total_nominal
           ]); 
         }
