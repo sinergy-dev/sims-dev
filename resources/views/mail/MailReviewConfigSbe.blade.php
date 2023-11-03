@@ -126,8 +126,8 @@
 				              		@foreach($get_function['get_function'] as $datas)
 						                <tr>
 						                  <td style="text-align: center;border: 1px solid black;">{{++$i}}</td>
-						                  <td style="text-align: left;border: 1px solid black;">{{$datas->item}}</td>
-						                  <td style="text-align: right;border: 1px solid black;">IDR {{number_format($datas->total_nominal)}}</td>
+						                  <td style="text-align: left;border: 1px solid black;">{{$datas['item']}}</td>
+						                  <td style="text-align: right;border: 1px solid black;">IDR {{number_format($datas['total_nominal'])}}</td>
 						                </tr>
 				                	@endforeach
 				              </tbody>
@@ -185,8 +185,8 @@
 				              		@foreach($get_function['get_function'] as $datas)
 						                <tr>
 						                  <td style="text-align: center;border: 1px solid black;">{{++$i}}</td>
-						                  <td style="text-align: left;border: 1px solid black;">{{$datas->item}}</td>
-						                  <td style="text-align: right;border: 1px solid black;">IDR {{number_format($datas->total_nominal)}}</td>
+						                  <td style="text-align: left;border: 1px solid black;">{{$datas['item']}}</td>
+						                  <td style="text-align: right;border: 1px solid black;">IDR {{number_format($datas['total_nominal'])}}</td>
 						                </tr>
 				                	@endforeach
 				              </tbody>
