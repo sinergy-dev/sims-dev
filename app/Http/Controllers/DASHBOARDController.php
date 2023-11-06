@@ -998,7 +998,7 @@ class DASHBOARDController extends Controller
         // return $this->RoleDynamic('asset_atk');
         // return $top_win_sip_ter;
 
-        return view('dashboard/dashboard_edit', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip','top_win_sip_ter','top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('Dashboard')]);
+        return view('dashboard/dashboard', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip','top_win_sip_ter','top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('Dashboard')]);
 
     }
 
@@ -1477,7 +1477,9 @@ class DASHBOARDController extends Controller
 
         $hasil2 = [0,0];
         foreach ($hasil as $key => $value) {
-            $hasil2[$key] = ($value/$pie)*100;
+            if ($value != 0) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
         }
 
         return $hasil2;
