@@ -1398,84 +1398,86 @@ class PresenceController extends Controller
                 ->toArray();
         }
 
-        // return $parameterUser;
+        if (!empty(($parameterUser))) {
+            foreach($parameterUser as $user){
+                $status[] = $user->name;
+            }
 
-        // return $startDate;
+            foreach($parameterUser as $user){
+                $NikUser[] = $user->nik;
+            }
 
-        $status;
+            foreach ($status as $key => $stat) {
+                $all = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$startDate)
+                    ->where('presence_actual','<=',$endDate)
+                    ->get()
+                    ->toarray();
+                $late = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$startDate)
+                    ->where('presence_actual','<=',$endDate)
+                    ->where('presence_condition','=',"Late")
+                    ->get()
+                    ->toarray();
+                $ontime = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$startDate)
+                    ->where('presence_actual','<=',$endDate)
+                    ->where('presence_condition','=',"On-Time")
+                    ->get()
+                    ->toarray();
+                $injury = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$startDate)
+                    ->where('presence_actual','<=',$endDate)
+                    ->where('presence_condition','=',"Injury-Time")
+                    ->get()
+                    ->toarray();
+                $absen = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$startDate)
+                    ->where('presence_actual','<=',$endDate)
+                    ->where('presence_condition','<>',"Injury-Time")
+                    ->where('presence_condition','<>',"Late")
+                    ->where('presence_condition','<>',"On-Time")
+                    ->where('presence_condition','<>',"-")
+                    ->get()
+                    ->toarray();
+
+                $where =  DB::table('presence__location_user')
+                    ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
+                    ->select('presence__location.location_name', 'user_id')
+                    ->get()
+                    ->toarray();
+
+
+                $var[$stat]["all"] = sizeof($all);
+                $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
+                $var[$stat]["late"] = sizeof($late);
+                $var[$stat]["ontime"] = sizeof($ontime);
+                $var[$stat]["injury"] = sizeof($injury);
+                $var[$stat]["absen"] = sizeof($absen);
+                $var[$stat]["where"] = $where[0]->location_name;
+                $var[$stat]["name"] = $status[$key];
+            }
+
+            return collect([
+                "range" => $startDate . " to " . $endDate,
+                "data" => $var,
+            ])->sortBy("data");
+        }else{
+            return collect([
+                "range" => $startDate . " to " . $endDate,
+                "data" => [],
+            ]);
+        }
         
-        foreach($parameterUser as $user){
-            $status[] = $user->name;
-        }
-
-        foreach($parameterUser as $user){
-            $NikUser[] = $user->nik;
-        }
-
-        foreach ($status as $key => $stat) {
-
-            $all = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$startDate)
-                ->where('presence_actual','<=',$endDate)
-                ->get()
-                ->toarray();
-            $late = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$startDate)
-                ->where('presence_actual','<=',$endDate)
-                ->where('presence_condition','=',"Late")
-                ->get()
-                ->toarray();
-            $ontime = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$startDate)
-                ->where('presence_actual','<=',$endDate)
-                ->where('presence_condition','=',"On-Time")
-                ->get()
-                ->toarray();
-            $injury = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$startDate)
-                ->where('presence_actual','<=',$endDate)
-                ->where('presence_condition','=',"Injury-Time")
-                ->get()
-                ->toarray();
-            $absen = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$startDate)
-                ->where('presence_actual','<=',$endDate)
-                ->where('presence_condition','<>',"Injury-Time")
-                ->where('presence_condition','<>',"Late")
-                ->where('presence_condition','<>',"On-Time")
-                ->where('presence_condition','<>',"-")
-                ->get()
-                ->toarray();
-
-            $where =  DB::table('presence__location_user')
-                ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
-                ->select('presence__location.location_name', 'user_id')
-                ->get()
-                ->toarray();
-
-
-            $var[$stat]["all"] = sizeof($all);
-            $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
-            $var[$stat]["late"] = sizeof($late);
-            $var[$stat]["ontime"] = sizeof($ontime);
-            $var[$stat]["injury"] = sizeof($injury);
-            $var[$stat]["absen"] = sizeof($absen);
-            $var[$stat]["where"] = $where[0]->location_name;
-            $var[$stat]["name"] = $status[$key];
-        }
-
-        return collect([
-            "range" => $startDate . " to " . $endDate,
-            "data" => $var,
-        ])->sortBy("data");
+        
     }
 
-    public function getDataReportPresence2(Request $req){
+    public function getFilterReport(Request $req){
 
         // $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
         // $endDate = Carbon::now()->format("Y-m-16");
@@ -1483,90 +1485,98 @@ class PresenceController extends Controller
             $parameterUser = DB::table('users')
                 ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
                 ->select('users.nik', 'users.name')
-                ->where('presence_actual','>=',$req->start)
-                ->where('presence_actual','<=',$req->end)
+                ->whereDate('presence_actual','>=',$req->start)
+                ->whereDate('presence_actual','<=',$req->end)
                 ->whereIn('presence__history.nik',$req->nik)
                 ->get()->toArray();  
         } else {
             $parameterUser = DB::table('users')
                 ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
                 ->select('users.nik', 'users.name')
-                ->where('presence_actual','>=',$req->start)
-                ->where('presence_actual','<=',$req->end)
+                ->whereDate('presence_actual','>=',$req->start)
+                ->whereDate('presence_actual','<=',$req->end)
                 ->get()->toArray();  
         }
-                  
-        $status;
+                
+        if (!empty(($parameterUser))) {
+            $status;
 
-        foreach($parameterUser as $user){
-            $status[] = $user->name;
+            foreach($parameterUser as $user){
+                $status[] = $user->name;
+            }
+
+            foreach($parameterUser as $user){
+                $NikUser[] = $user->nik;
+            }
+
+            foreach ($status as $key => $stat) {
+                $all = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$req->start)
+                    ->where('presence_actual','<=',$req->end)
+                    ->get()
+                    ->toarray();
+
+                $late = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$req->start)
+                    ->where('presence_actual','<=',$req->end)
+                    ->where('presence_condition','=',"Late")
+                    ->get()
+                    ->toarray();
+                $ontime = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$req->start)
+                    ->where('presence_actual','<=',$req->end)
+                    ->where('presence_condition','=',"On-Time")
+                    ->get()
+                    ->toarray();
+                $injury = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$req->start)
+                    ->where('presence_actual','<=',$req->end)
+                    ->where('presence_condition','=',"Injury-Time")
+                    ->get()
+                    ->toarray();
+                $absen = DB::table('presence__history')
+                    ->where('nik','=',$NikUser[$key])
+                    ->where('presence_actual','>=',$req->start)
+                    ->where('presence_actual','<=',$req->end)
+                    ->where('presence_condition','<>',"Injury-Time")
+                    ->where('presence_condition','<>',"Late")
+                    ->where('presence_condition','<>',"On-Time")
+                    ->where('presence_condition','<>',"-")
+                    ->get()
+                    ->toarray();
+
+                $where =  DB::table('presence__location_user')
+                    ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
+                    ->select('presence__location.location_name', 'user_id')
+                    ->get()
+                    ->toarray();
+
+
+                $var[$stat]["all"] = sizeof($all);
+                $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
+                $var[$stat]["late"] = sizeof($late);
+                $var[$stat]["ontime"] = sizeof($ontime);
+                $var[$stat]["injury"] = sizeof($injury);
+                $var[$stat]["absen"] = sizeof($absen);
+                $var[$stat]["where"] = $where[0]->location_name;
+                $var[$stat]["name"] = $status[$key];
+            }
+
+            return collect([
+                "range" => $req->start . " to " . $req->end,
+                "data" => $var,
+            ]);
+        }else{
+            return collect([
+                "range" => $req->start . " to " . $req->end,
+                "data" => [],
+            ]);
         }
-
-        foreach($parameterUser as $user){
-            $NikUser[] = $user->nik;
-        }
-
-        foreach ($status as $key => $stat) {
-
-            $all = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$req->start)
-                ->where('presence_actual','<=',$req->end)
-                ->get()
-                ->toarray();
-            $late = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$req->start)
-                ->where('presence_actual','<=',$req->end)
-                ->where('presence_condition','=',"Late")
-                ->get()
-                ->toarray();
-            $ontime = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$req->start)
-                ->where('presence_actual','<=',$req->end)
-                ->where('presence_condition','=',"On-Time")
-                ->get()
-                ->toarray();
-            $injury = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$req->start)
-                ->where('presence_actual','<=',$req->end)
-                ->where('presence_condition','=',"Injury-Time")
-                ->get()
-                ->toarray();
-            $absen = DB::table('presence__history')
-                ->where('nik','=',$NikUser[$key])
-                ->where('presence_actual','>=',$req->start)
-                ->where('presence_actual','<=',$req->end)
-                ->where('presence_condition','<>',"Injury-Time")
-                ->where('presence_condition','<>',"Late")
-                ->where('presence_condition','<>',"On-Time")
-                ->where('presence_condition','<>',"-")
-                ->get()
-                ->toarray();
-
-            $where =  DB::table('presence__location_user')
-                ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
-                ->select('presence__location.location_name', 'user_id')
-                ->get()
-                ->toarray();
-
-
-            $var[$stat]["all"] = sizeof($all);
-            $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
-            $var[$stat]["late"] = sizeof($late);
-            $var[$stat]["ontime"] = sizeof($ontime);
-            $var[$stat]["injury"] = sizeof($injury);
-            $var[$stat]["absen"] = sizeof($absen);
-            $var[$stat]["where"] = $where[0]->location_name;
-            $var[$stat]["name"] = $status[$key];
-        }
-
-        return collect([
-            "range" => $req->start . " to " . $req->end,
-            "data" => $var,
-        ]);
+        
     }
 
     function getLogActivityShifting(Request $req){
