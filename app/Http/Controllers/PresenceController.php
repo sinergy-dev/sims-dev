@@ -721,20 +721,20 @@ class PresenceController extends Controller
         $nicknameM = DB::table('users')
                    ->select('name as nickname','nik')
                    ->where('status_karyawan', '!=', 'dummy')
-                   ->where('name','RLIKE','^M[[:>:]]')
-                   ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
-                   ->orWhere('name','RLIKE','^Mochammad[[:>:]]')
-                   ->orWhere('name','RLIKE','^Muhammad[[:>:]]');
+                   ->where('name','RLIKE',"^M\\b")
+                   ->orWhere('name','RLIKE','^Muhammad\\b')
+                   ->orWhere('name','RLIKE','^Mochammad\\b')
+                   ->orWhere('name','RLIKE','^Muhammad\\b');
 
         $nicknameAll = DB::table('users')
                     ->select('name as nickname_all','nik')
                     ->whereNotIn('name',function($query){
                         $query->select('name')
                         ->where('status_karyawan', '!=', 'dummy')
-                        ->where('name','RLIKE','^M[[:>:]]')
-                       ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
-                       ->orWhere('name','RLIKE','^Mochammad[[:>:]]')
-                       ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
+                        ->where('name','RLIKE','^M\\b')
+                       ->orWhere('name','RLIKE','^Muhammad\\b')
+                       ->orWhere('name','RLIKE','^Mochammad\\b')
+                       ->orWhere('name','RLIKE','^Muhammad\\b')
                         ->from('users');
                     });
 
