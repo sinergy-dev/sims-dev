@@ -365,11 +365,8 @@ SBE Detail
                             }
                         }
 
-                        console.log("{{Auth::User()->nik}}")
-
                         var nik = '"' + "{{Auth::User()->nik}}" + '"'
                         if (!accesable.includes('radioConfig') || result.presales.includes(nik)) {
-                            console.log("hah")
                             $("#btnResetConfig").hide()
                             $("#btnSaveConf").hide()
                             $("input[type='radio']").prop("disabled",true)
@@ -380,8 +377,6 @@ SBE Detail
                                 })
                             })
                         }else{
-                            console.log("hooh")
-
                             if (result.getNotes.length > 0) {
                                 $("#temporaryFunction").closest(".row").siblings().first().show()
                                 $("#temporaryFunction").closest(".row").siblings().first().find(".alert").find("span").text(result.getNotes[0].notes)
@@ -449,9 +444,6 @@ SBE Detail
                             appendTemporary = appendTemporary + '                        </thead>'
                             appendTemporary = appendTemporary + '                        <tbody>'
                             $.each(items[0].get_function,function(index,itemsTemp){
-                                console.log(index)
-                                console.log(itemsTemp)
-
                                 appendTemporary = appendTemporary + '          <tr>'
                                 appendTemporary = appendTemporary + '              <td>'+ ++i +'</td>'
                                 appendTemporary = appendTemporary + '              <td>'+ index +'</td>'
@@ -1123,7 +1115,6 @@ SBE Detail
                             Object.keys(results).forEach(function(keys) {
                                 j++
                                 var resultsDetail = results[keys];
-                                console.log(keys + ": " + resultsDetail.detail_item)
 
                                 append = append + ' <tr>'
                                 append = append + '     <td>'
@@ -1157,7 +1148,6 @@ SBE Detail
                                 success:function(result){ 
                                     Object.keys(results).forEach(function(keys) {
                                         var resultsDetail = results[keys];
-                                        console.log(resultsDetail.detail_item+"---------")
 
                                         loopInt++ 
                                         $("#tableShowConfig_"+i).each(function(item,results){
@@ -1171,53 +1161,6 @@ SBE Detail
                                 }
                             })
 
-                            // $.each(results.reverse(), function(keys, resultsDetail){
-
-                            //     j++
-                            //     // console.log(keys)
-                            //     append = append + ' <tr>'
-                            //     append = append + '     <td>'
-                            //     append = append + '       <input type="" style="width:300px" class="form-control" name="inputItemsTemporary" id="" value="'+ key +'" placeholder="Ex: PM Maintenance">'
-                            //     append = append + '     </td>'
-                            //     append = append + '     <td>'
-                            //     append = append + '       <select type="" style="width:450px" class="select2 form-control detailItemsTemporary_'+ j +'" name="detailItemsTemporary" id="detailItemsTemporary">'
-                            //     append = append + '             <option></option>'
-                            //     append = append + '       </select>'
-                            //     append = append + '     </td>'
-                            //     append = append + '     <td>'
-                            //     append = append + '         <input type="number" style="width:60px" class="form-control" name="" id="" value="'+ resultsDetail.qty +'">'
-                            //     append = append + '     </td>'
-                            //     append = append + '     <td>'
-                            //     append = append + '         <input type="" class="form-control priceItemsUpdate_'+ j +'" name="" id="" readonly="" value="'+ formatter.format(resultsDetail.price) +'" style="width:300px">'
-                            //     append = append + '     </td>'
-                            //     append = append + '     <td>'
-                            //     append = append + '         <input type="" style="width:60px" class="form-control" name="manpowerItemsUpdate" id="" value="'+ resultsDetail.manpower +'">'
-                            //     append = append + '     </td>'
-                            //     append = append + '     <td>'
-                            //     append = append + '         <input type="" class="form-control totalItemsTemporary_'+ j +'" name="totalItems" id="totalItemsUpdate" readonly value="'+ formatter.format(resultsDetail.total_nominal) +'" style="width:300px">'
-                            //     append = append + '     </td>'
-                            //     append = append + '     <td></td>'
-                            //     append = append + ' </tr>'
-
-                            //     $.ajax({
-                            //         url:"{{url('/sbe/getDropdownDetailItem')}}",
-                            //         type:"GET",
-                            //         success:function(result){  
-                            //             $("#tableShowConfig_"+i).each(function(item,results){
-                            //                 z++ 
-                            //                 console.log(keys+"---------")
-                            //                 // console.log(resultsDetail.detail_item+"---------")
-
-                                            
-                            //                 $(".detailItemsTemporary_"+z).select2({
-                            //                     placeholder:"Select Detail Items",
-                            //                     data:result.data,
-                            //                     disabled:true
-                            //                 }).val(resultsDetail.detail_item).trigger("change")
-                            //             })
-                            //         }
-                            //     })
-                            // })
                             append = append + '        </tbody>'
                             append = append + '        <tfoot>'
                             append = append + '          <tr>'
@@ -1286,8 +1229,6 @@ SBE Detail
           return 0;
         });
 
-        // Do something with the sorted data
-        console.log(data);
     }
 
     //for create SBE
@@ -1817,10 +1758,8 @@ SBE Detail
                             success:function(result){     
                                 Object.keys(results).forEach(function(keys) {
                                     var resultsDetail = results[keys];
-                                    console.log(resultsDetail.detail_item+"---------")
                                     z++ 
                                     $("#tableItemsUpdateConfig_"+i).each(function(item,results){
-                                        console.log(keys+"------")
                                         $(".detailItemsUpdate_"+z).select2({
                                             placeholder:"Select Detail Items",
                                             data:result.data
@@ -2315,12 +2254,7 @@ SBE Detail
                 
             })
             
-         
-            console.log(isCompleteFillSO)
-            console.log(isCompleteFillImp)
-            console.log(isCompleteFillMnS)
             $("input[class='cbConfig']").each(function(item,value){
-                console.log(value.id)
                 if ($("#"+value.id).is(":checked") == true) {
                     arrSelectConf.push(value.id)
 
@@ -2354,8 +2288,6 @@ SBE Detail
             arrSelectConf = $.unique(arrSelectConf)
             arrCompleteFill = $.unique(arrCompleteFill)
 
-            console.log(arrSelectConf)
-            console.log(arrCompleteFill)
             if (arrSelectConf.length == arrCompleteFill.length) {
                 isReadyStore = true
             }else{
@@ -2414,10 +2346,6 @@ SBE Detail
     }
 
     function cekTableLength(arrTableSO,arrTableImp,arrTableMnS,isReadyStore,formData,swalFireCustom,swalSuccess,url){
-        console.log(arrTableSO.length + "SO")
-        console.log(arrTableImp.length + "imp")
-        console.log(arrTableMnS.length + "Mns")
-
         if (isReadyStore == true) {
             createPost(swalFireCustom,formData,swalSuccess,url)
         }else{
@@ -2428,53 +2356,6 @@ SBE Detail
                 $(".nav-tabs-custom").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please Add Config!</div>') 
             }
         }
-        // if (arrTableSO.length > 0 || arrTableImp.length > 0 || arrTableMnS.length > 0) {
-        //     if (arrTableSO.length > 0 ) {
-        //         if ($("#durationSO").val() == "") {
-        //             $("#durationSO").next().show()
-        //             $("#durationSO").closest("div").addClass("has-error")
-        //         }
-        //     }
-
-        //     if (arrTableImp.length > 0) {
-        //         if ($("#durationImp").val() == "") {
-        //             $("#durationImp").next().show()
-        //             $("#durationImp").closest("div").addClass("has-error")
-        //         }
-        //     }
-
-        //     if (arrTableMnS.length > 0) {
-        //         if ($("#durationMnS").val() == "") {
-        //             $("#durationMnS").next().show()
-        //             $("#durationMnS").closest("div").addClass("has-error")
-        //         }
-        //     }
-
-        //     console.log(isReadyStore)
-            
-        //     // if ($("#durationSO").val() == "" || $("#durationImp").val() == "" || $("#durationMnS").val() == "") {
-                
-
-                
-
-        //     //     if ($("#durationMnS").val() == "") {
-        //     //         $("#durationMnS").next().show()
-        //     //         $("#durationMnS").closest("div").addClass("has-error")
-        //     //     }
-                
-        //     //     // $("#durationSO").css("border-color","red")
-        //     // }else{
-                
-        //     // }
-        // }else{
-        //     if (isReadyStore != "tab") {
-        //         if ($(".nav-tabs-custom").find('.alert-danger').length == 0) {
-        //             $(".nav-tabs-custom").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please Add Config!</div>') 
-        //         }
-               
-        //    }
-           
-        // }
     }
 
     var arrItems = []
@@ -2639,7 +2520,6 @@ SBE Detail
     }
 
     function validateInput(val){
-        console.log()
         if ($(val).is("select")) {
             if (val.value != "") {
                 $("#"+val.id).next().next().hide()
