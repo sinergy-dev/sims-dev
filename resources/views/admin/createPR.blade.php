@@ -1124,6 +1124,10 @@
           {
             "id": "lokasi",
             "text": "Lokasi"
+          },
+          {
+            "id": "ttk",
+            "text": "Ttk"
           }
         ]
       }
