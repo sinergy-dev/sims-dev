@@ -150,13 +150,18 @@ Presence Report
 			Pace.track(function() {
 				$.ajax({
 					type:"GET",
-					url:"{{url('/presence/report/getData2')}}",
+					url:"{{url('/presence/report/getDataReportPresence')}}",
+					beforeSend:function(){
+	  				$("#table_report").empty("")
+	  				$("#table_report").append("<tr><td colspan='8'> <p style='text-align:center'>Loading . . .</p></td></tr>")
+					},
 					success: function(result){
+	  				$("#table_report").empty("")
+
 						$(".box-title").text("This period " + result.range)
 						var append = ""
 						var no = 1
 						$.each(result.data,function(index,data){
-							console.log(data.name)
 							append = append + "<tr>"
 							append = append + "	<td>" + no++ + "</td>"
 							append = append + "	<td>" + data.name + "</td>"
@@ -169,7 +174,11 @@ Presence Report
 							append = append + "</tr>"
 						})
 
-						$("#table_report").append(append)
+						if (result.data.length == 0) {
+							$("#table_report").append("<tr><td colspan='8'> <p style='text-align:center'>Data is empty!</p></td></tr>")
+						}else{
+							$("#table_report").append(append)
+						}
 					}
 				})
 			})
@@ -205,7 +214,6 @@ Presence Report
 			endDate = end.format('D MMMM YYYY');
 
 			table_presence()
-			console.log(startDay + "" + endDay)
 		});
 
 		$(document).on('change', '.validationCheck', function() {
@@ -268,16 +276,17 @@ Presence Report
 							'end' : endDay,
 							'nik' : filterUser,
 						},
+						beforeSend:function(){
+		  				$("#table_report").empty("")
+		  				$("#table_report").append("<tr><td colspan='8'> <p style='text-align:center'>Loading . . .</p></td></tr>")
+						},
 						success: function(result){
-		  				$("#table_report").empty()
+	  					$("#table_report").empty("")
 
-							console.log(filterUser)
 							$(".box-title").text("This period " + result.range)
-							console.log(result.range)
 							var append = ""
 							var no = 1
 							$.each(result.data,function(index,value){
-								console.log(value.name)
 								append = append + "<tr>"
 								append = append + "	<td>" + no++ + "</td>"
 								append = append + "	<td>" + value.name + "</td>"
@@ -290,7 +299,11 @@ Presence Report
 								append = append + "</tr>"
 							})
 
-							$("#table_report").append(append)
+							if (result.data.length == 0) {
+								$("#table_report").append("<tr><td colspan='8'> <p style='text-align:center'>Data is empty!</p></td></tr>")
+							}else{
+								$("#table_report").append(append)
+							}
 						}
 					})
 				})	  	
