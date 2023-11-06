@@ -258,9 +258,6 @@ Presence Setting
 
 @section('script')
 <script type="text/javascript">
-	// Script yang import dari CDN ato Local ada di sini
-	console.log('Hi')
-
 	$.ajax({
 		type:"GET",
 		url:"{{url('presence/setting/getListUser')}}",
@@ -297,7 +294,6 @@ Presence Setting
 			lengthChange: false
 		})
 
-			console.log(result)
 		}
 	})
 
@@ -353,7 +349,6 @@ Presence Setting
 				// $("#location_before").val(result.data[0].location_name)
 				// $("#location_before_id").val(result.data[0].location_id)
 				// $("#location_after").empty()
-				console.log(result.data[0].location_id)
 				if (result.data[0].location_id != null) {
 					var strx = result.data[0].location_id.split(',')
 					var array = []
@@ -387,8 +382,6 @@ Presence Setting
 				$("#btnUpdateLocation").click(function(){
 					$("#btnUpdateLocation").attr("onclick",updateLocation(result.data[0].nik))
 				})
-
-				console.log(result)
 			}
 		})
 	}
@@ -551,10 +544,8 @@ Presence Setting
 		});
 
 		var autocomplete = new google.maps.places.Autocomplete((document.getElementById('search')));
-		console.log(autocomplete)
 
 		 map.addListener('click', function(result) {
-			console.log(result.latLng)
 			marker.setVisible(false);
 			marker.setPosition(result.latLng);
 			marker.setVisible(true);
