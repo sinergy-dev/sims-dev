@@ -1149,8 +1149,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/report', 'PresenceController@presenceReport');
 	Route::get('/presence/report/getData', 'PresenceController@getPresenceReportData');
 	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportReport');
-	Route::get('/presence/report/getData2', 'PresenceController@getDataReportPresence');
-	Route::get('/presence/report/getFilterReport', 'PresenceController@getDataReportPresence2');
+	Route::get('/presence/report/getDataReportPresence', 'PresenceController@getDataReportPresence');
+	Route::get('/presence/report/getFilterReport', 'PresenceController@getFilterReport');
 	Route::get('/presence/report/getReportPresenceDummy', 'PresenceController@getReportPresenceDummy');
 	
 	Route::get('/presence/setting', 'PresenceController@presenceSetting');
