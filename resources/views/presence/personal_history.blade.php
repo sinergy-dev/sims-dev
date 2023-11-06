@@ -193,6 +193,5 @@ Presence History
 
 	var ctx = document.getElementById("pieChart").getContext("2d");
 	window.myDoughnut = new Chart(ctx, config);
-	console.log(@json($presenceHistoryCounted->values()))
 </script>
 @endsection
