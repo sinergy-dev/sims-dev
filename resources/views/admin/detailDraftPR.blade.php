@@ -765,104 +765,17 @@
   })
 
   function select2TypeProduct(value){
-    var dataTypeProduct = []
-    dataTypeProduct = {
-      "results": [
-        {
-          "id": "pcs",
-          "text": "Pcs"
-        },
-        {
-          "id": "unit",
-          "text": "Unit"
-        },
-        {
-          "id": "lot",
-          "text": "Lot"
-        },
-        {
-          "id": "pax",
-          "text": "Pax"
-        },
-        {
-          "id": "node",
-          "text": "Node"
-        },
-        {
-         "id": "kg",
-         "text": "Kg"
-        },
-        {
-          "id": "meter",
-          "text": "Meter"
-        },
-        {
-          "id": "paket",
-          "text": "Paket"
-        },
-        {
-          "id": "tahun",
-          "text": "Tahun"
-        },
-        {
-          "id": "rell",
-          "text": "Rell"
-        },
-        {
-          "id": "roll",
-          "text": "Roll"
-        },
-        {
-          "id": "ea",
-          "text": "Ea"
-        },
-        {
-          "id": "box",
-          "text": "Box"
-        },
-        {
-          "id": "rim",
-          "text": "Rim"
-        },
-        {
-          "id": "pad",
-          "text": "Pad"
-        },
-        {
-          "id": "set",
-          "text": "Set"
-        },
-        {
-          "id": "pack",
-          "text": "Pack"
-        },
-        {
-          "id": "core",
-          "text": "Core"
-        },
-        {
-          "id": "bh",
-          "text": "bh"
-        },
-        {
-          "id": "mandays",
-          "text": "Mandays"
-        },
-        {
-          "id": "bln",
-          "text": "Bln"
-        },
-        {
-          "id": "lokasi",
-          "text": "Lokasi"
-        }
-      ]
-    }
-
-    $('#selectTypeProduct').select2({
-      data:dataTypeProduct.results,
-      placeholder:'Ex. Unit',
-      dropdownParent: $('#ModalDraftPr')
+    $.ajax({
+    type:"GET",
+    dataType:"json",
+    url:"{{asset('/json/typePrProduct.json')}}",
+      success: function(result){
+        $('#selectTypeProduct').select2({
+          data:result,
+          placeholder:'Ex. Unit',
+          dropdownParent: $('#ModalDraftPr')
+        })
+      }
     })
 
     if (value != undefined) {
