@@ -1037,7 +1037,7 @@
       $.ajax({
       type:"GET",
       dataType:"json",
-      url:"{{asset('/public/json/typePrProduct.json')}}",
+      url:"{{asset('/json/typePrProduct.json')}}",
         success: function(result){
           $('#selectTypeProduct').select2({
             data:result,
