@@ -1025,7 +1025,7 @@
 
                 var filteredData = uniqueData.filter(function(obj1) {
                   const found = events.some(el => el.title === obj1.title);
-                  return !events.some(function(obj2) {
+                  return events.some(function(obj2) {
                       if (obj1.title) {
                         if (obj1.title.includes(obj2.title)) {
                           return obj2.title
