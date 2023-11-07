@@ -26,10 +26,6 @@
 					<a href="#">
 						<i class="{{$group[0]->icon_group}}"></i>
 						<span>{{$key}}</span>
-						<span class="pull-right-container">
-							<small class="label pull-right bg-red" id=""></small>
-							<i class="fa fa-angle-left pull-right" id=""></i>
-						</span>
 					</a>
 					<ul class="treeview-menu">
 						@foreach($group as $keys => $childGroup)
@@ -37,15 +33,20 @@
 								<li class="activeable_menu">
 									<a href="{{url($group[$keys]->url)}}">
 										<i class="fa fa-circle-o"></i>{{$group[$keys]->name}}
+										@if($group[$keys]->name == "Lead Register")
+										<span class="pull-right-container">
+											<small class="label pull-right bg-red" id="Lead_Register"></small>
+										</span>
+										@endif
 									</a>
 								</li>
 							@else
+								@if($group[$keys]->name == "Consumable")
 								<li class="treeview">
 									<a href="#">
 										<i class="fa fa-circle-o"></i>
 										<span>{{$group[$keys]->name}}</span>
 										<span class="pull-right-container">
-											<small class="label pull-right bg-red" id=""></small>
 											<i class="fa fa-angle-left pull-right" id=""></i>
 										</span>
 									</a>
@@ -61,6 +62,7 @@
 									@endforeach
 									</ul>
 								</li>
+								@endif
 							@endif
 						@endforeach
 					</ul>
@@ -73,14 +75,35 @@
 @section('scriptNotificationSidebar')
 @parent
 <!-- From Sidebar Blade for notification -->
+<!-- Firebase-app 8.6.3-->
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<!-- Firebase-database 8.6.3-->
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+<!-- MomentJS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
 <script type="text/javascript">
+
+	var firebaseConfigSidebar = {
+	    apiKey: "{{env('FIREBASE_APIKEY')}}",
+	    authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
+	    projectId: "{{env('FIREBASE_PROJECTID')}}",
+	    storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
+	    messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
+	    appId: "{{env('FIREBASE_APPID')}}",
+	    measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
+	};
+	
+  	// Initialize Firebase
+  	firebase.initializeApp(firebaseConfigSidebar);
+
 	var firebaseRootRef = firebase.database().ref();
 
    	if ("{{Auth::User()->id_division}}" == 'SALES' || "{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
  		var personale_Ref = firebaseRootRef.child('notif/Lead_Register');
    	} else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
  		var personale_Ref = firebaseRootRef.child('notif/ID_Project');
-   	}
+   	}   	
 
    	if (personale_Ref != null) {
    		personale_Ref.orderByChild("to").equalTo("{{Auth::User()->email}}").on("value", function(snapshot) {
@@ -113,5 +136,4 @@
 	    });	
    	}
 </script>
-
 @endsection
