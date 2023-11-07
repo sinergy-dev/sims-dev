@@ -630,7 +630,6 @@ ID Project
 
     if (!(accesable.includes('btnEdit'))) {
       //action
-      console.log('gaada')
       var column3 = table.column(13);
       column3.visible(!column3.visible() );
     }
@@ -1051,7 +1050,6 @@ ID Project
 
   $('#table-pid').on('click', '.btn-edit', function(){
   	$('#tunggu').modal('show');
-      console.log(this.value);
       $.ajax({
         type:"GET",
         url:'{{url("getEditPID")}}',
@@ -1060,7 +1058,6 @@ ID Project
         },
         success: function(result){
         	  $('#tunggu').modal('hide');
-            console.log(result)
             $.each(result[0], function(key, value){
               $('#id_project_edit').val(value.id_project);
               $('#name_project_edit').val(value.name_project);
@@ -1133,7 +1130,6 @@ ID Project
           id:this.value,
         },
         success:function(result){
-          console.log(result)
           $('#tunggu').modal('hide');
           $("#code_name").val(result.code)
           $("#inputCustomer").val(result.lead_id)
@@ -1246,7 +1242,6 @@ ID Project
 
  $("#year_filter").change(function(){
   var filterYear = this.value;
-    console.log(this.value)
     // $.ajax({
     //   url:"getFilterYearPID",
     //   type:"GET",
@@ -1262,14 +1257,10 @@ ID Project
     @if(Auth::User()->id_division == 'FINANCE')
       
       var companyString = $('.tabs_item.active').text()
-      console.log(companyString)
-      // var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
-
       // console.log(companyString)
       if(companyString == "SIP" || companyString == "MSP"){
         $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
       } else {
-        console.log('bukan tab perusahaan')
       }
 
     @else
