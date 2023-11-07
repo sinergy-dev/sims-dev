@@ -1069,7 +1069,7 @@ class TimesheetController extends Controller
         $hidden = ['planned','threshold'];
 
         $plannedDone = DB::table('tb_timesheet')
-                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 WHEN (point_mandays = '') THEN 0 ELSE 0 END) as planned"))
+                   ->select('id','nik',DB::raw("(CASE WHEN (point_mandays is null) THEN 0 WHEN (point_mandays = '') THEN 0 ELSE point_mandays END) as planned"))
                    ->where('schedule', 'Planned')
                    ->where('status', 'Done');
 
@@ -1485,6 +1485,7 @@ class TimesheetController extends Controller
                                         ->where('roles.group','msm')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('roles.name','not like','%MSM Helpdesk%')
+                                        ->where('roles.name','not like','%MSM Lead Helpdesk%')
                                         ->where('users.status_delete','-')
                                         ->whereNotIn('nik', $sumMandays->pluck('nik'))
                                         ->get();
@@ -2789,13 +2790,18 @@ class TimesheetController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
         $data = DB::table('tb_timesheet')
-                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status','users.nik')->where('status_karyawan','!=','dummy')->selectRaw('MONTH(start_date) AS month_number');
+                ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status','users.nik')
+                    ->where('status_karyawan','!=','dummy')
+                    ->where('status_delete','!=','D')
+                    ->selectRaw('MONTH(start_date) AS month_number');
 
         $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->select('users.name')
                         ->where('roles.group',$cek_role->group)
                         ->where('roles.name','not like','%Manager')
+                        ->where('roles.name','not like','%MSM Helpdesk%')
+                        ->where('roles.name','not like','%MSM Lead Helpdesk%')
                         ->where('users.status_delete','-')
                         ->get();
 
@@ -3412,11 +3418,13 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')
-                    ->where('roles.name','not like','%Manager')
+
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    // ->where('roles.name','not like','%Manager')
+                    ->where('roles.group','msm')
                     ->where('roles.name','not like','%MSM Helpdesk%')
                     ->where('roles.name','not like','%MSM Lead Helpdesk%')
-                    ->pluck('nik');
+                    ->pluck('users.nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
@@ -3569,6 +3577,7 @@ class TimesheetController extends Controller
                         ->where('roles.group',$cek_role->group)
                         ->where('roles.name','not like','%Manager')
                         ->where('roles.name','not like','%MSM Helpdesk')
+                        ->where('roles.name','not like','%MSM Lead Helpdesk')
                         ->where('users.status_karyawan','!=','dummy')
                         ->whereNotIn('nik', $data->get()->pluck('nik'))
                         ->get();
@@ -3996,6 +4005,8 @@ class TimesheetController extends Controller
                                         ->select('users.name','users.nik')
                                         ->where('roles.group',$cek_role->group)
                                         ->where('roles.name','not like','%Manager')
+                                        ->where('roles.name','not like','%MSM Helpdesk%')
+                                        ->where('roles.name','not like','%MSM Lead Helpdesk%')
                                         ->where('users.status_delete','-');
 
         if ($cek_role->group == 'pmo') {
@@ -4221,7 +4232,11 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')
+                    ->where('roles.name','not like','%Manager')
+                    ->where('roles.name','not like','%MSM Helpdesk%')
+                    ->where('roles.name','not like','%MSM Lead Helpdesk%')
+                    ->pluck('nik');
                 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('status_karyawan','!=','dummy')->where(function ($query) use ($arrayMonth) {
                                             foreach ($arrayMonth as $month) {
@@ -4457,6 +4472,8 @@ class TimesheetController extends Controller
                         ->select('users.name')
                         ->where('roles.group',$cek_role->group)
                         ->where('roles.name','not like','%Manager')
+                        ->where('roles.name','not like','%MSM Helpdesk%')
+                        ->where('roles.name','not like','%MSM Lead Helpdesk%')
                         ->where('users.status_delete','-');
 
         if ($request->task[0] === null) {
@@ -4942,7 +4959,11 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')
+                    ->where('roles.name','not like','%Manager')
+                    ->where('roles.name','not like','%MSM Helpdesk%')
+                    ->where('roles.name','not like','%MSM Lead Helpdesk%')
+                    ->pluck('nik');
 
                 if ($request->pic[0] === null) {
                     $data = $data->whereIn('tb_timesheet.nik',$listGroup);
@@ -5167,6 +5188,8 @@ class TimesheetController extends Controller
                     ->select('users.name')
                     ->where('roles.group',$request->roles)
                     ->where('roles.name','not like','%Manager%')
+                    ->where('roles.name','not like','%MSM Helpdesk%')
+                    ->where('roles.name','not like','%MSM Lead Helpdesk%')
                     ->where('users.status_delete','-')
                     ->get();
         }else{
@@ -5175,6 +5198,8 @@ class TimesheetController extends Controller
                     ->select('users.name')
                     ->where('roles.group',$cek_role->group)
                     ->where('roles.name','not like','%Manager%')
+                    ->where('roles.name','not like','%MSM Helpdesk%')
+                    ->where('roles.name','not like','%MSM Lead Helpdesk%')
                     ->where('users.status_delete','-')
                     ->get();
         }        
@@ -5777,7 +5802,11 @@ class TimesheetController extends Controller
             }
         }elseif ($cek_role->group == 'msm') {
             if ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')
+                    ->where('roles.name','not like','%Manager')
+                    ->where('roles.name','not like','%MSM Helpdesk%')
+                    ->where('roles.name','not like','%MSM Lead Helpdesk%')
+                    ->pluck('nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
