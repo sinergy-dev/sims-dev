@@ -62,6 +62,10 @@
   .dataTables_filter {
     display: none;
   }
+
+  #selectPid {
+    text-transform:uppercase;
+  }
 </style>
 @endsection
 @section('content')
@@ -2399,7 +2403,7 @@
                     // $("#selectQuoteNum").val(result.pr.quote_number).trigger("change")
 
                     $.ajax({
-                      url: "{{url('/admin/getPidAll')}}",
+                      url: "{{url('/admin/getPidUnion')}}",
                       type: "GET",
                       success: function(result) {
                         if (selectedPid) {
@@ -2412,7 +2416,7 @@
 
                         $("#selectPid").select2({
                             data: result.data,
-                            placeholder: "Select Pid",
+                            placeholder: "Select/Input Pid",
                             dropdownParent: $('#ModalDraftPr'),
                             tags: true
                         }).on('change', function() {
@@ -3257,12 +3261,12 @@
           document.getElementById("prevBtnAdd").style.display = "inline";
 
           $.ajax({
-            url: "{{url('/admin/getPidAll')}}",
+            url: "{{url('/admin/getPidUnion')}}",
             type: "GET",
             success: function(result) {
               $("#selectPid").select2({
                   data: result.data,
-                  placeholder: "Select Pid",
+                  placeholder: "Select/Input Pid",
                   dropdownParent: $('#ModalDraftPr'),
                   tags: true
               }).on('select2:select', function() {
@@ -3352,17 +3356,17 @@
             }
           }) 
 
-          $.ajax({
-            url: "{{url('/admin/getPid')}}",
-            type: "GET",
-            success: function(result) {
-              $("#selectPid").select2({
-                  data: result.data,
-                  placeholder: "Select PID",
-                  tags: true
-              })
-            }
-          }) 
+          // $.ajax({
+          //   url: "{{url('/admin/getPid')}}",
+          //   type: "GET",
+          //   success: function(result) {
+          //     $("#selectPid").select2({
+          //         data: result.data,
+          //         placeholder: "Select PID",
+          //         tags: true
+          //     })
+          //   }
+          // }) 
 
         }else if (n == 4) {
           if ($('.wysihtml5-toolbar').length == 0) {
@@ -3729,19 +3733,19 @@
                   placeholder: "Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
-                $.ajax({
-                  url: "{{url('/admin/getPid')}}",
-                  type: "GET",
-                  data: {
-                    lead_id:data
-                  },
-                  success: function(result) {
-                    $("#selectPid").select2({
-                        data: result.data,
-                        tags: true
-                    })
-                  }
-                }) 
+                // $.ajax({
+                //   url: "{{url('/admin/getPid')}}",
+                //   type: "GET",
+                //   data: {
+                //     lead_id:data
+                //   },
+                //   success: function(result) {
+                //     $("#selectPid").select2({
+                //         data: result.data,
+                //         tags: true
+                //     })
+                //   }
+                // }) 
 
                 $.ajax({
                   url: "{{url('/admin/getQuote')}}",
