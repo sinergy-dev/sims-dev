@@ -62,6 +62,10 @@
   .dataTables_filter {
     display: none;
   }
+
+  #selectPid {
+    text-transform:uppercase;
+  }
 </style>
 @endsection
 @section('content')
@@ -443,13 +447,13 @@
                       <option>
                     </select>
                     <span class="help-block" style="display:none;">Please fill PID!</span>
-                    <span id="makeId" style="cursor: pointer;">other?</span>
+  <!--                   <span id="makeId" style="cursor: pointer;">other?</span>
                     <div class="form-group" id="project_idNew" style="display: none;">
                       <div class="input-group">
                         <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                         <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
                       </div>
-                    </div> 
+                    </div>  -->
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -2399,7 +2403,7 @@
                     // $("#selectQuoteNum").val(result.pr.quote_number).trigger("change")
 
                     $.ajax({
-                      url: "{{url('/admin/getPidAll')}}",
+                      url: "{{url('/admin/getPidUnion')}}",
                       type: "GET",
                       success: function(result) {
                         if (selectedPid) {
@@ -2411,9 +2415,10 @@
                         }
 
                         $("#selectPid").select2({
+                            placeholder: "Select/Input Pid",
+                            dropdownParent: $('#ModalDraftPr'),
+                            tags: true,
                             data: result.data,
-                            placeholder: "Select Pid",
-                            dropdownParent: $('#ModalDraftPr')
                         }).on('change', function() {
                           var data = $("#selectPid option:selected").text();
                           $("#selectLeadId").empty()
@@ -3256,13 +3261,14 @@
           document.getElementById("prevBtnAdd").style.display = "inline";
 
           $.ajax({
-            url: "{{url('/admin/getPidAll')}}",
+            url: "{{url('/admin/getPidUnion')}}",
             type: "GET",
             success: function(result) {
               $("#selectPid").select2({
                   data: result.data,
-                  placeholder: "Select Pid",
-                  dropdownParent: $('#ModalDraftPr')
+                  placeholder: "Select/Input Pid",
+                  dropdownParent: $('#ModalDraftPr'),
+                  tags: true
               }).on('select2:select', function() {
                 var data = $("#selectPid option:selected").text();
                 var lead_id = $("#selectLeadId option:selected").text();
@@ -3350,16 +3356,17 @@
             }
           }) 
 
-          $.ajax({
-            url: "{{url('/admin/getPid')}}",
-            type: "GET",
-            success: function(result) {
-              $("#selectPid").select2({
-                  data: result.data,
-                  placeholder: "Select PID"
-              })
-            }
-          }) 
+          // $.ajax({
+          //   url: "{{url('/admin/getPid')}}",
+          //   type: "GET",
+          //   success: function(result) {
+          //     $("#selectPid").select2({
+          //         data: result.data,
+          //         placeholder: "Select PID",
+          //         tags: true
+          //     })
+          //   }
+          // }) 
 
         }else if (n == 4) {
           if ($('.wysihtml5-toolbar').length == 0) {
@@ -3726,18 +3733,20 @@
                   placeholder: "Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
-                $.ajax({
-                  url: "{{url('/admin/getPid')}}",
-                  type: "GET",
-                  data: {
-                    lead_id:data
-                  },
-                  success: function(result) {
-                    $("#selectPid").select2({
-                        data: result.data
-                    })
-                  }
-                }) 
+
+                // $.ajax({
+                //   url: "{{url('/admin/getPid')}}",
+                //   type: "GET",
+                //   data: {
+                //     lead_id:data
+                //   },
+                //   success: function(result) {
+                //     $("#selectPid").select2({
+                //         data: result.data,
+                //         tags: true
+                //     })
+                //   }
+                // }) 
 
                 $.ajax({
                   url: "{{url('/admin/getQuote')}}",
