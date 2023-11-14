@@ -333,7 +333,7 @@
               </div>
             </div>         
             <div style="display: flex;">
-              <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('draft_pr/Import_product_sample.csv')}}" style="cursor:pointer;">link</a></span>
+              <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('https://drive.google.com/uc?export=download&id=1IDI8NVdVskSl__qQVfsrugEamr01W4IA')}}" style="cursor:pointer;">link</a></span>
             </div>
             <div style="display: flex;">
               <span style="margin: 0 auto;">And make sure, the change of template only at row 2, any change on row 1 (header) will be reject</span>
