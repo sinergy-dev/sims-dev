@@ -1017,12 +1017,6 @@
                     return false;
                 });
 
-                // const ids = events.map(({ title }) => title);
-                // const filtered = uniqueData.filter(({ title }) => ids.includes(title) && !ids.includes(title));
-
-                // let arrMapEvents = events.map((p) => p.title);
-                // let arrFiltered = uniqueData.filter((p) => !arrMapEvents.includes(p.title));
-
                 var filteredData = uniqueData.filter(function(obj1) {
                   const found = events.some(el => el.title === obj1.title);
                   return events.some(function(obj2) {
@@ -1035,24 +1029,7 @@
                   });
                 });
 
-                // const filterByReference = (events, uniqueData) => {
-                //    let res = [];
-                //    res = events.filter(el => {
-                //       return uniqueData.find(element => {
-                //          return element.title === el.title;
-                //       });
-                //    });
-                //    return res;
-                // }
-
-                // var arrUnique = filterByReference(events, uniqueData)
-
                 var arrayCalconcatDb = events.concat(filteredData)
-
-                // var uniqueArray = arrayCalconcatDb.filter((obj, index, self) =>
-                //   index === self.findIndex((item) => item.refer === obj.refer)
-                // );
-
                 
                 return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji)
               },
