@@ -886,20 +886,19 @@ class PrDraftController extends Controller
 
     public function getLeadByPid(Request $request)
     {
-        $data = collect(SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,`sales_lead_register`.`lead_id` AS `text`'))->where('tb_id_project.id_project', $request->pid)->get());
+        if (SalesProject::where('tb_id_project.id_project', $request->pid)->exists()) {
+            $data = collect(SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,`sales_lead_register`.`lead_id` AS `text`'))->where('tb_id_project.id_project', $request->pid)->get());
 
-        // return $data[0]['id'];
-
-        $getLinkSbe = DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->where('lead_id',$data[0]['id'])->select('link_drive','document_name','document_location')->get();
-
-        // return $getLinkSbe;
+            $getLinkSbe = DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->where('lead_id',$data[0]['id'])->select('link_drive','document_name','document_location')->get();
+        } else{
+            $data = [];
+            $getLinkSbe = [];
+        }
 
         return collect([
             'data' => $data,
             'linkSbe' => $getLinkSbe
         ]);
-
-        // return array("data" => $data);
     }
 
     public function getPidAll(Request $request)
@@ -936,9 +935,9 @@ class PrDraftController extends Controller
     public function getProductPr(Request $request)
     {
         $getProductPr = PrProduct::join('tb_pr_product_draft', 'tb_pr_product.id', '=', 'tb_pr_product_draft.id_product')
-        				->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+                        ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
                         ->select('tb_pr_product.name_product', 'tb_pr_product.description', 'tb_pr_product.qty', 'tb_pr_product.unit', 'tb_pr_product.nominal_product', 'tb_pr_product.grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'tb_pr_product.id as id_product')
-        				->where('id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
+                        ->where('id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
         return array("data"=>$getProductPr);
     }
@@ -975,11 +974,11 @@ class PrDraftController extends Controller
         $tambah->issuance = Auth::User()->nik;
         $tambah->category = $request['selectCategory'];
         if ($request['selectMethode'] == 'purchase_order') {
-        	$tambah->request_method = 'Purchase Order';
+            $tambah->request_method = 'Purchase Order';
         } elseif ($request['selectMethode'] == 'payment') {
-        	$tambah->request_method = 'Payment';
+            $tambah->request_method = 'Payment';
         } elseif ($request['selectMethode'] = 'reimbursement') {
-        	$tambah->request_method = 'Reimbursement';
+            $tambah->request_method = 'Reimbursement';
         }
         $tambah->status = 'SAVED';
         $tambah->status_used = 'Selected';
@@ -1539,10 +1538,10 @@ class PrDraftController extends Controller
                 $update->lead_id = $request['selectLeadId'];
             }     
             if ($request['selectPid'] == null) {
-	            $update->pid = $request['inputPid'];
-	        }else{
-	            $update->pid = $request['selectPid'];
-	        }
+                $update->pid = $request['inputPid'];
+            }else{
+                $update->pid = $request['selectPid'];
+            }
 
             if ($request['selectQuoteNumber'] == null) {
                 $update->quote_number = '-';
@@ -2088,7 +2087,7 @@ class PrDraftController extends Controller
     }
 
     public function verifyDraft(Request $request)
-    {	
+    {   
         if (isset($request->valuesChecked)) {
             foreach ($request->valuesChecked as $key => $value) {
                 if ($value == 'type_cek') {
@@ -2171,23 +2170,23 @@ class PrDraftController extends Controller
             }
         }
 
-    	$activity = new PRActivity();
+        $activity = new PRActivity();
         $activity->id_draft_pr = $request['no_pr'];
         $activity->date_time = Carbon::now()->toDateTimeString();
         if ($request['radioConfirm']  == 'reject') {
-        	$activity->status = 'REJECT';
+            $activity->status = 'REJECT';
             $activity->activity = $request['rejectReason'];
         } else {
-        	$activity->status = 'VERIFIED';
+            $activity->status = 'VERIFIED';
             $activity->activity = 'Verify Draft PR';
         } 
         $activity->operator = Auth::User()->name;
         $activity->save();
 
-    	if ($request['radioConfirm']  == 'reject') {
-    		$update = PRDraft::where('id', $request['no_pr'])->first();
-	    	$update->status = 'REJECT';
-	    	$update->save();
+        if ($request['radioConfirm']  == 'reject') {
+            $update = PRDraft::where('id', $request['no_pr'])->first();
+            $update->status = 'REJECT';
+            $update->save();
 
             $activity = PRActivity::select('activity','operator','id_draft_pr')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->where('status', 'REJECT')->orderBy('date_time', 'desc')->take(1);
 
@@ -2232,11 +2231,11 @@ class PrDraftController extends Controller
 
             $this->getNotifBadgeInsert($jsonInsertCreate);
 
-    	} else {
+        } else {
             // return 'verify';
-    		$update = PRDraft::where('id', $request['no_pr'])->first();
-	    	$update->status = 'VERIFIED';
-	    	$update->save();
+            $update = PRDraft::where('id', $request['no_pr'])->first();
+            $update->status = 'VERIFIED';
+            $update->save();
 
             //Store Nomor PR
             $get_draft_pr = PRDraft::where('id', $request['no_pr'])->first();
@@ -2388,7 +2387,7 @@ class PrDraftController extends Controller
 
             $this->getNotifBadgeInsert($jsonInsertCreate);
 
-    	}
+        }
     }
 
     public function getPreviewPr(Request $request)
@@ -2416,12 +2415,12 @@ class PrDraftController extends Controller
         // $activity_all = array_merge($activity,$activity_unapproved);
 
         $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
-        		->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', 'tb_pr_product.id as id_product', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
+                ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', 'tb_pr_product.id as id_product', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
         $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
-        		->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
-        		->select('dokumen_name', 'dokumen_location', 'tb_pr_document.id as id_dokumen', 'tb_pr_document_draft.id as id_dokumen_draft', 'link_drive')->where('tb_pr_document_draft.id_draft_pr', $request->no_pr);
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                ->select('dokumen_name', 'dokumen_location', 'tb_pr_document.id as id_dokumen', 'tb_pr_document_draft.id as id_dokumen_draft', 'link_drive')->where('tb_pr_document_draft.id_draft_pr', $request->no_pr);
 
         if ($data->type_of_letter == 'IPR') {
             $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
@@ -2464,9 +2463,9 @@ class PrDraftController extends Controller
 
         if ($data->status_draft_pr == 'draft') {
             $id_compare_pr = '';
-        	$product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
-        		->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
+            $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
             $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
@@ -2482,9 +2481,9 @@ class PrDraftController extends Controller
             }
         } else if ($data->status_draft_pr == 'pembanding'){
             $id_compare_pr = PRCompare::select('id')->where('id_draft_pr', $request->no_pr)->where('tb_pr_compare.status', 'Selected')->first()->id;
-        	$product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
-        		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
+            $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
 
             $dokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', 'tb_pr_document_compare.id_compare_pr')
@@ -2597,8 +2596,8 @@ class PrDraftController extends Controller
 
     public function storePembandingSupplier(Request $request)
     {
-    	$tambah = new PRCompare();
-    	$tambah->id_draft_pr = $request['no_pr'];
+        $tambah = new PRCompare();
+        $tambah->id_draft_pr = $request['no_pr'];
         $tambah->to = $request['inputTo'];
         $tambah->attention = $request['inputAttention'];
         $tambah->title = $request['inputSubject'];
@@ -2630,8 +2629,8 @@ class PrDraftController extends Controller
 
     public function storePembandingProduct(Request $request)
     {
-    	// return $request['no_pr'];
-    	$tambah = new PrProduct();
+        // return $request['no_pr'];
+        $tambah = new PrProduct();
         $tambah->name_product = $request['inputNameProduct'];
         $tambah->description = $request['inputDescProduct'];
         $tambah->nominal_product = str_replace(',', '', $request['inputPriceProduct']);
@@ -2858,23 +2857,23 @@ class PrDraftController extends Controller
 
     public function getPembanding(Request $request)
     {
-    	$getPembanding = PRDraftComparison::where('id', $request->no_pr)->get();
-    	return $getPembanding;
+        $getPembanding = PRDraftComparison::where('id', $request->no_pr)->get();
+        return $getPembanding;
     }
 
     public function getTypePr(Request $request)
     {
-    	// $data = DB::table('tb_pr_draft')->select('type_of_letter')->where('id', $request->no_pr)->first()->type_of_letter;
+        // $data = DB::table('tb_pr_draft')->select('type_of_letter')->where('id', $request->no_pr)->first()->type_of_letter;
         $data = DB::table('tb_pr_draft')->select('type_of_letter')->where('id', $request->no_pr)->get();
-    	return $data;
+        return $data;
     }
 
     public function getProductPembanding(Request $request)
     {
         $getProductPr = PrProduct::join('tb_pr_product_compare', 'tb_pr_product.id', '=', 'tb_pr_product_compare.id_product')
-        				->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
-        				->select('tb_pr_product.name_product', 'tb_pr_product.description', 'tb_pr_product.qty', 'tb_pr_product.unit', 'tb_pr_product.nominal_product', 'tb_pr_product.grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'id_product')
-        				->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
+                        ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
+                        ->select('tb_pr_product.name_product', 'tb_pr_product.description', 'tb_pr_product.qty', 'tb_pr_product.unit', 'tb_pr_product.nominal_product', 'tb_pr_product.grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'id_product')
+                        ->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
 
         return array("data"=>$getProductPr);
     }
@@ -2885,8 +2884,8 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', DB::raw("(CASE WHEN (lead_id = 'null') THEN '-' ELSE lead_id END) as lead_id"), DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category', 'tb_pr_compare.status_tax')->where('tb_pr_compare.id', $request->no_pr)->first();
 
         $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
-        		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'nominal_product', 'grand_total')->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->get();
+                ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'nominal_product', 'grand_total')->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->get();
 
         $dokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', 'tb_pr_document_compare.id_compare_pr')
@@ -2909,42 +2908,42 @@ class PrDraftController extends Controller
 
     public function choosedComparison(Request $request)
     {
-    	if ($request->status == 'pembanding'){
+        if ($request->status == 'pembanding'){
             $select_nopr = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')
                         // ->join('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id')
                         ->select('tb_pr_compare.id as id_compare', 'tb_pr_compare.to as to_compare', 'tb_pr_compare.email as email_compare', 'tb_pr_compare.phone as phone_compare', 'tb_pr_compare.fax as fax_compare', 'tb_pr_compare.attention as attention_compare', 'tb_pr_compare.title as title_compare', 'tb_pr_compare.address as address_compare', 'tb_pr_compare.term_payment as term_payment_compare', 'tb_pr_compare.nominal as nominal_compare', 'tb_pr_compare.note_pembanding', 'tb_pr_compare.status_tax')
                         ->where('tb_pr_compare.id', $request->no_pr)
                         ->first();
 
-    		$get_id_compare = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')->select('tb_pr_compare.id')->where('tb_pr_compare.id_draft_pr', $request->id_draft_pr)->get();
+            $get_id_compare = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')->select('tb_pr_compare.id')->where('tb_pr_compare.id_draft_pr', $request->id_draft_pr)->get();
 
-    		foreach ($get_id_compare as $data) {
-    			$update = PRCompare::where('id', $data->id)->first();
-		    	$update->status = 'Un-Select';
-		    	$update->save();
-    		}
+            foreach ($get_id_compare as $data) {
+                $update = PRCompare::where('id', $data->id)->first();
+                $update->status = 'Un-Select';
+                $update->save();
+            }
 
-    		$update = PRCompare::where('id', $request->no_pr)->first();
-	    	$update->status = 'Selected';
-	    	$update->save();
+            $update = PRCompare::where('id', $request->no_pr)->first();
+            $update->status = 'Selected';
+            $update->save();
 
-	    	$update_pr = PR::where('id_draft_pr', $request->id_draft_pr)->first();
-	    	$update_pr->to = $select_nopr->to_compare;
-	    	$update_pr->attention = $select_nopr->attention_compare;
+            $update_pr = PR::where('id_draft_pr', $request->id_draft_pr)->first();
+            $update_pr->to = $select_nopr->to_compare;
+            $update_pr->attention = $select_nopr->attention_compare;
             if (strpos($update_pr->title, 'Revisi')) {
                 $update_pr->title = substr_replace($update_pr->title,"(Revisi " . ((int)substr($update_pr->title,strpos($update_pr->title,"Revisi ") + 7,1)+1) . ")",strpos($update_pr->title,"Revisi") - 1);
             } else {
                 $update_pr->title = $update_pr->title . ' (Revisi 1)';
             }
-	    	$update_pr->phone = $select_nopr->phone_compare;
-	    	$update_pr->email = $select_nopr->email_compare;
-	    	$update_pr->address = $select_nopr->address_compare;
-	    	$update_pr->fax = $select_nopr->fax_compare;
-	    	$update_pr->term_payment = $select_nopr->term_payment_compare;
-	    	$update_pr->amount = $select_nopr->nominal_compare;
-	    	$update_pr->status_draft_pr = 'pembanding';
+            $update_pr->phone = $select_nopr->phone_compare;
+            $update_pr->email = $select_nopr->email_compare;
+            $update_pr->address = $select_nopr->address_compare;
+            $update_pr->fax = $select_nopr->fax_compare;
+            $update_pr->term_payment = $select_nopr->term_payment_compare;
+            $update_pr->amount = $select_nopr->nominal_compare;
+            $update_pr->status_draft_pr = 'pembanding';
             $update_pr->status_tax = $select_nopr->status_tax;
-	    	$update_pr->save();
+            $update_pr->save();
 
             $update_draft = PRDraft::where('id', $request->id_draft_pr)->first();
             $update_draft->status_used = 'Un-Select';
@@ -2963,7 +2962,7 @@ class PrDraftController extends Controller
             $this->uploadPdf($request->no_pr);
             $this->uploadPdfMerge($request->id_draft_pr, $approver);
 
-    	} else if($request->status == 'draft'){
+        } else if($request->status == 'draft'){
             $select_draft = DB::table('tb_pr_draft')->select('tb_pr_draft.to as to_draft', 'tb_pr_draft.email as email_draft', 'tb_pr_draft.phone as phone_draft', 'tb_pr_draft.fax as fax_draft', 'tb_pr_draft.attention as attention_draft', 'tb_pr_draft.title as title_draft', 'tb_pr_draft.address as address_draft', 'tb_pr_draft.term_payment as term_payment_draft', 'tb_pr_draft.id as id_draft_pr', 'tb_pr_draft.nominal as nominal_draft', 'status_used', 'status_tax')->where('id', $request->no_pr)->first();
 
             $get_id_compare = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')->select('tb_pr_compare.id')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->get();
@@ -2974,24 +2973,24 @@ class PrDraftController extends Controller
                 $update->save();
             }
               
-    		$update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
-	    	$update_pr->to = $select_draft->to_draft;
-	    	$update_pr->attention = $select_draft->attention_draft;
+            $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
+            $update_pr->to = $select_draft->to_draft;
+            $update_pr->attention = $select_draft->attention_draft;
             if (strpos($update_pr->title, 'Revisi')) {
                 $update_pr->title = substr_replace($update_pr->title,"(Revisi " . ((int)substr($update_pr->title,strpos($update_pr->title,"Revisi ") + 7,1)+1) . ")",strpos($update_pr->title,"Revisi") - 1);
             } else {
                 $update_pr->title = $update_pr->title . ' (Revisi 1)';
             }
-	    	// $update_pr->title = $select_draft->title_draft;
-	    	$update_pr->phone = $select_draft->phone_draft;
-	    	$update_pr->email = $select_draft->email_draft;
-	    	$update_pr->address = $select_draft->address_draft;
-	    	$update_pr->fax = $select_draft->fax_draft;
-	    	$update_pr->term_payment = $select_draft->term_payment_draft;
-	    	$update_pr->status_draft_pr = 'draft';
-	    	$update_pr->amount = $select_draft->nominal_draft;
+            // $update_pr->title = $select_draft->title_draft;
+            $update_pr->phone = $select_draft->phone_draft;
+            $update_pr->email = $select_draft->email_draft;
+            $update_pr->address = $select_draft->address_draft;
+            $update_pr->fax = $select_draft->fax_draft;
+            $update_pr->term_payment = $select_draft->term_payment_draft;
+            $update_pr->status_draft_pr = 'draft';
+            $update_pr->amount = $select_draft->nominal_draft;
             $update_pr->status_tax = $select_draft->status_tax;
-	    	$update_pr->save();
+            $update_pr->save();
 
             $update_draft = PRDraft::where('id', $request->no_pr)->first();
             $update_draft->status_used = 'Selected';
@@ -3009,14 +3008,14 @@ class PrDraftController extends Controller
 
             // $this->uploadPdf($request->no_pr);
             $this->uploadPdfMerge($request->no_pr, $approver);
-    	}
-    	
+        }
+        
     }
 
     public function getActivity(Request $request)
     {
-    	$getActivity = PRActivity::select('activity', 'operator', 'status', 'date_time')
-    			->selectRaw("SUBSTR(`tb_pr_activity`.`date_time`,1,10) AS `date_format`")->where('id_draft_pr', $request->no_pr)->orderBy('date_time', 'desc')->get();
+        $getActivity = PRActivity::select('activity', 'operator', 'status', 'date_time')
+                ->selectRaw("SUBSTR(`tb_pr_activity`.`date_time`,1,10) AS `date_format`")->where('id_draft_pr', $request->no_pr)->orderBy('date_time', 'desc')->get();
 
         $lastActivity = PRActivity::join('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_activity.id_draft_pr')->select('tb_pr_activity.status')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->orderBy('date_time', 'desc')->take(1)->get();
 
@@ -3031,26 +3030,26 @@ class PrDraftController extends Controller
 
         return [$getActivity->groupBy('date_format'), $lastActivity, $isCircular, $approver];
 
-    	// return $getActivity->groupBy('date_format');
+        // return $getActivity->groupBy('date_format');
     }
 
     public function getCountComparing(Request $request)
     {
-    	$cek = PRDraft::join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')
-    			->where('tb_pr_draft.id', $request->no_pr)
-    			->count();
+        $cek = PRDraft::join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')
+                ->where('tb_pr_draft.id', $request->no_pr)
+                ->count();
 
-    	return $cek;
+        return $cek;
     }
 
     public function cekTTD(Request $request)
     {
-    	return $cek = User::select('ttd')->where('nik', Auth::User()->nik)->first();
+        return $cek = User::select('ttd')->where('nik', Auth::User()->nik)->first();
     }
 
     public function uploadTTD(Request $request)
     {
-    	$update                 = User::where('nik', Auth::User()->nik)->first();
+        $update                 = User::where('nik', Auth::User()->nik)->first();
         $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
         $file                   = $request->file('inputTTD');
         $fileName               = $file->getClientOriginalName();
@@ -3141,61 +3140,61 @@ class PrDraftController extends Controller
 
     public function showTTD(Request $request)
     {
-    	$cek_type = PR::select('type_of_letter', 'issuance')->where('id_draft_pr', $request['no_pr'])->first();
+        $cek_type = PR::select('type_of_letter', 'issuance')->where('id_draft_pr', $request['no_pr'])->first();
 
-    	$territory = DB::table('users')->select('id_territory')->where('nik', $cek_type->issuance)->first()->id_territory;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $cek_type->issuance)->first()->id_territory;
         // return $territory;
 
-    	$cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
+        $cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
 
-    	if ($cek_type->type_of_letter == 'EPR') {
-    		$show = User::select('ttd', 'name')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+        if ($cek_type->type_of_letter == 'EPR') {
+            $show = User::select('ttd', 'name')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
 
-    		return $show;
+            return $show;
 
-    	} else {
-    		if ($cek_group->group == 'pmo') {
+        } else {
+            if ($cek_group->group == 'pmo') {
 
-	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->first();
+                $show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->first();
 
-    			return $show;
+                return $show;
 
-	        } elseif ($cek_group->group == 'msm') {
-	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
-    			return $show;
+            } elseif ($cek_group->group == 'msm') {
+                $show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+                return $show;
 
-	        } elseif ($cek_group->group == 'bcd') {
-	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'BCD' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
-    			return $show;
+            } elseif ($cek_group->group == 'bcd') {
+                $show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'BCD' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+                return $show;
 
-	        } elseif ($cek_group->group == 'DPG') {
-	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
-    			return $show;
+            } elseif ($cek_group->group == 'DPG') {
+                $show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+                return $show;
 
-	        } elseif ($cek_group->group == 'presales') {
-	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
-    			return $show;
+            } elseif ($cek_group->group == 'presales') {
+                $show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+                return $show;
 
-	        } elseif ($cek_group->group == 'hr') {
-	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `roles`.`name` = 'HR Manager' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
-    			return $show;
+            } elseif ($cek_group->group == 'hr') {
+                $show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `roles`.`name` = 'HR Manager' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+                return $show;
 
-	        } elseif ($cek_group->group == 'sales') {
-	        	$show = User::select('ttd', 'name')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
-    			return $show;
-	        }
-    	}
+            } elseif ($cek_group->group == 'sales') {
+                $show = User::select('ttd', 'name')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+                return $show;
+            }
+        }
     }
 
     public function circulerPrTanpaPembanding(Request $request)
     {
-    	$tambah = new PRActivity();
-    	$tambah->operator = Auth::User()->name;
-    	$tambah->id_draft_pr = $request['no_pr'];
-    	$tambah->status = 'CIRCULAR';
+        $tambah = new PRActivity();
+        $tambah->operator = Auth::User()->name;
+        $tambah->id_draft_pr = $request['no_pr'];
+        $tambah->status = 'CIRCULAR';
         $tambah->date_time = Carbon::now()->toDateTimeString();
-    	$tambah->activity = 'The comparison process is skipped for the following reasons: ' . $request['reason'];
-    	$tambah->save();
+        $tambah->activity = 'The comparison process is skipped for the following reasons: ' . $request['reason'];
+        $tambah->save();
 
         $update = PRDraft::where('id', $request->no_pr)->first();
         $update->status = 'CIRCULAR';
@@ -3427,13 +3426,13 @@ class PrDraftController extends Controller
 
     public function rejectCirculerPR(Request $request)
     {
-    	$tambah = new PRActivity();
-    	$tambah->operator = Auth::User()->name;
-    	$tambah->id_draft_pr = $request['no_pr'];
-    	$tambah->status = 'UNAPPROVED';
+        $tambah = new PRActivity();
+        $tambah->operator = Auth::User()->name;
+        $tambah->id_draft_pr = $request['no_pr'];
+        $tambah->status = 'UNAPPROVED';
         $tambah->date_time = Carbon::now()->toDateTimeString();
-    	$tambah->activity = 'The circulation process was stopped because it was rejected for the following reasons: ' . $request['reasonRejectSirkular'];
-    	$tambah->save();
+        $tambah->activity = 'The circulation process was stopped because it was rejected for the following reasons: ' . $request['reasonRejectSirkular'];
+        $tambah->save();
 
         $update = PRDraft::where('id', $request->no_pr)->first();
         $update->isCircular = 'False';
@@ -4592,6 +4591,19 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr')->select(DB::raw('`tb_pr`.`to` AS `id`,`tb_pr`.`to` AS `text`'))->whereRaw("(`tb_pr`.`to` != '' OR `tb_pr`.`to` != NULL)")->groupBy('tb_pr.to');
 
         return $data_draft_pr = DB::table('tb_pr_draft')->select(DB::raw('`tb_pr_draft`.`to` AS `id`,`tb_pr_draft`.`to` AS `text`'))->whereRaw("(`tb_pr_draft`.`to` != '' OR `tb_pr_draft`.`to` != NULL)")->groupBy('tb_pr_draft.to')->union($data)->get();
+    }
+
+    public function getPidUnion(Request $request)
+    {
+        $pid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->select(DB::raw('`tb_id_project`.`id_project` AS `id`,`tb_id_project`.`id_project` AS `text`'))
+                    ->where('id_company', '1')->orderBy('tb_id_project.id_project','desc')
+                    ->groupBy('id_project');
+
+        $pid_pr = DB::table('tb_pr_draft')->select(DB::raw('`tb_pr_draft`.`pid` AS `id`,`tb_pr_draft`.`pid` AS `text`'))->where('pid','!=',null)->groupBy('tb_pr_draft.pid')->union($pid)->get();
+
+        return array("data" => $pid_pr);
     }
 
     public function getSupplierDetail(Request $request)
