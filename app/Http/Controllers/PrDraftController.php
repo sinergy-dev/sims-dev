@@ -886,13 +886,15 @@ class PrDraftController extends Controller
 
     public function getLeadByPid(Request $request)
     {
-        $data = collect(SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,`sales_lead_register`.`lead_id` AS `text`'))->where('tb_id_project.id_project', $request->pid)->get());
+        if (SalesProject::where('tb_id_project.id_project', $request->pid)->exists()) {
+            $data = collect(SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,`sales_lead_register`.`lead_id` AS `text`'))->where('tb_id_project.id_project', $request->pid)->get());
 
-        // return $data[0]['id'];
-
-        $getLinkSbe = DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->where('lead_id',$data[0]['id'])->select('link_drive','document_name','document_location')->get();
-
-        // return $getLinkSbe;
+            $getLinkSbe = DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->where('lead_id',$data[0]['id'])->select('link_drive','document_name','document_location')->get();
+        } else{
+            $data = [];
+            $getLinkSbe = [];
+        }
+        
 
         return collect([
             'data' => $data,
@@ -4592,6 +4594,19 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr')->select(DB::raw('`tb_pr`.`to` AS `id`,`tb_pr`.`to` AS `text`'))->whereRaw("(`tb_pr`.`to` != '' OR `tb_pr`.`to` != NULL)")->groupBy('tb_pr.to');
 
         return $data_draft_pr = DB::table('tb_pr_draft')->select(DB::raw('`tb_pr_draft`.`to` AS `id`,`tb_pr_draft`.`to` AS `text`'))->whereRaw("(`tb_pr_draft`.`to` != '' OR `tb_pr_draft`.`to` != NULL)")->groupBy('tb_pr_draft.to')->union($data)->get();
+    }
+
+    public function getPidUnion(Request $request)
+    {
+        $pid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->select(DB::raw('`tb_id_project`.`id_project` AS `id`,`tb_id_project`.`id_project` AS `text`'))
+                    ->where('id_company', '1')->orderBy('tb_id_project.id_project','desc')
+                    ->groupBy('id_project');
+
+        $pid_pr = DB::table('tb_pr_draft')->select(DB::raw('`tb_pr_draft`.`pid` AS `id`,`tb_pr_draft`.`pid` AS `text`'))->where('pid','!=',null)->groupBy('tb_pr_draft.pid')->union($pid)->get();
+
+        return array("data" => $pid_pr);
     }
 
     public function getSupplierDetail(Request $request)
