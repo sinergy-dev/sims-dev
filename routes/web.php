@@ -1186,6 +1186,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/shifting/getReportShifting', 'PresenceController@getReportShifting');
 
 	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
+	Route::get('/presence/getCurrentLocation', 'PresenceController@getCurrentLocation');
 
 	// Invoice
 	Route::get('/invoice', 'InvoiceController@index');

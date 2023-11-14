@@ -191,6 +191,7 @@ class ProductTechnologyTag extends Controller
     public function store_tech(Request $req){
         $store = new TechnologyTag();
         $store->name_tech = $req->name_tech;
+        $store->about = $req->about;
         $store->desc_tech = $req->desc_tech;
         $store->date_add = Carbon::now()->toDateTimeString();
         $store->save(); 
@@ -211,6 +212,7 @@ class ProductTechnologyTag extends Controller
     public function update_tag_tech(Request $req){
         $update = TechnologyTag::where('id',$req->id_tech_edit)->first();
         $update->name_tech = $req->name_tech_edit;
+        $update->about = $req->about_edit;
         $update->desc_tech = $req->desc_tech_edit;
         $update->update(); 
 

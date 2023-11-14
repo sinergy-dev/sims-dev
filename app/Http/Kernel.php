@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'DirectorMiddleware' => \App\Http\Middleware\DirectorMiddleware::class,
         'Maintenance' => \App\Http\Middleware\Maintenance::class,
         'SIP' => \App\Http\Middleware\SIP::class,
+        'custom.session.timeout' => \App\Http\Middleware\CustomSessionTimeout::class,
     ];
 }

@@ -1,4 +1,4 @@
-﻿no;product;description;serial_number;part_number;qty;type;price
+﻿no;product;description;serial_number;part_number;qty;type(Pcs,Unit,Lot,Pack,Node);price(non-ppn per item)
 1;A556 ;REPAIR FASCIA ;;;1;unit;Rp1.332.000,00
 2;A430 ;PC I3 ;;;1;unit;Rp21.700.500,00
 3;A424 ;REPAIR FASCIA  & CAMERA  MAKU;;;1;unit;Rp5.994.000,00

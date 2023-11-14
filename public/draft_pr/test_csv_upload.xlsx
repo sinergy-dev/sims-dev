@@ -1,0 +1,203 @@
+﻿no;product;description;serial_number;part_number;qty;type(Pcs,Unit,Lot,Pack,Node);price(non-ppn per item)
+1;Server HCI;Server HCI;;;1;Unit;1533742547
+2;;Controller : Lenovo ThinkSystem DM3000H Hybrid Flash Array -3 year;;7D7UCTO1WW;1;Unit;0
+3;;Lenovo ThinkSystem Storage Series 2U12 Chassis;;BEY6;1;Unit;0
+4;;DM Series Fundamentals Offering;;B72U;1;Unit;0
+5;;Lenovo ThinkSystem DM Series DM3000/DM5000 Cntr, 16Gb FC/10Gb Opt;;B39F;2;Unit;0
+6;;10G SW Optical iSCSI SFP+ Module 1 pack;;B4K9;8;Unit;0
+7;;"Lenovo ThinkSystem 60TB (6x 10TB, 3.5"", Non-SED, NLSAS HDD) Drive Pack for DM3000H - Fundamental Bundle - ONTAP: Unified";;BLQC;2;Unit;0
+8;;0.5m Passive DAC SFP+ Cable;;A3RG;2;Unit;0
+9;;Lenovo ThinkSystem Storage USB Cable, Micro-USB;;B4BP;1;Unit;0
+10;;2.8m, 10A/100-250V, C13 to IEC 320-C14 Rack Power Cable;;6311;2;Unit;0
+11;;Lenovo ThinkSystem Storage ONTAP 9.13 Software NonEncryption - IPAv2;;BWUB;1;Unit;0
+12;;3 Years;;B0W1;1;Unit;0
+13;;Premier with Essential;;B48J;1;Unit;0
+14;;Configured with Lenovo ThinkSystem DM3000H 3Yr Warranty;;BMAW;1;Unit;0
+15;;DM Series Unified Fundamental Bundle License Key;;BX95;2;Unit;0
+16;;Lenovo ThinkSystem Storage Rack Mount Kit 2U12;;B38X;1;Unit;0
+17;;Lenovo ThinkSystem DM Series 1TB NVMe Cache;;B4CH;2;Unit;0
+18;;Lenovo ThinkSystem DM Series 2U Accessory;;B4CX;1;Unit;0
+19;;Lenovo ThinkSystem Storage Packaging 2U;;B4AW;1;Unit;0
+20;;Lenovo ThinkSystem DM Series 2U12 Bezel;;B39K;1;Unit;0
+21;;Lenovo ThinkSystem Storage 2U12 System Label;;B4BJ;1;Unit;0
+22;;Lenovo ThinkSystem DM3000H Product Label;;B398;1;Unit;0
+23;;Storage SubSystem ID 01;;9170;6;Unit;0
+24;;Lenovo ThinkSystem DM Series Ship Kit (RoW);;B39C;1;Unit;0
+25;;Auto-Derived Part Items;;;1;Unit;0
+26;;Storage Controller Parent MFG Inst;;B4K5;1;Unit;0
+27;;Premier Essential 3Y 24x7x4 DM3000H 120TB(12x10TB NLSAS HDD)Pack Fundamentals;;5WS7B21542;1;Unit;0
+28;;Premier Essential 3Y 24x7x4+YDYD ThinkSystem DM3000H HFA Fundamentals;;5PS7B02722;1;Unit;0
+29;;ThinkSystem DM Remote Deployment;;5MS7A79862;1;Unit;0
+30;;Hardware Installation Advanced Storage (Business Hours);;5AS7A02255;1;Unit;0
+31;;Storage : Lenovo ThinkSystem DM120S 2U12 LFF Expansion Enclosure - 3 year;;7D7XCTO1WW;6;Unit;0
+32;;Lenovo ThinkSystem Storage Series 2U12 Chassis;;BEY6;6;Unit;0
+33;;Lenovo ThinkSystem DM Series DM120S/240S/600S IOM;;B39J;12;Unit;0
+34;;"Lenovo ThinkSystem 60TB (6x 10TB, 3.5"", Non-SED, NLSAS HDD) Drive Pack for DM3000H - Fundamental Bundle - ONTAP: Unified";;BLQC;12;Unit;0
+35;;2m External MiniSAS HD 8644/MiniSAS HD 8644 Cable;;AU18;24;Unit;0
+36;;2.8m, 10A/100-250V, C13 to IEC 320-C14 Rack Power Cable;;6311;12;Unit;0
+37;;Lenovo ThinkSystem Storage Rack Mount Kit 2U12;;B38X;6;Unit;0
+38;;Lenovo ThinkSystem Tied Controller MTM-SN Asset Tag Label;;BAKT;6;Unit;0
+39;;Lenovo ThinkSystem Storage Packaging 2U;;B4AW;6;Unit;0
+40;;Lenovo ThinkSystem DM Series 2U12 Bezel;;B39K;6;Unit;0
+41;;2U12 Expansion System Labels;;B4BF;6;Unit;0
+42;;Lenovo ThinkSystem DM Series DM120S Product Label;;B399;6;Unit;0
+43;;Storage SubSystem ID 01;;9170;6;Unit;0
+44;;Lenovo ThinkSystem DM Series ExP Ship Kit (ROW);;B4CS;6;Unit;0
+45;;Auto-Derived Part Items;;;1;Unit;0
+46;;Configured with Lenovo ThinkSystem DM3000H 3Yr Warranty;;BMAW;6;Unit;0
+47;;Premier with Essential;;B48J;6;Unit;0
+48;;SW Offering is defined from linked Product;;B5XW;6;Unit;0
+49;;3 Years;;B0W1;6;Unit;0
+50;;DM Series Fundamentals Offering;;B72U;6;Unit;0
+51;;Controller is defined from Linked Product;;B4E6;6;Unit;0
+52;;DM Expansion Child MFG Inst;;B4K6;6;Unit;0
+53;;Premier Essential 3Y 24x7x4 DM3000H 120TB(12x10TB NLSAS HDD)Pack Fundamentals;;5WS7B21542;6;Unit;0
+54;;Premier Essential 3Y 24x7x4+YDYD ThinkSystem DM120S 2U12 for DM30x0/DM5000/DM7100;;5PS7B03942;6;Unit;0
+55;;CO2 Offset 10 Metric Tonnes;;5MS7B07545;6;Unit;0
+56;;Hardware Installation Advanced Storage (Business Hours);;5AS7A02255;6;Unit;0
+57;;Server Exchange : ThinkSystem SR650 V3 - 3yr warranty;;7D76CTO1WW;6;Unit;921190079
+58;;"ThinkSystem V3 2U 24x2.5"" Chassis";;BLKK;6;Unit;0
+59;;"Operating mode selection for: ""Efficiency - Favoring Performance Mode""";;BFYE;6;Unit;0
+60;;Data Center Environment 30 Degree Celsius / 86 Degree Fahrenheit;;BVGL;6;Unit;0
+61;;Intel Xeon Gold 6430 32C 270W 2.1GHz Processor;;BPPC;12;Unit;0
+62;;ThinkSystem 64GB TruDDR5 4800MHz (2Rx4) 10x4 RDIMM;;BNF9;24;Unit;0
+63;;Select Storage devices - no configured RAID required;;5977;6;Unit;0
+64;;ThinkSystem RAID 5350-8i PCIe 12Gb Internal Adapter;;BRQV;6;Unit;0
+65;;"ThinkSystem 2.5"" PM1655 800GB Mixed Use SAS 24Gb HS SSD";;BNW8;12;Unit;0
+66;;"ThinkSystem 2.5"" PM1653 960GB Read Intensive SAS 24Gb HS SSD";;BNWC;12;Unit;0
+67;;"ThinkSystem 2U 8x2.5"" SAS/SATA Backplane";;B8LU;6;Unit;0
+68;;ThinkSystem Broadcom 5719 1GbE RJ45 4-port OCP Ethernet Adapter;;B5T1;6;Unit;0
+69;;ThinkSystem Emulex LPe35002 32Gb 2-port PCIe Fibre Channel Adapter V2;;BJ3H;6;Unit;0
+70;;ThinkSystem Broadcom 57414 10/25GbE SFP28 2-port PCIe Ethernet Adapter;;BK1H;6;Unit;0
+71;;10GBASE-LR SFP+Transceiver;;B0RJ;12;Unit;0
+72;;ThinkSystem V3 2U x16/x8/x8 PCIe Gen5 Riser 1 or 2;;BPQU;6;Unit;0
+73;;ThinkSystem 1100W 230V Titanium Hot-Swap Gen2 Power Supply;;BLKH;12;Unit;0
+74;;4.3m, 10A/100-250V, C13 to IEC 320-C14 Rack Power Cable;;6263;12;Unit;0
+75;;ThinkSystem 2U V3 Performance Fan Module;;BLL6;36;Unit;0
+76;;ThinkSystem Toolless Slide Rail Kit v2;;B8LA;6;Unit;0
+77;;ThinkSystem 2U V3 EIA Latch Standard;;BQQ2;6;Unit;0
+78;;TPM 2.0;;BPKR;6;Unit;0
+79;;Disable IPMI-over-LAN;;B7XZ;6;Unit;0
+80;;XCC Platinum;;BRPJ;6;Unit;0
+81;;ThinkSystem SR650 V3 MB;;BLL0;6;Unit;0
+82;;Trigger MFG to scan the SN from the CPU Board via this MI;;BVMC;6;Unit;0
+83;;XCC Label;;B97B;6;Unit;0
+84;;ThinkSystem SR650 V3 Service Label for WW;;BPF4;6;Unit;0
+85;;ThinkSystem Response time Service Label LI;;AWF9;6;Unit;0
+86;;ThinkSystem SR650 V3 model name Label;;BPF3;6;Unit;0
+87;;ThinkSystem XCC CPU Clip;;BP53;12;Unit;0
+88;;ThinkSystem logo Label;;BQPS;6;Unit;0
+89;;ThinkSystem 1100W Ti Power rating Label WW;;BPDF;6;Unit;0
+90;;ThinkSystem HV 2U WW General PKG BOM;;B986;6;Unit;0
+91;;"ThinkSystem 2U MS 24x2.5"" SATA/SAS HDD Type Label1";;B8K0;6;Unit;0
+92;;MI for PXE with RJ45 Network port;;BHSS;6;Unit;0
+93;;Right EIA with FIO assembly;;BXGY;6;Unit;0
+94;;ThinkSystem 2U V3 EIA right with FIO;;BQQ6;6;Unit;0
+95;;"ThinkSystem small Lenovo Label for 24x2.5""/12x3.5""/10x2.5""";;AUTQ;6;Unit;0
+96;;"ThinkSystem 8x1 2.5"" HDD Filler";;AVEQ;12;Unit;0
+97;;ThinkSystem 2U MS Air Duct Filler(For 2U Gap);;B8MP;12;Unit;0
+98;;Lenovo ThinkSystem Memory Dummy;;AURS;168;Unit;0
+99;;ThinkSystem 2U MS 3FH Riser 1&2 Cage w/Label1;;BPKD;6;Unit;0
+100;;ThinkSystem 2U MS 3FH Riser Filler;;B8MM;6;Unit;0
+101;;MS 2FH Riser Filler;;BC4X;6;Unit;0
+102;;ThinkSystem SR650 V3 Agency Label;;BPF1;6;Unit;0
+103;;ThinkSystem SR650 V3 Firmware and Root of Trust Security Module;;BM8T;6;Unit;0
+104;;ThinkSystem 2U Main Air Duct;;BP46;6;Unit;0
+105;;ThinkSystem SR650 V3 Performance Heatsink;;BP4Z;12;Unit;0
+106;;"ThinkSystem 1x1 2.5"" HDD Filler";;AVEN;24;Unit;0
+107;;"ThinkSystem V3 2U Power Cable from MB to Front 2.5"" BP v2";;BMPF;6;Unit;0
+108;;"ThinkSystem V3 2U SAS/SATA Y Cable from CFF C0,C1/ C2,C3 to Front 8x2.5"" BP";;BACB;6;Unit;0
+109;;ThinkSystem SR650 V3 MCIO8x to SL8x CBL, PCIe4, CFF RAID INPUT, 250mm;;BPED;6;Unit;0
+110;;ThinkSystem V3 2U Power Cable from MB to CFF / Exp v2;;BMP2;6;Unit;0
+111;;ThinkSystem WW Lenovo LPK;;BPK3;6;Unit;0
+112;;N+N Redundancy With Over-Subscription;;BE0E;6;Unit;0
+113;;High voltage (200V+);;BK15;6;Unit;0
+114;;G5 x16/x8/x8 PCIe Riser BPQU for Riser 1 Placement;;BQ15;6;Unit;0
+115;;Configuration ID 01;;A2HP;6;Unit;0
+117;;Configuration Instruction;;5374CM1;6;Unit;0
+118;;ThinkSystem RAID 5350-8i PCIe 12Gb Internal Adapter Placement;;BSGR;6;Unit;0
+119;;Controller 01;;A2JX;6;Unit;0
+120;;Configuration ID 01;;A2HP;6;Unit;0
+121;;Premier Essential - 3Yr 24x7 4Hr Resp + YDYD SR650 V3;;5PS7B07067;6;Unit;0
+123;;XClarity Controller;;7S0XCTO5WW;6;Unit;0
+124;;Lenovo XClarity XCC2 Platinum Upgrade (FOD);;SBCV;6;Unit;0
+125;;XClarity Pro, Per Endpoint w/3 Yr SW S&S;;5641PX3;6;Unit;0
+126;;Lenovo XClarity Pro, Per Managed Endpoint w/3 Yr SW S&S;;1340;6;Unit;0
+127;;Registration only;;3444;6;Unit;0
+128;;Server AD : ThinkSystem SR650 V3 - 3yr warranty;;7D76CTO1WW;4;Unit;563879906
+129;;"ThinkSystem V3 2U 24x2.5"" Chassis";;BLKK;4;Unit;0
+130;;"Operating mode selection for: ""Efficiency - Favoring Performance Mode""";;BFYE;4;Unit;0
+131;;Data Center Environment 30 Degree Celsius / 86 Degree Fahrenheit;;BVGL;4;Unit;0
+132;;Intel Xeon Gold 6430 32C 270W 2.1GHz Processor;;BPPC;8;Unit;0
+133;;ThinkSystem 64GB TruDDR5 4800MHz (2Rx4) 10x4 RDIMM;;BNF9;8;Unit;0
+134;;Select Storage devices - no configured RAID required;;5977;4;Unit;0
+135;;ThinkSystem RAID 5350-8i PCIe 12Gb Internal Adapter;;BRQV;4;Unit;0
+136;;"ThinkSystem 2.5"" PM1655 800GB Mixed Use SAS 24Gb HS SSD";;BNW8;8;Unit;0
+137;;"ThinkSystem 2U 8x2.5"" SAS/SATA Backplane";;B8LU;4;Unit;0
+138;;ThinkSystem Broadcom 5719 1GbE RJ45 4-port OCP Ethernet Adapter;;B5T1;4;Unit;0
+139;;ThinkSystem Emulex LPe35002 32Gb 2-port PCIe Fibre Channel Adapter V2;;BJ3H;4;Unit;0
+140;;ThinkSystem Broadcom 57414 10/25GbE SFP28 2-port PCIe Ethernet Adapter;;BK1H;4;Unit;0
+141;;10GBASE-LR SFP+Transceiver;;B0RJ;8;Unit;0
+142;;ThinkSystem V3 2U x16/x8/x8 PCIe Gen5 Riser 1 or 2;;BPQU;4;Unit;0
+143;;ThinkSystem 1100W 230V Titanium Hot-Swap Gen2 Power Supply;;BLKH;8;Unit;0
+144;;4.3m, 10A/100-250V, C13 to IEC 320-C14 Rack Power Cable;;6263;8;Unit;0
+145;;ThinkSystem 2U V3 Performance Fan Module;;BLL6;24;Unit;0
+146;;ThinkSystem Toolless Slide Rail Kit v2;;B8LA;4;Unit;0
+147;;ThinkSystem 2U V3 EIA Latch Standard;;BQQ2;4;Unit;0
+148;;TPM 2.0;;BPKR;4;Unit;0
+149;;Disable IPMI-over-LAN;;B7XZ;4;Unit;0
+150;;XCC Platinum;;BRPJ;4;Unit;0
+151;;ThinkSystem SR650 V3 MB;;BLL0;4;Unit;0
+152;;Trigger MFG to scan the SN from the CPU Board via this MI;;BVMC;4;Unit;0
+153;;XCC Label;;B97B;4;Unit;0
+154;;ThinkSystem SR650 V3 Service Label for WW;;BPF4;4;Unit;0
+155;;ThinkSystem Response time Service Label LI;;AWF9;4;Unit;0
+156;;ThinkSystem SR650 V3 model name Label;;BPF3;4;Unit;0
+157;;ThinkSystem XCC CPU Clip;;BP53;8;Unit;0
+158;;ThinkSystem logo Label;;BQPS;4;Unit;0
+159;;ThinkSystem 1100W Ti Power rating Label WW;;BPDF;4;Unit;0
+160;;ThinkSystem HV 2U WW General PKG BOM;;B986;4;Unit;0
+161;;"ThinkSystem 2U MS 24x2.5"" SATA/SAS HDD Type Label1";;B8K0;4;Unit;0
+162;;MI for PXE with RJ45 Network port;;BHSS;4;Unit;0
+163;;Right EIA with FIO assembly;;BXGY;4;Unit;0
+164;;ThinkSystem 2U V3 EIA right with FIO;;BQQ6;4;Unit;0
+165;;"ThinkSystem small Lenovo Label for 24x2.5""/12x3.5""/10x2.5""";;AUTQ;4;Unit;0
+166;;"ThinkSystem 8x1 2.5"" HDD Filler";;AVEQ;8;Unit;0
+167;;ThinkSystem 2U MS Air Duct Filler(For 2U Gap);;B8MP;8;Unit;0
+168;;Lenovo ThinkSystem Memory Dummy;;AURS;120;Unit;0
+169;;ThinkSystem 2U MS 3FH Riser 1&2 Cage w/Label1;;BPKD;4;Unit;0
+170;;ThinkSystem 2U MS 3FH Riser Filler;;B8MM;4;Unit;0
+171;;MS 2FH Riser Filler;;BC4X;4;Unit;0
+172;;ThinkSystem SR650 V3 Agency Label;;BPF1;4;Unit;0
+173;;ThinkSystem SR650 V3 Firmware and Root of Trust Security Module;;BM8T;4;Unit;0
+174;;ThinkSystem 2U Main Air Duct;;BP46;4;Unit;0
+175;;ThinkSystem SR650 V3 Performance Heatsink;;BP4Z;8;Unit;0
+176;;"ThinkSystem 1x1 2.5"" HDD Filler";;AVEN;24;Unit;0
+177;;"ThinkSystem V3 2U Power Cable from MB to Front 2.5"" BP v2";;BMPF;4;Unit;0
+178;;"ThinkSystem V3 2U SAS/SATA Y Cable from CFF C0,C1/ C2,C3 to Front 8x2.5"" BP";;BACB;4;Unit;0
+179;;ThinkSystem SR650 V3 MCIO8x to SL8x CBL, PCIe4, CFF RAID INPUT, 250mm;;BPED;4;Unit;0
+180;;ThinkSystem V3 2U Power Cable from MB to CFF / Exp v2;;BMP2;4;Unit;0
+181;;ThinkSystem WW Lenovo LPK;;BPK3;4;Unit;0
+182;;N+N Redundancy With Over-Subscription;;BE0E;4;Unit;0
+183;;High voltage (200V+);;BK15;4;Unit;0
+184;;G5 x16/x8/x8 PCIe Riser BPQU for Riser 1 Placement;;BQ15;4;Unit;0
+185;;Configuration ID 01;;A2HP;4;Unit;0
+186;;Configuration Instruction;;5374CM1;4;Unit;0
+187;;ThinkSystem RAID 5350-8i PCIe 12Gb Internal Adapter Placement;;BSGR;4;Unit;0
+188;;Controller 01;;A2JX;4;Unit;0
+189;;Configuration ID 01;;A2HP;4;Unit;0
+190;;Premier Essential - 3Yr 24x7 4Hr Resp + YDYD SR650 V3;;5PS7B07067;4;Unit;0
+191;;XClarity Controller;;7S0XCTO5WW;4;Unit;0
+192;;Lenovo XClarity XCC2 Platinum Upgrade (FOD);;SBCV;4;Unit;0
+193;;XClarity Pro, Per Endpoint w/3 Yr SW S&S;;5641PX3;4;Unit;0
+194;;Lenovo XClarity Pro, Per Managed Endpoint w/3 Yr SW S&S;;1340;4;Unit;0
+195;;Registration only;;3444;4;Unit;0
+196;;Switch : Lenovo ThinkSystem DB620S, 24 ports active /w 32Gb SWL SFP, 2 PS, Rail Kit (1yr);;6415HC7;2;Unit;1074004947
+197;;Lenovo ThinkSystem DB620S, 24 ports active /w 32Gb SWL SFP, 2 PS, Rail Kit (1yr);;BCH2;2;Unit;0
+198;;Lenovo DB620S 12-Port License (12 Transceivers, 32Gbps);;AVG4;4;Unit;0
+199;;Lenovo Mid-Mount Rack Kit;;AVG7;2;Unit;0
+200;;Lenovo 5m LC-LC OM3 MMF Cable;;ASR8;96;Unit;0
+201;;1.5m, 10A/100-250V, C13 to IEC 320-C14 Rack Power Cable;;6201;4;Unit;0
+202;;Premier Essential - 3Yr 24x7 4Hr Resp DB620S;;5WS7A94059;2;Unit;0
+203;;Unconfigured Items;;;0;Unit;0
+204;;Lenovo DB620S Enterprise Bundle (TRK, FV, EF);;7S0C000GWW;2;Unit;0

@@ -1,0 +1,685 @@
+﻿no;schedule;start_date;type;pid;level;activity;duration(menit);status;end_date;task;phase
+;Unplanned;01/02/2023;Internal;;C;add table weekly task milestone;60;Done;01/02/2023;Development;Development
+;Unplanned;01/02/2023;Internal;;C;update for add solution, testing, validation;300;Done;01/02/2023;Development;Development
+;Unplanned;01/02/2023;Internal;;C;Sharing Session Bu Dewi SIMS ;30;Done;01/02/2023;Development;Meeting
+;Unplanned;01/02/2023;Internal;;C;Posting IG;15;Done;01/02/2023;SEO;Design
+;Unplanned;01/03/2023;Internal;;C;Validation milestone;420;Done;01/03/2023;Development;Development
+;Unplanned;01/03/2023;Internal;;C;testing frontend;60;Done;01/03/2023;Development;Development
+;Unplanned;01/03/2023;Internal;;C;update employee filter;30;Done;01/03/2023;Development;Enhance
+;Unplanned;01/04/2023;Internal;;C;create project charter add market segment;30;Done;01/04/2023;Development;Development
+;Unplanned;01/04/2023;Internal;;C;create query show project charter and parsing data;120;Done;01/04/2023;Development;Development
+;Unplanned;01/04/2023;Internal;;C;create privilege pmo manager or staff, sales am;60;Done;01/04/2023;Development;Development
+;Unplanned;01/04/2023;Internal;;C;update query data on BE and parsing table;120;Done;01/04/2023;Development;Development
+;Unplanned;01/04/2023;Internal;;C;testing add project charter;180;Done;01/04/2023;Development;Development
+;Unplanned;01/05/2023;Internal;;C;make change amount formating on frontend;30;Done;01/05/2023;Development;Enhance
+;Unplanned;01/05/2023;Internal;;C;make change amount formating store on backend;30;Done;01/05/2023;Development;Enhance
+;Unplanned;01/05/2023;Internal;;C;make change amount formating in email blade;15;Done;01/05/2023;Development;Enhance
+;Unplanned;01/05/2023;Internal;;C;update email & phone selecting name stakeholder;15;Done;01/05/2023;Development;Development
+;Unplanned;01/05/2023;Internal;;C;create ajax show revision project charter;60;Done;01/05/2023;Development;Development
+;Unplanned;01/05/2023;Internal;;C;update ajax show on show project charter pmo manager;60;Done;01/05/2023;Development;Development
+;Unplanned;01/05/2023;Internal;;C;create ajax post store reason reject and validation;15;Done;01/05/2023;Development;Development
+;Unplanned;01/05/2023;Internal;;C;versioning control draft pr;15;Done;01/05/2023;Development;Enhance
+;Unplanned;01/05/2023;Internal;;C;update privilege pmo;15;Done;01/05/2023;Development;Development
+;Unplanned;01/05/2023;Internal;;C;testing frontend;240;Done;01/05/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;configuration gantt chart (crud task, links);120;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;query gantt chart crud, links;120;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;query ajax post issue ;30;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;update parsing data table issue;30;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;query ajax post risk;30;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;update parsing data table risk;30;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;query get document;30;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;update parsing show document;30;Done;01/09/2023;Development;Development
+;Unplanned;01/09/2023;Internal;;C;testing frontend;60;Done;01/09/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;add validation form modal weekly report;60;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;testing validation function modal weekly report;60;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;add privilege on detail page (btn reject, final report);30;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;update show milestone functiion frontend;120;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;update progress bar milestone frontend;60;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;query store milestone;60;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;update ajax post revision project charter;30;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;create ajax store parameter data weekly;30;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;create query post weekly report;30;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;update column in table tb_pmo_progress_report;15;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;create model PMOProgressDisti, PMOProgressFinalReport;30;Done;01/10/2023;Development;Development
+;Unplanned;01/10/2023;Internal;;C;testing frontend;180;Done;01/10/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;create mailer pmo ;15;Done;01/11/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;create blade pmo email;30;Done;01/11/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;update query task on going;30;Done;01/11/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;update query & model send email (assign,approve,reject,final report);120;Done;01/11/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;update privilege (button add pm,solution, button approve sales,pmo manager, button add milestone, button save milestone);60;Done;01/11/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;testing;180;Done;01/11/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;update final project report show modal form;60;Done;01/11/2023;Development;Development
+;Unplanned;01/11/2023;Internal;;C;parsing ajax post reject final report;30;Done;01/11/2023;Development;Development
+;Unplanned;01/12/2023;Internal;;C;Demo modul on development (pmo team);60;Done;01/12/2023;Development;Development
+;Unplanned;01/12/2023;Internal;;C;testing;120;Done;01/12/2023;Development;Development
+;Unplanned;01/12/2023;Internal;;C;troubleshoot bug;180;Done;01/12/2023;Development;Development
+;Unplanned;01/12/2023;Internal;;C;update feature on query, db, blade;120;Done;01/12/2023;Development;Development
+;Unplanned;1/13/2023 ;Internal;;C;enhance frontend weekly;180;Done;1/13/2023 ;Development;Enhance
+;Unplanned;1/13/2023 ;Internal;;C;fixing bug;60;Done;1/13/2023 ;Development;Development
+;Unplanned;1/13/2023 ;Internal;;C;testing;180;Done;1/13/2023 ;Development;Development
+;Unplanned;1/13/2023 ;Internal;;C;enhance frontend add milestone;30;Done;1/13/2023 ;Development;Development
+;Unplanned;1/16/2023 ;Internal;;C;update query & ajax detail milestone table;120;Done;1/16/2023 ;Development;Development
+;Unplanned;1/16/2023 ;Internal;;C;update query & save final report;120;Done;1/16/2023 ;Development;Development
+;Unplanned;1/16/2023 ;Internal;;C;enhance pembanding ;120;Done;1/16/2023 ;Development;Enhance
+;Unplanned;1/16/2023 ;Internal;;C;testing ;120;Done;1/16/2023 ;Development;Development
+;Unplanned;1/17/2023 ;Internal;;C;Update query final report;120;Done;1/17/2023 ;Development;Development
+;Unplanned;1/17/2023 ;Internal;;C;Testing;180;Done;1/17/2023 ;Development;Development
+;Unplanned;1/17/2023 ;Internal;;C;Create jquery for milestone add solution;120;Done;1/17/2023 ;Development;Development
+;Unplanned;1/18/2023 ;Internal;;C;Update data milestone;60;Done;1/18/2023 ;Development;Development
+;Unplanned;1/18/2023 ;Internal;;C;testing;180;Done;1/18/2023 ;Development;Development
+;Unplanned;1/18/2023 ;Internal;;C;Update detail & list pmo;120;Done;1/18/2023 ;Development;Development
+;Unplanned;1/18/2023 ;Internal;;C;Meeting weekly module pmo;120;Done;1/18/2023 ;Development;Meeting
+;Unplanned;1/19/2023 ;Internal;;C;Update milestone date finish validation;180;Done;1/19/2023 ;Development;Development
+;Unplanned;1/19/2023 ;Internal;;C;Testing;120;Done;1/19/2023 ;Development;Development
+;Unplanned;1/19/2023 ;Internal;;C;Update list and detail page pmo;180;Done;1/19/2023 ;Development;Development
+;Unplanned;1/20/2023 ;Internal;;C;Update milestone query store;120;Done;1/20/2023 ;Development;Development
+;Unplanned;1/20/2023 ;Internal;;C;Update ajax get milestone;120;Done;1/20/2023 ;Development;Development
+;Unplanned;1/20/2023 ;Internal;;C;testing;120;Done;1/20/2023 ;Development;Development
+;Unplanned;1/20/2023 ;Internal;;C;Update query get milestone;120;Done;1/20/2023 ;Development;Development
+;Unplanned;1/20/2023 ;Internal;;C;Fixing bug doc pendukung;60;Done;1/20/2023 ;Development;Troubleshoot
+;Unplanned;1/24/2023 ;Internal;;C;Create document testing ;180;Done;1/24/2023 ;Development;Development
+;Unplanned;1/24/2023 ;Internal;;C;update pdf project charter;60;Done;1/24/2023 ;Development;Development
+;Unplanned;1/24/2023 ;Internal;;C;update pdf progress weekly;60;Done;1/24/2023 ;Development;Development
+;Unplanned;1/24/2023 ;Internal;;C;update styling all button, font;60;Done;1/24/2023 ;Development;Development
+;Unplanned;1/24/2023 ;Internal;;C;bug fixing draft pr;15;Done;1/24/2023 ;Development;Troubleshoot
+;Unplanned;1/24/2023 ;Internal;;C;update milestone;30;Done;1/24/2023 ;Development;Development
+;Unplanned;1/25/2023 ;Internal;;C;Update list table pmo;60;Done;1/25/2023 ;Development;Development
+;Unplanned;1/25/2023 ;Internal;;C;Enhance presence shifting;120;Done;1/25/2023 ;Development;Development
+;Unplanned;1/25/2023 ;Internal;;C;update detail pmo;60;Done;1/25/2023 ;Development;Development
+;Unplanned;1/25/2023 ;Internal;;C;troubleshoot bugs;120;Done;1/25/2023 ;Development;Development
+;Unplanned;1/25/2023 ;Internal;;C;testing;120;Done;1/25/2023 ;Development;Test
+;Unplanned;-;Internal;;C;Meeting weekly PMO;180;Done;-;Development;Meeting
+;Unplanned;1/30/2023 ;Internal;;C;Meeting internal;30;Done;1/30/2023 ;Development;Meeting
+;Unplanned;1/30/2023 ;Internal;;C;Update reject jquery, update css email;120;Done;1/30/2023 ;Development;Development
+;Unplanned;1/30/2023 ;Internal;;C;Update show additional document on revision status jquery;30;Done;1/30/2023 ;Development;Development
+;Unplanned;1/30/2023 ;Internal;;C;Help faiqoh check for enhance feature;15;Done;1/30/2023 ;Development;Enhance
+;Unplanned;1/30/2023 ;Internal;;C;update verify button css;15;Done;1/30/2023 ;Development;Troubleshoot
+;Unplanned;1/30/2023 ;Internal;;C;versioning control;60;Done;1/30/2023 ;Development;Enhance
+;Unplanned;1/30/2023 ;Internal;;C;Testing;60;Done;1/30/2023 ;Development;Test
+;Unplanned;1/31/2023 ;Internal;;C;Create user matrix ;60;Done;1/31/2023 ;Development;Development
+;Unplanned;1/31/2023 ;Internal;;C;Create user guide ;120;Done;1/31/2023 ;Development;Development
+;Unplanned;1/31/2023 ;Internal;;C;Troubleshoot bugs;15;Done;1/31/2023 ;Development;Development
+;Unplanned;1/31/2023 ;Internal;;C;Troubleshoot employee update;15;Done;1/31/2023 ;Development;Troubleshoot
+;Unplanned;1/31/2023 ;Internal;;C;Update email logo css;120;Done;1/31/2023 ;Development;Development
+;Unplanned;1/31/2023 ;Internal;;C;Update query send email;15;Done;1/31/2023 ;Development;Development
+;Unplanned;02/01/2023;Internal;;C;Update user guide;60;Done;02/01/2023;Development;Development
+;Unplanned;02/01/2023;Internal;;C;Create posting schedule;120;Done;02/01/2023;SEO;New
+;Unplanned;02/01/2023;Internal;;C;Update menu show project charter, update feature type proyek implementation + maintenance;180;Done;02/01/2023;Development;Development
+;Unplanned;02/01/2023;Internal;;C;Testing module pm;60;Done;02/01/2023;Development;Development
+;Unplanned;02/01/2023;Internal;;C;Update assign project function controller;120;Done;02/01/2023;Development;Development
+;Unplanned;02/02/2023;Internal;;C;Meeting PMO;30;Done;02/02/2023;Development;Development
+;Unplanned;02/02/2023;Internal;;C;buat risk & issue kasih warna background row;30;Done;02/02/2023;Development;Development
+;Unplanned;02/02/2023;Internal;;C;tambah button back di weekly, distribution hanya sekali;120;Done;02/02/2023;Development;Development
+;Unplanned;02/02/2023;Internal;;C;belum bisa closing/bikin final report sebelum risk & issue nya clear;120;Done;02/02/2023;Development;Development
+;Unplanned;02/02/2023;Internal;;C;Testing;120;Done;02/02/2023;Development;Test
+;Unplanned;02/03/2023;Internal;;C;Create user guide PMO;120;Done;02/03/2023;Development;Development
+;Unplanned;02/03/2023;Internal;;C;Testing;15;Done;02/03/2023;Development;Development
+;Unplanned;02/03/2023;Internal;;C;Help faiqoh check user privilege;15;Done;02/03/2023;Development;Enhance
+;Unplanned;02/03/2023;Internal;;C;Help Tito scheduling upload content;120;Done;02/03/2023;SEO;New
+;Unplanned;02/03/2023;Internal;;C;Jquery - Sololearn;15;Done;02/03/2023;Development;Self Enhancement
+;Unplanned;02/06/2023;Internal;;C;check functional assign pmo;30;Done;02/06/2023;Development;Development
+;Unplanned;02/06/2023;Internal;;C;Update list pmo;15;Done;02/06/2023;Development;Development
+;Unplanned;02/06/2023;Internal;;C;troubleshoot bug;240;Done;02/06/2023;Development;Development
+;Unplanned;02/06/2023;Internal;;C;Create design post ig ;120;Done;02/06/2023;SEO;Design
+;Unplanned;02/06/2023;Internal;;C;Jquery - sololearn;120;Done;02/06/2023;Development;Self Enhancement
+;Unplanned;02/07/2023;Internal;;C;Query done on dashboard;30;Done;02/07/2023;Development;Development
+;Unplanned;02/07/2023;Internal;;C;Dashboard PMO Manager parsing data count dashboard;60;Done;02/07/2023;Development;Development
+;Unplanned;02/07/2023;Internal;;C;Jquery - Sololearn;30;Done;02/07/2023;Development;Self Enhancement
+;Unplanned;02/07/2023;Internal;;C;Posting IG;240;Done;02/07/2023;SEO;Design
+;Unplanned;02/07/2023;Internal;;C;Make technical assestment programming;15;Done;02/07/2023;Development;Self Enhancement
+;Unplanned;02/07/2023;Internal;;C;Help faiqoh research query replace;30;Done;02/07/2023;Development;Troubleshoot
+;Unplanned;02/08/2023;Internal;;C;update duration milestone on function backend;60;Done;02/08/2023;Development;Development
+;Unplanned;02/08/2023;Internal;;C;update query for countDone dashboard;15;Done;02/08/2023;Development;Development
+;Unplanned;02/08/2023;Internal;;C;parsing data on count dashboard;15;Done;02/08/2023;Development;Development
+;Unplanned;02/08/2023;Internal;;C;update response on table risk;30;Done;02/08/2023;Development;Development
+;Unplanned;02/08/2023;Internal;;C;update email validation;15;Done;02/08/2023;Development;Development
+;Unplanned;02/08/2023;Internal;;C;update feature button back give alert in milestone;120;Done;02/08/2023;Development;Development
+;Unplanned;02/08/2023;Internal;;C;learning jquery - sololearn;120;Done;02/08/2023;Development;Self Enhancement
+;Unplanned;02/08/2023;Internal;;C;Meeting with PMO;120;Done;02/08/2023;Development;Meeting
+;Unplanned;02/09/2023;Internal;;C;sololearn - javascript intermediate;240;Done;02/09/2023;Development;Self Enhancement
+;Unplanned;02/09/2023;Internal;;C;parsing data on dashboard chart, testing;30;Done;02/09/2023;Development;Development
+;Unplanned;02/09/2023;Internal;;C;update query task on going;30;Done;02/09/2023;Development;Development
+;Unplanned;02/09/2023;Internal;;C;update feature save milestone;30;Done;02/09/2023;Development;Development
+;Unplanned;02/09/2023;Internal;;C;update feature button back browser on milestone;120;Done;02/09/2023;Development;Development
+;Unplanned;02/10/2023;Internal;;C;Update task on going query;15;Done;02/10/2023;Development;Development
+;Unplanned;02/10/2023;Internal;;C;Create delete assign project backend;15;Done;02/10/2023;Development;Development
+;Unplanned;02/10/2023;Internal;;C;Create feature delete assign project;15;Done;02/10/2023;Development;Development
+;Unplanned;02/10/2023;Internal;;C;Create function delete in ajax;60;Done;02/10/2023;Development;Development
+;Unplanned;02/10/2023;Internal;;C;Enhance profile page feature in production, KTP image, NPWP image add rotate image;120;Done;02/10/2023;Development;Enhance
+;Unplanned;02/10/2023;Internal;;C;research selenium IDE automation testing tools;60;Done;02/10/2023;Development;Self Enhancement
+;Unplanned;02/10/2023;Internal;;C;versioning control (git);60;Done;02/10/2023;Development;Development
+;Unplanned;02/10/2023;Internal;;C;Add feature item on stage db;30;Done;02/10/2023;Development;Development
+;Unplanned;2/13/2023 ;Internal;;C;new feature export excel issue;15;Done;2/13/2023 ;Development;Development
+;Unplanned;2/13/2023 ;Internal;;C;new feature export excel risks;60;Done;2/13/2023 ;Development;Development
+;Unplanned;2/13/2023 ;Internal;;C;menampilkan selisih antara default bobot poin dengan input user;15;Done;2/13/2023 ;Development;Development
+;Unplanned;2/13/2023 ;Internal;;C;Update user guide module pm;240;Done;2/13/2023 ;Development;Development
+;Unplanned;2/13/2023 ;Internal;;C;research selenium IDE automation testing tools;60;Done;2/13/2023 ;Development;Development
+;Unplanned;2/13/2023 ;Internal;;C;enhance feature select to supplier;60;Done;2/13/2023 ;Development;Enhance
+;Unplanned;2/13/2023 ;Internal;;C;enhance feature select to supplier pembanding;120;Done;2/13/2023 ;Development;Enhance
+;Unplanned;2/14/2023 ;Internal;;C;Sharing session module PMO Dashboard;180;Done;2/14/2023 ;Development;Meeting
+;Unplanned;2/14/2023 ;Internal;;C;Troubleshoot bugs;120;Done;2/14/2023 ;Development;Review
+;Unplanned;2/14/2023 ;Internal;;C;Versioning control;60;Done;2/14/2023 ;Development;Review
+;Unplanned;2/14/2023 ;Internal;;C;Troubleshoot bugs dropdown PR;30;Done;2/14/2023 ;Development;Troubleshoot
+;Unplanned;2/15/2023 ;Internal;;C;Troubleshoot bug task done FE;30;Done;2/15/2023 ;Development;Review
+;Unplanned;2/15/2023 ;Internal;;C;Update feature button raise to tender privilege FE;180;Done;2/15/2023 ;Development;Enhance
+;Unplanned;2/16/2023 ;Internal;;C;Update PDF project charter, progress meeting, final project;60;Done;2/16/2023 ;Development;Review
+;Unplanned;2/16/2023 ;Internal;;C;Troubleshoot task done FE;60;Done;2/16/2023 ;Development;Review
+;Unplanned;2/16/2023 ;Internal;;C;Troubleshoot identified risk FE;15;Done;2/16/2023 ;Development;Review
+;Unplanned;2/16/2023 ;Internal;;C;Versioning control;120;Done;2/16/2023 ;Development;Review
+;Unplanned;2/16/2023 ;Internal;;C;Research for add footer on every page and counter page in css;120;Done;2/16/2023 ;Development;Review
+;Unplanned;2/17/2023 ;Internal;;C;Troubleshoot bug acc direktur operasional on module PMO;30;Done;2/17/2023 ;Development;Troubleshoot
+;Unplanned;2/17/2023 ;Internal;;C;Grab data for qr code list, update user matrix on user guide;240;Done;2/17/2023 ;Development;Review
+;Unplanned;2/17/2023 ;Internal;;C;Research for insert event calendar ;60;Done;2/17/2023 ;Development;Review
+;Unplanned;2/17/2023 ;Internal;;C;Post estimated finish date on customer information project charter, versioning control;15;Done;2/17/2023 ;Development;Review
+;Unplanned;2/17/2023 ;Internal;;C;Maintenance Export PID;30;Done;2/17/2023 ;Development;Troubleshoot
+;Unplanned;2/20/2023 ;Internal;;C;check bugs image in project charter while reject not showing on pdf;30;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;check bugs internal stakeholder while reject disapear on id project before;120;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;troubleshoot image in project charter not showing on BE;120;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;troubleshoot internal stakeholder while reject disapear on id project before on BE;15;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;troubleshoot bugs on project charter pdf new lines text on FE;30;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;add button delete document using ajax;30;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;add guest on google calendar estimated finish date - BE;60;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;create table for change log each project type progress - FE;15;Done;2/20/2023 ;Development;Review
+;Unplanned;2/20/2023 ;Internal;;C;learning - https://www.sololearn.com/learn/courses/javascript-intermediate;60;Done;2/20/2023 ;Development;Self Enhancement
+;Unplanned;2/21/2023 ;Internal;;C;troubleshoot bugs on reject notes text;120;Done;2/21/2023 ;Development;Review
+;Unplanned;2/21/2023 ;Internal;;C;troubleshoot project charter styling text pdf;60;Done;2/21/2023 ;Development;Review
+;Unplanned;2/21/2023 ;Internal;;C;troubleshoot progress week styling text pdf;60;Done;2/21/2023 ;Development;Review
+;Unplanned;2/21/2023 ;Internal;;C;troubleshoot final project styling text pdf;60;Done;2/21/2023 ;Development;Review
+;Unplanned;2/21/2023 ;Internal;;C;learning - https://www.sololearn.com/learn/courses/javascript-intermediate;30;Done;2/21/2023 ;Development;Self Enhancement
+;Unplanned;2/21/2023 ;Internal;;C;present soal to mas den;30;Done;2/21/2023 ;Development;Meeting
+;Unplanned;2/21/2023 ;Internal;;C;versioning control;60;Done;2/21/2023 ;Development;Review
+;Unplanned;2/22/2023 ;Internal;;C;troubleshoot pm index blade;30;Done;2/22/2023 ;Development;Troubleshoot
+;Unplanned;2/22/2023 ;Internal;;C;update google form for soal ;30;Done;2/22/2023 ;Development;New
+;Unplanned;2/22/2023 ;Internal;;C;versioning control;120;Done;2/22/2023 ;Development;Troubleshoot
+;Unplanned;2/23/2023 ;Internal;;C;Meeting;60;Done;2/23/2023 ;Development;Meeting
+;Unplanned;2/23/2023 ;Internal;;C;Enhance datatable dismiss wrap scroll y, versioning control;30;Done;2/23/2023 ;Development;Troubleshoot
+;Unplanned;2/23/2023 ;Internal;;C;research https://www.freecodecamp.org/learn/quality-assurance/;180;Done;2/23/2023 ;Development;Self Enhancement
+;Unplanned;2/23/2023 ;Internal;;C;Update soal magang;240;Done;2/23/2023 ;Development;Update
+;Unplanned;2/24/2023 ;Internal;;C;https://www.sololearn.com/learn/courses/javascript-intermediate/lesson/591272416?p=1;120;Done;2/24/2023 ;Development;Self Enhancement
+;Unplanned;2/24/2023 ;Internal;;C;Research Dokumen Penunjang Software Testing Life Cycle (STLC);30;Done;2/24/2023 ;Development;Self Enhancement
+;Unplanned;2/24/2023 ;Internal;;C;Research selenium assert in IDE;240;Done;2/24/2023 ;Development;Self Enhancement
+;Unplanned;2/27/2023 ;Internal;;C;Sololearn Javascript intermediate (get certificate);120;Done;2/27/2023 ;Development;Self Enhancement
+;Unplanned;2/27/2023 ;Internal;;C;Create a testing document spreadsheet SBE by research on internet;60;Done;2/27/2023 ;Development;Test
+;Unplanned;2/27/2023 ;Internal;;C;Create filter ig effect for event;30;Done;2/27/2023 ;SEO;Design
+;Unplanned;2/27/2023 ;Internal;;C;Create March posting schedule on spreadsheet;240;Done;2/27/2023 ;SEO;Design
+;Unplanned;2/28/2023 ;Internal;;C;Enhance sidebar dynamically menus;60;Done;2/28/2023 ;Development;Enhance
+;Unplanned;2/28/2023 ;Internal;;C;Enhance ATK dropdown select month;120;Done;2/28/2023 ;Development;Enhance
+;Unplanned;2/28/2023 ;Internal;;C;Ngobrol sbe flow and mockup (dev);240;Done;2/28/2023 ;Development;Meeting
+;Unplanned;03/01/2023;Internal;;C;enhance feature hr employee, add, update, delete, attach file;60;Done;03/01/2023;Development;Enhance
+;Unplanned;03/01/2023;Internal;;C;troubleshoot bugs on profile page read URL images, update function upload attach file;60;Done;03/01/2023;Development;Troubleshoot
+;Unplanned;03/01/2023;Internal;;C;troubleshoot bugs update employee;120;Done;03/01/2023;Development;Troubleshoot
+;Unplanned;03/02/2023;Internal;;C;update library select2 in msp some modules;120;Done;03/02/2023;Development;Troubleshoot
+;Unplanned;03/02/2023;Internal;;C;update on edit employee msp;30;Done;03/02/2023;Development;Troubleshoot
+;Unplanned;03/02/2023;Internal;;C;troubleshoot bugs on pmo blade privilege button;15;Done;03/02/2023;Development;Troubleshoot
+;Unplanned;03/02/2023;Internal;;C;update on detail pmo on input weight css;60;Done;03/02/2023;Development;Troubleshoot
+;Unplanned;03/02/2023;Internal;;C;https://class.buildwithangga.com/course_playing/blade-templating-laravel-8/6;30;Done;03/02/2023;Development;Self Enhancement
+;Unplanned;03/02/2023;Internal;;C;versioning control;60;Done;03/02/2023;Development;Troubleshoot
+;Unplanned;03/03/2023;Internal;;C;troubleshoot bugs sales page;60;Done;03/03/2023;Development;Troubleshoot
+;Unplanned;03/03/2023;Internal;;C;troubleshoot bugs on image pdf project charter;240;Done;03/03/2023;Development;Troubleshoot
+;Unplanned;03/03/2023;Internal;;C;learn K6 (performance testing);60;Done;03/03/2023;Development;Self Enhancement
+;Unplanned;03/06/2023;Internal;;C;create report;240;Done;03/06/2023;Development;Meeting
+;Unplanned;03/06/2023;Internal;;C;https://www.sololearn.com/learn/courses/sql-intermediate;15;Done;03/06/2023;Development;Self Enhancement
+;Unplanned;03/06/2023;Internal;;C;Add privilege to pak nabil, bu elfi, consumable ATK, Logistik history;30;Done;03/06/2023;Development;Enhance
+;Unplanned;03/06/2023;Internal;;C;ngobrol sbe;30;Done;03/06/2023;Development;Meeting
+;Unplanned;03/06/2023;Internal;;C;Research K6;60;Done;03/06/2023;Development;Self Enhancement
+;Unplanned;03/08/2023;Internal;;C;Create flowchart document testing;30;Done;03/08/2023;Development;New
+;Unplanned;03/08/2023;Internal;;C;Research testing document;240;Done;03/08/2023;Development;New
+;Unplanned;3/13/2023 ;Internal;;C;Slicing feature create config;120;Done;3/13/2023 ;Development;Development
+;Unplanned;3/13/2023 ;Internal;;C;Slicing feature detail function temporary sbe;30;Done;3/13/2023 ;Development;Development
+;Unplanned;3/13/2023 ;Internal;;C;Create function button feature save config;30;Done;3/13/2023 ;Development;Development
+;Unplanned;3/13/2023 ;Internal;;C;Create function button feature back pages;60;Done;3/13/2023 ;Development;Development
+;Unplanned;3/14/2023 ;Internal;;C;button back showconfig;30;Done;3/14/2023 ;Development;Development
+;Unplanned;3/14/2023 ;Internal;;C;slicing modal notes;180;Done;3/14/2023 ;Development;Development
+;Unplanned;3/14/2023 ;Internal;;C;slicing create config button add, select 2 function;120;Done;3/14/2023 ;Development;Development
+;Unplanned;3/14/2023 ;Internal;;C;update function button add items;60;Done;3/14/2023 ;Development;Development
+;Unplanned;3/15/2023 ;Internal;;C;create validation on setting form;180;Done;3/15/2023 ;Development;Development
+;Unplanned;3/15/2023 ;Internal;;C;create validation create SBE;60;Done;3/15/2023 ;Development;Development
+;Unplanned;3/15/2023 ;Internal;;C;create parsing data save config with jquery;120;Done;3/15/2023 ;Development;Development
+;Unplanned;3/15/2023 ;Internal;;C;create function select2 onchange;120;Done;3/15/2023 ;Development;Development
+;Unplanned;3/16/2023 ;Internal;;C;pasang sweet alert send notes, save function, save config, update config;60;Done;3/16/2023 ;Development;Development
+;Unplanned;3/16/2023 ;Internal;;C;create show function (readonly);240;Done;3/16/2023 ;Development;Development
+;Unplanned;3/16/2023 ;Internal;;C;create update config pages;60;Done;3/16/2023 ;Development;Development
+;Unplanned;3/17/2023 ;Internal;;C;pasang swal di post setting;60;Done;3/17/2023 ;Development;Development
+;Unplanned;3/17/2023 ;Internal;;C;parsing data post setting;120;Done;3/17/2023 ;Development;Development
+;Unplanned;3/17/2023 ;Internal;;C;update create config;120;Done;3/17/2023 ;Development;Development
+;Unplanned;3/20/2023 ;Internal;;C;update save config sbe;180;Done;3/20/2023 ;Development;Development
+;Unplanned;3/20/2023 ;Internal;;C;Create pdf generate sbe;30;Done;3/20/2023 ;Development;Development
+;Unplanned;3/20/2023 ;Internal;;C;parsing data /sbe/getDataSbe;30;Done;3/20/2023 ;Development;Development
+;Unplanned;3/20/2023 ;Internal;;C;parsing data /sbe/getActivity;30;Done;3/20/2023 ;Development;Development
+;Unplanned;3/20/2023 ;Internal;;C;parsing data sbe/getVersionConfig;30;Done;3/20/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;tambah reset config;30;Done;3/21/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;tampilkan notes reject;60;Done;3/21/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;parsing data /sbe/getDetailConfig;120;Done;3/21/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;parsing data /sbe/updateConfig;60;Done;3/21/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;parsing data /sbe/updateVersion;60;Done;3/21/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;parsing data sbe/getConfigTemporary;30;Done;3/21/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;parsing data empty config;15;Done;3/21/2023 ;Development;Development
+;Unplanned;3/21/2023 ;Internal;;C;Bugs btn delete assign;120;Done;3/21/2023 ;Development;Troubleshoot
+;Unplanned;3/24/2023 ;Internal;;C;Update config belum bisa dropdown select2nya;60;Done;3/24/2023 ;Development;Development
+;Unplanned;3/24/2023 ;Internal;;C;Update grand total di update belum sesuai;30;Done;3/24/2023 ;Development;Development
+;Unplanned;3/24/2023 ;Internal;;C;update bugs setting detail items;30;Done;3/24/2023 ;Development;Development
+;Unplanned;3/24/2023 ;Internal;;C;create user matrix;180;Done;3/24/2023 ;Development;Development
+;Unplanned;3/24/2023 ;Internal;;C;update error message input duration per config saja;30;Done;3/24/2023 ;Development;Development
+;Unplanned;3/24/2023 ;Internal;;C;Create email blade temporary sbe review;60;Done;3/24/2023 ;Development;Development
+;Unplanned;3/27/2023 ;Internal;;C;Usd format currency;240;Done;3/27/2023 ;Development;Enhance
+;Unplanned;3/27/2023 ;Internal;;C;Update PDF blade;30;Done;3/27/2023 ;Development;Development
+;Unplanned;3/27/2023 ;Internal;;C;Update email blade;30;Done;3/27/2023 ;Development;Development
+;Unplanned;3/27/2023 ;Internal;;C;Parsing data on button;60;Done;3/27/2023 ;Development;Development
+;Unplanned;3/27/2023 ;Internal;;C;Create permission feature;60;Done;3/27/2023 ;Development;Development
+;Unplanned;3/28/2023 ;Internal;;C;create test case testing;15;Done;3/28/2023 ;Development;Development
+;Unplanned;3/28/2023 ;Internal;;C;migrate feature item into db stage;30;Done;3/28/2023 ;Development;Development
+;Unplanned;3/28/2023 ;Internal;;C;enhance detail sales on tender process show choseed function sbe;30;Done;3/28/2023 ;Development;Development
+;Unplanned;3/28/2023 ;Internal;;C;parsing data choosed func sbe on detail sales tender;60;Done;3/28/2023 ;Development;Development
+;Unplanned;3/28/2023 ;Internal;;C;tambah sow dan oos di pdf;120;Done;3/28/2023 ;Development;Development
+;Unplanned;3/28/2023 ;Internal;;C;tambah grand total show temporary sbe;60;Done;3/28/2023 ;Development;Development
+;Unplanned;3/28/2023 ;Internal;;C;tambah fungsi dihapus row, dinamis grand total;60;Done;3/28/2023 ;Development;Development
+;Unplanned;3/29/2023 ;Internal;;C;testing development, update doc test case;15;Done;3/29/2023 ;Development;Development
+;Unplanned;3/29/2023 ;Internal;;C;create user privilege on dev;15;Done;3/29/2023 ;Development;Development
+;Unplanned;3/29/2023 ;Internal;;C;create features on stage;15;Done;3/29/2023 ;Development;Development
+;Unplanned;3/29/2023 ;Internal;;C;create features on prod;15;Done;3/29/2023 ;Development;Development
+;Unplanned;3/29/2023 ;Internal;;C;create features item on prod;15;Done;3/29/2023 ;Development;Development
+;Unplanned;3/29/2023 ;Internal;;C;create feature item on stage;240;Done;3/29/2023 ;Development;Development
+;Unplanned;3/29/2023 ;Internal;;C;fixing bugs;60;Done;3/29/2023 ;Development;Development
+;Unplanned;3/30/2023 ;Internal;;C;create user guide;240;Done;3/30/2023 ;Development;Deploy
+;Unplanned;3/30/2023 ;Internal;;C;testing development, update test case;120;Done;3/30/2023 ;Development;Deploy
+;Unplanned;3/30/2023 ;Internal;;C;update feature select configs dynamis show on left tab;120;Done;3/30/2023 ;Development;Deploy
+;Unplanned;3/31/2023 ;Internal;;C;update user guide;60;Done;3/31/2023 ;Development;Deploy
+;Unplanned;3/31/2023 ;Internal;;C;testing stage;30;Done;3/31/2023 ;Development;Deploy
+;Unplanned;3/31/2023 ;Internal;;C;update feature roles stage;120;Done;3/31/2023 ;Development;Deploy
+;Unplanned;3/31/2023 ;Internal;;C;add feature saved & unsaved select config;60;Done;3/31/2023 ;Development;Deploy
+;Unplanned;3/31/2023 ;Internal;;C;update privilege on stage;60;Done;3/31/2023 ;Development;Deploy
+;Unplanned;04/03/2023;Internal;;C;testing stage;60;Done;04/03/2023;Development;Test
+;Unplanned;04/03/2023;Internal;;C;add prod privilege, testing prod privilege;240;Done;04/03/2023;Development;Test
+;Unplanned;04/03/2023;Internal;;C;Explore timesheet design UI/UX, scope timesheet;120;Done;04/03/2023;Development;Self Enhancement
+;Unplanned;04/04/2023;Internal;;C;Sharing session module SBE;30;Done;04/04/2023;Development;Meeting
+;Unplanned;04/04/2023;Internal;;C;troubleshoot pdf sbe add information;30;Done;04/04/2023;Development;Troubleshoot
+;Unplanned;04/04/2023;Internal;;C;troubleshoot sbe setting change button update to delete;15;Done;04/04/2023;Development;Troubleshoot
+;Unplanned;04/04/2023;Internal;;C;troubleshoot button send notes while load is disable;120;Done;04/04/2023;Development;Troubleshoot
+;Unplanned;04/04/2023;Internal;;C;Brainstorming timesheet;120;Done;04/04/2023;Development;Meeting
+;Unplanned;04/04/2023;Internal;;C;Testing staging server before sharing session;60;Done;04/04/2023;Development;Test
+;Unplanned;04/05/2023;Internal;;C;enhance grand total price di halaman show temporary;15;Done;04/05/2023;Development;Review
+;Unplanned;04/05/2023;Internal;;C;enhance color table header preview temporary config;60;Done;04/05/2023;Development;Review
+;Unplanned;04/05/2023;Internal;;C;enhance grand total price di halaman update;60;Done;04/05/2023;Development;Review
+;Unplanned;04/05/2023;Internal;;C;brainstorming timesheet divisi PMO;120;Done;04/05/2023;Development;Requirement
+;Unplanned;04/05/2023;Internal;;C;brainstorming timesheet divisi MSM;60;Done;04/05/2023;Development;Requirement
+;Unplanned;04/05/2023;Internal;;C;brainstorming timesheet divisi HRD;60;Done;04/05/2023;Development;Requirement
+;Unplanned;04/05/2023;Internal;;C;Good Friday design, scheduling;60;Done;04/05/2023;SEO;Design
+;Unplanned;04/06/2023;Internal;;C;Update table item config size responsive;120;Done;04/06/2023;Development;Review
+;Unplanned;04/06/2023;Internal;;C;Brainstorming timesheet SID;120;Done;04/06/2023;Development;Requirement
+;Unplanned;04/10/2023;Internal;;C;update user guide, update user matrix;30;Done;04/10/2023;Development;Review
+;Unplanned;04/10/2023;Internal;;C;Create Dokumen MoM SID;30;Done;04/10/2023;Development;Requirement
+;Unplanned;04/10/2023;Internal;;C;Create Dokumen MoM PMO;30;Done;04/10/2023;Development;Requirement
+;Unplanned;04/10/2023;Internal;;C;Create Dokumen MoM MSM;30;Done;04/10/2023;Development;Requirement
+;Unplanned;04/10/2023;Internal;;C;Create Dokumen MoM HRD;60;Done;04/10/2023;Development;Requirement
+;Unplanned;04/10/2023;Internal;;C;Meeting with mas angger;30;Done;04/10/2023;Development;Requirement
+;Unplanned;04/10/2023;Internal;;C;update width grand total cost on prod;120;Done;04/10/2023;Development;Review
+;Unplanned;04/10/2023;Internal;;C;Mapping data cont & var based on object timesheet;120;Done;04/10/2023;Development;Requirement
+;Unplanned;04/11/2023;Internal;;C;Fixing bug sbe detail, add sort while ajax response;60;Done;04/11/2023;Development;Review
+;Unplanned;04/11/2023;Internal;;C;Meeting Collect Requirement SOL;180;Done;04/11/2023;Development;Requirement
+;Unplanned;04/11/2023;Internal;;C;Mapping data timesheet per divisi, update MoM;30;Done;04/11/2023;Development;Requirement
+;Unplanned;04/11/2023;Internal;;C;arrange meeting collect requirement;180;Done;04/11/2023;Development;Requirement
+;Unplanned;04/12/2023;Internal;;C;Meeting timesheet bahas concern tipe kategori;120;Done;04/12/2023;Development;Meeting
+;Unplanned;04/12/2023;Internal;;C;udpate MoM masing-masing Divisi;60;Done;04/12/2023;Development;Requirement
+;Unplanned;04/12/2023;Internal;;C;update list activity per divisi;60;Done;04/12/2023;Development;Requirement
+;Unplanned;04/12/2023;Internal;;C;update document requirement;30;Done;04/12/2023;Development;Requirement
+;Unplanned;04/12/2023;Internal;;C;check cv anak magang;180;Done;04/12/2023;Development;New
+;Unplanned;4/13/2023 ;Internal;;C;update document requirement;120;Done;4/13/2023 ;Development;Requirement
+;Unplanned;4/13/2023 ;Internal;;C;update list activity.xls, koordinasi dengan MSM supervisor, koordinasi dengan SOL manager, koordinasi dengan PMO Manager;30;Done;4/13/2023 ;Development;Requirement
+;Unplanned;4/13/2023 ;Internal;;C;create MoM (12-04-23) Meeting concern timesheet;60;Done;4/13/2023 ;Development;Requirement
+;Unplanned;4/13/2023 ;Internal;;C;update gantt chart for timesheet;30;Done;4/13/2023 ;Development;Requirement
+;Unplanned;4/13/2023 ;Internal;;C;create story board timesheet flow;15;Done;4/13/2023 ;Development;Requirement
+;Unplanned;4/13/2023 ;Internal;;C;koordinasi tim dev untuk isi timesheet yang otomatis (PMO Dashboard);60;Done;4/13/2023 ;Development;Requirement
+;Unplanned;4/14/2023 ;Internal;;C;Troubleshoot bug ;120;Done;4/14/2023 ;Development;Troubleshoot
+;Unplanned;4/14/2023 ;Internal;;C;update document requirement;60;Done;4/14/2023 ;Development;Requirement
+;Unplanned;4/14/2023 ;Internal;;C;create flowchart timesheet, update storyboard timesheet;120;Done;4/14/2023 ;Development;Requirement
+;Unplanned;4/14/2023 ;Internal;;C;Add checklist lifetime and function on expired date;180;Done;4/14/2023 ;Development;Troubleshoot
+;Unplanned;4/17/2023 ;Internal;;C;Update document requirement;60;Done;4/17/2023 ;Development;Requirement
+;Unplanned;4/17/2023 ;Internal;;C;Create Fsd document;15;Done;4/17/2023 ;Development;Requirement
+;Unplanned;4/17/2023 ;Internal;;C;follow up stage definition to msm member (mas dicky);60;Done;4/17/2023 ;Development;Requirement
+;Unplanned;4/18/2023 ;Internal;;C;create document TSD;60;Done;4/18/2023 ;Development;Requirement
+;Unplanned;4/18/2023 ;Internal;;C;Design ucapan lebaran, schedulling post ;30;Done;4/18/2023 ;SEO;Design
+;Unplanned;4/18/2023 ;Internal;;C;Create schedule post mei, anniv, birthday;120;Done;4/18/2023 ;SEO;Design
+;Unplanned;4/18/2023 ;Internal;;C;enhance for integrate sbe link drive on draft pr [development];60;Done;4/18/2023 ;Development;Enhance
+;Unplanned;4/18/2023 ;Internal;;C;create frontend table report customer by territory, parsing data [production];60;Done;4/18/2023 ;Development;Add Feature
+;Unplanned;05/02/2023;Internal;;C;Check jawaban anak magang;180;Done;05/02/2023;Development;Check
+;Unplanned;05/02/2023;Internal;;C;Update document requirement;30;Done;05/02/2023;Development;Requirement
+;Unplanned;05/02/2023;Internal;;C;Update input sbe css disable;60;Done;05/02/2023;Development;Troubleshoot
+;Unplanned;05/02/2023;Internal;;C;Check design on whimsycal;60;Done;05/02/2023;Development;Requirement
+;Unplanned;05/03/2023;Internal;;C;Ngobrol sama mas angger tentang report PR yang korelasi sama draft pr;120;Done;05/03/2023;Development;Review
+;Unplanned;05/03/2023;Internal;;C;Meeting Timesheet sama mas denny;120;Done;05/03/2023;Development;Requirement
+;Unplanned;05/03/2023;Internal;;C;Update document requirement (about feature, flowchart);60;Done;05/03/2023;Development;Requirement
+;Unplanned;05/03/2023;Internal;;C;Troubleshoot bug sbe pdf;30;Done;05/03/2023;Development;Troubleshoot
+;Unplanned;05/04/2023;Internal;;C;show pdf pr on production;30;Done;05/04/2023;Development;Enhance
+;Unplanned;05/04/2023;Internal;;C;show customer by territory, change by territory tab on production;60;Done;05/04/2023;Development;Enhance
+;Unplanned;05/04/2023;Internal;;C;Update document requirement feature, update flowchart;180;Done;05/04/2023;Development;Requirement
+;Unplanned;05/04/2023;Internal;;C;create wireframe dashboard timesheet(corat coret dulu);30;Done;05/04/2023;Development;Requirement
+;Unplanned;05/04/2023;Internal;;C;check bug sbe;120;Done;05/04/2023;Development;Review
+;Unplanned;05/05/2023;Internal;;C;Update flowchart, document requirement;60;Done;05/05/2023;Development;Requirement
+;Unplanned;05/05/2023;Internal;;C;Meeting brainstorming requirement sama mas den;180;Done;05/05/2023;Development;Meeting
+;Unplanned;05/05/2023;Internal;;C;fixing and troubleshoot bug (list produk acak, save config);60;Done;05/05/2023;Development;Troubleshoot
+;Unplanned;05/05/2023;Internal;;C;Check bug, testing;120;Done;05/05/2023;Development;Review
+;Unplanned;05/08/2023;Internal;;C;Check bug, testing;60;Done;05/08/2023;Development;Review
+;Unplanned;05/08/2023;Internal;;C;fixing bug tab pane add config timesheet;30;Done;05/08/2023;Development;Troubleshoot
+;Unplanned;05/08/2023;Internal;;C;Update doc requirement;30;Done;05/08/2023;Development;Requirement
+;Unplanned;05/08/2023;Internal;;C;Ngobrolin timesheet (dev);60;Done;05/08/2023;Development;Meeting
+;Unplanned;05/08/2023;Internal;;C;Learn FullCalendar for timesheet frontend;60;Done;05/08/2023;Development;Self Enhancement
+;Unplanned;05/09/2023;Internal;;C;Learning full calendar, try full calendar feature on dev;120;Done;05/09/2023;Development;Self Enhancement
+;Unplanned;05/09/2023;Internal;;C;Add comment on whimsical, ngobrolin design (masih bingung buat desain list task,phase definition);180;Done;05/09/2023;Development;Design
+;Unplanned;05/09/2023;Internal;;C;Update document requirement, fsd, tsd;120;Done;05/09/2023;Development;Requirement
+;Unplanned;05/10/2023;Internal;;C;Update document requirement, fsd, tsd;120;Done;05/10/2023;Development;Requirement
+;Unplanned;05/10/2023;Internal;;C;Review wireframe bersama tim dev;120;Done;05/10/2023;Development;Design
+;Unplanned;05/10/2023;Internal;;C;Review Desain bersama mas den;180;Done;05/10/2023;Development;Meeting
+;Unplanned;05/11/2023;Internal;;C;Learning gcalendar get list and query params responseStatus:yes;60;Done;05/11/2023;Development;Self Enhancement
+;Unplanned;05/11/2023;Internal;;C;fixing bug cancel pop up belum ada alert mandatory isi reason;60;Done;05/11/2023;Development;Troubleshoot
+;Unplanned;05/11/2023;Internal;;C;fixing bug read all on notification draft pr;240;Done;05/11/2023;Development;Troubleshoot
+;Unplanned;05/12/2023;Internal;;C;Get list google calendar event parsing to fullcalendar;60;Done;05/12/2023;Development;Self Enhancement
+;Unplanned;05/12/2023;Internal;;C;Update document requirement;60;Done;05/12/2023;Development;Requirement
+;Unplanned;05/12/2023;Internal;;C;Review timesheet wireframe;15;Done;05/12/2023;Development;Design
+;Unplanned;05/12/2023;Internal;;C;Cek database detail item config, update missing detail item id;240;Done;05/12/2023;Development;Review
+;Unplanned;5/15/2023 ;Internal;;C;Update doc requirement, create user story, update gantt chart;60;Done;5/15/2023 ;Development;Requirement
+;Unplanned;5/15/2023 ;Internal;;C;Fullcalendar ;15;Done;5/15/2023 ;Development;Self Enhancement
+;Unplanned;5/15/2023 ;Internal;;C;Minta review mas den;180;Done;5/15/2023 ;Development;Requirement
+;Unplanned;5/16/2023 ;Internal;;C;Update document requirement & fsd;60;Done;5/16/2023 ;Development;Requirement
+;Unplanned;5/16/2023 ;Internal;;C;Learn python sololearn;15;Done;5/16/2023 ;Development;Self Enhancement
+;Unplanned;5/16/2023 ;Internal;;C;Learn daterangepicker ;120;Done;5/16/2023 ;Development;Self Enhancement
+;Unplanned;5/17/2023 ;Internal;;C;Learning python in sololearn;120;Done;5/17/2023 ;Development;Self Enhancement
+;Unplanned;5/17/2023 ;Internal;;C;Design & schedule posting kenaikan isa almasih;180;Done;5/17/2023 ;SEO;Design
+;Unplanned;5/22/2023 ;Internal;;C;learning python - sololearn;180;Done;5/22/2023 ;Development;Self Enhancement
+;Unplanned;5/23/2023 ;Internal;;C;Update document tsd, fsd;60;Done;5/23/2023 ;Development;Requirement
+;Unplanned;5/23/2023 ;Internal;;C;review and update mockup timesheet;180;Done;5/23/2023 ;Development;Design
+;Unplanned;5/23/2023 ;Internal;;C;learning fullcalendar library;240;Done;5/23/2023 ;Development;Self Enhancement
+;Unplanned;5/24/2023 ;Internal;;C;Update flowchart, update dokumen requirement, fsd, tsd;60;Done;5/24/2023 ;Development;Requirement
+;Unplanned;5/24/2023 ;Internal;;C;Ngobrolin timesheet w (tito,mas bima,mas dicky) ;60;Done;5/24/2023 ;Development;Requirement
+;Unplanned;5/24/2023 ;Internal;;C;review for update mockup ;60;Done;5/24/2023 ;Development;Design
+;Unplanned;5/25/2023 ;Internal;;C;Add grand total in detail preview config temporary sbe;15;Done;5/25/2023 ;Development;Enhance
+;Unplanned;5/25/2023 ;Internal;;C;Update dokumen yang kurang rapi;120;Done;5/25/2023 ;Development;Requirement
+;Unplanned;5/25/2023 ;Internal;;C;Create webview on react native;180;Done;5/25/2023 ;Development;Development
+;Unplanned;5/25/2023 ;Internal;;C;explore geolocation webview in react native;30;Done;5/25/2023 ;Development;Development
+;Unplanned;5/25/2023 ;Internal;;C;learning python sololearn;60;Done;5/25/2023 ;Development;Self Enhancement
+;Unplanned;5/26/2023 ;Internal;;C;Review doc requirement with mas den;300;Done;5/26/2023 ;Development;Requirement
+;Unplanned;5/26/2023 ;Internal;;C;Update doc requirement, fsd;30;Done;5/26/2023 ;Development;Requirement
+;Unplanned;5/26/2023 ;Internal;;C;troubleshoot css pdf sbe;60;Done;5/26/2023 ;Development;Troubleshoot
+;Unplanned;5/26/2023 ;Internal;;C;create report;15;Done;5/26/2023 ;Development;New
+;Unplanned;5/29/2023 ;Internal;;C;Create posting schedule juni;30;Done;5/29/2023 ;SEO;New
+;Unplanned;5/29/2023 ;Internal;;C;slicing page timesheet;60;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;slicing page add config, lock activity, assign pid;30;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;slicing modal add task;15;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;slicing modal add phase;60;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;slicing modal create timesheet;30;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;slicing modal permit;120;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;add function to planned & unplanned daterangepicker;30;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;add function to permit daterangepicker;30;Done;5/29/2023 ;Development;Development
+;Unplanned;5/29/2023 ;Internal;;C;Follow up for sign tsd, fsd document;60;Done;5/29/2023 ;Development;Requirement
+;Unplanned;5/30/2023 ;Internal;;C;slicing update timesheet;60;Done;5/30/2023 ;Development;Development
+;Unplanned;5/30/2023 ;Internal;;C;add function for update timesheet;60;Done;5/30/2023 ;Development;Development
+;Unplanned;5/30/2023 ;Internal;;C;create function for lock activity in fullcalendar;60;Done;5/30/2023 ;Development;Development
+;Unplanned;5/30/2023 ;Internal;;C;create function for leaving permit in fullcalendar can't create timesheet;60;Done;5/30/2023 ;Development;Development
+;Unplanned;5/30/2023 ;Internal;;C;sheet selalu bisa diklik tapi disable untuk tanggal diluar lock activity;60;Done;5/30/2023 ;Development;Development
+;Unplanned;5/30/2023 ;Internal;;C;enhance - slicing add custom task pmo;60;Done;5/30/2023 ;Development;Enhance
+;Unplanned;5/30/2023 ;Internal;;C;enhance - add function add,delete custom task;15;Done;5/30/2023 ;Development;Enhance
+;Unplanned;5/30/2023 ;Internal;;C;enhance - add validasi add custom task;60;Done;5/30/2023 ;Development;Enhance
+;Unplanned;5/31/2023 ;Internal;;C;update function button add + delete custom task;120;Done;5/31/2023 ;Development;Enhance
+;Unplanned;5/31/2023 ;Internal;;C;create validation function custom milestone task;60;Done;5/31/2023 ;Development;Enhance
+;Unplanned;5/31/2023 ;Internal;;C;create store function custom milestone task;120;Done;5/31/2023 ;Development;Enhance
+;Unplanned;5/31/2023 ;Internal;;C;add store function to custom milestone task;60;Done;5/31/2023 ;Development;Enhance
+;Unplanned;5/31/2023 ;Internal;;C;testing add custom task milestone;15;Done;5/31/2023 ;Development;Enhance
+;Unplanned;5/31/2023 ;Internal;;C;Initiate dashboard page template;15;Done;5/31/2023 ;Development;Development
+;Unplanned;06/05/2023;Internal;;C;add permission config in dev for timesheet;15;Done;06/05/2023;Development;Development
+;Unplanned;06/05/2023;Internal;;C;testing function show timesheet information for permit (dev);30;Done;06/05/2023;Development;Development
+;Unplanned;06/05/2023;Internal;;C;udpate function show timesheet information for permit;30;Done;06/05/2023;Development;Development
+;Unplanned;06/05/2023;Internal;;C;slicing dashboard box filter;60;Done;06/05/2023;Development;Development
+;Unplanned;06/05/2023;Internal;;C;slicing dashboard box table;120;Done;06/05/2023;Development;Development
+;Unplanned;06/05/2023;Internal;;C;slicing dashboard box chart;120;Done;06/05/2023;Development;Development
+;Unplanned;06/05/2023;Internal;;C;add login page for 'esenso app' (engineer presence solusindo - msp);60;Done;06/05/2023;Development;Development
+;Unplanned;06/05/2023;Internal;;C;update session lifetime dynamically (add middleware, provider) for technician - msp;30;Done;06/05/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;add function for the tooltip on Create a timesheet;120;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;add function dashboard chart;15;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;add function displayed column on the data table;15;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;add function reload on the data table;15;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;add function group row data table;30;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;create dummy data for data table;30;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;create ajax store phase config;30;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;create ajax store task config;30;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;create ajax store lock duration;30;Done;06/06/2023;Development;Development
+;Unplanned;06/06/2023;Internal;;C;testing dev;60;Done;06/06/2023;Development;Development
+;Unplanned;06/07/2023;Internal;;C;parsing ajax store assign PIC ;60;Done;06/07/2023;Development;Development
+;Unplanned;06/07/2023;Internal;;C;parsing ajax store config ;60;Done;06/07/2023;Development;Development
+;Unplanned;06/07/2023;Internal;;C;add validation assign config ;60;Done;06/07/2023;Development;Development
+;Unplanned;06/07/2023;Internal;;C;parsing data to filter dashboard ;60;Done;06/07/2023;Development;Development
+;Unplanned;06/07/2023;Internal;;C;add privilege function in dashboard page ;60;Done;06/07/2023;Development;Development
+;Unplanned;06/07/2023;Internal;;C;parsing data get config by division;60;Done;06/07/2023;Development;Development
+;Unplanned;06/07/2023;Internal;;C;parsing data duration ;30;Done;06/07/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;parsing data to filter;30;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;create a dummy on the dashboard manager to view timesheet staff;15;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;add the button back in the timesheet for the manager back to the dashboard;60;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;create a function custom filter on the dashboard;15;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;create report meta sosmed ;30;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;create a dummy for chart cumulative man-days in the dashboard;30;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;setting privilege manager to staff timesheet not allow to create;60;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;create validation add timesheet;30;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;paraphrase object phase, task;15;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;store object phase, task into db;15;Done;06/08/2023;Development;Development
+;Unplanned;06/08/2023;Internal;;C;discuss troubleshoot sbe;30;Done;06/08/2023;Development;Troubleshoot
+;Unplanned;06/08/2023;Internal;;C;research query join array contain;30;Done;06/08/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;create box config table definition;30;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data table definition config on the data table;30;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data select lead/pid;30;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;update validation add timesheet;15;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data set task -  timesheet;15;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data set phase - timesheet;15;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data set level - timesheet;120;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data on a full calendar;60;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;create function lock activity based on the division in full calendar;30;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;create function show leaving permit in full calendar;15;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data for table tasks in the dashboard;15;Done;06/09/2023;Development;Development
+;Unplanned;06/09/2023;Internal;;C;parsing data for the table phase in the dashboard;30;Done;06/09/2023;Development;Development
+;Unplanned;06/12/2023;Internal;;C;add user privilege in the timesheet;60;Done;06/12/2023;Development;Development
+;Unplanned;06/12/2023;Internal;;C;create a function store permit;180;Done;06/12/2023;Development;Development
+;Unplanned;06/12/2023;Internal;;C;learning python - solo learn;60;Done;06/12/2023;Development;Self Enhancement
+;Unplanned;06/12/2023;Internal;;C;update timesheet by privilege for update function;15;Done;06/12/2023;Development;Development
+;Unplanned;06/12/2023;Internal;;C;change issuance draft pr on database;120;Done;06/12/2023;Development;Troubleshoot
+;Unplanned;6/13/2023 ;Internal;;C;setting privilege on config timesheet page for spv;60;Done;6/13/2023 ;Development;Development
+;Unplanned;6/13/2023 ;Internal;;C;setting privilege on timesheet page for spv, manager;180;Done;6/13/2023 ;Development;Development
+;Unplanned;6/13/2023 ;Internal;;C;troubleshoot draft pr page;15;Done;6/13/2023 ;Development;Troubleshoot
+;Unplanned;6/14/2023 ;Internal;;C;store roles to feature to manager, spv;120;Done;6/14/2023 ;Development;Development
+;Unplanned;6/14/2023 ;Internal;;C;testing timesheet on bcd staff, spv, manager;30;Done;6/14/2023 ;Development;Development
+;Unplanned;6/14/2023 ;Internal;;C;update for modal detail timesheet;120;Done;6/14/2023 ;Development;Development
+;Unplanned;6/14/2023 ;Internal;;C;update click name from dashboard for spv show staff timesheet;120;Done;6/14/2023 ;Development;Development
+;Unplanned;6/14/2023 ;Internal;;C;update for google calendar filter ajax;60;Done;6/14/2023 ;Development;Development
+;Unplanned;6/15/2023 ;Internal;;C;timesheet add staff dan supervisor berdasarkan lock activity;30;Done;6/15/2023 ;Development;Development
+;Unplanned;6/15/2023 ;Internal;;C;timeheet unplanned bisa create berdasarkan lock activity;30;Done;6/15/2023 ;Development;Development
+;Unplanned;6/15/2023 ;Internal;;C;spv bisa update timesheet planned & unplanned milik staff berdasarkan lock duration;30;Done;6/15/2023 ;Development;Development
+;Unplanned;6/15/2023 ;Internal;;C;check planned timesheet tidak bisa diedit sebelum hari H dan arround lock activity;60;Done;6/15/2023 ;Development;Development
+;Unplanned;6/15/2023 ;Internal;;C;change permit date to datepicker ;15;Done;6/15/2023 ;Development;Development
+;Unplanned;6/15/2023 ;Internal;;C;create disable status when select unplanned schedule;120;Done;6/15/2023 ;Development;Development
+;Unplanned;6/15/2023 ;Internal;;C;update store timesheet without reload page;180;Done;6/15/2023 ;Development;Development
+;Unplanned;6/16/2023 ;Internal;;C;update store timesheet, permit without refresh page to fullcalendar;120;Done;6/16/2023 ;Development;Development
+;Unplanned;6/16/2023 ;Internal;;C;testing di masing-masing role user staff, spv, manager;30;Done;6/16/2023 ;Development;Development
+;Unplanned;6/16/2023 ;Internal;;C;disable holydate in calendar picker;60;Done;6/16/2023 ;Development;Development
+;Unplanned;6/16/2023 ;Internal;;C;parsing data on dashboard chart;30;Done;6/16/2023 ;Development;Development
+;Unplanned;6/16/2023 ;Internal;;C;create doc user matrix;30;Done;6/16/2023 ;Development;Development
+;Unplanned;6/16/2023 ;Internal;;C;create doc user story;60;Done;6/16/2023 ;Development;Development
+;Unplanned;6/19/2023 ;Internal;;C;update event update frondtend in fullcalendar;15;Done;6/19/2023 ;Development;Development
+;Unplanned;6/19/2023 ;Internal;;C;add alert on timesheet page;30;Done;6/19/2023 ;Development;Development
+;Unplanned;6/19/2023 ;Internal;;C;add setting feature item for dashboard page;30;Done;6/19/2023 ;Development;Deploy
+;Unplanned;6/19/2023 ;Internal;;C;migrate setting feature item from dev to stage;15;Done;6/19/2023 ;Development;Deploy
+;Unplanned;6/20/2023 ;Internal;;C;insert data role_feature_item in db sims stage;60;Done;6/20/2023 ;Development;Development
+;Unplanned;6/20/2023 ;Internal;;C;create an email blade page;60;Done;6/20/2023 ;Development;Development
+;Unplanned;6/20/2023 ;Internal;;C;create get alert remaining;120;Done;6/20/2023 ;Development;Development
+;Unplanned;6/20/2023 ;Internal;;C;learning react js;120;Done;6/20/2023 ;Development;Self Enhancement
+;Unplanned;6/20/2023 ;Internal;;C;learning dasar-dasar analitik data;30;Done;6/20/2023 ;Development;Self Enhancement
+;Unplanned;6/20/2023 ;Internal;;C;parsing data to email blade;30;Done;6/20/2023 ;Development;Development
+;Unplanned;6/20/2023 ;Internal;;C;return redirect without reload page after update timesheet from email;120;Done;6/20/2023 ;Development;Development
+;Unplanned;6/21/2023 ;Internal;;C;return redirect without reload page after update timesheet from email;60;Done;6/21/2023 ;Development;Development
+;Unplanned;6/21/2023 ;Internal;;C;learning python - sololearn;60;Done;6/21/2023 ;Development;Self Enhancement
+;Unplanned;6/21/2023 ;Internal;;C;update eventclick fullcalendar;60;Done;6/21/2023 ;Development;Development
+;Unplanned;6/21/2023 ;Internal;;C;testing function fullcalendar;300;Done;6/21/2023 ;Development;Development
+;Unplanned;6/22/2023 ;Internal;;C;Learn analisis data;120;Done;6/22/2023 ;Development;Self Enhancement
+;Unplanned;6/22/2023 ;Internal;;C;Update fullcalendar timesheet appareance for initiate appareance;15;Done;6/22/2023 ;Development;Development
+;Unplanned;6/22/2023 ;Internal;;C;troubleshoot format rupiah on pr;180;Done;6/22/2023 ;Development;Troubleshoot
+;Unplanned;6/23/2023 ;Internal;;C;learning python;60;Done;6/23/2023 ;Development;Self Enhancement
+;Unplanned;6/23/2023 ;Internal;;C;cleaning code timesheet & config;60;Done;6/23/2023 ;Development;Test
+;Unplanned;6/23/2023 ;Internal;;C;initiating document user guide timesheet;30;Done;6/23/2023 ;Development;Test
+;Unplanned;6/23/2023 ;Internal;;C;update lock duration division on sims-db-dev;180;Done;6/23/2023 ;Development;Development
+;Unplanned;6/26/2023 ;Internal;;C;update user guide timesheet;180;Done;6/26/2023 ;Development;Test
+;Unplanned;6/26/2023 ;Internal;;C;testing timesheet privilege in stage;15;Done;6/26/2023 ;Development;Test
+;Unplanned;6/26/2023 ;Internal;;C;create jadwal posting sosmed juli, anniv, birthday;60;Done;6/26/2023 ;SEO;New
+;Unplanned;6/27/2023 ;Internal;;C;create add msp teknisi page;60;Done;6/27/2023 ;Development;Development
+;Unplanned;6/27/2023 ;Internal;;C;create modal add msp teknisi;30;Done;6/27/2023 ;Development;Development
+;Unplanned;6/27/2023 ;Internal;;C;create update msp teknisi;30;Done;6/27/2023 ;Development;Development
+;Unplanned;6/27/2023 ;Internal;;C;parsing data table msp teknisi;30;Done;6/27/2023 ;Development;Development
+;Unplanned;6/27/2023 ;Internal;;C;create function store ajax;30;Done;6/27/2023 ;Development;Development
+;Unplanned;6/27/2023 ;Internal;;C;create function update ajax;120;Done;6/27/2023 ;Development;Development
+;Unplanned;07/04/2023;Internal;;C;update user guide timesheet;120;Done;07/04/2023;Development;Test
+;Unplanned;07/04/2023;Internal;;C;Meeting coordination with mas den;120;Done;07/04/2023;Development;Meeting
+;Unplanned;07/04/2023;Internal;;C;testing timesheet in stage;15;Done;07/04/2023;Development;Test
+;Unplanned;07/05/2023;Internal;;C;troubleshoot bug date shown in draft pr;30;Done;07/05/2023;Development;Troubleshoot
+;Unplanned;07/05/2023;Internal;;C;add roles SPV in db prod;30;Done;07/05/2023;Development;Deploy
+;Unplanned;07/05/2023;Internal;;C;add roles feature in db prod;60;Done;07/05/2023;Development;Deploy
+;Unplanned;07/05/2023;Internal;;C;create page report technician msp;15;Done;07/05/2023;Development;Development
+;Unplanned;07/05/2023;Internal;;C;add library transfer on server msp;60;Done;07/05/2023;Development;Development
+;Unplanned;07/05/2023;Internal;;C;testing report technician msp;15;Done;07/05/2023;Development;Development
+;Unplanned;07/05/2023;Internal;;C;cleaning code on template main msp;30;Done;07/05/2023;Development;Troubleshoot
+;Unplanned;07/05/2023;Internal;;C;update document test case timesheet;30;Done;07/05/2023;Development;Test
+;Unplanned;07/05/2023;Internal;;C;add function export report excel;60;Done;07/05/2023;Development;Development
+;Unplanned;07/05/2023;Internal;;C;versioning control dev - stage timesheet;60;Done;07/05/2023;Development;Deploy
+;Unplanned;07/05/2023;Internal;;C;Update code for validation unplanned timesheet;120;Done;07/05/2023;Development;Test
+;Unplanned;07/06/2023;Internal;;C;Testing timesheet module on server stage;60;Done;07/06/2023;Development;Test
+;Unplanned;07/06/2023;Internal;;C;Enhance (Update for edit product after submit not scrolling on first item);60;Done;07/06/2023;Development;Enhance
+;Unplanned;07/06/2023;Internal;;C;Update User guide timesheet (kecuali dashboard);120;Done;07/06/2023;Development;Test
+;Unplanned;07/06/2023;Internal;;C;update source for planned schedule can edit detail by the staff;30;Done;07/06/2023;Development;Test
+;Unplanned;07/06/2023;Internal;;C;Update Permission config in stage for timesheet;15;Done;07/06/2023;Development;Test
+;Unplanned;07/06/2023;Internal;;C;troubleshoot nominal in draft pr ;60;Done;07/06/2023;Development;Troubleshoot
+;Unplanned;07/07/2023;Internal;;C;testing timesheet module on server stage (kecuali dashboard page);30;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;enhance (Update for edit product after submit not scrolling on first item);15;Done;07/07/2023;Development;Enhance
+;Unplanned;07/07/2023;Internal;;C;update User guide timesheet (exclude dashboard);30;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;learning data analitik;15;Done;07/07/2023;Development;Self Enhancement
+;Unplanned;07/07/2023;Internal;;C;check permission config in stage for timesheet;60;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;update document testing timesheet for stage;15;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;create document testing timesheet for prod;30;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;testing for enhance scrolling product after submit testing on draft pr;30;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;store data in permission config feature item for timesheet - prod ;15;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;update show table by privilege in dashboard timesheet css;30;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;update backend level chart timesheet;30;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;update backend status chart timesheet;30;Done;07/07/2023;Development;Test
+;Unplanned;07/07/2023;Internal;;C;update backend schedule chart timesheet;60;Done;07/07/2023;Development;Test
+;Unplanned;07/10/2023;Internal;;C;Update document testing timesheet for stage;120;Done;07/10/2023;Development;Test
+;Unplanned;07/10/2023;Internal;;C;get data chart cummulative mandays BE;30;Done;07/10/2023;Development;Test
+;Unplanned;07/10/2023;Internal;;C;versioning control dev - stage timesheet;60;Done;07/10/2023;Development;Test
+;Unplanned;07/10/2023;Internal;;C;update store schedule planned fullcalendar frontend;30;Done;07/10/2023;Development;Test
+;Unplanned;07/10/2023;Internal;;C;testing timesheet - dev;60;Done;07/10/2023;Development;Test
+;Unplanned;07/11/2023;Internal;;C;Weekly Meeting with mas denny;60;Done;07/11/2023;Development;Meeting
+;Unplanned;07/11/2023;Internal;;C;check bug schedule planned fullcalendar - update;60;Done;07/11/2023;Development;Troubleshoot
+;Unplanned;07/11/2023;Internal;;C;check bug schedule unplanned planned fullcalendar - update;60;Done;07/11/2023;Development;Troubleshoot
+;Unplanned;07/11/2023;Internal;;C;get data cummulative for dashboard chart staff;30;Done;07/11/2023;Development;Development
+;Unplanned;07/11/2023;Internal;;C;versioning control;180;Done;07/11/2023;Development;Test
+;Unplanned;07/11/2023;Internal;;C;testing timesheet;180;Done;07/11/2023;Development;Test
+;Unplanned;07/12/2023;Internal;;C;get data cummulative mandays user manager;120;Done;07/12/2023;Development;Development
+;Unplanned;07/12/2023;Internal;;C;testing get data cummulative;30;Done;07/12/2023;Development;Test
+;Unplanned;07/12/2023;Internal;;C;parsing data to chart;30;Done;07/12/2023;Development;Development
+;Unplanned;07/12/2023;Internal;;C;testing chart;15;Done;07/12/2023;Development;Test
+;Unplanned;07/12/2023;Internal;;C;ordering index sidebar timesheet menu on db stage, db prod, db dev;15;Done;07/12/2023;Development;Deploy
+;Unplanned;07/12/2023;Internal;;C;insert features timesheet into db prod;30;Done;07/12/2023;Development;Deploy
+;Unplanned;7/13/2023 ;Internal;;C;change remaining label to remaining - month if fiter by month (set default current month);120;Done;7/13/2023 ;Development;Development
+;Unplanned;7/13/2023 ;Internal;;C;add pagination for remaining chart (FE);60;Done;7/13/2023 ;Development;Development
+;Unplanned;7/13/2023 ;Internal;;C;update for canvas remaining chart (FE);120;Done;7/13/2023 ;Development;Development
+;Unplanned;7/13/2023 ;Internal;;C;get data remaining for staff prosentase value per month (BE);60;Done;7/13/2023 ;Development;Development
+;Unplanned;7/13/2023 ;Internal;;C;parsing data remaining for staff in chart remaining (FE);60;Done;7/13/2023 ;Development;Development
+;Unplanned;7/13/2023 ;Internal;;C;trial in bcd division;15;Done;7/13/2023 ;Development;Development
+;Unplanned;7/13/2023 ;Internal;;C;setting initiate active page in pagination for remaining chart;15;Done;7/13/2023 ;Development;Development
+;Unplanned;7/13/2023 ;Internal;;C;ngobrol design remaining chart;15;Done;7/13/2023 ;Development;Design
+;Unplanned;7/14/2023 ;Internal;;C;get data actual (point) mandays for manager;60;Done;7/14/2023 ;Development;Development
+;Unplanned;7/14/2023 ;Internal;;C;testing get remaining for user and manager;60;Done;7/14/2023 ;Development;Test
+;Unplanned;7/14/2023 ;Internal;;C;get effective mandays every month for function get remaining;15;Done;7/14/2023 ;Development;Development
+;Unplanned;7/14/2023 ;Internal;;C;setting feature item in dashboard page;30;Done;7/14/2023 ;Development;Deploy
+;Unplanned;7/14/2023 ;Internal;;C;insert data to db roles feature item dev, stage, prod;15;Done;7/14/2023 ;Development;Deploy
+;Unplanned;7/14/2023 ;Internal;;C;change label summary of mandays into summary of mandays {year};60;Done;7/14/2023 ;Development;Development
+;Unplanned;7/14/2023 ;Internal;;C;get data sum point mandays for manager;120;Done;7/14/2023 ;Development;Development
+;Unplanned;7/14/2023 ;Internal;;C;get data remaining for dashboard chart timesheet (BE);30;Done;7/14/2023 ;Development;Development
+;Unplanned;7/14/2023 ;Internal;;C;parsing get data remaining into chart (FE);30;Done;7/14/2023 ;Development;Development
+;Unplanned;7/14/2023 ;Internal;;C;learning data analitik;60;Done;7/14/2023 ;Development;Self Enhancement
+;Unplanned;7/17/2023 ;Internal;;C;Weekly report;120;Done;7/17/2023 ;Development;Meeting
+;Unplanned;7/17/2023 ;Internal;;C;create function get sum point man-days for manager;60;Done;7/17/2023 ;Development;Development
+;Unplanned;7/17/2023 ;Internal;;C;get attribute billable;60;Done;7/17/2023 ;Development;Development
+;Unplanned;7/17/2023 ;Internal;;C;get function permit each user;60;Done;7/17/2023 ;Development;Development
+;Unplanned;7/17/2023 ;Internal;;C;get function all leaving permit each user;30;Done;7/17/2023 ;Development;Development
+;Unplanned;7/17/2023 ;Internal;;C;get attribute percentage billable;30;Done;7/17/2023 ;Development;Development
+;Unplanned;7/17/2023 ;Internal;;C;get attribute deviation;60;Done;7/17/2023 ;Development;Development
+;Unplanned;7/18/2023 ;Internal;;C;get attribute billable;30;Done;7/18/2023 ;Development;Development
+;Unplanned;7/18/2023 ;Internal;;C;testing data accuration;60;Done;7/18/2023 ;Development;Development
+;Unplanned;7/18/2023 ;Internal;;C;custom axis y for cummulative mandays based on planned current month ;60;Done;7/18/2023 ;Development;Development
+;Unplanned;7/18/2023 ;Internal;;C;get data sum point mandays;60;Done;7/18/2023 ;Development;Development
+;Unplanned;7/18/2023 ;Internal;;C;testing get data sum point mandays;120;Done;7/18/2023 ;Development;Development
+;Unplanned;7/18/2023 ;Internal;;C;parsing get data sum mandays by sbe into datatable;60;Done;7/18/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;get user by sbe;120;Done;7/20/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;get sum mandays by sbe -> by division;60;Done;7/20/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;parsing data get sum mandays by sbe into datatable;60;Done;7/20/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;testing function get sum mandays by sbe;30;Done;7/20/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;check flow testing document;30;Done;7/20/2023 ;Development;New
+;Unplanned;7/20/2023 ;Internal;;C;get data sum mandays by sbe;30;Done;7/20/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;get data sum mandays by sbe for staff;30;Done;7/20/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;get data sum mandays by sbe for manager;30;Done;7/20/2023 ;Development;Development
+;Unplanned;7/20/2023 ;Internal;;C;get data staff by sbe assign ;60;Done;7/20/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;testing all activity on dashboard;60;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;get all data user each division, merge in sum point mandays;30;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;parsing total mandays;30;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;show total man-days on table summary of sbe;30;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;show all user on the summary of man-days has/not filled timesheet;30;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;add function filter by month (summary of man-days) FE;60;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;create function gets planned in a monthly filter on a summary of man-days BE;60;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;create function gets permit in a monthly filter on a summary of man-days BE;60;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;create function gets leaving permit in a monthly filter on a summary of man-days BE;15;Done;7/21/2023 ;Development;Development
+;Unplanned;7/21/2023 ;Internal;;C;Review design figma sinergy Abdi;30;Done;7/21/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;Weekly Meeting;60;Done;7/24/2023 ;Development;Meeting
+;Unplanned;7/24/2023 ;Internal;;C;create function filter by PIC for cummulative mandays chart;30;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;create function filter by Status for cummulative mandays chart;30;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;create function filter by Task for cummulative mandays chart;30;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;create function filter by Year for cummulative mandays chart;30;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;create function filter by Schedule for cummulative mandays chart;30;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;getAll user filter BE;15;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;parsing getAlluser on select FE;30;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;hide staff filter pic;120;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;show all user on remaining chart by division;60;Done;7/24/2023 ;Development;Development
+;Unplanned;7/24/2023 ;Internal;;C;show all user on cummulative mandays chart by division;60;Done;7/24/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by PIC for status chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by year for status chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by month for status chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by PIC for level chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by year for level chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by month for level chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by PIC for schedule chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by year for schedule chart;30;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;create function filter by month for schedule chart;120;Done;7/25/2023 ;Development;Development
+;Unplanned;7/25/2023 ;Internal;;C;testing function;60;Done;7/25/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;functional test timesheet for staff in dev;60;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;functional test timesheet for spv in dev;60;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;functional test timesheet for manager in dev;60;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;update cummulative chart mandays filter month FE;60;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;udpate bug remaining chart FE;30;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;check all filter dashboard function;30;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;check filter for table sum point mandays;15;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;check filter for chart cummulative mandays;15;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;check remaining BE;15;Done;7/26/2023 ;Development;Development
+;Unplanned;7/26/2023 ;Internal;;C;check cummulative mandays BE;60;Done;7/26/2023 ;Development;Development
+;Unplanned;7/27/2023 ;Internal;;C;import data to table roles feature item;180;Done;7/27/2023 ;Development;Deploy
+;Unplanned;7/27/2023 ;Internal;;C;testing flow in stage;60;Done;7/27/2023 ;Development;Deploy
+;Unplanned;7/27/2023 ;Internal;;C;update document testing;60;Done;7/27/2023 ;Development;Deploy
+;Unplanned;7/27/2023 ;Internal;;C;check for bug detail timesheet;30;Done;7/27/2023 ;Development;Deploy
+;Unplanned;7/27/2023 ;Internal;;C;compare git in dev - stage;60;Done;7/27/2023 ;Development;Deploy
+;Unplanned;7/27/2023 ;Internal;;C;preparation deploy in prod(- update data in prod table - timesheet,- add bcd access in prod - timesheet);30;Done;7/27/2023 ;Development;Deploy
+;Unplanned;7/28/2023 ;Internal;;C;update user matrix;30;Done;7/28/2023 ;Development;Deploy
+;Unplanned;7/28/2023 ;Internal;;C;create query for store roles feature in prod;120;Done;7/28/2023 ;Development;Deploy
+;Unplanned;7/28/2023 ;Internal;;C;testing in stage (with tim dev);60;Done;7/28/2023 ;Development;Deploy
+;Unplanned;7/28/2023 ;Internal;;C;update user guide;60;Done;7/28/2023 ;Development;Deploy
+;Unplanned;7/28/2023 ;Internal;;C;testing in prod using bcd account;60;Done;7/28/2023 ;Development;Deploy
+;Unplanned;7/28/2023 ;Internal;;C;troubleshoot bug get data task and phase in table ;60;Done;7/28/2023 ;Development;Deploy
+;Unplanned;7/31/2023 ;Internal;;C;Weekly Meeting;60;Done;7/31/2023 ;Development;Meeting
+;Unplanned;08/01/2023;Internal;;C;troubleshoot bugs, function from integrated timesheet g-cal - update timesheet (FE);120;Done;08/01/2023;Development;Troubleshoot
+;Unplanned;08/01/2023;Internal;;C;create ppt for sharing session;180;Done;08/01/2023;Development;Test
+;Unplanned;08/01/2023;Internal;;C;testing in prod;15;Done;08/01/2023;Development;Test
+;Unplanned;08/02/2023;Internal;;C;"koordinasi dengan mas ihsan buat ngobrol"" tentang UAT";30;Done;08/02/2023;Development;New
+;Unplanned;08/02/2023;Internal;;C;update slide ppt;60;Done;08/02/2023;Development;Test
+;Unplanned;08/02/2023;Internal;;C;revisi document user guide;120;Done;08/02/2023;Development;Test
+;Unplanned;08/02/2023;Internal;;C;koordinasi jadwal sharing session modul timesheet;120;Done;08/02/2023;Development;New
+;Unplanned;08/02/2023;Internal;;C;troubleshoot bug on dashboard timesheet;120;Done;08/02/2023;Development;Troubleshoot
+;Unplanned;08/02/2023;Internal;;C;preparation for timesheet go live;120;Done;08/02/2023;Development;Test

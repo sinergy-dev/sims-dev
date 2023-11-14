@@ -443,13 +443,13 @@
                       <option>
                     </select>
                     <span class="help-block" style="display:none;">Please fill PID!</span>
-                    <span id="makeId" style="cursor: pointer;">other?</span>
+               <!--      <span id="makeId" style="cursor: pointer;">other?</span>
                     <div class="form-group" id="project_idNew" style="display: none;">
                       <div class="input-group">
                         <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                         <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
                       </div>
-                    </div> 
+                    </div>  -->
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -2413,7 +2413,8 @@
                         $("#selectPid").select2({
                             data: result.data,
                             placeholder: "Select Pid",
-                            dropdownParent: $('#ModalDraftPr')
+                            dropdownParent: $('#ModalDraftPr'),
+                            tags: true
                         }).on('change', function() {
                           var data = $("#selectPid option:selected").text();
                           $("#selectLeadId").empty()
@@ -3262,7 +3263,8 @@
               $("#selectPid").select2({
                   data: result.data,
                   placeholder: "Select Pid",
-                  dropdownParent: $('#ModalDraftPr')
+                  dropdownParent: $('#ModalDraftPr'),
+                  tags: true
               }).on('select2:select', function() {
                 var data = $("#selectPid option:selected").text();
                 var lead_id = $("#selectLeadId option:selected").text();
@@ -3356,7 +3358,8 @@
             success: function(result) {
               $("#selectPid").select2({
                   data: result.data,
-                  placeholder: "Select PID"
+                  placeholder: "Select PID",
+                  tags: true
               })
             }
           }) 
@@ -3734,7 +3737,8 @@
                   },
                   success: function(result) {
                     $("#selectPid").select2({
-                        data: result.data
+                        data: result.data,
+                        tags: true
                     })
                   }
                 }) 
@@ -5439,15 +5443,19 @@
                 }
             })
           }else{
-            if ($("#projectIdInputNew").is(":visible") == false) {
-              if ($("#selectPid").val() == "") {
+            // if ($("#projectIdInputNew").is(":visible") == false) {
+            //   if ($("#selectPid").val() == "") {
+            //     $("#selectPid").closest('.form-group').addClass('has-error')
+            //     $("#selectPid").closest('select').next('span').next("span").show(); 
+            //     $("#selectPid").prev('.col-md-6').css("background-color","red");
+            //   }
+            // }
+
+            if ($("#selectPid").val() == "") {
                 $("#selectPid").closest('.form-group').addClass('has-error')
                 $("#selectPid").closest('select').next('span').next("span").show(); 
                 $("#selectPid").prev('.col-md-6').css("background-color","red");
-              }
-            }
-
-            if ($("#selectLeadId").val() == "") {
+            }else if ($("#selectLeadId").val() == "") {
               $("#selectLeadId").closest('.form-group').addClass('has-error')
               $("#selectLeadId").closest('select').next('span').next("span").show(); 
               $("#selectLeadId").prev('.col-md-6').css("background-color","red");

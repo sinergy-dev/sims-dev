@@ -30,6 +30,7 @@ use App\ProductTagRelation;
 use App\ServiceTagRelation;
 use App\TechnologyTagRelation;
 use App\PID;
+use App\CustomerTechnology;
 
 use App\SalesChangeLog;
 use App\Detail_IdProject;
@@ -2500,10 +2501,22 @@ class SalesController extends Controller{
     {
         $id_cus = $request['edit_cus'];
 
-        return array(DB::table('tb_contact')
-                ->select('id_customer','code','customer_legal_name','brand_name','office_building','street_address','city','province','postal','phone')
-                ->where('id_customer',$request->id_cus)
-                ->get(),$request->id_cus);
+        $contact_data = TB_Contact::select('id_customer','code','customer_legal_name','brand_name','logo','type','office_building','street_address','city','province','postal','phone')
+        ->where('id_customer',$request->id_cus)
+        ->get();
+
+
+        $technologyTag = CustomerTechnology::where('id_customer', $request->id_cus)
+        ->join('tb_technology_tag', 'tb_customer_connector.id_product', '=', 'tb_technology_tag.id')
+        ->select('tb_technology_tag.id')
+        ->get()->all();
+
+        $responseData = [
+            'contact_data' => $contact_data,
+            'technologyTag' => $technologyTag
+        ];
+
+        return response()->json($responseData);
     }
 
     /**
@@ -4071,7 +4084,9 @@ class SalesController extends Controller{
                 ->where('roles.id',42)
                 ->first();
 
-        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim', 'count_request','roles'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
+        $tech = TechnologyTag::all();
+
+        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim', 'count_request','roles', 'tech'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
     }
 
     public function getCustomerData()
@@ -4113,18 +4128,33 @@ class SalesController extends Controller{
         $tambah->office_building = nl2br($request['office_building']);
         $tambah->street_address = $request['street_address'];
         $tambah->city = $request['city'];
+        $tambah->type = $request['type'];
         $tambah->province = $request['province'];
         $tambah->postal = $request['postal'];
         $tambah->phone = $request['phone'];
         $tambah->status = 'New';
         $tambah->nik_request = Auth::User()->nik;
+        $destination_path = 'public/images/customer'; 
+        $image = $request->file('logo');
+        $image_name = $image->getClientOriginalName(); 
+        $path = $request->file('logo')->storeAs($destination_path, $image_name); 
+        $tambah->logo = $image_name;
         $tambah->save();
+
+        if(isset($request['id_product'])){
+            foreach ($request['id_product'] as $key => $value) {
+                CustomerTechnology::create([
+                    'id_customer' => $tambah->id_customer,
+                    'id_product' => $value[$key]
+                ]);
+            }
+        }
 
         $kirim = User::join('role_user','users.nik','=','role_user.user_id')
                 ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
-                    ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status')
+                    ->select('id_customer', 'customer_legal_name', 'logo', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status')
                     ->where('id_customer',$tambah->id_customer)
                     ->first();
 
@@ -4176,6 +4206,14 @@ class SalesController extends Controller{
         $update->code = $request['code_name'];
         $update->customer_legal_name = $request['name_contact'];
         $update->brand_name = $request['brand_name'];
+        if($request->hasFile('logo')) {
+            $destination_path = 'public/images/customer'; 
+            $image = $request->file('logo');
+            $image_name = $image->getClientOriginalName(); 
+            $path = $request->file('logo')->storeAs($destination_path, $image_name); 
+            $update->logo = $image_name;
+        }
+        $update->type = $request['type'];
         $update->office_building = $request['office_building'];
         $update->street_address = $request['street_address'];
         $update->city = $request['city'];
@@ -4183,6 +4221,20 @@ class SalesController extends Controller{
         $update->postal = $request['postal'];
         $update->phone = $request['phone'];
         $update->update();
+
+        if($request->id_product) {
+            CustomerTechnology::where('id_customer', $request['id_customer'])->delete();
+
+            $idProducts = explode(',', $request['id_product']);
+
+            foreach ($idProducts as $idProduct) {
+                $data_connector = array(
+                    'id_product' => $idProduct,
+                    'id_customer' => $request['id_customer'],
+                );
+                CustomerTechnology::create($data_connector);
+            }
+        }
 
         return redirect('customer')->with('update', 'Update Contact Successfully!');;
     }

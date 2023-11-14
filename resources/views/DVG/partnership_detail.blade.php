@@ -320,69 +320,85 @@ Partnership
           </div>
           <div style="padding-top:10px">
 	          	<table class="table" id="table-detail">
-		          		<tr>
-		          			<input type="" name="id_edit" id="id_edit" value="{{$data->id_partnership}}" style="display:none">
-		          			<td style="vertical-align: middle;">Partner Name</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="partner_edit" name="partner_edit" value="{{$data->partner}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">Current Level</td>
-		          			<th>
-		          				<input class="form-control transparent-input" readonly type="text" id="level_edit" name="level_edit" value="{{$data->level}}">
-		          			</th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">Level</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="levelling_edit" name="levelling_edit" value="{{$data->levelling}}"></th>
-		          		</tr>		          		
-		          		<tr>
-		          			<td style="vertical-align: middle;">Type</td>
-		          			<th>
-		          				<select class="form-control transparent-input" id="type_edit" name="type_edit" disabled>
-                        <option value="">Select Type</option>
-                        <option value="Distributor"  @if($data->type == 'Distributor') selected @endif>Distributor</option>
-                        <option value="Principal" @if($data->type == 'Principal') selected @endif>Principal</option>
-                      </select>
-		          			</th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">Renewal Date</td>
-		          			<th><input class="form-control transparent-input" readonly type="date" id="renewal_edit" name="renewal_edit" value="{{$data->renewal_date}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">Renewal Fee</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="annual_edit" name="annual_edit" value="{{$data->annual_fee}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">CAM</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="cam_edit" name="cam_edit" value="{{$data->cam_name}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">CAM Phone</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="phone_edit" name="phone_edit" value="{{$data->cam_phone}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">CAM Email</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="email_edit" name="email_edit" value="{{$data->cam_email}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">Email Support</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="support_edit" name="support_edit" value="{{$data->email_support}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">ID Mitra</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="mitra_edit" name="mitra_edit" value="{{$data->id_mitra}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">Partner Portal URL</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="partner_portal_edit" name="partner_portal_edit" value="{{$data->portal_partner}}"></th>
-		          		</tr>
-		          		<tr>
-		          			<td style="vertical-align: middle;">Technology Tag</td>
-		          			<th>
-                    	<select class="form-control" id="technologyTag_edit" name="technologyTag_edit" style="width: 100%;" disabled></select>
-		          			</th>
-		          		</tr>
+	          		<tr>
+	          			<input type="" name="id_edit" id="id_edit" value="{{$data->id_partnership}}" style="display:none">
+	          			<td style="vertical-align: middle;">Partner Name</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="partner_edit" name="partner_edit" value="{{$data->partner}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">Current Level</td>
+	          			<th>
+	          				<input class="form-control transparent-input" readonly type="text" id="level_edit" name="level_edit" value="{{$data->level}}">
+	          			</th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">Level</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="levelling_edit" name="levelling_edit" value="{{$data->levelling}}"></th>
+	          		</tr>
+	          		<tr>
+						<td style="vertical-align: middle;">Standarization Website</td>
+						<th>
+							<select class="form-control transparent-input" id="standarization_edit" name="standarization_edit"
+								disabled>
+								<option value="Seasoned" @if($data->standarization == 'Seasoned') selected
+									@endif>Seasoned</option>
+								<option value="Stalwart" @if($data->standarization == 'Stalwart') selected
+									@endif>Stalwart</option>
+								<option value="Trending" @if($data->standarization == 'Trending') selected
+									@endif>Trending</option>
+								<option value="Featuring" @if($data->standarization == 'Featuring') selected
+									@endif>Featuring</option>
+							</select>
+						</th>
+					</tr>		          		
+	          		<tr>
+	          			<td style="vertical-align: middle;">Type</td>
+	          			<th>
+	          				<select class="form-control transparent-input" id="type_edit" name="type_edit" disabled>
+			                    <option value="">Select Type</option>
+			                    <option value="Distributor"  @if($data->type == 'Distributor') selected @endif>Distributor</option>
+			                    <option value="Principal" @if($data->type == 'Principal') selected @endif>Principal</option>
+			                </select>
+	          			</th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">Renewal Date</td>
+	          			<th><input class="form-control transparent-input" readonly type="date" id="renewal_edit" name="renewal_edit" value="{{$data->renewal_date}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">Renewal Fee</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="annual_edit" name="annual_edit" value="{{$data->annual_fee}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">CAM</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="cam_edit" name="cam_edit" value="{{$data->cam_name}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">CAM Phone</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="phone_edit" name="phone_edit" value="{{$data->cam_phone}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">CAM Email</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="email_edit" name="email_edit" value="{{$data->cam_email}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">Email Support</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="support_edit" name="support_edit" value="{{$data->email_support}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">ID Mitra</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="mitra_edit" name="mitra_edit" value="{{$data->id_mitra}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">Partner Portal URL</td>
+	          			<th><input class="form-control transparent-input" readonly type="text" id="partner_portal_edit" name="partner_portal_edit" value="{{$data->portal_partner}}"></th>
+	          		</tr>
+	          		<tr>
+	          			<td style="vertical-align: middle;">Technology Tag</td>
+	          			<th>
+                	<select class="form-control" id="technologyTag_edit" name="technologyTag_edit" style="width: 100%;" disabled></select>
+	          			</th>
+	          		</tr>
 	          	</table>
           	</form>
           	<a class="btn btn-primary btn-block" id="btn-edit" style="display: none;" type="button"><b>Edit</b></a>
@@ -698,6 +714,7 @@ Partnership
 			localStorage.setItem("status", "update");
 			$(":input[type=date],:input[type=text][readonly='readonly']").attr("readonly", false)
 			$("#type_edit").attr("disabled", false)
+			$("#standarization_edit").attr("disabled", false)
 			$("#technologyTag_edit").attr("disabled", false);
 			$(":input[type=text]").focus()
 			$(".avatar-edit").css("display", "block")
@@ -760,6 +777,7 @@ Partnership
 			formData.append('_token',"{{csrf_token()}}")
 			formData.append('id_edit', $("#id_edit").val())
 			formData.append('partner_edit', $("#partner_edit").val())
+			formData.append('standarization_edit', $("#standarization_edit").val())
     	formData.append('level_edit', $("#level_edit").val())
     	formData.append('levelling_edit', $("#levelling_edit").val())
     	formData.append('type_edit', $("#type_edit").val())

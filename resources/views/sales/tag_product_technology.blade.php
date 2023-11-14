@@ -141,6 +141,15 @@ Tag Customer
 		              <input type="text" class="form-control" id="name_tech" name="name_tech" placeholder="" required>
 		            </div>
 		            <div class="form-group">
+									<label for="">About</label>
+									<select name="about" id="about" class="form-control">
+										<option value="1">Enterprise Network Infrastructure</option>
+										<option value="2">Data Center & Cloud</option>
+										<option value="3">Cyber Security</option>
+										<option value="4">Collaboration & Facility</option>
+									</select>
+								</div>
+		            <div class="form-group">
 		              <label for="top">Technology Description</label>
 		              <textarea type="text" class="form-control" id="desc_tech" name="desc_tech" placeholder="" required> </textarea>
 		            </div>
@@ -211,6 +220,15 @@ Tag Customer
 		              <input type="text" class="form-control" id="name_tech_edit" name="name_tech_edit" placeholder="" required>
 		            </div>
 		            <div class="form-group">
+									<label for="">About</label>
+									<select name="about_edit" id="about_edit" class="form-control">
+										<option value="1">Enterprise Network Infrastructure</option>
+										<option value="2">Data Center & Cloud</option>
+										<option value="3">Cyber Security</option>
+										<option value="4">Collaboration & Facility</option>
+									</select>
+								</div>
+		            <div class="form-group">
 		              <label for="top">Product Description</label>
 		              <textarea type="text" class="form-control" id="desc_tech_edit" name="desc_tech_edit" placeholder="" required> </textarea>
 		            </div>
@@ -276,6 +294,7 @@ Tag Customer
           	$('#id_tech_edit').val(result[0].id)
            	$('#date_add_technology').val(moment(result[0].date_add).format('L'));
            	$('#name_tech_edit').val(result[0].name_tech);
+           	$('#about_edit').val(result[0].about);
            	$('#desc_tech_edit').val(result[0].desc_tech);
            
           }

@@ -149,8 +149,7 @@ Quote Number
                   
                   <div class="form-group">
                       <label>Position</label>
-                      <select class="form-control" id="position" name="position" required>
-                          <option value="">--Choose Position--</option>
+                      <select class="form-control" id="position" name="position" placeholder="Select Position" required>
                           <option value="TAM">TAM</option>
                           <option value="DIR">DIR</option>
                           <option value="MSM">MSM</option>
@@ -158,8 +157,13 @@ Quote Number
                   </div>
 
                   <div class="form-group">
-                    <label for="">Date*</label>
-                    <input type="date" class="form-control" name="date" id="date_quote" required>
+                    <label for="">Date</label>
+                    <div class="input-group date">
+                      <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </div>
+                      <input type="text" class="form-control pull-right date" name="date" id="date_quote">
+                    </div>
                   </div>
 
                   <div class="form-group">
@@ -191,8 +195,7 @@ Quote Number
                   </div>
                   <div class="form-group">
                     <label for="">Division</label>
-                    <select type="text" class="form-control" name="division" id="division" required>
-                        <option value="">--Choose Division--</option>
+                    <select type="text" class="form-control" name="division" id="division" placeholder="Select Division" required>
                         <option>PMO</option>
                         <option>MSM</option>
                         <option>Marketing</option>
@@ -260,8 +263,7 @@ Quote Number
               </div>
               <div class="form-group">
                 <label for="">Position</label>
-                <select type="text" class="form-control" name="position" id="position" required>
-                    <option value="">--Choose Position--</option>
+                <select type="text" class="form-control" name="position" id="position" placeholder="Select Position" required>
                     <option value="TAM">TAM</option>
                     <option value="DIR">DIR</option>
                     <option value="MSM">MSM</option>
@@ -293,8 +295,7 @@ Quote Number
               </div>
               <div class="form-group">
                 <label for="">Division</label>
-                <select type="text" class="form-control" name="division" id="division" required>
-                    <option value="">--Choose Division--</option>
+                <select type="text" class="form-control" name="division" id="division" placeholder="Select Division" required>
                     <option>PMO</option>
                     <option>MSM</option>
                     <option>Marketing</option>
@@ -398,6 +399,15 @@ Quote Number
                   <label>Note</label>
                   <input class="form-control" id="edit_note" name="edit_note" placeholder="Enter Note">
               </div>
+              <div class="form-group">
+                <label>Project Type</label>
+                <select class="form-control" id="edit_project_type" name="edit_project_type" required style="width: 100%">
+                  <option value="">--Choose Project Type--</option>
+                  <option value="Supply Only">Supply Only</option>
+                  <option value="Maintenance">Maintenance</option>
+                  <option value="Implementation">Implementation</option>
+                </select>
+              </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
                 <button type="submit" class="btn btn-success"><i class="fa fa-check"> </i>&nbspUpdate</button>
@@ -439,8 +449,13 @@ Quote Number
     var nowDate = new Date();
     var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
 
-    var datePickerId = document.getElementById('date_quote')
-    datePickerId.min = new Date().toISOString().split("T")[0];
+    // var datePickerId = document.getElementById('date_quote')
+    // datePickerId.min = new Date().toISOString().split("T")[0];
+
+    $('#date_quote').datepicker({
+      autoclose: true,
+      startDate: today 
+    }).attr('readonly','readonly').css('background-color','#fff');
 
     $('#project_id').select2({
       dropdownParent:$("#modalAdd")
@@ -545,7 +560,7 @@ Quote Number
       })
     })
 
-    function edit_quote(quote_number,id_customer,attention,title,project,description,project_id,note,date,position) {
+    function edit_quote(quote_number,id_customer,attention,title,project,description,project_id,note,date,position,project_type) {
       console.log(id_customer)
       $('#modalEdit').modal('show');
       $('#edit_quote_number').val(quote_number);
@@ -600,12 +615,22 @@ Quote Number
       } else {
         $('#edit_note').val(note);
       }
+      if (project_type == "null") {
+        '';
+      } else {
+        $('#edit_project_type').val(project_type);
+      }
       $('#edit_date').val(date);
       $('#edit_position').val(position);
     }
 
     var nowDate = new Date();
     var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+
+    $('#date_quote').datepicker({
+      autoclose: true,
+      startDate: today 
+    }).attr('readonly','readonly').css('background-color','#fff');
 
     $('#date_backdate').datepicker({
       autoclose: true,
@@ -622,7 +647,7 @@ Quote Number
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.nik) {
-                var x = '"' + data.quote_number + '","' + data.id_customer + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '","' +data.date+ '","' +data.position+ '"'
+                var x = '"' + data.quote_number + '","' + data.id_customer + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '","' +data.date+ '","' +data.position+ '","' +data.project_type+ '"'
                 data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_quote(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button>";
@@ -641,7 +666,15 @@ Quote Number
           { "data": "date","width": "20%" },          
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.customer_legal_name + '</div>'
+                if(row.id_customer == null){
+                  if(row.to == null) {
+                    return '<div class="truncate"> - </div>'
+                  } else  {
+                    return '<div class="truncate">' + row.to + '</div>'
+                  }
+                } else {
+                  return '<div class="truncate">' + row.customer_legal_name + '</div>'
+                }
 
                 // if(row.id_customer == null){
                 //   return '<div class="truncate"> - </div>'

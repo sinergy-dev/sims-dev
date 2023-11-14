@@ -1,0 +1,48 @@
+Dokumen Survey.txt
+
+General
+	- Kapan dilakukan Survey?
+	- Oleh siapa saja surver dilakukan?
+	- Keperluan apa survey dilakukan?
+	- Dimana survey itu dilakukan?
+	- Berapa lama survey dilakukan?
+
+	- Concern Survey
+		- Apakah ada yang kurang?
+		- Apakah memang mereka ada standart tertentu?
+
+Fisik
+	- Penempatan Perangkat (Ruang)
+		- Space nya gimana
+		- Rack ke berapa
+		- U yang ke berapa
+		- Cagenute nya gimana
+
+	- Denah ruang
+		- Di Gambar untuk memudahkan dokumentasinya
+
+	- Interkoneksi perangkat (ke Suronding Perangkat)
+		- Panjang Kabel
+		- Jumlah kabel
+		- Apakah beda rak?
+		- Apakah Lintas Ruangan?
+		- Apakah ada perangkat yang harus konek ke perangkat kita?
+
+	- Power (PDU)
+		- Ketersediaan secara watt (Makesure buat kapasiti nya)
+			- Biasanya ada MCB setelah PDU nya
+		- Ketersedian port power + jenisnya plug (C13, C14, Urope, Legrand)
+		- 
+
+	- Colling Ruangan
+
+Logic
+	- Topologi Fisik
+	- Topologi Logic
+		- Perangkat yang exisiting
+		- Perangkat yang nantinya akan di tambah
+		- Perangkat yang nantinya akan di replace
+		- Interkoneksi before after
+	- IP Addresing
+		- Existing
+	- 
