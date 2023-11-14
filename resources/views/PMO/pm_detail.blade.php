@@ -3852,7 +3852,7 @@ PMO
 
 				var appendTbody = ""
 
-				$.each(result[0].internal_stakeholder,function(idx,item){
+				$.each(result[0].internal_stakeholder.data,function(idx,item){
 					appendTbody = appendTbody + ' <tr>'
 					appendTbody = appendTbody + '  <td><input readonly type="text" name="" class="form-control" value="'+ item.name +'"></td>'
 					appendTbody = appendTbody + '  <td><input readonly type="text" name="" class="form-control" value="'+ item.role +'"></td>'
