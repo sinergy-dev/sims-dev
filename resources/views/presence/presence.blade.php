@@ -164,8 +164,6 @@ Presence
 						<div id="min-hand"></div>
 						<div id="sec-hand"></div>
 					</div>
-
-					<!-- <input type="file" accept="image/*" capture="camera" /> -->
 				</div>
 			</div>
 
@@ -221,7 +219,6 @@ Presence
 				},
 				success: function(result){	
 					presenceLocation = result
-					// console.log(result)
 					// isOnLocation(presenceLocation)
 				}
 			})
@@ -377,8 +374,6 @@ Presence
 						position.coords.latitude,position.coords.longitude
 					)
 
-					console.log(navigator.geolocation.getCurrentPosition(redirectToPosition))
-
 					var onLocation = false 
 					var locationNow = 0 
 					presenceLocation.forEach(function(data){ 
@@ -418,10 +413,6 @@ Presence
 			} else {
 				return true
 			}
-		}
-
-		function redirectToPosition(position) {
-		    console.log("Latitude: " + position.coords.latitude + "<br>Longitude: " + position.coords.longitude);
 		}
 	</script>
 	{{-- <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY_NEW')}}"></script> --}}

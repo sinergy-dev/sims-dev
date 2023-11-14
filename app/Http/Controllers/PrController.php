@@ -502,8 +502,7 @@ class PrController extends Controller
                 DB::raw('COUNT(no_pr) as total'),
                 DB::raw('SUM(amount) as nominal'),
                 // 'to'
-                // DB::raw("REPLACE(`to`,'.','') as `to_replace`"),
-                DB::raw("(CASE WHEN (`to` = 'PT Westcon International Indonesia') THEN '-' ELSE `to` END) as to_replace")
+                DB::raw("REPLACE(`to`,'.','') as `to_replace`") 
             )
             ->whereYear('date', date('Y'))
             // ->whereYear('date', '2022')

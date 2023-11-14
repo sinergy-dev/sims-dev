@@ -2415,9 +2415,15 @@
                         }
 
                         $("#selectPid").select2({
+<<<<<<< HEAD
                             placeholder: "Select/Input Pid",
                             dropdownParent: $('#ModalDraftPr'),
                             tags: true
+=======
+                            data: result.data,
+                            placeholder: "Select Pid",
+                            dropdownParent: $('#ModalDraftPr')
+>>>>>>> parent of 61005276 (update select pid tags enabled creation)
                         }).on('change', function() {
                           var data = $("#selectPid option:selected").text();
                           $("#selectLeadId").empty()
@@ -3265,9 +3271,14 @@
             success: function(result) {
               $("#selectPid").select2({
                   data: result.data,
+<<<<<<< HEAD
                   placeholder: "Select/Input Pid",
                   dropdownParent: $('#ModalDraftPr'),
                   tags: true
+=======
+                  placeholder: "Select Pid",
+                  dropdownParent: $('#ModalDraftPr')
+>>>>>>> parent of 61005276 (update select pid tags enabled creation)
               }).on('select2:select', function() {
                 var data = $("#selectPid option:selected").text();
                 var lead_id = $("#selectLeadId option:selected").text();
@@ -3354,6 +3365,7 @@
               })
             }
           }) 
+<<<<<<< HEAD
           // $.ajax({
           //   url: "{{url('/admin/getPid')}}",
           //   type: "GET",
@@ -3365,6 +3377,19 @@
           //     })
           //   }
           // }) 
+=======
+
+          $.ajax({
+            url: "{{url('/admin/getPid')}}",
+            type: "GET",
+            success: function(result) {
+              $("#selectPid").select2({
+                  data: result.data,
+                  placeholder: "Select PID"
+              })
+            }
+          }) 
+>>>>>>> parent of 61005276 (update select pid tags enabled creation)
 
         }else if (n == 4) {
           if ($('.wysihtml5-toolbar').length == 0) {
@@ -3731,6 +3756,7 @@
                   placeholder: "Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
+<<<<<<< HEAD
 
                 // $.ajax({
                 //   url: "{{url('/admin/getPid')}}",
@@ -3745,6 +3771,20 @@
                 //     })
                 //   }
                 // }) 
+=======
+                $.ajax({
+                  url: "{{url('/admin/getPid')}}",
+                  type: "GET",
+                  data: {
+                    lead_id:data
+                  },
+                  success: function(result) {
+                    $("#selectPid").select2({
+                        data: result.data
+                    })
+                  }
+                }) 
+>>>>>>> parent of 61005276 (update select pid tags enabled creation)
 
                 $.ajax({
                   url: "{{url('/admin/getQuote')}}",

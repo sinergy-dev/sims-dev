@@ -1096,25 +1096,6 @@ class PresenceController extends Controller
             ->where('user_id',$req->nik)->get();
     }
 
-    public function getCurrentLocation()
-    {
-        $lat = "-6.4250046";
-        $lng = "106.96603619999996";
-        $url = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?latlng={$lat},{$lng}&key=".env('GOOGLE_API_KEY_MAP'));
-        if ($url === false) {
-            return "Error fetching data.";
-        }
-
-        // Parsing hasil JSON
-        return $data = json_decode($url, true);
-
-        // Mengecek apakah hasil valid
-        if ($data['status'] == 'OK') {
-            // Menelusuri hasil geocoding untuk mendapatkan negara
-            return $data['results'][0]['formatted_address'];
-        }
-    }
-
     public function getPresenceReportData($typeData = "notAll",$nik = "", $typeCompany = "all",$date){
         // $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
         // $endDate = Carbon::now()->format("Y-m-16");
