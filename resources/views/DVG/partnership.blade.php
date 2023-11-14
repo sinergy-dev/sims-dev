@@ -355,17 +355,6 @@ Partnership
                   </div>
 
                   <div class="form-group">
-                      <label>Standarization<span style="color:red">*</span></label>
-                      <select class="form-control" placeholder="ex: Beginner" id="standarization" name="standarization" onkeyup="fillInput('standarization')">
-                        <option value="Seasoned">Seasoned</option>
-                        <option value="Stalwart">Stalwart</option>
-                        <option value="Trending">Trending</option>
-                        <option value="Featuring">Featuring</option>
-                      </select>
-                      <span class="help-block" style="display:none;">Please Fill Level!</span>
-                  </div>
-
-                  <div class="form-group">
                       <label>Renewal Date<span style="color:red">*</span></label>
                       <input type="date" class="form-control" id="renewal_date" name="renewal_date" onchange="fillInput('renewal')">
                       <span class="help-block" style="display:none;">Please Fill Renewal Date!</span>
@@ -1213,10 +1202,6 @@ Partnership
         $("#renewal_date").closest('.form-group').removeClass('has-error')
         $("#renewal_date").closest('input').next('span').hide();
         $("#renewal_date").prev('.input-group-addon').css("background-color","red");
-      } else if (val == "standarization") {
-        $("#standarization").closest('.form-group').removeClass('has-error')
-        $("#standarization").closest('input').next('span').hide();
-        $("#standarization").prev('.input-group-addon').css("background-color","red");
       }
     }
 
@@ -1281,7 +1266,6 @@ Partnership
                 partner:$("#partner").val(),
                 levelling:$("#levelling").val(),
                 level:$("#level").val(),
-                standarization:$("#standarization").val(),
                 renewal_date:$("#renewal_date").val(),
                 annual_fee:$("#annual_fee").val(),
                 cam:$("#cam").val(),

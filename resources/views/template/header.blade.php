@@ -112,8 +112,6 @@
   	// Initialize Firebase
   	firebase.initializeApp(firebaseConfig);
 
-  	console.log(firebase.initializeApp(firebaseConfig))
-
   	firebase.database().ref('notif/web-notif').once('value', function(snapshot) {
   	 	snapshot_dump = snapshot.val()
 
@@ -124,7 +122,6 @@
   	 	keys = keys.reverse()
 
   	 	for (var i = 0; i < keys.length; i++) {
-  	 		console.log("testtt")
   	 		if (snapshot_dump[keys[i]].status == "unread") {
   	 			if (!snapshot_dump[keys[i]].module == false) {
  					

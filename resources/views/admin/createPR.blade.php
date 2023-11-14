@@ -447,13 +447,13 @@
                       <option>
                     </select>
                     <span class="help-block" style="display:none;">Please fill PID!</span>
-               <!--      <span id="makeId" style="cursor: pointer;">other?</span>
+                    <span id="makeId" style="cursor: pointer;">other?</span>
                     <div class="form-group" id="project_idNew" style="display: none;">
                       <div class="input-group">
                         <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                         <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
                       </div>
-                    </div>  -->
+                    </div> 
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -2415,7 +2415,6 @@
                         }
 
                         $("#selectPid").select2({
-                            data: result.data,
                             placeholder: "Select/Input Pid",
                             dropdownParent: $('#ModalDraftPr'),
                             tags: true
@@ -3355,7 +3354,6 @@
               })
             }
           }) 
-
           // $.ajax({
           //   url: "{{url('/admin/getPid')}}",
           //   type: "GET",
@@ -3733,6 +3731,7 @@
                   placeholder: "Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
+
                 // $.ajax({
                 //   url: "{{url('/admin/getPid')}}",
                 //   type: "GET",
@@ -5447,19 +5446,15 @@
                 }
             })
           }else{
-            // if ($("#projectIdInputNew").is(":visible") == false) {
-            //   if ($("#selectPid").val() == "") {
-            //     $("#selectPid").closest('.form-group').addClass('has-error')
-            //     $("#selectPid").closest('select').next('span').next("span").show(); 
-            //     $("#selectPid").prev('.col-md-6').css("background-color","red");
-            //   }
-            // }
-
-            if ($("#selectPid").val() == "") {
+            if ($("#projectIdInputNew").is(":visible") == false) {
+              if ($("#selectPid").val() == "") {
                 $("#selectPid").closest('.form-group').addClass('has-error')
                 $("#selectPid").closest('select').next('span').next("span").show(); 
                 $("#selectPid").prev('.col-md-6').css("background-color","red");
-            }else if ($("#selectLeadId").val() == "") {
+              }
+            }
+
+            if ($("#selectLeadId").val() == "") {
               $("#selectLeadId").closest('.form-group').addClass('has-error')
               $("#selectLeadId").closest('select').next('span').next("span").show(); 
               $("#selectLeadId").prev('.col-md-6').css("background-color","red");

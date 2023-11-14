@@ -91,12 +91,12 @@ Customer
                   <div class="col-md-8">
                     <button style="width: 100px;display: none;" class="btn btn-success btn-md" id="btn_add_customer" data-target="#add_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
                   </div>
-                  <div class="col-md-4 text-right" style="margin-bottom: 0px; margin-top: 0px;">
+                  <dir class="col-md-4 text-right" style="margin-bottom: 0px; margin-top: 0px;">
                     <div class="input-group pull-right">
                       <input id="searchBar" type="text" class="form-control" onkeyup="searchCustom('data-table','searchBar')" placeholder="Search Anything">
                       
                       <div class="input-group-btn">
-                       <button type="button" id="btnShowEntryFeature" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <button type="button" id="btnShowEntryFeature" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                           Show 10 entries
                         </button>
                         <ul class="dropdown-menu">
@@ -112,7 +112,7 @@ Customer
                         </button>
                       </span>
                     </div>
-                  </div>
+                  </dir>
                 </div>
                 <div class="table-responsive">
                   <table class="table table-bordered table-striped dataTable" id="data-table">
@@ -162,26 +162,6 @@ Customer
                       <input type="text" class="form-control" id="brand_name" name="brand_name" placeholder="Brand Name" required>
                     </div>
                   </div> 
-                </div>
-                <div class="form-group">
-                  <label for="office_building">Brand Logo / Icon</label>
-                  <input type="file" class="form-control" id="logo" name="logo" placeholder="Logo">
-                </div>
-                <div class="form-group">
-                  <label for="office_building">Type</label>
-                  <select name="type" id="type" class="form-control" placeholder="Type">
-                    <option value="1">FSI and Banking</option>
-                    <option value="2">Government</option>
-                    <option value="3">Manufacturing</option>
-                    <option value="4">Telco & Service Provider</option>
-                    <option value="5">Retail</option>
-                    <option value="6">Education</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="office_building">Technology</label>
-                  <select class="form-control" id="id_product" name="id_product" style="width: 100%;"
-                    multiple="multiple"></select>
                 </div>
                 <div class="form-group">
                   <label for="office_building">Office Building</label>
@@ -260,29 +240,6 @@ Customer
                         <input type="text" class="form-control" id="brand_name_edit" name="brand_name" placeholder="Brand Name" required>
                      </div>
                    </div>
-                </div>
-                <div class="form-group">
-                  <label for="office_building">Brand Logo / Icon</label>
-                  <div>
-                    <img src="" id="logo_show_edit" class="img-thumbnail" width="180px" alt="">
-                  </div>
-                  <input type="file" class="form-control" id="logo_edit" name="logo" placeholder="Logo">
-                </div>
-                <div class="form-group">
-                  <label for="office_building">Type</label>
-                  <select name="type" id="type_edit" class="form-control" placeholder="Type">
-                    <option value="1">FSI and Banking</option>
-                    <option value="2">Government</option>
-                    <option value="3">Manufacturing</option>
-                    <option value="4">Telco & Service Provider</option>
-                    <option value="5">Retail</option>
-                    <option value="6">Education</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="office_building">Technology</label>
-                  <select class="form-control" id="id_product_edit" name="id_product" style="width: 100%;"
-                    multiple="multiple"></select>
                 </div>
                 <div class="form-group">
                   <label for="office_building">Office Building</label>
@@ -393,7 +350,6 @@ Customer
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 
 @endsection
 @section('script')
@@ -474,10 +430,6 @@ Customer
         Swal.fire("Please Fill Customer Legal Name of Contact!");
       }else if($('#brand_name').val() == ''){
         Swal.fire("Please Fill Brand Name of Contact!");
-      } else if ($('#logo').val() == '') {
-        Swal.fire("Please Input Logo of Contact!");
-      } else if ($('#id_product').val() == '') {
-        Swal.fire("Please Input Technology of Contact!");
       }else if ($('#office_building').val() == '') {
         Swal.fire("Please Fill Office Building of Contact!");
       }else if($('#street_address').val() == ''){
@@ -500,9 +452,6 @@ Customer
         fd.append('_token',"{{csrf_token()}}")
         fd.append("name_contact",$('#name_contact').val());
         fd.append("brand_name",$('#brand_name').val());
-        fd.append("logo", $('#logo')[0].files[0]);
-        fd.append("type", $('#type').val());
-        fd.append("id_product", $('#id_product').val());
         fd.append("office_building",$('#office_building').val());
         fd.append("street_address",$('#street_address').val());
         fd.append("city",$('#city').val());
@@ -586,9 +535,6 @@ Customer
             fd.append("code_name",$('#code_name_edit').val());
             fd.append("name_contact",$('#name_contact_edit').val());
             fd.append("brand_name",$('#brand_name_edit').val());
-            fd.append("id_product", $('#id_product_edit').val());
-            fd.append("logo", $('#logo_edit')[0].files[0]);
-            fd.append("type", $('#type_edit').val());
             fd.append("office_building",$('#office_building_edit').val());
             fd.append("street_address",$('#street_address_edit').val());
             fd.append("city",$('#city_edit').val());
@@ -608,67 +554,24 @@ Customer
           data:{
             id_cus:this.value,
           },
-          success: function (result) {
-            var data = result.contact_data[0]
-            var data2 = result.technologyTag
-            var selectedValues = data2.map(function (item) {
-              return item;
+          success: function(result){
+            $.each(result[0], function(key, value){
+              $('#id_contact').val(value.id_customer);
+              $('#code_name_edit').val(value.code);
+              $('#name_contact_edit').val(value.customer_legal_name);
+              $('#brand_name_edit').val(value.brand_name);
+              $('#office_building_edit').val(value.office_building);
+              $('#street_address_edit').val(value.street_address);
+              $('#city_edit').val(value.city);
+              $('#province_edit').val(value.province);
+              $('#postal_edit').val(value.postal);
+              $('#phone_edit').val(value.phone);
             });
 
-            $('#id_contact').val(data.id_customer);
-            $('#code_name_edit').val(data.code);
-            $('#name_contact_edit').val(data.customer_legal_name);
-            $('#brand_name_edit').val(data.brand_name);
-            $('#type_edit').val(data.type);
-            $('#logo_show_edit').attr("src", "/storage/images/customer/" + data.logo);
-            $('#office_building_edit').val(data.office_building);
-            $('#street_address_edit').val(data.street_address);
-            $('#city_edit').val(data.city);
-            $('#province_edit').val(data.province);
-            $('#postal_edit').val(data.postal);
-            $('#phone_edit').val(data.phone);
-
-            // console.log(data2);
-
-            $.ajax({
-              url: "{{url('/project/getTechTag')}}",
-              type: "GET",
-              success: function (result) {
-                $("#id_product_edit").select2({
-                  dropdownParent: $('#edit_customer'),
-                  placeholder: "Select Technology",
-                  data: result.results,
-                  multiple: true
-                })
-
-                var selectedValues = [];
-
-                data2.forEach(function (item) {
-                  selectedValues.push(item.id);
-                });
-
-                console.log(selectedValues);
-
-                $('#id_product_edit').val(selectedValues).trigger('change');
-              }
-            })
           }
         }); 
         $("#edit_customer").modal("show");
     });
-
-     $.ajax({
-      url: "{{url('/project/getTechTag')}}",
-      type: "GET",
-      success: function (result) {
-        $("#id_product").select2({
-          dropdownParent: $('#add_customer'),
-          placeholder: "Select Technology",
-          data: result.results,
-          multiple: true
-        })
-      }
-    })
 
     function Update(value,url,status){
       Swal.fire({

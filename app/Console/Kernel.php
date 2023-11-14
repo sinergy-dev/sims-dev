@@ -94,7 +94,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('ReminderPengembalianAssetTech:reminderpengembalianassettech')->dailyAt('08:00');
 
-        // $schedule->command('pending:remind')->everyMinute();
+        $schedule->command('pending:remind')->everyMinute();
     }
 
     /**
