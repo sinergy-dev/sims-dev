@@ -463,8 +463,6 @@
     accesable.forEach(function(item,index){
       $("#" + item).show()
     })
-
-    console.log(accesable)
     
     if ($("#tbSummaryMandays").is(":visible") == false) {
       // $(".nav-tabs").find("li").last().addClass("active")
@@ -571,10 +569,10 @@
       var isPMO = false
       if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.group',"PMO")->exists()}}") {
         isPMO = true
-        var colspan = 3
+        var colspan = 4
         var enabledClick = true
       }else{
-        var colspan = 2
+        var colspan = 3
         var enabledClick = false
       }
 
@@ -586,7 +584,11 @@
         columns: [
           { title: 'PID', data:'pid'},
           { title: 'Name', data:'name'},
-          { title: 'Planned',data:'planned'},
+          { title: 'Planned',
+            render: function (data, type, row, meta){
+              return row.planned
+            },
+          },
           { title: 'Actual',
             render: function (data, type, row, meta){
               if (enabledClick) {
@@ -595,6 +597,10 @@
                 return row.actual
               }
             },
+          },
+          {
+            title: 'Remaining',
+            data: 'remaining'
           },
           {
             title: 'Finish Date',
@@ -631,6 +637,24 @@
                     last = group;
                     // <b>Total Mandays : '+ api.column(2).data()[i] +'</b>
                 }
+            });
+
+            var lastValueActual = null, lastValueRemaining = null;
+            $('table#tbSummarySbe tbody tr:not(.group)').each(function() {
+              var dataActual = $(this).find('td:nth-child(2)').text();
+              var dataRemaining = $(this).find('td:nth-child(4)').text();
+
+              if (dataActual === lastValueActual) {
+                 $(this).find('td:nth-child(2)').text('');
+              } else {
+                 lastValueActual    = dataActual;
+              }
+
+              if (dataRemaining === lastValueRemaining) {
+                 $(this).find('td:nth-child(4)').text('');
+              } else {
+                 lastValueRemaining = dataRemaining;
+              }
             });
         },
       }) 
@@ -1104,7 +1128,6 @@
     });
 
     const containerBodyRemaining = document.querySelector('#box-remaining');
-    console.log(myChart2.data.labels.length)
     if (myChart2.data.labels.length > 7) {
       containerBodyRemaining.style.width  = '1300px';
     }
@@ -1116,7 +1139,6 @@
   }
 
   function duplicateCanvasRemaining(url,param,position){
-    console.log(url)
     $.ajax({
       type:"GET",
       url:"{{url('/')}}/"+url+param,
@@ -1563,7 +1585,6 @@
       })
       duplicateCanvasRemaining("timesheet/getFilterRemainingChart?",arrFilter,val) 
     }else{
-      console.log("sinii")
       if (isTbSummary == true) {
         $("#loadingIndicator").show()
         $("#filterSumPoint").find("i").css("color","red")
@@ -1650,11 +1671,8 @@
     $("#modalDetailActual").modal("show")
 
     if ($.fn.DataTable.isDataTable('#tbDetailActual')) {
-      console.log("reload")
       $('#tbDetailActual').DataTable().ajax.url("{{url('/timesheet/detailActivitybyPid')}}?nik="+nik+"&pid="+pid).load();
     }else{
-      console.log("belum ada")
-
       var table = $('#tbDetailActual').DataTable({
         "ajax":{
             "type":"GET",

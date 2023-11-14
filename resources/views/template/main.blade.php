@@ -4,6 +4,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<title>
 		@hasSection('tittle')
 			SIMS - @yield('tittle')
@@ -13,7 +14,6 @@
 	</title>
 	<link rel="icon" type="image/png" href="{{url('img/siplogooke.png')}}">
 	<!-- Tell the browser to be responsive to screen width -->
-	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">	
 	<!-- Bootstrap 3.3.7 -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 	<!-- Font Awesome -->
@@ -26,11 +26,23 @@
 	
 	<!-- Theme style -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css">
-	@yield('head_css_and')
+	@yield('head_css_end')
 	<!-- AdminLTE Skins -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/skins/skin-blue.min.css">
 	<!-- Google Font -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
+	<!-- Hotjar Tracking Code for SIMS App - prod -->
+	<script>
+	    (function(h,o,t,j,a,r){
+	        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+	        h._hjSettings={hjid:3568234,hjsv:6};
+	        a=o.getElementsByTagName('head')[0];
+	        r=o.createElement('script');r.async=1;
+	        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+	        a.appendChild(r);
+	    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+	</script>
 
 </head>
 @if(isset($sidebar_collapse))
@@ -38,15 +50,14 @@
 @else
 <body class="hold-transition skin-blue sidebar-mini">
 @endif
-
 	<div class="wrapper">
-	@section('header')
-	@include('template.header')
-	@show
+		@section('header')
+		@include('template.header')
+		@show
 
-@section('sidebar')
-@include('template.sidebar')
-@show
+		@section('sidebar')
+		@include('template.sidebar')
+		@show
 
 		<div class="content-wrapper">
 			@yield('content')
@@ -56,33 +67,33 @@
 		@include('template.footer')
 		@show
 	</div>
+	<!-- jQuery 3.1.1 -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+	<!-- Bootstrap 3.3.7 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	@section('scriptNotificationHeader')
+	@show
+	@section('scriptNotificationSidebar')
+	@show
+	@yield('scriptImport')
 
-		<!-- jQuery 3.1.1 -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
-		<!-- Bootstrap 3.3.7 -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		@section('scriptNotificationHeader')
-		@show
-		@section('scriptNotificationSidebar')
-		@show
-		@yield('scriptImport')
+	<!-- SlimScroll -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+	<!-- FastClick -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
+	<!-- AdminLTE App -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/adminlte.min.js"></script>
+	<!-- AdminLTE for demo purposes -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/demo.js"></script>
 
-		<!-- SlimScroll -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
-		<!-- FastClick -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
-		<!-- AdminLTE App -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/adminlte.min.js"></script>
-		<!-- AdminLTE for demo purposes -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/demo.js"></script>
-
-		<script>
-			$(document).ready(function () {
-				$(".activeable_group").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
-				$(".activeable_menu").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
-			})
-		</script>
-		@yield('script')
+	<script>
+		$(document).ready(function () {
+			$(".activeable_group").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+			$(".activeable_menu").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+		})
+	</script>
+	@yield('script')
 </body>
 </html>

@@ -685,7 +685,6 @@ Lead Register
       				onclickAssign = "onclick=btnAssign('reassign',"+row.lead_id+")"
       				status = 'reassign'
       				if (row.result_modif == 'WIN' || row.result_modif == 'LOSE' || row.result_modif == 'CANCEL') {
-      					// console.log(row.status == 'pending')
       					if (row.status == 'pending') {
   								return btnIdProject      								
   							}else{
@@ -1659,20 +1658,17 @@ Lead Register
 		$("#BoxId").prepend(prepend)
 
 		if (!document.getElementById("bg-orange") == false) {
-			console.log('orange')
 			// document.getElementById("bg-orange").style.backgroundColor  = "#f2562b!important";
 			$(".bg-orange").addClass('bg-orange')
 		}
 
 		if (!document.getElementById("bg-aqua") == false) {
-			console.log('aqua')
 
 			document.getElementById("bg-aqua").style.backgroundColor  = "#04dda3!important";
 			// $(".bg-aqua").css('background-color','#04dda3')
 		}
 
 		if (!document.getElementById("bg-yellow") == false) {
-			console.log('yellow')
 
 			document.getElementById("bg-yellow").style.backgroundColor  = "#f7e127!important";
 			// $(".bg-yellow").css('background-color','#f7e127')
@@ -1706,7 +1702,6 @@ Lead Register
 			            data: selectOption,
 			            templateSelection: function(selection, container) {
 			                var selectedOption = selection.id.slice(0, 1);
-			                console.log(selection.id)
 			                if (selectedOption == 'p') {
 			                    $(container).css("background-color", "#32a852");
 			                    $(container).css("border-color", "#32a852");
@@ -1942,7 +1937,6 @@ Lead Register
 	  $.each($('#searchTags').val(),function(key, value) {
 	  	// console.log(value)
 	    if (value.substr(0,1) == 'p') {
-	    	// console.log(value.substr(1,1))
 	    	if (tempProduct == 'product_tag[]=') {
 		      tempProduct = tempProduct + value.substring(1)
 		    }else{
@@ -1994,8 +1988,6 @@ Lead Register
 		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
 
 		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
-
-		console.log("sekali")
 
 		dashboardCountFilter(tempFiltered)
 	}
