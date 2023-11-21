@@ -367,7 +367,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('admin/getSupplier', 'PrDraftController@getSupplier');
 	Route::get('admin/getDropdownFilterPr', 'PrDraftController@getDropdownFilterPr');
 	Route::get('admin/getSupplierDetail', 'PrDraftController@getSupplierDetail');
-	Route::get('admin/getPidUnion', 'PrDraftController@getPidUnion');
+	Route::get('admin/getPidUnion', 'PrDraftController@getSupplierDetail');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
@@ -1187,6 +1187,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/shifting/getReportShifting', 'PresenceController@getReportShifting');
 
 	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
+	Route::get('/presence/getLocationNameFromLatLng', 'PresenceController@getLocationNameFromLatLng');
 
 	// Invoice
 	Route::get('/invoice', 'InvoiceController@index');
