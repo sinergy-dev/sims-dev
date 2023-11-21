@@ -37,8 +37,7 @@ GA Asset
 
   td>.truncate{
     word-break:break-all;
-    white-space: normal;
-    width:200px;  
+    white-space: normal; 
   }
 
   .transparant{
@@ -129,25 +128,25 @@ GA Asset
                   <h4><i class="fa fa-table"></i> Table Asset</h4>
                   <thead>
                     <tr>
-                      <th>Code</th>
-                      <th width="15%">Product Name</th>
-                      <th width="25%">Specification</th>
-                      <th>Latest person</th>
-                      <th>Status</th>
-                      <th>Location</th>
-                      <th style="text-align: center;">Action</th>
-                      <th style="text-align: center;">Action</th>                      
-                      <th></th>
+                      <th width="5%">Code</th>
+                      <th width="10%">Product Name</th>
+                      <th width="20%">Specification</th>
+                      <th width="15%">Latest person</th>
+                      <th width="5%">Status</th>
+                      <th width="5%">Location</th>
+                      <th width="5%" style="text-align: center;">Action</th>
+                      <th width="5%" style="text-align: center;">Action</th>                      
+                      <th width=""></th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
                   @foreach($asset as $item => $value)
                     @foreach($value as $data)
                       <tr>
-                          <td>{{$data->code_name}}<input type="" name="id_barang_update" hidden></td>
-                          <td>{{$data->nama_barang}}</td>
-                          <td>{{$data->description}} - {{$data->serial_number}}</td>
-                          <td>
+                          <td width="5%">{{$data->code_name}}<input type="" name="id_barang_update" hidden></td>
+                          <td width="10%">{{$data->nama_barang}}</td>
+                          <td width="20%">{{$data->description}} - {{$data->serial_number}}</td>
+                          <td width="15%">
                               @foreach(explode(',', $data->name) as $key => $latest_pinjam) 
                                 {{$latest_pinjam}}
                               @endforeach<br>
@@ -162,7 +161,7 @@ GA Asset
                                 <label class="label label-warning" style="margin-left: 5px;"><litle>Status karyawan : {{$data->status_kerja}}</litle></label>
                               @endif
                           </td>
-                          <td>
+                          <td width="5%">
                             @if($data->status == "UNAVAILABLE")
                             <span class="label label-default">UNAVAILABLE</span>
                             @elseif($data->status == "AVAILABLE")
@@ -175,8 +174,8 @@ GA Asset
                             <span class="label label-warning">PENDING</span>
                             @endif
                           </td>
-                          <td>{{$data->lokasi}}</td>
-                          <td>                      
+                          <td width="5%">{{$data->lokasi}}</td>
+                          <td width="5%">                      
                             @if($data->status == "UNAVAILABLE")
                             <button class="btn btn-xs btn-default btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
                             <button class="btn btn-xs btn-warning barang_asset_edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
@@ -196,7 +195,7 @@ GA Asset
                             @endif                      
                             <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
                           </td>
-                          <td style="text-align: center;">
+                          <td width="5%" style="text-align: center;">
                             @if($data->status == "UNAVAILABLE" || $data->status == "PENDING" || $data->status == "RUSAK" || $data->status == "SERVICE")
                             <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
                             @else                      
@@ -256,28 +255,28 @@ GA Asset
                   <h4><i class="fa fa-table"></i> Table Request</h4>
                   <thead>
                     <tr>
-                      <th>No Transaction</th>
-                      <th>Request By</th>
-                      <th>Request Date</th>
-                      <th>Name/Category</th>
-                      <th>Specification</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th width="5%">No Transaction</th>
+                      <th width="5%">Request By</th>
+                      <th width="5%">Request Date</th>
+                      <th width="35%">Name/Category</th>
+                      <th width="40%">Specification</th>
+                      <th width="5%">Status</th>
+                      <th width="5%">Action</th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
                     <?php $no = 1?>
                     @foreach($request_asset as $data)
                       <tr>
-                        <td>{{$data->no_transac}}</td>
-                        <td>{{$data->name}}</td>
-                        <td>{{$data->created_at}}</td>
-                        <td>{{$data->note}}</td>
-                        <td>{!!nl2br($data->keterangan)!!}</td>
-                        <td>
+                        <td width="5%">{{$data->no_transac}}</td>
+                        <td width="5%">{{$data->name}}</td>
+                        <td width="5%">{{$data->created_at}}</td>
+                        <td width="35%">{{$data->note}}</td>
+                        <td width="40%">{!!nl2br($data->keterangan)!!}</td>
+                        <td width="5%">
                           <label class="label label-info">Request</label>
                         </td>
-                        <td>
+                        <td width="5%">
                           <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
                           <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','REJECT')">Reject</button>
                         </td>
@@ -285,20 +284,19 @@ GA Asset
                     @endforeach
                     @foreach($current_request as $datas)
                       <tr>
-                        <td>{{$datas->id_request}}</td>
-                        <td>{{$datas->name}}</td>
-                        <td>{{$datas->created_at}}</td>                        
-                        <td>{{$datas->nama}}</td>
-                        <!-- <td><div class="truncate">{{$datas->link}}</div></td>  -->
-                        <td class="links{{$datas->id_request}}">{{$datas->link}}</td>
-                        <td>
+                        <td width="5%">{{$datas->id_request}}</td>
+                        <td width="5%">{{$datas->name}}</td>
+                        <td width="5%">{{$datas->created_at}}</td>                        
+                        <td width="35%">{{$datas->nama}}</td>
+                        <td width="40%" class="links{{$datas->id_request}}">{{$datas->link}}</td>
+                        <td width="5%">
                           @if($datas->status == 'REQUEST')
                           <label class="label label-info">Request</label>
                           @else
                           <label class="label label-warning">Pending</label>
                           @endif
                         </td>                     
-                        <td>
+                        <td width="5%">
                           @if($datas->status == 'REQUEST')
                             <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->nama}}','{{$datas->id_request}}','ACCEPT')">Accept</button>
                             <button class="btn btn-danger btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->nama}}','{{$datas->id_request}}','REJECT')">Reject</button>
@@ -316,62 +314,66 @@ GA Asset
             </div>
             <div class="tab-pane fade" id="current_asset" role="tabpanel" aria-labelledby="current">
               <div class="table-responsive" style="margin-top: 15px">
-                <table class="table table-bordered collapsed DataTable" id="datatable" width="100%" cellspacing="0">
+                <table class="table table-bordered collapsed" id="datatable" width="100%" cellspacing="0">
                   <h4><i class="fa fa-table"></i> Table My Asset</h4>
                   <thead>
                     <tr>
-                      <th>No</th>
-                      <th>Code</th>
-                      <th>Name</th>
-                      <th>Specification</th>
-                      <th>Note</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th width="5%">No</th>
+                      <th width="5%">Code</th>
+                      <th width="20%">Name</th>
+                      <th width="20%">Specification</th>
+                      <th width="40%">Note</th>
+                      <th width="5%">Status</th>
+                      <th width="5%">Action</th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
                     <?php $no = 1?>                  
                     @foreach($pinjam_request as $data)
                       <tr>
-                        <td>{{$data->no_transac}}</td>
-                        <td> - </td>
-                        <td>{{$data->note}} - {{$data->serial_number}}</td>
-                        <td>{!! nl2br($data->keterangan) !!}</td>
-                        <td> - </td> 
-                        <td><label class="label label-warning">PENDING</label></td>                     
-                        <td>
+                        <td  width="5%">{{$data->no_transac}}</td>
+                        <td  width="5%"> - </td>
+                        <td width="20%">{{$data->note}} - {{$data->serial_number}}</td>
+                        <td width="20%">{!! nl2br($data->keterangan) !!}</td>
+                        <td width="40%"> - </td> 
+                        <td  width="5%"><label class="label label-warning">PENDING</label></td>                     
+                        <td  width="5%">
                           <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="btnEditRequestAsset('{{$data->id_transaction}}','pinjam')"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
                         </td>
                       </tr>
                     @endforeach
                     @foreach($current_request as $datas)
                       <tr>
-                        <td>{{$datas->id_request}}</td>
-                        <td>{{$datas->code_kat}}</td>
-                        <td>{{$datas->nama}}</td>
-                        <td>{{$datas->merk}}</td>
-                        <td><div class="truncate">{{$datas->link}}</div></td> 
-                        <td>
+                        <td  width="5%" >{{$datas->id_request}}</td>
+                        <td  width="5%" >{{$datas->code_kat}}</td>
+                        <td width="20%" >{{$datas->nama}}</td>
+                        <td width="20%" >{{$datas->merk}}</td>
+                        <td width="40%" >
+                          <div class="truncate">
+                             {{$datas->link}}
+                          </div>
+                        </td> 
+                        <td  width="5%" >
                           @if($datas->status == 'REQUEST')
                           <label class="label label-info">{{$datas->status}}</label>
                           @else
                           <label class="label label-warning">{{$datas->status}}</label>                        
                           @endif
                         </td>                     
-                        <td>
+                        <td  width="5%">
                           <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="btnEditRequestAsset('{{$datas->id_request}}','request')"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
                         </td>
                       </tr>
                     @endforeach
                     @foreach($current_borrowed as $data)
                       <tr>
-                        <td>{{$data->no_transac}}</td>
-                        <td>{{$data->code_name}}</td>
-                        <td>{{$data->nama_barang}}</td>
-                        <td>{{$data->description}} - {{$data->serial_number}}</td>
-                        <td>{{$data->keterangan}}</td> 
-                        <td><label class="label label-success">BORROWING</label></td>                     
-                        <td>
+                        <td  width="5%">{{$data->no_transac}}</td>
+                        <td  width="5%">{{$data->code_name}}</td>
+                        <td width="20%">{{$data->nama_barang}}</td>
+                        <td width="20%">{{$data->description}} - {{$data->serial_number}}</td>
+                        <td width="40%">{{$data->keterangan}}</td> 
+                        <td  width="5%"><label class="label label-success">BORROWING</label></td>                     
+                        <td  width="5%">
                           <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset_transac" value="{{$data->id_transaction}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
                         </td>
                       </tr>
@@ -388,24 +390,24 @@ GA Asset
                   <h4><i class="fa fa-table"></i> Table History</h4>
                   <thead>
                     <tr>
-                      <th>No</th>
-                      <th>Code</th>
-                      <th>Name</th>
-                      <th>Specification</th>
-                      <th>Note</th>
-                      <th>Status</th>
+                      <th width="5%">No</th>
+                      <th width="5%">Code</th>
+                      <th width="30%">Name</th>
+                      <th width="20%">Specification</th>
+                      <th width="35%">Note</th>
+                      <th width="5%">Status</th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
                     <?php $no = 1?>
                     @foreach($historyCancel as $datas)
                       <tr>
-                        <td>{{$datas->id_request}}</td>
-                        <td>{{$datas->code_kat}}</td>
-                        <td>{{$datas->nama}}</td>
-                        <td>{{$datas->merk}}</td>
-                        <td><div class="truncate">{{$datas->link}}</div></td> 
-                        <td>
+                        <td width="5%">{{$datas->id_request}}</td>
+                        <td width="5%">{{$datas->code_kat}}</td>
+                        <td width="30%">{{$datas->nama}}</td>
+                        <td width="20%">{{$datas->merk}}</td>
+                        <td width="35%"><div class="truncate">{{$datas->link}}</div></td> 
+                        <td width="5%">
                           @if($datas->status == 'ACCEPT')
                           <label class="label label-success">{{$datas->status}}</label>
                         	@elseif($datas->status == 'CANCEL')
