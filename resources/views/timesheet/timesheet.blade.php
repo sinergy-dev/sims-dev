@@ -359,7 +359,7 @@
 
                 <div class="form-group">
                   <label>Activity*</label>
-                  <textarea class="form-control" name="textareaActivity" id="textareaActivity_refer" onkeyup="validateInput(this)"></textarea> 
+                  <textarea class="form-control" name="textareaActivity" id="textareaActivity_refer" onkeyup="validateInput(this)" disabled></textarea> 
                   <span class="help-block" style="display:none">Please fill Activity!</span>
                 </div>
 
@@ -1019,7 +1019,7 @@
 
                 var filteredData = uniqueData.filter(function(obj1) {
                   const found = events.some(el => el.title === obj1.title);
-                  return events.some(function(obj2) {
+                  return !events.some(function(obj2) {
                       if (obj1.title) {
                         if (obj1.title.includes(obj2.title)) {
                           return obj2.title
