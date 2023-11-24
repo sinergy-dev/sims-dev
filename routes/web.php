@@ -1178,6 +1178,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/shifting/deleteSchedule', 'PresenceController@deleteSchedule');
 	Route::get('/presence/shifting/addProject', 'PresenceController@addProject');
 
+	Route::post('presence/getLocationNameFromLatLng','PresenceController@getLocationNameFromLatLng');
+	Route::get('presence/getLocationByUser','PresenceController@getLocationByUser');
 
 	Route::post('/presence/shifting/modifyUserShifting', 'PresenceController@modifyUserShifting');
 	Route::get('/presence/shifting/modifyOptionShifting', 'PresenceController@modifyOptionShifting');

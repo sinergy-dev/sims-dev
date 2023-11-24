@@ -540,7 +540,43 @@ class PresenceController extends Controller
         return redirect()->back();
     }
 
+    public function getLocationNameFromLatLng(Request $request) {
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+        $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$latitude},{$longitude}&key=".env('GOOGLE_API_KEY');
+
+        // Membuat request ke Google Maps Geocoding API
+        $response = file_get_contents($url);
+
+        // Mengecek apakah request berhasil
+        if ($response === false) {
+            return "Error fetching data.";
+        }
+
+        // Parsing hasil JSON
+        $data = json_decode($response, true);
+
+        // Mengecek apakah hasil valid
+        if ($data['status'] == 'OK') {
+            // Mengambil alamat format terbaca manusia (formatted_address) dari hasil pertama
+            return $data['results'][0]['formatted_address'];
+        }
+
+        return "Location not found.";
+    }
+
+    public function getLocationByUser(Request $req)
+    {
+        $getAllLocationUser = PresenceLocationUser::join('presence__location', 'presence__location.id', '=', 'presence__location_user.location_id')
+                            ->join('users','users.nik','presence__location_user.user_id')
+                            ->select('user_id', 'location_name','location_radius','location_lat','location_lng')
+                            ->where('user_id',Auth::User()->nik)->get();
+
+        return $getCurrentLocation = PresenceLocation::join('presence__location_user', 'presence__location.id', '=', 'presence__location_user.location_id')->select('location_name')->where('user_id',Auth::User()->nik)->where('presence__location.id',$req->id_location)->first()->location_name;
+    }
+
     public function checkIn(Request $req) {
+
         $history = new PresenceHistory();
 
         if (isset(Auth::User()->nik)) {
