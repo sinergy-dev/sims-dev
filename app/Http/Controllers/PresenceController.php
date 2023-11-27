@@ -543,7 +543,7 @@ class PresenceController extends Controller
     public function getLocationNameFromLatLng(Request $request) {
         $latitude = $request->latitude;
         $longitude = $request->longitude;
-        $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$latitude},{$longitude}&key=".env('GOOGLE_API_KEY');
+        $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$latitude},{$longitude}&key=".env('GOOGLE_API_KEY_GLOBAL');
 
         // Membuat request ke Google Maps Geocoding API
         $response = file_get_contents($url);
@@ -1367,8 +1367,8 @@ class PresenceController extends Controller
 
     public function getWorkDays($startDate,$endDate){
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
-        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY_GLOBAL'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
