@@ -576,6 +576,7 @@ class PresenceController extends Controller
     }
 
     public function checkIn(Request $req) {
+
         $history = new PresenceHistory();
 
         if (isset(Auth::User()->nik)) {

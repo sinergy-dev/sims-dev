@@ -969,20 +969,20 @@
                 
                 if (result != "") {
                   result.items.map(item => {
-                    if (item.creator != undefined) {
-                      if (Object.keys(item.creator).length == 2) {
-                        if (item.creator.self == true) {
-                          arrayData.push({
-                            id:item.id,
-                            title: item.summary,
-                            start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
-                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
-                            activity: item.summary,
-                            refer:"gcal",
-                          })
-                        }
-                      }
-                    }
+                    // if (item.creator != undefined) {
+                    //   if (Object.keys(item.creator).length == 2) {
+                    //     if (item.creator.self == true) {
+                    //       arrayData.push({
+                    //         id:item.id,
+                    //         title: item.summary,
+                    //         start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
+                    //         end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                    //         activity: item.summary,
+                    //         refer:"gcal",
+                    //       })
+                    //     }
+                    //   }
+                    // }
                  
 
                     $.each(item.attendees,function(index,itemX){
@@ -1017,7 +1017,7 @@
                     return false;
                 });
 
-                var filteredData = uniqueData.filter(function(obj1) {
+                var filteredData = arrayData.filter(function(obj1) {
                   const found = events.some(el => el.title === obj1.title);
                   return !events.some(function(obj2) {
                       if (obj1.title) {

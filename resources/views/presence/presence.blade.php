@@ -195,7 +195,10 @@ Presence
 			</div>
 			</center>
 			<br>
-			<p style="margin-left: 10px;padding-bottom: 10px;">Accessed : {{date("l, d M Y H:i:s")}}</p>
+			<div style="padding: 10px;">
+				<span style="flex-grow: 1;margin-right: 5px;"><i class="fa fa-desktop"></i></span><span style="flex-grow: 2;">Accessed : </span><span id="current_time">{{date("l, d M Y H:i:s")}}</span><br>
+				<span style="flex-grow: 1;margin-right: 5px;"><i class="fa fa-map-pin"></i></span><span>Current Location : </span><span id="current_location"></span>
+			</div>
 		</div> 
 	</section>
 @endsection
@@ -207,8 +210,6 @@ Presence
 @section('script')
 	<script>
 		var presenceLocation;
-
-
 		$(document).ready(function(){
 			updateTime();
 			$.ajax({
@@ -234,52 +235,78 @@ Presence
 			}, 1000);
 		}
 		
-		function checkIn(){
-
-			Swal.fire({
-				title: 'Please Wait..!',
-				text: "It's checking..",
-				allowOutsideClick: false,
-				allowEscapeKey: false,
-				allowEnterKey: false,
-				customClass: {
-					popup: 'border-radius-0',
-				},
-				onOpen: () => {
-					Swal.showLoading()
-				}
-			})
+		function checkIn(){	
 			if(isLocationSet(presenceLocation)){
 				isOnLocation(presenceLocation).then((result) => {
-					console.log(result)
+					var id_location = result
 					if(result != 0){
 						$.ajax({
-							type:"POST",
-							url:"{{url('/presence/checkIn')}}",
+							type:"GET",
+							url:"{{url('/presence/getLocationByUser')}}",
 							data:{
-								presence_actual:moment().format("YYYY-MM-DD HH:mm:ss"),
-								id_location:result,
-								_token: "{{ csrf_token() }}"
+								id_location:id_location,
 							},
-							success: function(){
-								Swal.fire(
-									'Check-in success',
-									"Don't forget to checkout later",
-									'success'
-								).then((result) => {
-									location.reload();
+							success: function(result){
+								var curLoc = result
+
+								Swal.fire({
+									title: 'Are you sure?',
+									html: '<h6>Check-In at '+ curLoc  +'</h6>',
+									icon: 'warning',
+									showCancelButton: true,
+									confirmButtonColor: '#3085d6',
+									cancelButtonColor: '#d33',
+									confirmButtonText: 'Yes',
+									cancelButtonText: 'No',
+								}).then((result) => {
+									if(result.value){
+										Swal.fire({
+											title: 'Please Wait..!',
+											text: "It's checking..",
+											allowOutsideClick: false,
+											allowEscapeKey: false,
+											allowEnterKey: false,
+											customClass: {
+												popup: 'border-radius-0',
+											},
+											onOpen: () => {
+												Swal.showLoading()
+											}
+										})
+
+										$.ajax({
+											type:"POST",
+											url:"{{url('/presence/checkIn')}}",
+											data:{
+												presence_actual:moment().format("YYYY-MM-DD HH:mm:ss"),
+												id_location:id_location,
+												_token: "{{ csrf_token() }}"
+											},
+											success: function(result){
+												var curLoc = "Inlingua"
+
+												Swal.fire(
+													'Check-in success',
+													"Don't forget to checkout later",
+													'success'
+												).then((result) => {
+													location.reload();
+												})
+											},
+											error: function(e,textStatus,errorThrown){
+												console.log(e.responseJSON.message)
+												// console.log(textStatus)
+												// console.log(errorThrown)
+												Swal.hideLoading(); 
+												Swal.fire(
+													'Check-in error',
+													"Your shifting is not Something error on server.",
+													'error'
+												)
+											}
+										})
+									}
 								})
-							},
-							error: function(e,textStatus,errorThrown){
-								console.log(e.responseJSON.message)
-								// console.log(textStatus)
-								// console.log(errorThrown)
-								Swal.hideLoading(); 
-								Swal.fire(
-									'Check-in error',
-									"Your shifting is not Something error on server.",
-									'error'
-								)
 							}
 						})
 					} else {
@@ -414,6 +441,78 @@ Presence
 				return true
 			}
 		}
+
+
+		function reverseGeocodeLatLng() {
+			if (navigator.geolocation) {
+		        navigator.geolocation.getCurrentPosition(showPosition,showError);
+	      	} else {
+	        	console.error("Geolocation is not supported by this browser.");
+	      	}
+	    }
+
+	    function showPosition(position) {
+	      	const latitude = position.coords.latitude;
+	      	const longitude = position.coords.longitude;
+	      	$.ajax({
+				type:"POST",
+				url:"{{url('/presence/getLocationNameFromLatLng')}}",
+				data:{
+					latitude:latitude,
+					longitude:longitude,
+					_token: "{{ csrf_token() }}"
+				},
+				success: function(result){
+					$("#current_location").text(result)
+					return addressLocation = result
+				},
+			})
+
+	      // Use the retrieved latitude and longitude values as needed (e.g., display on a map, perform reverse geocoding, etc.)
+	    }
+
+	    function showError(error) {
+	      switch (error.code) {
+	        case error.PERMISSION_DENIED:
+	          console.error("User denied the request for Geolocation.");
+	          break;
+	        case error.POSITION_UNAVAILABLE:
+	          console.error("Location information is unavailable.");
+	          break;
+	        case error.TIMEOUT:
+	          console.error("The request to get user location timed out.");
+	          break;
+	        case error.UNKNOWN_ERROR:
+	          console.error("An unknown error occurred.");
+	          break;
+	      }
+	    }
+
+	    function onLoad() {
+	      // Call reverseGeocodeLatLng function when the page loads
+	      reverseGeocodeLatLng()
+	    }
+
+	    // Attach the onLoad function to the window.onload event
+	    window.onload = onLoad;
+
+	    startTime()
+	    function checkTime(i) {
+		  if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+		  return i;
+		}
+
+		function startTime() {
+	      	var today = new Date();
+	      	var time = moment(today).format('dddd, D MMM YYYY HH:mm:ss');
+	      	var h = today.getHours();
+	      	var m = today.getMinutes();
+	      	var s = today.getSeconds();
+	      	m = checkTime(m);
+	      	s = checkTime(s);
+	      	document.getElementById('current_time').innerHTML =  time;
+	      	var t = setTimeout(startTime, 500);
+	  	}
 	</script>
 	{{-- <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY_NEW')}}"></script> --}}
 	<script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY_GLOBAL')}}"></script>
