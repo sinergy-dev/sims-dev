@@ -540,6 +540,41 @@ class PresenceController extends Controller
         return redirect()->back();
     }
 
+    public function getLocationNameFromLatLng(Request $request) {
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+        $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$latitude},{$longitude}&key=".env('GOOGLE_API_KEY_GLOBAL');
+
+        // Membuat request ke Google Maps Geocoding API
+        $response = file_get_contents($url);
+
+        // Mengecek apakah request berhasil
+        if ($response === false) {
+            return "Error fetching data.";
+        }
+
+        // Parsing hasil JSON
+        $data = json_decode($response, true);
+
+        // Mengecek apakah hasil valid
+        if ($data['status'] == 'OK') {
+            // Mengambil alamat format terbaca manusia (formatted_address) dari hasil pertama
+            return $data['results'][0]['formatted_address'];
+        }
+
+        return "Location not found.";
+    }
+
+    public function getLocationByUser(Request $req)
+    {
+        $getAllLocationUser = PresenceLocationUser::join('presence__location', 'presence__location.id', '=', 'presence__location_user.location_id')
+                            ->join('users','users.nik','presence__location_user.user_id')
+                            ->select('user_id', 'location_name','location_radius','location_lat','location_lng')
+                            ->where('user_id',Auth::User()->nik)->get();
+
+        return $getCurrentLocation = PresenceLocation::join('presence__location_user', 'presence__location.id', '=', 'presence__location_user.location_id')->select('location_name')->where('user_id',Auth::User()->nik)->where('presence__location.id',$req->id_location)->first()->location_name;
+    }
+
     public function checkIn(Request $req) {
         $history = new PresenceHistory();
 
@@ -1331,8 +1366,8 @@ class PresenceController extends Controller
 
     public function getWorkDays($startDate,$endDate){
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
-        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY_GLOBAL'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
