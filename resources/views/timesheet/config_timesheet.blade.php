@@ -97,7 +97,7 @@
                 <div class="form-group">
                   <label>Lock Duration*</label>
                   <select class="form-control select2" id="selectLock" name="selectLock" placeholder="Select Lock Duration">
-                    <option value="1">1 Week</option>
+                    <!-- <option value="1">1 Week</option>
                     <option value="2">2 Week</option>
                     <option value="3">3 Week</option>
                     <option value="4">1 Month</option>
@@ -105,7 +105,17 @@
                     <option value="6">6 Week</option>
                     <option value="7">7 Week</option>
                     <option value="8">2 Month</option>
-                    <option value="12">3 Month</option>
+                    <option value="12">3 Month</option> -->
+                    <option value="1">1 Day</option>
+                    <option value="7">1 Week</option>
+                    <option value="14">2 Week</option>
+                    <option value="21">3 Week</option>
+                    <option value="28">1 Month</option>
+                    <option value="35">5 Week</option>
+                    <option value="42">6 Week</option>
+                    <option value="49">7 Week</option>
+                    <option value="56">2 Month</option>
+                    <option value="84">3 Month</option>
                   </select>
                 </div>
               </div>
