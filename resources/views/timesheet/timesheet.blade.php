@@ -972,7 +972,7 @@
                   }
                   $("#title_lock_duration").text(results.lock_duration + week)
                 }else{
-                  week = " Week"
+                  week = week
 
                   $("#title_lock_duration").text((parseInt(results.lock_duration) / 7) + week)
                 }
