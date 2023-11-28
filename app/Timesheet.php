@@ -103,7 +103,7 @@ class Timesheet extends Model
     public function getWorkdays($startDate,$endDate,$remarks)
     {
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
 
