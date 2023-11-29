@@ -88,13 +88,14 @@ class Timesheet extends Model
             }
 
             $sumMandays = array_sum($arrMonthMandays);
-            return $threshold = $sumMandays*80/100;
+
+            return $threshold = (float)$sumMandays*80/100;
         }else{
             $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
             $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
             $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
             $workdays = count($workdays);
-            return $threshold = $workdays*80/100;
+            return $threshold = (float)$workdays*80/100;
         }
         // return collect(["planned"=>$workdays,"threshold"=>$threshold]);
         // return [$workdays,$threshold];
