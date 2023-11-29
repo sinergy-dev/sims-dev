@@ -1582,7 +1582,7 @@ class TimesheetController extends Controller
                     // "planned"=>collect($sumMandays)->first()->planned,
                     "planned"=>$workdays - $getPublicHolidayAdjustment,
                     // "threshold"=>collect($sumMandays)->first()->threshold,
-                    "threshold"=>$workdays*80/100,
+                    "threshold"=>number_format((float)$workdays*80/100,1,'.',''),
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     // "percentage_billable"=>number_format(($valueSumPoint - $billable)/collect($sumMandays)->first()->planned*100,  2, '.', ''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/$workdays*100,  2, '.', ''),
@@ -1607,7 +1607,7 @@ class TimesheetController extends Controller
                         "nik"       =>$data_uniq['nik'],
                         "actual"    =>$data_uniq['actual'],
                         "planned"   =>$data_uniq['planned'],
-                        "threshold" =>$data_uniq['threshold'],
+                        "threshold" =>number_format((float)$data_uniq['threshold'],1,'.',''),
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
                         "deviation" =>number_format($data_uniq['deviation'], 2, '.', ''),
@@ -3969,11 +3969,11 @@ class TimesheetController extends Controller
         // Return the filtered products or perform any other logic
         $countData = response()->json($count);
         $data = $countData->getData();
-        $countPlanned = (int)$data;
+        $countPlanned = (float)$data;
 
         $countDataThreshold = response()->json($countThreshold);
         $dataThreshold = $countDataThreshold->getData();
-        $countThresholdFinal = (int)$dataThreshold;
+        $countThresholdFinal = (float)$dataThreshold;
 
         $arrayMonth = collect();
         $arrSumPoint = collect();
@@ -4388,7 +4388,7 @@ class TimesheetController extends Controller
                     "nik"=>collect($sumMandays)->where('name',$key_point)->first()->nik,
                     "actual"=>$valueSumPoint,
                     "planned"=>$countPlanned - $getPublicHolidayAdjustment,
-                    "threshold"=>$countThresholdFinal,
+                    "threshold"=>number_format((float)$countThresholdFinal,1,'.',''),
                     "billable"=>number_format($valueSumPoint - $billable,2,'.',''),
                     "percentage_billable"=>number_format(($valueSumPoint - $billable)/$countPlanned*100,  2, '.', ''),
                     "deviation"=>number_format($countPlanned - $valueSumPoint, 2, '.', ''),
@@ -4406,7 +4406,7 @@ class TimesheetController extends Controller
                         "nik"       =>$data_uniq['nik'],
                         "actual"    =>$data_uniq['actual'],
                         "planned"   =>$data_uniq['planned'],
-                        "threshold" =>$data_uniq['threshold'],
+                        "threshold" =>number_format((float)$data_uniq['threshold'],1,'.',''),
                         "billable"  =>$data_uniq['billable'],
                         "percentage_billable" =>$data_uniq['percentage_billable'] . "%",
                         "deviation" =>number_format($data_uniq['deviation'], 2, '.', ''),

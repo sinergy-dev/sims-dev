@@ -88,13 +88,14 @@ class Timesheet extends Model
             }
 
             $sumMandays = array_sum($arrMonthMandays);
-            return $threshold = $sumMandays*80/100;
+
+            return $threshold = (float)$sumMandays*80/100;
         }else{
             $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
             $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
             $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
             $workdays = count($workdays);
-            return $threshold = $workdays*80/100;
+            return $threshold = (float)$workdays*80/100;
         }
         // return collect(["planned"=>$workdays,"threshold"=>$threshold]);
         // return [$workdays,$threshold];
@@ -103,7 +104,7 @@ class Timesheet extends Model
     public function getWorkdays($startDate,$endDate,$remarks)
     {
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
 
