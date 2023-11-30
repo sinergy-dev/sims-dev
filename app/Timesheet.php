@@ -112,7 +112,7 @@ class Timesheet extends Model
         $holiday_indonesia_final_date = collect();
         
         foreach ($holiday_indonesia["items"] as $value) {
-            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) )){
+            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && ($value["description"] == 'Public holiday'))){
                 $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
                 $holiday_indonesia_final_date->push($value["start"]["date"]);
             }
@@ -133,7 +133,7 @@ class Timesheet extends Model
 
         $workDaysMinHoliday = $workDays->diff($holiday_indonesia_final_date->unique());
         $workDaysMinHolidayKeyed = $workDaysMinHoliday->map(function ($item, $key) {
-            // return ["date" => $item];
+            return ["date" => $item];
             // return (object) array('date' => $item);
             return $item;
         });
