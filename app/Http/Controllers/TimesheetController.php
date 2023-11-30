@@ -4019,28 +4019,49 @@ class TimesheetController extends Controller
                     }
                 });
 
-                if (isset($request->pic[0])) {
-                    $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
-
-                    $getUserByGroup = $getUserByGroup
-                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->whereIn('nik',$request->pic)    
-                                        ->get();
-                }else{
-                    $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-
-                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->get();
-                }
+                $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                $sumMandays = $sumMandays->where('status','Done');
 
                 if (is_null($sumMandays)) {
                     $isNeedOtherUser = true;
                 }else{
                     $isNeedOtherUser = false;
+                }
+
+                if (is_null($sumMandays)) {
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->get();
+                    }
+                }else{
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->get();
+                    }
                 }
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
@@ -4067,28 +4088,49 @@ class TimesheetController extends Controller
                         }
                     });
 
-                if (isset($request->pic[0])) {
-                    $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
-
-                    $getUserByGroup = $getUserByGroup
-                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->whereIn('nik',$request->pic)    
-                                        ->get();
-                }else{
-                    $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-
-                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->get();
-                }
+                $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                $sumMandays = $sumMandays->where('status','Done');
 
                 if (is_null($sumMandays)) {
                     $isNeedOtherUser = true;
                 }else{
                     $isNeedOtherUser = false;
+                }
+
+                if (is_null($sumMandays)) {
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->get();
+                    }
+                }else{
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->get();
+                    }
                 }
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
@@ -4115,28 +4157,49 @@ class TimesheetController extends Controller
                                             }
                                         });
 
-                if (isset($request->pic[0])) {
-                    $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
-
-                    $getUserByGroup = $getUserByGroup
-                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->whereIn('nik',$request->pic)    
-                                        ->get();
-                }else{
-                    $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-
-                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->get();
-                }
+                $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                $sumMandays = $sumMandays->where('status','Done');
 
                 if (is_null($sumMandays)) {
                     $isNeedOtherUser = true;
                 }else{
                     $isNeedOtherUser = false;
+                }
+
+                if (is_null($sumMandays)) {
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->get();
+                    }
+                }else{
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->get();
+                    }
                 }
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
@@ -4163,29 +4226,50 @@ class TimesheetController extends Controller
                                 $query->orWhereRaw("MONTH(start_date) = $month");
                             }
                         });
-
-                    if (isset($request->pic[0])) {
-                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
-                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
-                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
-
-                        $getUserByGroup = $getUserByGroup
-                                            ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                            ->whereIn('nik',$request->pic)    
-                                            ->get();
-                    }else{
-                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
-                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
-                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-
-                        $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                            ->get();
-                    }
+                    
+                    $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                    $sumMandays = $sumMandays->where('status','Done');
 
                     if (is_null($sumMandays)) {
                         $isNeedOtherUser = true;
                     }else{
                         $isNeedOtherUser = false;
+                    }
+
+                    if (is_null($sumMandays)) {
+                        if (isset($request->pic[0])) {
+                            $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                            $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                            $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                            $getUserByGroup = $getUserByGroup
+                                                ->whereIn('nik',$request->pic)    
+                                                ->get();
+                        }else{
+                            $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                            $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                            $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                            $getUserByGroup = $getUserByGroup->get();
+                        }
+                    }else{
+                        if (isset($request->pic[0])) {
+                            $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                            $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                            $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                            $getUserByGroup = $getUserByGroup
+                                                ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                                ->whereIn('nik',$request->pic)    
+                                                ->get();
+                        }else{
+                            $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                            $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                            $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                            $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                                ->get();
+                        }
                     }
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
@@ -4212,28 +4296,49 @@ class TimesheetController extends Controller
                                             }
                                         });
 
-                if (isset($request->pic[0])) {
-                    $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+                $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                $sumMandays = $sumMandays->where('status','Done');
 
-                    $getUserByGroup = $getUserByGroup
-                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->whereIn('nik',$request->pic)    
-                                        ->get();
-                }else{
-                    $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-
-                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->get();
-                }
-
-                if (isset($sumMandays)) {
+                if (is_null($sumMandays)) {
                     $isNeedOtherUser = true;
                 }else{
                     $isNeedOtherUser = false;
+                }
+
+                if (is_null($sumMandays)) {
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->get();
+                    }
+                }else{
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->get();
+                    }
                 }
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
@@ -4265,28 +4370,49 @@ class TimesheetController extends Controller
                                             }
                                         });
 
-                if (isset($request->pic[0])) {
-                    $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
-
-                    $getUserByGroup = $getUserByGroup
-                                        ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->whereIn('nik',$request->pic)    
-                                        ->get();
-                }else{
-                    $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
-                    $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
-                    $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
-
-                    $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
-                                        ->get();
-                }
+                $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                $sumMandays = $sumMandays->where('status','Done');
 
                 if (is_null($sumMandays)) {
                     $isNeedOtherUser = true;
                 }else{
                     $isNeedOtherUser = false;
+                }
+
+                if (is_null($sumMandays)) {
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->get();
+                    }
+                }else{
+                    if (isset($request->pic[0])) {
+                        $sumMandays         = $sumMandays->whereIn('tb_timesheet.nik',$request->pic);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$request->pic)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$request->pic)->get();
+
+                        $getUserByGroup = $getUserByGroup
+                                            ->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->whereIn('nik',$request->pic)    
+                                            ->get();
+                    }else{
+                        $sumMandays = $sumMandays->whereIn('tb_timesheet.nik',$listGroup);
+                        $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
+                        $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
+
+                        $getUserByGroup = $getUserByGroup->whereNotIn('nik', $sumMandays->get()->pluck('nik'))
+                                            ->get();
+                    }
                 }
             } else {
                 $getLeavingPermit   = $getLeavingPermit->where('tb_cuti.nik',$nik)->get();
