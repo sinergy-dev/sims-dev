@@ -4051,7 +4051,11 @@ class TimesheetController extends Controller
                                             }
                                         });
                 
-                $isNeedOtherUser = false;
+                if (count($sumMandays->get()) == 0) {
+                    $isNeedOtherUser = true;
+                }else{
+                    $isNeedOtherUser = false;
+                }
             }
         }elseif ($cek_role->group == 'DPG') {
             if ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
@@ -4095,7 +4099,11 @@ class TimesheetController extends Controller
                                             }
                                         });
 
-                $isNeedOtherUser = false;
+                if (count($sumMandays->get()) == 0) {
+                    $isNeedOtherUser = true;
+                }else{
+                    $isNeedOtherUser = false;
+                }
             }
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
@@ -4139,7 +4147,11 @@ class TimesheetController extends Controller
                                             }
                                         });
 
-                $isNeedOtherUser = false;
+                if (count($sumMandays->get()) == 0) {
+                    $isNeedOtherUser = true;
+                }else{
+                    $isNeedOtherUser = false;
+                }
             }
         }elseif ($cek_role->group == 'bcd') {
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','bcd')->pluck('nik');
@@ -4183,8 +4195,12 @@ class TimesheetController extends Controller
                             $query->orWhereRaw("MONTH(start_date) = $month");
                         }
                     });
-                
-                $isNeedOtherUser = false;
+
+                if (count($sumMandays->get()) == 0) {
+                    $isNeedOtherUser = true;
+                }else{
+                    $isNeedOtherUser = false;
+                }
             }
         }elseif ($cek_role->group == 'hr') {
             if ($cek_role->name == 'HR Manager') {
@@ -4227,7 +4243,12 @@ class TimesheetController extends Controller
                                                 $query->orWhereRaw("MONTH(start_date) = $month");
                                             }
                                         });
-                $isNeedOtherUser = false;
+
+                if (count($sumMandays->get()) == 0) {
+                    $isNeedOtherUser = true;
+                }else{
+                    $isNeedOtherUser = false;
+                }
 
             }
         }elseif ($cek_role->group == 'msm') {
@@ -4275,7 +4296,12 @@ class TimesheetController extends Controller
                                                 $query->orWhereRaw("MONTH(start_date) = $month");
                                             }
                                         });
-                $isNeedOtherUser = false;
+                
+                if (count($sumMandays->get()) == 0) {
+                    $isNeedOtherUser = true;
+                }else{
+                    $isNeedOtherUser = false;
+                }
 
             }
         }
@@ -4316,7 +4342,7 @@ class TimesheetController extends Controller
         $getPermitByName        = collect($getPermit)->groupBy('name');
         $getTaskAvailableByName = collect($sumMandays->where('task',36)->groupBy('name'));
 
-        if (count($sumMandays) === 0) {
+        if (count($sumMandays) === 0) {            
             $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
             $endDate         = Carbon::now()->endOfYear()->format("Y-m-d");
             $workdays        = $this->getWorkDays($startDate,$endDate,"workdays");
@@ -4327,7 +4353,7 @@ class TimesheetController extends Controller
                     $arrSumPoint->push(["name"=>$value_group->name,
                         "nik"       =>$value_group->nik,
                         "actual"    =>"-",
-                        "planned"   =>$workdays - $getPublicHolidayAdjustment,
+                        "planned"   =>$countPlanned,
                         "threshold" =>"-",
                         "billable"  =>"-",
                         "percentage_billable" =>"-",
@@ -4335,6 +4361,17 @@ class TimesheetController extends Controller
                         "total_task"=>"-"
                     ]);
                 }
+            }else{
+                $arrSumPoint->push(["name"=>Auth::User()->name,
+                    "nik"       =>$nik,
+                    "actual"    =>"-",
+                    "planned"   =>$countPlanned,
+                    "threshold" =>"-",
+                    "billable"  =>"-",
+                    "percentage_billable" =>"-",
+                    "deviation" =>"-",
+                    "total_task"=>"-"
+                ]);                
             }
         }else{
             $startDate       = Carbon::now()->startOfYear()->format("Y-m-d");
@@ -4433,6 +4470,7 @@ class TimesheetController extends Controller
                 }
             }
         }
+
 
         return array("data"=>$arrSumPoint);
     }
