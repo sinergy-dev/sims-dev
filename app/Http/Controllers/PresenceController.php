@@ -223,20 +223,36 @@ class PresenceController extends Controller
         //     $presenceStatus = "libur";
         // } else {
             // code...
+
+        $userPresence = User::join('presence__shifting_user','presence__shifting_user.nik','=','users.nik','left')->select('name',
+                DB::raw("(CASE WHEN (`presence__shifting_user`.`nik` is null) THEN 'non-shifting' ELSE 'shifting' END) as status"))
+                ->where('name',Auth::User()->name)
+                ->first();
+
+
         if($presenceStatus->count() == 0){
             $presenceStatus = "not-yet";
         } else {
             if($presenceStatus->first()->presence_type == "Check-Out"){
                 $todayPresence = PresenceHistory::where('nik',Auth::User()->nik)
-                    ->whereRaw('DATE(`presence_actual`) = "' . now()->toDateString() . '"')
-                    ->orderBy('presence_actual','DESC')
-                    ->count();
+                        ->whereRaw('DATE(`presence_actual`) = "' . now()->toDateString() . '"')
+                        ->orderBy('presence_actual','DESC')
+                        ->count();
+                if ($userPresence->status == 'shifting') {
 
-                if($todayPresence > 2){
-                    $presenceStatus = "done-checkout";
+                    if($todayPresence > 2){
+                        $presenceStatus = "done-checkout";
+                    } else {
+                        $presenceStatus = "not-yet";
+                    }
                 } else {
-                    $presenceStatus = "not-yet";
+                    if($todayPresence > 1){
+                        $presenceStatus = "done-checkout";
+                    } else {
+                        $presenceStatus = "not-yet";
+                    }
                 }
+                
 
                 // return $todayPresence;
 
@@ -617,6 +633,8 @@ class PresenceController extends Controller
             ->first()
             ->presence_setting;
 
+        $getCheckout = PresenceHistory::where('nik',$req->nik)->orderby('id','desc')->first();
+
         if (PresenceShiftingUser::join('presence__shifting','presence__shifting.nik','presence__shifting_user.nik')->where('presence__shifting_user.nik',$req->nik)->where('tanggal_shift',date('Y-m-d'))->exists()){
             $setting_schedule = $this->makeShiftingSchedule($req->nik,"15");
         }
@@ -625,7 +643,7 @@ class PresenceController extends Controller
         $history->presence_setting = $setting_schedule->id;
         $history->presence_schedule = $setting_schedule->setting_check_out;
         $history->presence_actual = $req->presence_actual;
-        $history->presence_location = 1;
+        $history->presence_location = $getCheckout->presence_location;
         $history->presence_condition = "-";
         $history->presence_type = "Check-Out";
 
@@ -644,9 +662,21 @@ class PresenceController extends Controller
     }
 
     public function makeShiftingSchedule($nik,$span){
-        $shiftingSchedule = PresenceShifting::where('nik',$nik)
+
+        $shiftingSchedule = $shiftingSchedule = PresenceShifting::where('nik',$nik)
             ->where('tanggal_shift',date('Y-m-d'))
+            ->whereNotExists(function($query)
+            {
+                $query->select(DB::raw(1))
+                      ->from('presence__history')
+                      ->whereRaw('presence__history.presence_setting = presence__shifting.id')
+                      ->where('presence_type','Check-Out');
+            })
             ->first();
+
+        // $shiftingSchedule = PresenceShifting::where('nik',$nik)
+        //     ->where('tanggal_shift',date('Y-m-d'))
+        //     ->first();
 
         $start = substr($shiftingSchedule->start, 11,8);
         $shiftingSchedule->setting_on_time = $start;
@@ -1158,40 +1188,41 @@ class PresenceController extends Controller
         // $parameterUser = $parameterUser->limit(1)->pluck('nik')->unique()->values();
         $parameterUser = User::whereIn('nik',$parameterUser->pluck('nik')->unique()->values())->get();
         // $parameterUser = User::whereIn('nik',['1220599090'])->get();
-        // return $parameterUser;
-
         $presenceHistoryAll = collect();
         foreach ($parameterUser as $value) {
             // echo $value->nik . "<br>";
             if (in_array($value->nik, $shiftingUserList)) {
 
-                $getShifting = PresenceShifting::select(DB::raw('GROUP_CONCAT(`className`) as `title`'), 'tanggal_shift', 'presence__shifting.nik')
-                        // ->whereRaw('`nik` = ' . $value->nik)
-                        ->whereRaw('`presence__shifting`.`nik` = 1220102040')
-                        ->where('className', '!=', 'Libur')
-                        ->whereRaw('`tanggal_shift` BETWEEN "' . $startDate . ' 00:00:00" AND "' . $endDate . ' 23:59:59"')->groupBy('tanggal_shift');
+                // $getLoc = PresenceHistory::select('presence__location.location_name','presence__location.id')->join('presence__location','presence__location.id','=','presence__history.presence_location')->where('presence__history.presence_type','Check-In')
+                //     ->whereRaw('`presence_actual` BETWEEN "' . $startDate . ' 00:00:00" AND "' . $endDate . ' 23:59:59"')->whereRaw('`presence__history`.`nik` = ' . $value->nik);
+
+                $getLastTimeCheckOut = PresenceShifting::where('nik',$value->nik)->whereBetween('tanggal_shift',[$startDate,$endDate])->get();
 
                 $presenceHistoryTemp = PresenceHistory::select(
-                        DB::raw("presence__history.*"),
-                        DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),
-                        DB::raw('`presence__location`.`location_name`'),
-                        // DB::raw('`shifting`.`title`')
-                        DB::raw('`presence__shifting`.`title`')
+                        DB::raw("presence__history.nik"),
+                        DB::raw("MIN(presence__history.presence_schedule) AS presence_schedule"),
+                        DB::raw("SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT `presence__history`.`presence_condition`), ',',1) AS presence_condition"),
+                        DB::raw("MIN(CAST(`presence_actual` AS DATE)) AS `presence_actual_date`"),
+                        // DB::raw("MIN(presence__location.location_name) AS location_name"),
+                        DB::raw("MIN(`presence_actual`) AS `presence_actual_start_date`"),
+                        DB::raw("MAX(`presence_actual`) AS `presence_actual_end_date`"),
+                        DB::raw("GROUP_CONCAT(
+                            DISTINCT `presence__shifting`.`className` SEPARATOR ', '
+                        ) AS shifting",
+                        ),
+                        DB::raw("SUBSTRING_INDEX(GROUP_CONCAT(
+                            DISTINCT `presence__location`.`location_name`), ',', 1)  AS location_name",
+                        ),
                     )->whereRaw('`presence__history`.`nik` = ' . $value->nik)
-                    // )->whereRaw('`presence__history`.`nik` = 1210398080')
                     ->whereRaw('`presence_actual` BETWEEN "' . $startDate . ' 00:00:00" AND "' . $endDate . ' 23:59:59"')
-                    ->leftJoin('presence__location','presence__location.id','=','presence__history.presence_location')
-                    // ->leftJoinSub($getShifting, 'shifting', function($join){
-                    //     $join->on("shifting.tanggal_shift", "=", "presence__history.presence_actual");
-                    // })
+                    ->where('className','<>','Libur')
                     ->join('presence__shifting','presence__shifting.id','=','presence__history.presence_setting')
-                    // ->orderBy('presence_actual_date','ASC')
-                    ->orderBy('presence_actual','ASC')
-                    ->orderBy('presence_type','ASC');
+                    ->join('presence__location','presence__location.id','=','presence__history.presence_location')
+                    ->groupBy(['presence__history.nik','tanggal_shift'])->orderBy('presence_actual_date','ASC');
+
+                // $presenceHistoryTemp = $presenceHistoryTemp->where('presence_condition','!=','-');
 
                 // return $presenceHistoryTemp->get();
-
-                // return $getShifting->get();
             } else {
                 $presenceHistoryTemp = PresenceHistory::select(
                     DB::raw("presence__history.*"),
@@ -1219,6 +1250,7 @@ class PresenceController extends Controller
             if(in_array($value->nik, $shiftingUserList)){
                 // return $presenceHistoryTemp->get();
                 foreach($presenceHistoryTemp->get() as $key => $eachPresenceHistory){
+                    // return $eachPresenceHistory;
                     if($eachPresenceHistory->presence_type == "Check-Out"){
                         // return $eachPresenceHistory;
                         if($presenceHistory->isNotEmpty()){
@@ -1226,17 +1258,16 @@ class PresenceController extends Controller
                         }
                     } 
                     else {
-
                         $presenceHistory->push((object) [
                             "nik" => $eachPresenceHistory->nik,
                             "name" => $value->name,
                             "date" => $eachPresenceHistory->presence_actual_date,
                             "location" => $eachPresenceHistory->location_name,
                             "schedule" => $eachPresenceHistory->presence_schedule,
-                            "checkin" =>  $eachPresenceHistory->presence_actual,
-                            "checkout" =>  $eachPresenceHistory->presence_actual,
+                            "checkin" =>  $eachPresenceHistory->presence_actual_start_date,
+                            "checkout" =>  $eachPresenceHistory->presence_actual_end_date,
                             "condition" => $eachPresenceHistory->presence_condition,
-                            "shifting" => explode(" - ",$eachPresenceHistory->title)[0]
+                            "shifting" => $eachPresenceHistory->shifting
                             // "shifting" => $eachPresenceHistory->title
                         ]);
                     }
@@ -1262,7 +1293,8 @@ class PresenceController extends Controller
                             "checkin" =>  $eachPresenceHistory->presence_actual,
                             "checkout" =>  "Uncheckout",
                             "condition" => $eachPresenceHistory->presence_condition,
-                            "shifting" => explode(" - ",$eachPresenceHistory->title)[0]
+                            "shifting" => $eachPresenceHistory->shifting
+                            // "shifting" => $eachPresenceHistory->title
                         ]);
                     }
                 }
@@ -1305,7 +1337,7 @@ class PresenceController extends Controller
                         "checkin" =>  "00:00:00",
                         "checkout" =>  "00:00:00",
                         "condition" => "Absent",
-                        "shifting" => explode(" - ",$workDays->get()->where('tanggal_shift',$absentDate)->first()->title)[0]
+                        "shifting" => $value->shifting
                     ]);
                 }
             } else {
@@ -1386,7 +1418,7 @@ class PresenceController extends Controller
         $period = new DatePeriod(
              new DateTime($startDate),
              new DateInterval('P1D'),
-             new DateTime($endDate)
+             new DateTime($endDate . '23:59:59')
         );
 
         $workDays = collect();
@@ -1675,7 +1707,14 @@ class PresenceController extends Controller
         $headerContent = ["No", "Nik", "Name", "Date","Location","Schedule","Check-In","Check-Out","Condition","Shifting"];
         $summarySheet->getStyle('A2:J2')->applyFromArray($headerStyle);
         $summarySheet->fromArray($headerContent,NULL,'A2');
-        // return $req->nik;
+
+        $summarySheet2 = $spreadsheet->setActiveSheetIndex(0);
+
+        // $summarySheet2->mergeCells('M2:Q2');
+
+        $headerContent2 = ["Nama", "Total Hari Kerja", "Kegiatan", "Hari Kerja Non-Shift","Kelebihan Hari Kerja"];
+        $summarySheet2->getStyle('M2:Q2')->applyFromArray($headerStyle);
+        $summarySheet2->fromArray($headerContent2,NULL,'M2');
 
         // if(isset($req->type)){
         //     if($req->type == "SIP"){
@@ -1715,6 +1754,33 @@ class PresenceController extends Controller
             $exportName = 'Report Presence ' . $req->type . '(reported at ' . date("Y-m-d") . ')';
         }
 
+
+        $getHariKerjaShifting = PresenceShifting::join('users','users.nik','presence__shifting.nik')
+                            ->select('presence__shifting.nik', 'name',
+                                DB::raw('COUNT(className) as className'),
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Kegiatan",1,NULL)) AS "classNameKegiatan"'))
+                            ->where('className', '!=', 'Libur')
+                            ->whereIn('presence__shifting.nik',$req->nik)
+                            ->whereRaw('`tanggal_shift` BETWEEN "' . $req->startDate . ' 00:00:00" AND "' . $req->endDate . ' 23:59:59"')->groupBy('nik')->get();
+
+        $workDays = $this->getWorkDays($req->startDate,$req->endDate)["workdays"]->values()->count();
+
+        $getAll = collect();
+
+        foreach ($getHariKerjaShifting as $key => $value) {
+            $getAll->push([
+                "name"              =>$value['name'],
+                "workDays"          =>$workDays,
+                "classNameKegiatan" => $value['classNameKegiatan'],
+                "className"         => $value['className'],
+                "lebih_kerja"       =>(int)$value['className']-$workDays
+            ]);
+        }
+
+        foreach ($getAll as $key => $value) {
+            $summarySheet2->fromArray(array_merge(array_values($value)),NULL,'M' . ($key + 3));
+        }
+
         // return $dataPresence;
         $dataPresence["data"]->sortBy('name')->sortBy('date')->map(function($item,$key) use ($summarySheet,$conditionOnTime,$conditionInjury,$conditionLate,$conditionUnCheckout,$conditionAbsent){
             $summarySheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($item))),NULL,'A' . ($key + 3));
@@ -1743,6 +1809,12 @@ class PresenceController extends Controller
         $summarySheet->getColumnDimension('J')->setAutoSize(true);
         $summarySheet->getColumnDimension('K')->setAutoSize(true);
 
+        $summarySheet2->getColumnDimension('M')->setAutoSize(true);
+        $summarySheet2->getColumnDimension('N')->setAutoSize(true);
+        $summarySheet2->getColumnDimension('O')->setAutoSize(true);
+        $summarySheet2->getColumnDimension('P')->setAutoSize(true);
+        $summarySheet2->getColumnDimension('Q')->setAutoSize(true);
+
         $dataPresenceIndividual = $dataPresence["data"]->sortBy('name')->groupBy('name');
 
         $indexSheet = 0;
@@ -1761,7 +1833,45 @@ class PresenceController extends Controller
             $detailSheet->getStyle('A2:K2')->applyFromArray($headerStyle);
             $detailSheet->fromArray($headerContent,NULL,'A2');
 
+            if (DB::table('presence__shifting_user')->where('nik',$item[0]->nik)->exists()) {
+                $detailSheet2 = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
+
+                $detailSheet2->getStyle('N1:P1')->applyFromArray($titleStyle);
+                $detailSheet2->setCellValue('N1','Jumlah Hari Kerja ' . $key);
+                $detailSheet2->mergeCells('N1:P1');
+
+                $headerContent2 = ["Total Kerja", "Hari Kerja Non-Shift", "Kelebihan Hari Kerja"];
+                $detailSheet2->getStyle('N2:P2')->applyFromArray($headerStyle);
+                $detailSheet2->fromArray($headerContent2,NULL,'N2');
+
+                $countShift = collect();
+
+                $getShifting = PresenceShifting::join('presence__history','presence__history.presence_setting','presence__shifting.id')
+                            ->select(DB::raw('CONCAT(`className`) as `title`'), 'tanggal_shift', 'presence__shifting.nik')
+                            // ->whereRaw('`nik` = ' . $value->nik)
+                            ->whereRaw('`presence__shifting`.`nik` = ' . $item[0]->nik)
+                            ->where('className', '!=', 'Libur')
+                            ->where('presence_type','Check-In')
+                            ->whereRaw('`tanggal_shift` BETWEEN "' . $req->startDate . ' 00:00:00" AND "' . $req->endDate . ' 23:59:59"')->get()->count();
+
+                $workDays = $this->getWorkDays($req->startDate,$req->endDate)["workdays"]->values()->count();
+
+                $countShift->push(["shift"=>$getShifting,
+                    "hari_kerja"       =>$workDays,
+                    "lebih_kerja"    =>$getShifting-$workDays,
+                ]);
+
+                foreach ($countShift as $key => $value) {
+                    $detailSheet2->fromArray(array_merge(array_values($value)),NULL,'N' . ($key + 3));
+                }
+
+                $detailSheet2->getColumnDimension('N')->setAutoSize(true);
+                $detailSheet2->getColumnDimension('O')->setAutoSize(true);
+                $detailSheet2->getColumnDimension('P')->setAutoSize(true);
+            }
+
             foreach ($item->sortBy('date')->values() as $key => $eachPresence) {
+                // return $item->sortBy('date')->values();
                 $detailSheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($eachPresence))),NULL,'A' . ($key + 3));
                 if($eachPresence->condition == "On-Time"){
                     $detailSheet->getStyle('I' . ($key + 3))->applyFromArray($conditionOnTime);
@@ -1789,6 +1899,8 @@ class PresenceController extends Controller
             $detailSheet->getColumnDimension('J')->setAutoSize(true);
             $detailSheet->getColumnDimension('K')->setAutoSize(true);
             $indexSheet = $indexSheet + 1;
+
+            // $indexSheet = $indexSheet + 1;
         }
 
         $spreadsheet->setActiveSheetIndex(0);
