@@ -512,5 +512,5 @@ Presence
 	  	}
 	</script>
 	{{-- <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY_NEW')}}"></script> --}}
-	<script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY_APP')}}"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY_GLOBAL')}}"></script>
 @endsection
