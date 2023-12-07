@@ -236,17 +236,18 @@ class PresenceController extends Controller
             if($presenceStatus->first()->presence_type == "Check-Out"){
                 $todayPresence = PresenceHistory::where('nik',Auth::User()->nik)
                         ->whereRaw('DATE(`presence_actual`) = "' . now()->toDateString() . '"')
+                        ->where('presence_type','Check-In')
                         ->orderBy('presence_actual','DESC')
                         ->count();
                 if ($userPresence->status == 'shifting') {
 
-                    if($todayPresence > 2){
+                    if($todayPresence >= 2){
                         $presenceStatus = "done-checkout";
                     } else {
                         $presenceStatus = "not-yet";
                     }
                 } else {
-                    if($todayPresence > 1){
+                    if($todayPresence >= 1){
                         $presenceStatus = "done-checkout";
                     } else {
                         $presenceStatus = "not-yet";
@@ -663,16 +664,43 @@ class PresenceController extends Controller
 
     public function makeShiftingSchedule($nik,$span){
 
-        $shiftingSchedule = $shiftingSchedule = PresenceShifting::where('nik',$nik)
-            ->where('tanggal_shift',date('Y-m-d'))
-            ->whereNotExists(function($query)
-            {
-                $query->select(DB::raw(1))
-                      ->from('presence__history')
-                      ->whereRaw('presence__history.presence_setting = presence__shifting.id')
-                      ->where('presence_type','Check-Out');
-            })
-            ->first();
+        $getData = 'true';
+        $getDate = PresenceHistory::select(DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),'presence_type')->where('nik',$nik)->orderBy('presence_actual','desc')->first()->presence_type;
+
+        if ($getDate == 'Check-In') {
+            $getDate = 'true';
+        } else {
+            $getDate = 'false';
+        }
+
+        if($getDate == 'true'){
+            $getDate = PresenceHistory::select(DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"))->where('nik',$nik)->orderBy('presence_actual','desc')->first()->presence_actual_date;
+
+            $shiftingSchedule = PresenceShifting::where('nik',$nik)
+                ->where('tanggal_shift',$getDate)
+                ->whereNotExists(function($query)
+                {
+                    $query->select(DB::raw(1))
+                          ->from('presence__history')
+                          ->whereRaw('presence__history.presence_setting = presence__shifting.id')
+                          ->where('presence_type','Check-Out');
+                })
+                ->first();
+        } else {
+            $shiftingSchedule = PresenceShifting::where('nik',$nik)
+                ->where('tanggal_shift',date('Y-m-d'))
+                ->whereNotExists(function($query)
+                {
+                    $query->select(DB::raw(1))
+                          ->from('presence__history')
+                          ->whereRaw('presence__history.presence_setting = presence__shifting.id')
+                          ->where('presence_type','Check-Out');
+                })
+                ->first();
+        }
+
+
+        // return $shiftingSchedule;
 
         // $shiftingSchedule = PresenceShifting::where('nik',$nik)
         //     ->where('tanggal_shift',date('Y-m-d'))
@@ -1399,8 +1427,7 @@ class PresenceController extends Controller
 
     public function getWorkDays($startDate,$endDate){
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
-        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY_GLOBAL'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY_GLOBAL'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
@@ -1749,19 +1776,27 @@ class PresenceController extends Controller
         if(isset($req->nik)){
             $dataPresence = $this->getPresenceReportData("all",$req->nik,'all',$date);
             $exportName = 'Report Presence ' . $req->type . '(reported at ' . date("Y-m-d") . ')';
-        } else {
-            $dataPresence = $this->getPresenceReportData("all",'','all',$date);
-            $exportName = 'Report Presence ' . $req->type . '(reported at ' . date("Y-m-d") . ')';
-        }
 
-
-        $getHariKerjaShifting = PresenceShifting::join('users','users.nik','presence__shifting.nik')
+            $getHariKerjaShifting = PresenceShifting::join('users','users.nik','presence__shifting.nik')
                             ->select('presence__shifting.nik', 'name',
                                 DB::raw('COUNT(className) as className'),
                                 DB::raw('COUNT(IF(`presence__shifting`.`className` = "Kegiatan",1,NULL)) AS "classNameKegiatan"'))
                             ->where('className', '!=', 'Libur')
                             ->whereIn('presence__shifting.nik',$req->nik)
                             ->whereRaw('`tanggal_shift` BETWEEN "' . $req->startDate . ' 00:00:00" AND "' . $req->endDate . ' 23:59:59"')->groupBy('nik')->get();
+        } else {
+            $dataPresence = $this->getPresenceReportData("all",'','all',$date);
+            $exportName = 'Report Presence ' . $req->type . '(reported at ' . date("Y-m-d") . ')';
+
+
+            $getHariKerjaShifting = PresenceShifting::join('users','users.nik','presence__shifting.nik')
+                            ->select('presence__shifting.nik', 'name',
+                                DB::raw('COUNT(className) as className'),
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Kegiatan",1,NULL)) AS "classNameKegiatan"'))
+                            ->where('className', '!=', 'Libur')
+                            // ->whereIn('presence__shifting.nik',$req->nik)
+                            ->whereRaw('`tanggal_shift` BETWEEN "' . $req->startDate . ' 00:00:00" AND "' . $req->endDate . ' 23:59:59"')->groupBy('nik')->get();
+        }
 
         $workDays = $this->getWorkDays($req->startDate,$req->endDate)["workdays"]->values()->count();
 
