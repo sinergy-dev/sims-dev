@@ -104,7 +104,7 @@ Letter Number
         </div>
       
         <div class="pull-right">
-          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 100px; color: white"><i class="fa fa-plus"> </i>&nbsp Letter</button>
+          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_letter" data-toggle="modal" style="width: 100px; color: white"><i class="fa fa-plus"> </i>&nbsp Letter</button>
           @if($counts)
           <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px; color: white; margin-right: 10px;"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
           @else
@@ -168,14 +168,14 @@ Letter Number
   </div>
 
   <!--MODAL ADD PROJECT-->
-<div class="modal fade" id="modal_pr" role="dialog">
+<div class="modal fade" id="modal_letter" role="dialog">
     <div class="modal-dialog modal-lg">
       <div class="modal-content modal-md">
         <div class="modal-header">
           <h4 class="modal-title">Add Letter</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('/store_letter')}}" id="modal_pr" name="modal_pr">
+          <form method="POST" action="{{url('/store_letter')}}" name="modal_letter">
             @csrf
           <div class="form-group">
             <label for="">Position</label>
@@ -335,7 +335,7 @@ Letter Number
             <label for="">Description</label>
             <textarea class="form-control" id="description" name="description" placeholder="Enter Description"></textarea>
           </div>
-          <div class="form-group" id="pid">
+          <div class="form-group" id="pid_backdate">
             <label for="">Project ID</label>                
             <select type="text" class="form-control select2" name="project_id_backdate" id="project_id_backdate" style="width: 100%">
               <option value="">Select project id</option>
@@ -483,7 +483,7 @@ Letter Number
     }).attr('readonly','readonly').css('background-color','#fff');
     $('#addLetter').click(function(){
       $('#tunggu').modal('show')
-      $('#modal_pr').modal('hide')
+      $('#modal_letter').modal('hide')
       setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
     });
 
@@ -524,11 +524,11 @@ Letter Number
     });
 
     $('#project_id').select2({
-      dropdownParent:$("#modal_pr")
+      dropdownParent:$("#pid")
     })
 
     $('#project_id_backdate').select2({
-      dropdownParent:$("#letter_backdate")
+      dropdownParent:$("#pid_backdate")
     })
 
     function backdateReload(){
