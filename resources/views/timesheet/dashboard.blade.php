@@ -1583,7 +1583,7 @@
       $.each(remainingBarChart,function(idx,value){
           value.destroy()
       })
-      duplicateCanvasRemaining("timesheet/getFilterRemainingChart?",arrFilter,val) 
+      duplicateCanvasRemaining("timesheet/getFilterRemainingChart",arrFilter,val) 
     }else{
       if (isTbSummary == true) {
         $("#loadingIndicator").show()
