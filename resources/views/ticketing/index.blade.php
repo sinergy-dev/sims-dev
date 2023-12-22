@@ -11,6 +11,8 @@ Ticketing
 <link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" integrity="sha512-/Ae8qSd9X8ajHk6Zty0m8yfnKJPlelk42HTJjOHDWs1Tjr41RfsSkceZ/8yyJGLkxALGMIYd5L2oGemy/x1PLg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+<link type="text/css" rel="stylesheet" href="{{asset('css/simplePagination.css')}}" />
+
 <style type="text/css">
 	.table2 > tbody > tr > th, .table2 > tbody > tr > td {
 		border-color: #141414;border: 1px solid;padding: 3px;}
@@ -138,9 +140,51 @@ Ticketing
 		background-color: #f1c40f;color: #fff !important;
 	}
 
+	/* For WebKit-based browsers (Chrome, Safari) */
+    .boxDivSite::-webkit-scrollbar {
+      width: 2px; /* Width of the scrollbar */
+    }
+
+    /* For Firefox */
+    .boxDivSite {
+      scrollbar-width: thin; /* Thin scrollbar for Firefox */
+    }
+
+    /* Track (background of the scrollbar) */
+    .boxDivSite::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle (thumb of the scrollbar) */
+    .boxDivSite::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
 	/*.columnCheck {
 		margin: 0 10px 0 5px;
 	}*/
+	.widthBoxPID{
+		width: 50%;
+	}
+
+	.container_pid{
+		display: flex;
+	}
+
+	@media screen and (max-width: 500px) { 
+      .widthBoxPID { 
+          width: 100%; 
+      } 
+
+      .container_pid{
+      	display: block;
+      }
+  }
+
+  .widthBoxPID100{
+  	width: 100%;
+  }
 </style>
 @endsection
 @section('content')
@@ -357,19 +401,27 @@ Ticketing
 							<form class="form-horizontal">
 								<input type="hidden" id="inputID">
 								<div class="form-group" id="nomorDiv" style="display: none;">
-									<label for="inputNomor" class="col-sm-1 control-label" >ID Ticket</label>
-									<div class="col-sm-11">
+									<label for="inputNomor" class="col-sm-2 control-label" >ID Ticket</label>
+									<div class="col-sm-10">
 										<input type="text" class="form-control" id="inputticket" value="" readonly>
 									</div>
 								</div>
 								<div class="form-group" id="clientDiv" style="display: none;">
-									<label class="col-sm-1 control-label">Client</label>
-									<div class="col-sm-3">
+									<label class="col-sm-2 control-label">Client</label>
+									<div class="col-sm-4">
 										<select class="form-control" id="inputClient" style="width:100%">
 										</select>
 									</div>
-									<label class="col-sm-1 control-label">Type</label>
-									<div class="col-sm-3">
+									<label class="col-sm-2 control-label">PID</label>
+									<div class="col-sm-4">
+										<select class="form-control" id="selectPID" style="width:100%!important">
+											<option></option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group" id="typeDiv" style="display: none;">
+									<label class="col-sm-2 control-label">Type</label>
+									<div class="col-sm-4">
 										<select class="form-control" id="inputTypeTicket">
 											<option selected="selected" value="none">Chose Type</option>
 											<option value="Trouble Ticket">Trouble Ticket</option>
@@ -377,12 +429,10 @@ Ticketing
 											<option value="Permintaan Layanan">Permintaan Layanan Ticket</option>
 										</select>
 									</div>
-									<div class="form-group">
-										<label class="col-sm-1 control-label">Severity</label>
-										<div class="col-sm-3">
+									<label class="col-sm-2 control-label">Severity</label>
+									<div class="col-sm-4">
 											<select class="form-control" id="inputSeverity">
 											</select>
-										</div>
 									</div>
 								</div>
 
@@ -1051,18 +1101,19 @@ Ticketing
 
 				<div class="tab-pane" id="reporting">
 					<div class="row">
-						<div class="col-md-3">
+						<div class="col-md-2">
 							<div class="form-group">
 								<label>Select Type</label>
 								<select id="selectReportingType" class="form-control">
 									<option>Chose One</option>
-									<option value="1">Finish Report</option>
-									<option value="2">Helpesk Report</option>
-									<option value="3">Manager Report</option>
+									<option value="finishReport">Finish Report</option>
+									<option value="finishReportPid">Finish Report PID</option>
+									<option value="helpdeskReport">Helpesk Report</option>
+									<!-- <option value="managerReport">Manager Report</option> -->
 								</select>
 							</div>
 						</div>
-						<div class="col-md-3 finish-report" style="display:none;">
+						<div class="col-md-2 divReportingClient" style="display:none;">
 							<div class="form-group">
 								<label>Select Client</label>
 								<select id="selectReportingClient" style="width:100% !important" class="select2 form-control">
@@ -1070,21 +1121,39 @@ Ticketing
 								</select>
 							</div>
 						</div>
-						<div class="col-md-2 finish-report" style="display:none;">
+						<div class="col-md-2 divPID" style="display:none;">
+							<div class="form-group">
+								<label>Select PID</label>
+								<select class="form-control" id="selectPIDReport">
+								</select>
+							</div>
+						</div>
+						<div class="col-md-2 divTypeTicket" style="display:none;">
+							<div class="form-group">
+								<label>Select Type Ticket</label>
+								<select class="form-control" id="selectTypeTicket">
+									<option selected="selected" value="none">Chose Type</option>
+									<option value="TT">Trouble Ticket</option>
+									<option value="PM">Preventive Maintenance Ticket</option>
+									<option value="PL">Permintaan Layanan Ticket</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-2 divReportingYear" style="display:none;">
 							<div class="form-group">
 								<label>Select Year</label>
 								<select id="selectReportingYear" class="form-control">
 								</select>
 							</div>
 						</div>
-						<div class="col-md-2 finish-report" style="display:none;">
+						<div class="col-md-2 divReportingMonth" style="display:none;">
 							<div class="form-group">
 								<label>Select Month</label>
 								<select id="selectReportingMonth" class="form-control">
 								</select>
 							</div>
 						</div>
-						<div class="col-md-4 bayu-report" style="display:none;">
+						<div class="col-md-4 divDateRange" style="display:none;">
 							<div class="form-group">
 								<label>Date range button:</label>
 
@@ -1098,7 +1167,7 @@ Ticketing
 								</div>
 							</div>
 						</div>
-						<div class="col-md-4 denny-report" style="display:none;">
+						<!-- <div class="col-md-4 denny-report" style="display:none;">
 							<div class="form-group">
 								<label>Date range button:</label>
 
@@ -1111,10 +1180,10 @@ Ticketing
 									</button>
 								</div>
 							</div>
-						</div>
+						</div> -->
 					</div>
 					<div class="row">
-						<div class="col-md-10">
+						<div class="col-md-12">
 							<!-- <a id="ReportingButtonLink" href=""> -->
 								<button id="ReportingButtonGo" class="pull-right btn btn-flat btn-primary" style="display: none;" onclick="getReport()">
 									Goo..
@@ -1233,7 +1302,7 @@ Ticketing
 						</div>
 						<div class="form-group" id="ticketNoteUpdate">
 							<label>Note Activity*</label>
-							<textarea class="form-control" rows="1" id="ticketNote"></textarea>
+							<textarea class="form-control" rows="1" id="ticketNote" style="resize:vertical;"></textarea>
 						</div>
 						<div class="form-group" style="display: none" id="ticketRoute" >
 							<label>Root Cause</label>
@@ -1246,7 +1315,7 @@ Ticketing
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-flat btn-default pull-left" onclick="exitTicket()">Exit</button>
+					<button type="button" class="btn btn-flat btn-default pull-left" onclick="exitTicket()" data-dismiss="modal">Exit</button>
 					<button type="button" class="btn btn-flat btn-danger pull-left" id="escalateButton">Escalate</button>
 					<button type="button" class="btn btn-flat btn-info pull-left" id="reOpenButton" disabled>Re-Open Ticket</button>
 					<button type="button" class="btn btn-flat btn-success" id="closeButton">Close</button>
@@ -1655,7 +1724,7 @@ Ticketing
 						<form role="form">
 							<div class="form-group" >
 								<label>Root Cause Analysis (RCA)</label>
-								<textarea type="text" class="form-control" id="escalateRCA"></textarea>
+								<textarea type="text" class="form-control" id="escalateRCA" style="resize: vertical;"></textarea>
 							</div>
 							<div class="row">
 								<div class="col-sm-12">
@@ -2469,9 +2538,16 @@ Ticketing
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js" integrity="sha512-2xXe2z/uA+2SyT/sTSt9Uq4jDKsT0lV4evd3eoE/oxKih8DSAsOF6LUb+ncafMJPAimWAXdu9W+yMXGrCVOzQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ url('js/jquery.emailinput.min.js')}}"></script>
 <script src="{{ url('js/roman.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.simplePagination.js')}}"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
+	var accesable = @json($feature_item);
+      
+  accesable.forEach(function(item,index){
+    $("#" + item).show()
+  })
+
 	var swalWithCustomClass
 
 	$(document).ready(function(){
@@ -2590,7 +2666,6 @@ Ticketing
 		$('#reloadTable').click(function(){
 			$('#tablePerformance').DataTable().ajax.reload();
 		});
-
 	})
 
 	function getDashboard(){
@@ -2801,7 +2876,7 @@ Ticketing
 					$("#inputticket").val(result);
 					$("#inputID").val(result);
 					$("#inputDate").val(moment().format("DD-MMM-YY HH:mm"));
-					
+					$("#typeDiv").show();
 					$("#nomorDiv").show();
 					$("#clientDiv").show();
 					$("#formNewTicket").show();
@@ -2837,6 +2912,21 @@ Ticketing
 					clientBanking = result.banking
 					clientWincor = result.wincor
 					$("#inputticket").val($("#inputticket").val() + "/" + acronym_client + moment().format("/MMM/YYYY"));
+
+					$.ajax({
+						type:"GET",
+						url:"{{url('ticketing/create/getPidByPic')}}",
+						data:{
+							client_acronym:acronym_client
+						},
+						success: function(result){
+							$("#selectPID").empty("")
+							$("#selectPID").select2({
+								placeholder:"Select PID",
+								data:result
+							})
+						}
+					})
 				}
 			});
 		} else {
@@ -2857,6 +2947,21 @@ Ticketing
 					clientBanking = result.banking
 					clientWincor = result.wincor
 					$("#inputticket").val(changeResult);
+
+					$.ajax({
+						type:"GET",
+						url:"{{url('ticketing/create/getPidByPic')}}",
+						data:{
+							client_acronym:acronym_client
+						},
+						success: function(result){
+							$("#selectPID").empty("")
+							$("#selectPID").select2({
+								placeholder:"Select PID",
+								data:result
+							})
+						}
+					})
 				}
 			});
 		}
@@ -3128,7 +3233,7 @@ Ticketing
 		$("#inputReportingDate").val('');
 		$("#inputDate").val('');
 		$("#inputNote").val('');
-
+		$("#typeDiv").hide()
 		$("#hrLine").show();
 		$("#hrLine2").show();
 
@@ -3674,7 +3779,8 @@ Ticketing
 				note:$("#inputNote").val(),
 				report:moment($("#inputReportingDate").val(),'DD/MM/YYYY').format("YYYY-MM-DD") + " " + moment($("#inputReportingTime").val(),'HH:mm:ss').format("HH:mm:ss.000000"),
 				severity:severity,
-				type_ticket:type_ticket
+				type_ticket:type_ticket,
+				pid:$("#selectPID").select2("data")[0].id
 			}
 			var textSwal = ""
 			if($("#emailOpenCc").val() == ""){
@@ -6461,9 +6567,28 @@ Ticketing
 			})
 
 			$("#selectReportingClient").select2({
-              placeholder: " Select Client",
-              data:dataClient,
-            })
+        placeholder: " Select Client",
+        data:dataClient,
+      }).change(function(){
+				var acronym_client = $("#selectReportingClient option:selected").text().split(" - ")[0].replace(/\[|\]/g, '');
+      	if ($("#selectReportingType").val() == "finishReportPid") {
+      		$.ajax({
+						type:"GET",
+						url:"{{url('/ticketing/report/getPidAssigned')}}",
+						data:{
+							client_acronym:acronym_client
+						},
+						success:function(result){
+							$("#selectPIDReport").empty("")
+							$("#selectPIDReport").select2({
+								placeholder:"Select PID",
+								data:result,
+								multiple:true
+							})
+						}
+					})
+      	}
+      })
 
 			result.ticket_year.forEach(function(data,index){
 				$("#selectReportingYear").append("<option value='" + data.year + "'>" + data.year + "</option>")
@@ -6481,33 +6606,44 @@ Ticketing
 	})
 
 	$("#selectReportingType").change(function(){
+		$("#selectReportingClient").val("").trigger("change")
 		$("#ReportingButtonGo, #ReportingButtonGoNew, #ReportingButtonGoNew2").hide()
-		if($(this).val() == 1){
-			$(".finish-report").show()
-			$(".bayu-report").hide()
-			$(".denny-report").hide()
-		} else if($(this).val() == 2) {
-			$(".finish-report").hide()
-			$(".bayu-report").show()
-			$(".denny-report").hide()
-		} else if($(this).val() == 3){
-			$(".finish-report").hide()
-			$(".bayu-report").hide()
-			$(".denny-report").show()
+		if($(this).val() == 'finishReport'){
+			$(".divReportingClient").show()
+			$(".divTypeTicket").show()
+			$(".divReportingYear").show()
+			$(".divReportingMonth").show()
+			$(".divPID").hide()
+			$(".divDateRange").hide()
+		} else if($(this).val() == 'helpdeskReport'){
+			$(".divTypeTicket").show()
+			$(".divDateRange").show()
+			$(".divReportingClient").hide()
+			$(".divReportingYear").hide()
+			$(".divReportingMonth").hide()
+			$(".divPID").hide()
+		} else if ($(this).val() == 'finishReportPid') {
+			$("#selectPIDReport").empty("")
+
+			$(".divReportingClient").show()
+			$(".divPID").show()
+			$(".divTypeTicket").show()
+			$(".divReportingYear").show()
+			$(".divReportingMonth").show()
+			$(".divDateRange").hide()
+		} else {
+			$(".divReportingClient").hide()
+			$(".divPID").hide()
+			$(".divTypeTicket").hide()
+			$(".divReportingYear").hide()
+			$(".divReportingMonth").hide()
+			$(".divDateRange").hide()
 		}
 	})
 
-	$("#selectReportingClient, #selectReportingYear").change(function(){
+	$("#selectReportingYear").change(function(){
 		$("#selectReportingMonth").empty()
 
-		if($("#selectReportingClient").val() !== "Select Client" && $("#selectReportingYear").val() !== "Select Year"  && $("#selectReportingMonth").val() !== "Select Month"){
-			$("#ReportingButtonGo").show()			
-
-			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month='
-
-			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
-
-		}
 		if ($("#selectReportingYear").val() !== moment().format('YYYY') && $("#selectReportingYear").val() !== "Select Year"){
 			$("#selectReportingMonth").append("<option>Select Month</option>")
 			moment.months().forEach(function(data,index){
@@ -6522,12 +6658,34 @@ Ticketing
 			})
 		}
 
-		$("#selectReportingMonth").change(function(){
-			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+		if ($("#selectReportingType").val() == "finishReport") {
+			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' 
 
 			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
 
 			$("#ReportingButtonGo").show()			
+		}else if ($("#selectReportingType").val() == "finishReportPid") {
+			var urlAjax = '{{url("/ticketing/report/makePID")}}?client=' + $("#selectReportingClient").val() + '&pid=' + $("#selectPIDReport").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' 
+
+			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+
+			$("#ReportingButtonGo").show()			
+		}
+
+		$("#selectReportingMonth").change(function(){
+			if ($("#selectReportingType").val() == "finishReport") {
+				var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+
+				$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+
+				$("#ReportingButtonGo").show()			
+			}else if ($("#selectReportingType").val() == "finishReportPid") {
+				var urlAjax = '{{url("/ticketing/report/makePID")}}?client=' + $("#selectReportingClient").val() + '&pid=' + $("#selectPIDReport").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+
+				$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+
+				$("#ReportingButtonGo").show()			
+			}		
 		})
 	})
 
@@ -6617,6 +6775,7 @@ Ticketing
 						type:"GET",
 						url:"{{url('/ticketing/report/new')}}",
 						data:{
+							type:$("#selectTypeTicket").val(),
 							start:$('#daterange-btn').data('daterangepicker').startDate.format('YYYY-MM-DD'),
 							end:$('#daterange-btn').data('daterangepicker').endDate.format('YYYY-MM-DD')
 						},
@@ -6707,10 +6866,8 @@ Ticketing
 	function userSetting() {
 		$(".settingComponent").hide()
 		$("#userSetting").show()
-		$(".titleP").css('height', '30px')
 		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getUserShifting")
-		$("#assignFilter").val("user").trigger("change")
-    initiateFilter()
+    	initiateFilter()
 	}
 
 	function showDivSiteBox(defaultAssign,url){		
@@ -6775,10 +6932,10 @@ Ticketing
 					if (defaultAssign == 'user') {
 						$(".titleh4[data-value='"+ item +"']").text(value.name )
 						$(".titleP[data-value='"+ item +"']").html(value.project_name).css('height', '30px')
-  				}else if(defaultAssign == 'site'){
-  					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
-						$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
-  				}	
+	  				}else if(defaultAssign == 'site'){
+	  					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
+							$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
+	  				}	
     		})
 
 				if (result.length == 0) {
@@ -7155,7 +7312,7 @@ Ticketing
 		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getSearchAllData?assign="+$("#assignFilter").val() + "&searchAll=" + $("#"+idInput).val())
   }
 
-  function filterPID(value){
+  function filterPID(){
   	var arrSite = "location[]=", arrCust = "customer[]=", arrUser = "user[]=", assign = "assign="
 
   	if(assign == 'assign=') {
@@ -7201,9 +7358,8 @@ Ticketing
   	$("input[name='siteFilter']").each(function(idx,values){
   		$(values).prop("checked",false)
     })
-  	filterPID("reset")
+    filterPID("reset")
   }
 
 </script>
-
 @endsection
