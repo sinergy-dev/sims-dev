@@ -643,10 +643,49 @@ class PresenceController extends Controller
         }
     }
 
-    public function makeShiftingSchedule($nik,$span){
-        $shiftingSchedule = PresenceShifting::where('nik',$nik)
-            ->where('tanggal_shift',date('Y-m-d'))
-            ->first();
+    public function makeShiftingSchedule($nik,$span)
+    {
+        $getData = 'true';
+        $getDate = PresenceHistory::select(DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),'presence_type')->where('nik',$nik)->orderBy('presence_actual','desc')->first()->presence_type;
+
+        if ($getDate == 'Check-In') {
+            $getDate = 'true';
+        } else {
+            $getDate = 'false';
+        }
+
+        if($getDate == 'true'){
+            $getDate = PresenceHistory::select(DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"))->where('nik',$nik)->orderBy('presence_actual','desc')->first()->presence_actual_date;
+
+            $shiftingSchedule = PresenceShifting::where('nik',$nik)
+                ->where('tanggal_shift',$getDate)
+                ->whereNotExists(function($query)
+                {
+                    $query->select(DB::raw(1))
+                          ->from('presence__history')
+                          ->whereRaw('presence__history.presence_setting = presence__shifting.id')
+                          ->where('presence_type','Check-Out');
+                })
+                ->first();
+        } else {
+            $shiftingSchedule = PresenceShifting::where('nik',$nik)
+                ->where('tanggal_shift',date('Y-m-d'))
+                ->whereNotExists(function($query)
+                {
+                    $query->select(DB::raw(1))
+                          ->from('presence__history')
+                          ->whereRaw('presence__history.presence_setting = presence__shifting.id')
+                          ->where('presence_type','Check-Out');
+                })
+                ->first();
+        }
+
+
+        // return $shiftingSchedule;
+
+        // $shiftingSchedule = PresenceShifting::where('nik',$nik)
+        //     ->where('tanggal_shift',date('Y-m-d'))
+        //     ->first();
 
         $start = substr($shiftingSchedule->start, 11,8);
         $shiftingSchedule->setting_on_time = $start;
