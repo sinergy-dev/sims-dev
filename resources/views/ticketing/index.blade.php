@@ -3754,6 +3754,12 @@ Ticketing
 				type_ticket = "PL"
 			}
 
+			if ($("#selectPID").select2("data")[0].id) {
+				var pid = $("#selectPID").select2("data")[0].id
+			}else{
+				var pid = ""
+			}
+
 			var dataAjax = {
 				body:$("#bodyOpenMail").html(),
 				subject: $("#emailOpenSubject").val(),
@@ -3780,7 +3786,7 @@ Ticketing
 				report:moment($("#inputReportingDate").val(),'DD/MM/YYYY').format("YYYY-MM-DD") + " " + moment($("#inputReportingTime").val(),'HH:mm:ss').format("HH:mm:ss.000000"),
 				severity:severity,
 				type_ticket:type_ticket,
-				pid:$("#selectPID").select2("data")[0].id
+				pid:pid
 			}
 			var textSwal = ""
 			if($("#emailOpenCc").val() == ""){
