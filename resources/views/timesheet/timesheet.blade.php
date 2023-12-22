@@ -250,7 +250,7 @@
           </div>
         </div>
 
-        <div class="box box-solid">
+        <!-- <div class="box box-solid">
           <div class="box-header with-border">
             <h4 class="box-title">Timesheet Status</h4>
           </div>
@@ -260,7 +260,7 @@
               <button class="btn btn-sm btn-danger" onclick="removeFilter()">Remove Filter</button>
             </div>
           </div>
-        </div>
+        </div> -->
 
       </div>
       <div class="col-md-9 col-xs-12">
@@ -978,16 +978,29 @@
                 }
 
                 var arrayData = []
-                
+
+                function convertToYMD(dateTime) {
+                  const date = new Date(dateTime);
+
+                  const year = date.getFullYear();
+                  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+                  const day = String(date.getDate()).padStart(2, '0');
+
+                  return `${year}-${month}-${day}`;
+                }
+
                 if (result != "") {
+                  
+
                   result.items.map(item => {
                     if (item.creator != undefined) {
                       if (Object.keys(item.creator).length == 2) {
                         if (item.creator.self == true) {
+                          isCreator = true
                           arrayData.push({
                             id:item.id,
                             title: item.summary,
-                            start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
+                            start: convertToYMD(item.start.dateTime) || item.start.date, // Use the appropriate start date/time property from the API response
                             end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
                             activity: item.summary,
                             refer:"gcal",
@@ -995,53 +1008,79 @@
                         }
                       }
                     }
-                 
 
                     $.each(item.attendees,function(index,itemX){
-                      if (itemX.responseStatus == "accepted") {
-                        if (itemX.email == email) {
-                          arrayData.push({
-                            id:item.id,
-                            title: item.summary,
-                            start: item.start.dateTime || item.start.date, // Use the appropriate start date/time property from the API response
-                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
-                            activity: item.summary,
-                            refer:"gcal"
-                          })
-                        }
-                      }
-                    })
+                          if (itemX.responseStatus == "accepted") {
+                            if (itemX.email == email) {
+                              arrayData.push({
+                                id:item.id,
+                                title: item.summary,
+                                start: convertToYMD(item.start.dateTime) || item.start.date, // Use the appropriate start date/time property from the API response
+                                end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                                activity: item.summary,
+                                refer:"gcal"
+                              })
+                            }
+                          }
+                      })
+                    
                   })
                 }
 
-                // Initialize an empty array to store unique titles
-                // Create an object to track unique values
-                const uniqueValues = {};
+                function filterUniqueObjects(arr, prop1, prop2) {
+                  const seen = {};
+                  return arr.filter((item) => {
+                    const itemValue1 = item[prop1];
+                    const itemValue2 = item[prop2];
+                    const combinedKey = itemValue1 + '-' + itemValue2; // Create a combined key
+                    
+                    return seen.hasOwnProperty(combinedKey) ? false : (seen[combinedKey] = true);
+                  });
+                }
 
-                // Use the filter() method to filter the array
-                const uniqueData = arrayData.filter(item => {
-                    // Check if the value is not already in the uniqueValues object
-                    if (!uniqueValues[item.title]) {
-                        // If not, mark it as seen and keep it in the result
-                        uniqueValues[item.title] = true;
-                        return true;
-                    }
-                    return false;
-                });
+                const uniqueDatas = filterUniqueObjects(arrayData, 'title', 'start');
 
-                var filteredData = arrayData.filter(function(obj1) {
+                var filteredData = uniqueDatas.filter(function(obj1) {
                   const found = events.some(el => el.title === obj1.title);
-                  return !events.some(function(obj2) {
-                      if (obj1.title) {
-                        if (obj1.title.includes(obj2.title)) {
-                          return obj2.title
-
-                        }
-                      }
+                  return events.some(function(obj2) {
+                    if (obj1.title) {
+                      return obj2.title
+                    }
                   });
                 });
 
-                var arrayCalconcatDb = events.concat(filteredData)
+                // Merge the arrays
+                const mergedEvents = [...events, ...arrayData];
+
+                const filterDistinctEvents = (events) => {
+                  const uniqueEvents = [];
+                  const uniqueEventMap = new Map();
+
+                  events.forEach((event) => {
+                    const eventKey = `${event.title}-${event.start instanceof Date ? event.start.toISOString() : event.start}`;
+                    
+                    if (!uniqueEventMap.has(eventKey)) {
+                      uniqueEventMap.set(eventKey, true);
+                      uniqueEvents.push(event);
+                    }
+                  });
+
+                  return uniqueEvents;
+                };
+
+                // Filter distinct events
+                const distinctEvents = filterDistinctEvents(mergedEvents);
+
+                // Filter distinct events based on the title
+                const uniqueEvents = mergedEvents.reduce((unique, event) => {
+                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start);
+                  if (isEventUnique) {
+                    unique.push(event);
+                  }
+                  return unique;
+                }, []);
+
+                var arrayCalconcatDb = uniqueEvents
                 
                 return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji)
               },
