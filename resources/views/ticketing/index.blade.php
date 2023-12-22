@@ -6866,10 +6866,8 @@ Ticketing
 	function userSetting() {
 		$(".settingComponent").hide()
 		$("#userSetting").show()
-		$(".titleP").css('height', '30px')
 		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getUserShifting")
-		$("#assignFilter").val("user").trigger("change")
-    initiateFilter()
+    	initiateFilter()
 	}
 
 	function showDivSiteBox(defaultAssign,url){		
@@ -6934,10 +6932,10 @@ Ticketing
 					if (defaultAssign == 'user') {
 						$(".titleh4[data-value='"+ item +"']").text(value.name )
 						$(".titleP[data-value='"+ item +"']").html(value.project_name).css('height', '30px')
-  				}else if(defaultAssign == 'site'){
-  					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
-						$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
-  				}	
+	  				}else if(defaultAssign == 'site'){
+	  					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
+							$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
+	  				}	
     		})
 
 				if (result.length == 0) {
@@ -7314,7 +7312,7 @@ Ticketing
 		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getSearchAllData?assign="+$("#assignFilter").val() + "&searchAll=" + $("#"+idInput).val())
   }
 
-  function filterPID(value){
+  function filterPID(){
   	var arrSite = "location[]=", arrCust = "customer[]=", arrUser = "user[]=", assign = "assign="
 
   	if(assign == 'assign=') {
@@ -7360,7 +7358,7 @@ Ticketing
   	$("input[name='siteFilter']").each(function(idx,values){
   		$(values).prop("checked",false)
     })
-  	filterPID("reset")
+    filterPID("reset")
   }
   
 	function showDivSiteBox(defaultAssign,url){		
