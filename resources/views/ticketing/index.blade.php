@@ -838,6 +838,9 @@ Ticketing
 							<button class="btn btn-flat btn-default" onclick="switchSetting()">
 								Switch Setting
 							</button>
+							<button class="btn btn-flat btn-default" onclick="userSetting()">
+								User Setting
+							</button>
 							<!-- <button class="btn btn-flat btn-default" onclick="severitySetting()">
 								Severity Setting
 							</button> -->
@@ -973,6 +976,65 @@ Ticketing
 									</tr>
 								</thead>
 							</table>
+						</div>
+					</div>
+					<div style="display: none" id="userSetting" class="row form-group settingComponent">
+						<div class="col-md-2 col-xs-12">
+							<div class="box box-solid box-default">
+								<div class="box-header">
+									<h3 class="box-title"><i class="fa fa-filter"></i> Filter</label>
+								</div>
+								<div class="box-body">
+									<div class="form-group">
+										<label>Assign</label>
+										<select id="assignFilter" name="assignFilter" class="form-control select2" style="width: 100%!important;" onchange="assignFilter(this.value)">
+											<option value="user">User</option>
+											<option value="site">Site</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label>Location</label>
+										<div class="siteFilter">
+											
+										</div>
+									</div>
+									<div class="form-group">
+										<label>User</label>
+										<select id="userFilter" name="userFilter" class="form-control select2" style="width: 100%!important;">
+										</select>
+									</div>
+									<div class="form-group">
+										<label>Customer</label>
+										<select id="customerFilter" name="customerFilter" class="form-control select2" style="width: 100%!important;">
+										</select>
+									</div>
+									<button class="btn bg-purple btn-block" id="btnFilterPid" onclick="filterPID()">Filter</button>
+									<button class="btn btn-default btn-block" id="btnFilterResetPid" onclick="resetPID()">Reset Filter</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-10 col-xs-12">
+							<div class="box box-solid">
+								<div class="box-header" style="flex-direction: row-reverse;display: flex;">
+									<div class="input-group" style="width: 50%;">
+										<input id="searchBarAll" type="text" class="form-control" onkeyup="searchCustomAll('searchBarAll')" placeholder="Search PID/Site/User">	
+										<span class="input-group-btn">
+											<button onclick="searchCustomAll('searchBarAll')" type="button" class="btn btn-default btn-flat">
+												<i class="fa fa-fw fa-search"></i>
+											</button>
+										</span>
+									</div>
+								</div>
+								<div class="box-body boxDivSite" style="overflow: auto;">
+									<div class="divSiteBox">
+										
+									</div>									
+								</div>
+								<nav class="pull-right" aria-label="Page navigation example" style="margin-top:10px">
+								  <ul class="pagination justify-content-center" id="pagination">
+								  </ul>
+								</nav>
+							</div>
 						</div>
 					</div>
 					<div style="display: none" id="severitySetting" class="row form-group settingComponent">
@@ -6642,12 +6704,12 @@ Ticketing
 		);
 	})
 
-<<<<<<< Updated upstream
-=======
 	function userSetting() {
 		$(".settingComponent").hide()
 		$("#userSetting").show()
+		$(".titleP").css('height', '30px')
 		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getUserShifting")
+		$("#assignFilter").val("user").trigger("change")
     initiateFilter()
 	}
 
@@ -6712,7 +6774,7 @@ Ticketing
 
 					if (defaultAssign == 'user') {
 						$(".titleh4[data-value='"+ item +"']").text(value.name )
-						$(".titleP[data-value='"+ item +"']").text(value.project_name).css("height","")
+						$(".titleP[data-value='"+ item +"']").html(value.project_name).css('height', '30px')
   				}else if(defaultAssign == 'site'){
   					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
 						$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
@@ -7141,9 +7203,6 @@ Ticketing
     })
   	filterPID("reset")
   }
-
-
->>>>>>> Stashed changes
 
 </script>
 
