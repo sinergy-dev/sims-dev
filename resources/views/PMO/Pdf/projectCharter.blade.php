@@ -1054,7 +1054,9 @@
                 </span>
                 <ul style="list-style-type: none;">
                   @foreach($data['internal_stakeholder'] as $key => $eachName)
-                    <li style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;list-style:none;'>{{$eachName['name']}}</li>
+                    @foreach($eachName as $eachName)
+                      <li style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;list-style:none;'>{{$eachName['name']}}</li>
+                    @endforeach
                   @endforeach
                 </ul>
               </p>

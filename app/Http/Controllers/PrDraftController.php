@@ -811,9 +811,9 @@ class PrDraftController extends Controller
             
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED');
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else {
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->where('status','!=','SENDED');
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         }
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
@@ -828,24 +828,24 @@ class PrDraftController extends Controller
             
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->where('status','!=','SENDED');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else if ($cek_role->name == 'PMO Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else if ($cek_role->name == 'MSM Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else if ($cek_role->name == 'HR Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else if ($cek_role->name == 'SOL Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else if ($cek_role->name == 'SID Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->where('status','!=','SENDED');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else {
-            $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik);
+            $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         }
 
         // return $nik;
