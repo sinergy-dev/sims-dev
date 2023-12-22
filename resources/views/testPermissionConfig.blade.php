@@ -485,40 +485,41 @@ Permission Config
 		</div>
 	</div>
 
-	<div class="modal fade" id="modal-config-feature">
+	<div class="modal fade" id="modal-edit-config-feature">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title">Add New Feature</h4>
+					<h4 class="modal-title">Edit Feature</h4>
 				</div>
 				<div class="modal-body">
+					<input type="" name="" id="id-feature-edit" hidden="">
 					<div class="form-group">
 						<label>Name</label>
-						<input type="" name="" class="form-control text-capitalize" id="name-feature" placeholder="ex: 'Presence Personal'">
+						<input type="" name="" class="form-control text-capitalize" id="name-feature-edit" disabled placeholder="ex: 'Presence Personal'">
 					</div>
 					<div class="form-group">
 						<label>Group</label>
-						<input type="" name="" class="form-control" id="group-feature" placeholder="ex: 'Presence'">
+						<input type="" name="" class="form-control" id="group-feature-edit" disabled placeholder="ex: 'Presence'">
 					</div>
 					<div class="form-group">
 						<label>Url</label>
-						<input type="" name="" class="form-control text-lowercase" id="url-feature" placeholder="ex: 'presence/personal'">
+						<input type="" name="" class="form-control text-lowercase" disabled id="url-feature-edit" placeholder="ex: 'presence/personal'">
 					</div>
 					<div class="form-group">
 						<label>Description</label>
-						<textarea class="form-control" id="description-feature" placeholder="ex: Digunakan untuk absen personal"></textarea>
+						<textarea class="form-control" id="description-feature-edit" disabled placeholder="ex: Digunakan untuk absen personal"></textarea>
 					</div>
 					<div class="form-group">
 						<label>Icon</label>
-						<input class="form-control" id="icon-feature" placeholder="ex: fa fa-pencil"/>
-					</div>						
+						<select class="form-control" id="icon-feature-edit" style="width:100%!important" placeholder="ex: fa fa-pencil"><select/>
+					</div>					
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" onclick="addConfigFeature()">Create</button>
+					<button type="button" class="btn btn-primary" onclick="editConfigFeature()">Create</button>
 				</div>
 			</div>
 		</div>
@@ -1254,10 +1255,32 @@ Permission Config
 			})
 		}
 
+		// $.ajax({
+		// 	type:"GET",
+		// 	dataType:"json",
+		// 	url:"{{asset('/json/iconData.json')}}",
+		// 	success: function(result){
+		// 		console.log("hhhhh")
+		// 		$('#icon-feature-edit').select2({
+		// 	        data: result,
+		// 	        escapeMarkup: function (markup) {
+		// 	            return markup;
+		// 	        }
+		// 	    });
+
+		// 	    $('#icon-feature').select2({
+		// 	        data: result,
+		// 	        escapeMarkup: function (markup) {
+		// 	            return markup;
+		// 	        }
+		// 	    });
+		// 	},
+		// })
+
 		$.ajax({
 			type:"GET",
 			dataType:"json",
-			url:"{{asset('/json/iconData.json')}}",
+			url:"{{asset('/public/json/iconData.json')}}",
 			success: function(result){
 				console.log("hhhhh")
 				$('#icon-feature-edit').select2({
@@ -1266,7 +1289,6 @@ Permission Config
 			            return markup;
 			        }
 			    });
-
 			    $('#icon-feature').select2({
 			        data: result,
 			        escapeMarkup: function (markup) {

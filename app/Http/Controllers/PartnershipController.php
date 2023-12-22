@@ -257,7 +257,7 @@ class PartnershipController extends Controller
         $data = Partnership::leftJoinSub($getListTech, 'tech_tag', function($join){
                     $join->on('tb_partnership.id_partnership', '=', 'tech_tag.id_partnership');
                 })
-                ->select('tb_partnership.id_partnership', 'partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo', 'id_tech', 'portal_partner', 'name_tech', 'badge')->where('tb_partnership.id_partnership', $id)->first();
+                ->select('tb_partnership.id_partnership', 'partner', 'level', 'standarization', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo', 'id_tech', 'portal_partner', 'name_tech', 'badge')->where('tb_partnership.id_partnership', $id)->first();
 
         $sidebar_collapse = true;
 
@@ -281,6 +281,7 @@ class PartnershipController extends Controller
     	$tambah 						= new Partnership();
     	$tambah->type 					= $request['type'];
     	$tambah->partner 				= $request['partner'];
+        $tambah->standarization         = $request['standarization'];
         $tambah->level                  = $request['level'];
     	$tambah->renewal_date 			= $request['renewal_date'];
     	$tambah->annual_fee 			= str_replace('.', '', $request['annual_fee']);;
@@ -680,6 +681,7 @@ class PartnershipController extends Controller
     	$update->partner           = $request['partner_edit'];
         $update->levelling         = $request['levelling_edit'];
         $update->level             = $request['level_edit'];
+        $update->standarization    = $request['standarization_edit'];
     	$update->renewal_date      = $request['renewal_edit'];
     	$update->annual_fee        = $request['annual_edit'];
         $update->cam_name          = $request['cam_edit'];
