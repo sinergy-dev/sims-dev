@@ -154,6 +154,7 @@ Quote Number
                           <option value="TAM">TAM</option>
                           <option value="DIR">DIR</option>
                           <option value="MSM">MSM</option>
+                          <option value="BCD">BCD</option>
                       </select>
                   </div>
 
@@ -195,8 +196,8 @@ Quote Number
                         <option value="">--Choose Division--</option>
                         <option>PMO</option>
                         <option>MSM</option>
-                        <option>Marketing</option>
-                        <option>TEC</option>
+                        <option>SAL</option>
+                        <option>BCD</option>
                     </select>
                   </div>
                   <!-- <div class="form-group">
@@ -265,6 +266,7 @@ Quote Number
                     <option value="TAM">TAM</option>
                     <option value="DIR">DIR</option>
                     <option value="MSM">MSM</option>
+                    <option value="BCD">BCD</option>
                 </select>
               </div>
               <div class="form-group">
@@ -297,8 +299,8 @@ Quote Number
                     <option value="">--Choose Division--</option>
                     <option>PMO</option>
                     <option>MSM</option>
-                    <option>Marketing</option>
-                    <option>TEC</option>
+                    <option>SAL</option>
+                    <option>BCD</option>
                 </select>
               </div>
               <!-- <div class="form-group">
@@ -354,6 +356,7 @@ Quote Number
                       <option value="TAM">TAM</option>
                       <option value="DIR">DIR</option>
                       <option value="MSM">MSM</option>
+                      <option value="BCD">BCD</option>
                   </select>
               </div>
 
