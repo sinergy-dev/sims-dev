@@ -1215,6 +1215,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/create/getAtmPeripheralDetail','TicketingController@getAtmPeripheralDetail');
 	Route::get('/ticketing/create/getSwitchId','TicketingController@getSwitchId');
 	Route::get('/ticketing/create/getSwitchDetail','TicketingController@getSwitchDetail');
+	Route::get('/ticketing/create/getPidByPic','TicketingController@getPidByPic');
 
 	Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
 	Route::get('/ticketing/mail/getEmailTemplate','TicketingController@getEmailTemplate');
@@ -1276,12 +1277,26 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/ticketing/report/getParameter','TicketingController@getReportParameter');
 	Route::get('/ticketing/report/make','TicketingController@makeReportTicket');
+	Route::get('/ticketing/report/makePID','TicketingController@makeReportTicketPID');
 	Route::get('/ticketing/report/download','TicketingController@downloadReportTicket');
 	Route::get('/ticketing/report/new','TicketingController@getReportNew');
 	Route::get('/ticketing/report/newDeny','TicketingController@getReportNewDeny');
+	Route::get('/ticketing/report/getPidAssigned','TicketingController@getPidAssigned');
 	Route::get('/changeNominal/testRequestChange','TestController@testRequestChange');
 
 	Route::get('/report_ticketing','TicketingController@getReportTicket');
+
+	Route::get('/ticketing/setting/getUser','TicketingController@getUser');
+	Route::get('/ticketing/setting/getCustomer','TicketingController@getCustomer');
+	Route::get('/ticketing/setting/getAllPid','TicketingController@getAllPid');
+	Route::get('/ticketing/setting/getSiteShifting','TicketingController@getSiteShifting');
+	Route::get('/ticketing/setting/getUserShifting','TicketingController@getUserShifting');
+	Route::get('/ticketing/setting/getFilterDataAll','TicketingController@getFilterDataAll');
+	Route::get('/ticketing/setting/getFilterPIDByCustomer','TicketingController@getFilterPIDByCustomer');
+	Route::get('/ticketing/setting/getSearchPID','TicketingController@getSearchPID');
+	Route::get('/ticketing/setting/getSearchAllData','TicketingController@getSearchAllData');
+	Route::post('/ticketing/setting/storeAssign','TicketingController@storeAssign');
+	Route::post('/ticketing/setting/storeAssign','TicketingController@storeAssign');
 
 	Route::get('/requestChange','RequestChangeController@index');
 
@@ -1393,6 +1408,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/message/detail/{id}','QuotationController@show');
 	Route::delete('/message/delete/{id}','QuotationController@destroy');
 	Route::post('/message/send','QuotationController@store');
+	Route::get('/message/show','QuotationController@showData');
 	
 	Route::get('/tag', 'TagController@index');
 	Route::delete('/tag/delete/{id}', 'TagController@destroy');
@@ -1426,7 +1442,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::delete('/career/d/{id}','CareerController@destroy');
 	Route::put('/career/update/{id}','CareerController@update');
 	Route::get('/career/edit/{id}','CareerController@edit');
-	
+	Route::get('career/data/{id}', 'CareerController@show');
+	Route::get('/career/create','CareerController@create');	
 
 });
 
@@ -1485,7 +1502,24 @@ Route::get('testGCal','TestController@testGCal');
 Route::get('downloadSbePdf','TestController@downloadSbePdf');
 Route::get('testMailSBE','TestController@testMailSBE');
 
+Route::get('/tag-setting', 'OtherConfigController@tag');
+Route::get('/tag-setting/edit/{id}', 'OtherConfigController@tagEdit');
+Route::put('/tag-setting/update/{id}', 'OtherConfigController@tagUpdate');
 
+
+Route::get('/customer-setting', 'OtherConfigController@customer');
+Route::get('/customer-setting/show/{id}', 'OtherConfigController@show');
+Route::put('/customer-setting/update/{id}', 'OtherConfigController@update');
+
+Route::get('/subscription', 'OtherConfigController@subscription');
+Route::delete('/subscription/delete/{id}', 'OtherConfigController@subsDelete');
+
+Route::get('/solution','SolutionController@index');
+Route::get('/solution/create','SolutionController@create');
+Route::post('/solution/store','SolutionController@store');
+Route::get('/solution/edit/{id}','SolutionController@edit');
+Route::put('/solution/update/{id}','SolutionController@update');
+Route::delete('/solution/delete/{id}','SolutionController@destroy');
 
 
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');
