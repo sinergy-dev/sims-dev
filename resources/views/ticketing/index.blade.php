@@ -3754,11 +3754,11 @@ Ticketing
 				type_ticket = "PL"
 			}
 
-			if ($("#selectPID").select2("data")[0].id) {
-				var pid = $("#selectPID").select2("data")[0].id
+			if ($("#selectPID").select2("data")[0] == undefined) {
+      	var pid = ""
 			}else{
-				var pid = ""
-			}
+	      var pid = $("#selectPID").select2("data")[0].id
+      }
 
 			var dataAjax = {
 				body:$("#bodyOpenMail").html(),
@@ -7428,10 +7428,10 @@ Ticketing
 
 					if (defaultAssign == 'user') {
 						$(".titleh4[data-value='"+ item +"']").text(value.name )
-						$(".titleP[data-value='"+ item +"']").text(value.project_name)
+						$(".titleP[data-value='"+ item +"']").text(value.project_name).css("height","")
   				}else if(defaultAssign == 'site'){
-  					$(".titleh4[data-value='"+ item +"']").text(value.project_name )
-						$(".titleP[data-value='"+ item +"']").text(value.name)
+  					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
+						$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
   				}	
     		})
 
@@ -7629,9 +7629,10 @@ Ticketing
 		      }
 		      // Add more "targets" objects to hide/show multiple columns if needed
 		    ],
-	      "pageLength" : 50,
+	      // "pageLength" : false,
+	      "paging": false,
 	      "bLengthChange": false,
-	      "bInfo": false,
+	      "bInfo": true,
 	      "ordering":false,
 	      "aaSorting": [],
 	      "scrollCollapse": true,
@@ -7850,6 +7851,7 @@ Ticketing
   function resetPID(){
   	$('#customerFilter').val(null).trigger('change');
   	$('#userFilter').val(null).trigger('change');
+  	$('#assignFilter').val("user").trigger('change');
   	$("input[name='siteFilter']").each(function(idx,values){
   		$(values).prop("checked",false)
     })
