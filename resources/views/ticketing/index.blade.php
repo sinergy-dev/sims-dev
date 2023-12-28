@@ -6870,6 +6870,7 @@ Ticketing
 	})
 
 	function userSetting() {
+		///////
 		$(".settingComponent").hide()
 		$("#userSetting").show()
 		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getUserShifting")
