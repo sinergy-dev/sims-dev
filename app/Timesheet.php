@@ -88,13 +88,14 @@ class Timesheet extends Model
             }
 
             $sumMandays = array_sum($arrMonthMandays);
-            return $threshold = $sumMandays*80/100;
+
+            return $threshold = (float)$sumMandays*80/100;
         }else{
             $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
             $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
             $workdays = $this->getWorkDays($startDate,$endDate,"workdays");
             $workdays = count($workdays);
-            return $threshold = $workdays*80/100;
+            return $threshold = (float)$workdays*80/100;
         }
         // return collect(["planned"=>$workdays,"threshold"=>$threshold]);
         // return [$workdays,$threshold];
@@ -111,7 +112,7 @@ class Timesheet extends Model
         $holiday_indonesia_final_date = collect();
         
         foreach ($holiday_indonesia["items"] as $value) {
-            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) )){
+            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && ($value["description"] == 'Public holiday'))){
                 $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
                 $holiday_indonesia_final_date->push($value["start"]["date"]);
             }
@@ -132,7 +133,7 @@ class Timesheet extends Model
 
         $workDaysMinHoliday = $workDays->diff($holiday_indonesia_final_date->unique());
         $workDaysMinHolidayKeyed = $workDaysMinHoliday->map(function ($item, $key) {
-            // return ["date" => $item];
+            return ["date" => $item];
             // return (object) array('date' => $item);
             return $item;
         });

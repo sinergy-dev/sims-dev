@@ -964,7 +964,19 @@
 
                 var lock_activity = [{"lock_activity":results.lock_duration}]
                 var emoji = results.emoji
-                $("#title_lock_duration").text(results.lock_duration + " Week")
+                var week = " Week"
+                if (results.lock_duration < 7) {
+                  if (results.lock_duration > 1) {
+                    week = " Days"
+                  }else{
+                    week = " Day"
+                  }
+                  $("#title_lock_duration").text(results.lock_duration + week)
+                }else{
+                  week = week
+
+                  $("#title_lock_duration").text((parseInt(results.lock_duration) / 7) + week)
+                }
 
                 var arrayData = []
 
@@ -1100,53 +1112,81 @@
 
         var today = new Date(); // Get today's date
         var startOfWeek = new Date(today); // Create a new date object representing the start of the week
+        var isJustOneDay = true
+
         if (lock_activity[0].lock_activity == 1) {
           var daysToSubtract = today.getDay(); // Add 7 to ensure we get to the first day of the next two-week period
+          var incDate = 0
+          isJustOneDay = isJustOneDay
+        }else if (lock_activity[0].lock_activity == 7) {
+          var daysToSubtract = today.getDay(); // Add 7 to ensure we get to the first day of the next two-week period
           var incDate = 7
-        }else if (lock_activity[0].lock_activity == 2) {
+          isJustOneDay = false
+
+        }else if (lock_activity[0].lock_activity == 14) {
           var daysToSubtract = today.getDay() + 7; // Add 7 to ensure we get to the first day of the next two-week period
           var incDate = 14
-        }else if(lock_activity[0].lock_activity == 3){
+          isJustOneDay = false
+
+        }else if(lock_activity[0].lock_activity == 21){
           var daysToSubtract = today.getDay() + 14; // Add 7 to ensure we get to the first day of the next two-week period
           var incDate = 21
-        }else if(lock_activity[0].lock_activity == 4){
+          isJustOneDay = false
+
+        }else if(lock_activity[0].lock_activity == 28){
           var daysToSubtract = today.getDay() + 21;
           // startOfWeek.setDate(1)
           var incDate = 28
-        }else if(lock_activity[0].lock_activity == 5){
+          isJustOneDay = false
+
+        }else if(lock_activity[0].lock_activity == 35){
           // startOfWeek.setDate(1) //lock activity 1 month
           var daysToSubtract = today.getDay() + 28;
           var incDate = 35
-        }else if(lock_activity[0].lock_activity == 6){
+          isJustOneDay = false
+
+        }else if(lock_activity[0].lock_activity == 42){
           var daysToSubtract = today.getDay() + 35;
           var incDate = 42
-        }else if(lock_activity[0].lock_activity == 7){
+          isJustOneDay = false
+
+        }else if(lock_activity[0].lock_activity == 49){
           var daysToSubtract = today.getDay() + 42;
           var incDate = 49
-        }else if(lock_activity[0].lock_activity == 8){
+          isJustOneDay = false
+
+        }else if(lock_activity[0].lock_activity == 56){
           // startOfWeek.setDate(1) //lock activity 2 month
           var daysToSubtract = today.getDay() + 49;
           var incDate = 56
-        }else if(lock_activity[0].lock_activity == 12){
+          isJustOneDay = false
+
+        }else if(lock_activity[0].lock_activity == 84){
           // startOfWeek.setDate(1) //lock activity 3 month
           var daysToSubtract = today.getDay() + 77;
           var incDate = 84
+          isJustOneDay = false
+
         }
 
-        // Set the date to the first day of the two-week or three-week period
-        var startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysToSubtract);
         var datesInWeek = []; // Array to store the dates in the week
 
-        for (var i = 0; i < incDate; i++) {
-          var currentDate = new Date(startOfWeek);
-          currentDate.setDate(startOfWeek.getDate() + i); // Set the date to each day within the week
-          
-          datesInWeek.push(moment(currentDate)); // Add the date to the array
+        // Set the date to the first day of the two-week or three-week period
+        if (isJustOneDay == true) {
+          datesInWeek.push(moment())
+          var allowedDates = datesInWeek
+        }else{
+          var startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysToSubtract);
+          for (var i = 0; i < incDate; i++) {
+            var currentDate = new Date(startOfWeek);
+            currentDate.setDate(startOfWeek.getDate() + i); // Set the date to each day within the week
+            
+            datesInWeek.push(moment(currentDate)); // Add the date to the array
+          }
+
+          var allowedDates = datesInWeek
+          var currDate = moment().startOf('day');
         }
-
-        var allowedDates = datesInWeek
-
-        var currDate = moment().startOf('day');
       }
       
       var isCustomButtonClick = false;
@@ -3446,7 +3486,11 @@
 
     function unplannedDate(lock_date){
       if (moment($('#daterange-timesheet').data('daterangepicker').startDate).format('MM/DD/YYYY') <= lock_date) {
-        alert("Out of the date, you have limit of <b>lock duration</b>")
+        Swal.fire(
+          'Out of the Date!',
+          'You have limit of lock duration',
+          'warning'
+        )
       }else{
         var range = moment(moment().format('MM/DD/YYYY'),'MM/DD/YYYY').isBetween(moment($('#daterange-timesheet').data('daterangepicker').startDate).subtract(1, 'd').format('MM/DD/YYYY'), moment($('#daterange-timesheet').data('daterangepicker').endDate).subtract(1, 'd').format('MM/DD/YYYY'), undefined, '[)');
 

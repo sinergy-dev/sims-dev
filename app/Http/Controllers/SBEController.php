@@ -180,8 +180,16 @@ class SBEController extends Controller
                 $createDetailConfig->date_add = Carbon::now()->toDateTimeString();
 	    		$createDetailConfig->save();
 	    	}
+
+            $nominalConfig = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$createConfig->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+            $totalNominalConfig = 0;
+            foreach($nominalConfig as $key_point => $valueSumPoint){
+                $totalNominalConfig += $valueSumPoint->total_nominal;
+            }
+
             $updateConfig = SbeConfig::where('id',$createConfig->id)->first();
-            $updateConfig->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
+            $updateConfig->nominal = $totalNominalConfig;
             $updateConfig->save();
 
             $storeActivity = new SbeActivity();
@@ -244,8 +252,16 @@ class SBEController extends Controller
                 $createDetailConfig->date_add = Carbon::now()->toDateTimeString();
 	    		$createDetailConfig->save();
 	    	}
+
+            $nominalConfig = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$createConfig->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+            $totalNominalConfig = 0;
+            foreach($nominalConfig as $key_point => $valueSumPoint){
+                $totalNominalConfig += $valueSumPoint->total_nominal;
+            }
+
             $updateConfig = SbeConfig::where('id',$createConfig->id)->first();
-            $updateConfig->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
+            $updateConfig->nominal = $totalNominalConfig;
             $updateConfig->save();
 
             $storeActivity = new SbeActivity();
@@ -309,8 +325,15 @@ class SBEController extends Controller
                 $createDetailConfig->date_add = Carbon::now()->toDateTimeString();
 	    		$createDetailConfig->save();
 	    	}
+            $nominalConfig = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$createConfig->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+            $totalNominalConfig = 0;
+            foreach($nominalConfig as $key_point => $valueSumPoint){
+                $totalNominalConfig += $valueSumPoint->total_nominal;
+            }
+
             $updateConfig = SbeConfig::where('id',$createConfig->id)->first();
-            $updateConfig->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
+            $updateConfig->nominal = $totalNominalConfig;
             $updateConfig->save();
 
             $storeActivity = new SbeActivity();
@@ -337,7 +360,7 @@ class SBEController extends Controller
     	}
 
         $updateNominalSbe = Sbe::where('id',$create->id)->first();
-        $updateNominalSbe->nominal = DB::table('tb_sbe_config')->where('id_sbe',$create->id)->groupby('id_sbe')->sum('nominal');
+        $updateNominalSbe->nominal = DB::table('tb_sbe_config')->where('status','Choosed')->where('id_sbe',$create->id)->groupby('id_sbe')->sum('nominal');
         $updateNominalSbe->save();
 
         $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'SOL Manager')->first()->email;
@@ -403,7 +426,7 @@ class SBEController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        $data = Sbe::join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_solution_design.nik')->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')->select('tb_sbe.lead_id','tb_sbe.status','opp_name','users.name as presales','tb_sbe.nominal','tb_sbe.id');
+        $data = Sbe::join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_solution_design.nik')->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')->select('tb_sbe.lead_id','tb_sbe.status','opp_name','users.name as presales','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
 
         if ($cek_role->name == 'SOL Staff') {
             $data->where('sales_solution_design.nik',$nik)->get();
@@ -548,12 +571,26 @@ class SBEController extends Controller
             $createDetailConfig->date_add = Carbon::now()->toDateTimeString();
             $createDetailConfig->save();
         }
+
+
+        $nominalConfig = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$createConfig->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+        $totalNominalConfig = 0;
+        foreach($nominalConfig as $key_point => $valueSumPoint){
+            $totalNominalConfig += $valueSumPoint->total_nominal;
+        }
+
         $updateConfig = SbeConfig::where('id',$createConfig->id)->first();
-        $updateConfig->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
+        $updateConfig->nominal = $totalNominalConfig;
         $updateConfig->save();
 
+
+        // $updateConfig = SbeConfig::where('id',$createConfig->id)->first();
+        // $updateConfig->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
+        // $updateConfig->save();
+
         $updateNominalSbe = Sbe::where('id',$request->id_sbe)->first();
-        $updateNominalSbe->nominal = DB::table('tb_sbe_detail_config')->where('id_config_sbe',$createConfig->id)->groupby('id_config_sbe')->sum('total_nominal');
+        $updateNominalSbe->nominal = DB::table('tb_sbe_config')->where('id_sbe',$request->id_sbe)->where('status','Choosed')->groupby('id_sbe')->sum('nominal');
         $updateNominalSbe->save();
 
         $storeActivity = new SbeActivity();
@@ -619,7 +656,7 @@ class SBEController extends Controller
             $storeActivity->save();
 
 
-            $data = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$value)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+            $data = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$value)->orderBy('item','asc')->distinct()->get();
 
             $total_nominal = 0;
             foreach($data as $key_point => $valueSumPoint){
@@ -728,7 +765,14 @@ class SBEController extends Controller
 
         $getAll = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_lead_register.nik')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select('tb_sbe.lead_id','users.name as owner','project_location','estimated_running','duration','opp_name','tb_sbe.nominal as grand_total','customer_legal_name')->where('id_sbe',$request->id_sbe)->first();
 
-        $getNominal = SBE::where('id',$request->id_sbe)->first()->detail_config_nominal;
+        // $getNominal = SBE::where('id',$request->id_sbe)->first()->detail_config_nominal;
+
+        $getNominalConfig = DB::table('tb_sbe')->join('tb_sbe_config','tb_sbe_config.id_sbe','tb_sbe.id')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe.id',$request->id_sbe)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+        $getNominal = 0;
+            foreach($getNominalConfig as $key_point => $valueSumPoint){
+            $getNominal += $valueSumPoint->total_nominal;
+        }
 
         $getIdConfigSbe = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('id_sbe','id_config_sbe')->where('tb_sbe_config.status','Choosed')->where('id_sbe',$request->id_sbe)->get();
 
