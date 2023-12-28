@@ -1091,10 +1091,16 @@ class TimesheetController extends Controller
             ->where('tb_timesheet.nik',$request->nik)
             ->orderby('id','asc');
 
-        if (isset($request->phase[1])) {
-            $data = $data->whereIn('phase',$request->phase)->get();
+        // if (isset($request->phase[1])) {
+        //     $data = $data->whereIn('phase',$request->phase);
+        // }else{
+        //     $data = $data;
+        // }
+
+        if (isset($request->status)) {
+            $data = $data->whereIn('tb_timesheet.status',$request->status);
         }else{
-            $data = $data->get();
+            $data = $data;
         }
 
     	$getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
@@ -1105,7 +1111,7 @@ class TimesheetController extends Controller
 
     	$getPermit = TimesheetPermit::select('start_date','end_date','status as remarks','activity','id')->where('nik',$request->nik)->get();
 
-    	$array = array_merge($data->toArray(),$getLeavingPermit->toArray(),$holiday->toArray(),$getPermit->toArray());
+    	$array = array_merge($data->get()->toArray(),$getLeavingPermit->toArray(),$holiday->toArray(),$getPermit->toArray());
 
     	return collect(["data"=>$array,
     		"lock_duration"=>empty($getLock->lock_duration)?(empty(DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration) ? "1" : DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration):$getLock->lock_duration,"emoji"=>$emoji]);
