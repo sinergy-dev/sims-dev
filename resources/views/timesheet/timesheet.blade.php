@@ -250,7 +250,7 @@
           </div>
         </div>
 
-        <!-- <div class="box box-solid">
+        <div class="box box-solid">
           <div class="box-header with-border">
             <h4 class="box-title">Timesheet Status</h4>
           </div>
@@ -260,7 +260,7 @@
               <button class="btn btn-sm btn-danger" onclick="removeFilter()">Remove Filter</button>
             </div>
           </div>
-        </div> -->
+        </div>
 
       </div>
       <div class="col-md-9 col-xs-12">
@@ -896,7 +896,7 @@
 
     function loadData(){
       var arrFilter = localStorage.getItem("arrFilter",arrFilter)
-
+      console.log(arrFilter)
       if(arrFilter != null){
         arrFilter = arrFilter
         $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter On')
@@ -912,6 +912,7 @@
         $.ajax({
           type:"GET",
           url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter,
+          // url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik,
           success:function(results){
             // Pace.restart();
             // Pace.track(function(){

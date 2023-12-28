@@ -382,13 +382,31 @@ class PresenceController extends Controller
     public function getAllUser()
     {
         $getUserSip = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik`  AS `nik`,`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
         $getUserMsp = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','2')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
         $getUserSipMsm = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'MSM')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
         $getUserSipBcd = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'BCD')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
         $getUserSipFin = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'FINANCE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
-        $getUserSipHr = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'HR')->orWhere('id_division', 'WAREHOUSE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
+        $getUserSipHr = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')
+                ->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')
+                // ->where('id_company','1')
+                // ->where('id_division', 'HR')
+                // ->orWhere('id_division', 'WAREHOUSE')
+                // ->where('status_karyawan','!=','dummy')
+                ->whereRaw("(`id_company` = '1' AND `id_division` = 'HR' AND `status_karyawan` != 'dummy' OR `id_division` = 'WAREHOUSE')")
+                ->orderBy('name','asc')->groupBy('users.nik')->get();
+
         $getUserSipPmo = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'PMO')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
         $getUserShifting = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->join('presence__shifting_user', 'presence__shifting_user.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        
+        $getUserSipSid = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_territory', 'DPG')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
+        $getUserSipSol = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_territory', 'PRESALES')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
 
         return array(
             collect(["text"=>'SIP',"children"=>$getUserSip]),
@@ -397,6 +415,8 @@ class PresenceController extends Controller
             collect(["text"=>'FIN',"children"=>$getUserSipFin]),
             collect(["text"=>'HR',"children"=>$getUserSipHr]),
             collect(["text"=>'PMO',"children"=>$getUserSipPmo]),
+            collect(["text"=>'SID', "children"=>$getUserSipSid]),
+            collect(["text"=>'SOL', "children"=>$getUserSipSol]),
             collect(["text"=>'MSP',"children"=>$getUserMsp]),
             collect(["text"=>'Shifting', "children"=>$getUserShifting])
         );
@@ -1481,6 +1501,8 @@ class PresenceController extends Controller
                 ->where('users.id_company', $typeCompany)
                 ->where('presence_actual','>=',$startDate)
                 ->where('presence_actual','<=',$endDate)
+                ->where('status_karyawan', '!=', 'dummy')
+                ->groupBy('users.nik')
                 ->get()
                 ->toArray();
         } else {
@@ -1489,9 +1511,13 @@ class PresenceController extends Controller
                 ->select('users.nik', 'users.name')
                 ->where('presence_actual','>=',$startDate)
                 ->where('presence_actual','<=',$endDate)
+                ->where('status_karyawan', '!=', 'dummy')
+                ->groupBy('users.nik')
                 ->get()
                 ->toArray();
         }
+
+        // return $parameterUser;
 
         if (!empty(($parameterUser))) {
             foreach($parameterUser as $user){
@@ -1508,28 +1534,29 @@ class PresenceController extends Controller
                     ->where('presence_actual','>=',$startDate)
                     ->where('presence_actual','<=',$endDate)
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
+                // return $all;
                 $late = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
                     ->where('presence_actual','>=',$startDate)
                     ->where('presence_actual','<=',$endDate)
                     ->where('presence_condition','=',"Late")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
                 $ontime = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
                     ->where('presence_actual','>=',$startDate)
                     ->where('presence_actual','<=',$endDate)
                     ->where('presence_condition','=',"On-Time")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
                 $injury = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
                     ->where('presence_actual','>=',$startDate)
                     ->where('presence_actual','<=',$endDate)
                     ->where('presence_condition','=',"Injury-Time")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
                 $absen = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
                     ->where('presence_actual','>=',$startDate)
@@ -1539,7 +1566,7 @@ class PresenceController extends Controller
                     ->where('presence_condition','<>',"On-Time")
                     ->where('presence_condition','<>',"-")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
 
                 $where =  DB::table('presence__location_user')
                     ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
@@ -1548,12 +1575,18 @@ class PresenceController extends Controller
                     ->toarray();
 
 
-                $var[$stat]["all"] = sizeof($all);
-                $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
-                $var[$stat]["late"] = sizeof($late);
-                $var[$stat]["ontime"] = sizeof($ontime);
-                $var[$stat]["injury"] = sizeof($injury);
-                $var[$stat]["absen"] = sizeof($absen);
+                // $var[$stat]["all"] = sizeof($all);
+                $var[$stat]["all"] = $all;
+                // $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
+                $var[$stat]["all"] = $late + $ontime + $injury;
+                // $var[$stat]["late"] = sizeof($late);
+                $var[$stat]["late"] = $late;
+                // $var[$stat]["ontime"] = sizeof($ontime);
+                $var[$stat]["ontime"] = $ontime;
+                // $var[$stat]["injury"] = sizeof($injury);
+                $var[$stat]["injury"] = $injury;
+                // $var[$stat]["absen"] = sizeof($absen);
+                $var[$stat]["absen"] = $absen;
                 $var[$stat]["where"] = $where[0]->location_name;
                 $var[$stat]["name"] = $status[$key];
             }
@@ -1583,6 +1616,7 @@ class PresenceController extends Controller
                 ->whereDate('presence_actual','>=',$req->start)
                 ->whereDate('presence_actual','<=',$req->end)
                 ->whereIn('presence__history.nik',$req->nik)
+                ->groupBy('users.nik')
                 ->get()->toArray();  
         } else {
             $parameterUser = DB::table('users')
@@ -1590,6 +1624,7 @@ class PresenceController extends Controller
                 ->select('users.nik', 'users.name')
                 ->whereDate('presence_actual','>=',$req->start)
                 ->whereDate('presence_actual','<=',$req->end)
+                ->groupBy('users.nik')
                 ->get()->toArray();  
         }
                 
@@ -1610,7 +1645,7 @@ class PresenceController extends Controller
                     ->where('presence_actual','>=',$req->start)
                     ->where('presence_actual','<=',$req->end)
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
 
                 $late = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
@@ -1618,21 +1653,21 @@ class PresenceController extends Controller
                     ->where('presence_actual','<=',$req->end)
                     ->where('presence_condition','=',"Late")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
                 $ontime = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
                     ->where('presence_actual','>=',$req->start)
                     ->where('presence_actual','<=',$req->end)
                     ->where('presence_condition','=',"On-Time")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
                 $injury = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
                     ->where('presence_actual','>=',$req->start)
                     ->where('presence_actual','<=',$req->end)
                     ->where('presence_condition','=',"Injury-Time")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
                 $absen = DB::table('presence__history')
                     ->where('nik','=',$NikUser[$key])
                     ->where('presence_actual','>=',$req->start)
@@ -1642,7 +1677,7 @@ class PresenceController extends Controller
                     ->where('presence_condition','<>',"On-Time")
                     ->where('presence_condition','<>',"-")
                     ->get()
-                    ->toarray();
+                    ->count('presence_type');
 
                 $where =  DB::table('presence__location_user')
                     ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
@@ -1651,12 +1686,17 @@ class PresenceController extends Controller
                     ->toarray();
 
 
-                $var[$stat]["all"] = sizeof($all);
-                $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
-                $var[$stat]["late"] = sizeof($late);
-                $var[$stat]["ontime"] = sizeof($ontime);
-                $var[$stat]["injury"] = sizeof($injury);
-                $var[$stat]["absen"] = sizeof($absen);
+                // $var[$stat]["all"] = sizeof($all);
+                $var[$stat]["all"] = $all;
+                // $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
+                $var[$stat]["all"] = $late + $ontime + $injury;
+                // $var[$stat]["late"] = sizeof($late);
+                $var[$stat]["late"] = $late;
+                // $var[$stat]["ontime"] = sizeof($ontime);
+                $var[$stat]["ontime"] = $ontime;
+                // $var[$stat]["injury"] = sizeof($injury);
+                $var[$stat]["injury"] = $injury;
+                // $var[$stat]["absen"] = sizeof($absen);
                 $var[$stat]["where"] = $where[0]->location_name;
                 $var[$stat]["name"] = $status[$key];
             }

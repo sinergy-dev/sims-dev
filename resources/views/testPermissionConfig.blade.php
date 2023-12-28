@@ -1280,7 +1280,7 @@ Permission Config
 		$.ajax({
 			type:"GET",
 			dataType:"json",
-			url:"{{asset('/public/json/iconData.json')}}",
+			url:"{{asset('/json/iconData.json')}}",
 			success: function(result){
 				console.log("hhhhh")
 				$('#icon-feature-edit').select2({
