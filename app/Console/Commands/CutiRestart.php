@@ -40,7 +40,7 @@ class CutiRestart extends Command
     public function handle()
     {
         //
-        $totalcuti = User::select('cuti','nik','name')->where('status_karyawan','cuti')->get(); 
+        $totalcuti = DB::table('users')->select('cuti','nik','name','email')->where('status_karyawan','cuti')->get(); 
 
         foreach ($totalcuti as $data) {
             // print_r($data->name . $data->nik . "\n");
