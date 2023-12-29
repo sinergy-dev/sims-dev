@@ -53,7 +53,7 @@ class UpdateStatusKaryawan extends Command
         // }
         // $total_cuti = 12 - $i;
         // $reset = User::select('nik','name','status_karyawan')->where('nik',1191094060)->first();
-        $reset = User::select('nik','name',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan')->get();
+        $reset = DB::table('users')->select('nik','name',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan')->get();
 
         foreach ($reset as $data) {
 
