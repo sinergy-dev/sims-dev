@@ -840,77 +840,77 @@ Permission Config
 		});
 		var dataTableFeatureItem;
 		var firstGroup = ""
-		// function getFeatureItemByRoleGroup(group){
-		// 	Pace.restart();
-		// 	Pace.track(function() {
-		// 		if(group != firstGroup){
-		// 			dataTableFeatureItem.destroy();
-		// 			$("#featureItemTable").empty();
-		// 		}
-		// 		$.ajax({
-		// 			type:"GET",
-		// 			url:"{{url('permission/getFeatureItem')}}",
-		// 			data:{
-		// 				group:group
-		// 			},
-		// 			beforeSend: function(){
-		// 				if($.fn.dataTable.isDataTable("#featureItemTable")){
-		// 					dataTableFeatureItem.destroy();
-		// 					$("#featureItemTable").empty();
-		// 				}
-		// 			},
-		// 			success:function(result){
-		// 				dataTableFeatureItem = $("#featureItemTable").DataTable({
-		// 					data: result.data,
-		// 					order: [[ 0, 'asc' ]],
-		// 					columns: result.column,
-		// 					paging: false,
-		// 					drawCallback: function ( settings ) {
-		// 						var api = this.api();
-		// 						var rows = api.rows( {page:'current'} ).nodes();
-		// 						var last = null;
+		function getFeatureItemByRoleGroup(group){
+			Pace.restart();
+			Pace.track(function() {
+				if(group != firstGroup){
+					dataTableFeatureItem.destroy();
+					$("#featureItemTable").empty();
+				}
+				$.ajax({
+					type:"GET",
+					url:"{{url('permission/getFeatureItem')}}",
+					data:{
+						group:group
+					},
+					beforeSend: function(){
+						if($.fn.dataTable.isDataTable("#featureItemTable")){
+							dataTableFeatureItem.destroy();
+							$("#featureItemTable").empty();
+						}
+					},
+					success:function(result){
+						dataTableFeatureItem = $("#featureItemTable").DataTable({
+							data: result.data,
+							order: [[ 0, 'asc' ]],
+							columns: result.column,
+							paging: false,
+							drawCallback: function ( settings ) {
+								var api = this.api();
+								var rows = api.rows( {page:'current'} ).nodes();
+								var last = null;
 
-		// 						// console.log(api)
+								// console.log(api)
 
-		// 						api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-		// 							if ( last !== group ) {
-		// 								var append = ''
-		// 								append = append + '<tr class="group">'
-		// 								append = append + '	<td colspan="' + (result.column.length + 1) + '">'
-		// 								append = append + '		<b>Feature : <i title="' + group + '">' + group + '</i></b>'
-		// 								append = append + '	</td>'
-		// 								append = append + '</tr>'
-		// 								$(rows).eq( i ).before(
-		// 									append
-		// 								);
+								api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+									if ( last !== group ) {
+										var append = ''
+										append = append + '<tr class="group">'
+										append = append + '	<td colspan="' + (result.column.length + 1) + '">'
+										append = append + '		<b>Feature : <i title="' + group + '">' + group + '</i></b>'
+										append = append + '	</td>'
+										append = append + '</tr>'
+										$(rows).eq( i ).before(
+											append
+										);
 
-		// 								last = group;
-		// 							}
-		// 						});
-		// 					},
-		// 					pageLength:100,
-		// 					fixedHeader: true
-		// 					// columnDefs: [{
-		// 					// 	// The `data` parameter refers to the data for the cell (defined by the
-		// 					// 	// `data` option, which defaults to the column being worked with, in
-		// 					// 	// this case `data: 0`.
-		// 					// 	"render": function ( data, type, row ) {
-		// 					// 		return data +' ('+ row[3]+')';
-		// 					// 	},
-		// 					// 	"targets": 0
-		// 					// }]
-		// 				})
-		// 			},
-		// 			complete:function(){
-		// 				$('.featureItemCheck').click(function() {
-		// 					console.log("heyyyyy")
-		// 					var data = this.id
-		// 					changeFeatureItem(data.split("-")[0],data.split("-")[1])
-		// 				});
-		// 			}
-		// 		})	
-		// 	})
-		// }
+										last = group;
+									}
+								});
+							},
+							pageLength:100,
+							fixedHeader: true
+							// columnDefs: [{
+							// 	// The `data` parameter refers to the data for the cell (defined by the
+							// 	// `data` option, which defaults to the column being worked with, in
+							// 	// this case `data: 0`.
+							// 	"render": function ( data, type, row ) {
+							// 		return data +' ('+ row[3]+')';
+							// 	},
+							// 	"targets": 0
+							// }]
+						})
+					},
+					// complete:function(){
+					// 	$('.featureItemCheck').click(function() {
+					// 		console.log("heyyyyy")
+					// 		var data = this.id
+					// 		changeFeatureItem(data.split("-")[0],data.split("-")[1])
+					// 	});
+					// }
+				})	
+			})
+		}
 
 		function getFeatureItemByFeatureItem(group){
 			if(group == "All"){
