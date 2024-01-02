@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use App\User;
 use GuzzleHttp\Client;
 use DB;
-use Carbon\carbon;
+use Carbon\Carbon;
 use DatePeriod;
 use DateInterval;
 use DateTime;
@@ -67,6 +67,8 @@ class ResetAwalTahun extends Command
 
         // $total_cuti = 12 - $i;
         $total_cuti = 12;
+        echo($total_cuti);
+        syslog(LOG_ERR, $total_cuti);
 
         $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
         $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
@@ -113,7 +115,7 @@ class ResetAwalTahun extends Command
         syslog(LOG_ERR, "Reset Cuti Start");
         syslog(LOG_ERR, "-------------------------");
         
-        $reset = User::select('nik','name','cuti','cuti2')
+        $reset = DB::table('users')->select('nik','name','cuti','cuti2')
             ->where('status_karyawan','cuti')
             ->orderBy('name','ASC') 
             ->get();
