@@ -44,7 +44,7 @@ use Mail;
 
 class TimesheetController extends Controller
 {
-	public function timesheet()
+    public function timesheet()
     {
         // return "lalalal";
         return view('timesheet/timesheet')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('timesheet')]);
@@ -807,21 +807,21 @@ class TimesheetController extends Controller
         } else {
             $lock = new TimesheetLockDuration();
         }
-    	// if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->division == Auth::User()->id_division) {
-    	// 	$lock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
-    	// } else {
-    	// 	$lock = new TimesheetLockDuration();
-    	// }
-    	
-    	$lock->lock_duration = $request->selectLock;
-    	$lock->division = Auth::User()->id_division;
-    	$lock->date_add = Carbon::now()->toDateTimeString();
-    	$lock->save();
+        // if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->division == Auth::User()->id_division) {
+        //  $lock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
+        // } else {
+        //  $lock = new TimesheetLockDuration();
+        // }
+        
+        $lock->lock_duration = $request->selectLock;
+        $lock->division = Auth::User()->id_division;
+        $lock->date_add = Carbon::now()->toDateTimeString();
+        $lock->save();
     }
 
     public function addConfig(Request $request)
     {
-    	// return $request->arrConfig;
+        // return $request->arrConfig;
         // $delete = TimesheetConfig::where('division',Auth::User()->id_division);
         // $delete->delete();
         $delete = TimesheetConfig::where('division',Auth::User()->id_division)->whereNotIn('roles',json_decode($request->roles));
@@ -829,35 +829,35 @@ class TimesheetController extends Controller
             $delete->delete();
         }
 
-    	foreach (json_decode($request->arrConfig,true) as $key => $value) {
-    		// return gettype($value['phase']);
-	    	// foreach ($value['phase'] as $key => $phase) {
-	    		// foreach ($value['task'] as $key => $task) {
-    				if (DB::table('tb_timesheet_config')->select('roles')->where('roles',$value['unit'])->exists()) {
+        foreach (json_decode($request->arrConfig,true) as $key => $value) {
+            // return gettype($value['phase']);
+            // foreach ($value['phase'] as $key => $phase) {
+                // foreach ($value['task'] as $key => $task) {
+                    if (DB::table('tb_timesheet_config')->select('roles')->where('roles',$value['unit'])->exists()) {
                         $addConfig = TimesheetConfig::where('roles',$value['unit'])->first();
-    				} else {
+                    } else {
                         $addConfig = new TimesheetConfig();
-    				}
+                    }
 
-    				$arrPhase            = array($value['phase']);
-		    		$arrTask             = array($value['task']);
-		    		$addConfig->roles    = $value['unit'];
-		    		$addConfig->phase    = json_encode($value['phase'],JSON_NUMERIC_CHECK);
-		    		$addConfig->task     = json_encode($value['task'],JSON_NUMERIC_CHECK);
-		    		$addConfig->date_add = Carbon::now()->toDateTimeString();
-			    	$addConfig->division = Auth::User()->id_division;
-			    	$addConfig->save();
-		    		
-			    // }
-	    	// }
-    	}
+                    $arrPhase            = array($value['phase']);
+                    $arrTask             = array($value['task']);
+                    $addConfig->roles    = $value['unit'];
+                    $addConfig->phase    = json_encode($value['phase'],JSON_NUMERIC_CHECK);
+                    $addConfig->task     = json_encode($value['task'],JSON_NUMERIC_CHECK);
+                    $addConfig->date_add = Carbon::now()->toDateTimeString();
+                    $addConfig->division = Auth::User()->id_division;
+                    $addConfig->save();
+                    
+                // }
+            // }
+        }
     }
 
     public function getAllPid(Request $request)
     {
-    	$getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id','id_project as text')->where('id_company', '1')->orderby('tb_id_project.id_pro','desc')->get();
+        $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id','id_project as text')->where('id_company', '1')->orderby('tb_id_project.id_pro','desc')->get();
 
-    	return $getAllPid;
+        return $getAllPid;
     }
 
     public function getPidByPic(Request $request)
@@ -897,7 +897,7 @@ class TimesheetController extends Controller
 
     public function getLeadId(Request $request)
     {
-    	return $getLeadId = DB::table('sales_lead_register')->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')->select('sales_solution_design.lead_id as id',DB::raw("CONCAT(`sales_solution_design`.`lead_id`,' - ',`opp_name`) AS text"))->where('sales_solution_design.nik',Auth::User()->nik)->get();
+        return $getLeadId = DB::table('sales_lead_register')->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')->select('sales_solution_design.lead_id as id',DB::raw("CONCAT(`sales_solution_design`.`lead_id`,' - ',`opp_name`) AS text"))->where('sales_solution_design.nik',Auth::User()->nik)->get();
     }
 
 
@@ -944,11 +944,11 @@ class TimesheetController extends Controller
             })
             ->select('tb_timesheet_task.id as id', 'tb_timesheet_task.task as text')->where('group',$getGroupRoles)->distinct()->get();
         }
-    	
-    	// $getAll = TimesheetConfig::join('roles','roles.id','tb_timesheet_config.roles')->select('task')->where('group',$getGroupRoles)->get();
+        
+        // $getAll = TimesheetConfig::join('roles','roles.id','tb_timesheet_config.roles')->select('task')->where('group',$getGroupRoles)->get();
 
-		return $data;
-    	
+        return $data;
+        
     }
 
     public function getPhaseByDivision(Request $request)
@@ -987,8 +987,8 @@ class TimesheetController extends Controller
             ->select('tb_timesheet_phase.id as id', 'tb_timesheet_phase.phase as text')->where('group',$getGroupRoles)->distinct()->get();
         }
 
-		return $data;
-    	
+        return $data;
+        
     }
 
     public function getAllPhase(Request $request)
@@ -1002,12 +1002,12 @@ class TimesheetController extends Controller
 
     public function getLockDurationByDivision(Request $request)
     {
-    	return $getLockDuration = TimesheetLockDuration::select('lock_duration','division')->where('division',Auth::User()->id_division)->get();
+        return $getLockDuration = TimesheetLockDuration::select('lock_duration','division')->where('division',Auth::User()->id_division)->get();
     }
 
     public function getRoles()
     {
-    	$getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
+        $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
         if($getGroupRoles == 'msm'){
             $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("MSM") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
@@ -1023,7 +1023,7 @@ class TimesheetController extends Controller
             $getRoles = DB::table('roles')->select('id as id','name as text')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get();
         }
 
-    	return $getRoles;
+        return $getRoles;
     }
 
     public function getAllUser()
@@ -1032,21 +1032,21 @@ class TimesheetController extends Controller
 
         return $getUser = User::select('users.nik as id', 'users.name as text')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group',$cek_role)->where('roles.name',"not like","%Manager%")->where('roles.name','not like','%MSM Helpdesk%')->where('status_karyawan','!=','dummy')->get();
 
-    	// return $getUser = User::select('nik as id', 'name as text')->where('id_division',Auth::User()->id_division)->get();
+        // return $getUser = User::select('nik as id', 'name as text')->where('id_division',Auth::User()->id_division)->get();
     }
 
     public function getConfigByDivision()
     {
-    	// return $getConfig = TimesheetConfig::join('tb_timesheet_phase','tb_timesheet_phase.id','tb_timesheet_config.phase')->join('tb_timesheet_task','tb_timesheet_task.id','tb_timesheet_config.task')->join('roles','roles.id','tb_timesheet_config.roles')->select('roles.name','tb_timesheet_task.task','tb_timesheet_phase.phase','division','tb_timesheet_config.date_add')->where('division',Auth::User()->id_division)->get();
-    	return $getConfig = TimesheetConfig::where('division',Auth::User()->id_division)->get();
+        // return $getConfig = TimesheetConfig::join('tb_timesheet_phase','tb_timesheet_phase.id','tb_timesheet_config.phase')->join('tb_timesheet_task','tb_timesheet_task.id','tb_timesheet_config.task')->join('roles','roles.id','tb_timesheet_config.roles')->select('roles.name','tb_timesheet_task.task','tb_timesheet_phase.phase','division','tb_timesheet_config.date_add')->where('division',Auth::User()->id_division)->get();
+        return $getConfig = TimesheetConfig::where('division',Auth::User()->id_division)->get();
 
-    	// return unserialize($getConfig->phase);
+        // return unserialize($getConfig->phase);
     }
 
     public function getAllPhaseTask(Request $request)
     {
-    	$dataTask = TimesheetTask::select('task as name','description','id')->get();
-    	$dataPhase = TimesheetPhase::select('phase as name','description','id')->get();
+        $dataTask = TimesheetTask::select('task as name','description','id')->get();
+        $dataPhase = TimesheetPhase::select('phase as name','description','id')->get();
 
         if (isset($request->type)) {
             if ($request->type == 'Task') {
@@ -1058,12 +1058,12 @@ class TimesheetController extends Controller
             $array = array_merge($dataTask->toArray(),$dataPhase->toArray());
         }
 
-		return array("data"=>$array);
+        return array("data"=>$array);
     }
 
     public function getAllActivityByUser(Request $request)
     {
-    	$startDate = Carbon::now()->startOfYear()->format("Y-m-d");
+        $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
         $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
 
         $hidden = ['planned','threshold'];
@@ -1081,7 +1081,7 @@ class TimesheetController extends Controller
         $emoji = DB::table('tb_feelings')
                    ->select('code_feeling','date_add')->where('nik',$request->nik)->get();
 
-    	$data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')
+        $data = DB::table('tb_timesheet')->leftJoin('tb_id_project','tb_id_project.id_project','tb_timesheet.pid')
             ->LeftjoinSub($unPlannedDone, 'unplanned_done', function ($join) {
                 $join->on('tb_timesheet.id', '=', 'unplanned_done.id');
             })
@@ -1091,24 +1091,30 @@ class TimesheetController extends Controller
             ->where('tb_timesheet.nik',$request->nik)
             ->orderby('id','asc');
 
-        if (isset($request->phase[1])) {
-            $data = $data->whereIn('phase',$request->phase)->get();
+        // if (isset($request->phase[1])) {
+        //     $data = $data->whereIn('phase',$request->phase);
+        // }else{
+        //     $data = $data;
+        // }
+
+        if (isset($request->status)) {
+            $data = $data->whereIn('tb_timesheet.status',$request->status);
         }else{
-            $data = $data->get();
+            $data = $data;
         }
 
-    	$getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
+        $getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
-    	$getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->orderby('start_date','desc')->get();
+        $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->orderby('start_date','desc')->get();
 
-    	$holiday = $this->getWorkDays($startDate,$endDate)["holiday"]->values();
+        $holiday = $this->getWorkDays($startDate,$endDate)["holiday"]->values();
 
-    	$getPermit = TimesheetPermit::select('start_date','end_date','status as remarks','activity','id')->where('nik',$request->nik)->get();
+        $getPermit = TimesheetPermit::select('start_date','end_date','status as remarks','activity','id')->where('nik',$request->nik)->get();
 
-    	$array = array_merge($data->toArray(),$getLeavingPermit->toArray(),$holiday->toArray(),$getPermit->toArray());
+        $array = array_merge($data->get()->toArray(),$getLeavingPermit->toArray(),$holiday->toArray(),$getPermit->toArray());
 
-    	return collect(["data"=>$array,
-    		"lock_duration"=>empty($getLock->lock_duration)?(empty(DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration) ? "1" : DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration):$getLock->lock_duration,"emoji"=>$emoji]);
+        return collect(["data"=>$array,
+            "lock_duration"=>empty($getLock->lock_duration)?(empty(DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration) ? "1" : DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->lock_duration):$getLock->lock_duration,"emoji"=>$emoji]);
     }
 
     public function getWorkDays($startDate,$endDate){
@@ -1191,7 +1197,7 @@ class TimesheetController extends Controller
             }
         }
         
-    	return array("data"=>$data);
+        return array("data"=>$data);
     }
 
     public function getTaskPhaseByDivisionForTable(Request $request)
@@ -1199,7 +1205,7 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-    	$getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
+        $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
 
         if ($cek_role->group == 'bcd') {
@@ -1228,10 +1234,10 @@ class TimesheetController extends Controller
             ->select('tb_timesheet_task.id', 'tb_timesheet_task.task as title','tb_timesheet_task.description')->where('group',$getGroupRoles)->distinct()->get();
         }
 
-		// $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_task', function ($join) {
-	 //        $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_task.id AS JSON), "$")'), '=', DB::raw('1'));
-	 //    })
-	 //    ->select('tb_timesheet_task.id', 'tb_timesheet_task.task as title','tb_timesheet_task.description')->where('group',$getGroupRoles)->distinct()->get();
+        // $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_task', function ($join) {
+     //        $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_task.id AS JSON), "$")'), '=', DB::raw('1'));
+     //    })
+     //    ->select('tb_timesheet_task.id', 'tb_timesheet_task.task as title','tb_timesheet_task.description')->where('group',$getGroupRoles)->distinct()->get();
 
 
         if ($cek_role->group == 'bcd') {
@@ -1274,29 +1280,29 @@ class TimesheetController extends Controller
 
 
 
-		// $dataPhase = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase', function ($join) {
-	 //        $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_phase.id AS JSON), "$")'), '=', DB::raw('1'));
-	 //    })
-	 //    ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase as title','tb_timesheet_phase.description')->where('group',$getGroupRoles)->distinct()->get();
+        // $dataPhase = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase', function ($join) {
+     //        $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_phase.id AS JSON), "$")'), '=', DB::raw('1'));
+     //    })
+     //    ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase as title','tb_timesheet_phase.description')->where('group',$getGroupRoles)->distinct()->get();
 
-		$array = array_merge($data->toArray(),$dataPhase->toArray());
-		return collect(["Task"=>$data,"Phase"=>$dataPhase]);
-    	
+        $array = array_merge($data->toArray(),$dataPhase->toArray());
+        return collect(["Task"=>$data,"Phase"=>$dataPhase]);
+        
     }
 
   //   public function getPhaseByDivisionForTable(Request $request)
   //   {
-  //   	$getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
+  //    $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
-  //   	// $getAll = TimesheetConfig::join('roles','roles.id','tb_timesheet_config.roles')->select('task')->where('group',$getGroupRoles)->get();
+  //    // $getAll = TimesheetConfig::join('roles','roles.id','tb_timesheet_config.roles')->select('task')->where('group',$getGroupRoles)->get();
 
-		// $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase', function ($join) {
-	 //        $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_phase.id AS JSON), "$")'), '=', DB::raw('1'));
-	 //    })
-	 //    ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase','tb_timesheet_phase.description')->where('group',$getGroupRoles)->distinct()->get();
+        // $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase', function ($join) {
+     //        $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_phase.id AS JSON), "$")'), '=', DB::raw('1'));
+     //    })
+     //    ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase','tb_timesheet_phase.description')->where('group',$getGroupRoles)->distinct()->get();
 
-		// return array("data"=>$data);
-    	
+        // return array("data"=>$data);
+        
   //   }
 
     public function storePermit(Request $request)
