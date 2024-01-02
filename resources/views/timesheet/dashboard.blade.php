@@ -1244,6 +1244,7 @@
          .slice(startIndex, endIndex) // Show only items for the current page
          .show();
   }
+  ///////
   
   appendChartLevel = ""
     appendChartLevel = appendChartLevel + '<table class="table table-striped" style="border-collapse: separate;border-spacing: 0 10px;">'
