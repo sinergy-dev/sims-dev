@@ -182,7 +182,7 @@
         <div class="row">
           <div class="col-md-12 col-xs-12">
             <h4>
-              <i class="icon fa fa-info-circle"></i> Hai <span>{name}</span>! Your mandays this month is <span>{percentage}</span>%, Happy Working!!  &#9994; <a href="{{url('timesheet/dashboard')}}" style="cursor: pointer;">See My Dashboard</a>
+              <i class="icon fa fa-info-circle"></i> Hai <span>. . .</span>! Your mandays this month is <span>. . .</span>%, Happy Working!!  &#9994; <a href="{{url('timesheet/dashboard')}}" style="cursor: pointer;">See My Dashboard</a>
             </h4>
           </div>
         </div>
@@ -672,7 +672,9 @@
       }
 
       if(nik == "{{Auth::User()->nik}}"){
-        showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
+        $("#alertForRemaining").show()
+
+        // showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
       }else{
         $("#alertForRemaining").hide()
       }
@@ -1039,7 +1041,7 @@
                   });
                 }
 
-                const uniqueDatas = filterUniqueObjects(arrayData, 'title', 'start');
+                const uniqueDatas = filterUniqueObjects(arrayData, 'title', 'start','phase');
 
                 var filteredData = uniqueDatas.filter(function(obj1) {
                   const found = events.some(el => el.title === obj1.title);
@@ -1058,7 +1060,7 @@
                   const uniqueEventMap = new Map();
 
                   events.forEach((event) => {
-                    const eventKey = `${event.title}-${event.start instanceof Date ? event.start.toISOString() : event.start}`;
+                    const eventKey = `${event.title}-${event.start instanceof Date ? event.start.toISOString() : event.start}-${event.phase}`;
                     
                     if (!uniqueEventMap.has(eventKey)) {
                       uniqueEventMap.set(eventKey, true);
@@ -1074,7 +1076,8 @@
 
                 // Filter distinct events based on the title
                 const uniqueEvents = mergedEvents.reduce((unique, event) => {
-                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start);
+                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
+
                   if (isEventUnique) {
                     unique.push(event);
                   }
@@ -1709,6 +1712,32 @@
           }
         }
       })
+
+      $('.fc-prev-button').on('click', function() {
+        var currentView = calendar.fullCalendar('getView');
+        var startDate = currentView.intervalStart;
+        
+        var month = startDate.format('MMMM');
+        var year = startDate.format('YYYY');
+        
+        console.log('Previous Month:', startDate.format('YYYY-MM-DD'));
+        console.log('Previous Year:', year);
+
+        showAlertRemaining(startDate.format('YYYY-MM-DD'))
+      });
+
+      $('.fc-next-button').on('click', function() {
+        var currentView = calendar.fullCalendar('getView');
+        var startDate = currentView.intervalStart;
+        
+        var month = startDate.format('MMMM');
+        var year = startDate.format('YYYY');
+        
+        console.log('Next Month:', month);
+        console.log('Next Year:', year);
+
+        showAlertRemaining(startDate.format('YYYY-MM-DD'))
+      });
 
       var view = calendar.fullCalendar('getView');
       var currentTimeZone = view.options.timezone;
@@ -3057,6 +3086,8 @@
     }
 
     function showAlertRemaining(date){
+      $($("#alertForRemaining").find("span")[1]).text(". . .")
+
       $.ajax({
         type:"GET",
         url:"{{url('timesheet/getPercentage')}}?date="+date,

@@ -65,54 +65,56 @@ use App\Mail\EmailChangeNominal;
 class TestController extends Controller
 {
 
-	// public function getWorkDays(Request $request){
- //        $client = new Client();
- //        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
- //        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
- //        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
- //        $json = (string)$api_response->getBody();
- //        $holiday_indonesia = json_decode($json, true);
+	public function getWorkDays(Request $request){
+        $client = new Client();
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
+        $json = (string)$api_response->getBody();
+        $holiday_indonesia = json_decode($json, true);
 
- //        $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
- //        $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
+        $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
+        $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
 
- //        $holiday_indonesia_final_detail = collect();
- //        $holiday_indonesia_final_date = collect();
- //        return $holiday_indonesia;
+        $holiday_indonesia_final_detail = collect();
+        $holiday_indonesia_final_date = collect();
+        // return $holiday_indonesia;
         
- //        foreach ($holiday_indonesia["items"] as $value) {
- //            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && (strstr($value['summary'], "Joint")) )){
- //                $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
- //                $holiday_indonesia_final_date->push($value["start"]["date"]);
- //            }
- //        }
+        foreach ($holiday_indonesia["items"] as $value) {
+            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && (strstr($value['summary'], "Joint")) || ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && ($value["summary"] == 'Boxing Day') )){
+                $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"]]);
+                $holiday_indonesia_final_date->push($value["start"]["date"]);
+            }
+        }
+
+        return $holiday_indonesia_final_date;
 
 
- //        $period = new DatePeriod(
- //             new DateTime($startDate),
- //             new DateInterval('P1D'),
- //             new DateTime($endDate . '23:59:59')
- //        );
+        $period = new DatePeriod(
+             new DateTime($startDate),
+             new DateInterval('P1D'),
+             new DateTime($endDate . '23:59:59')
+        );
 
- //        $workDays = collect();
- //        foreach($period as $date){
- //            if(!($date->format("N") == 6 || $date->format("N") == 7)){
- //                $workDays->push($date->format("Y-m-d"));
- //            }
- //        }
+        $workDays = collect();
+        foreach($period as $date){
+            if(!($date->format("N") == 6 || $date->format("N") == 7)){
+                $workDays->push($date->format("Y-m-d"));
+            }
+        }
 
- //        // return $period;
+        // return $period;
 
- //        $workDaysMinHoliday = $workDays->diff($holiday_indonesia_final_date->unique());
- //        $workDaysMinHolidayKeyed = $workDaysMinHoliday->map(function ($item, $key) {
- //            // return ["date" => $item];
- //            // return (object) array('date' => $item);
- //            return $item;
- //        });
+        $workDaysMinHoliday = $workDays->diff($holiday_indonesia_final_date->unique());
+        $workDaysMinHolidayKeyed = $workDaysMinHoliday->map(function ($item, $key) {
+            // return ["date" => $item];
+            // return (object) array('date' => $item);
+            return $item;
+        });
 
- //        return collect(["holiday" => $holiday_indonesia_final_detail, "workdays" => $workDaysMinHolidayKeyed]);
+        return collect(["holiday" => $holiday_indonesia_final_detail, "workdays" => $workDaysMinHolidayKeyed]);
         
- //    }
+    }
 
 	public function send_mail(){
 		// $email = 'faiqoh@sinergy.co.id';
