@@ -22,9 +22,10 @@ class Timesheet extends Model
 
     protected $appends = ['planned', 'threshold', 'plannedMonth'];
 
-    public function getPlannedAttribute($month)
+    public function getPlannedAttribute($month,$year)
     {
         $this->month = $month;
+        $this->year = $year;
         if (isset($this->month)) {
             $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
             foreach($this->month as $month){
@@ -33,10 +34,20 @@ class Timesheet extends Model
                 $numericMonth = $date->month;
                 // return $numericMonth;
 
-                $startDate = Carbon::now();
+                if (isset($this->year)) {
+                    $startDate = Carbon::createFromDate($this->year, 1, 1);
+                }else{
+                    $startDate = Carbon::now();
+                }
+
                 $startDate->month($numericMonth);
 
-                $endDate = Carbon::now();
+                if (isset($this->year)) {
+                    $endDate = Carbon::createFromDate($this->year, 1, 1);
+                }else{
+                    $endDate = Carbon::now();
+                }
+
                 $endDate->month($numericMonth);
 
                 $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
@@ -63,9 +74,11 @@ class Timesheet extends Model
         return $workdays = count($workdays);
     }
 
-    public function getThresholdAttribute($month)
+    public function getThresholdAttribute($month,$year)
     {
         $this->month = $month;
+        $this->year = $year;
+
         if (isset($this->month)) {
             $arrMonthMandays = [0,0,0,0,0,0,0,0,0,0,0,0];
             foreach($this->month as $month){
@@ -74,10 +87,19 @@ class Timesheet extends Model
                 $numericMonth = $date->month;
                 // return $numericMonth;
 
-                $startDate = Carbon::now();
+                if (isset($this->year)) {
+                    $startDate = Carbon::createFromDate($this->year, 1, 1);
+                }else{
+                    $startDate = Carbon::now();
+                }
                 $startDate->month($numericMonth);
 
-                $endDate = Carbon::now();
+                if (isset($this->year)) {
+                    $endDate = Carbon::createFromDate($this->year, 1, 1);
+                }else{
+                    $endDate = Carbon::now();
+                }
+
                 $endDate->month($numericMonth);
 
                 $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");

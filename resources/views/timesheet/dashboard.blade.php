@@ -534,6 +534,8 @@
     }
 
     $(document).ready(function(){
+      localStorage.removeItem('arrFilter');
+
       $("#span-remaining").text(moment().format('MMMM'))
       $("#textLevel").text(moment().format('YYYY'))
       $("#textStatus").text(moment().format('YYYY'))
@@ -903,6 +905,7 @@
 
     arrFilterMonth = []
     arrMonth = []
+    arrMonthNumber = []
 
     $(".cbMonth").each(function(idx,values){
       if ($(values).is(":checked") == true) {
@@ -913,6 +916,7 @@
         }
 
         arrMonth.push(values.value)
+        arrMonthNumber.push(++idx)
       }
     })
     
@@ -980,7 +984,7 @@
     }
 
     if(id == "changePageRemaining"){
-      var arrFilter = '?month_select=' + val + '&' + selectRoles
+      var arrFilter = '?month_select=' + val + '&' + selectRoles + '&' + selectYear
       showDataFilter(arrFilter,arrMonth,"remainingChart",val)
     }else{
       if (cummulativeLineChart){
@@ -992,7 +996,7 @@
         window.open(val + '?' + arrFilter, "_blank")
         // window.location = val + arrFilter;
       }else{
-        showDataFilter(arrFilter,arrMonth,"all")
+        showDataFilter(arrFilter,arrMonth,"all",selectYear)
 
         localStorage.setItem("arrFilter",arrFilter)
       }
@@ -1178,18 +1182,25 @@
           showItems(position,items,itemsPerPage);
         }else{
           //set current month
-          for (var i = 1; i <= totalPages; i++) {
-            if (i === moment().month() + 1) {
-              $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
-            }else{
-              //bedakan dengan filter year
-              if (i > moment().month() + 1) {
-                $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+          if (totalPages == 12) {
+            for (var i = 1; i <= totalPages; i++) {
+              $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+            }
+          }else{
+            for (var i = 1; i <= totalPages; i++) {
+              if (i === moment().month() + 1) {
+                $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
               }else{
-                $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+                //bedakan dengan filter year
+                if (i > moment().month() + 1) {
+                  $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+                }else{
+                  $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+                }
               }
             }
           }
+          
           showItems(moment().month() + 1,items,itemsPerPage);
           // Generate pagination links
           
@@ -1573,6 +1584,7 @@
   }
 
   function showDataFilter(arrFilter,arrMonth,nameChart,val){
+    console.log(val)
     var accesable = @json($feature_item);
     accesable.forEach(function(item,index){
       $("#" + item).show()
@@ -1645,6 +1657,7 @@
         })
         $("#pagination").empty("")
         $("#box-remaining").empty("")
+        console.log(yearMatch)
         duplicateCanvasRemaining("timesheet/getFilterRemainingChart?",arrFilter)
       } 
     }

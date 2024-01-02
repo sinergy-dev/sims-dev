@@ -8,6 +8,9 @@ use App\User;
 use GuzzleHttp\Client;
 use DB;
 use Carbon\carbon;
+use DatePeriod;
+use DateInterval;
+use DateTime;
 
 
 class ResetAwalTahun extends Command
@@ -65,6 +68,47 @@ class ResetAwalTahun extends Command
         // $total_cuti = 12 - $i;
         $total_cuti = 12;
 
+        $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
+        $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
+
+        $client = new Client();
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
+        $json = (string)$api_response->getBody();
+        $holiday_indonesia = json_decode($json, true);
+
+        $holiday_indonesia_final_detail = collect();
+        $holiday_indonesia_final_date = collect();
+        
+        foreach ($holiday_indonesia["items"] as $value) {
+            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && (strstr($value['summary'], "Joint")) || ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && ($value["summary"] == 'Boxing Day') )){
+                $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"]]);
+                $holiday_indonesia_final_date->push($value["start"]["date"]);
+            }
+        }
+
+        $period = new DatePeriod(
+             new DateTime($startDate),
+             new DateInterval('P1D'),
+             new DateTime($endDate . '23:59:59')
+        );
+
+        $workDays = collect();
+        foreach($period as $date){
+            if(!($date->format("N") == 6 || $date->format("N") == 7)){
+                $workDays->push($date->format("Y-m-d"));
+            }
+        }
+
+        $workDaysMinHoliday = $workDays->diff($holiday_indonesia_final_date->unique());
+        $workDaysMinHolidayKeyed = $workDaysMinHoliday->map(function ($item, $key) {
+            return ["date" => $item];
+            // return (object) array('date' => $item);
+            return $item;
+        });
+
+        
+        // echo(count($holiday_indonesia_final_detail));
+
         // echo("cuti". $total_cuti);
         syslog(LOG_ERR, "Reset Cuti Start");
         syslog(LOG_ERR, "-------------------------");
@@ -79,23 +123,25 @@ class ResetAwalTahun extends Command
         // $update->cuti2 = $total_cuti;
         // $update->update();
 
+        $cuti2 = 12-count($holiday_indonesia_final_detail);
+
         foreach ($reset as $data) {
             syslog(LOG_ERR, "Reset Cuti for " . $data->name);
             syslog(LOG_ERR, "before reset cuti : " . $data->cuti);
             syslog(LOG_ERR, "before reset cuti2 : " . $data->cuti2);
             syslog(LOG_ERR, "-------------------------");
 
-            // $update = User::where('nik',$data->nik)->first();
+            $update = User::where('nik',$data->nik)->first();
             // $data->cuti2 = 12 - $total_cuti;
             // $update->cuti2 = $total_cuti;
             // $update->update();
-            $data->cuti  = $data->cuti2;
-            $data->cuti2 = $total_cuti;
+            $update->cuti  = $data->cuti2;
+            $update->cuti2 = $cuti2;
             syslog(LOG_ERR, "after reset cuti : " . $data->cuti);
             syslog(LOG_ERR, "after reset cuti2 : " . $data->cuti2);
             syslog(LOG_ERR, "-------------------------");
             
-            $data->save();
+            $update->save();
 
         }
     }
