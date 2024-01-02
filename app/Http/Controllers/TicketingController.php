@@ -18,6 +18,9 @@ use App\TicketingSwitch;
 use App\TicketingPendingReminder;
 use App\TicketingEscalateEngineer;
 use App\TicketingEmail;
+use App\User;
+use App\SalesProject;
+use App\TicketingUser;
 
 use Auth;
 use Mail;
@@ -56,7 +59,8 @@ class TicketingController extends Controller
 			->with([
 				'clients' => $clients,
 				'initView' => $this->initMenuBase(),
-				'sidebar_collapse' => 'true'
+				'sidebar_collapse' => 'true',
+				'feature_item'=>$this->RoleDynamic('userSetting')
 			]);
 	}
 
@@ -401,6 +405,7 @@ class TicketingController extends Controller
 		$detailTicketOpen->reporting_time = $request->report;
 		$detailTicketOpen->severity = substr($request->severity,0,1);
 		$detailTicketOpen->type_ticket = $request->type_ticket;
+		$detailTicketOpen->pid = $request->pid;
 
 		if($request->engineer != ""){
 			$detailTicketOpen->engineer = $request->engineer;
@@ -443,6 +448,9 @@ class TicketingController extends Controller
 
 	public function getPerformanceAll(){
 		// sleep(5);
+
+		$getPid = TicketingUser::where('nik',Auth::User()->nik);
+
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('id_ticket','activity')
 			->whereIn('id',function ($query) {
@@ -460,8 +468,21 @@ class TicketingController extends Controller
 				'lastest_activity_ticket',
 				'id_detail:id_ticket,id',
 			])
+			->where('pid','=',null)
 			->whereIn('id_ticket',$occurring_ticket)
-			->orderBy('id','DESC')
+			->orderBy('ticketing__detail.id','DESC')
+			->get();
+
+		$occurring_ticket_result_pid = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->joinSub($getPid,'getPid',function($join){
+				$join->on('getPid.pid','=','ticketing__detail.pid');
+			})
+			->whereIn('id_ticket',$occurring_ticket)
+			->orderBy('ticketing__detail.id','DESC')
 			->get();
 
 		$limit = $occurring_ticket->count() > 100 ? 100 : 100 - $occurring_ticket->count();
@@ -472,11 +493,23 @@ class TicketingController extends Controller
 				'id_detail:id_ticket,id',
 			])
 			->whereNotIn('id_ticket',$occurring_ticket)
+			->where('pid','=',null)
 			->limit($limit)
-			->orderBy('id','DESC')
+			->orderBy('ticketing__detail.id','DESC')
 			->get();
 
-		$result = $occurring_ticket_result->merge($residual_ticket_result);
+		$residual_ticket_result_pid = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->join('ticketing__user','ticketing__user.pid','ticketing__detail.pid')
+			->whereNotIn('id_ticket',$occurring_ticket)
+			->limit($limit)
+			->orderBy('ticketing__detail.id','DESC')
+			->get();
+
+		$result = $occurring_ticket_result->merge($residual_ticket_result)->merge($occurring_ticket_result_pid)->merge($residual_ticket_result_pid);
 
 		return array("data" => $result);
 
@@ -1467,9 +1500,9 @@ class TicketingController extends Controller
 		// $value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year);
 
 		if (isset($req->month)) {
-			$value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year);
+			$value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year,$req->type);
 		} else {
-			$value1 = $this->getPerformanceByFinishTicket($client,$req->year);
+			$value1 = $this->getPerformanceByFinishTicket($client,$req->year,$req->type);
 		}
 		// return $value1;
 
@@ -1597,7 +1630,7 @@ class TicketingController extends Controller
 		$spreadsheet->getActiveSheet()->getStyle("I5")->getAlignment()->setWrapText(true);
 		$spreadsheet->getActiveSheet()->getStyle("J5")->getAlignment()->setWrapText(true);
 
-		$value1 = $this->getPerformance5($client,$bulan . "/" . $req->year);
+		$value1 = $this->getPerformance5($client,$bulan . "/" . $req->year,$req->type);
 		// return $value1;
 		if($value1 == 0){
 			return 0;
@@ -1740,7 +1773,7 @@ class TicketingController extends Controller
 		}
 	}
 
-	public function getPerformanceByFinishTicket($acronym_client,$period){
+	public function getPerformanceByFinishTicket($acronym_client,$period,$type){
 		// return $period;
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('id_ticket','activity')
@@ -1765,6 +1798,7 @@ class TicketingController extends Controller
 			])
 			// ->whereNotIn('id_ticket',$occurring_ticket)
 			->whereIn('id_ticket',$occurring_ticket)
+			->where('type_ticket',$type)
 			->whereRaw("`id_ticket` LIKE '%/" . $acronym_client . "/" . $period . "'")
 			->orderBy('id','ASC')
 			->get();
@@ -1778,6 +1812,487 @@ class TicketingController extends Controller
 			])
 			// ->whereNotIn('id_ticket',$occurring_ticket)
 			->whereIn('id_ticket',$occurring_ticket)
+			->where('type_ticket',$type)
+			// ->whereRaw("`id_ticket` LIKE '%/" . $acronym_client . "/%'")
+			->where('id_ticket', 'like', '%' . $acronym_client . '%')
+			->where('id_ticket', 'like', '%' . $period . '%')
+			->orderBy('id','ASC')
+			->get();
+		}
+
+		
+
+		return $residual_ticket_result;
+	}
+
+	public function makeReportTicketPID(Request $req){
+		// Create new Spreadsheet object
+		$spreadsheet = new Spreadsheet();
+		$client = TicketingClient::find($req->client)->client_acronym;
+		if (isset($req->month)) {
+			$bulan = Carbon::createFromDate($req->year, $req->month + 1, 1)->format('M');
+		} else {
+			$bulan = '';
+		}
+		
+
+		// return $client . "/" . $bulan . "/" . $req->year;
+		// return $bulan . "/" . $req->year;
+		// $value1 = $this->getPerformance5($client,$bulan . "/" . $req->year);
+		// return $value1;
+
+		// Set document properties
+		$title = 'Laporan Bulanan '. $client . ' '. $bulan . " " . $req->year;
+
+		$spreadsheet->getProperties()->setCreator('SIP')
+			->setLastModifiedBy('Rama Agastya')
+			->setTitle($title);
+
+		// Rename worksheet
+		$spreadsheet->getActiveSheet()->setTitle('General');
+
+		// Report Title
+		$spreadsheet->getActiveSheet()->getRowDimension('2')->setRowHeight(35);
+		$spreadsheet->getActiveSheet()->setCellValue('J2', 'LAPORAN REPORT ' . $client);
+		$spreadsheet->getActiveSheet()->getStyle('J2')->getFont()->setName('Calibri');
+		$spreadsheet->getActiveSheet()->getStyle('J2')->getFont()->setSize(24);
+		$spreadsheet->getActiveSheet()->getStyle('J2')->getFont()->setBold(true);
+		$spreadsheet->getActiveSheet()->getStyle('J2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+		$spreadsheet->getActiveSheet()->getStyle('J2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+		// Report Month
+		$spreadsheet->getActiveSheet()->getRowDimension('2')->setRowHeight(35);
+		$spreadsheet->getActiveSheet()->setCellValue('B2', Carbon::createFromDate(2018, $req->month + 1, 1)->format('F'));
+		$spreadsheet->getActiveSheet()->getStyle('B2')->getFont()->setName('Calibri');
+		$spreadsheet->getActiveSheet()->getStyle('B2')->getFont()->setSize(24);
+		$spreadsheet->getActiveSheet()->getStyle('B2')->getFont()->setBold(true);
+		$spreadsheet->getActiveSheet()->getStyle('B2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+		$spreadsheet->getActiveSheet()->getStyle('B2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+		$Colom_Header = [
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => Border::BORDER_THIN,
+					'color' => ['argb' => 'FF000000'],
+				],
+			],
+			'font' => [
+				'name' => 'Calibri',
+				'bold' => false,
+				'size' => 11,
+			],
+			'alignment' => [
+				'horizontal' => Alignment::HORIZONTAL_CENTER,
+				'vertical' => Alignment::VERTICAL_CENTER,
+			],
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'color' => ['argb' => 'FF00B0F0'],
+			],
+		];
+
+		$border = [
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => Border::BORDER_THIN,
+					'color' => ['argb' => 'FF000000'],
+				],
+			],
+		];
+
+		$cancel_row = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'color' => ['argb' => 'FFFF0000'],
+			],
+		];
+
+		$spreadsheet->getActiveSheet()->getStyle('A4:S4')->applyFromArray($Colom_Header);
+		$spreadsheet->getActiveSheet()->getRowDimension('4')->setRowHeight(25);
+		
+		$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(7);
+		$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(20);
+		$spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(40);
+		$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(10);
+		$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(40);
+		$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+		$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(30);
+		$spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(60);
+		$spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+		$spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(15);
+		$spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(15);
+		$spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(15);
+		$spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(15);
+		$spreadsheet->getActiveSheet()->getColumnDimension('N')->setWidth(20);
+		$spreadsheet->getActiveSheet()->getColumnDimension('O')->setWidth(20);
+		$spreadsheet->getActiveSheet()->getColumnDimension('P')->setWidth(80);
+		$spreadsheet->getActiveSheet()->getColumnDimension('Q')->setWidth(100);
+		$spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(20);
+		$spreadsheet->getActiveSheet()->getColumnDimension('S')->setWidth(20);
+
+		if($client == "BTNI"){
+			// Colom Header
+			$spreadsheet->getActiveSheet(0)
+				->setCellValue('A4','NO')
+				->setCellValue('B4','ID tiket SIP')
+				->setCellValue('C4','ID Project')
+				->setCellValue('D4','LOKASI')
+				->setCellValue('E4','TYPE MACHINE')
+				->setCellValue('F4','IP MACHINE')
+				->setCellValue('G4','IP SERVER')
+				->setCellValue('H4','PROBLEM')
+				->setCellValue('I4','JAM OPEN')
+				->setCellValue('J4','TGL. OPEN TIKET')
+				->setCellValue('K4','TGL. SELESAI')
+				->setCellValue('L4','SELESAI')
+				->setCellValue('M4','PIC')
+				->setCellValue('N4','NO TLP')
+				->setCellValue('O4','ROOTCOSE')
+				->setCellValue('P4','CONTERMASURE')
+				->setCellValue('Q4','ENGINEER')
+				->setCellValue('R4','OPEN BY');
+		} else {
+			$spreadsheet->getActiveSheet(0)
+				->setCellValue('A4','NO')
+				->setCellValue('B4','ID tiket SIP')
+				->setCellValue('C4','ID Project')
+				->setCellValue('D4','ID ATM')
+				->setCellValue('E4','LOKASI ')
+				->setCellValue('F4','SN ATM')
+				->setCellValue('G4','NUMBER TIKET')
+				->setCellValue('H4','PROBLEM')
+				->setCellValue('I4','TIKET WINCOR')
+				->setCellValue('J4','JAM OPEN')
+				->setCellValue('K4','TGL. OPEN TIKET')
+				->setCellValue('L4','TGL. SELESAI')
+				->setCellValue('M4','SELESAI')
+				->setCellValue('N4','PIC')
+				->setCellValue('O4','NO TLP')
+				->setCellValue('P4','ROOTCOSE')
+				->setCellValue('Q4','CONTERMASURE')
+				->setCellValue('R4','ENGINEER')
+				->setCellValue('S4','OPEN BY');
+		}
+		
+		// $value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year);
+
+		if (isset($req->month)) {
+			$value1 = $this->getPerformanceByFinishTicketPID($client,$bulan . "/" . $req->year,$req->pid,$req->type);
+		} else {
+			$value1 = $this->getPerformanceByFinishTicketPID($client,$req->year,$req->pid,$req->type);
+		}
+		// return $value1;
+
+		if($client == "BTNI"){
+			foreach ($value1 as $key => $value) {
+				$spreadsheet->getActiveSheet()->getStyle('A' . (5 + $key))->applyFromArray($Colom_Header);
+				$spreadsheet->getActiveSheet()->getStyle('B' . (5 + $key) .  ':R' . (5 + $key))->applyFromArray($border);
+				$spreadsheet->getActiveSheet()->setCellValue('A' . (5 + $key),$key + 1);
+				$spreadsheet->getActiveSheet()->setCellValue('B' . (5 + $key),$value->id_ticket);
+				$spreadsheet->getActiveSheet()->setCellValue('C' . (5 + $key),$value->pid);
+				$spreadsheet->getActiveSheet()->setCellValue('D' . (5 + $key),$value->location);
+				if(isset($value->absen_machine)){
+					$spreadsheet->getActiveSheet()->setCellValue('E' . (5 + $key),$value->absen_machine->type_machine);
+					$spreadsheet->getActiveSheet()->setCellValue('F' . (5 + $key),$value->absen_machine->ip_machine);
+					$spreadsheet->getActiveSheet()->setCellValue('G' . (5 + $key),$value->absen_machine->ip_server);
+				}
+				$spreadsheet->getActiveSheet()->setCellValue('H' . (5 + $key),$value->problem);
+				$spreadsheet->getActiveSheet()->setCellValue('I' . (5 + $key),$value->ticket_number_3party);
+				if($value->open == NULL){
+					// $spreadsheet->getActiveSheet()->setCellValue('I' . (5 + $key),"NULL");
+					// $spreadsheet->getActiveSheet()->setCellValue('J' . (5 + $key),"NULL");
+					if($value->reporting_time != "Invalid date"){
+						$spreadsheet->getActiveSheet()->setCellValue('J' . (5 + $key),date_format(date_create($value->reporting_time),'G:i:s'));
+						$spreadsheet->getActiveSheet()->setCellValue('K' . (5 + $key),date_format(date_create($value->reporting_time),'d F Y'));
+					}
+				} else {
+					$spreadsheet->getActiveSheet()->setCellValue('J' . (5 + $key),date_format(date_create($value->open),'G:i:s'));
+					$spreadsheet->getActiveSheet()->setCellValue('K' . (5 + $key),date_format(date_create($value->open),'d F Y'));
+				}
+				if($value->lastest_activity_ticket->activity == "CANCEL"){
+					$spreadsheet->getActiveSheet()->setCellValue('K' . (5 + $key),'-');
+					$spreadsheet->getActiveSheet()->setCellValue('L' . (5 + $key),'-');
+					$spreadsheet->getActiveSheet()->getStyle('B' . (5 + $key) .  ':Q' . (5 + $key))->applyFromArray($cancel_row);
+				} else {
+					$spreadsheet->getActiveSheet()->setCellValue('L' . (5 + $key),date_format(date_create($value->lastest_activity_ticket->date),'G:i:s'));
+					$spreadsheet->getActiveSheet()->setCellValue('L' . (5 + $key),date_format(date_create($value->lastest_activity_ticket->date),'d F Y'));
+					if(isset($value->resolve)){
+						$spreadsheet->getActiveSheet()->setCellValue('O' . (5 + $key),$value->resolve->root_couse);
+						$spreadsheet->getActiveSheet()->setCellValue('P' . (5 + $key),$value->resolve->counter_measure);
+					}
+				}
+				$spreadsheet->getActiveSheet()->setCellValue('M' . (5 + $key),$value->pic);
+				$spreadsheet->getActiveSheet()->setCellValue('N' . (5 + $key),$value->contact_pic);
+				$spreadsheet->getActiveSheet()->setCellValue('Q' . (5 + $key),$value->engineer);
+				$spreadsheet->getActiveSheet()->setCellValue('R' . (5 + $key),$value->first_activity_ticket->operator);
+				// $spreadsheet->getActiveSheet()->setCellValue('R' . (5 + $key),$value->id_ticket);
+			}
+		} else {
+			foreach ($value1 as $key => $value) {
+				$spreadsheet->getActiveSheet()->getStyle('A' . (5 + $key))->applyFromArray($Colom_Header);
+				$spreadsheet->getActiveSheet()->getStyle('B' . (5 + $key) .  ':R' . (5 + $key))->applyFromArray($border);
+				$spreadsheet->getActiveSheet()->setCellValue('A' . (5 + $key),$key + 1);
+				$spreadsheet->getActiveSheet()->setCellValue('B' . (5 + $key),$value->id_ticket);
+				$spreadsheet->getActiveSheet()->setCellValue('C' . (5 + $key),$value->pid);
+				$spreadsheet->getActiveSheet()->setCellValue('D' . (5 + $key),$value->id_atm);
+				$spreadsheet->getActiveSheet()->setCellValue('E' . (5 + $key),$value->location);
+				$spreadsheet->getActiveSheet()->setCellValue('F' . (5 + $key),$value->serial_device);
+				$spreadsheet->getActiveSheet()->setCellValue('G' . (5 + $key),$value->refrence);
+				$spreadsheet->getActiveSheet()->setCellValue('H' . (5 + $key),$value->problem);
+				$spreadsheet->getActiveSheet()->setCellValue('I' . (5 + $key),$value->ticket_number_3party);
+				if($value->open == NULL){
+					// $spreadsheet->getActiveSheet()->setCellValue('I' . (5 + $key),"NULL");
+					// $spreadsheet->getActiveSheet()->setCellValue('J' . (5 + $key),"NULL");
+					if($value->reporting_time != "Invalid date"){
+						$spreadsheet->getActiveSheet()->setCellValue('J' . (5 + $key),date_format(date_create($value->reporting_time),'G:i:s'));
+						$spreadsheet->getActiveSheet()->setCellValue('K' . (5 + $key),date_format(date_create($value->reporting_time),'d F Y'));
+					}
+				} else {
+					$spreadsheet->getActiveSheet()->setCellValue('J' . (5 + $key),date_format(date_create($value->open),'G:i:s'));
+					$spreadsheet->getActiveSheet()->setCellValue('K' . (5 + $key),date_format(date_create($value->open),'d F Y'));
+				}
+				if($value->lastest_activity_ticket->activity == "CANCEL"){
+					$spreadsheet->getActiveSheet()->setCellValue('L' . (5 + $key),'-');
+					$spreadsheet->getActiveSheet()->setCellValue('M' . (5 + $key),'-');
+					$spreadsheet->getActiveSheet()->getStyle('B' . (5 + $key) .  ':Q' . (5 + $key))->applyFromArray($cancel_row);
+				} else {
+					$spreadsheet->getActiveSheet()->setCellValue('L' . (5 + $key),date_format(date_create($value->lastest_activity_ticket->date),'G:i:s'));
+					$spreadsheet->getActiveSheet()->setCellValue('M' . (5 + $key),date_format(date_create($value->lastest_activity_ticket->date),'d F Y'));
+					if(isset($value->resolve)){
+						$spreadsheet->getActiveSheet()->setCellValue('P' . (5 + $key),$value->resolve->root_couse);
+						$spreadsheet->getActiveSheet()->setCellValue('Q' . (5 + $key),$value->resolve->counter_measure);
+					}
+				}
+				$spreadsheet->getActiveSheet()->setCellValue('N' . (5 + $key),$value->pic);
+				$spreadsheet->getActiveSheet()->setCellValue('O' . (5 + $key),$value->contact_pic);
+				$spreadsheet->getActiveSheet()->setCellValue('R' . (5 + $key),$value->engineer);
+				$spreadsheet->getActiveSheet()->setCellValue('S' . (5 + $key),$value->first_activity_ticket->operator);
+			}
+		}
+
+		$spreadsheet->createSheet(1)->setTitle('Summary');
+		$spreadsheet->setActiveSheetIndex(1);
+
+		$Colom_Header2 = [
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => Border::BORDER_THIN,
+					'color' => ['argb' => 'FF000000'],
+				],
+			],
+			'font' => [
+				'name' => 'Calibri',
+				'bold' => TRUE,
+				'size' => 11,
+			],
+			'alignment' => [
+				'horizontal' => Alignment::HORIZONTAL_CENTER,
+				'vertical' => Alignment::VERTICAL_CENTER,
+			]
+		];
+
+		$spreadsheet->getActiveSheet()
+			->setCellValue('B5','No')
+			->setCellValue('D5','ID ATM')
+			->setCellValue('E5','LOKASI ATM')
+			->setCellValue('F5','PERIODE BULAN')
+			->setCellValue('J5','TOTAL DATA CORECTIVE (JAM) ')
+			->setCellValue('K5','JUMLAH OPERASIONAL')
+			->setCellValue('L5','SLA')
+
+			->setCellValue('F6','AWAL')
+			->setCellValue('G6','PERIODE PROBLEM')
+			->setCellValue('I6','AKHIR')
+			;
+
+		$spreadsheet->getActiveSheet()->getStyle("I5")->getAlignment()->setWrapText(true);
+		$spreadsheet->getActiveSheet()->getStyle("J5")->getAlignment()->setWrapText(true);
+
+		$value1 = $this->getPerformance6($client,$bulan . "/" . $req->year,$req->pid,$req->type);
+		// return $value1;
+		if($value1 == 0){
+			return 0;
+		} else {
+			$middle = [
+				'alignment' => [
+					'horizontal' => Alignment::HORIZONTAL_LEFT,
+					'vertical' => Alignment::VERTICAL_CENTER,
+				]
+			];
+
+			$index = 0;
+
+			$atm_id = "";
+			$repeat = 0;
+			foreach ($value1 as $key => $value) {
+				if($value->last_status[0] == "CLOSE"){
+					// return 'disini';
+
+					$spreadsheet->getActiveSheet()->getStyle('B' . (7 + $index))->getFill()->setFillType(Fill::FILL_SOLID);
+					$spreadsheet->getActiveSheet()->getStyle('B' . (7 + $index))->getFill()->getStartColor()->setARGB('FF2E75B6');
+					$spreadsheet->getActiveSheet()->getStyle('B' . (7 + $index) .  ':K' . (7 + $index))->applyFromArray($border);
+					$spreadsheet->getActiveSheet()->setCellValue('B' . (7 + $index),$index + 1);
+					$spreadsheet->getActiveSheet()->setCellValue('D' . (7 + $index),$value->location);
+					$spreadsheet->getActiveSheet()->setCellValue('E' . (7 + $index),date_format(date_create($bulan),"01/m/Y"));
+					$spreadsheet->getActiveSheet()->setCellValue('F' . (7 + $index),date_format(date_create($value->open),'d/m/Y h:i A'));
+					$spreadsheet->getActiveSheet()->setCellValue('G' . (7 + $index),date_format(date_create($value->last_status[1]),'d/m/Y h:i A'));
+					$spreadsheet->getActiveSheet()->setCellValue('H' . (7 + $index),date_format(date_create($bulan),"t/m/Y"));
+					
+					$close_ticket_time = (int)strtotime($value->last_status[1]);
+					$open_ticket_time = (int)strtotime($value->open);
+					if ($close_ticket_time > $open_ticket_time){
+						if($open_ticket_time == NULL){
+							$operasional = round(($close_ticket_time - (int)strtotime($value->reporting_time))/3600,2);
+						} else {
+							$operasional = round(($close_ticket_time - $open_ticket_time)/3600,2);
+						}
+					} else {
+						if($open_ticket_time == NULL){
+							$operasional = round(((int)strtotime($value->reporting_time) - $close_ticket_time)/3600,2);
+						} else {
+							$operasional = round(($open_ticket_time - $close_ticket_time)/3600,2);
+						}
+					}
+
+					$spreadsheet->getActiveSheet()->setCellValue('I' . (7 + $index),$operasional);
+					$spreadsheet->getActiveSheet()->setCellValue('J' . (7 + $index),(int)date_format(date_create($bulan),"t") * 24);
+					$sla_result = 100 - round(($operasional / ((int)date_format(date_create($bulan),"t") * 24)) * 100 , 2);
+					$spreadsheet->getActiveSheet()->setCellValue('K' . (7 + $index),($sla_result < 0 ? 0 : $sla_result));
+					
+					if($client != "TTNI"){
+						$spreadsheet->getActiveSheet()->setCellValue('C' . (7 + $index),$value->id_atm);
+						$spreadsheet->getActiveSheet()->setCellValue('C' . (7 + $index),$value->id_atm);
+						if($atm_id == $value->id_atm){
+							$atm_id = $atm_id;
+							$repeat++;
+						} else {
+							// $spreadsheet->getActiveSheet()->getStyle('C' . (7 + $index))->getFill()->setFillType(Fill::FILL_SOLID);
+							// $spreadsheet->getActiveSheet()->getStyle('C' . (7 + $index))->getFill()->getStartColor()->setARGB('FFFF0000');
+							if($repeat != 0){
+								// $spreadsheet->getActiveSheet()->getStyle('C' . ((6 + $index) - $repeat))->getFill()->setFillType(Fill::FILL_SOLID);
+								// $spreadsheet->getActiveSheet()->getStyle('C' . ((6 + $index) - $repeat))->getFill()->getStartColor()->setARGB('FF00FF00');
+								$spreadsheet->getActiveSheet()->mergeCells('C' . ((6 + $index) - $repeat) . ':C' . (((6 + $index) - $repeat) + $repeat));
+								$spreadsheet->getActiveSheet()->mergeCells('D' . ((6 + $index) - $repeat) . ':D' . (((6 + $index) - $repeat) + $repeat));
+								$spreadsheet->getActiveSheet()->getStyle('C' . ((6 + $index) - $repeat) . ':C' . (((6 + $index) - $repeat) + $repeat))->applyFromArray($middle);
+								$spreadsheet->getActiveSheet()->getStyle('D' . ((6 + $index) - $repeat) . ':D' . (((6 + $index) - $repeat) + $repeat))->applyFromArray($middle);
+							}
+
+							$repeat = 0;
+							$atm_id = $value->id_atm;
+						}
+					} else {
+						$spreadsheet->getActiveSheet()->setCellValue('C' . (7 + $index),'-');
+						$spreadsheet->getActiveSheet()->setCellValue('C' . (7 + $index),'-');
+					}
+
+					$index++;
+				}
+			}
+
+			$bold = [
+				'font' => [
+					'name' => 'Calibri',
+					'bold' => TRUE,
+					'size' => 11,
+				]
+			];
+
+			$spreadsheet->getActiveSheet()->getStyle('J' . (7 + $index) .  ':K' . (7 + $index))->applyFromArray($border);
+			$spreadsheet->getActiveSheet()->getStyle('J' . (7 + $index) .  ':K' . (7 + $index))->applyFromArray($bold);
+			$spreadsheet->getActiveSheet()->setCellValue('J' . (7 + $index),"TOTAL");
+			$spreadsheet->getActiveSheet()->setCellValue('K' . (7 + $index),"=ROUND(AVERAGE(K7:K" . (6 + $index) . "),3)");
+
+			$spreadsheet->getActiveSheet()->getStyle('E5')->getFill()->setFillType(Fill::FILL_SOLID);
+			$spreadsheet->getActiveSheet()->getStyle('E5')->getFill()->getStartColor()->setARGB('FF2E75B6');
+
+			$spreadsheet->getActiveSheet()->getStyle('E6')->getFill()->setFillType(Fill::FILL_SOLID);
+			$spreadsheet->getActiveSheet()->getStyle('E6')->getFill()->getStartColor()->setARGB('FFFF0000');
+
+			$spreadsheet->getActiveSheet()->getStyle('F6')->getFill()->setFillType(Fill::FILL_SOLID);
+			$spreadsheet->getActiveSheet()->getStyle('F6')->getFill()->getStartColor()->setARGB('FFFFFF00');
+
+			$spreadsheet->getActiveSheet()->getStyle('H6')->getFill()->setFillType(Fill::FILL_SOLID);
+			$spreadsheet->getActiveSheet()->getStyle('H6')->getFill()->getStartColor()->setARGB('FF00B050');
+
+			$spreadsheet->getActiveSheet()->getStyle('B5:K6')->applyFromArray($Colom_Header2);
+
+			$spreadsheet->getActiveSheet()->mergeCells('B5:B6');
+			$spreadsheet->getActiveSheet()->mergeCells('C5:C6');
+			$spreadsheet->getActiveSheet()->mergeCells('D5:D6');
+			$spreadsheet->getActiveSheet()->mergeCells('E5:H5');
+			$spreadsheet->getActiveSheet()->mergeCells('I5:I6');
+			$spreadsheet->getActiveSheet()->mergeCells('J5:J6');
+			$spreadsheet->getActiveSheet()->mergeCells('K5:K6');
+			$spreadsheet->getActiveSheet()->mergeCells('F6:G6');
+
+			$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(5);
+			$spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(10);
+			$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(40);
+			$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+			$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(20);
+			$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+			$spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(15);
+			$spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(20);
+			$spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(15);
+			$spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(15);
+
+			$spreadsheet->getActiveSheet()->getRowDimension('5')->setRowHeight(20);
+			$spreadsheet->getActiveSheet()->getRowDimension('6')->setRowHeight(20);
+
+			$spreadsheet->setActiveSheetIndex(1);
+			$spreadsheet->getActiveSheet()->getSheetView()->setZoomScale(98);
+
+			$name = 'Report_' . $client . '_-_' . Carbon::createFromDate( $req->year , $req->month + 1, 1)->format('F-Y') . '_(' . date("Y-m-d") . ')_' . Auth::user()->name . '.xlsx';
+			$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+			$location = public_path() . '/report/' . $name;
+			ob_end_clean();
+			$writer->save($location);
+			return $name;
+		}
+	}
+
+	public function getPerformanceByFinishTicketPID($acronym_client,$period,$pid,$type){
+		// return $period;
+		$occurring_ticket = DB::table('ticketing__activity')
+			->select('id_ticket','activity')
+			->whereIn('id',function ($query) {
+				$query->select(DB::raw("MAX(id) AS activity"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			// ->where('activity','<>','CANCEL')
+			// ->where('activity','<>','CLOSE')
+			->whereRaw('`id_ticket` LIKE "%' . $acronym_client . '%"')
+			->get()
+			->pluck('id_ticket');
+
+		if (preg_match("(/)", $period)) {
+			$residual_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+				'resolve',
+				'absen_machine'
+			])
+			// ->whereNotIn('id_ticket',$occurring_ticket)
+			->whereIn('id_ticket',$occurring_ticket)
+			->where('ticketing__detail.pid',$pid)
+			->where('ticketing__detail.type_ticket',$type)
+			->whereRaw("`id_ticket` LIKE '%/" . $acronym_client . "/" . $period . "'")
+			->orderBy('id','ASC')
+			->get();
+		} else {
+			$residual_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+				'resolve',
+				'absen_machine'
+			])
+			// ->whereNotIn('id_ticket',$occurring_ticket)
+			->whereIn('id_ticket',$occurring_ticket)
+			->where('ticketing__detail.pid',$pid)
+			->where('ticketing__detail.type_ticket',$type)
 			// ->whereRaw("`id_ticket` LIKE '%/" . $acronym_client . "/%'")
 			->where('id_ticket', 'like', '%' . $acronym_client . '%')
 			->where('id_ticket', 'like', '%' . $period . '%')
@@ -1836,17 +2351,105 @@ class TicketingController extends Controller
 		return $residual_ticket_result;
 	}
 
-	public function getPerformance5($acronym_client,$period){
+	public function getPerformance5($acronym_client,$period,$type){
 		if($acronym_client != "TTNI" && $acronym_client != "BTNI"){
 			$result = DB::table('ticketing__id')
 				->where('ticketing__detail.id_ticket','LIKE','%' . $period . '%')
+				->where('ticketing__detail.type_ticket',$type)
 				->where('ticketing__detail.id_ticket','LIKE','%' . $acronym_client . '%')
 				->join('ticketing__detail','ticketing__detail.id_ticket','=','ticketing__id.id_ticket')
 				->orderBy('ticketing__detail.id_atm','ASC');
 		} else {
 			$result = DB::table('ticketing__id')
 				->where('ticketing__detail.id_ticket','LIKE','%' . $period . '%')
+				->where('ticketing__detail.type_ticket',$type)
 				->where('ticketing__detail.id_ticket','LIKE','%' . $acronym_client . '%')
+				->join('ticketing__detail','ticketing__detail.id_ticket','=','ticketing__id.id_ticket')
+				->orderBy('ticketing__detail.id_ticket','ASC');
+		}
+
+		$final = [];
+
+		if($result->count() == 0){
+			return 0;
+		}else{
+			$result = $result->get();
+			$atm_before = $result[0]->id_atm; 
+
+			foreach ($result as $key => $value) {
+
+				$check = DB::table('ticketing__activity')
+					->where('id_ticket','=',$value->id_ticket)
+					->orderBy('id','DESC')
+					->value('activity');
+
+				$downtime = 0;
+
+				if($check == "CLOSE" || $check == "CANCEL"){
+					$value->open = DB::table('ticketing__activity')
+						->where('id_ticket','=',$value->id_ticket)
+						->where('activity','=','OPEN')
+						->value('date');
+
+					$value->id_open = DB::table('ticketing__id')
+						->where('id_ticket','=',$value->id_ticket)
+						->value('id');
+
+					$value->last_status = array(
+						$check,
+						DB::table('ticketing__activity')
+							->where('id_ticket','=',$value->id_ticket)
+							->orderBy('id','DESC')
+							->value('date')
+						);
+
+					if($value->id_atm == $atm_before){
+						
+					}
+
+					if($check == "CLOSE"){
+						$value->root_couse = DB::table('ticketing__resolve')
+							->where('id_ticket','=',$value->id_ticket)
+							->value('root_couse');
+
+						$value->counter_measure = DB::table('ticketing__resolve')
+							->where('id_ticket','=',$value->id_ticket)
+							->value('counter_measure');
+
+					} else {
+						$value->root_couse = '-';
+						$value->counter_measure = '-';
+					}
+
+
+					$value->operator = DB::table('ticketing__activity')
+						->where('id_ticket','=',$value->id_ticket)
+						->orderBy('id','DESC')
+						->value('operator');
+
+					$final[] = $value;
+
+				}
+			}
+			return $final;
+		}
+	}
+
+	public function getPerformance6($acronym_client,$period,$pid,$type){
+		if($acronym_client != "TTNI" && $acronym_client != "BTNI"){
+			$result = DB::table('ticketing__id')
+				->where('ticketing__detail.id_ticket','LIKE','%' . $period . '%')
+				->where('ticketing__detail.id_ticket','LIKE','%' . $acronym_client . '%')
+				->where('ticketing__detail.pid',$pid)
+				->where('ticketing__detail.type_ticket',$type)
+				->join('ticketing__detail','ticketing__detail.id_ticket','=','ticketing__id.id_ticket')
+				->orderBy('ticketing__detail.id_atm','ASC');
+		} else {
+			$result = DB::table('ticketing__id')
+				->where('ticketing__detail.id_ticket','LIKE','%' . $period . '%')
+				->where('ticketing__detail.id_ticket','LIKE','%' . $acronym_client . '%')
+				->where('ticketing__detail.pid',$pid)
+				->where('ticketing__detail.type_ticket',$type)
 				->join('ticketing__detail','ticketing__detail.id_ticket','=','ticketing__id.id_ticket')
 				->orderBy('ticketing__detail.id_ticket','ASC');
 		}
@@ -2085,6 +2688,7 @@ class TicketingController extends Controller
 			->leftJoin('ticketing__detail','ticketing__detail.id_ticket','=','open_activity_detail.id_ticket')
 			->leftJoin('ticketing__severity','ticketing__severity.id','=','ticketing__detail.severity')
 			->orderBy('open_activity_detail.id_ticket','ASC')
+			->where('type_ticket',$request->type)
 			->get();
 
 		// return $data;
@@ -2415,5 +3019,502 @@ class TicketingController extends Controller
 
 		return $latest_activity_table->get();
 	}
+
+	public function getUser(Request $request)
+	{
+		$getUser = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN' AND `id_position` != 'MANAGER')");
+
+        return array("data" => collect($getUser->get()));
+	}
+
+	public function getCustomer()
+    {
+        $getCustomer = collect(DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('users','users.nik','sales_lead_register.nik')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select(DB::raw('`tb_contact`.`brand_name` AS `id`,`customer_legal_name` AS `text`'))->where('users.id_company', '1')->distinct()->get());
+
+        return array("data" => $getCustomer);
+    }
+
+    public function getAllPid(Request $request)
+    {
+    	// $nik = json_decode($request->nik,true);
+    	if ($request->assign == 'user') {
+    		$getPid = DB::table('ticketing__user')->select('pid')->whereIn('nik',$request->nik);
+	    	$getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+	    						->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')
+		    					->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+		    					->leftJoinSub($getPid, 'tb_pid',function($join){
+				                    $join->on("tb_pid.pid", '=', 'tb_id_project.id_project');
+				                })
+		    					->select('tb_pid.pid', 'id_project',DB::raw("(CASE WHEN `tb_pid`.`pid` is null THEN 'Non-Selected' ELSE 'Selected' END) as result_modif"),'name_project','brand_name','customer_legal_name')->where('id_company', '1');
+
+	    	if (DB::table('ticketing__user')->where('nik',$request->nik)->exists()) {
+		    	$getAllPid = $getAllPid->orderby('result_modif','desc')->orderBy('tb_id_project.created_at','desc')->get();
+	    	} else {
+	    		$getAllPid = $getAllPid->orderby('tb_id_project.created_at','desc')->get();
+	    	}
+	    } else {
+	    	$getProjectName = DB::table('presence__shifting_user')->join('presence__shifting_project', 'presence__shifting_project.id', 'presence__shifting_user.shifting_project')->select('project_name')->whereIn('nik',$request->nik)->first();
+
+    		$getPidShifting = DB::table('ticketing__user')->join('presence__shifting_user','presence__shifting_user.nik','ticketing__user.nik')->join('presence__shifting_project', 'presence__shifting_project.id', 'presence__shifting_user.shifting_project')->select('pid')->where('project_name',$getProjectName->project_name)->distinct();
+
+    		$getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+	    						->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')
+		    					->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+		    					->leftJoinSub($getPidShifting, 'getPidShifting',function($join){
+				                    $join->on("getPidShifting.pid", '=', 'tb_id_project.id_project');
+				                })
+		    					->select('getPidShifting.pid', 'id_project',DB::raw("(CASE WHEN `getPidShifting`.`pid` is null THEN 'Non-Selected' ELSE 'Selected' END) as result_modif"),'name_project','brand_name','customer_legal_name')->where('id_company', '1');
+
+    		// return $getPidShifting->get();
+		   	$getAllPid = $getAllPid->orderby('result_modif','desc')->orderBy('tb_id_project.created_at','desc')->get();
+    	}
+    	
+
+    	return array("data"=>$getAllPid);
+    }
+
+    public function getSiteShifting()
+    {
+    	return $data = DB::table('presence__shifting_project')->select('id','project_name')->get();
+    }
+
+    public function getUserShifting()
+    {
+    	$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name')->where('user_id', Auth::User()->nik)->first();
+
+        if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+        	$data = DB::table('presence__shifting_user')->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')->join('users','users.nik','presence__shifting_user.nik')->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location')->where('status_karyawan','!=','dummy')->orderBy('project_name','asc')->get();
+
+	    	$dataNonShifting = DB::table('users')
+	    			->whereNotExists(function($query)
+	                {
+	                    $query->select(DB::raw(1))
+	                          ->from('presence__shifting_user')
+	                          ->whereRaw('presence__shifting_user.nik = users.nik');
+	                })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN')")
+	                ->select('users.name','users.nik',DB::raw("CONCAT('Not-Set') AS `project_name`"),DB::raw("CONCAT('-') AS `id_location`"))->orderBy('project_name','asc')->get();
+
+	        $data = $data->merge($dataNonShifting);
+        } else {
+        	$data = DB::table('presence__shifting_user')->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')->join('users','users.nik','presence__shifting_user.nik')->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location')->where('status_karyawan','!=','dummy')->where('presence__shifting_user.nik',Auth::User()->nik)->orderBy('project_name','asc')->get();
+
+	    	$dataNonShifting = DB::table('users')
+	    			->whereNotExists(function($query)
+	                {
+	                    $query->select(DB::raw(1))
+	                          ->from('presence__shifting_user')
+	                          ->whereRaw('presence__shifting_user.nik = users.nik');
+	                })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN')")
+	                ->select('users.name','users.nik',DB::raw("CONCAT('Not-Set') AS `project_name`"),DB::raw("CONCAT('-') AS `id_location`"))->orderBy('project_name','asc')->where('users.nik',Auth::User()->nik)->get();
+
+	        $data = $data->merge($dataNonShifting);
+        }
+    	
+
+    	$dataAll = collect();
+
+    	foreach ($data as $key => $value) {
+    		$count = DB::table('ticketing__user')->where('nik',$value->nik)->count();
+    		$dataAll->push([
+    			"name" => $value->name,
+    			"id_location" =>$value->id_location,
+    			"nik" => $value->nik,
+    			"project_name" => $value->project_name,
+    			"count"	=> $count
+    		]);
+    	}
+
+    	return $dataAll;
+    }
+
+    public function getFilterDataAll(Request $request)
+    {
+    	$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name')->where('user_id', Auth::User()->nik)->first();
+
+    	if ($request->assign == 'user') {
+
+    		$getPid = TicketingUser::join('tb_id_project','tb_id_project.id_project','ticketing__user.pid')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->selectRaw('ticketing__user.nik')->selectRaw('GROUP_CONCAT(`ticketing__user`.`pid`, " - ", `name_project`) AS `pid`')->selectRaw('GROUP_CONCAT(`tb_contact`.`brand_name`) AS `brand_name`')->groupby('ticketing__user.nik');
+
+    		$dataNonShifting = User::leftJoinSub($getPid, 'tb_pid',function($join){
+                    $join->on("tb_pid.nik", '=', 'users.nik');
+                })
+    			->whereNotExists(function($query){
+                    $query->select(DB::raw(1))
+                          ->from('presence__shifting_user')
+                          ->whereRaw('presence__shifting_user.nik = users.nik');
+                })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN' AND `id_position` != 'MANAGER')")
+                ->select('users.name',DB::raw("CONCAT('Not-Set') AS `project_name`"),'users.nik',DB::raw("CONCAT('-') AS `id_location`"),'tb_pid.pid',DB::raw("CONCAT('-') AS `brand_name`"))->orderBy('project_name','asc');
+
+            if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+            	$dataNonShifting = $dataNonShifting;
+            } else{
+            	$dataNonShifting = $dataNonShifting->where('users.nik',Auth::User()->nik);
+            }
+
+            if (!in_array(null,$request->location)) {
+    			foreach ($request->location as $key => $value) {
+	                $dataNonShifting->havingRaw('FIND_IN_SET("'. $value.'", project_name)');
+	            }
+    		}
+
+    		if (!in_array(null,$request->user)) {
+    			$dataNonShifting->whereIn('users.nik',$request->user);
+    		}
+
+    		if (!in_array(null,$request->customer)) {
+	            foreach ($request->customer as $key => $value) {
+	                $dataNonShifting->havingRaw('FIND_IN_SET("'. $value.'", brand_name)');
+	            }
+	        }
+
+    		$data = DB::table('presence__shifting_user')
+    				->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')
+    				->join('users','users.nik','presence__shifting_user.nik')
+    				->leftJoinSub($getPid, 'tb_pid',function($join){
+	                    $join->on("tb_pid.nik", '=', 'presence__shifting_user.nik');
+	                })
+    				->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location','tb_pid.pid','brand_name')
+    				->where('status_karyawan','!=','dummy')
+    				->orderBy('project_name','asc')
+    				->union($dataNonShifting);
+
+    		if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+            	$data = $data;
+            } else{
+            	$data = $data->where('users.nik',Auth::User()->nik);
+            }
+
+    		if (!in_array(null,$request->location)) {
+    			$data->whereIn('project_name',$request->location);
+    		}
+
+    		if (!in_array(null,$request->user)) {
+    			$data->whereIn('presence__shifting_user.nik',$request->user);
+    		}
+
+    		if (!in_array(null,$request->customer)) {
+	            foreach ($request->customer as $key => $value) {
+	                $data->havingRaw('FIND_IN_SET("'. $value.'", brand_name)');
+	            }
+	        }
+
+    		$data = $data->get();
+
+    		$dataAll = collect();
+    		foreach ($data as $key => $value) {
+	    		$count = DB::table('ticketing__user')->join('tb_id_project','tb_id_project.id_project','ticketing__user.pid')->join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select('id_project','name_project','brand_name')->where('ticketing__user.nik',$value->nik);
+
+	    		if (!in_array(null,$request->customer)) {
+		            foreach ($request->customer as $key => $valueCount) {
+		                $count->havingRaw('FIND_IN_SET("'. $valueCount.'", brand_name)');
+		            }
+		        }
+
+	    		$dataAll->push([
+	    			"name" => $value->name,
+	    			"id_location" =>$value->id_location,
+	    			"nik" => $value->nik,
+	    			"project_name" => $value->project_name,
+	    			"count"	=> $count->get()->count()
+	    		]);
+	    	}
+    	} else {
+
+    		$data = DB::table('users')
+    				->join('presence__shifting_user','users.nik','presence__shifting_user.nik')
+	    			->join('presence__shifting_project', 'presence__shifting_project.id', 'presence__shifting_user.shifting_project')
+	    			->leftJoin('ticketing__user','ticketing__user.nik','presence__shifting_user.nik')
+	    			->leftJoin('tb_id_project','tb_id_project.id_project','ticketing__user.pid')
+	    			->leftJoin('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')
+	    			->leftJoin('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')
+	    			->selectRaw('GROUP_CONCAT(DISTINCT `users`.`name`) AS `name`, GROUP_CONCAT(DISTINCT `presence__shifting_user`.`nik`) AS `nik`')
+	    			->selectRaw('GROUP_CONCAT( DISTINCT `ticketing__user`.`pid`, " - ", `tb_id_project`.`name_project`) AS `pid`')
+	    			->selectRaw('GROUP_CONCAT(DISTINCT `tb_contact`.`brand_name`) AS `brand_name`')
+	    			->selectRaw('presence__shifting_project.project_name')->where('status_karyawan','!=','dummy')->groupBy('presence__shifting_project.project_name');
+
+	    	if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+            	$data = $data;
+            } else{
+            	// $data = $data;
+            	$data = $data->where('nik',Auth::User()->nik);
+            }
+
+	    	if (!in_array(null,$request->location)) {
+    			$data->where('project_name',$request->location);
+    		}
+
+    		if (!in_array(null,$request->customer)) {
+	            foreach ($request->customer as $key => $value) {
+	                $data->havingRaw('FIND_IN_SET("'. $value.'", brand_name)');
+	            }
+	        }
+
+	    	$data = $data->get();
+
+	    	$dataAll = collect();
+
+	    	foreach ($data as $key => $value) {
+	    		$count = DB::table('ticketing__user')->join('presence__shifting_user','presence__shifting_user.nik','ticketing__user.nik')->join('presence__shifting_project', 'presence__shifting_project.id', 'presence__shifting_user.shifting_project')->select('pid')->where('project_name',$value->project_name)->distinct()->get();
+	    		$dataAll->push([
+	    			"name" => $value->name,
+	    			"nik" => $value->nik,
+	    			"id" => DB::table('presence__shifting_project')->where('project_name',$value->project_name)->first()->id,
+	    			"project_name" => $value->project_name,
+	    			"count" => $count->count('pid')
+	    		]);
+	    	}
+	    }
+
+    	return $dataAll;
+    }
+
+    public function storeAssign(Request $request)
+    {
+    	$nik = json_decode($request->nik,true);
+    	$delete = TicketingUser::whereIn('nik',$nik)->delete();
+
+    	foreach ($nik as $key => $value) {
+    		foreach (json_decode($request->pid,true) as $key => $valuepid) {
+    			$store = new TicketingUser();
+	    		$store->nik = $value;
+	    		$store->pid = $valuepid;
+	    		$store->date_time = Carbon::now()->toDateTimeString();
+	    		$store->save();
+    		}
+    		
+    	}
+    }
+
+    public function getFilterPIDByCustomer(Request $request)
+    {
+    	// $nik = json_decode($request->nik,true);
+    	if (DB::table('ticketing__user')->where('nik',$request->nik)->exists()) {
+    		$getPid = DB::table('ticketing__user')->select('pid')->whereIn('nik',$request->nik);
+
+	    	$getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+	    					->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+	    					->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')
+	    					->leftJoinSub($getPid, 'tb_pid',function($join){
+			                    $join->on("tb_pid.pid", '=', 'tb_id_project.id_project');
+			                })
+	    					->select('tb_pid.pid', 'id_project',DB::raw("(CASE WHEN `tb_pid`.`pid` is null THEN 'Non-Selected' ELSE 'Selected' END) as result_modif"),'name_project','brand_name',DB::raw("(CASE WHEN `tb_pid`.`pid` is null THEN `id_project` ELSE `id_project` END) as pid"),'customer_legal_name')->where('id_company', '1')
+	    					->orderby('result_modif','desc')->orderBy('tb_id_project.created_at','desc');
+    	} else {
+    		$getPid = DB::table('ticketing__user')->select('pid')->whereIn('nik',$request->nik);
+
+    		$getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+    					->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+    					->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')
+    					->leftJoinSub($getPid, 'tb_pid',function($join){
+		                    $join->on("tb_pid.pid", '=', 'tb_id_project.id_project');
+		                })
+    					->select('tb_pid.pid', 'id_project',DB::raw("(CASE WHEN `tb_pid`.`pid` is null THEN 'Non-Selected' ELSE 'Selected' END) as result_modif"),'name_project','brand_name',DB::raw("(CASE WHEN `tb_pid`.`pid` is null THEN `id_project` ELSE `id_project` END) as pid"),'customer_legal_name')->where('id_company', '1')
+    					->orderby('tb_id_project.created_at','desc');
+    	}
+
+    	// return $getAllPid->get();
+
+    	// if (isset($request->customer)) {
+    	// 	$getAllPid->whereIn('sales_lead_register.id_customer',$request->customer);
+    	// }
+
+    	if (!in_array(null,$request->customer)) {
+            foreach ($request->customer as $key => $value) {
+                $getAllPid->havingRaw('FIND_IN_SET("'. $value.'", brand_name)');
+            }
+        }
+
+    	return array("data"=>$getAllPid->get());
+    }
+
+    public function getSearchPID(Request $request)
+    {
+    	$getPid = DB::table('ticketing__user')->select('pid')->where('nik',$request->nik);
+
+    	$getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+    					->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+    					->leftJoinSub($getPid, 'tb_pid',function($join){
+		                    $join->on("tb_pid.pid", '=', 'tb_id_project.id_project');
+		                })
+    					->select('tb_pid.pid', 'id_project',DB::raw("(CASE WHEN `tb_pid`.`pid` is null THEN 'Non-Selected' ELSE 'Selected' END) as result_modif"),'name_project')->where('id_company', '1')
+    					->orderby('result_modif','desc')->orderBy('tb_id_project.created_at','desc');
+
+    	$searchFields = ['tb_pid.pid', 'id_project', 'name_project'];
+
+        if($request->search != ""){
+            $getAllPid->where(function($getAllPid) use($request, $searchFields){
+                $searchWildCard = '%'. $request->search . '%';
+                foreach ($searchFields as $data) {
+                    $getAllPid->orWhere($data, 'LIKE', $searchWildCard);
+                }
+            });
+        }
+
+        if (isset($request->customer)) {
+        	$getAllPid->whereIn('sales_lead_register.id_customer',$request->customer);
+        }
+
+
+        return array("data" => $getAllPid->get());
+    }
+
+    public function getSearchAllData(Request $request)
+    {
+    	$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name')->where('user_id', Auth::User()->nik)->first();
+
+    	if ($request->assign == 'user') {
+
+    		$getPid = TicketingUser::join('tb_id_project','tb_id_project.id_project','ticketing__user.pid')->selectRaw('ticketing__user.nik')->selectRaw('GROUP_CONCAT(`pid`, " - ", `name_project`) AS `pid`')->groupby('ticketing__user.nik');
+
+    		$dataNonShifting = User::leftJoinSub($getPid, 'tb_pid',function($join){
+                    $join->on("tb_pid.nik", '=', 'users.nik');
+                })
+    			->whereNotExists(function($query){
+                    $query->select(DB::raw(1))
+                          ->from('presence__shifting_user')
+                          ->whereRaw('presence__shifting_user.nik = users.nik');
+                })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN' AND `id_position` != 'MANAGER')")
+                ->select('users.name','users.nik',DB::raw("CONCAT('Not-Set') AS `project_name`"),DB::raw("CONCAT('-') AS `id_location`"),'tb_pid.pid');
+
+    		$dataAll = User::join('presence__shifting_user','users.nik','presence__shifting_user.nik')
+    				->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')
+    				->leftJoinSub($getPid, 'tb_pid',function($join){
+	                    $join->on("tb_pid.nik", '=', 'presence__shifting_user.nik');
+	                })
+    				->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location','tb_pid.pid')
+    				->where('users.status_karyawan','!=','dummy')
+    				->orderBy('project_name','asc');
+
+    		if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+            	$dataNonShifting = $dataNonShifting->get();
+            	$dataAll = $dataAll->get();
+            } else{
+            	$dataNonShifting = $dataNonShifting->where('users.nik',Auth::User()->nik)->get();
+            	$dataAll = $dataAll->where('presence__shifting_user.nik',Auth::User()->nik)->get();
+            }
+
+    		$dataAll = $dataAll->merge($dataNonShifting);
+
+    		if ($request->searchAll != "") {
+    			$filtered = $dataAll->filter(function ($value, $key) use($request) { 
+    				return stripos($value["project_name"], $request->searchAll) !== false ||
+	                    stripos($value["name"], $request->searchAll) !== false ||
+	                    stripos($value["pid"], $request->searchAll) !== false;
+    			});
+    		} else {
+    			$filtered = $dataAll;
+    		}
+
+    		$dataCollect = collect();
+    		foreach ($filtered as $key => $value) {
+	    		$count = DB::table('ticketing__user')->where('nik',$value->nik)->count();
+	    		$dataCollect->push([
+	    			"name" => $value->name,
+	    			"id_location" =>$value->id_location,
+	    			"nik" => $value->nik,
+	    			"project_name" => $value->project_name,
+	    			"count"	=> $count
+	    		]);
+	    	}
+    	} else {
+
+	    	$dataAll = DB::table('presence__shifting_user')
+	    			->join('presence__shifting_project', 'presence__shifting_project.id', 'presence__shifting_user.shifting_project')
+	    			->join('users','users.nik','presence__shifting_user.nik')
+	    			->join('ticketing__user','ticketing__user.nik','presence__shifting_user.nik')
+	    			->join('tb_id_project','tb_id_project.id_project','ticketing__user.pid')
+	    			->selectRaw('GROUP_CONCAT(DISTINCT `users`.`name`) AS `name`, GROUP_CONCAT(DISTINCT `presence__shifting_user`.`nik`) AS `nik`')
+	    			->selectRaw('GROUP_CONCAT( DISTINCT `pid`, " - ", `name_project`) AS `pid`')
+	    			->selectRaw('presence__shifting_project.project_name')->where('status_karyawan','!=','dummy')->groupBy('presence__shifting_project.project_name');
+
+	    	if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+            	$dataAll = $dataAll;
+            } else{
+            	$dataAll = $dataAll->where('presence__shifting_user.nik',Auth::User()->nik);
+            }
+
+	    	$searchFields = ['presence__shifting_project.project_name', 'name', 'pid'];
+
+	    	if($request->searchAll != ""){
+	            $dataAll->where(function($dataAll) use($request, $searchFields){
+	                $searchWildCard = '%'. $request->searchAll . '%';
+	                foreach ($searchFields as $data) {
+	                    $dataAll->orWhere($data, 'LIKE', $searchWildCard);
+	                }
+	            });
+        	}
+
+	    	$dataAll = $dataAll->get();
+
+	    	$dataCollect = collect();
+
+	    	foreach ($dataAll as $key => $value) {
+	    		$count = DB::table('ticketing__user')->join('presence__shifting_user','presence__shifting_user.nik','ticketing__user.nik')->join('presence__shifting_project', 'presence__shifting_project.id', 'presence__shifting_user.shifting_project')->select('pid')->where('project_name',$value->project_name)->distinct()->get();
+
+
+	    		$dataCollect->push([
+	    			"name" => $value->name,
+	    			"nik" => $value->nik,
+	    			"id_location" => DB::table('presence__shifting_project')->where('project_name',$value->project_name)->first()->id,
+	    			"project_name" => $value->project_name,
+	    			"count" => $count->count('pid')
+	    		]);
+	    	}
+	    }
+
+	    return $dataCollect;
+    }
+
+    public function getPidByPic(Request $request)
+    {
+    	if ($request->client_acronym == 'BPJS') {
+    		$client_acronym = 'BKES';
+    	} elseif($request->client_acronym == 'PBLG'){
+    		$client_acronym = 'BULG';
+    	} elseif($request->client_acronym == 'BGDN'){
+    		$client_acronym = 'PGAN';
+    	} elseif($request->client_acronym == 'BJBR'){
+    		$client_acronym = 'BBJB';
+    	} elseif($request->client_acronym == 'ADRF'){
+    		$client_acronym = 'ADMF';
+    	} elseif($request->client_acronym == 'BTNI'){
+    		$client_acronym = 'BBTN';
+    	} else {
+    		$client_acronym = $request->client_acronym;
+    	}
+
+    	$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
+    			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
+    			->where('pid', 'like', '%'.$client_acronym.'%')
+    			->where('ticketing__user.nik',Auth::User()->nik)->get();
+
+    	return $data;
+    }
+
+    public function getPidAssigned(Request $request)
+    {
+    	if ($request->client_acronym == 'BPJS') {
+    		$client_acronym = 'BKES';
+    	} elseif($request->client_acronym == 'PBLG'){
+    		$client_acronym = 'BULG';
+    	} elseif($request->client_acronym == 'BGDN'){
+    		$client_acronym = 'PGAN';
+    	} elseif($request->client_acronym == 'ADRF'){
+    		$client_acronym = 'ADMF';
+    	} elseif($request->client_acronym == 'BJBR'){
+    		$client_acronym = 'BBJB';
+    	} elseif($request->client_acronym == 'BTNI'){
+    		$client_acronym = 'BBTN';
+    	} else{
+    		$client_acronym = $request->client_acronym;
+    	}
+
+    	$data = DB::table('ticketing__user')->select(DB::raw('`pid` AS `id`,`pid` AS `text`'))->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
+
+    	return $data;
+    }
 
 }

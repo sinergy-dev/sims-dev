@@ -151,25 +151,45 @@ Route::group(['middleware' => ['auth']], function () {
 	//coba calendar team up
 	Route::get('/indexCalendar','TestController@indexCalendar');
 
-	Route::get('permission/changeFeatureItem','TestController@changeFeatureItem');
-	Route::get('permission/getUserList','TestController@getUserList');
-	Route::get('permission/getParameter','TestController@getParameter');
-	Route::get('permission/getParameterFeature','TestController@getParameterFeature');
-	Route::get('permission/getFeatureRole','TestController@getFeatureRole');
-	Route::get('permission/setRoles','TestController@setRoles');
-	Route::get('permission/setRolesFeature','TestController@setRolesFeature');
-	Route::get('permission/getParameterRoles','TestController@getParameterRoles');
-	Route::get('permission/getRoles','TestController@getRoles');
-	Route::get('permission/getFeature','TestController@getFeature');
-	Route::get('permission/addConfigRoles','TestController@addConfigRoles');
-	Route::get('permission/addConfigFeature','TestController@addConfigFeature');
-	Route::get('permission/addConfigFeatureItem','TestController@addConfigFeatureItem');
-	Route::get('permission/getRoleDetail','TestController@getRoleDetail');
-	Route::get('permission/getConfigFeature','TestController@getConfigFeature');
-	Route::get('permission/getFeatureItem','TestController@getFeatureItem');
-	Route::get('permission/getFeatureItemParameterByRoleGroup','TestController@getFeatureItemParameterByRoleGroup');
-	Route::get('permission/getFeatureItemParameterByFeatureItem','TestController@getFeatureItemParameterByFeatureItem');
-	Route::get('permission/jsonIconData', 'TestController@getDataIcon');
+	Route::get('testPermission/changeFeatureItem','TestController@changeFeatureItem');
+	Route::get('testPermission/getUserList','TestController@getUserList');
+	Route::get('testPermission/getParameter','TestController@getParameter');
+	Route::get('testPermission/getParameterFeature','TestController@getParameterFeature');
+	Route::get('testPermission/getFeatureRole','TestController@getFeatureRole');
+	Route::get('testPermission/setRoles','TestController@setRoles');
+	Route::get('testPermission/setRolesFeature','TestController@setRolesFeature');
+	Route::get('testPermission/getParameterRoles','TestController@getParameterRoles');
+	Route::get('testPermission/getRoles','TestController@getRoles');
+	Route::get('testPermission/getFeature','TestController@getFeature');
+	Route::get('testPermission/addConfigRoles','TestController@addConfigRoles');
+	Route::get('testPermission/addConfigFeature','TestController@addConfigFeature');
+	Route::get('testPermission/addConfigFeatureItem','TestController@addConfigFeatureItem');
+	Route::get('testPermission/getRoleDetail','TestController@getRoleDetail');
+	Route::get('testPermission/getConfigFeature','TestController@getConfigFeature');
+	Route::get('testPermission/getFeatureItem','TestController@getFeatureItem');
+	Route::get('testPermission/getFeatureItemParameterByRoleGroup','TestController@getFeatureItemParameterByRoleGroup');
+	Route::get('testPermission/getFeatureItemParameterByFeatureItem','TestController@getFeatureItemParameterByFeatureItem');
+	Route::get('testPermission/jsonIconData', 'TestController@getDataIcon');
+
+	Route::get('permission/changeFeatureItem','PermissionConfigController@changeFeatureItem');
+	Route::get('permission/getUserList','PermissionConfigController@getUserList');
+	Route::get('permission/getParameter','PermissionConfigController@getParameter');
+	Route::get('permission/getParameterFeature','PermissionConfigController@getParameterFeature');
+	Route::get('permission/getFeatureRole','PermissionConfigController@getFeatureRole');
+	Route::get('permission/setRoles','PermissionConfigController@setRoles');
+	Route::get('permission/setRolesFeature','PermissionConfigController@setRolesFeature');
+	Route::get('permission/getParameterRoles','PermissionConfigController@getParameterRoles');
+	Route::get('permission/getRoles','PermissionConfigController@getRoles');
+	Route::get('permission/getFeature','PermissionConfigController@getFeature');
+	Route::get('permission/addConfigRoles','PermissionConfigController@addConfigRoles');
+	Route::get('permission/addConfigFeature','PermissionConfigController@addConfigFeature');
+	Route::get('permission/addConfigFeatureItem','PermissionConfigController@addConfigFeatureItem');
+	Route::get('permission/getRoleDetail','PermissionConfigController@getRoleDetail');
+	Route::get('permission/getConfigFeature','PermissionConfigController@getConfigFeature');
+	Route::get('permission/getFeatureItem','PermissionConfigController@getFeatureItem');
+	Route::get('permission/getFeatureItemParameterByRoleGroup','PermissionConfigController@getFeatureItemParameterByRoleGroup');
+	Route::get('permission/getFeatureItemParameterByFeatureItem','PermissionConfigController@getFeatureItemParameterByFeatureItem');
+	// Route::get('permission/jsonIconData', 'PermissionConfigController@getDataIcon');
 
 	Route::get('/data/{id}', 'ImplementationController@get');
 	Route::get('/data_pmo', 'PMOController@getGantt');
@@ -1215,6 +1235,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/create/getAtmPeripheralDetail','TicketingController@getAtmPeripheralDetail');
 	Route::get('/ticketing/create/getSwitchId','TicketingController@getSwitchId');
 	Route::get('/ticketing/create/getSwitchDetail','TicketingController@getSwitchDetail');
+	Route::get('/ticketing/create/getPidByPic','TicketingController@getPidByPic');
 
 	Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
 	Route::get('/ticketing/mail/getEmailTemplate','TicketingController@getEmailTemplate');
@@ -1276,12 +1297,26 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/ticketing/report/getParameter','TicketingController@getReportParameter');
 	Route::get('/ticketing/report/make','TicketingController@makeReportTicket');
+	Route::get('/ticketing/report/makePID','TicketingController@makeReportTicketPID');
 	Route::get('/ticketing/report/download','TicketingController@downloadReportTicket');
 	Route::get('/ticketing/report/new','TicketingController@getReportNew');
 	Route::get('/ticketing/report/newDeny','TicketingController@getReportNewDeny');
+	Route::get('/ticketing/report/getPidAssigned','TicketingController@getPidAssigned');
 	Route::get('/changeNominal/testRequestChange','TestController@testRequestChange');
 
 	Route::get('/report_ticketing','TicketingController@getReportTicket');
+
+	Route::get('/ticketing/setting/getUser','TicketingController@getUser');
+	Route::get('/ticketing/setting/getCustomer','TicketingController@getCustomer');
+	Route::get('/ticketing/setting/getAllPid','TicketingController@getAllPid');
+	Route::get('/ticketing/setting/getSiteShifting','TicketingController@getSiteShifting');
+	Route::get('/ticketing/setting/getUserShifting','TicketingController@getUserShifting');
+	Route::get('/ticketing/setting/getFilterDataAll','TicketingController@getFilterDataAll');
+	Route::get('/ticketing/setting/getFilterPIDByCustomer','TicketingController@getFilterPIDByCustomer');
+	Route::get('/ticketing/setting/getSearchPID','TicketingController@getSearchPID');
+	Route::get('/ticketing/setting/getSearchAllData','TicketingController@getSearchAllData');
+	Route::post('/ticketing/setting/storeAssign','TicketingController@storeAssign');
+	Route::post('/ticketing/setting/storeAssign','TicketingController@storeAssign');
 
 	Route::get('/requestChange','RequestChangeController@index');
 
@@ -1393,6 +1428,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/message/detail/{id}','QuotationController@show');
 	Route::delete('/message/delete/{id}','QuotationController@destroy');
 	Route::post('/message/send','QuotationController@store');
+	Route::get('/message/show','QuotationController@showData');
 	
 	Route::get('/tag', 'TagController@index');
 	Route::delete('/tag/delete/{id}', 'TagController@destroy');
@@ -1426,7 +1462,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::delete('/career/d/{id}','CareerController@destroy');
 	Route::put('/career/update/{id}','CareerController@update');
 	Route::get('/career/edit/{id}','CareerController@edit');
-	
+	Route::get('career/data/{id}', 'CareerController@show');
+	Route::get('/career/create','CareerController@create');	
 
 });
 
@@ -1485,7 +1522,24 @@ Route::get('testGCal','TestController@testGCal');
 Route::get('downloadSbePdf','TestController@downloadSbePdf');
 Route::get('testMailSBE','TestController@testMailSBE');
 
+Route::get('/tag-setting', 'OtherConfigController@tag');
+Route::get('/tag-setting/edit/{id}', 'OtherConfigController@tagEdit');
+Route::put('/tag-setting/update/{id}', 'OtherConfigController@tagUpdate');
 
+
+Route::get('/customer-setting', 'OtherConfigController@customer');
+Route::get('/customer-setting/show/{id}', 'OtherConfigController@show');
+Route::put('/customer-setting/update/{id}', 'OtherConfigController@update');
+
+Route::get('/subscription', 'OtherConfigController@subscription');
+Route::delete('/subscription/delete/{id}', 'OtherConfigController@subsDelete');
+
+Route::get('/solution','SolutionController@index');
+Route::get('/solution/create','SolutionController@create');
+Route::post('/solution/store','SolutionController@store');
+Route::get('/solution/edit/{id}','SolutionController@edit');
+Route::put('/solution/update/{id}','SolutionController@update');
+Route::delete('/solution/delete/{id}','SolutionController@destroy');
 
 
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');

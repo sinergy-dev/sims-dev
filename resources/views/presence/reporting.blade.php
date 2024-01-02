@@ -164,12 +164,24 @@ Presence Report
 						$.each(result.data,function(index,data){
 							append = append + "<tr>"
 							append = append + "	<td>" + no++ + "</td>"
-							append = append + "	<td>" + data.name + "</td>"
+							var name = data.name.split(" ")
+							var finalName = []
+							name.forEach(function(item,index){
+							  finalName.push(item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
+							})
+
+							append = append + "	<td>" + finalName.toString().replaceAll(","," ") + "</td>"
 							append = append + "	<td>" + data.where + "</td>"
 							append = append + "	<td class='text-center'> <span class='badge bg-green'>" + data.ontime + "</span> </td>"
 							append = append + "	<td class='text-center'> <span class='badge bg-yellow'>" + data.injury + "</span> </td>"
 							append = append + "	<td class='text-center'> <span class='badge bg-red'>" + data.late + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-default'>" + data.absen + "</span> </td>"
+							var absen = 0
+							if (data.absen == undefined) {
+								absen = absen
+							}else{
+								absen = data.absen
+							}
+							append = append + "	<td class='text-center'> <span class='badge bg-default'>" + absen + "</span> </td>"
 							append = append + "	<td class='text-center'> <span class='badge bg-blue'>" + data.all + "</span> </td>"
 							append = append + "</tr>"
 						})
@@ -289,12 +301,25 @@ Presence Report
 							$.each(result.data,function(index,value){
 								append = append + "<tr>"
 								append = append + "	<td>" + no++ + "</td>"
-								append = append + "	<td>" + value.name + "</td>"
+
+								var name = value.name.split(" ")
+								var finalName = []
+								name.forEach(function(item,index){
+								  finalName.push(item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
+								})
+
+								append = append + "	<td>" + finalName.toString().replaceAll(","," ") + "</td>"
 								append = append + "	<td>" + value.where + "</td>"
 								append = append + "	<td class='text-center'> <span class='badge bg-green'>" + value.ontime + "</span> </td>"
 								append = append + "	<td class='text-center'> <span class='badge bg-yellow'>" + value.injury + "</span> </td>"
 								append = append + "	<td class='text-center'> <span class='badge bg-red'>" + value.late + "</span> </td>"
-								append = append + "	<td class='text-center'> <span class='badge bg-default'>" + value.absen + "</span> </td>"
+								var absen = 0
+								if (value.absen == undefined) {
+									absen = absen
+								}else{
+									absen = value.absen
+								}
+								append = append + "	<td class='text-center'> <span class='badge bg-default'>" + absen + "</span> </td>"
 								append = append + "	<td class='text-center'> <span class='badge bg-blue'>" + value.all + "</span> </td>"
 								append = append + "</tr>"
 							})

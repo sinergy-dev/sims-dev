@@ -11,6 +11,8 @@ Ticketing
 <link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" integrity="sha512-/Ae8qSd9X8ajHk6Zty0m8yfnKJPlelk42HTJjOHDWs1Tjr41RfsSkceZ/8yyJGLkxALGMIYd5L2oGemy/x1PLg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+<link type="text/css" rel="stylesheet" href="{{asset('css/simplePagination.css')}}" />
+
 <style type="text/css">
 	.table2 > tbody > tr > th, .table2 > tbody > tr > td {
 		border-color: #141414;border: 1px solid;padding: 3px;}
@@ -138,9 +140,51 @@ Ticketing
 		background-color: #f1c40f;color: #fff !important;
 	}
 
+	/* For WebKit-based browsers (Chrome, Safari) */
+    .boxDivSite::-webkit-scrollbar {
+      width: 2px; /* Width of the scrollbar */
+    }
+
+    /* For Firefox */
+    .boxDivSite {
+      scrollbar-width: thin; /* Thin scrollbar for Firefox */
+    }
+
+    /* Track (background of the scrollbar) */
+    .boxDivSite::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle (thumb of the scrollbar) */
+    .boxDivSite::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
 	/*.columnCheck {
 		margin: 0 10px 0 5px;
 	}*/
+	.widthBoxPID{
+		width: 50%;
+	}
+
+	.container_pid{
+		display: flex;
+	}
+
+	@media screen and (max-width: 500px) { 
+      .widthBoxPID { 
+          width: 100%; 
+      } 
+
+      .container_pid{
+      	display: block;
+      }
+  }
+
+  .widthBoxPID100{
+  	width: 100%;
+  }
 </style>
 @endsection
 @section('content')
@@ -357,19 +401,27 @@ Ticketing
 							<form class="form-horizontal">
 								<input type="hidden" id="inputID">
 								<div class="form-group" id="nomorDiv" style="display: none;">
-									<label for="inputNomor" class="col-sm-1 control-label" >ID Ticket</label>
-									<div class="col-sm-11">
+									<label for="inputNomor" class="col-sm-2 control-label" >ID Ticket</label>
+									<div class="col-sm-10">
 										<input type="text" class="form-control" id="inputticket" value="" readonly>
 									</div>
 								</div>
 								<div class="form-group" id="clientDiv" style="display: none;">
-									<label class="col-sm-1 control-label">Client</label>
-									<div class="col-sm-3">
+									<label class="col-sm-2 control-label">Client</label>
+									<div class="col-sm-4">
 										<select class="form-control" id="inputClient" style="width:100%">
 										</select>
 									</div>
-									<label class="col-sm-1 control-label">Type</label>
-									<div class="col-sm-3">
+									<label class="col-sm-2 control-label">PID</label>
+									<div class="col-sm-4">
+										<select class="form-control" id="selectPID" style="width:100%!important">
+											<option></option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group" id="typeDiv" style="display: none;">
+									<label class="col-sm-2 control-label">Type</label>
+									<div class="col-sm-4">
 										<select class="form-control" id="inputTypeTicket">
 											<option selected="selected" value="none">Chose Type</option>
 											<option value="Trouble Ticket">Trouble Ticket</option>
@@ -377,12 +429,10 @@ Ticketing
 											<option value="Permintaan Layanan">Permintaan Layanan Ticket</option>
 										</select>
 									</div>
-									<div class="form-group">
-										<label class="col-sm-1 control-label">Severity</label>
-										<div class="col-sm-3">
+									<label class="col-sm-2 control-label">Severity</label>
+									<div class="col-sm-4">
 											<select class="form-control" id="inputSeverity">
 											</select>
-										</div>
 									</div>
 								</div>
 
@@ -838,6 +888,9 @@ Ticketing
 							<button class="btn btn-flat btn-default" onclick="switchSetting()">
 								Switch Setting
 							</button>
+							<button class="btn btn-flat btn-default" onclick="userSetting()">
+								User Setting
+							</button>
 							<!-- <button class="btn btn-flat btn-default" onclick="severitySetting()">
 								Severity Setting
 							</button> -->
@@ -975,6 +1028,65 @@ Ticketing
 							</table>
 						</div>
 					</div>
+					<div style="display: none" id="userSetting" class="row form-group settingComponent">
+						<div class="col-md-2 col-xs-12">
+							<div class="box box-solid box-default">
+								<div class="box-header">
+									<h3 class="box-title"><i class="fa fa-filter"></i> Filter</label>
+								</div>
+								<div class="box-body">
+									<div class="form-group">
+										<label>Assign</label>
+										<select id="assignFilter" name="assignFilter" class="form-control select2" style="width: 100%!important;" onchange="assignFilter(this.value)">
+											<option value="user">User</option>
+											<option value="site">Site</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label>Location</label>
+										<div class="siteFilter">
+											
+										</div>
+									</div>
+									<div class="form-group">
+										<label>User</label>
+										<select id="userFilter" name="userFilter" class="form-control select2" style="width: 100%!important;">
+										</select>
+									</div>
+									<div class="form-group">
+										<label>Customer</label>
+										<select id="customerFilter" name="customerFilter" class="form-control select2" style="width: 100%!important;">
+										</select>
+									</div>
+									<button class="btn bg-purple btn-block" id="btnFilterPid" onclick="filterPID()">Filter</button>
+									<button class="btn btn-default btn-block" id="btnFilterResetPid" onclick="resetPID()">Reset Filter</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-10 col-xs-12">
+							<div class="box box-solid">
+								<div class="box-header" style="flex-direction: row-reverse;display: flex;">
+									<div class="input-group" style="width: 50%;">
+										<input id="searchBarAll" type="text" class="form-control" onkeyup="searchCustomAll('searchBarAll')" placeholder="Search PID/Site/User">	
+										<span class="input-group-btn">
+											<button onclick="searchCustomAll('searchBarAll')" type="button" class="btn btn-default btn-flat">
+												<i class="fa fa-fw fa-search"></i>
+											</button>
+										</span>
+									</div>
+								</div>
+								<div class="box-body boxDivSite" style="overflow: auto;">
+									<div class="divSiteBox">
+										
+									</div>									
+								</div>
+								<nav class="pull-right" aria-label="Page navigation example" style="margin-top:10px">
+								  <ul class="pagination justify-content-center" id="pagination">
+								  </ul>
+								</nav>
+							</div>
+						</div>
+					</div>
 					<div style="display: none" id="severitySetting" class="row form-group settingComponent">
 						<div class="col-md-12">
 							Comming Soon...
@@ -989,18 +1101,19 @@ Ticketing
 
 				<div class="tab-pane" id="reporting">
 					<div class="row">
-						<div class="col-md-3">
+						<div class="col-md-2">
 							<div class="form-group">
 								<label>Select Type</label>
 								<select id="selectReportingType" class="form-control">
 									<option>Chose One</option>
-									<option value="1">Finish Report</option>
-									<option value="2">Helpesk Report</option>
-									<option value="3">Manager Report</option>
+									<option value="finishReport">Finish Report</option>
+									<option value="finishReportPid">Finish Report PID</option>
+									<option value="helpdeskReport">Helpesk Report</option>
+									<!-- <option value="managerReport">Manager Report</option> -->
 								</select>
 							</div>
 						</div>
-						<div class="col-md-3 finish-report" style="display:none;">
+						<div class="col-md-2 divReportingClient" style="display:none;">
 							<div class="form-group">
 								<label>Select Client</label>
 								<select id="selectReportingClient" style="width:100% !important" class="select2 form-control">
@@ -1008,21 +1121,39 @@ Ticketing
 								</select>
 							</div>
 						</div>
-						<div class="col-md-2 finish-report" style="display:none;">
+						<div class="col-md-2 divPID" style="display:none;">
+							<div class="form-group">
+								<label>Select PID</label>
+								<select class="form-control" id="selectPIDReport">
+								</select>
+							</div>
+						</div>
+						<div class="col-md-2 divTypeTicket" style="display:none;">
+							<div class="form-group">
+								<label>Select Type Ticket</label>
+								<select class="form-control" id="selectTypeTicket">
+									<option selected="selected" value="none">Chose Type</option>
+									<option value="TT">Trouble Ticket</option>
+									<option value="PM">Preventive Maintenance Ticket</option>
+									<option value="PL">Permintaan Layanan Ticket</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-2 divReportingYear" style="display:none;">
 							<div class="form-group">
 								<label>Select Year</label>
 								<select id="selectReportingYear" class="form-control">
 								</select>
 							</div>
 						</div>
-						<div class="col-md-2 finish-report" style="display:none;">
+						<div class="col-md-2 divReportingMonth" style="display:none;">
 							<div class="form-group">
 								<label>Select Month</label>
 								<select id="selectReportingMonth" class="form-control">
 								</select>
 							</div>
 						</div>
-						<div class="col-md-4 bayu-report" style="display:none;">
+						<div class="col-md-4 divDateRange" style="display:none;">
 							<div class="form-group">
 								<label>Date range button:</label>
 
@@ -1036,7 +1167,7 @@ Ticketing
 								</div>
 							</div>
 						</div>
-						<div class="col-md-4 denny-report" style="display:none;">
+						<!-- <div class="col-md-4 denny-report" style="display:none;">
 							<div class="form-group">
 								<label>Date range button:</label>
 
@@ -1049,10 +1180,10 @@ Ticketing
 									</button>
 								</div>
 							</div>
-						</div>
+						</div> -->
 					</div>
 					<div class="row">
-						<div class="col-md-10">
+						<div class="col-md-12">
 							<!-- <a id="ReportingButtonLink" href=""> -->
 								<button id="ReportingButtonGo" class="pull-right btn btn-flat btn-primary" style="display: none;" onclick="getReport()">
 									Goo..
@@ -1171,7 +1302,7 @@ Ticketing
 						</div>
 						<div class="form-group" id="ticketNoteUpdate">
 							<label>Note Activity*</label>
-							<textarea class="form-control" rows="1" id="ticketNote"></textarea>
+							<textarea class="form-control" rows="1" id="ticketNote" style="resize:vertical;"></textarea>
 						</div>
 						<div class="form-group" style="display: none" id="ticketRoute" >
 							<label>Root Cause</label>
@@ -1184,7 +1315,7 @@ Ticketing
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-flat btn-default pull-left" onclick="exitTicket()">Exit</button>
+					<button type="button" class="btn btn-flat btn-default pull-left" onclick="exitTicket()" data-dismiss="modal">Exit</button>
 					<button type="button" class="btn btn-flat btn-danger pull-left" id="escalateButton">Escalate</button>
 					<button type="button" class="btn btn-flat btn-info pull-left" id="reOpenButton" disabled>Re-Open Ticket</button>
 					<button type="button" class="btn btn-flat btn-success" id="closeButton">Close</button>
@@ -1593,7 +1724,7 @@ Ticketing
 						<form role="form">
 							<div class="form-group" >
 								<label>Root Cause Analysis (RCA)</label>
-								<textarea type="text" class="form-control" id="escalateRCA"></textarea>
+								<textarea type="text" class="form-control" id="escalateRCA" style="resize: vertical;"></textarea>
 							</div>
 							<div class="row">
 								<div class="col-sm-12">
@@ -2407,9 +2538,16 @@ Ticketing
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js" integrity="sha512-2xXe2z/uA+2SyT/sTSt9Uq4jDKsT0lV4evd3eoE/oxKih8DSAsOF6LUb+ncafMJPAimWAXdu9W+yMXGrCVOzQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ url('js/jquery.emailinput.min.js')}}"></script>
 <script src="{{ url('js/roman.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.simplePagination.js')}}"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
+	var accesable = @json($feature_item);
+      
+  accesable.forEach(function(item,index){
+    $("#" + item).show()
+  })
+
 	var swalWithCustomClass
 
 	$(document).ready(function(){
@@ -2528,7 +2666,6 @@ Ticketing
 		$('#reloadTable').click(function(){
 			$('#tablePerformance').DataTable().ajax.reload();
 		});
-
 	})
 
 	function getDashboard(){
@@ -2739,7 +2876,7 @@ Ticketing
 					$("#inputticket").val(result);
 					$("#inputID").val(result);
 					$("#inputDate").val(moment().format("DD-MMM-YY HH:mm"));
-					
+					$("#typeDiv").show();
 					$("#nomorDiv").show();
 					$("#clientDiv").show();
 					$("#formNewTicket").show();
@@ -2775,6 +2912,21 @@ Ticketing
 					clientBanking = result.banking
 					clientWincor = result.wincor
 					$("#inputticket").val($("#inputticket").val() + "/" + acronym_client + moment().format("/MMM/YYYY"));
+
+					$.ajax({
+						type:"GET",
+						url:"{{url('ticketing/create/getPidByPic')}}",
+						data:{
+							client_acronym:acronym_client
+						},
+						success: function(result){
+							$("#selectPID").empty("")
+							$("#selectPID").select2({
+								placeholder:"Select PID",
+								data:result
+							})
+						}
+					})
 				}
 			});
 		} else {
@@ -2795,6 +2947,21 @@ Ticketing
 					clientBanking = result.banking
 					clientWincor = result.wincor
 					$("#inputticket").val(changeResult);
+
+					$.ajax({
+						type:"GET",
+						url:"{{url('ticketing/create/getPidByPic')}}",
+						data:{
+							client_acronym:acronym_client
+						},
+						success: function(result){
+							$("#selectPID").empty("")
+							$("#selectPID").select2({
+								placeholder:"Select PID",
+								data:result
+							})
+						}
+					})
 				}
 			});
 		}
@@ -3066,7 +3233,7 @@ Ticketing
 		$("#inputReportingDate").val('');
 		$("#inputDate").val('');
 		$("#inputNote").val('');
-
+		$("#typeDiv").hide()
 		$("#hrLine").show();
 		$("#hrLine2").show();
 
@@ -3587,6 +3754,12 @@ Ticketing
 				type_ticket = "PL"
 			}
 
+			if ($("#selectPID").select2("data")[0] == undefined) {
+      	var pid = ""
+			}else{
+	      var pid = $("#selectPID").select2("data")[0].id
+      }
+
 			var dataAjax = {
 				body:$("#bodyOpenMail").html(),
 				subject: $("#emailOpenSubject").val(),
@@ -3612,7 +3785,8 @@ Ticketing
 				note:$("#inputNote").val(),
 				report:moment($("#inputReportingDate").val(),'DD/MM/YYYY').format("YYYY-MM-DD") + " " + moment($("#inputReportingTime").val(),'HH:mm:ss').format("HH:mm:ss.000000"),
 				severity:severity,
-				type_ticket:type_ticket
+				type_ticket:type_ticket,
+				pid:pid
 			}
 			var textSwal = ""
 			if($("#emailOpenCc").val() == ""){
@@ -6399,9 +6573,28 @@ Ticketing
 			})
 
 			$("#selectReportingClient").select2({
-              placeholder: " Select Client",
-              data:dataClient,
-            })
+        placeholder: " Select Client",
+        data:dataClient,
+      }).change(function(){
+				var acronym_client = $("#selectReportingClient option:selected").text().split(" - ")[0].replace(/\[|\]/g, '');
+      	if ($("#selectReportingType").val() == "finishReportPid") {
+      		$.ajax({
+						type:"GET",
+						url:"{{url('/ticketing/report/getPidAssigned')}}",
+						data:{
+							client_acronym:acronym_client
+						},
+						success:function(result){
+							$("#selectPIDReport").empty("")
+							$("#selectPIDReport").select2({
+								placeholder:"Select PID",
+								data:result,
+								multiple:true
+							})
+						}
+					})
+      	}
+      })
 
 			result.ticket_year.forEach(function(data,index){
 				$("#selectReportingYear").append("<option value='" + data.year + "'>" + data.year + "</option>")
@@ -6419,33 +6612,44 @@ Ticketing
 	})
 
 	$("#selectReportingType").change(function(){
+		$("#selectReportingClient").val("").trigger("change")
 		$("#ReportingButtonGo, #ReportingButtonGoNew, #ReportingButtonGoNew2").hide()
-		if($(this).val() == 1){
-			$(".finish-report").show()
-			$(".bayu-report").hide()
-			$(".denny-report").hide()
-		} else if($(this).val() == 2) {
-			$(".finish-report").hide()
-			$(".bayu-report").show()
-			$(".denny-report").hide()
-		} else if($(this).val() == 3){
-			$(".finish-report").hide()
-			$(".bayu-report").hide()
-			$(".denny-report").show()
+		if($(this).val() == 'finishReport'){
+			$(".divReportingClient").show()
+			$(".divTypeTicket").show()
+			$(".divReportingYear").show()
+			$(".divReportingMonth").show()
+			$(".divPID").hide()
+			$(".divDateRange").hide()
+		} else if($(this).val() == 'helpdeskReport'){
+			$(".divTypeTicket").show()
+			$(".divDateRange").show()
+			$(".divReportingClient").hide()
+			$(".divReportingYear").hide()
+			$(".divReportingMonth").hide()
+			$(".divPID").hide()
+		} else if ($(this).val() == 'finishReportPid') {
+			$("#selectPIDReport").empty("")
+
+			$(".divReportingClient").show()
+			$(".divPID").show()
+			$(".divTypeTicket").show()
+			$(".divReportingYear").show()
+			$(".divReportingMonth").show()
+			$(".divDateRange").hide()
+		} else {
+			$(".divReportingClient").hide()
+			$(".divPID").hide()
+			$(".divTypeTicket").hide()
+			$(".divReportingYear").hide()
+			$(".divReportingMonth").hide()
+			$(".divDateRange").hide()
 		}
 	})
 
-	$("#selectReportingClient, #selectReportingYear").change(function(){
+	$("#selectReportingYear").change(function(){
 		$("#selectReportingMonth").empty()
 
-		if($("#selectReportingClient").val() !== "Select Client" && $("#selectReportingYear").val() !== "Select Year"  && $("#selectReportingMonth").val() !== "Select Month"){
-			$("#ReportingButtonGo").show()			
-
-			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month='
-
-			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
-
-		}
 		if ($("#selectReportingYear").val() !== moment().format('YYYY') && $("#selectReportingYear").val() !== "Select Year"){
 			$("#selectReportingMonth").append("<option>Select Month</option>")
 			moment.months().forEach(function(data,index){
@@ -6460,12 +6664,34 @@ Ticketing
 			})
 		}
 
-		$("#selectReportingMonth").change(function(){
-			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+		if ($("#selectReportingType").val() == "finishReport") {
+			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' 
 
 			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
 
 			$("#ReportingButtonGo").show()			
+		}else if ($("#selectReportingType").val() == "finishReportPid") {
+			var urlAjax = '{{url("/ticketing/report/makePID")}}?client=' + $("#selectReportingClient").val() + '&pid=' + $("#selectPIDReport").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' 
+
+			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+
+			$("#ReportingButtonGo").show()			
+		}
+
+		$("#selectReportingMonth").change(function(){
+			if ($("#selectReportingType").val() == "finishReport") {
+				var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+
+				$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+
+				$("#ReportingButtonGo").show()			
+			}else if ($("#selectReportingType").val() == "finishReportPid") {
+				var urlAjax = '{{url("/ticketing/report/makePID")}}?client=' + $("#selectReportingClient").val() + '&pid=' + $("#selectPIDReport").val() + '&type=' + $("#selectTypeTicket").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+
+				$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+
+				$("#ReportingButtonGo").show()			
+			}		
 		})
 	})
 
@@ -6555,6 +6781,7 @@ Ticketing
 						type:"GET",
 						url:"{{url('/ticketing/report/new')}}",
 						data:{
+							type:$("#selectTypeTicket").val(),
 							start:$('#daterange-btn').data('daterangepicker').startDate.format('YYYY-MM-DD'),
 							end:$('#daterange-btn').data('daterangepicker').endDate.format('YYYY-MM-DD')
 						},
@@ -6642,7 +6869,997 @@ Ticketing
 		);
 	})
 
+	function userSetting() {
+		///////
+		$(".settingComponent").hide()
+		$("#userSetting").show()
+		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getUserShifting")
+    	initiateFilter()
+	}
+
+	function showDivSiteBox(defaultAssign,url){		
+		$.ajax({
+			type:"GET",
+			url:"{{url('/')}}"+url,
+			success:function(result){
+				$(".divSiteBox").empty("")
+
+				let append = "", nik = []
+				let columnCount = 0
+
+  			append = append + "<div style='column-count:2;column-gap:10px' id='container_pid'></div>"
+  			// append = append + "<div class='container_pid' id='container_pid'></div>"
+				$(".divSiteBox").append(append)	
+
+				result.forEach(function	(index,items){
+					nik.push({
+						"nik": index.nik
+					})
+				})	
+
+    		$.each(result,function(item,value){
+    			// if (item % 3 === 0) {
+    			// $("#container_pid").append("<div class='widthBoxPID column_pid'></div>")
+    				// columnCount++
+						// append = append + "<div style='width:50%'></div>"
+    			// }
+
+  				let append_column = ""
+    			append_column = append_column + "<div class='alert bg-gray disabled' style='margin-bottom:10px!important;break-inside:avoid;'>"
+						append_column = append_column + "<div style='position:relative'>"
+							append_column = append_column + "<span class='showPID' data-value='"+ item +"' onclick='showPID("+ item +"," + '['+ nik[item].nik + "]" +")' style='position:absolute;right:0;top:0'><i class='fa fa-2x fa-angle-right'></i></span>"
+							append_column = append_column + "	<h4><b class='titleh4' data-value='"+ item +"'></b></h4>"
+							append_column = append_column + "	<p class='titleP' data-value='"+ item +"'></p>"
+							append_column = append_column + "<div style='position:relative'>"
+								append_column = append_column + "<span class='badge bg-purple' style='position:absolute;right:0;bottom:0'>"+ value.count +"</span>"
+							append_column = append_column + "</div>"
+								append_column = append_column + "<div class='divPID' data-value='"+ item +"' style='overflow:x;padding:8px;border-radius:5px;display:none;margin-top:25px'>"
+									append_column = append_column + "<div class='row'>"
+										append_column = append_column + "<div class='col-md-12'>"
+											append_column = append_column + "<div>"
+												append_column = append_column + "<div style='display: flex;'><div class='input-group searchTablePID' style='flex-direction: row; margin: 10px; width: 50% !important;' data-value='"+ item +"'><input class='form-control' placeholder='Search Cutsomer/PID/Project Name' id='searchbarPID' onkeyup='searchCustomPID("+ item + ")' data-value='"+ item +"'><span class='input-group-btn'><button onclick='searchCustomPID("+ item + ")' type='button' class='btn btn-default btn-flat' fdprocessedid='f23lya'>	<i class='fa fa-fw fa-search'></i></button></span></div>"
+													append_column = append_column + "<span style='margin-top: 19px;' data-toggle='tooltip' data-placement='top' title='Please search for more PID list!'><i class='fa fa-question-circle' style='font-size: 1.2em;color: #579bcf;'></i></span>"
+												append_column = append_column + "</div>"
+											append_column = append_column + "</div>"
+											append_column = append_column + "<div class='boxPID' data-value='"+ item +"'>"
+											append_column = append_column + "</div>"
+											append_column = append_column + "<button class='btn btn-sm bg-purple btnSavePID pull-right' data-value='"+ item +"' style='margin:10px;display:none'>"
+												append_column = append_column + "Save"
+											append_column = append_column + "</button>"
+										append_column = append_column + "</div>"					
+									append_column = append_column + "</div>"
+								append_column = append_column + "</div>"
+							append_column = append_column + "</div>"
+						append_column = append_column + "</div>"
+					append_column = append_column + "</div>"
+
+					// $(".column_pid").eq(columnCount - 1).append(append_column)
+					$("#container_pid").append(append_column)
+
+					if (defaultAssign == 'user') {
+						$(".titleh4[data-value='"+ item +"']").text(value.name )
+						$(".titleP[data-value='"+ item +"']").html(value.project_name).css('height', '30px')
+	  				}else if(defaultAssign == 'site'){
+	  					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
+							$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
+	  				}	
+    		})
+
+				if (result.length == 0) {
+					$("#container_pid").html("<span style='display:flex;flex-direction:row-reverse'>Empty Data!</span>")
+					$("#pagination").hide()
+				}else{
+					$("#pagination").show()
+				}
+
+				var items = $(".divSiteBox .alert");
+				var numItems = items.length;
+				var perPage = 6;
+
+				items.slice(perPage).hide();
+
+				$('#pagination').pagination({
+					items: numItems,
+					itemsOnPage: perPage,
+					prevText: "&laquo;",
+					nextText: "&raquo;",
+					onPageClick: function (pageNumber) {
+						var showFrom = perPage * (pageNumber - 1);
+						var showTo = showFrom + perPage;
+						items.hide().slice(showFrom, showTo).show();
+					}
+				});
+
+			}
+		})		
+	}
+
+	function showPID(item,nik){
+		console.log(nik)
+		let append = ""
+
+		if (!$("#tablePID[data-value='"+ item +"']").is(":visible")) {
+			append = append + "<table id='tablePID' name='"+ item +"' data-value='"+ item +"' class='table table-condensed'>"
+				append = append + "<tr>"
+					append = append + "<th>"
+						append = append + "PID"
+					append = append + "</th>"
+					append = append + "<th>"
+						append = append + "Project Name"
+					append = append + "</th>"
+				append = append + "</tr>"
+				append = append + "<tfoot>"
+					append  = append + "<tr>"
+						append = append + "<td colspan='2'>"
+							append = append + "<div class='checkbox'>"
+								append = append + "	<label>"
+									append = append + "		<input type='checkbox' data-value='"+ item +"'>"
+									append = append + "		Check All"
+								append = append + "	</label>"
+							append = append + "</div>"
+						append = append + "</td>"
+					append  = append + "</tr>"
+				append = append + "</tfoot>"
+			append = append + "</table>"
+
+			$(".divPID[data-value='"+ item +"']").fadeIn('slow').css('width','')
+			$(".searchTablePID[data-value='"+ item +"']").show()
+			$(".btnSavePID[data-value='"+ item +"']").show()
+			$(".showPID[data-value='"+ item +"'] i").removeClass("fa-angle-right").addClass("fa-angle-down")
+			$(".boxPID[data-value='"+ item +"']").append(append)
+			$(".boxPID[data-value='"+ item +"']").closest(".divPID").css({'background-color':'white','padding':'8px'});
+
+			if ($("#customerFilter").val().length > 0) {
+				var arrCust = "customer[]=", url = "/ticketing/setting/getFilterPIDByCustomer?"
+
+		    $.each($('#customerFilter').val(),function(key,value){
+					if(arrCust == 'customer[]=') {
+		        arrCust = arrCust + value
+		      }else{
+		        arrCust = arrCust + '&customer[]=' + valuee
+		      }
+		    })
+			}else{
+				var url = "/ticketing/setting/getAllPid?"
+			}
+		
+
+			$("#tablePID[data-value='"+ item +"']").DataTable({
+				"ajax":{
+	        "type":"GET",
+	        "url":"{{url('/')}}"+url + arrCust,
+	        "data":{
+			    	nik:nik,
+		        assign:$("#assignFilter").val(),
+			    }
+	      },
+	      "columns": [
+	        { 
+	        	render: function (data, type, row, meta){
+	        		if (row.result_modif == "Selected") {
+	        			return "<label>"
+								+ "<input type='checkbox' checked value='"+ row.id_project +"'> "
+								+ row.id_project
+								+ "	</label>" 
+	        		}else{
+	        			return "<label>"
+								+ "<input type='checkbox' value='"+ row.id_project +"'> "
+								+ row.id_project
+								+ "	</label>" 
+	        		}
+	        		
+	        	},
+	        	"title":"PID",
+	        	"width":"30%"
+	        },
+	        { "data": "name_project","title":"Name Project"},
+	        { "data": "brand_name","title":"Name Project"},
+	        { "data": "customer_legal_name","title":"Name Project"},
+
+	      ],
+	      fixedHeader:{
+	      	footer:true
+	      },
+	      "initComplete": function(settings,json){
+	      	$(".dataTables_paginate.paging_simple_numbers").css("display","none")
+			    var input = $('.dataTable[data-value="'+ item +'"] tbody input[type="checkbox"]')
+			    console.log(accesable)
+	      	checkInputCheked()
+
+	      	function checkInputCheked(){
+	      		var isInputChecked = $(".btnSavePID[data-value='"+ item +"']").closest(".row").closest(".row").find(".col-sm-12").find(".dataTable[data-value='"+ item +"'] tbody input[type='checkbox']").is(":checked");
+	      		if (isInputChecked) {
+				      $(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+		      	}else{
+				      $(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+		      	}	
+	      	}
+
+	      	var inputCheckAll = $('.dataTable[data-value="'+ item +'"] tfoot input[type="checkbox"]');
+
+	      	$(inputCheckAll).on('change', function() {
+			        if ($(this).is(':checked')) {
+			        	if ($("#searchbarPID[data-value='"+ item +"']").val() == '') {
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+		            	$(input).prop("checked",true)
+				        }else{
+				        	var table = $('.dataTable[data-value="'+ item +'"]').DataTable()
+
+				        	var filteredCheckboxes = table.rows({ search: 'applied' }).nodes().to$().find('label input[type="checkbox"]');
+								  filteredCheckboxes.prop('checked', true);
+
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+				        }
+		        		
+			        } else {
+			        	if ($("#searchbarPID[data-value='"+ item +"']").val() == '') {
+		            	$(input).prop("checked",false)
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+
+				        }else{
+				        	var table = $('.dataTable[data-value="'+ item +'"]').DataTable()
+
+				        	var filteredCheckboxes = table.rows({ search: 'applied' }).nodes().to$().find('label input[type="checkbox"]');
+								  filteredCheckboxes.prop('checked', false);
+
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+				        }
+		        		
+			        }
+			    });
+
+	      	$(input).on('change', function() {
+	      		if ($(this).is(':checked')) {
+	      			checkInputCheked()
+		        } else {
+		        	checkInputCheked()
+		        	$(inputCheckAll).prop("checked",false)
+		        }
+	      	})
+
+	      	if (accesable.includes('checkboxPID')) {
+	      		$(input).prop("disabled",false)
+	      		$(inputCheckAll).prop("disabled",false)
+	      		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+	      	}else{
+	      		$(input).prop("disabled",true)
+	      		$(inputCheckAll).prop("disabled",true)
+	      		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+	      	}
+
+	      },
+	      "footerCallback": function( tfoot, data, start, end, display ) {
+	      	var api = this.api();
+	      	// console.log(api)
+			  },
+			  "columnDefs": [
+		      {
+		        "targets": [2, 3], // Columns indices to hide (0-based index)
+		        "visible": false // Set to true if you want them visible by default
+		      }
+		      // Add more "targets" objects to hide/show multiple columns if needed
+		    ],
+	      "pageLength" : 50,
+	      "bLengthChange": false,
+	      "bInfo": false,
+	      "ordering":false,
+	      "aaSorting": [],
+	      "scrollCollapse": true,
+    		"scrollY": '200px'
+			})
+
+			$(".btnSavePID[data-value='"+ item +"']").click(function(){
+				// var input = $('.dataTable[data-value="'+ $(this).attr("data-value") +'"] tbody input[type="checkbox"]:checked')
+				var table = $('.dataTable[data-value="'+ $(this).attr("data-value") +'"]')
+
+				let arr_pid = []
+
+				var checkboxes = table.DataTable().column(0).nodes().to$().find('label input[type="checkbox"]:checked')
+
+				checkboxes.each(function() {
+			    if ($(this).prop('checked')) {
+						arr_pid.push($(this).val())
+			    }
+			  });
+
+				// $.each(input,function(item,value){
+				// 	arr_pid.push($(value).attr("value"))
+				// })
+
+				formData = new FormData
+        formData.append("_token","{{ csrf_token() }}")
+        formData.append("pid",JSON.stringify(arr_pid))
+        formData.append("nik",JSON.stringify(nik))
+        formData.append("assign",$("#assignFilter").val())
+
+        console.log(formData)
+
+        // Initialize the HTML content variable
+				let htmlContent = '<span style="font-size:14px"><label>'+ $(".showPID[data-value='0']").next().next().text() + '</label>' + ' assigned to selected PID : <div style="max-height:100px;overflow:auto"><ul style="text-align:start;">'; // Start an unordered list
+
+				// Loop through the array to create HTML content for each element
+				arr_pid.forEach(item => {
+				    htmlContent += `<li>${item}</li>`; // Add each array element as a list item
+				});
+
+				htmlContent += '</ul><div></span>';
+
+        swalFireCustom = {
+          title: 'Are you sure?',
+          html: htmlContent,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        }
+
+        swalSuccess = {
+            icon: 'success',
+            title: 'Assigned PID Successfully!',
+            text: 'Click Ok to reload page',
+        } 
+
+        createPost(swalFireCustom,formData,swalSuccess,url="/ticketing/setting/storeAssign")
+			})
+		}else{
+			$(".divPID[data-value='"+ item +"']").hide()
+			$(".searchTablePID[data-value='"+ item +"']").hide()
+			$(".btnSavePID[data-value='"+ item +"']").hide()
+			$(".showPID[data-value='"+ item +"'] i").removeClass("fa-angle-down").addClass("fa-angle-right")
+			$(".boxPID[data-value='"+ item +"']").empty("")
+			$(".boxPID[data-value='"+ item +"']").closest(".divPID").css('background-color', '');
+		}
+
+		// var contentWidth = $(".boxPID[data-value='"+ item +"']").width();
+  // 	// Set the div's width to match the content width
+  // 	$(".divPID[data-value='"+ item +"']").width(contentWidth);
+	}
+
+  function initiateFilter(){
+  	//filter site
+  	$.ajax({
+  		type:"GET",
+  		url:"{{url('/ticketing/setting/getSiteShifting')}}",
+			success:function(result){
+				$(".siteFilter").empty("")
+				let append = ""
+
+				$.each(result,function(item,value){
+					append = append	+ "<div class='checkbox'>"
+					append = append + "<label>"
+					append = append + " <input type='checkbox' name='siteFilter' id='siteFilter' value='"+ value.project_name +"'>" + value.project_name
+					append = append + "</label>" 
+					append = append	+ "</div>"
+
+				})
+
+				$(".siteFilter").append(append)
+  		}
+  	})
+
+  	//filter user
+  	$.ajax({
+  		type:"GET",
+  		url:"{{url('/ticketing/setting/getUser')}}",
+			success:function(result){
+				$("#userFilter").select2({
+					multiple:true,
+					placeholder:"Select User",
+					data:result.data
+				})
+  		}
+  	})
+
+  	//filter user
+  	$.ajax({
+  		type:"GET",
+  		url:"{{url('/ticketing/setting/getCustomer')}}",
+			success:function(result){
+				$("#customerFilter").select2({
+					multiple:true,
+					placeholder:"Select Customer",
+					data:result.data
+				})
+  		}
+  	})
+  	
+  }
+
+  function createPost(swalFireCustom,data,swalSuccess,url){
+  	Swal.fire(swalFireCustom).then((resultFire) => {
+      if (resultFire.value) {
+      	$.ajax({
+		      type:"POST",
+		      url:"{{url('/')}}"+url,
+		      processData: false,
+		      contentType: false,
+		      data:data,
+		      beforeSend:function(){
+		        Swal.fire({
+		            title: 'Please Wait..!',
+		            text: "It's sending..",
+		            allowOutsideClick: false,
+		            allowEscapeKey: false,
+		            allowEnterKey: false,
+		            customClass: {
+		                popup: 'border-radius-0',
+		            },
+		        })
+		        Swal.showLoading()
+		      },
+		      success: function(results)
+		      {
+            Swal.fire(swalSuccess).then((result,data) => {
+            		filterPID()
+            })
+		      }
+		    })
+      }
+    })
+  }
+
+  function assignFilter(val){
+  	if (val == "site") {
+  		$("#userFilter").closest(".form-group").hide()
+  		$('#userFilter').val(null).trigger('change');
+  	}else{
+  		$("#userFilter").closest(".form-group").show()
+  	}
+  }
+
+  function searchCustomPID(item){
+  	var inputCheckAll = $('.dataTable[data-value="'+ item +'"] tfoot input[type="checkbox"]');
+  	inputCheckAll.prop("checked",false)
+  	$('.dataTable[data-value="'+ item +'"]').DataTable().search($("#searchbarPID[data-value='"+ item +"']").val()).draw();
+  }
+
+  function searchCustomAll(idInput){
+		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getSearchAllData?assign="+$("#assignFilter").val() + "&searchAll=" + $("#"+idInput).val())
+  }
+
+  function filterPID(){
+  	var arrSite = "location[]=", arrCust = "customer[]=", arrUser = "user[]=", assign = "assign="
+
+  	if(assign == 'assign=') {
+      assign = assign + $("#assignFilter").val()
+    }else{
+      assign = assign + '&assign=' + $("#assignFilter").val()
+    }
+
+  	if (value == null) {
+  		$.each($('#customerFilter').val(),function(key,value){
+				if(arrCust == 'customer[]=') {
+	        arrCust = arrCust + value
+	      }else{
+	        arrCust = arrCust + '&customer[]=' + valuee
+	      }
+	    })
+
+	  	$("input[name='siteFilter']").each(function(idx,values){
+	      if ($(values).is(":checked") == true) {
+	  			if(arrSite == 'location[]=') {
+	          arrSite = arrSite + values.value
+	        }else{
+	          arrSite = arrSite + '&location[]=' + values.value
+	        }
+	      }
+	    })
+
+	    $.each($('#userFilter').val(),function(key,value){
+	      if(arrUser == 'user[]=') {
+	        arrUser = arrUser + value
+	      }else{
+	        arrUser = arrUser + '&user[]=' + value
+	      }
+	    })
+  	}
+
+  	showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getFilterDataAll?" + '&' + arrSite + '&' + arrCust + '&' + arrUser + '&' + assign)
+  }
+
+  function resetPID(){
+  	$('#customerFilter').val(null).trigger('change');
+  	$('#userFilter').val(null).trigger('change');
+  	$("input[name='siteFilter']").each(function(idx,values){
+  		$(values).prop("checked",false)
+    })
+    filterPID("reset")
+  }
+  
+	function showDivSiteBox(defaultAssign,url){		
+		$.ajax({
+			type:"GET",
+			url:"{{url('/')}}"+url,
+			success:function(result){
+				$(".divSiteBox").empty("")
+
+				let append = "", nik = []
+				let columnCount = 0
+
+  			append = append + "<div style='column-count:2;column-gap:10px' id='container_pid'></div>"
+  			// append = append + "<div class='container_pid' id='container_pid'></div>"
+				$(".divSiteBox").append(append)	
+
+				result.forEach(function	(index,items){
+					nik.push({
+						"nik": index.nik
+					})
+				})	
+
+    		$.each(result,function(item,value){
+    			// if (item % 3 === 0) {
+    			// $("#container_pid").append("<div class='widthBoxPID column_pid'></div>")
+    				// columnCount++
+						// append = append + "<div style='width:50%'></div>"
+    			// }
+
+  				let append_column = ""
+    			append_column = append_column + "<div class='alert bg-gray disabled' style='margin-bottom:10px!important;break-inside:avoid;'>"
+						append_column = append_column + "<div style='position:relative'>"
+							append_column = append_column + "<span class='showPID' data-value='"+ item +"' onclick='showPID("+ item +"," + '['+ nik[item].nik + "]" +")' style='position:absolute;right:0;top:0'><i class='fa fa-2x fa-angle-right'></i></span>"
+							append_column = append_column + "	<h4><b class='titleh4' data-value='"+ item +"'></b></h4>"
+							append_column = append_column + "	<p class='titleP' data-value='"+ item +"'></p>"
+							append_column = append_column + "<div style='position:relative'>"
+								append_column = append_column + "<span class='badge bg-purple' style='position:absolute;right:0;bottom:0'>"+ value.count +"</span>"
+							append_column = append_column + "</div>"
+								append_column = append_column + "<div class='divPID' data-value='"+ item +"' style='overflow:x;padding:8px;border-radius:5px;display:none;margin-top:25px'>"
+									append_column = append_column + "<div class='row'>"
+										append_column = append_column + "<div class='col-md-12'>"
+											append_column = append_column + "<div>"
+												append_column = append_column + "<div style='display: flex;'><div class='input-group searchTablePID' style='flex-direction: row; margin: 10px; width: 50% !important;' data-value='"+ item +"'><input class='form-control' placeholder='Search Cutsomer/PID/Project Name' id='searchbarPID' onkeyup='searchCustomPID("+ item + ")' data-value='"+ item +"'><span class='input-group-btn'><button onclick='searchCustomPID("+ item + ")' type='button' class='btn btn-default btn-flat' fdprocessedid='f23lya'>	<i class='fa fa-fw fa-search'></i></button></span></div>"
+													append_column = append_column + "<span style='margin-top: 19px;' data-toggle='tooltip' data-placement='top' title='Please search for more PID list!'><i class='fa fa-question-circle' style='font-size: 1.2em;color: #579bcf;'></i></span>"
+												append_column = append_column + "</div>"
+											append_column = append_column + "</div>"
+											append_column = append_column + "<div class='boxPID' data-value='"+ item +"'>"
+											append_column = append_column + "</div>"
+											append_column = append_column + "<button class='btn btn-sm bg-purple btnSavePID pull-right' data-value='"+ item +"' style='margin:10px;display:none'>"
+												append_column = append_column + "Save"
+											append_column = append_column + "</button>"
+										append_column = append_column + "</div>"					
+									append_column = append_column + "</div>"
+								append_column = append_column + "</div>"
+							append_column = append_column + "</div>"
+						append_column = append_column + "</div>"
+					append_column = append_column + "</div>"
+
+					// $(".column_pid").eq(columnCount - 1).append(append_column)
+					$("#container_pid").append(append_column)
+
+					if (defaultAssign == 'user') {
+						$(".titleh4[data-value='"+ item +"']").text(value.name )
+						$(".titleP[data-value='"+ item +"']").text(value.project_name).css("height","")
+  				}else if(defaultAssign == 'site'){
+  					$(".titleh4[data-value='"+ item +"']").text(value.project_name)
+						$(".titleP[data-value='"+ item +"']").html(value.name.replaceAll(",","<br>")).css("height","100px")
+  				}	
+    		})
+
+				if (result.length == 0) {
+					$("#container_pid").html("<span style='display:flex;flex-direction:row-reverse'>Empty Data!</span>")
+					$("#pagination").hide()
+				}else{
+					$("#pagination").show()
+				}
+
+				var items = $(".divSiteBox .alert");
+				var numItems = items.length;
+				var perPage = 6;
+
+				items.slice(perPage).hide();
+
+				$('#pagination').pagination({
+					items: numItems,
+					itemsOnPage: perPage,
+					prevText: "&laquo;",
+					nextText: "&raquo;",
+					onPageClick: function (pageNumber) {
+						var showFrom = perPage * (pageNumber - 1);
+						var showTo = showFrom + perPage;
+						items.hide().slice(showFrom, showTo).show();
+					}
+				});
+
+			}
+		})		
+	}
+
+	function showPID(item,nik){
+		console.log(nik)
+		let append = ""
+
+		if (!$("#tablePID[data-value='"+ item +"']").is(":visible")) {
+			append = append + "<table id='tablePID' name='"+ item +"' data-value='"+ item +"' class='table table-condensed'>"
+				append = append + "<tr>"
+					append = append + "<th>"
+						append = append + "PID"
+					append = append + "</th>"
+					append = append + "<th>"
+						append = append + "Project Name"
+					append = append + "</th>"
+				append = append + "</tr>"
+				append = append + "<tfoot>"
+					append  = append + "<tr>"
+						append = append + "<td colspan='2'>"
+							append = append + "<div class='checkbox'>"
+								append = append + "	<label>"
+									append = append + "		<input type='checkbox' data-value='"+ item +"'>"
+									append = append + "		Check All"
+								append = append + "	</label>"
+							append = append + "</div>"
+						append = append + "</td>"
+					append  = append + "</tr>"
+				append = append + "</tfoot>"
+			append = append + "</table>"
+
+			$(".divPID[data-value='"+ item +"']").fadeIn('slow').css('width','')
+			$(".searchTablePID[data-value='"+ item +"']").show()
+			$(".btnSavePID[data-value='"+ item +"']").show()
+			$(".showPID[data-value='"+ item +"'] i").removeClass("fa-angle-right").addClass("fa-angle-down")
+			$(".boxPID[data-value='"+ item +"']").append(append)
+			$(".boxPID[data-value='"+ item +"']").closest(".divPID").css({'background-color':'white','padding':'8px'});
+
+			if ($("#customerFilter").val().length > 0) {
+				var arrCust = "customer[]=", url = "/ticketing/setting/getFilterPIDByCustomer?"
+
+		    $.each($('#customerFilter').val(),function(key,value){
+					if(arrCust == 'customer[]=') {
+		        arrCust = arrCust + value
+		      }else{
+		        arrCust = arrCust + '&customer[]=' + valuee
+		      }
+		    })
+			}else{
+				var url = "/ticketing/setting/getAllPid?"
+			}
+		
+
+			$("#tablePID[data-value='"+ item +"']").DataTable({
+				"ajax":{
+	        "type":"GET",
+	        "url":"{{url('/')}}"+url + arrCust,
+	        "data":{
+			    	nik:nik,
+		        assign:$("#assignFilter").val(),
+			    }
+	      },
+	      "columns": [
+	        { 
+	        	render: function (data, type, row, meta){
+	        		if (row.result_modif == "Selected") {
+	        			return "<label>"
+								+ "<input type='checkbox' checked value='"+ row.id_project +"'> "
+								+ row.id_project
+								+ "	</label>" 
+	        		}else{
+	        			return "<label>"
+								+ "<input type='checkbox' value='"+ row.id_project +"'> "
+								+ row.id_project
+								+ "	</label>" 
+	        		}
+	        		
+	        	},
+	        	"title":"PID",
+	        	"width":"30%"
+	        },
+	        { "data": "name_project","title":"Name Project"},
+	        { "data": "brand_name","title":"Name Project"},
+	        { "data": "customer_legal_name","title":"Name Project"},
+
+	      ],
+	      fixedHeader:{
+	      	footer:true
+	      },
+	      "initComplete": function(settings,json){
+	      	$(".dataTables_paginate.paging_simple_numbers").css("display","none")
+			    var input = $('.dataTable[data-value="'+ item +'"] tbody input[type="checkbox"]')
+			    console.log(accesable)
+	      	checkInputCheked()
+
+	      	function checkInputCheked(){
+	      		var isInputChecked = $(".btnSavePID[data-value='"+ item +"']").closest(".row").closest(".row").find(".col-sm-12").find(".dataTable[data-value='"+ item +"'] tbody input[type='checkbox']").is(":checked");
+	      		if (isInputChecked) {
+				      $(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+		      	}else{
+				      $(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+		      	}	
+	      	}
+
+	      	var inputCheckAll = $('.dataTable[data-value="'+ item +'"] tfoot input[type="checkbox"]');
+
+	      	$(inputCheckAll).on('change', function() {
+			        if ($(this).is(':checked')) {
+			        	if ($("#searchbarPID[data-value='"+ item +"']").val() == '') {
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+		            	$(input).prop("checked",true)
+				        }else{
+				        	var table = $('.dataTable[data-value="'+ item +'"]').DataTable()
+
+				        	var filteredCheckboxes = table.rows({ search: 'applied' }).nodes().to$().find('label input[type="checkbox"]');
+								  filteredCheckboxes.prop('checked', true);
+
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+				        }
+		        		
+			        } else {
+			        	if ($("#searchbarPID[data-value='"+ item +"']").val() == '') {
+		            	$(input).prop("checked",false)
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+
+				        }else{
+				        	var table = $('.dataTable[data-value="'+ item +'"]').DataTable()
+
+				        	var filteredCheckboxes = table.rows({ search: 'applied' }).nodes().to$().find('label input[type="checkbox"]');
+								  filteredCheckboxes.prop('checked', false);
+
+			        		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+				        }
+		        		
+			        }
+			    });
+
+	      	$(input).on('change', function() {
+	      		if ($(this).is(':checked')) {
+	      			checkInputCheked()
+		        } else {
+		        	checkInputCheked()
+		        	$(inputCheckAll).prop("checked",false)
+		        }
+	      	})
+
+	      	if (accesable.includes('checkboxPID')) {
+	      		$(input).prop("disabled",false)
+	      		$(inputCheckAll).prop("disabled",false)
+	      		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",false)
+	      	}else{
+	      		$(input).prop("disabled",true)
+	      		$(inputCheckAll).prop("disabled",true)
+	      		$(".btnSavePID[data-value='"+ item +"']").prop("disabled",true)
+	      	}
+
+	      },
+	      "footerCallback": function( tfoot, data, start, end, display ) {
+	      	var api = this.api();
+	      	// console.log(api)
+			  },
+			  "columnDefs": [
+		      {
+		        "targets": [2, 3], // Columns indices to hide (0-based index)
+		        "visible": false // Set to true if you want them visible by default
+		      }
+		      // Add more "targets" objects to hide/show multiple columns if needed
+		    ],
+	      // "pageLength" : false,
+	      "paging": false,
+	      "bLengthChange": false,
+	      "bInfo": true,
+	      "ordering":false,
+	      "aaSorting": [],
+	      "scrollCollapse": true,
+    		"scrollY": '200px'
+			})
+
+			$(".btnSavePID[data-value='"+ item +"']").click(function(){
+				// var input = $('.dataTable[data-value="'+ $(this).attr("data-value") +'"] tbody input[type="checkbox"]:checked')
+				var table = $('.dataTable[data-value="'+ $(this).attr("data-value") +'"]')
+
+				let arr_pid = []
+
+				var checkboxes = table.DataTable().column(0).nodes().to$().find('label input[type="checkbox"]:checked')
+
+				checkboxes.each(function() {
+			    if ($(this).prop('checked')) {
+						arr_pid.push($(this).val())
+			    }
+			  });
+
+				// $.each(input,function(item,value){
+				// 	arr_pid.push($(value).attr("value"))
+				// })
+
+				formData = new FormData
+        formData.append("_token","{{ csrf_token() }}")
+        formData.append("pid",JSON.stringify(arr_pid))
+        formData.append("nik",JSON.stringify(nik))
+        formData.append("assign",$("#assignFilter").val())
+
+        console.log(formData)
+
+        // Initialize the HTML content variable
+				let htmlContent = '<span style="font-size:14px"><label>'+ $(".showPID[data-value='0']").next().next().text() + '</label>' + ' assigned to selected PID : <div style="max-height:100px;overflow:auto"><ul style="text-align:start;">'; // Start an unordered list
+
+				// Loop through the array to create HTML content for each element
+				arr_pid.forEach(item => {
+				    htmlContent += `<li>${item}</li>`; // Add each array element as a list item
+				});
+
+				htmlContent += '</ul><div></span>';
+
+        swalFireCustom = {
+          title: 'Are you sure?',
+          html: htmlContent,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        }
+
+        swalSuccess = {
+            icon: 'success',
+            title: 'Assigned PID Successfully!',
+            text: 'Click Ok to reload page',
+        } 
+
+        createPost(swalFireCustom,formData,swalSuccess,url="/ticketing/setting/storeAssign")
+			})
+		}else{
+			$(".divPID[data-value='"+ item +"']").hide()
+			$(".searchTablePID[data-value='"+ item +"']").hide()
+			$(".btnSavePID[data-value='"+ item +"']").hide()
+			$(".showPID[data-value='"+ item +"'] i").removeClass("fa-angle-down").addClass("fa-angle-right")
+			$(".boxPID[data-value='"+ item +"']").empty("")
+			$(".boxPID[data-value='"+ item +"']").closest(".divPID").css('background-color', '');
+		}
+
+		// var contentWidth = $(".boxPID[data-value='"+ item +"']").width();
+  // 	// Set the div's width to match the content width
+  // 	$(".divPID[data-value='"+ item +"']").width(contentWidth);
+	}
+
+  function initiateFilter(){
+  	//filter site
+  	$.ajax({
+  		type:"GET",
+  		url:"{{url('/ticketing/setting/getSiteShifting')}}",
+			success:function(result){
+				$(".siteFilter").empty("")
+				let append = ""
+
+				$.each(result,function(item,value){
+					append = append	+ "<div class='checkbox'>"
+					append = append + "<label>"
+					append = append + " <input type='checkbox' name='siteFilter' id='siteFilter' value='"+ value.project_name +"'>" + value.project_name
+					append = append + "</label>" 
+					append = append	+ "</div>"
+
+				})
+
+				$(".siteFilter").append(append)
+  		}
+  	})
+
+  	//filter user
+  	$.ajax({
+  		type:"GET",
+  		url:"{{url('/ticketing/setting/getUser')}}",
+			success:function(result){
+				$("#userFilter").select2({
+					multiple:true,
+					placeholder:"Select User",
+					data:result.data
+				})
+  		}
+  	})
+
+  	//filter user
+  	$.ajax({
+  		type:"GET",
+  		url:"{{url('/ticketing/setting/getCustomer')}}",
+			success:function(result){
+				$("#customerFilter").select2({
+					multiple:true,
+					placeholder:"Select Customer",
+					data:result.data
+				})
+  		}
+  	})
+  	
+  }
+
+  function createPost(swalFireCustom,data,swalSuccess,url){
+  	Swal.fire(swalFireCustom).then((resultFire) => {
+      if (resultFire.value) {
+      	$.ajax({
+		      type:"POST",
+		      url:"{{url('/')}}"+url,
+		      processData: false,
+		      contentType: false,
+		      data:data,
+		      beforeSend:function(){
+		        Swal.fire({
+		            title: 'Please Wait..!',
+		            text: "It's sending..",
+		            allowOutsideClick: false,
+		            allowEscapeKey: false,
+		            allowEnterKey: false,
+		            customClass: {
+		                popup: 'border-radius-0',
+		            },
+		        })
+		        Swal.showLoading()
+		      },
+		      success: function(results)
+		      {
+            Swal.fire(swalSuccess).then((result,data) => {
+            		filterPID()
+            })
+		      }
+		    })
+      }
+    })
+  }
+
+  function assignFilter(val){
+  	if (val == "site") {
+  		$("#userFilter").closest(".form-group").hide()
+  		$('#userFilter').val(null).trigger('change');
+  	}else{
+  		$("#userFilter").closest(".form-group").show()
+  	}
+  }
+
+  function searchCustomPID(item){
+  	var inputCheckAll = $('.dataTable[data-value="'+ item +'"] tfoot input[type="checkbox"]');
+  	inputCheckAll.prop("checked",false)
+  	$('.dataTable[data-value="'+ item +'"]').DataTable().search($("#searchbarPID[data-value='"+ item +"']").val()).draw();
+  }
+
+  function searchCustomAll(idInput){
+		showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getSearchAllData?assign="+$("#assignFilter").val() + "&searchAll=" + $("#"+idInput).val())
+  }
+
+  function filterPID(){
+  	var arrSite = "location[]=", arrCust = "customer[]=", arrUser = "user[]=", assign = "assign="
+
+    $.each($('#customerFilter').val(),function(key,value){
+			if(arrCust == 'customer[]=') {
+        arrCust = arrCust + value
+      }else{
+        arrCust = arrCust + '&customer[]=' + valuee
+      }
+    })
+
+  	$("input[name='siteFilter']").each(function(idx,values){
+      if ($(values).is(":checked") == true) {
+  			if(arrSite == 'location[]=') {
+          arrSite = arrSite + values.value
+        }else{
+          arrSite = arrSite + '&location[]=' + values.value
+        }
+      }
+    })
+
+    $.each($('#userFilter').val(),function(key,value){
+      if(arrUser == 'user[]=') {
+        arrUser = arrUser + value
+      }else{
+        arrUser = arrUser + '&user[]=' + value
+      }
+    })
+
+    if(assign == 'assign=') {
+      assign = assign + $("#assignFilter").val()
+    }else{
+      assign = assign + '&assign=' + $("#assignFilter").val()
+    }
+
+  	showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getFilterDataAll?" + '&' + arrSite + '&' + arrCust + '&' + arrUser + '&' + assign)
+  }
+
+  function resetPID(){
+  	$('#customerFilter').val(null).trigger('change');
+  	$('#userFilter').val(null).trigger('change');
+  	$('#assignFilter').val("user").trigger('change');
+  	$("input[name='siteFilter']").each(function(idx,values){
+  		$(values).prop("checked",false)
+    })
+  	showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getUserShifting")
+  }
+
+
 
 </script>
-
 @endsection

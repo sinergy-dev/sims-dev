@@ -103,10 +103,11 @@ class SbeConfig extends Model
 
     public function getDetailConfigNominalAttribute()
     {
-      $data = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$this->id)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+      $data = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe_config.id',$this->id)->orderBy('item','asc')->distinct()->get();
 
       $total_nominal = 0;
       foreach($data as $key_point => $valueSumPoint){
+        // return $valueSumPoint->total_nominal;
         $total_nominal += $valueSumPoint->total_nominal;
       }
 
