@@ -6255,6 +6255,7 @@ class ReportController extends Controller
                     ->groupBy('tb_product_tag.name_product')
                     ->orderBy('total_lead', 'desc')
                     ->orderBy('total_price', 'desc')
+                    ->where('status_karyawan','!=','dummy')
                     // ->groupBy('tb_product_tag_relation.id_product_tag')
                     ->get());
 

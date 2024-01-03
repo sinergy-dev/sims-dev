@@ -56,20 +56,34 @@ class Kernel extends ConsoleKernel
         // })
         // ->everyMinute();
 
-        $schedule->call(function() {
-            if (date("n") == 4 && date("j") == 1) {
-                Artisan::call('CutiRestart:cutirestart');
-            }
-        })->monthly()
-        ->at('01:00');
+        // $schedule->call(function() {
+        //     if (date("n") == 4 && date("j") == 1) {
+        //         Artisan::call('CutiRestart:cutirestart');
+        //     }
+        // })->monthly()
+        // ->at('01:00');
         
 
-        $schedule->call(function() {
-            if (date("n") == 1 && date("j") == 1) {
-                Artisan::call('ResetAwalTahun:resetawaltahun');
-            }
-        })->monthly()
-        ->at('01:00');
+        // $schedule->call(function() {
+        //     if (date("n") == 1 && date("j") == 1) {
+        //         Artisan::call('ResetAwalTahun:resetawaltahun');
+        //     }
+        // })->monthly()
+        // ->at('01:00');
+
+        $schedule->command('ResetAwalTahun:resetawaltahun')->yearly()->at('00:15');
+
+        $schedule->command('UpdateYearByClosingDate:UpdateYearByClosingDate')->yearly()->at('00:45');
+
+        $schedule->command('CutiRestart:cutirestart')->monthlyOn(4, '01:00');
+
+
+        // $schedule->call(function() {
+        //     if (date("n") == 1 && date("j") == 1) {
+        //         Artisan::call('UpdateYearByClosingDate:UpdateYearByClosingDate');
+        //     }
+        // })->monthly()
+        // ->at('01:00');
 
         $schedule->call(function() {
             if (date("n") == 12 && date("j") == 30) {
@@ -78,9 +92,11 @@ class Kernel extends ConsoleKernel
         })->monthly()
         ->at('01:00');
 
-        $schedule->call(function() {
-            Artisan::call('UpdateStatusKaryawan:updatestatuskaryawan');
-        })->daily();
+        // $schedule->call(function() {
+        //     Artisan::call('UpdateStatusKaryawan:updatestatuskaryawan');
+        // })->daily();
+
+        $schedule->command('UpdateStatusKaryawan:updatestatuskaryawan')->dailyAt('02:30');
 
         $schedule->call(function() {
             Artisan::call('RejectCuti:rejectCuti');

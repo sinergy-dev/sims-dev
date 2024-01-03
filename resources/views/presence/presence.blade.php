@@ -248,10 +248,9 @@ Presence
 							},
 							success: function(result){
 								var curLoc = result
-
 								Swal.fire({
 									title: 'Are you sure?',
-									html: '<h6>Check-In at '+ curLoc  +'</h6>',
+									html: '<h6>Check-In at <b>'+ curLoc  +'</b></h6>',
 									icon: 'warning',
 									showCancelButton: true,
 									confirmButtonColor: '#3085d6',
@@ -283,8 +282,6 @@ Presence
 												_token: "{{ csrf_token() }}"
 											},
 											success: function(result){
-												var curLoc = "Inlingua"
-
 												Swal.fire(
 													'Check-in success',
 													"Don't forget to checkout later",
@@ -468,7 +465,7 @@ Presence
 				},
 			})
 
-	      // Use the retrieved latitude and longitude values as needed (e.g., display on a map, perform reverse geocoding, etc.)
+	 	 // Use the retrieved latitude and longitude values as needed (e.g., display on a map, perform reverse geocoding, etc.)
 	    }
 
 	    function showError(error) {
@@ -493,7 +490,7 @@ Presence
 	      reverseGeocodeLatLng()
 	    }
 
-	    // Attach the onLoad function to the window.onload event
+	 //    // Attach the onLoad function to the window.onload event
 	    window.onload = onLoad;
 
 	    startTime()

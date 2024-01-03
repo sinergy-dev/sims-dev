@@ -229,3 +229,7 @@ li div a.btn{
 .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a > p {
 	margin-left: 50px;
 }
+
+.swal2-actions {
+gap : 5px;
+}
