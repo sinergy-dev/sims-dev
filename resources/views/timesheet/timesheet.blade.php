@@ -661,6 +661,7 @@
 
     var calendar
     $(document).ready(function(){
+      localStorage.removeItem('arrFilter');
       var accesable = @json($feature_item);
       
       accesable.forEach(function(item,index){
@@ -673,21 +674,12 @@
 
       if(nik == "{{Auth::User()->nik}}"){
         $("#alertForRemaining").show()
-
-        // showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
       }else{
         $("#alertForRemaining").hide()
       }
 
       calendar = $('#calendar').fullCalendar({
         timezone:'Asia/Jakarta',
-        // header: {
-        //   left: 'prev,next today myCustomButton',
-        //   center: 'title',
-        //   // right: 'month'
-        //   // ,agendaWeek,agendaDay'
-        // } 
-        // defaultView: window.mobilecheck() ? "basicDay" : "month",
         defaultView:"month",
       });
       loadData()
@@ -887,7 +879,6 @@
 
     $("#btn_back_timesheet_spv").click(function(){
       window.location.href = '{{url("timesheet/timesheet")}}';
-      // location.reload()
     })
 
     var currentDate = new Date(); // Get the current date
@@ -896,9 +887,13 @@
     tomorrow.setDate(currentDate.getDate() + 1)
     var endDate = currentDate.toLocaleDateString();
 
-    function loadData(){
+    function loadData(valDate){
       var arrFilter = localStorage.getItem("arrFilter",arrFilter)
-      console.log(arrFilter)
+
+      if (valDate != undefined) {
+        var dateDifYear = '&date=' + valDate
+      }
+
       if(arrFilter != null){
         arrFilter = arrFilter
         $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter On')
@@ -913,11 +908,8 @@
       Pace.track(function(){
         $.ajax({
           type:"GET",
-          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter,
-          // url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik,
+          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter + dateDifYear,
           success:function(results){
-            // Pace.restart();
-            // Pace.track(function(){
             $.ajax({
               type:"GET",
               url:"{{url('/getListCalendarEvent')}}",
@@ -993,8 +985,6 @@
                 }
 
                 if (result != "") {
-                  
-
                   result.items.map(item => {
                     if (item.creator != undefined) {
                       if (Object.keys(item.creator).length == 2) {
@@ -1026,7 +1016,6 @@
                             }
                           }
                       })
-                    
                   })
                 }
 
@@ -1085,7 +1074,7 @@
 
                 var arrayCalconcatDb = uniqueEvents
                 
-                return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji)
+                return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji,valDate)
               },
               complete:function(){
                 Pace.stop();
@@ -1098,9 +1087,8 @@
     }
 
     var checkDate = ""
-    function showEvents(events,lock_activity,disabledDates,emoji){
-      showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
-      
+    var NewCalendar
+    function showEvents(events,lock_activity,disabledDates,emoji,valDate){
       if (events) {
         $.ajax({
           type:"GET",
@@ -1252,7 +1240,7 @@
         }
       })
 
-      $('#calendar').fullCalendar({
+      var calendarElement = $('#calendar').fullCalendar({
         // customButtons: {
         //   myCustomButton: {
         //     text: 'custom!',
@@ -1711,6 +1699,15 @@
           }
         }
       })
+      
+      if (valDate) {
+        if (calendarElement.data("fullCalendar")) {
+          $("#calendar").fullCalendar('gotoDate',valDate)
+        }
+        showAlertRemaining(valDate)
+      }else{
+        showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
+      }
 
       $('.fc-prev-button').on('click', function() {
         var currentView = calendar.fullCalendar('getView');
@@ -1718,11 +1715,9 @@
         
         var month = startDate.format('MMMM');
         var year = startDate.format('YYYY');
-        
-        console.log('Previous Month:', startDate.format('YYYY-MM-DD'));
-        console.log('Previous Year:', year);
 
-        showAlertRemaining(startDate.format('YYYY-MM-DD'))
+        $($("#alertForRemaining").find("span")[1]).text(". . .")
+        loadData(startDate.format('YYYY-MM-DD'))
       });
 
       $('.fc-next-button').on('click', function() {
@@ -1731,17 +1726,13 @@
         
         var month = startDate.format('MMMM');
         var year = startDate.format('YYYY');
-        
-        console.log('Next Month:', month);
-        console.log('Next Year:', year);
 
-        showAlertRemaining(startDate.format('YYYY-MM-DD'))
+        $($("#alertForRemaining").find("span")[1]).text(". . .")
+        loadData(startDate.format('YYYY-MM-DD'))
       });
 
       var view = calendar.fullCalendar('getView');
       var currentTimeZone = view.options.timezone;
-
-      console.log('Current time zone: ' + currentTimeZone);
 
       $('#calendar').fullCalendar('addEventSource', events)
       $('#calendar').fullCalendar('rerenderEvents')
