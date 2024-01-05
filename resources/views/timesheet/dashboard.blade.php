@@ -535,14 +535,13 @@
 
     $(document).ready(function(){
       localStorage.removeItem('arrFilter');
-
-      $("#span-remaining").text(moment().format('MMMM'))
       $("#textLevel").text(moment().format('YYYY'))
       $("#textStatus").text(moment().format('YYYY'))
       $("#textTask").text(moment().format('YYYY'))
       $("#textPhase").text(moment().format('YYYY'))
       $("#textSchedule").text(moment().format('YYYY'))
       $("#title_summary_year").text(moment().year())
+      $("#span-remaining").text(moment().format('MMMM'))
 
       if ($("#tbSummaryMandays").is(":visible") == true) {
         duplicateCanvasRemaining("/timesheet/getRemainingChart","")
@@ -1182,11 +1181,60 @@
           showItems(position,items,itemsPerPage);
         }else{
           //set current month
-          if (totalPages == 12) {
+          var arrMonth = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+          if (totalPages == 12) {            
             for (var i = 1; i <= totalPages; i++) {
-              $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+              if ($("#cbMonth:checked").length == 1) {
+                var monthAsMoment = moment($("#cbMonth:checked").val(), 'MMMM');
+                var numericMonth = monthAsMoment.month() + 1;
+                if (i == numericMonth) {
+                  $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
+                }else{
+                  $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+                }
+
+                showItems(numericMonth,items,itemsPerPage);
+
+              }else{
+                if ($("#cbMonth:checked").length > 0) {
+                  $.each($("#cbMonth:checked"),function(idx,item){
+                      console.log(item.value)
+                      var monthAsMoment = moment(item.value, 'MMMM');
+                      var numericMonth = monthAsMoment.month() + 1;
+                      if (idx == 0) {
+                        showItems(numericMonth,items,itemsPerPage);
+
+                        var monthAsMoment = moment().month(parseInt(numericMonth)-1);
+                        $("#span-remaining").text(moment(monthAsMoment).format('MMMM')) 
+                      }
+
+                      arrMonth[numericMonth] = numericMonth
+                  })
+
+                  if (arrMonth[i] == i) {
+                    $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+                  }else{
+                    $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+                  }
+                }else{
+                  showItems(moment().month() + 1,items,itemsPerPage);
+
+                  if (i === moment().month() + 1) {
+                    $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
+                  }else{
+                    //bedakan dengan filter year
+                    if (i > moment().month() + 1) {
+                      $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+                    }else{
+                      $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
+                    }
+                  }
+                }
+
+              }
             }
           }else{
+            console.log("disinituu")
             for (var i = 1; i <= totalPages; i++) {
               if (i === moment().month() + 1) {
                 $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
@@ -1222,6 +1270,8 @@
     var page = parseInt($(this).text()); // Get the clicked page number
     const monthName = moment().month(page-1).format('MMMM')
     $("#span-remaining").text(monthName)
+
+    console.log(monthName)
     $.each($(".pagination-link"),function(idx,value){
       if (value.text == page) {
         customFilter(page,"changePageRemaining")
@@ -1663,8 +1713,36 @@
       } 
     }
 
-    
+    if (val) {
+      $("#title_summary_year").text($("#selectYear").val())
+      $("#textLevel").text($("#selectYear").val())
+      $("#textStatus").text($("#selectYear").val())
+      $("#textSchedule").text($("#selectYear").val())
+      $("#textTask").text($("#selectYear").val())
+      $("#textPhase").text($("#selectYear").val())
+    }   
+
+    if ($("#cbMonth:checked").length == 1) {
+      var monthAsMoment = moment($("#cbMonth:checked").val(), 'MMMM');
+      var numericMonth = monthAsMoment.month();
+      var monthAsMoment = moment().month(parseInt(numericMonth));
+      $("#span-remaining").text(moment(monthAsMoment).format('MMMM'))
+    }
+    // else{
+    //   var numericMonth = '1'; // Replace this with your numeric month value
+    //   var monthAsMoment = moment().month(parseInt(numericMonth) - 1);
+    //   var monthFullName = monthAsMoment.format('MMMM');
+    //   $("#span-remaining").text(monthFullName) 
+    // }   
   }
+    // else{
+    //   var numericMonth = '1'; // Replace this with your numeric month value
+    //   var monthAsMoment = moment().month(parseInt(numericMonth) - 1);
+    //   var monthFullName = monthAsMoment.format('MMMM');
+    //   $("#span-remaining").text(monthFullName) 
+
+    //   console.log("sini")
+    // }
 
   $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
     // AJAX reload is complete
