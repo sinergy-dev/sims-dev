@@ -889,19 +889,22 @@
 
     function loadData(valDate){
       var arrFilter = localStorage.getItem("arrFilter",arrFilter)
+      var arrFilter = ""
 
       if (valDate != undefined) {
         var dateDifYear = '&date=' + valDate
+      }else{
+        var dateDifYear = '&date='
       }
 
-      if(arrFilter != null){
-        arrFilter = arrFilter
-        $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter On')
-        $(".timesheet_status").css("background-color","green")
-      }else{
-        arrFilter = ""
+      if(arrFilter == null || arrFilter == ""){
         $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter Off')
         $(".timesheet_status").css("background-color","red")
+      }else{
+        arrFilter = arrFilter
+
+        $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter On')
+        $(".timesheet_status").css("background-color","green")
       }
 
       Pace.restart();
@@ -1066,7 +1069,6 @@
                 // Filter distinct events based on the title
                 const uniqueEvents = mergedEvents.reduce((unique, event) => {
                   const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
-
                   if (isEventUnique) {
                     unique.push(event);
                   }
@@ -2592,23 +2594,25 @@
           $("#selectType_refer").closest("div").find("span").show()
           $("#selectType_refer").closest("div").addClass("has-error")
         }else if($("#selectType_refer").val() == "Project"){
-          if ($("#selectLead_refer").val() == "") {
-            $("#selectLead_refer").closest("div").find("span").show()
-            $("#selectLead_refer").closest("div").addClass("has-error")
-            // $("#selectLead_refer").closest("div").find("span").text("Please select Project ID!")
-            $("#selectLead_refer").closest("div").find(".help-block").text("Please select Project ID!")          
-          }else if($("#textareaActivity_refer").val() == ""){
+          // if ($("#selectLead_refer").val() == "") {
+          //   $("#selectLead_refer").closest("div").find("span").show()
+          //   $("#selectLead_refer").closest("div").addClass("has-error")
+          //   // $("#selectLead_refer").closest("div").find("span").text("Please select Project ID!")
+          //   $("#selectLead_refer").closest("div").find(".help-block").text("Please select Project ID!")          
+          // }else 
+          if($("#textareaActivity_refer").val() == ""){
             $("#textareaActivity_refer").closest("div").find("span").show()
             $("#textareaActivity_refer").closest("div").addClass("has-error")
           }else{
             storeTimesheet(param,"ModalUpdateTimesheet")
           }
         }else if($("#selectType_refer").val() == "Approach"){
-          if ($("#selectLead_refer").val() == "") {
-            $("#selectLead_refer").closest("div").find("span").show()
-            $("#selectLead_refer").closest("div").addClass("has-error")
-            $("#selectLead_refer").closest("div").find(".help-block").text("Please select Lead ID!")
-          }else if($("#textareaActivity_refer").val() == ""){
+          // if ($("#selectLead_refer").val() == "") {
+          //   $("#selectLead_refer").closest("div").find("span").show()
+          //   $("#selectLead_refer").closest("div").addClass("has-error")
+          //   $("#selectLead_refer").closest("div").find(".help-block").text("Please select Lead ID!")
+          // }else 
+          if($("#textareaActivity_refer").val() == ""){
             $("#textareaActivity_refer").closest("div").find("span").show()
             $("#textareaActivity_refer").closest("div").addClass("has-error")
           }else{
@@ -2640,10 +2644,10 @@
           }else if ($(items).find(".box-body").find("#selectType_"+index).val() == "Project" || $(items).find(".box-body").find("#selectType_"+index).val() == "Approach") {
             if ($(items).find(".box-body").find("#selectLead_"+index).val() == "") {
               if ($(items).find(".box-body").find("#selectType_"+index).val() == "Project") {
-                if ($(items).find(".box-body").find("#inputPid_"+index).val() == "") {
-                  $("#selectLead_"+index).closest("div").find("span").show()
-                  $("#selectLead_"+index).closest("div").addClass("has-error")
-                }else{
+                // if ($(items).find(".box-body").find("#inputPid_"+index).val() == "") {
+                //   $("#selectLead_"+index).closest("div").find("span").show()
+                //   $("#selectLead_"+index).closest("div").addClass("has-error")
+                // }else{
                   if($(items).find(".box-body").find("#textareaActivity_"+index).val() == ""){
                     $("#textareaActivity_"+index).closest("div").find("span").show()
                     $("#textareaActivity_"+index).closest("div").addClass("has-error")
@@ -2666,10 +2670,10 @@
                       }
                     }
                   }
-                }
-                $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Project ID!")          
+                // }
+                // $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Project ID!")          
               }else{
-                $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Lead ID!")          
+                // $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Lead ID!")          
               }
             }else if($(items).find(".box-body").find("#textareaActivity_"+index).val() == ""){
               $("#textareaActivity_"+index).closest("div").find("span").show()
