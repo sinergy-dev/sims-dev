@@ -952,9 +952,17 @@
     })
 
     if(selectYear == 'year=') {
-      selectYear = selectYear + $('#selectYear').val()
+      if ($('#selectYear').val() == '') {
+        selectYear = selectYear + moment().year()
+      }else{
+        selectYear = selectYear + $('#selectYear').val()
+      }
     }else{
-      selectYear = selectYear + '&year=' + $('#selectYear').val()
+      if ($('#selectYear').val() == '') {
+        selectYear = selectYear + '&year=' + moment().year()
+      }else{
+        selectYear = selectYear + '&year=' + $('#selectYear').val()
+      }
     }
 
     if(selectRoles == 'roles=') {
@@ -1186,53 +1194,43 @@
         }else{
           //set current month
           var arrMonth = [0,0,0,0,0,0,0,0,0,0,0,0,0]
-          if (totalPages == 12) {            
+          if (totalPages == 12) { 
+            console.log("lohh")           
             for (var i = 1; i <= totalPages; i++) {
-              if ($("#cbMonth:checked").length == 1) {
-                var monthAsMoment = moment($("#cbMonth:checked").val(), 'MMMM');
-                var numericMonth = monthAsMoment.month() + 1;
-                if (i == numericMonth) {
-                  $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
+              if ($("#cbMonth:checked").length) {
+                $.each($("#cbMonth:checked"),function(idx,item){
+                    console.log(item.value)
+                    var monthAsMoment = moment(item.value, 'MMMM');
+                    var numericMonth = monthAsMoment.month() + 1;
+                    if (idx == 0) {
+                      showItems(numericMonth,items,itemsPerPage);
+
+                      var monthAsMoment = moment().month(parseInt(numericMonth)-1);
+                      $("#span-remaining").text(moment(monthAsMoment).format('MMMM')) 
+                    }
+
+                    arrMonth[numericMonth] = numericMonth
+                })
+
+                if (arrMonth[i] == i) {
+                  $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
                 }else{
                   $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
-
                 }
 
-                showItems(numericMonth,items,itemsPerPage);
-
               }else{
-                if ($("#cbMonth:checked").length > 0) {
-                  $.each($("#cbMonth:checked"),function(idx,item){
-                      console.log(item.value)
-                      var monthAsMoment = moment(item.value, 'MMMM');
-                      var numericMonth = monthAsMoment.month() + 1;
-                      if (idx == 0) {
-                        showItems(numericMonth,items,itemsPerPage);
+              //   console.log("disitu")
 
-                        var monthAsMoment = moment().month(parseInt(numericMonth)-1);
-                        $("#span-remaining").text(moment(monthAsMoment).format('MMMM')) 
-                      }
+                showItems(moment().month() + 1,items,itemsPerPage);
 
-                      arrMonth[numericMonth] = numericMonth
-                  })
-
-                  if (arrMonth[i] == i) {
-                    $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
-                  }else{
-                    $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
-                  }
+                if (i === moment().month() + 1) {
+                  $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
                 }else{
-                  showItems(moment().month() + 1,items,itemsPerPage);
-
-                  if (i === moment().month() + 1) {
-                    $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
+                  //bedakan dengan filter year
+                  if (i > moment().month() + 1) {
+                    $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
                   }else{
-                    //bedakan dengan filter year
-                    if (i > moment().month() + 1) {
-                      $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
-                    }else{
-                      $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
-                    }
+                    $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
                   }
                 }
               }
