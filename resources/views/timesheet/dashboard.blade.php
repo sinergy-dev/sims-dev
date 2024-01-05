@@ -1177,6 +1177,10 @@
         var items         = $myDiv.children();
         var totalPages    = Math.ceil(items.length / itemsPerPage);
 
+        // if (!$(".textWarningRemaining").length) {
+        //   $myDiv.after("<p class='textWarningRemaining'>Filter by month</p>")
+        // }
+
         if (position) {
           showItems(position,items,itemsPerPage);
         }else{
@@ -1191,6 +1195,7 @@
                   $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
                 }else{
                   $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+
                 }
 
                 showItems(numericMonth,items,itemsPerPage);
@@ -1230,9 +1235,9 @@
                     }
                   }
                 }
-
               }
             }
+
           }else{
             console.log("disinituu")
             for (var i = 1; i <= totalPages; i++) {
@@ -1247,9 +1252,8 @@
                 }
               }
             }
+            showItems(moment().month() + 1,items,itemsPerPage);
           }
-          
-          showItems(moment().month() + 1,items,itemsPerPage);
           // Generate pagination links
           
         }
@@ -1635,7 +1639,6 @@
   }
 
   function showDataFilter(arrFilter,arrMonth,nameChart,val){
-    console.log(val)
     var accesable = @json($feature_item);
     accesable.forEach(function(item,index){
       $("#" + item).show()
@@ -1733,7 +1736,7 @@
     //   var monthAsMoment = moment().month(parseInt(numericMonth) - 1);
     //   var monthFullName = monthAsMoment.format('MMMM');
     //   $("#span-remaining").text(monthFullName) 
-    // }   
+    // } 
   }
     // else{
     //   var numericMonth = '1'; // Replace this with your numeric month value
