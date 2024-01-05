@@ -661,6 +661,7 @@
 
     var calendar
     $(document).ready(function(){
+      localStorage.removeItem('arrFilter');
       var accesable = @json($feature_item);
       
       accesable.forEach(function(item,index){
@@ -673,21 +674,12 @@
 
       if(nik == "{{Auth::User()->nik}}"){
         $("#alertForRemaining").show()
-
-        // showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
       }else{
         $("#alertForRemaining").hide()
       }
 
       calendar = $('#calendar').fullCalendar({
         timezone:'Asia/Jakarta',
-        // header: {
-        //   left: 'prev,next today myCustomButton',
-        //   center: 'title',
-        //   // right: 'month'
-        //   // ,agendaWeek,agendaDay'
-        // } 
-        // defaultView: window.mobilecheck() ? "basicDay" : "month",
         defaultView:"month",
       });
       loadData()
@@ -887,7 +879,6 @@
 
     $("#btn_back_timesheet_spv").click(function(){
       window.location.href = '{{url("timesheet/timesheet")}}';
-      // location.reload()
     })
 
     var currentDate = new Date(); // Get the current date
@@ -896,28 +887,32 @@
     tomorrow.setDate(currentDate.getDate() + 1)
     var endDate = currentDate.toLocaleDateString();
 
-    function loadData(){
+    function loadData(valDate){
       var arrFilter = localStorage.getItem("arrFilter",arrFilter)
-      console.log(arrFilter)
-      if(arrFilter != null){
-        arrFilter = arrFilter
-        $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter On')
-        $(".timesheet_status").css("background-color","green")
+      var arrFilter = ""
+
+      if (valDate != undefined) {
+        var dateDifYear = '&date=' + valDate
       }else{
-        arrFilter = ""
+        var dateDifYear = '&date='
+      }
+
+      if(arrFilter == null || arrFilter == ""){
         $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter Off')
         $(".timesheet_status").css("background-color","red")
+      }else{
+        arrFilter = arrFilter
+
+        $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter On')
+        $(".timesheet_status").css("background-color","green")
       }
 
       Pace.restart();
       Pace.track(function(){
         $.ajax({
           type:"GET",
-          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter,
-          // url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik,
+          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter + dateDifYear,
           success:function(results){
-            // Pace.restart();
-            // Pace.track(function(){
             $.ajax({
               type:"GET",
               url:"{{url('/getListCalendarEvent')}}",
@@ -993,8 +988,6 @@
                 }
 
                 if (result != "") {
-                  
-
                   result.items.map(item => {
                     if (item.creator != undefined) {
                       if (Object.keys(item.creator).length == 2) {
@@ -1026,7 +1019,6 @@
                             }
                           }
                       })
-                    
                   })
                 }
 
@@ -1077,7 +1069,6 @@
                 // Filter distinct events based on the title
                 const uniqueEvents = mergedEvents.reduce((unique, event) => {
                   const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
-
                   if (isEventUnique) {
                     unique.push(event);
                   }
@@ -1086,7 +1077,7 @@
 
                 var arrayCalconcatDb = uniqueEvents
                 
-                return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji)
+                return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji,valDate)
               },
               complete:function(){
                 Pace.stop();
@@ -1099,9 +1090,8 @@
     }
 
     var checkDate = ""
-    function showEvents(events,lock_activity,disabledDates,emoji){
-      showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
-      
+    var NewCalendar
+    function showEvents(events,lock_activity,disabledDates,emoji,valDate){
       if (events) {
         $.ajax({
           type:"GET",
@@ -1253,7 +1243,7 @@
         }
       })
 
-      $('#calendar').fullCalendar({
+      var calendarElement = $('#calendar').fullCalendar({
         // customButtons: {
         //   myCustomButton: {
         //     text: 'custom!',
@@ -1712,6 +1702,15 @@
           }
         }
       })
+      
+      if (valDate) {
+        if (calendarElement.data("fullCalendar")) {
+          $("#calendar").fullCalendar('gotoDate',valDate)
+        }
+        showAlertRemaining(valDate)
+      }else{
+        showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
+      }
 
       $('.fc-prev-button').on('click', function() {
         var currentView = calendar.fullCalendar('getView');
@@ -1719,11 +1718,9 @@
         
         var month = startDate.format('MMMM');
         var year = startDate.format('YYYY');
-        
-        console.log('Previous Month:', startDate.format('YYYY-MM-DD'));
-        console.log('Previous Year:', year);
 
-        showAlertRemaining(startDate.format('YYYY-MM-DD'))
+        $($("#alertForRemaining").find("span")[1]).text(". . .")
+        loadData(startDate.format('YYYY-MM-DD'))
       });
 
       $('.fc-next-button').on('click', function() {
@@ -1732,17 +1729,13 @@
         
         var month = startDate.format('MMMM');
         var year = startDate.format('YYYY');
-        
-        console.log('Next Month:', month);
-        console.log('Next Year:', year);
 
-        showAlertRemaining(startDate.format('YYYY-MM-DD'))
+        $($("#alertForRemaining").find("span")[1]).text(". . .")
+        loadData(startDate.format('YYYY-MM-DD'))
       });
 
       var view = calendar.fullCalendar('getView');
       var currentTimeZone = view.options.timezone;
-
-      console.log('Current time zone: ' + currentTimeZone);
 
       $('#calendar').fullCalendar('addEventSource', events)
       $('#calendar').fullCalendar('rerenderEvents')
@@ -2601,23 +2594,25 @@
           $("#selectType_refer").closest("div").find("span").show()
           $("#selectType_refer").closest("div").addClass("has-error")
         }else if($("#selectType_refer").val() == "Project"){
-          if ($("#selectLead_refer").val() == "") {
-            $("#selectLead_refer").closest("div").find("span").show()
-            $("#selectLead_refer").closest("div").addClass("has-error")
-            // $("#selectLead_refer").closest("div").find("span").text("Please select Project ID!")
-            $("#selectLead_refer").closest("div").find(".help-block").text("Please select Project ID!")          
-          }else if($("#textareaActivity_refer").val() == ""){
+          // if ($("#selectLead_refer").val() == "") {
+          //   $("#selectLead_refer").closest("div").find("span").show()
+          //   $("#selectLead_refer").closest("div").addClass("has-error")
+          //   // $("#selectLead_refer").closest("div").find("span").text("Please select Project ID!")
+          //   $("#selectLead_refer").closest("div").find(".help-block").text("Please select Project ID!")          
+          // }else 
+          if($("#textareaActivity_refer").val() == ""){
             $("#textareaActivity_refer").closest("div").find("span").show()
             $("#textareaActivity_refer").closest("div").addClass("has-error")
           }else{
             storeTimesheet(param,"ModalUpdateTimesheet")
           }
         }else if($("#selectType_refer").val() == "Approach"){
-          if ($("#selectLead_refer").val() == "") {
-            $("#selectLead_refer").closest("div").find("span").show()
-            $("#selectLead_refer").closest("div").addClass("has-error")
-            $("#selectLead_refer").closest("div").find(".help-block").text("Please select Lead ID!")
-          }else if($("#textareaActivity_refer").val() == ""){
+          // if ($("#selectLead_refer").val() == "") {
+          //   $("#selectLead_refer").closest("div").find("span").show()
+          //   $("#selectLead_refer").closest("div").addClass("has-error")
+          //   $("#selectLead_refer").closest("div").find(".help-block").text("Please select Lead ID!")
+          // }else 
+          if($("#textareaActivity_refer").val() == ""){
             $("#textareaActivity_refer").closest("div").find("span").show()
             $("#textareaActivity_refer").closest("div").addClass("has-error")
           }else{
@@ -2649,10 +2644,10 @@
           }else if ($(items).find(".box-body").find("#selectType_"+index).val() == "Project" || $(items).find(".box-body").find("#selectType_"+index).val() == "Approach") {
             if ($(items).find(".box-body").find("#selectLead_"+index).val() == "") {
               if ($(items).find(".box-body").find("#selectType_"+index).val() == "Project") {
-                if ($(items).find(".box-body").find("#inputPid_"+index).val() == "") {
-                  $("#selectLead_"+index).closest("div").find("span").show()
-                  $("#selectLead_"+index).closest("div").addClass("has-error")
-                }else{
+                // if ($(items).find(".box-body").find("#inputPid_"+index).val() == "") {
+                //   $("#selectLead_"+index).closest("div").find("span").show()
+                //   $("#selectLead_"+index).closest("div").addClass("has-error")
+                // }else{
                   if($(items).find(".box-body").find("#textareaActivity_"+index).val() == ""){
                     $("#textareaActivity_"+index).closest("div").find("span").show()
                     $("#textareaActivity_"+index).closest("div").addClass("has-error")
@@ -2675,10 +2670,10 @@
                       }
                     }
                   }
-                }
-                $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Project ID!")          
+                // }
+                // $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Project ID!")          
               }else{
-                $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Lead ID!")          
+                // $("#selectLead_"+index).closest("div").find(".help-block").text("Please select Lead ID!")          
               }
             }else if($(items).find(".box-body").find("#textareaActivity_"+index).val() == ""){
               $("#textareaActivity_"+index).closest("div").find("span").show()
