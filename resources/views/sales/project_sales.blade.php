@@ -1994,12 +1994,13 @@ Lead Register
 
 	function filterFromDashboard(){
 		if (window.location.href.split("=")[1]) {	
+			$("#year_dif_dir").val(window.location.href.split("=")[2]).trigger("change")
 			$(".cb-result").each(function(item,value){
-				if (window.location.href.split("=")[1] == 'ALL') {
+				if (window.location.href.split("=")[1].split("?")[0] == 'ALL') {
 			    $("#filter_lead_"+value.value).prop("checked", true)
 			    $("#filter_lead_INITIAL").prop("checked", true)
 				}else{
-					if(value.value == window.location.href.split("=")[1]){
+					if(value.value == window.location.href.split("=")[1].split("?")[0]){
 						if (window.location.href.split("=")[1] == "OPEN") {
 			    		$("#filter_lead_OPEN").prop("checked", true)
 			    		$("#filter_lead_SD").prop("checked", true)

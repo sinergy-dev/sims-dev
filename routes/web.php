@@ -274,8 +274,12 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getDoughnutChart', 'DASHBOARDController@getDoughnutChart');
 	Route::get('/getDoughnutChartAFH', 'DASHBOARDController@getDoughnutChartAFH');
 	Route::get('/getChartByStatus','DASHBOARDController@getChartByStatus');
-
 	Route::get('/getChartAdmin', 'DASHBOARDController@getChartAdmin');
+	Route::get('/getTopWinSipTer', 'DASHBOARDController@top_win_sip_ter');
+	Route::get('/getTopWinSip', 'DASHBOARDController@top_win_sip');
+	Route::get('/getTopWinMsp', 'DASHBOARDController@top_win_msp');
+	Route::get('/loopYear', 'DASHBOARDController@loop_year');
+
 
 	Route::get('/getCustomer', 'ReportController@getCustomer');
 	Route::get('/getCustomerbyDate', 'ReportController@getCustomerbyDate');
