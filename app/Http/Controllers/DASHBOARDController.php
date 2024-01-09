@@ -1002,7 +1002,7 @@ class DASHBOARDController extends Controller
 
     }
 
-    public function getDashboardBox(){
+    public function getDashboardBox(Request $request){
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -1013,7 +1013,9 @@ class DASHBOARDController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
         $com = $company->id_company;
 
-        $year = date('Y');
+        // $year = date('Y');
+        $year = $request->year;
+
         $count_lead = DB::table('sales_lead_register')
                     ->join('users','sales_lead_register.nik','=','users.nik')
                     ->whereYear('sales_lead_register.closing_date',$year)
@@ -1075,7 +1077,7 @@ class DASHBOARDController extends Controller
     }
 
 
-    public function getChart()
+    public function getChart(Request $request)
     {
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -1093,7 +1095,7 @@ class DASHBOARDController extends Controller
                     ->orderBy('month')
                     ->where('id_territory', $ter)
                     ->where('id_company',1)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
             $chart = DB::table('sales_lead_register')
@@ -1101,28 +1103,32 @@ class DASHBOARDController extends Controller
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->orderBy('month')
                     ->where('sales_solution_design.nik', $nik)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }else{
             $chart = DB::table('sales_lead_register')
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->orderBy('month')
                     ->get();
         }
 
-        $first = $chart[0]->month;
         $hasil = [0,0,0,0,0,0,0,0,0,0,0,0];
-
-        $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $bulan_angka = [1,2,3,4,5,6,7,8,9,10,11,12];
 
-        foreach ($bulan_angka as $key => $value2) {
-            foreach ($chart as $value) {
-                if ($value->month == $value2) {
-                    $hasil[$key]++;
+        if (count($chart) != 0) {
+            $first = $chart[0]->month;
+
+            $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+            foreach ($bulan_angka as $key => $value2) {
+                foreach ($chart as $value) {
+                    if ($value->month == $value2) {
+                        $hasil[$key]++;
+                    }
                 }
             }
         }
+        
         return $hasil;
     }
 
@@ -1171,7 +1177,7 @@ class DASHBOARDController extends Controller
         return $hasil;
     }
 
-    public function getPieChart()
+    public function getPieChart(Request $request)
     {
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -1190,7 +1196,7 @@ class DASHBOARDController extends Controller
                     ->join('users', 'sales_lead_register.nik', '=', 'users.nik')
                     ->orderBy('result')
                     ->where('id_territory', $ter)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
             $status = DB::table('sales_lead_register')
@@ -1198,31 +1204,34 @@ class DASHBOARDController extends Controller
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->orderBy('result')
                     ->where('sales_solution_design.nik', $nik)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }else{
             $status = DB::table('sales_lead_register')
                     ->orderBy('result')
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }
 
-        $first = $status[0]->result;
         $hasil = [0,0,0,0,0,0];
-        $bulan_angka = ['OPEN', '', 'SD', 'TP', 'WIN', 'LOSE'];
-
-        foreach ($bulan_angka as $key => $value2) {
-            foreach ($status as $value) {
-                    if ($value->result == $value2) {
-                        $hasil[$key]++;
-                        $pie++;
-                    }
-                }
-        }
-
         $hasil2 = [0,0,0,0,0,0];
-        foreach ($hasil as $key => $value) {
-            $hasil2[$key] = ($value/$pie)*100;
+
+        if (count($status) != 0) {
+            $first = $status[0]->result;
+            $bulan_angka = ['OPEN', '', 'SD', 'TP', 'WIN', 'LOSE'];
+
+            foreach ($bulan_angka as $key => $value2) {
+                foreach ($status as $value) {
+                        if ($value->result == $value2) {
+                            $hasil[$key]++;
+                            $pie++;
+                        }
+                    }
+            }
+
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
         }
 
         return $hasil2;
@@ -1323,7 +1332,7 @@ class DASHBOARDController extends Controller
         return $hasil;
     }
 
-    public function getAreaChart2019()
+    public function getAreaChart2019(Request $request)
     {   
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -1341,7 +1350,7 @@ class DASHBOARDController extends Controller
                     ->join('users', 'sales_lead_register.nik', '=', 'users.nik')
                     ->orderBy('amount')
                     ->where('id_territory', $ter)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
             $chart = DB::table('sales_lead_register')
@@ -1349,35 +1358,39 @@ class DASHBOARDController extends Controller
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->orderBy('amount')
                     ->where('sales_solution_design.nik', $nik)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }else{
             if (Auth::User()->email == 'tech@sinergy.co.id') {
                 $chart = DB::table('sales_lead_register')
                     ->orderBy('deal_price')
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
             }else{
                 $chart = DB::table('sales_lead_register')
                     ->orderBy('amount')
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
             }
         }
 
-        $first = $chart[0]->month;
         $hasil = [0,0,0,0,0,0,0,0,0,0,0,0];
-
-        $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $bulan_angka = [1,2,3,4,5,6,7,8,9,10,11,12];
 
-        foreach ($bulan_angka as $key => $value2) {
-           foreach ($chart as $value) {
-               if ($value->month == $value2) {
-                    $hasil[$key] = $hasil[$key]+$value->deal_price;
+        if (empty($chart) != 0) {
+            $first = $chart[0]->month;
+
+            $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+            foreach ($bulan_angka as $key => $value2) {
+               foreach ($chart as $value) {
+                   if ($value->month == $value2) {
+                        $hasil[$key] = $hasil[$key]+$value->deal_price;
+                    }
                 }
             }
         }
+       
         return $hasil;
     }
 
@@ -1426,7 +1439,7 @@ class DASHBOARDController extends Controller
         return $hasil;
     }
 
-    public function getDoughnutChart()
+    public function getDoughnutChart(Request $request)
     {
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -1445,7 +1458,7 @@ class DASHBOARDController extends Controller
                     ->join('users', 'sales_lead_register.nik', '=', 'users.nik')
                     ->orderBy('result')
                     ->where('id_territory', $ter)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
             $status = DB::table('sales_lead_register')
@@ -1453,35 +1466,39 @@ class DASHBOARDController extends Controller
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->orderBy('result')
                     ->where('sales_solution_design.nik', $nik)
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }else{
             $status = DB::table('sales_lead_register')
                     ->orderBy('result')
-                    ->where('year',$year)
+                    ->where('year',$request->year)
                     ->get();
         }
 
-        $first = $status[0]->result;
         $hasil = [0,0];
-        $bulan_angka = ['WIN', 'LOSE'];
+        $hasil2 = [0,0];
 
-        foreach ($bulan_angka as $key => $value2) {
-            foreach ($status as $value) {
+        if (count($status) != 0) {
+            $first = $status[0]->result;
+            $bulan_angka = ['WIN', 'LOSE'];
+
+            foreach ($bulan_angka as $key => $value2) {
+                foreach ($status as $value) {
                     if ($value->result == $value2) {
                         $hasil[$key]++;
                         $pie++;
                     }
                 }
-        }
-
-        $hasil2 = [0,0];
-        foreach ($hasil as $key => $value) {
-            if ($value != 0) {
-                $hasil2[$key] = ($value/$pie)*100;
             }
-        }
 
+            foreach ($hasil as $key => $value) {
+                if ($value != 0) {
+                    $hasil2[$key] = ($value/$pie)*100;
+                }
+            }
+
+        }
+        
         return $hasil2;
     }
 
@@ -1563,7 +1580,7 @@ class DASHBOARDController extends Controller
         return $hasil2;
     }
 
-    public function getChartByStatus()
+    public function getChartByStatus(Request $request)
     {
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -1598,7 +1615,7 @@ class DASHBOARDController extends Controller
                 ->where('result','!=','CANCEL')
                 ->where('id_company','1')
                 ->where('sales_lead_register.result','!=','hmm')
-                ->whereYear('sales_lead_register.created_at',date("Y"))
+                ->whereYear('sales_lead_register.created_at',$request->year)
                 ->groupBy('month');
 
         if ($div == 'SALES') {        	
@@ -1608,7 +1625,6 @@ class DASHBOARDController extends Controller
         }
 
         return $datas;
-
     }
 
     public function maintenance()
@@ -1617,8 +1633,146 @@ class DASHBOARDController extends Controller
     }
 
     public function notif_view_all(){
-
         return view('notif/view_all')->with(['initView'=> $this->initMenuBase()]);
+    }
+
+    public function top_win_sip_ter(Request $request){
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+        $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
+        $com = $company->id_company;
+
+        if ($div == 'SALES') {
+            $top_win_sip_ter = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik','users.id_territory')
+                        ->where('result', 'WIN')
+                        ->whereYear('closing_date', $request->year)
+                        ->where('users.id_company', '1')
+                        ->where('users.id_territory', $ter)
+                        ->where('users.status_karyawan', '!=', 'dummy')
+                        ->groupBy('users.id_territory','sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get()->toArray();
+        }else{
+            $sum_amounts_ter = DB::table('sales_lead_register')
+                            ->join('users','users.nik','=','sales_lead_register.nik')
+                            ->select(DB::raw('SUM(sales_lead_register.amount) as sum_amounts'),DB::raw('COUNT(sales_lead_register.lead_id) as leads_total'),'id_territory')
+                            // ->where('users.id_territory','!=','OPERATION')
+                            ->whereYear('closing_date', $request->year)
+                            ->where('result', 'WIN')
+                            ->where('users.status_karyawan', '!=', 'dummy')
+                            ->where('users.id_company', '1')
+                            ->groupBy('id_territory');
+
+            $top_win_sip_ter_ter = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->joinSub($sum_amounts_ter,'sum_amounts_ter',function($join){
+                            $join->on('sum_amounts_ter.id_territory','=','users.id_territory');
+                        })
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.id_territory','users.nik')
+                        ->selectRaw('`sum_amounts_ter`.`sum_amounts` AS `sum_total`')
+                        ->selectRaw('`sum_amounts_ter`.`leads_total` AS `leads_total`')
+                        ->where('result', 'WIN')
+                        // ->where('users.id_territory','!=','OPERATION')
+                        ->whereYear('closing_date', $request->year)
+                        ->where('users.status_karyawan', '!=', 'dummy')
+                        ->where('users.id_company', '1')
+                        ->groupBy('users.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->get();
+
+           $top_win_sip_ter_ter->push([
+                "leads" => $sum_amounts_ter->get()->sum('leads_total'),
+                "amounts" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
+                "deal_prices" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
+                "name" => "Total All Teritory",
+                "code_company" => "SIP",
+                "id_territory" => "TOTAL",
+                "nik" => "-",
+                "sum_total" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
+                "leads_total" => $sum_amounts_ter->get()->sum('leads_total')
+            ]);
+
+            $groups = collect($top_win_sip_ter_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('id_territory');
+
+            $groups2 = collect($sum_amounts_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('sum_amounts');
+
+            $top_win_sip_ter = $groups->toArray();
+
+            return $top_win_sip_ter;
+        }
+    }
+
+    public function top_win_sip(Request $request){
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+        $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
+        $com = $company->id_company;
+
+        $top_win_sip = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik','users.id_territory')
+                        ->where('result', 'WIN')
+                        ->whereYear('closing_date', $request->year)
+                        ->where('users.id_company', '1')
+                        ->where('users.status_karyawan', '!=', 'dummy')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get();
+
+        return $top_win_sip;
+    }
+
+    public function top_win_msp(Request $request){
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+        $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
+        $com = $company->id_company;
+
+        $top_win_msp = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik')
+                        ->where('result', 'WIN')
+                        ->whereYear('closing_date', $request->year)
+                        ->where('users.id_company', '2')
+                        ->where('users.status_karyawan', '!=', 'dummy')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get();
+
+        return $top_win_msp;
+    }
+
+    public function loop_year(){
+        $loop_year = DB::table('sales_lead_register')
+                    ->select(DB::raw('`year` AS `id`,`year` AS `text`'))->groupBy('year')->orderBy('year','desc')->get();
+
+        return $loop_year;
     }
 
 }
