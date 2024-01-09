@@ -55,34 +55,42 @@ Presence Report
 		</div>
 		<div class="box-body">
 			<div class="row">
-				<div class="col-md-3">
-					<button type="button" class="btn btn-default" id="daterange-btn">
-						<i class="fa fa-calendar"></i> Date range picker
-						<span>
-							<i class="fa fa-caret-down"></i>
-						</span>
-					</button><br><br>
-					<fieldset id="shuttle-box" disabled>
-				        <div id="transfer3" class="transfer-demo" ></div>
-					</fieldset>
+				<div class="col-md-12 col-xs-12">
+					<div class="form-group">
+						<button type="button" class="btn btn-default" id="daterange-btn">
+							<i class="fa fa-calendar"></i> Date range picker
+							<span>
+								<i class="fa fa-caret-down"></i>
+							</span>
+						</button>
+					</div>
 				</div>
-				<div class="col-md-9 table-responsive">
-					<table class="table table-bordered table-striped display" id="report_table" style="overflow-x:auto;">
-						<thead>
-							<tr>
-								<th style="width: 7px;">No</th>
-								<th>Name</th>
-								<th>Location</th>
-								<th style="width: 70px;" class="text-center">On Time</th>
-								<th style="width: 50px;" class="text-center">Injury</th>
-								<th style="width: 50px;" class="text-center">Late</th>
-								<th style="width: 50px;" class="text-center">Absent</th>
-								<th style="width: 50px;" class="text-center">All</th>
-							</tr>
-						</thead>
-						<tbody id="table_report">
-						</tbody>
-					</table>
+			</div>
+			<div class="row">
+				<div class="col-md-3 col-xs-12">
+					<div id="shuttle-box" disabled>
+				    <div id="transfer3" class="transfer-demo"></div>
+					</div><br>
+				</div>
+				<div class="col-md-9 col-xs-12">
+					<div class="table-responsive">
+						<table class="table table-bordered table-striped display" id="report_table" style="overflow-x:auto;">
+							<thead>
+								<tr>
+									<th style="width: 7px;">No</th>
+									<th>Name</th>
+									<th>Location</th>
+									<th style="width: 70px;" class="text-center">On Time</th>
+									<th style="width: 50px;" class="text-center">Injury</th>
+									<th style="width: 50px;" class="text-center">Late</th>
+									<th style="width: 50px;" class="text-center">Absent</th>
+									<th style="width: 50px;" class="text-center">All</th>
+								</tr>
+							</thead>
+							<tbody id="table_report">
+							</tbody>
+						</table>
+					</div>					
 				</div>
 			</div>						
 			<!-- <div class="row mb-3">
