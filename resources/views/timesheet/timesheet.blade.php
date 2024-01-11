@@ -1068,7 +1068,8 @@
 
                 // Filter distinct events based on the title
                 const uniqueEvents = mergedEvents.reduce((unique, event) => {
-                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
+                  // const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
+                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start);
                   if (isEventUnique) {
                     unique.push(event);
                   }
