@@ -800,7 +800,8 @@ class PrDraftController extends Controller
         // $cek_status = PR::join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->select('status_draft_pr')->get();
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'PMO Manager' || $cek_role->name == 'SOL Manager') {
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereYear('tb_pr_draft.updated_at',date('Y'));
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR');
+            // ->whereYear('tb_pr_draft.updated_at',date('Y'));
             if ($cek_role->name == 'BCD Procurement') {
                 $getDataEPR = $getDataEPR->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')")
                 ;
@@ -817,7 +818,8 @@ class PrDraftController extends Controller
         }
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereYear('tb_pr_draft.updated_at',date('Y'));
+            $getData = PRDraft::where('type_of_letter', 'IPR');
+            // ->whereYear('tb_pr_draft.updated_at',date('Y'));
             if ($cek_role->name == 'BCD Procurement') {
                 $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED')")
                 ;

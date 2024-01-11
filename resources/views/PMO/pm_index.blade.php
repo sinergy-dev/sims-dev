@@ -98,24 +98,26 @@ PMO
             <div class="box-body">
               <div class="row">
                 <div class="col-md-4 pull-right" id="search-table">
-                  <div class="input-group" style="margin-left: 10px">
-                    <div class="input-group-btn">
-                      <button type="button" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        Show 10 entries
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a href="#" onclick="changeNumberEntries('tbListProject',10)">10</a></li>
-                        <li><a href="#" onclick="changeNumberEntries('tbListProject',25)">25</a></li>
-                        <li><a href="#" onclick="changeNumberEntries('tbListProject',50)">50</a></li>
-                        <li><a href="#" onclick="changeNumberEntries('tbListProject',100)">100</a></li>
-                      </ul>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-btn">
+                        <button type="button" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                          Show 10 entries
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a href="#" onclick="changeNumberEntries('tbListProject',10)">10</a></li>
+                          <li><a href="#" onclick="changeNumberEntries('tbListProject',25)">25</a></li>
+                          <li><a href="#" onclick="changeNumberEntries('tbListProject',50)">50</a></li>
+                          <li><a href="#" onclick="changeNumberEntries('tbListProject',100)">100</a></li>
+                        </ul>
+                      </div>
+                      <input id="searchBarList" type="text" class="form-control" placeholder="Search Anything">
+                      <span class="input-group-btn">
+                        <button id="applyFilterTableSearch" type="button" class="btn btn-default btn-md" style="width: 40px">
+                          <i class="fa fa-fw fa-search"></i>
+                        </button>
+                      </span>
                     </div>
-                    <input id="searchBarList" type="text" class="form-control" placeholder="Search Anything">
-                    <span class="input-group-btn">
-                      <button id="applyFilterTableSearch" type="button" class="btn btn-default btn-md" style="width: 40px">
-                        <i class="fa fa-fw fa-search"></i>
-                      </button>
-                    </span>
                   </div>
                 </div>
               </div>

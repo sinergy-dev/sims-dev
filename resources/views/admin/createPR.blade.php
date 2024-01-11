@@ -92,61 +92,62 @@
         <div class="box-body">
           <div class="row" style="margin-bottom:10px" id="filterBox">
             <div class="col-md-2 col-xs-12">
-              <b>Filter by Type PR : </b>
-              <div>
+              <div class="form-group">
+                <label>Filter by Type PR : </label>
                 <select class="form-control select2" id="inputFilterTypePr" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true">
                 </select>
               </div>
             </div>
 
             <div class="col-md-2 col-xs-12">
-              <b>Filter by Status : </b>
-              <div>
+              <div class="form-group">
+                <label>Filter by Status : </label>
                 <select class="form-control select2" id="inputFilterStatus" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
               </div>
             </div>
 
             <div class="col-md-2 col-xs-12" id="filterUser" style="display:none">
-              <b>Filter by User : </b>
-              <div>
+              <div class="form-group">
+                <label>Filter by User : </label>
                 <select class="form-control select2" id="inputFilterUser" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
               </div>
             </div>
 
             <div class="col-md-2 col-xs-12">
-              <b>Range Date PR : </b>
-
-              <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate" disabled>
-                <i class="fa fa-calendar"></i> Date range picker
-                <span>
-                  <i class="fa fa-caret-down"></i>
-                </span>
-              </button>
+              <div class="form-group">
+                <label>Range Date PR : </label>
+                <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate" disabled>
+                  <i class="fa fa-calendar"></i> Date range picker
+                  <span>
+                    <i class="fa fa-caret-down"></i>
+                  </span>
+                </button>
+              </div>
             </div>
             
             <div class="col-md-4 col-xs-12">
-              <b>Search Anything : </b>
-              <div class="input-group pull-right">
-                <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
-                
-                <div class="input-group-btn">
-                  <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Show 10 
-                    <span class="fa fa-caret-down"></span>
-                  </button>
-                  <ul class="dropdown-menu" id="selectShowEntryTicket">
-                    <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                    <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                    <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                    <li class="active"><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-                  </ul>
+              <div class="form-group">
+                <label>Search Anything : </label>
+                <div class="input-group">
+                  <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
+                  <div class="input-group-btn">
+                    <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                      Show 10 
+                      <span class="fa fa-caret-down"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="selectShowEntryTicket">
+                      <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+                      <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+                      <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+                      <li class="active"><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                    </ul>
+                  </div>
+                  <span class="input-group-btn">
+                    <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" type="button" class="btn btn-default btn-flat">
+                      <i class="fa fa-fw fa-remove"></i>
+                    </button>
+                  </span>
                 </div>
-                <span class="input-group-btn">
-                  <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" type="button" class="btn btn-default btn-flat">
-                    <i class="fa fa-fw fa-remove"></i>
-                  </button>
-                  
-                </span>
               </div>
             </div>
                 
@@ -3851,8 +3852,7 @@
               $(".modal-dialog").removeClass('modal-lg')
               $("#nextBtnAddAdmin").attr('onclick','nextPrevAddAdmin(1,'+ result.pr.id +')')
               
-            }
-            else if(n == 1){
+            }else if(n == 1){
               $(".modal-title").text('')
               $("#nextBtnAddAdmin").removeAttr('onclick')
               $(".modal-dialog").addClass('modal-lg')
@@ -3966,6 +3966,7 @@
                   }
                 })
               })
+            
             }else if (n == 2) {
               $(".modal-dialog").removeClass('modal-lg')
               if ($("#selectTypeCek").val() == 'EPR') {
@@ -4169,7 +4170,7 @@
               appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
               appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
               appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
-              if (PRType == 'EPR') {
+              if ($("#selectTypeCek").val() == 'EPR')
                 appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
                 appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
                 appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
@@ -4369,9 +4370,7 @@
             $("#nextBtnAddAdmin").prop("disabled",false)
             $("#addProduct").attr('onclick','nextPrevAddAdmin(-1,'+ result.pr.id +')')
           }
-        }
-      })
-        
+      }) 
       $("#ModalDraftPrAdmin").modal({backdrop: 'static', keyboard: false})  
     }
 

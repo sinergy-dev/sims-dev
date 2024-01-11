@@ -97,6 +97,13 @@ GA Logistik
       outline:none;
       width: 25px;
     }
+
+    @media screen and (max-width: 768px) {
+      .btn-action-atk{
+        float: left!important;
+        margin: 5px;
+      }
+    }
   </style>
 @endsection
 @section('content')
@@ -162,26 +169,26 @@ GA Logistik
             <a class="nav-link" id="home-tab" data-toggle="tab" href="#request_pr" role="tab" aria-controls="home" aria-selected="true">Request PR</a>
           </li>
           @endif -->
-          <button class="btn btn-sm btn-success pull-right tambah_asset_logistik" data-toggle="modal" id="tambah_asset_logistik" data-target="#add_asset" style="display: none"><i class="fa fa-plus"> </i>&nbsp Asset</button>
-
-          <button class="btn btn-sm btn-warning pull-right btnExport" id="btnExport" style="margin-right: 5px;display: none;" onclick="exportExcel('{{action('AssetLogistikController@reportExcel')}}')"><i class="fa fa-download"> </i>&nbsp Excel</button>
-
-          <div class="pull-right dropdown dropdownBln" style="margin-right: 5px;display: none;">
-            <button type="button" id="btnShowMonth" class="btn btn-sm btn-default dropdown-toggle" style="width:120px" data-toggle="dropdown" aria-expanded="false">
-              Select Month
-              <span class="fa fa-caret-down"></span>
-            </button>
-            <ul class="dropdown-menu" id="selectShowMonth">
-              @foreach($month_formatted as $value)
-                <li style="cursor:pointer; padding-top: 5px;padding-bottom: 5px;text-align: center;" onclick="reportExcel(this)">{{$value}}</li>
-              @endforeach
-            </ul>
-          </div>
-          <div class="pull-right dropdown" style="margin-left: 5px">
-            <button class="dropbtn request_logistik" id="request_logistik" style="margin-right: 5px;" style="display: none;"><i class="fa fa-plus"> </i>&nbspRequest Logistik</button>
-            <div class="dropdown-content">
-              <a data-toggle="modal" data-target="#peminjaman_modal">Available</a>
-              <a data-toggle="modal" data-target="#request_modal">Unavailable</a>
+          <div class="form-group btn-action-atk" style="float: right;">
+            <button class="btn btn-sm btn-success tambah_asset_logistik" data-toggle="modal" id="tambah_asset_logistik" data-target="#add_asset" style="display: none"><i class="fa fa-plus"> </i>&nbsp Asset</button>
+            <button class="btn btn-sm btn-warning btnExport" id="btnExport" style="display: none;" onclick="exportExcel('{{action('AssetLogistikController@reportExcel')}}')"><i class="fa fa-download"> </i>&nbsp Excel</button>
+            <div class="dropdown dropdownBln" style="display: none;">
+              <button type="button" id="btnShowMonth" class="btn btn-sm btn-default dropdown-toggle" style="width:120px" data-toggle="dropdown" aria-expanded="false">
+                Select Month
+                <span class="fa fa-caret-down"></span>
+              </button>
+              <ul class="dropdown-menu" id="selectShowMonth">
+                @foreach($month_formatted as $value)
+                  <li style="cursor:pointer; padding-top: 5px;padding-bottom: 5px;text-align: center;" onclick="reportExcel(this)">{{$value}}</li>
+                @endforeach
+              </ul>
+            </div>
+            <div class="dropdown">
+              <button class="dropbtn request_logistik" id="request_logistik" style="margin-right: 5px;" style="display: none;"><i class="fa fa-plus"> </i>&nbspRequest Logistik</button>
+              <div class="dropdown-content">
+                <a data-toggle="modal" data-target="#peminjaman_modal">Available</a>
+                <a data-toggle="modal" data-target="#request_modal">Unavailable</a>
+              </div>
             </div>
           </div>
         </ul>

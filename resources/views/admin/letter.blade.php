@@ -49,6 +49,12 @@ Letter Number
       padding-top: 4px;
       padding-left: 10px;
     }
+
+    @media screen and (max-width: 768px) {
+      .btn-action-letter{
+        float: left!important;
+      }
+    }
   </style>
 @endsection
 @section('content')
@@ -86,37 +92,37 @@ Letter Number
 
   <div class="box">
     <div class="box-header with-border">
-
-        <div class="pull-left">
-          <!-- <label style="margin-top: 5px;margin-right: 5px">Filter Year</label> -->
-        <!--   <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
-              <option value="2020">&#xf073 &nbsp2020</option>
-              <option value="2019">&#xf073 &nbsp2019</option>
-          </select> -->
-          <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat" id="year_filter">
-              <option value="{{$tahun}}">&nbsp{{$tahun}}</option>
-              @foreach($year_before as $years)
-                @if($years->year != $tahun)
-                  <option value="{{$years->year}}">&nbsp{{$years->year}}</option>
-                @endif
-              @endforeach
-          </select>
-        </div>
-      
-        <div class="pull-right">
-          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_letter" data-toggle="modal" style="width: 100px; color: white"><i class="fa fa-plus"> </i>&nbsp Letter</button>
-          @if($counts)
-          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px; color: white; margin-right: 10px;"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
-          @else
-          <button type="button" class="btn btn-success margin-bottom pull-right disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px; color: white; margin-right: 10px;" disabled><i class="fa fa-plus"> </i>&nbsp Back Date</button>
-          @endif
-          <!-- <a href="{{url('/downloadExcelLetter')}}"><button class="btn btn-warning" style=" margin-right: 10px;"><i class="fa fa-print"></i> EXCEL </button></a> -->
-          <button class="btn btn-warning" onclick="exportLetter('{{action('LetterController@downloadExcel')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel</button>
-        </div>
+        <h3 class="box-title"><i class="fa fa-table"></i> Letter</h3>
     </div>
     <div class="box-body">
     <div class="row">
     	<div class="col-md-12">
+        <div class="row">
+          <div class="col-md-2 col-xs-12">
+            <div class="form-group">
+              <select class="form-control btn-primary btn-flat" style="width:100px" id="year_filter">
+                  <option value="{{$tahun}}">&nbsp{{$tahun}}</option>
+                  @foreach($year_before as $years)
+                    @if($years->year != $tahun)
+                      <option value="{{$years->year}}">&nbsp{{$years->year}}</option>
+                    @endif
+                  @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-10">
+            <div class="form-group btn-action-letter" style="float:right;">
+              <button type="button" class="btn btn-success btn-flat" id="" data-target="#modal_letter" data-toggle="modal" style="color: white"><i class="fa fa-plus"> </i>&nbsp Letter</button>
+              @if($counts)
+              <button type="button" class="btn btn-success btn-flat" id="" data-target="#letter_backdate" data-toggle="modal" style="color: white"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
+              @else
+              <button type="button" class="btn btn-success btn-flat disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="color: white" disabled><i class="fa fa-plus"> </i>&nbsp Back Date</button>
+              @endif
+              <button class="btn btn-warning btn-flat" onclick="exportLetter('{{action('LetterController@downloadExcel')}}')"><i class="fa fa-print"></i> Excel</button>
+            </div>
+          </div>
+        </div>
+        
 	      <div class="nav-tabs-custom">
 	        <ul class="nav nav-tabs" id="myTab">
 	          @foreach($status_letter as $data)
@@ -131,9 +137,7 @@ Letter Number
                     </li>
             @endforeach
 	        </ul>
-	        
 	        <div class="tab-content">
-
 	          <div class="tab-pane active">
 	          	<div class="table-responsive DTFC_LeftBodyLiner">
 	                <table class="table table-bordered nowrap display table-striped dataTable" id="data_all" width="100%" cellspacing="0">

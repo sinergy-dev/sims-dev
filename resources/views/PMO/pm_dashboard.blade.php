@@ -66,7 +66,7 @@ PMO
                         <h3 class="box-title">Total Project</h3>
                     </div>
                     <div class="box-body chartBoxTotalProject">
-                        <canvas id="totalProjectCanvas" width="400" height="100"></canvas>
+                        <canvas id="totalProjectCanvas" width="400" height="150"></canvas>
                     </div>
                 </div>
             </div>

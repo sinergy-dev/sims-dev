@@ -169,30 +169,28 @@ Leaving Permitte
         </div>
       </div>
 
-      <div class="box-body">
-        <div class="table-responsive">          
-          <div class="nav-tabs-custom">
-
-            <ul class="nav nav-tabs" style="margin-top: 10px" id="cutis">
-              <li class="tabs_item">
-                <a href="#bos" style="display: none;" id="tab-list-cuti" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
-              </li>
-              <li class="tabs_item">
-                <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
-              </li>
-              <li class="tabs_item">
-                {{-- @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-                  <a href="#staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
-                @else
-                  <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
-                @endif --}}
+      <div class="box-body">         
+        <div class="nav-tabs-custom">
+          <ul class="nav nav-tabs" style="margin-top: 10px" id="cutis">
+            <li class="tabs_item">
+              <a href="#bos" style="display: none;" id="tab-list-cuti" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
+            </li>
+            <li class="tabs_item">
+              <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
+            </li>
+            <li class="tabs_item">
+              {{-- @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                <a href="#staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
+              @else
                 <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
-              </li>
-            </ul>
+              @endif --}}
+              <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
+            </li>
+          </ul>
 
-            <div class="tab-content">
-
-              <div class="tab-pane" id="bos"> 
+          <div class="tab-content">
+            <div class="tab-pane" id="bos"> 
+              <div class="table-responsive">
                 <table class="table table-bordered table-striped dataTable" id="datatables" width="100%" cellspacing="0">
                   <thead>
                     <tr>
@@ -214,8 +212,10 @@ Leaving Permitte
                   </tbody>
                 </table>
               </div>
+            </div>
 
-              <div class="tab-pane" id="cuti">
+            <div class="tab-pane" id="cuti">
+              <div class="table-responsive">
                 <table class="table table-bordered table-striped dataTable" id="datatablew" width="100%" cellspacing="0">
                   <thead>
                     <tr>
@@ -233,36 +233,38 @@ Leaving Permitte
                   </tbody>
                 </table>
               </div>
+            </div>
 
-              <div class="tab-pane" id="staff">
-                <div class="row" style="margin-bottom: 10px; display: none;" id="div_filter">
-                  <div class="input-group date" style="width: 300px;margin-left: 15px;float: right;">
-                    <div class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
-                    </div>
-                    <input type="text" class="form-control" id="datesReport" name="dates">
+            <div class="tab-pane" id="staff">
+              <div class="row" style="margin-bottom: 10px; display: none;" id="div_filter">
+                <div class="input-group date" style="width: 300px;margin-left: 15px;float: right;">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
                   </div>
-
-                  <div  class="input-group date disabled" style="width: 300px;margin-left: 15px;float: right;">
-                    <div class="input-group-addon">
-                      <i class="fa fa-filter"></i>
-                    </div>
-                    <select class="form-control" id="division_cuti" name="division_cuti">
-                      <option value="alldeh">ALL DIVISION</option>
-                      @foreach($division as $data)
-                        @if($data->id_division != 'NULL')
-                          @if($data->id_division == '-')
-                            <option value="{{$data->id_division}}">WAREHOUSE</option>
-                          @else
-                            <option value="{{$data->id_division}}">{{$data->id_division}}</option>
-                          @endif
-                        @endif
-                      @endforeach
-                    </select>
-                  </div>
-
-                  <button class="btn btn-sm bg-olive" style="float: left;margin-left: 15px" onclick="exportExcel()">&nbspExport to <i class="fa fa-file-excel-o"></i></button>
+                  <input type="text" class="form-control" id="datesReport" name="dates">
                 </div>
+
+                <div  class="input-group date disabled" style="width: 300px;margin-left: 15px;float: right;">
+                  <div class="input-group-addon">
+                    <i class="fa fa-filter"></i>
+                  </div>
+                  <select class="form-control" id="division_cuti" name="division_cuti">
+                    <option value="alldeh">ALL DIVISION</option>
+                    @foreach($division as $data)
+                      @if($data->id_division != 'NULL')
+                        @if($data->id_division == '-')
+                          <option value="{{$data->id_division}}">WAREHOUSE</option>
+                        @else
+                          <option value="{{$data->id_division}}">{{$data->id_division}}</option>
+                        @endif
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+
+                <button class="btn btn-sm bg-olive" style="float: left;margin-left: 15px" onclick="exportExcel()">&nbspExport to <i class="fa fa-file-excel-o"></i></button>
+              </div>
+              <div class="table-responsive">
                 <table class="table table-bordered table-striped dataTable" id="datatableq" width="100%" cellspacing="0">
                   <thead>
                     <tr>
@@ -279,9 +281,7 @@ Leaving Permitte
                   </tbody>
                 </table>
               </div>
-
             </div>
-
           </div>
         </div>
       </div>
@@ -830,6 +830,7 @@ Leaving Permitte
             {"width": "10%", "targets":4},
            ],
         "order": [[ "2", "desc" ]],
+        "scrollX":true,
         // // "bPaginate": false,
         // "pageLength": 25,
         // "paging": false,
@@ -1846,6 +1847,7 @@ Leaving Permitte
         "searching": true,
         "lengthChange": true,
         "order": [[ 0, "asc" ]],
+        "scrollX":true,
         "fixedColumns":   {
           leftColumns: 1
         },

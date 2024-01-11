@@ -108,7 +108,7 @@
       </div>
       <div class="pull-right">
           <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px;color: white; display: none"><i class="fa fa-plus"> </i>&nbsp Number Purchase Request</button>
-          <button class="btn btn-warning" onclick="exportPr('{{action('PrController@downloadExcelPr')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i>Excel</button>
+          <button class="btn btn-warning" onclick="exportPr('{{action('PrController@downloadExcelPr')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel</button>
       </div>
     </div>
 

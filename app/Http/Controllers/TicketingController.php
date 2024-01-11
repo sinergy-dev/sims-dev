@@ -250,6 +250,8 @@ class TicketingController extends Controller
 	public function getAtmId(Request $request){
 		if($request->acronym == "BDIY"){
 			$request->client_id = 19;
+		}else if($request->acronym == "BNTT"){
+			$request->client_id = 48;
 		}
 
 		// return TicketingATM::where('owner',TicketingClient::where('client_acronym',$client_acronym)->first()->id)
@@ -2687,9 +2689,13 @@ class TicketingController extends Controller
 			->leftJoin('ticketing__resolve','ticketing__resolve.id_ticket','=','open_activity_detail.id_ticket')
 			->leftJoin('ticketing__detail','ticketing__detail.id_ticket','=','open_activity_detail.id_ticket')
 			->leftJoin('ticketing__severity','ticketing__severity.id','=','ticketing__detail.severity')
-			->orderBy('open_activity_detail.id_ticket','ASC')
-			->where('type_ticket',$request->type)
-			->get();
+			->orderBy('open_activity_detail.id_ticket','ASC');
+
+		if ($request->type != 'none') {
+			$data = $data->where('type_ticket',$request->type);
+		}
+
+		$data = $data->get();
 
 		// return $data;
 

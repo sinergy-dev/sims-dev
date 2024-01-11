@@ -24,6 +24,11 @@ Quote Number
       white-space: normal;
       width:200px;    
     }
+    @media screen and (max-width: 768px) {
+      .btn-action-letter{
+        float: left!important;
+      }
+    }
   </style>
 @endsection
 @section('content')
@@ -61,31 +66,33 @@ Quote Number
 
     <div class="box">
       <div class="box-header with-border">
-          <div class="pull-left">
-            <!-- <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
-            <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
-                <option value="2020">&#xf073 &nbsp2020</option>
-                <option value="2019">&#xf073 &nbsp2019</option>
-            </select> -->
-            <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat" id="year_filter">
-                <option value="{{$tahun}}"> &nbsp{{$tahun}}</option>
-                @foreach($year_before as $years)
-                  @if($years->year != $tahun)
-                    <option value="{{$years->year}}"> &nbsp{{$years->year}}</option>
-                  @endif
-                @endforeach
-            </select>
-          </div>
-          <div class="pull-right">
-            <button type="button" class="btn btn-success pull-right" style="width: 100px" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
-            @if($counts)
-            <button type="button" class="btn btn-success pull-right" id="" data-target="#letter_backdate" data-toggle="modal" style="margin-right: 10px;width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
-            @else
-            <button type="button" class="btn btn-success pull-right disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="margin-right: 10px;width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
-            @endif
-          </div>
+        <h3 class="box-title"><i class="fa fa-table"></i> Quote Number</h3>
       </div>
       <div class="box-body">
+        <div class="row">
+          <div class="col-md-2 col-xs-12">
+            <div class="form-group">
+              <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat" id="year_filter">
+                  <option value="{{$tahun}}"> &nbsp{{$tahun}}</option>
+                  @foreach($year_before as $years)
+                    @if($years->year != $tahun)
+                      <option value="{{$years->year}}"> &nbsp{{$years->year}}</option>
+                    @endif
+                  @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-md-10 col-xs-12">
+            <div class="form-group btn-action-letter" style="float:right;">
+              <button type="button" class="btn btn-success btn-flat" style="width: 100px" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
+              @if($counts)
+              <button type="button" class="btn btn-success btn-flat" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
+              @else
+              <button type="button" class="btn btn-success btn-flat disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
+              @endif
+            </div>
+          </div>
+        </div>
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs" id="myTab">
             @foreach($status_quote as $data)

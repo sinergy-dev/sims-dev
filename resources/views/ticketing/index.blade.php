@@ -5677,7 +5677,7 @@ Ticketing
 	}
 
 	$("#atmAddOwner").change(function(){
-		if(this.value == 26 || this.value == 27){
+		if(this.value == 26 || this.value == 27 || this.value == '54'){
 			$.ajax({
 				type:"GET",
 				url:"{{url('/ticketing/create/getAtmId')}}",
@@ -5827,7 +5827,7 @@ Ticketing
 				$("#atmEditNote").val(result.atm.note);
 				$("#atmEditType").val(result.atm.machine_type);
 
-				if(result.atm.owner == 19){
+				if(result.atm.owner == 19 || result.atm.owner == 48){
 					var append = ""
 					$.each(result.atm.peripheral,function (key,value){
 						if(value.type == "CCTV"){

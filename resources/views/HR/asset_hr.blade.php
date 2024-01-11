@@ -41,14 +41,20 @@ GA Asset
   }
 
   .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    width: 25px;
+  }
+
+/*  @media screen and (max-width: 768px) {
+    .btn-action-asset{
+      float: left!important;
     }
+  }*/
 </style>
 @endsection
 @section('content')
@@ -89,20 +95,16 @@ GA Asset
         <div class="nav-tabs-custom" id="asset" role="tabpanel">
           <ul class="nav nav-tabs" id="myTab" role="tablist"> 
             <li class="nav-item">
-              <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="asset" aria-selected="false"><i class="fa fa-list"></i>&nbspList Asset</a>
+              <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="asset" aria-selected="false">List Asset</a>
             </li>
               <li class="nav-item">
-                <a class="nav-link" id="kategori_list" style="display: none;" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false"><i class="fa fa-wrench"></i>&nbspKategori</a>
+                <a class="nav-link" id="kategori_list" style="display: none;" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false">Kategori</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" id="request_list" style="display: none;" data-toggle="tab" href="#request_asset" role="tab" aria-controls="kategori" aria-selected="false"><i class="fa fa- fa-exclamation"></i>&nbspRequest</a>
+                <a class="nav-link" id="request_list" style="display: none;" data-toggle="tab" href="#request_asset" role="tab" aria-controls="kategori" aria-selected="false">Request</a>
               </li>
-          <!--     <button class="btn btn-sm btn-primary pull-right" style="display: none;width: 120px;margin-left: 5px;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  --> 
-              <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
+              <!--     <button class="btn btn-sm btn-primary pull-right" style="display: none;width: 120px;margin-left: 5px;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  --> 
               <!-- <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a> -->
-              <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-              <button id="btnImport" onclick="importData()" class="btn btn-warning btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button>
-
               <!-- <div class="box-body">
                 <form action="{{ url('import') }}" method="POST" enctype="multipart/form-data">
                   @csrf
@@ -112,20 +114,23 @@ GA Asset
                 </form>
               </div> -->
               <li class="nav-item">
-                <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Occurance</a>
+                <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"> Occurance</a>
               </li>          
-              <button class="btn btn-sm btn-success pull-right" style="width: 100px;margin-right: 5px;display: none;" id="btnRequest"><i class="fa fa-plus"> </i>&nbsp Request Asset</button>
-              <button class="btn btn-sm btn-info pull-right" style="width: 100px;margin-right: 5px;display: none;" id="btnPinjam"><i class="fa fa-plus"> </i>&nbsp Borrow Asset</button>
             <li class="nav-item">
-              <a class="nav-link" id="history_asset" data-toggle="tab" href="#history" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-history"></i> History</a>
+              <a class="nav-link" id="history_asset" data-toggle="tab" href="#history" role="tab" aria-controls="current" aria-selected="false">History</a>
             </li>
+            <div class="form-group btn-action-asset" style="float: right;">
+              <button class="btn btn-sm btn-success" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
+              <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
+              <button id="btnImport" onclick="importData()" class="btn btn-warning btn-sm" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button>
+              <button class="btn btn-sm btn-success" style="width: 100px;margin-right: 5px;display: none;" id="btnRequest">Request Asset</button>
+              <button class="btn btn-sm btn-info" style="width: 100px;margin-right: 5px;display: none;" id="btnPinjam">Borrow Asset</button>
+            </div>
           </ul>
           <div class="tab-content" id="myTabContent">           
-            <div class="tab-pane" id="asset_list" role="tabpanel" aria-labelledby="home-tab">
-              <br>            
+            <div class="tab-pane" id="asset_list" role="tabpanel" aria-labelledby="home-tab">       
               <div class="table-responsive" >
                 <table class="table table-bordered table-striped" id="data_table" width="100%" cellspacing="0">
-                  <h4><i class="fa fa-table"></i> Table Asset</h4>
                   <thead>
                     <tr>
                       <th width="5%">Code</th>
@@ -212,11 +217,10 @@ GA Asset
                 </table>
               </div>
             </div>
-            <div class="tab-pane fade" id="kategori_asset" role="tabpanel" aria-labelledby="current">
+            <div class="tab-pane" id="kategori_asset" role="tabpanel" aria-labelledby="current">
               <div class="row">
                 <div class="col-md-8 col-xs-12">
                   <div class="table-responsive" style="margin-top: 15px">
-                    <h4><i class="fa fa-table"></i> Table Kategori</h4>
                     <table class="table table-bordered nowrap DataTable" id="kategori_table" width="100%" cellspacing="0">
                       <thead>
                         <tr>
@@ -250,33 +254,32 @@ GA Asset
               
             </div>
             <div class="tab-pane" id="request_asset">
-              <div class="table-responsive" style="margin-top: 15px">
+              <div class="table-responsive">
                 <table class="table table-bordered requestTable" id="request_table" width="100%" cellspacing="0">
-                  <h4><i class="fa fa-table"></i> Table Request</h4>
                   <thead>
                     <tr>
-                      <th width="5%">No Transaction</th>
-                      <th width="5%">Request By</th>
-                      <th width="5%">Request Date</th>
-                      <th width="35%">Name/Category</th>
-                      <th width="40%">Specification</th>
-                      <th width="5%">Status</th>
-                      <th width="5%">Action</th>
+                      <th >No Transaction</th>
+                      <th >Request By</th>
+                      <th >Request Date</th>
+                      <th >Name/Category</th>
+                      <th >Specification</th>
+                      <th >Status</th>
+                      <th >Action</th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
                     <?php $no = 1?>
                     @foreach($request_asset as $data)
                       <tr>
-                        <td width="5%">{{$data->no_transac}}</td>
-                        <td width="5%">{{$data->name}}</td>
-                        <td width="5%">{{$data->created_at}}</td>
-                        <td width="35%">{{$data->note}}</td>
-                        <td width="40%">{!!nl2br($data->keterangan)!!}</td>
-                        <td width="5%">
+                        <td >{{$data->no_transac}}</td>
+                        <td >{{$data->name}}</td>
+                        <td >{{$data->created_at}}</td>
+                        <td >{{$data->note}}</td>
+                        <td >{!!nl2br($data->keterangan)!!}</td>
+                        <td >
                           <label class="label label-info">Request</label>
                         </td>
-                        <td width="5%">
+                        <td >
                           <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
                           <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','REJECT')">Reject</button>
                         </td>
@@ -284,19 +287,19 @@ GA Asset
                     @endforeach
                     @foreach($current_request as $datas)
                       <tr>
-                        <td width="5%">{{$datas->id_request}}</td>
-                        <td width="5%">{{$datas->name}}</td>
-                        <td width="5%">{{$datas->created_at}}</td>                        
-                        <td width="35%">{{$datas->nama}}</td>
-                        <td width="40%" class="links{{$datas->id_request}}">{{$datas->link}}</td>
-                        <td width="5%">
+                        <td >{{$datas->id_request}}</td>
+                        <td >{{$datas->name}}</td>
+                        <td >{{$datas->created_at}}</td>                        
+                        <td >{{$datas->nama}}</td>
+                        <td  class="links{{$datas->id_request}}">{{$datas->link}}</td>
+                        <td >
                           @if($datas->status == 'REQUEST')
                           <label class="label label-info">Request</label>
                           @else
                           <label class="label label-warning">Pending</label>
                           @endif
                         </td>                     
-                        <td width="5%">
+                        <td >
                           @if($datas->status == 'REQUEST')
                             <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->nama}}','{{$datas->id_request}}','ACCEPT')">Accept</button>
                             <button class="btn btn-danger btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->nama}}','{{$datas->id_request}}','REJECT')">Reject</button>
@@ -312,10 +315,9 @@ GA Asset
                 </table>
               </div>
             </div>
-            <div class="tab-pane fade" id="current_asset" role="tabpanel" aria-labelledby="current">
+            <div class="tab-pane" id="current_asset" role="tabpanel" aria-labelledby="current">
               <div class="table-responsive" style="margin-top: 15px">
                 <table class="table table-bordered collapsed" id="datatable" width="100%" cellspacing="0">
-                  <h4><i class="fa fa-table"></i> Table My Asset</h4>
                   <thead>
                     <tr>
                       <th width="5%">No</th>
@@ -384,10 +386,9 @@ GA Asset
                 </table>
               </div>
             </div>
-            <div class="tab-pane fade" id="history" role="tabpanel">
-            	<div class="table-responsive" style="margin-top: 15px">
-                <table class="table table-bordered collapsed DataTable" id="history_table" width="100%" cellspacing="0">
-                  <h4><i class="fa fa-table"></i> Table History</h4>
+            <div class="tab-pane" id="history" role="tabpanel">
+            	<div class="table-responsive">
+                <table class="table table-bordered DataTable" id="history_table" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th width="5%">No</th>
@@ -2051,28 +2052,26 @@ GA Asset
 
     var table = $('#data_table').DataTable({
       pageLength: 20,
+      order: [[0, 'asc']],
       columnDefs: [
-        // { orderable: false, targets: 0},
         { targets: 8, "visible": false}
       ],
-      order: [[0, 'asc']]
-      // "scrollX":true,
     });
     
 
     $('#datatable').DataTable({
-      pageLength: 20, 
-      columnDefs: [
-         { "width": "10%", "targets": 0 }
-      ],   
-      "order": [[ 5, "desc" ]]
+      pageLength: 20,    
+      "order": [[ 5, "desc" ]],
+      // columnDefs: [
+      //    { "width": "10%", "targets": 0 }
+      // ],
     });
 
     $('#kategori_table').DataTable({
       pageLength: 20,
-      columnDefs: [
-         { "width": "5%", "targets": 0 }
-      ], 
+      // columnDefs: [
+      //    { "width": "5%", "targets": 0 }
+      // ], 
     })
 
     var requestTable = $('#request_table').DataTable({

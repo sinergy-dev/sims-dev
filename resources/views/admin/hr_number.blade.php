@@ -32,6 +32,12 @@ HR Number
       padding-top: 4px;
       padding-left: 10px;
     }
+
+    @media screen and (max-width: 768px) {
+      .btn-action-letter{
+        float: left!important;
+      }
+    }
   </style>
 @endsection
 @section('content')
@@ -65,25 +71,30 @@ HR Number
 
     <div class="box">
       <div class="box-header with-border">
-
-        <div class="pull-left">
-          <select style="margin-right: 5px;width: 100px" class="form-control btn-primary" id="year_filter">
-            <option value="{{$year}}">&nbsp{{$year}}</option>
-            @foreach($year_before as $years)
-              @if($years->year != $year)
-                <option value="{{$years->year}}">&nbsp{{$years->year}}</option>
-              @endif
-            @endforeach
-          </select>
-        </div>
-
-        <div class="pull-right">
-          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 120px;color: white"><i class="fa fa-plus"> </i>&nbsp Number HR</button>
-          <button class="btn btn-warning" onclick="exportHrNumber('{{action('HRNumberController@downloadExcelAdminHR')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i>Excel</button>
-        </div>
+        <h3 class="box-title"><i class="fa fa-table"></i> Admin (HR)</h3>
       </div>
 
       <div class="box-body">
+        <div class="row">
+          <div class="col-md-2 col-xs-12">
+            <div class="form-group">
+              <select style="margin-right: 5px;width: 100px" class="form-control btn-primary" id="year_filter">
+                <option value="{{$year}}">&nbsp{{$year}}</option>
+                @foreach($year_before as $years)
+                  @if($years->year != $year)
+                    <option value="{{$years->year}}">&nbsp{{$years->year}}</option>
+                  @endif
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-10 col-xs-12">
+            <div class="form-group btn-action-letter" style="float:right;">
+              <button type="button" class="btn btn-success btn-flat margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 120px;color: white"><i class="fa fa-plus"> </i>&nbsp Number HR</button>
+              <button class="btn btn-warning btn-flat" onclick="exportHrNumber('{{action('HRNumberController@downloadExcelAdminHR')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel</button>
+            </div>
+          </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-bordered nowrap table-striped dataTable" id="data_Table" width="100%" cellspacing="0">
               <thead>

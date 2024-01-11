@@ -33,44 +33,25 @@ Report Sales
       <div class="col-md-12">
         <div class="box">
           <div class="box-header with-border">
-
-              <!-- <select style="margin-right: 5px;width: 100px" class="form-control" id="year_filter">
-                @foreach($years as $data)
-                <option value="{{$data->year}}"> &nbsp{{$data->year}}</option>
-                @endforeach
-              </select> -->
-              <!-- <select class="form-control" style="width: 300px" id="dropdown" name="dropdown">
-                <option >Select Win Probability</option>
-                <option value="ALL">ALL</option>
-                <option value="HIGH">HIGH</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="LOW">LOW</option>
-              </select> -->
               <h3 class="box-title"><i class="fa fa-table"></i> Report Sales</h3>
           </div>
-          <div class="row">
-            <div class="col-md-12">
-              <!-- <div class="col-md-2" style="margin-bottom: 15px;">
-                <label>Filter Year</label>
-                <select style="margin-right: 5px;width: 100px" class="form-control" id="year_filter">
-                  @foreach($years as $data)
-                  <option value="{{$data->year}}"> &nbsp{{$data->year}}</option>
-                  @endforeach
-                </select>
-              </div> -->
-              <div class="col-md-4" style="margin-bottom: 15px;">
-                <label>Filter by Date</label>
-                <div class="input-group">
-                  <div class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+                    <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
+                    <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                   </div>
-                  <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
-                  <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                 </div>
               </div>
               <div class="col-md-4">
-                <!-- <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button> -->
-                <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+                <div class="form-group">
+                  <button class="btn btn-info btn-sm reload-table" id="reload-table"><i class="fa fa-refresh"></i> Refresh</button>
+                </div>
               </div>
             </div>
           </div>
@@ -79,7 +60,6 @@ Report Sales
     </div>
 
     <div class="row">
-      <!-- <div class="col-lg-6" id="col-small"> -->
       <div style="display: none;" id="col-large">
         <div class="box box-primary">
           <div class="box-header with-border">
