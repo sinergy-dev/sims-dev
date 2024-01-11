@@ -77,44 +77,45 @@ Report Customer
       <div class="col-md-12">
         <div class="box">
           <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-table"></i> Report Customer</h3>
+          </div>   
+
+          <div class="box-body">
             <div class="row">
-                <div class="col-md-3">
-                  <div class="input-group" style="float: left">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="input-group">
                     <div class="input-group-addon">
                       <i class="fa fa-calendar"></i>
                     </div>
                     <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
                     <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                   </div>
-                </div> 
-                <div class="col-md-3">
-                  <select class="select2 form-control" style="width:100%;" id="select2Customer" name="select2Customer">
-                    
+                </div>
+              </div> 
+              <div class="col-md-2">
+                <div class="form-group">
+                  <select class="select2 form-control" style="width:100%!important;" id="select2Customer" name="select2Customer">
                   </select>
                 </div>
-                <div class="col-md-3">
-                  <select class="select2 form-control" style="display: none;" id="select2Sales" name="select2Sales">
-                    
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <select class="select2 form-control" style="display: none;width:100%!important;" id="select2Sales" name="select2Sales">
                   </select>
-                  <select class="select2 form-control" style="display: none;" id="select2Direktor" name="select2SalesDirektor">
-                    
+                  <select class="select2 form-control" style="display: none;width:100%!important;" id="select2Direktor" name="select2SalesDirektor">
                   </select>
                 </div>
-                <div class="col-md-3">
-                  <button class="btn btn-primary btnApply" style="margin-left:10px"><i class="fa fa-check-circle"></i> Apply</button>
-                  <button class="btn btn-info pull-right reload-table"><i class="fa fa-refresh"></i> Refresh</button>
-                </div>  
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <button class="btn btn-primary btnApply"><i class="fa fa-check-circle"></i> Apply</button>
+                  <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
+                </div>
+              </div> 
             </div>
-          </div>   
-
-          <div class="box-body">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs" id="tabTerritory" style="display: none;">
-                   <!--  <li class="nav-item active">
-                        <a class="nav-link" id="all" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changeTerritory('all')">
-                            All
-                        </a>
-                    </li> -->
                   @foreach($territory_loop as $data)
                    @if($data->id_territory == "TERRITORY 1")
                     <li class="nav-item active">

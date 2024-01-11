@@ -328,22 +328,26 @@ class PrController extends Controller
         $pie = 0;
         $total = PR::orderby('type_of_letter')->whereYear('date',$year)->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->get();
 
-        $first = $total[0]->type_of_letter;
-        $hasil = [0,0];
-        $type_pr = ['IPR', 'EPR'];
-
-        foreach ($type_pr as $key => $value2) {
-            foreach ($total as $value) {
-                    if ($value->type_of_letter == $value2) {
-                        $hasil[$key]++;
-                        $pie++;
-                    }
-                }
-        }
-
         $hasil2 = [0,0];
-        foreach ($hasil as $key => $value) {
-            $hasil2[$key] = ($value/$pie)*100;
+        if (count($total) == 0) {
+            $hasil2 = $hasil2;
+        }else{
+            $first = $total[0]->type_of_letter;
+            $hasil = [0,0];
+            $type_pr = ['IPR', 'EPR'];
+
+            foreach ($type_pr as $key => $value2) {
+                foreach ($total as $value) {
+                        if ($value->type_of_letter == $value2) {
+                            $hasil[$key]++;
+                            $pie++;
+                        }
+                    }
+            }
+
+            foreach ($hasil as $key => $value) {
+                $hasil2[$key] = ($value/$pie)*100;
+            }
         }
 
         return $hasil2;
@@ -358,7 +362,8 @@ class PrController extends Controller
             ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->first();
 
-        $sum_cat = PR::select('category')
+        if (!is_null($sum_all->sum_all)) {
+            $sum_cat = PR::select('category')
             // ->selectRaw('SUM(`amount`) as `sum`')
             ->selectRaw('SUM(`amount`)/' . $sum_all->sum_all . '*100 as `precentage`')
             ->orderBy('precentage','DESC')
@@ -366,7 +371,13 @@ class PrController extends Controller
             ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->groupBy('category')->get();
 
-        return array("label"=>$sum_cat->pluck('category'), "precentage"=>$sum_cat->pluck('precentage'));
+            return array("label"=>$sum_cat->pluck('category'), "precentage"=>$sum_cat->pluck('precentage'));
+        }else{
+            return array("label"=>"", "precentage"=>0);
+        }
+
+        
+
     }
 
     public function getTotalPrByMonth()
@@ -930,7 +941,7 @@ class PrController extends Controller
         $spreadsheet->removeSheetByIndex(0);
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->mergeCells('A1:P1');
+        $sheet->mergeCells('A1:Q1');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
@@ -944,20 +955,21 @@ class PrController extends Controller
         $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
         $titleStyle['font']['bold'] = true;
 
-        $sheet->getStyle('A1:P1')->applyFromArray($titleStyle);
+        $sheet->getStyle('A1:Q1')->applyFromArray($titleStyle);
         $sheet->setCellValue('A1','Purchase Request');
 
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
-        $sheet->getStyle('A2:P2')->applyFromArray($headerStyle);;
+        $sheet->getStyle('A2:Q2')->applyFromArray($headerStyle);;
 
-        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "KATEGORI", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
+        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "KATEGORI", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT",'STATUS'];
         $sheet->fromArray($headerContent,NULL,'A2');
 
         $dataPR = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
             ->Leftjoin('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
             ->select('no_pr','position','type_of_letter', 'month', 'date', 'category', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount', 'status')
             ->whereYear('tb_pr.date', $request->year)
+            ->where('status','!=','Cancel')
             ->get();
 
         foreach ($dataPR as $key => $data) {
@@ -982,6 +994,7 @@ class PrController extends Controller
         $sheet->getColumnDimension('N')->setWidth(25);
         $sheet->getColumnDimension('O')->setWidth(45);
         $sheet->getColumnDimension('P')->setWidth(25);
+        $sheet->getColumnDimension('Q')->setWidth(25);
 
 
         $fileName = 'Daftar Buku Admin (PR) ' . date('Y') . '.xlsx';

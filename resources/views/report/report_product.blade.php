@@ -107,9 +107,12 @@ Report Brands
       <div class="col-md-12">
         <div class="box">
           <div class="box-header with-border">
-            <h3 class="box-title"><i>Report Brands</i></h3>
+            <h3 class="box-title"><i class="fa fa-table"></i> Report Brands</h3>
+          </div>         
+          <div class="box-body">  
             <div class="row">
-                <div class="col-md-3 form-group">
+                <div class="col-md-3">
+                  <div class="form-group">
                     <label>Date</label>
                     <div class="input-group">
                       <div class="input-group-addon">
@@ -119,54 +122,58 @@ Report Brands
                       <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                     </div>
                   </div>
-                  <div class="col-md-2 form-group">
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
                     <label>Brand</label>
                     <select class="select2 form-control" style="width:100%;" id="select2Product" name="select2Product">                 
                     </select>
                   </div>
-                  <div class="col-md-1 form-group" style="margin-top:5px">
-                    <br>
+                </div>
+                <div class="col-md-1">
+                  <div class="form-group" style="margin-top:25px">
                     <button class="btn btn-primary btnApply"><i class="fa fa-check-circle"></i> Apply</button> 
                   </div>
-                    
-                  <div class="col-md-4" style="margin-bottom: 0px; margin-top: 0px;">
-                  <label>Search</label>
-                  <div class="input-group pull-right">
-                    <input id="searchBrand" type="text" class="form-control" onkeyup="searchCustom('data_product','searchBrand')" placeholder="Search Anything">
-                    
-                    <div class="input-group-btn">
-                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        Show 10 entries
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
-                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
-                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
-                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
-                      </ul>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Search</label>
+                    <div class="input-group">
+                      <input id="searchBrand" type="text" class="form-control" onkeyup="searchCustom('data_product','searchBrand')" placeholder="Search Anything">
+                      
+                      <div class="input-group-btn">
+                        <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                          Show 10 entries
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a href="#" onclick="$('#data_product').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+                          <li><a href="#" onclick="$('#data_product').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+                          <li><a href="#" onclick="$('#data_product').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+                          <li><a href="#" onclick="$('#data_product').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+                        </ul>
+                      </div>
+                      <span class="input-group-btn">
+                        <button onclick="searchCustom('data_product','searchBrand')" type="button" class="btn btn-default btn-flat">
+                          <i class="fa fa-fw fa-search"></i>
+                        </button>
+                      </span>
                     </div>
-                    <span class="input-group-btn">
-                      <button onclick="searchCustom('data_product','searchBrand')" type="button" class="btn btn-default btn-flat">
-                        <i class="fa fa-fw fa-search"></i>
-                      </button>
-                    </span>
                   </div>
                 </div>
-                <div class="col-md-2" style="margin-top:5px">
-                  <br>
-                  <button class="btn btn-info" onclick="reloadTable()"><i class="fa fa-refresh"></i> Refresh</button>
-                </div>
-                              
+                <div class="col-md-2">
+                  <div class="form-group" style="margin-top:25px">
+                    <button class="btn btn-info" onclick="reloadTable()"><i class="fa fa-refresh"></i> Refresh</button>
+                  </div>
+                </div>           
             </div>
             <div class="row">
-              <div class="col-md-12 form-group">
-                <label>Note: Untuk total amount dan total perhitungan yang tampil adalah total amount dan total perhitungan pertagging, yang diisi oleh presales atau sales ketika proses SD atau ketika akan submit Result WIN.</label>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Note: Untuk total amount dan total perhitungan yang tampil adalah total amount dan total perhitungan pertagging, yang diisi oleh presales atau sales ketika proses SD atau ketika akan submit Result WIN.</label>
+                </div>
               </div>
-            </div>
-          </div>         
-
-          <div class="box-body">              
-            <div class="table-responsive">
+            </div>            
+            <!-- <div class="table-responsive"> -->
               <table class="table table-bordered table-striped" id="data_product" width="100%" cellspacing="0">
                 <thead>
                   <tr class="header">
@@ -187,7 +194,7 @@ Report Brands
                 	<th></th>
                 </tfoot>
               </table>
-            </div>
+            <!-- </div> -->
           </div>
         </div>  
       </div>
@@ -221,7 +228,7 @@ Report Brands
           end_date    = end.format("YYYY-MM-DD 00:00:00");
 
           // $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
-          $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
+          // $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
 
 
           // $('#data_product').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
@@ -247,7 +254,7 @@ Report Brands
           start_date  = start.format("YYYY-MM-DD 00:00:00");
           end_date    = end.format("YYYY-MM-DD 00:00:00");
 
-          $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
+          // $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
         }
       )
 
@@ -256,6 +263,7 @@ Report Brands
               "type":"GET",
               "url":"{{url('/getreportproduct')}}",
             },
+            "scrollX":true,
             "columns": [
               {
                 render: function ( data, type, row ) {

@@ -63,79 +63,75 @@ Report Tagging
         <div class="box">
           <div class="box-header with-border">
             <h3 class="box-title"><i class="fa fa-table"></i> Report Tagging</h3>
-          </div>
-
-          <div class="row">   
-            <div class="col-md-12">
+          </div> 
+          <div class="box-body">
+            <div class="row">
               <div class="col-md-4">
-                <label>Filter by Brand</label>
-                <select class="form-control" style="width: 90%;max-width: 250px" id="searchTagsProduct"></select> <span style="padding:5px;"><b>AND</b></span>
-              </div>
-              <div class="col-md-4">
-                <label>Filter by Technology</label>
-                <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsTechnology"></select> 
-              </div>
-              <div class="col-md-4">
-                <label>Filter by Person <small>(One or More)</small></label>
-                <select class="form-control capitalize" style="width: 100%;max-width: 250px" id="searchTagsPerson"></select>
-              </div>
-            </div>  
-            <div class="col-md-12" style="margin-top: 10px">
-              <div class="col-md-4">
-                <label>Filter by Date</label>
-                <div class="input-group">
-                  <div class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
-                  </div>
-                  <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
-                  <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
+                <div class="form-group">
+                  <label>Filter by Brand</label>
+                  <select class="form-control" style="width: 90%;max-width: 250px" id="searchTagsProduct"></select> <span style="padding:5px;"><b>AND</b></span>
                 </div>
               </div>
               <div class="col-md-4">
-                <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
-                <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
-                <!-- <button class="btn btn-danger btn-sm report-pdf" style="margin-top: 25px"><i class="fa fa-file-pdf-o"></i> PDF</button> -->
-                <button class="btn btn-success btn-sm report-excel" onclick="exportExcel('{{action('ReportController@reportExcelTag')}}')" style="margin-top: 25px"><i class="fa fa-file-excel-o"></i> Excel</button>
+                <div class="form-group">
+                  <label>Filter by Technology</label>
+                  <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsTechnology"></select> 
+                </div>
               </div>
-            </div>     
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Filter by Person <small>(One or More)</small></label>
+                  <select class="form-control capitalize" style="width: 100%;max-width: 250px" id="searchTagsPerson"></select>
+                </div>
+              </div>
+            </div>
             
-            <!-- <div class="col-md-8" style="margin-top: 10px;"> -->
-            <!--   <div class="input-group">
-                  <select class="form-control a" style="width: 100%;max-width: 250px" id="searchTags"></select>
-                  <span class="input-group-btn">
-                      <button class="btn btn-info">MyButton</button>
-                  </s
-
-                  pan>
-              </div> -->
-           <!--    <label>Filter by Tags</label>
-              <select class="form-control a" style="width: 100%" id="searchTags"></select>
-              <button class="btn btn-primary a">Apply</button>    -->     
-            <!-- </div>  -->
-            </div>  
-
-            <div class="box-body">
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
-                  <thead>
-                    <tr class="header">
-                      <th>Lead ID</th>
-                      <th>Customer</th>
-                      <th>Opty Name</th>                    
-                      <th>Persona</th>
-                      <th>Brand/technology</th>
-                      <th width="15%">Price/Set Tagging</th>
-                      <th width="15%">Nominal (Deal Price)</th>
-                      <th>Nominal</th>
-                      <th>Nominal</th>
-                    </tr>
-                  </thead>
-                </table>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Filter by Date</label>
+                  <div class="input-group">
+                    <div class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+                    <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
+                    <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
+                  </div>
+                </div>
               </div>
-            </div>       
-          
-          </div>
-        </div>  
+              <div class="col-md-4">
+                <div class="form-group">
+                   <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
+                  <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+                  <!-- <button class="btn btn-danger btn-sm report-pdf" style="margin-top: 25px"><i class="fa fa-file-pdf-o"></i> PDF</button> -->
+                  <button class="btn btn-success btn-sm report-excel" onclick="exportExcel('{{action('ReportController@reportExcelTag')}}')" style="margin-top: 25px"><i class="fa fa-file-excel-o"></i> Excel</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12 col-xs-12">
+                <!-- <div class="table-responsive"> -->
+                  <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
+                    <thead>
+                      <tr class="header">
+                        <th>Lead ID</th>
+                        <th>Customer</th>
+                        <th>Opty Name</th>                    
+                        <th>Persona</th>
+                        <th>Brand/technology</th>
+                        <th width="15%">Price/Set Tagging</th>
+                        <th width="15%">Nominal (Deal Price)</th>
+                        <th>Nominal</th>
+                        <th>Nominal</th>
+                      </tr>
+                    </thead>
+                  </table>
+                <!-- </div> -->
+              </div>
+            </div>
+          </div>   
+        </div>
       </div>
     </div>
   </section>
@@ -384,7 +380,8 @@ Report Tagging
             },
             { targets: 'no-sort', orderable: false }
           ],
-        "paging": false
+        "paging": false,
+        "scrollX": true
       });
       // $('#data_lead').append( '<tr><td colspan="5">' + '<center>No available data</center>' + '</td></tr>' );
       // $("#data_lead").DataTable({
@@ -572,7 +569,7 @@ Report Tagging
               "order": [[ 6, "desc" ]],
               "aaSorting": [],
               // "info":false,
-              "scrollX": false,
+              "scrollX": true,
               "processing": true,
               "paging": false,
           })

@@ -1447,7 +1447,7 @@ class PresenceController extends Controller
 
     public function getWorkDays($startDate,$endDate){
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY_GLOBAL'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
@@ -1456,7 +1456,7 @@ class PresenceController extends Controller
         $holiday_indonesia_final_date = collect();
         
         foreach ($holiday_indonesia["items"] as $value) {
-            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) )){
+            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && ($value["description"] == 'Public holiday')  && (!strstr($value['summary'], "Joint")  && ($value["summary"] != 'Boxing Day') ))){
                 $holiday_indonesia_final_detail->push(["date" => $value["start"]["date"],"summary" => $value["summary"]]);
                 $holiday_indonesia_final_date->push($value["start"]["date"]);
             }
@@ -1820,7 +1820,10 @@ class PresenceController extends Controller
             $getHariKerjaShifting = PresenceShifting::join('users','users.nik','presence__shifting.nik')
                             ->select('presence__shifting.nik', 'name',
                                 DB::raw('COUNT(className) as className'),
-                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Kegiatan",1,NULL)) AS "classNameKegiatan"'))
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Kegiatan",1,NULL)) AS "classNameKegiatan"'),
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "HO/Aktivasi",1,NULL)) AS "classNameHo"'),
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Preventive_Maintenance",1,NULL)) AS "classNamePM"')
+                            )
                             ->where('className', '!=', 'Libur')
                             ->whereIn('presence__shifting.nik',$req->nik)
                             ->whereRaw('`tanggal_shift` BETWEEN "' . $req->startDate . ' 00:00:00" AND "' . $req->endDate . ' 23:59:59"')->groupBy('nik')->get();
@@ -1832,7 +1835,10 @@ class PresenceController extends Controller
             $getHariKerjaShifting = PresenceShifting::join('users','users.nik','presence__shifting.nik')
                             ->select('presence__shifting.nik', 'name',
                                 DB::raw('COUNT(className) as className'),
-                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Kegiatan",1,NULL)) AS "classNameKegiatan"'))
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Kegiatan",1,NULL)) AS "classNameKegiatan"'),
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "HO/Aktivasi",1,NULL)) AS "classNameHo"'),
+                                DB::raw('COUNT(IF(`presence__shifting`.`className` = "Preventive_Maintenance",1,NULL)) AS "classNamePM"')
+                            )
                             ->where('className', '!=', 'Libur')
                             // ->whereIn('presence__shifting.nik',$req->nik)
                             ->whereRaw('`tanggal_shift` BETWEEN "' . $req->startDate . ' 00:00:00" AND "' . $req->endDate . ' 23:59:59"')->groupBy('nik')->get();
@@ -1843,12 +1849,15 @@ class PresenceController extends Controller
         $getAll = collect();
 
         foreach ($getHariKerjaShifting as $key => $value) {
+            $kegiatan = $value['classNameKegiatan']+$value['classNameHo']+$value['classNamePM'];
+            $lebih_kerja = $value['className']-$workDays;
+            $className = $value['className']-$kegiatan;
             $getAll->push([
                 "name"              =>$value['name'],
+                "className"         => (string)$className,
+                "classNameKegiatan" => (string)$kegiatan,
                 "workDays"          =>$workDays,
-                "classNameKegiatan" => $value['classNameKegiatan'],
-                "className"         => $value['className'],
-                "lebih_kerja"       =>(int)$value['className']-$workDays
+                "lebih_kerja"       => (string)$lebih_kerja
             ]);
         }
 

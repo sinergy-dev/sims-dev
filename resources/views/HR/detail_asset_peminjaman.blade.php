@@ -255,6 +255,8 @@ Detail Asset Transaction
       $('#id_barang_kembali').val(id_barang);
     }
 
-    $('#data_Table').DataTable({})
+    $('#data_Table').DataTable({
+      "scrollX":true,
+    })
 </script>
 @endsection

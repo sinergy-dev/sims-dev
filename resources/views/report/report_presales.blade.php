@@ -33,19 +33,25 @@ Report Presales
       <div class="col-lg-12">
         <div class="box">
           <div class="box-header with-border">
-            <div class="pull-left">
-              <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
-              <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
-                @foreach($years as $data)
-                  <option value="{{$data->year}}">{{$data->year}}</option>
-                @endforeach
-              </select>
-            </div>
-            <div class="pull-right">
-              <!-- <a href="{{url('/report_excel_presales')}}"> -->
-                <button class="btn btn-success" onclick="exportExcel()">Excel</button>
-              <!-- </a> -->
-            </div>
+            <h3 class="box-title"><i class="fa fa-table"></i> Report Presales</h3>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-md-2">
+                <div class="form-group">
+                  <select style="width: 100%!important" class="form-control select2" id="year_filter" placeholder="Select Filter Year">
+                    @foreach($years as $data)
+                      <option value="{{$data->year}}">{{$data->year}}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <button class="btn btn-success" onclick="exportExcel()">Excel</button>
+                </div>
+              </div>
+            </div>            
           </div>
         </div>
       </div>
@@ -58,27 +64,29 @@ Report Presales
             <h3 class="box-title"><i>Total Lead</i></h3>
           </div>
           <div class="box-body">
-            <?php $no_sip = 1; ?>
-            <table class="table table-bordered table-striped" width="100%" cellspacing="0" id="table_lead_presales">
-              <thead>
-                <tr>
-                  <!-- <th width="5%"><center>No.</center></th> -->
-                  <th><center>Presales Name</center></th>
-                  <th ><center>Total INITIAL</center></th>
-                  <th ><center>Total OPEN</center></th>
-                  <th ><center>Total SD</center></th>
-                  <th ><center>Total TP</center></th>
-                  <th ><center>Total WIN</center></th>
-                  <th ><center>Total LOSE</center></th>
-                  <th ><center>Total HOLD</center></th>
-                  <th ><center>Total CANCEL</center></th>
-                  <th ><center>Total SPESIAL</center></th>
-                  <th ><center>Total LEAD</center></th>
-                </tr>
-              </thead>
-              <tbody id="body_sip" name="body_sip">
-              </tbody>
-            </table>
+            <!-- <div class="table-responsive"> -->
+              <?php $no_sip = 1; ?>
+              <table class="table table-bordered table-striped" width="100%" cellspacing="0" id="table_lead_presales">
+                <thead>
+                  <tr>
+                    <!-- <th width="5%"><center>No.</center></th> -->
+                    <th><center>Presales Name</center></th>
+                    <th ><center>Total INITIAL</center></th>
+                    <th ><center>Total OPEN</center></th>
+                    <th ><center>Total SD</center></th>
+                    <th ><center>Total TP</center></th>
+                    <th ><center>Total WIN</center></th>
+                    <th ><center>Total LOSE</center></th>
+                    <th ><center>Total HOLD</center></th>
+                    <th ><center>Total CANCEL</center></th>
+                    <th ><center>Total SPESIAL</center></th>
+                    <th ><center>Total LEAD</center></th>
+                  </tr>
+                </thead>
+                <tbody id="body_sip" name="body_sip">
+                </tbody>
+              </table>
+            <!-- </div> -->
           </div>
         </div>
       </div>
@@ -422,7 +430,7 @@ Report Presales
   			"lengthChange": false,
   			// "paging": false,
   			"info":false,
-  			"scrollX": false,
+  			"scrollX": true,
   			"order": [[ 1, "desc" ]]
   		})
 
@@ -575,8 +583,6 @@ Report Presales
 
     $('#year_filter2').change(function(){
 	    var type = this.value;
-	    console.log(this.value);
-
 	    $.ajax({
 	      type:"GET",
 	      url:"/getfiltersdyearpresales",
@@ -750,7 +756,7 @@ Report Presales
   	$('#dropdown').select2();
 
 
-  	$('#year_filter').change(function(){
+  	$('#year_filter').select2().change(function(){
       $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=1110492070&year=" + this.value).load();
 	    console.log(this.value);
 	    var tahun = this.value;
