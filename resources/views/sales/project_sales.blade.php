@@ -1994,7 +1994,17 @@ Lead Register
 
 	function filterFromDashboard(){
 		if (window.location.href.split("=")[1]) {	
-			$("#year_dif_dir").val(window.location.href.split("=")[2]).trigger("change")
+			if(window.location.href.split("=")[2]){
+				$("#year_dif_dir").val(window.location.href.split("=")[2]).trigger("change")
+				$("#year_dif").val(window.location.href.split("=")[2]).trigger("change")
+			}else{
+				var currentDate = moment();
+				// Get the current year
+				var currentYear = currentDate.year();
+				$('#year_dif').val('').trigger('change')
+				$('#year_dif').val(currentYear).trigger('change')
+			}
+
 			$(".cb-result").each(function(item,value){
 				if (window.location.href.split("=")[1].split("?")[0] == 'ALL') {
 			    $("#filter_lead_"+value.value).prop("checked", true)
@@ -2017,12 +2027,6 @@ Lead Register
 					$("#1").prop("checked", true)
 				}
 			})
-
-			var currentDate = moment();
-			// Get the current year
-			var currentYear = currentDate.year();
-			$('#year_dif').val('').trigger('change')
-			$('#year_dif').val(currentYear).trigger('change')
 
 			searchCustom("tableLead")
 		}
