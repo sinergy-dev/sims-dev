@@ -621,21 +621,6 @@ ID Project
       $("#" + item).show()  
     })
 
-    if (!(accesable.includes('amount_pid'))) {
-      // Column Amount IDR
-      var column1 = table.column(7);
-      column1.visible(!column1.visible() );
-      // Column Amount IDR Before Tax
-      var column2 = table.column(8);
-      column2.visible(!column2.visible() );
-    }
-
-    if (!(accesable.includes('btnEdit'))) {
-      //action
-      var column3 = table.column(13);
-      column3.visible(!column3.visible() );
-    }
-
     if ( window.location.href.split("/")[3].split("#")[1] == 'submitIdProject') {
       $.ajax({
         type:"GET",
@@ -678,8 +663,9 @@ ID Project
     window.location = url + "?year=" + $("#year_filter").val();
   }
 
-  function initiateTablePID(id){
-    console.log(id + "uy")
+  function initiateTablePID(id,year){
+    var accesable = @json($feature_item);
+
     if (!$.fn.DataTable.isDataTable('#table-pid')) {
       var table = $("#table-pid").DataTable({
         "footerCallback": function( row, data, start, end, display ) {
@@ -873,7 +859,24 @@ ID Project
         ]
       });
 
+      if (!(accesable.includes('amount_pid'))) {
+        // Column Amount IDR
+        var column1 = table.column(7);
+        column1.visible(!column1.visible() );
+        // Column Amount IDR Before Tax
+        var column2 = table.column(8);
+        column2.visible(!column2.visible() );
+      }
+
+      if (!(accesable.includes('btnEdit'))) {
+        //action
+        var column3 = table.column(13);
+        column3.visible(!column3.visible() );
+      }
+
       console.log(id + "owkey")
+    }else{
+      $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
     }
 
     $('#searchBarTicket').keyup(function(){
@@ -1178,8 +1181,7 @@ ID Project
       	$('.export-msp').css("display","none")
       	$('.export').css("display","block")
 
-        initiateTablePID(id)
-        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
+        initiateTablePID(id,year)
       }else if(id == "MSP"){
       	$('.export-msp').css("display","block")
       	$('.export').css("display","none")
@@ -1189,8 +1191,7 @@ ID Project
       	$('#history-table').css("display","none")
       	$('#pid-table').css("display","block")
 
-        initiateTablePID(id)
-        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
+        initiateTablePID(id,year)
       }else if (id == "request") {
       	$('#request-table').show()
       	$('#pid-table').css("display","none")
@@ -1270,8 +1271,14 @@ ID Project
       
       var companyString = $('.tabs_item.active').text()
       // console.log(companyString)
+      var com_id
+      if (companyString == "SIP") {
+        com_id = 1
+      }else{
+        com_id = 2
+      }
       if(companyString == "SIP" || companyString == "MSP"){
-        $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
+        $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + com_id).load();
       } 
 
     @else
