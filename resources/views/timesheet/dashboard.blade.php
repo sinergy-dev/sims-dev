@@ -1090,8 +1090,13 @@
             arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
           }else if(index == 'Remaining'){
             arrConfig.push({"label":index,"data":valueLabel,"borderColor":borderColorArr,"backgroundColor":backgroundColorArr,borderWidth:1,minBarLength:2,barThickness:30})
+          }else if (index == 'Over') {
+            arrConfig.push({"label":"Over","data":valueLabel,"borderColor":"#FFC300","backgroundColor":"#FFC300",borderWidth:1,minBarLength:2,barThickness:30})
           }
       })
+
+      console.log(arrConfig)
+
       datasetRemaining.push({"datasets":arrConfig})
     }else{
       arrConfig.push({"label":"","data":[0],"borderColor":'',"backgroundColor":'',borderWidth:1,minBarLength:2,barThickness:30})
@@ -1115,7 +1120,6 @@
             y: {
                 stacked: true,
                 beginAtZero: true
-
             }
         },
         plugins: {
@@ -1219,8 +1223,6 @@
                 }
 
               }else{
-              //   console.log("disitu")
-
                 showItems(moment().month() + 1,items,itemsPerPage);
 
                 if (i === moment().month() + 1) {
@@ -1228,7 +1230,7 @@
                 }else{
                   //bedakan dengan filter year
                   if (i > moment().month() + 1) {
-                    $pagination.append('<a href="#" class="pagination-link" style="color:#ccc!important;pointer-events: none!important;cursor: not-allowed;">' + i + '</a>');
+                    $pagination.append('<a href="#" class="pagination-link">' + i + '</a>');
                   }else{
                     $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
                   }

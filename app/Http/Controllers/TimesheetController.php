@@ -2873,6 +2873,8 @@ class TimesheetController extends Controller
 
         $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
         $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
+
+        $workdays = $this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values()->count();
                 
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
@@ -2889,7 +2891,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -2898,12 +2900,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -2916,6 +2921,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -2930,8 +2936,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -2942,6 +2963,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -2950,7 +2975,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -2982,11 +3008,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -3008,7 +3054,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -3017,12 +3063,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -3035,6 +3084,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -3049,8 +3099,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -3061,6 +3126,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -3069,7 +3138,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -3101,11 +3171,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -3127,7 +3217,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -3136,12 +3226,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -3154,6 +3247,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -3168,8 +3262,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -3180,6 +3289,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -3188,7 +3301,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -3220,11 +3334,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -3246,7 +3380,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -3255,12 +3389,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -3273,6 +3410,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -3287,8 +3425,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -3299,6 +3452,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -3307,7 +3464,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -3339,11 +3497,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -3366,7 +3544,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -3375,12 +3553,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -3393,6 +3574,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -3407,8 +3589,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -3419,6 +3616,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -3427,7 +3628,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -3459,11 +3661,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -3491,7 +3713,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -3500,12 +3722,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -3518,6 +3743,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -3532,8 +3758,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -3544,6 +3785,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -3552,7 +3797,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -3584,11 +3830,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -5368,37 +5634,42 @@ class TimesheetController extends Controller
         if (is_null($request->year)) {
             $data = $data->whereYear('start_date',date('Y'));
         }else{
-            $data = $data->whereYear('start_date',$request->year);     
-
-            if (isset($request->month_select)) {
-                $month_number = collect();
-
-                $data = $data->whereMonth('start_date',$request->month_select);
-
-                $month_number = $month_number->push($request->month_select);
-
-                $startDate = Carbon::now();
-                $startDate->month($request->month_select);
-
-                $endDate = Carbon::now();
-                $endDate->month($request->month_select);
-
-                $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
-            }else{
-                // $data = $data->whereMonth('start_date',Carbon::now()->month);
-                $month_number = [1,2,3,4,5,6,7,8,9,10,11,12];
-
-                $startDate = Carbon::now();
-                $startDate->month;
-
-                $endDate = Carbon::now();
-                $endDate->month;
-
-                $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
-                $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
-            } 
+            $data = $data->whereYear('start_date',$request->year); 
         }
+
+        if (isset($request->month_select)) {
+            $month_number = collect();
+
+            $data = $data->whereMonth('start_date',$request->month_select);
+
+            $month_number = $month_number->push($request->month_select);
+
+            $startDate = Carbon::createFromDate($request->year, 1, 1);
+            $startDate->month($request->month_select);
+
+            $endDate = Carbon::createFromDate($request->year, 1, 1);
+            $endDate->month($request->month_select);
+
+            $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+            $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
+        }else{
+            // $data = $data->whereMonth('start_date',Carbon::now()->month);
+            $month_number = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+            $month_awal = $request->month[0];
+            $month_formatted = Carbon::parse($month_awal)->month;
+
+            $startDate = Carbon::createFromDate($request->year, 1, 1);
+            $startDate->month($month_formatted);
+
+            $endDate = Carbon::createFromDate($request->year, 1, 1);
+            $endDate->month($month_formatted);
+
+            $startDateFinal = $startDate->startOfMonth()->format("Y-m-d");
+            $endDateFinal   = $endDate->endOfMonth()->format("Y-m-d");
+        }
+
+        $workdays = $this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values()->count();
 
         if ($request->roles != "") {
             $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
@@ -5420,7 +5691,7 @@ class TimesheetController extends Controller
                     ->where('roles.name','not like','%MSM Lead Helpdesk%')
                     ->where('users.status_delete','-')
                     ->get();
-        }        
+        }     
 
         if ($cek_role->group == 'pmo') {
             if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
@@ -5437,7 +5708,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -5446,12 +5717,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -5464,6 +5738,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -5478,8 +5753,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -5490,6 +5780,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -5498,7 +5792,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -5530,11 +5825,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -5556,7 +5871,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -5565,12 +5880,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -5583,6 +5901,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -5597,8 +5916,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -5609,6 +5943,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -5617,7 +5955,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -5649,11 +5988,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -5663,7 +6022,7 @@ class TimesheetController extends Controller
         }elseif ($cek_role->group == 'presales') {
             if ($cek_role->name == 'SOL Manager') {
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-                
+
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
 
                 $data = $data->groupBy('month_number');
@@ -5675,7 +6034,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$key_mandays] = $arrMonthMandays[$key_mandays]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -5684,12 +6043,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -5702,6 +6064,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -5716,8 +6079,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -5728,6 +6106,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -5736,7 +6118,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -5768,11 +6151,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -5794,7 +6197,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -5803,12 +6206,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -5821,6 +6227,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -5835,8 +6242,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -5847,6 +6269,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -5855,7 +6281,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -5887,11 +6314,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -5914,7 +6361,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -5923,12 +6370,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -5941,6 +6391,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -5955,8 +6406,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -5967,6 +6433,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -5975,7 +6445,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -6007,11 +6478,31 @@ class TimesheetController extends Controller
 
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -6035,7 +6526,7 @@ class TimesheetController extends Controller
                 foreach($arrMonthMandays as $key_mandays => $valueMandays){
                     foreach($month_number as $key_month => $value_ArrMonth)
                     if ($key_month == $key_mandays) {
-                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                        $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                     }else{
                         $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                     }
@@ -6044,12 +6535,15 @@ class TimesheetController extends Controller
                 foreach($data as $key => $value){
                     $hasil_prosentase  = array($key => 0);
                     $hasil_remaining   = array($key => 0);
+                    $hasil_over        = array($key => 0);
 
                     $arrName = collect();
                     $arrProsentaseByUser = collect();
                     $arrRemainingByUser = collect();
+                    $arrOverByUser = collect();
                     $arrFinalProsentaseByUser = collect();
                     $arrFinalRemainingByUser = collect();
+                    $arrFinalOverByUser = collect();
 
                     foreach($value as $datas){
                         $arrName->push($datas->name);
@@ -6062,6 +6556,7 @@ class TimesheetController extends Controller
                     foreach($arrName->unique() as $key_name => $value_name){
                         $arrProsentaseByUser->put($value_name,0); 
                         $arrRemainingByUser->put($value_name,0);
+                        $arrOverByUser->put($value_name,0);
                     }
 
                     foreach($value as $datas){
@@ -6076,8 +6571,23 @@ class TimesheetController extends Controller
                     }
 
                     foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalProsentaseByUser->push(100);
+                        } else {
+                            $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                            $arrFinalRemainingByUser->push(0);
+                        } else {
+                            $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                        }
+
+                        if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                            $arrFinalOverByUser->push(0);
+                        } else {
+                            $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                        }
                     }
 
                     foreach($value as $datas){
@@ -6088,6 +6598,10 @@ class TimesheetController extends Controller
                         foreach($hasil_remaining as $key_remaining => $value_remaining){
                             $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                         }
+
+                        foreach ($hasil_over as $key_over => $value_over) {
+                            $hasil_over[$key_over] = $arrFinalOverByUser;
+                        }
                     }
 
                     foreach($arrMonth as $keys => $month){
@@ -6096,7 +6610,8 @@ class TimesheetController extends Controller
                                 "arrName"=>array($arrName->unique()),
                                 "label"=>array(
                                     "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                    "Remaining"=>$hasil_remaining[$key_remaining]
+                                    "Remaining"=>$hasil_remaining[$key_remaining],
+                                    "Over"=>$hasil_over[$key_over]
                                 )
                             ])); 
                         }
@@ -6126,13 +6641,34 @@ class TimesheetController extends Controller
                         }
                     }
 
+
                     foreach($arrMonth as $keys => $month){
                         if ($month == $key) {
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $prosentase = 100;
+                            } else {
+                                $prosentase = round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2);
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) >= 100) {
+                                $remaining = 0;
+                            } else {
+                                $remaining = 100 - (round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2));
+                            }
+
+                            if (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) <= 100) {
+                                $over = 0;
+                            } else {
+                                $over = (round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2) - 100);
+                            }
+
                             $arrMonth[$keys] = array($key=>collect([
                                 "arrName"=>array($arrName),
                                 "label"=>array(
-                                    "Prosentase"=>array(round((float)($hasil_prosentase[$key] / $EffectiveMandaysMonthly) * 100,2)),
-                                    "Remaining"=>array((100 - round((($hasil_remaining[$key] / $EffectiveMandaysMonthly) * 100),2)))
+                                    "Prosentase"=>array($prosentase),
+                                    "Remaining"=>array($remaining),
+                                    "Over"=>array($over)
                                 )
                             ])); 
                         }
@@ -6153,7 +6689,7 @@ class TimesheetController extends Controller
             foreach($arrMonthMandays as $key_mandays => $valueMandays){
                 foreach($month_number as $key_month => $value_ArrMonth)
                 if ($key_month == $key_mandays) {
-                    $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+count($this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values());
+                    $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]+$workdays;
                 }else{
                     $arrMonthMandays[$value_ArrMonth-1] = $arrMonthMandays[$value_ArrMonth-1]; 
                 }
@@ -6162,12 +6698,15 @@ class TimesheetController extends Controller
             foreach($data as $key => $value){
                 $hasil_prosentase  = array($key => 0);
                 $hasil_remaining   = array($key => 0);
+                $hasil_over        = array($key => 0);
 
                 $arrName = collect();
                 $arrProsentaseByUser = collect();
                 $arrRemainingByUser = collect();
+                $arrOverByUser = collect();
                 $arrFinalProsentaseByUser = collect();
                 $arrFinalRemainingByUser = collect();
+                $arrFinalOverByUser = collect();
 
                 foreach($value as $datas){
                     $arrName->push($datas->name);
@@ -6180,6 +6719,7 @@ class TimesheetController extends Controller
                 foreach($arrName->unique() as $key_name => $value_name){
                     $arrProsentaseByUser->put($value_name,0); 
                     $arrRemainingByUser->put($value_name,0);
+                    $arrOverByUser->put($value_name,0);
                 }
 
                 foreach($value as $datas){
@@ -6194,8 +6734,23 @@ class TimesheetController extends Controller
                 }
 
                 foreach($arrProsentaseByUser as $key_byUsers => $value_byUsers){
-                    $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
-                    $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                    if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                        $arrFinalProsentaseByUser->push(100);
+                    } else {
+                        $arrFinalProsentaseByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2));
+                    }
+
+                    if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) >= 100) {
+                        $arrFinalRemainingByUser->push(0);
+                    } else {
+                        $arrFinalRemainingByUser->push(100 - (round(($value_byUsers / $arrMonthMandays[$key-1]) * 100,2)));
+                    }
+
+                    if (round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) <= 100) {
+                        $arrFinalOverByUser->push(0);
+                    } else {
+                        $arrFinalOverByUser->push(round((float)$value_byUsers / $arrMonthMandays[$key-1] * 100,2) - 100);
+                    }
                 }
 
                 foreach($value as $datas){
@@ -6206,6 +6761,10 @@ class TimesheetController extends Controller
                     foreach($hasil_remaining as $key_remaining => $value_remaining){
                         $hasil_remaining[$key_remaining] = $arrFinalRemainingByUser;
                     }
+
+                    foreach ($hasil_over as $key_over => $value_over) {
+                        $hasil_over[$key_over] = $arrFinalOverByUser;
+                    }
                 }
 
                 foreach($arrMonth as $keys => $month){
@@ -6214,7 +6773,8 @@ class TimesheetController extends Controller
                             "arrName"=>array($arrName->unique()),
                             "label"=>array(
                                 "Prosentase"=>$hasil_prosentase[$key_prosentase],
-                                "Remaining"=>$hasil_remaining[$key_remaining]
+                                "Remaining"=>$hasil_remaining[$key_remaining],
+                                "Over"=>$hasil_over[$key_over]
                             )
                         ])); 
                     }
