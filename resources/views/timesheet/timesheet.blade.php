@@ -1355,32 +1355,35 @@
 
             if (isAllowedDate) {
               setHoliday(start,end,checkDate)
-
               var isClickedDate = moment(calEvent.start)
                 if (isClickedDate.isSameOrBefore(moment())) {
                   if (disabledDates.some(function(disabledDate) {
                     return calEvent.start.isSame(disabledDate, 'day');
                   })) {
-                    $("#ModalInfo").modal("show")
-                    if (calEvent.remarks == 'Sick' || calEvent.remarks == 'Permit') {
-                      $("#btn_delete_permit").show()
-                      $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
+                    if ($(this).css('background-color') == "rgb(0, 166, 90)") {
+                      eventUpdateTimesheet(calEvent)
                     }else{
-                      $("#btn_delete_permit").hide()
-                    }
-                    $(".modal-title").text("Information")
-                    $("#tbInfo").empty()
-                    var append = ""
-                    append = append + '<tr>'
-                    append = append + '  <th>Date</th>'
-                    append = append + '  <td>'+ moment(calEvent.start).format('YYYY-MM-DD')  +'</td>'
-                    append = append + '</tr>'
-                    append = append + '<tr>'
-                    append = append + '  <th>Activity</th>'
-                    append = append + '  <td>'+ calEvent.activity  +'</td>'
-                    append = append + '</tr>'
+                      $("#ModalInfo").modal("show")
+                      if (calEvent.remarks == 'Sick' || calEvent.remarks == 'Permit') {
+                        $("#btn_delete_permit").show()
+                        $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
+                      }else{
+                        $("#btn_delete_permit").hide()
+                      }
+                      $(".modal-title").text("Information")
+                      $("#tbInfo").empty()
+                      var append = ""
+                      append = append + '<tr>'
+                      append = append + '  <th>Date</th>'
+                      append = append + '  <td>'+ moment(calEvent.start).format('YYYY-MM-DD')  +'</td>'
+                      append = append + '</tr>'
+                      append = append + '<tr>'
+                      append = append + '  <th>Activity</th>'
+                      append = append + '  <td>'+ calEvent.activity  +'</td>'
+                      append = append + '</tr>'
 
-                    $("#tbInfo").append(append)
+                      $("#tbInfo").append(append)
+                    }
                   }else{
                     if (calEvent.refer) {
                       $("#ModalUpdateTimesheet").modal("show")
@@ -1577,7 +1580,7 @@
               deviation = 1 - eventRenderDeviation[formattedDate]
             }
 
-            var customButton = $(!window.mobilecheck() ? '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span> <span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>' + ' <span class="label" style="color:orange;background-color:white;border:solid 1px orange">D '+ deviation.toFixed(2)+'</span>' : '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span><br><span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>');
+            var customButton = $(!window.mobilecheck() ? '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span> <span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span>' + ' <span class="label" style="color:orange;background-color:white;border:solid 1px orange">D '+ deviation.toFixed(2)+'</span>' : '<span class="label" style="color:red;background-color:white;border:solid 1px red">U '+ valueUnplanned.toFixed(2) +'</span><br><span class="label" style="color:green;background-color:white;border:solid 1px green">P '+ valuePlanned.toFixed(2)+'</span><br>'+ ' <span class="label" style="color:orange;background-color:white;border:solid 1px orange">D '+ deviation.toFixed(2)+'</span>');
           }
          
           if (eventRenderEmoji[formattedDate]) {
