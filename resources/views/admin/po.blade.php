@@ -76,7 +76,7 @@ Purchase Order Number
       <div class="box">
         <div class="box-header with-border">
           <div class="pull-left">
-            <select style="margin-right: 5px;width: 100px" class="form-control btn-primary" id="year_filter">
+            <select style="margin-right: 5px;width: 100px" class="form-control btn-primary" id="year_filter" aria-label="year filter">
               <option value="{{$tahun}}">&nbsp{{$tahun}}</option>
               @foreach($year_before as $years)
                 @if($years->year != $tahun)
@@ -96,23 +96,23 @@ Purchase Order Number
             <table class="table table-bordered table-striped dataTable nowrap" id="data_po" width="100%" cellspacing="0">
               <thead>
                 <tr  style="text-align: center;">
-                  <th>No PO</th>
-                  <th>No. PR</th>
-                  <th>Position</th>
-                  <th>Type</th>
-                  <th>Month</th>
-                  <th>Date</th>
-                  <th>To</th>
-                  <th>Attention</th>
-                  <th>Title</th>
-                  <th>Project</th>
-                  <th><div class="truncate">Description</div></th>
-                  <th>From</th>
-                  <th>Division</th>
-                  <th>Issuance</th>
-                  <th>Project ID</th>
-                  <th>Note</th>
-                  <th>Action</th>
+                  <th scope="col">No PO</th>
+                  <th scope="col">No. PR</th>
+                  <th scope="col">Position</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Month</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">To</th>
+                  <th scope="col">Attention</th>
+                  <th scope="col">Title</th>
+                  <th scope="col">Project</th>
+                  <th scope="col"><div class="truncate">Description</div></th>
+                  <th scope="col">From</th>
+                  <th scope="col">Division</th>
+                  <th scope="col">Issuance</th>
+                  <th scope="col">Project ID</th>
+                  <th scope="col">Note</th>
+                  <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody id="products-list" name="products-list">
