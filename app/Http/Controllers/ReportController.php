@@ -3676,6 +3676,7 @@ class ReportController extends Controller
         $users = User::join('role_user','users.nik','=','role_user.user_id')
                 ->join('roles','role_user.role_id','=','roles.id')
                 ->select('users.name', 'users.nik')
+                ->where('status_karyawan','!=','dummy')
                 ->where('roles.group', 'presales')
                 ->get();
 
@@ -6125,11 +6126,16 @@ class ReportController extends Controller
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',price,0)) AS ter5_price")
                     )
                     ->where('sales_lead_register.created_at', '>=', $request->start_date)
-                    ->where('sales_lead_register.created_at', '<=', $request->end_date);
+                    ->where('sales_lead_register.created_at', '<=', $request->end_date)
+                    ->orderBy('total_lead', 'desc')
+                    ->orderBy('total_price', 'desc')
+                    ->where('status_karyawan','!=','dummy');
                     // ->orderBy('total_lead', 'desc');
 
         if (isset($request->name_product)) {
             $reportproduct->where('tb_product_tag.id',$request->name_product)->groupBy('tb_product_tag.name_product');
+        }else{
+            $reportproduct->groupBy('tb_product_tag.name_product');
         } 
         
         return array("data" => $reportproduct->get());
