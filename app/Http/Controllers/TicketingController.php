@@ -451,7 +451,7 @@ class TicketingController extends Controller
 	public function getPerformanceAll(){
 		// sleep(5);
 
-		$getPid = TicketingUser::where('nik',Auth::User()->nik);
+		$getPid = TicketingUser::select('pid')->where('nik',Auth::User()->nik);
 
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('id_ticket','activity')
@@ -2653,6 +2653,7 @@ class TicketingController extends Controller
 			},'open_activity_detail')
 			->selectRaw("`open_activity_detail`.`id_ticket`")
 		    ->selectRaw("IFNULL(`ticketing__detail`.`ticket_number_3party`,'-') AS `ticket_number_3party`")
+		    ->selectRaw("IFNULL(`ticketing__detail`.`id_atm`,'-') AS `id_atm`")
 		    ->selectRaw("CONCAT('[',`ticketing__detail`.`location`,'] ',`ticketing__detail`.`problem`) AS `location_problem`")
 		    ->selectRaw("DATE_FORMAT(`ticketing__detail`.`reporting_time`,'%c/%e/%Y %k:%i') AS `open_reporting_date`")
 		    ->selectRaw("DATE_FORMAT(`open_activity_detail`.`open_date`,'%c/%e/%Y %k:%i') AS `open_date`")
@@ -2723,17 +2724,18 @@ class TicketingController extends Controller
 	    $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFC9C9C9"]];
 	    $headerStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
 
-	    $summarySheet->getStyle('A1:U1')->applyFromArray($titleStyle);
-	    $summarySheet->getStyle('A2:U2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-	    $summarySheet->getStyle('A2:U2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-	    $summarySheet->getStyle('C2:U2')->getAlignment()->setWrapText(true);
-	    $summarySheet->getStyle('C2:U2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+	    $summarySheet->getStyle('A1:V1')->applyFromArray($titleStyle);
+	    $summarySheet->getStyle('A2:V2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+	    $summarySheet->getStyle('A2:V2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+	    $summarySheet->getStyle('C2:V2')->getAlignment()->setWrapText(true);
+	    $summarySheet->getStyle('C2:V2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 	    $summarySheet->setCellValue('B1','Report Bayu');
 	    $summarySheet->setCellValue('D1','Grab per ' . Carbon::now()->format("d M Y"));
 
 	    $headerContent = [
 			"id_ticket",
 			"ticket_number_3party",
+			"id_atm",
 			"location_problem",
 			"open_reporting_date",
 			"open_date",
@@ -2791,6 +2793,7 @@ class TicketingController extends Controller
 	    $summarySheet->getColumnDimension('S')->setAutoSize(true);
 	    $summarySheet->getColumnDimension('T')->setAutoSize(true);
 	    $summarySheet->getColumnDimension('U')->setAutoSize(true);
+	    $summarySheet->getColumnDimension('V')->setAutoSize(true);
 
 	    $spreadsheet->setActiveSheetIndex(0);
 
