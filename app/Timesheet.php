@@ -131,14 +131,23 @@ class Timesheet extends Model
         $holiday_indonesia = json_decode($json, true);
 
         $holiday_indonesia_final_detail = collect();
+        $holiday_indonesia_final_details = collect();
         $holiday_indonesia_final_date = collect();
+        $holiday_indonesia_final_dates = collect();
+        // return $holiday_indonesia;
         
         foreach ($holiday_indonesia["items"] as $value) {
-            if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && ($value["description"] == 'Public holiday'))){
+            if(( (( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate )) && (($value["description"] == 'Public holiday')) && (!strstr($value['summary'], "Joint")  && ($value["summary"] != 'Boxing Day')) )){
                 $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
                 $holiday_indonesia_final_date->push($value["start"]["date"]);
             }
+            if(( (( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate )) && (($value['summary'] == 'Idul Fitri Joint Holiday') || ($value['summary'] == 'Boxing Day')) )){
+                $holiday_indonesia_final_details->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
+                $holiday_indonesia_final_dates->push($value["start"]["date"]);
+            }
         }
+
+        $holiday_indonesia_final_detail = $holiday_indonesia_final_detail->merge($holiday_indonesia_final_details);
 
         $period = new DatePeriod(
              new DateTime($startDate),
