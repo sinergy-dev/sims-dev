@@ -19,6 +19,7 @@ class PrIdProject extends Model
         $data = SalesProject::join('tb_pr', 'tb_pr.project_id', 'tb_id_project.id_project')
         	->select('no_pr', 'tb_pr.amount', DB::raw("(CASE WHEN (tb_pr.title is null) THEN tb_pr.description ELSE tb_pr.title END) as title"))
             ->where('id_project', $this->id_project)
+            ->whereYear('tb_pr.date',date('Y'))
             ->get();
 
         return $data;
