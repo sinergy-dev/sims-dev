@@ -411,7 +411,7 @@ class PMProjectController extends Controller
     {
         $get_project_type = PMO::where('id', $request->id_pmo)->first();
         if (count($get_project_type->type_project_array) == 2) {
-            $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo-1)->first();
+            $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
         } else {
             $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
         }
@@ -419,8 +419,8 @@ class PMProjectController extends Controller
         // return $get_technology_used;
         if ($get_project_type->project_type == 'implementation') {
             $implementation_type = json_decode($get_project_type->implementation_type);
-            if ($implementation_type == '["service"]') {
-                $implementation_type = substr($implementation_type,2,7);
+            if ($implementation_type == '["hardware","service"]') {
+                $implementation_type = substr($implementation_type,2,8);
             } elseif ($implementation_type == '["hardware","service","license"]') {
                 $implementation_type = substr($implementation_type,2,8);
             } elseif ($implementation_type == '["service","license"]'){
