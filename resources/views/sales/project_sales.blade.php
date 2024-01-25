@@ -9,6 +9,7 @@ Lead Register
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{url('css/sims-custom.css')}}">
 <style type="text/css">
 	.pace .pace-progress {
 		background: #ffffff;
@@ -211,8 +212,8 @@ Lead Register
 								<label>Tahun</label>
 								<div id="filter_year_for_dir" style="display:none">
 									<div class="row">
-										<div style="display: inline;" class="col-md-6">
-											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif_dir" onchange="searchCustom()" multiple>
+										<div style="display: inline;" class="col-md-6">	
+											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif_dir" multiple>
 												@foreach($year as $years)
 						              @if($years->year < $year_now-1)
 						              {{-- @if($years->year < $year_now) --}}
@@ -225,7 +226,7 @@ Lead Register
 										</div>
 
 										<div style="display: inline;" class="col-md-6">
-											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif2_dir" onchange="searchCustom()" multiple>
+											<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif2_dir" multiple>
 												@foreach($year as $years)
 						              @if($years->year < $year_now-1)
 						              {{-- @if($years->year < $year_now) --}}
@@ -239,7 +240,7 @@ Lead Register
 									</div>
 								</div>
 								<div id="filter_year_for_oth" style="display:none">
-									<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif" onchange="searchCustom()" multiple>
+									<select class="select2 form-control" style="width:100%;display: inline;float: left;" id="year_dif" multiple>
 										@foreach($year as $years)
 				              @if($years->year < $year_now-1)
 				              {{-- @if($years->year < $year_now) --}}
@@ -257,28 +258,28 @@ Lead Register
 							</div>
 							<div class="form-group" id="filter-sales" style="display:none;">
 								<label>Sales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_sales"  name="filter_sales" onchange="searchCustom()">
+							  <select class="form-control select2" style="width: 100%;" id="filter_sales"  name="filter_sales">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-sales-manager" style="display:none;">
 								<label>Sales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_sales_manager"  name="filter_sales_manager" onchange="searchCustom()">
+							  <select class="form-control select2" style="width: 100%;" id="filter_sales_manager"  name="filter_sales_manager">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-presales" style="display:none;">
 								<label>Presales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_presales"  name="filter_presales" onchange="searchCustom()">
+							  <select class="form-control select2" style="width: 100%;" id="filter_presales"  name="filter_presales">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-customer">
 								<label>Customer</label>
-								<select class="form-control select2" style="width: 100%" id="filter_customer" name="filter_customer" onchange="searchCustom()"></select>
+								<select class="form-control select2" style="width: 100%" id="filter_customer" name="filter_customer"></select>
 							</div>
 							<div class="form-group" id="filter-result">
 							</div>
 							<div class="form-group">
 								<label>Tag Product & Technology</label>
-							  <select class="form-control select2" style="width: 100%;" id="searchTags"  name="searchTags" onchange="searchCustom()">
+							  <select class="form-control select2" style="width: 100%;" id="searchTags"  name="searchTags">
 	              </select>
 							</div>
 						</div>  				
@@ -1596,7 +1597,7 @@ Lead Register
 	    $('#year_dif2_dir option[value="' + value + '"]').prop('disabled', true);
 	  });
 
-		var tempYear = '?year[]='
+		var tempYear = 'year[]='
 		
     var i = 0
 		var colors = []
@@ -1735,9 +1736,9 @@ Lead Register
 				})
 
 				$("#filter-com").append(prependFilterCom)
-				$(".cb-company").click(function(){
-					searchCustom()
-				})
+				// $(".cb-company").click(function(){
+				// 	searchCustom()
+				// })
 			}
 		})
 
@@ -1809,40 +1810,38 @@ Lead Register
 				$(".cb-result").click(function(){
 					searchCustom()
 				})
-
-				filterFromDashboard()	
 			}
 		})
-
-		if ("Auth::User()->id_position" == 'DIRECTOR') {
-			$.each(year_dir,function(item,value){
-				if (tempYear == '?year[]=') {
-		      tempYear = tempYear + value
-		    }else{
-		      tempYear = tempYear + '&year[]=' + value
-		    }
-			})
-
-			$.each(year2_dir,function(item,value){
-				if (tempYear == '?year[]=') {
-		      tempYear = tempYear + value
-		    }else{
-		      tempYear = tempYear + '&year[]=' + value
-		    }
-			})
-		}else{
-			$.each(year,function(item,value){
-				if (tempYear == '?year[]=') {
-		      tempYear = tempYear + value
-		    }else{
-		      tempYear = tempYear + '&year[]=' + value
-		    }
-			})
-		}
-		
-		dashboardCount(tempYear)
-	  
   })	
+
+	$(window).on('load', function() {
+			filterFromDashboard()	
+	    // Your code here
+	    $("#year_dif_dir").change(function(){
+				$("#year_dif_dir").attr("onchange",searchCustom())
+			})  
+			$("#year_dif2_dir").change(function(){
+				$("#year_dif2_dir").attr("onchange",searchCustom())
+			})
+			$("#year_dif").change(function(){
+				$("#year_dif").attr("onchange",searchCustom())
+			})
+			$("#filter_sales").change(function(){
+				$("#filter_sales").attr("onchange",searchCustom())
+			})
+			$("#filter_sales_manager").change(function(){
+				$("#filter_sales_manager").attr("onchange",searchCustom())
+			})
+			$("#filter_presales").change(function(){
+				$("#filter_presales").attr("onchange",searchCustom())
+			})
+			$("#filter_customer").change(function(){
+				$("#filter_customer").attr("onchange",searchCustom())
+			})
+			$("#searchTags").change(function(){
+				$("#searchTags").attr("onchange",searchCustom())
+			})
+	});
 	
 	var timer
 	function searchCustom(id_table,id_seach_bar){
@@ -1989,6 +1988,7 @@ Lead Register
 
 		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
 
+		console.log(tempFiltered)
 		dashboardCountFilter(tempFiltered)
 	}
 
@@ -2011,7 +2011,7 @@ Lead Register
 			    $("#filter_lead_INITIAL").prop("checked", true)
 				}else{
 					if(value.value == window.location.href.split("=")[1].split("?")[0]){
-						if (window.location.href.split("=")[1] == "OPEN") {
+						if (window.location.href.split("=")[1].split("?")[0] == "OPEN") {
 			    		$("#filter_lead_OPEN").prop("checked", true)
 			    		$("#filter_lead_SD").prop("checked", true)
 			    		$("#filter_lead_TP").prop("checked", true)
@@ -2027,9 +2027,8 @@ Lead Register
 					$("#1").prop("checked", true)
 				}
 			})
-
-			searchCustom("tableLead")
 		}
+		searchCustom("tableLead")
 	}
 
 	//dashboard count
@@ -2057,7 +2056,7 @@ Lead Register
 			var resultComplete
 			$.ajax({
 				type:"GET",
-				url:"{{url('project/getCountLead')}}"+ year,
+				url:"{{url('project/getCountLead')}}?"+ year,
 				success:function(result){
 						// Buat Mas ganjar total lead di ganti jadi Lead - Unassigned
 						if(result.presales){
@@ -2177,5 +2176,6 @@ Lead Register
   if (localStorage.getItem('status') == 'read') {
     table.search("").draw()
   }
+
 </script>
 @endsection
