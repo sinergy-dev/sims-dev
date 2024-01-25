@@ -1736,9 +1736,9 @@ Lead Register
 				})
 
 				$("#filter-com").append(prependFilterCom)
-				// $(".cb-company").click(function(){
-				// 	searchCustom()
-				// })
+				$(".cb-company").click(function(){
+					searchCustom()
+				})
 			}
 		})
 
