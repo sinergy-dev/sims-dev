@@ -140,6 +140,7 @@ HR Number
                 <option value="IDS">IDS</option>
                 <option value="Legal">Legal</option>
                 <option value="PKM">PKM</option>
+                <option value="NDA">NDA</option>
             </select>
           </div>
           <div class="form-group">
@@ -228,6 +229,7 @@ HR Number
                 <option value="IDS">IDS</option>
                 <option value="Legal">Legal</option>
                 <option value="PKM">PKM</option>
+                <option value="NDA">NDA</option>
             </select>
           </div>
           <div class="form-group">
