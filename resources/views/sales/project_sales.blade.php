@@ -1728,10 +1728,17 @@ Lead Register
 			type:"GET",
 			url:'{{url("/project/getCompany")}}',
 			success:function(result){
+				var checked = ""
 				$.each(result,function(key,value){
 					prependFilterCom = prependFilterCom + '<div>'
-				  	prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'"> '
-				    prependFilterCom = prependFilterCom + value.company
+						if (value.company == "Sinergy Informasi Pratama") {
+							prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'" checked> '
+				    	prependFilterCom = prependFilterCom + value.company
+						}else{
+							prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'"> '
+				    	prependFilterCom = prependFilterCom + value.company
+						}
+				  	
 				  prependFilterCom = prependFilterCom + '</div>'
 				})
 
@@ -2021,13 +2028,8 @@ Lead Register
 			    }
 				}
 			})
-
-			$(".cb-company").each(function(item,value){
-				if (value.value = 1) {
-					$("#1").prop("checked", true)
-				}
-			})
 		}
+
 		searchCustom("tableLead")
 	}
 
