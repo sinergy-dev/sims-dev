@@ -889,12 +889,19 @@
 
     function loadData(valDate){
       var arrFilter = localStorage.getItem("arrFilter",arrFilter)
-      var arrFilter = ""
+      var arrFilter = "", dateDifYear = "date=", year = ""
 
       if (valDate != undefined) {
-        var dateDifYear = '&date=' + valDate
+        if (dateDifYear == "date=") {
+          dateDifYear = dateDifYear + valDate
+        }else{
+          dateDifYear = dateDifYear + '&date=' + valDate
+        }
+
+        var year = valDate.split("-")[0]
       }else{
         var dateDifYear = '&date='
+        var year = year
       }
 
       if(arrFilter == null || arrFilter == ""){
@@ -911,14 +918,11 @@
       Pace.track(function(){
         $.ajax({
           type:"GET",
-          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter + dateDifYear,
+          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter + '&' + dateDifYear,
           success:function(results){
             $.ajax({
               type:"GET",
-              url:"{{url('/getListCalendarEvent')}}",
-              data:{
-                nik:nik
-              },
+              url:"{{url('/getListCalendarEvent')}}"+ "?nik=" + nik + '&year=' + year,
               success:function(result){
                 var events = [], disabledDates = []
                 if (results.data.length > 0) {
@@ -1353,8 +1357,10 @@
               return date.isSame(clickedDate, 'day');
             });
 
+            console.log(calEvent)
+
+            setHoliday(start,end,checkDate)
             if (isAllowedDate) {
-              setHoliday(start,end,checkDate)
               var isClickedDate = moment(calEvent.start)
                 if (isClickedDate.isSameOrBefore(moment())) {
                   if (disabledDates.some(function(disabledDate) {
@@ -1478,40 +1484,48 @@
 
                 $("#tbInfo").append(append)
               }else{
-                $("#ModalUpdateTimesheet").modal("show")
-                $("#ModalUpdateTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
-                $("#ModalUpdateTimesheet").find('.modal-footer').hide()
+                console.log(calEvent.originalStartDate)
 
-                setSchedule(calEvent.start)
-                setDuration("refer")
-                setStatus("refer")
-                setType("refer")
-                setTask("refer")
-                setPhase("refer")
-                setLevel("refer")
+                if (calEvent.originalStartDate > moment().format('YYYY-MM-DD')) {
+                  $('#daterange-timesheet').data('daterangepicker').setStartDate(moment(calEvent.originalStartDate).format('MM/DD/YYYY'));
+                  $('#daterange-timesheet').data('daterangepicker').setEndDate(moment(calEvent.originalStartDate).format('MM/DD/YYYY'));
+                  eventUpdateTimesheet(calEvent)
+                }else{
+                  $("#ModalUpdateTimesheet").modal("show")
+                  $("#ModalUpdateTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
+                  $("#ModalUpdateTimesheet").find('.modal-footer').hide()
 
-                //cek kenapa task dan phase munculnya lama untuk data select2!!
-                $("#id_activity").val(calEvent.id)
-                $('#selectSchedule').prop("disabled",true)
-                $('#textareaActivity_refer').val(calEvent.title).trigger('change') 
-                $('#selectLevel_refer').val(calEvent.level).trigger('change')
-                $('#selectTask_refer').val(calEvent.task).trigger('change')
-                $('#selectPhase_refer').val(calEvent.phase).trigger('change')
-                $('#selectDuration_refer').val(calEvent.duration).trigger('change')
-                $('#selectStatus_refer').val(calEvent.status).trigger('change')
-                $('#selectType_refer').val(calEvent.type).trigger('change')
+                  setSchedule(calEvent.start)
+                  setDuration("refer")
+                  setStatus("refer")
+                  setType("refer")
+                  setTask("refer")
+                  setPhase("refer")
+                  setLevel("refer")
 
-                $('#selectSchedule').val('Planned').trigger('change')
-                $('#daterange-input').prop("disabled",true)    
+                  //cek kenapa task dan phase munculnya lama untuk data select2!!
+                  $("#id_activity").val(calEvent.id)
+                  $('#selectSchedule').prop("disabled",true)
+                  $('#textareaActivity_refer').val(calEvent.title).trigger('change') 
+                  $('#selectLevel_refer').val(calEvent.level).trigger('change')
+                  $('#selectTask_refer').val(calEvent.task).trigger('change')
+                  $('#selectPhase_refer').val(calEvent.phase).trigger('change')
+                  $('#selectDuration_refer').val(calEvent.duration).trigger('change')
+                  $('#selectStatus_refer').val(calEvent.status).trigger('change')
+                  $('#selectType_refer').val(calEvent.type).trigger('change')
 
-                $('#selectType_refer').prop("disabled",true)
-                $('#selectLead_refer').prop("disabled",true)
-                $('#selectTask_refer').prop("disabled",true)
-                $('#selectPhase_refer').prop("disabled",true)
-                $('#selectLevel_refer').prop("disabled",true)
-                $('#textareaActivity_refer').prop("disabled",true)
-                $('#selectDuration_refer').prop("disabled",true)
-                $('#selectStatus_refer').prop("disabled",true)
+                  $('#selectSchedule').val('Planned').trigger('change')
+                  $('#daterange-input').prop("disabled",true)    
+
+                  $('#selectType_refer').prop("disabled",true)
+                  $('#selectLead_refer').prop("disabled",true)
+                  $('#selectTask_refer').prop("disabled",true)
+                  $('#selectPhase_refer').prop("disabled",true)
+                  $('#selectLevel_refer').prop("disabled",true)
+                  $('#textareaActivity_refer').prop("disabled",true)
+                  $('#selectDuration_refer').prop("disabled",true)
+                  $('#selectStatus_refer').prop("disabled",true)
+                }
               }
             }
         },
@@ -3933,6 +3947,7 @@
     }
 
     function eventUpdateTimesheet(calEvent,id){
+      var start_date = moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD")
       if (calEvent != undefined) {
         if (isNaN(calEvent.id) == true) {
           Swal.fire({
@@ -3944,6 +3959,7 @@
             confirmButtonText: 'OK',
           })
         }else{
+          var start_date = moment(calEvent.start._d).format("YYYY-MM-DD")
           $("#ModalAddTimesheet").modal("show")
           $("#ModalAddTimesheet").find("#modal_timesheet").empty("")
         }
@@ -3961,7 +3977,7 @@
         type:"GET",
         url:"{{url('timesheet/getActivitybyDate')}}",
         data:{
-          start_date:moment($('#daterange-timesheet').data('daterangepicker').startDate._d).format("YYYY-MM-DD"),
+          start_date:start_date,
           nik:nik,
           id:id
         },
