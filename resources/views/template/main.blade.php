@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+	<!-- <meta name="viewport" content="viewport-fit=cover"> -->
+	<meta name="theme-color" content="#000000">
 	<title>
 		@hasSection('tittle')
 			SIMS - @yield('tittle')
@@ -12,25 +15,31 @@
 			SIP - SIMS
 		@endif
 	</title>
+	<!-- PWA  -->
+	<link rel="manifest" href="{{ asset('/manifest.json') }}">
+	<!-- <link rel="manifest" href="{{url('public/manifest.json')}}"> -->
 	<link rel="icon" type="image/png" href="{{url('img/siplogooke.png')}}">
 	<!-- Tell the browser to be responsive to screen width -->
 	<!-- Bootstrap 3.3.7 -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"> -->
 	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"> -->
 	<!-- Ionicons -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-	
-	@yield('head_css')
-	<link rel="stylesheet" href="{{url('css/sims-custom.css')}}">
-	
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"> -->
+	@yield('head_css')	
 	<!-- Theme style -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css">
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css"> -->
 	@yield('head_css_end')
 	<!-- AdminLTE Skins -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/skins/skin-blue.min.css">
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/skins/skin-blue.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/skins/skin-blue.min.css"> -->
 	<!-- Google Font -->
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+	<link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"> -->
 
 	<!-- Hotjar Tracking Code for SIMS App - prod -->
 	<script>
@@ -87,12 +96,28 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/adminlte.min.js"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/demo.js"></script>
-
 	<script>
 		$(document).ready(function () {
 			$(".activeable_group").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
 			$(".activeable_menu").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
 		})
+	</script>
+	<script src="{{ asset('/sw.js') }}"></script>
+	<script>
+	   if ("serviceWorker" in navigator) {
+	      // Register a service worker hosted at the root of the
+	      // site using the default scope.
+	      navigator.serviceWorker.register("/sw.js").then(
+	      (registration) => {
+	         console.log("Service worker registration succeeded:", registration);
+	      },
+	      (error) => {
+	         console.error(`Service worker registration failed: ${error}`);
+	      },
+	    );
+	  } else {
+	     console.error("Service workers are not supported.");
+	  }
 	</script>
 	@yield('script')
 </body>
