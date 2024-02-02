@@ -2226,10 +2226,21 @@ Leaving Permitte
           success: function(result){
             $.each(result.items,function(key,value){
               if(value.description == "Public holiday"){
-                if(!liburNasionalException.includes(value.start.date)){
-                  hari_libur_nasional.push(moment(value.start.date).format("L"))
-                  hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
-                  hari_libur_nasional_tooltip.push(value.summary)
+                if (value.summary.indexOf('Joint') == -1) {
+                  console.log(value.summary)
+                  if(!liburNasionalException.includes(value.start.date)){
+                    hari_libur_nasional.push(moment(value.start.date).format("L"))
+                    hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
+                    hari_libur_nasional_tooltip.push(value.summary)
+                  }
+                }
+                if (value.summary.indexOf('Idul Fitri') !== -1 || value.summary.indexOf('Boxing Day') !== -1) {
+                  console.log(value.summary)
+                  if(!liburNasionalException.includes(value.start.date)){
+                    hari_libur_nasional.push(moment(value.start.date).format("L"))
+                    hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
+                    hari_libur_nasional_tooltip.push(value.summary)
+                  }
                 }
               }
             })

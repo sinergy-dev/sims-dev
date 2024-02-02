@@ -3,10 +3,10 @@
 GA Asset
 @endsection
 @section('head_css')
-<link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.cs" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <style type="text/css">
   .select2{
     width: 100%!important;
@@ -55,6 +55,11 @@ GA Asset
       float: left!important;
     }
   }*/
+
+  #request_table_wrapper {
+    margin: 0;
+    padding: 0;
+  }
 </style>
 @endsection
 @section('content')
@@ -95,13 +100,13 @@ GA Asset
         <div class="nav-tabs-custom" id="asset" role="tabpanel">
           <ul class="nav nav-tabs" id="myTab" role="tablist"> 
             <li class="nav-item">
-              <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="asset" aria-selected="false">List Asset</a>
+              <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="current" aria-selected="false">List Asset</a>
             </li>
               <li class="nav-item">
                 <a class="nav-link" id="kategori_list" style="display: none;" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false">Kategori</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" id="request_list" style="display: none;" data-toggle="tab" href="#request_asset" role="tab" aria-controls="kategori" aria-selected="false">Request</a>
+                <a class="nav-link" id="request_list" style="display: none;" data-toggle="tab" href="#request_asset" role="tab" aria-controls="asset" aria-selected="false">Request</a>
               </li>
               <!--     <button class="btn btn-sm btn-primary pull-right" style="display: none;width: 120px;margin-left: 5px;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  --> 
               <!-- <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a> -->
@@ -114,10 +119,10 @@ GA Asset
                 </form>
               </div> -->
               <li class="nav-item">
-                <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"> Occurance</a>
+                <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="occurance" aria-selected="false"> Occurance</a>
               </li>          
             <li class="nav-item">
-              <a class="nav-link" id="history_asset" data-toggle="tab" href="#history" role="tab" aria-controls="current" aria-selected="false">History</a>
+              <a class="nav-link" id="history_asset" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
             </li>
             <div class="form-group btn-action-asset" style="float: right;">
               <button class="btn btn-sm btn-success" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
@@ -219,7 +224,7 @@ GA Asset
             </div>
             <div class="tab-pane" id="kategori_asset" role="tabpanel" aria-labelledby="current">
               <div class="row">
-                <div class="col-md-8 col-xs-12">
+                <div class="col-lg-12 col-xs-12">
                   <div class="table-responsive" style="margin-top: 15px">
                     <table class="table table-bordered nowrap DataTable" id="kategori_table" width="100%" cellspacing="0">
                       <thead>
@@ -1132,8 +1137,8 @@ GA Asset
 @endsection
 @section('scriptImport')
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-  <script src="https://momentjs.com/downloads/moment-timezone.min.js"></script>
-  <script type="text/javascript" src="https://momentjs.com/downloads/moment-timezone-with-data.js"></script>
+<!--   <script src="https://momentjs.com/downloads/moment-timezone.min.js"></script>
+  <script type="text/javascript" src="https://momentjs.com/downloads/moment-timezone-with-data.js"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -1148,6 +1153,12 @@ GA Asset
 @section('script')  
   <script type="text/javascript">
     $(document).ready(function(){
+        $("#btnAdd").attr('data-target','#add_asset') 
+
+        $("#submitReq").on('click',function(){
+          $('#requestAsset').modal('hide')
+        })
+        
         initCategory() 
 
         var accesable = @json($feature_item);
@@ -1245,45 +1256,36 @@ GA Asset
     $("#select-status").select2()
     $("#guestEmail").select2()
 
-    $("#eventsCalendar").daterangepicker({
-      timePicker: true,
-      start: moment().startOf('hour'),
-      end: moment().startOf('hour').add(32, 'hour'),
-      locale: {
-        format: 'DD/MM/YYYY hh:mm A'
-      }
-    })
+    // $("#eventsCalendar").daterangepicker({
+    //   timePicker: true,
+    //   start: moment().startOf('hour'),
+    //   end: moment().startOf('hour').add(32, 'hour'),
+    //   locale: {
+    //     format: 'DD/MM/YYYY hh:mm A'
+    //   }
+    // })
 
-    $("#submitCalendar").click(function(){
-      var startDate = $('#eventsCalendar').val().slice(0,19)
-      var endDate = $('#eventsCalendar').val().slice(22,41)
-      console.log(moment.tz(startDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format())
-      $.ajax({
-        type:"GET",
-        url: "testPostEventCalendar",
-        data:{
-          summary:$("#summaryCal").val(),
-          description:$("#descCal").val(),
-          startDateTime:moment.tz(startDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format(),
-          endDateTime:moment.tz(endDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format(),
-          email:$("#guestEmail").val(),
-          group:$("#groupCalendar").val()
-        },
-        success:function(result){
-          alert("event created")      
-        },
-      })
-    })
+    // $("#submitCalendar").click(function(){
+    //   var startDate = $('#eventsCalendar').val().slice(0,19)
+    //   var endDate = $('#eventsCalendar').val().slice(22,41)
+    //   $.ajax({
+    //     type:"GET",
+    //     url: "testPostEventCalendar",
+    //     data:{
+    //       summary:$("#summaryCal").val(),
+    //       description:$("#descCal").val(),
+    //       startDateTime:moment.tz(startDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format(),
+    //       endDateTime:moment.tz(endDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format(),
+    //       email:$("#guestEmail").val(),
+    //       group:$("#groupCalendar").val()
+    //     },
+    //     success:function(result){
+    //       alert("event created")      
+    //     },
+    //   })
+    // })
 
     $('.money').mask('000,000,000,000,000', {reverse: true});
-
-    $(document).ready(function(){
-      $("#btnAdd").attr('data-target','#add_asset') 
-
-      $("#submitReq").on('click',function(){
-        $('#requestAsset').modal('hide')
-      })
-    })  
 
     $("#addEvents").click(function(){
       $("#modalCalender").modal("show")
