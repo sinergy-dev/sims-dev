@@ -3,16 +3,16 @@
   Draft Purchase Request
 @endsection
 @section('head_css')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
-<link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
-<link rel="stylesheet" href="{{ url('css/bootstrap-timepicker.min.css')}}">
-<link rel="stylesheet" href="{{ url('js/mentions/jquery.mentionsInput.css')}}" type="text/css">
-<link rel="stylesheet" type="text/css" href="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}"/>
-<link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
-
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="{{ url('css/jquery.emailinput.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="{{ url('css/bootstrap-timepicker.min.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="{{ url('js/mentions/jquery.mentionsInput.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<!-- <link rel="preload" href="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap3-wysihtml5-bower@0.3.3/dist/bootstrap3-wysihtml5.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="{{asset('/plugins/iCheck/all.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <style type="text/css">
   html,body,buttons,input,textarea,etc {
     font-family: inherit;
@@ -621,7 +621,8 @@
 <script src="{{ url('js/bootstrap-timepicker.min.js')}}"></script>
 <script src="{{ url('js/jquery.emailinput.min.js')}}"></script>
 <script src="{{ url('js/roman.js')}}"></script>
-<script src="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')}}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap3-wysihtml5-bower@0.3.3/dist/bootstrap3-wysihtml5.all.min.js"></script>
+<!-- <script src="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')}}"></script> -->
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
@@ -633,7 +634,6 @@
 <script type="text/javascript">
   // $(".money").mask('000,000,000,000,000', {reverse: true})
   $('.money').mask('#.##0,00', {reverse: true})
-
 
   window.onload = function(){
     localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilter"))
