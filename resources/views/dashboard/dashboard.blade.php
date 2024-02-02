@@ -3,6 +3,7 @@
 Dashboard
 @endsection
 @section('head_css')
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <style type="text/css">
   .icon{
     width: 90px;
@@ -40,7 +41,6 @@ Dashboard
     font-size: 60px;
   }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 @endsection
 @section('content')
 <section class="content-header">
@@ -352,7 +352,7 @@ Dashboard
 @endsection
 @section('script')
 <script type="text/javascript">
-	var accesable = @json($feature_item);
+  var accesable = @json($feature_item);
   accesable.forEach(function(item,index){
     $("#" + item).show()
     $("." + item).show()
@@ -479,53 +479,58 @@ Dashboard
 
   if (accesable.includes('salesWinTerritory')) {
     initiateTopWinTer(moment().year(),"initiate")
-    function initiateTopWinTer(year,status){
-      $.ajax({
-        url:"{{url('/getTopWinSipTer')}}?year="+year,
-        type:"GET",
-        success:function(result){
-          $("#tbody-table-sip-ter").empty()
-          var append = ""
-          var no = 1
+  }
 
-          $.each(result, function(key, value){
-            append = append + '<tr>'
-              append = append + '<td>'+ no++ +'</td>'
-              if ("{{Auth::User()->id_territory}}" == value.id_territory) {
-                append = append + '<td>'+value.name+'</td>'
-                // append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
-              }else{
-                append = append + '<td>'+value.name+'</td>'
-              }
-              append = append + '<td align="right">'
-              append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
-              append = append + '</td>'
-              append = append + '<td><center>('+value.leads+')</center></td>'
-            append = append + '</tr>'
-          })
+  function initiateTopWinTer(year,status){
+    $.ajax({
+      url:"{{url('/getTopWinSipTer')}}?year="+year,
+      type:"GET",
+      success:function(result){
+        $("#tbody-table-sip-ter").empty()
+        var append = ""
+        var no = 1
 
-          $("#tbody-table-sip-ter").html(append)
-        }
-      })
-    }
+        $.each(result, function(key, value){
+          append = append + '<tr>'
+            append = append + '<td>'+ no++ +'</td>'
+            if ("{{Auth::User()->id_territory}}" == value.id_territory) {
+              append = append + '<td>'+value.name+'</td>'
+              // append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
+            }else{
+              append = append + '<td>'+value.name+'</td>'
+            }
+            append = append + '<td align="right">'
+            append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
+            append = append + '</td>'
+            append = append + '<td><center>('+value.leads+')</center></td>'
+          append = append + '</tr>'
+        })
+
+        $("#tbody-table-sip-ter").html(append)
+      }
+    })
   }
 
   if (accesable.includes('BoxTopWinTerritory')) {
     var territory = ""
     var top_win_sip_ter =  JSON.parse('@json($top_win_sip_ter)')
-    initiateTopWinTer(moment().year(),"initiate")
-    function initiateTopWinTer(year,status){
-      $.ajax({
-        url:"{{url('/getTopWinSipTer')}}?year="+year,
-        type:"GET",
-        success:function(result){
-          $("#table-win-project-territory").empty()
-          var append = ""
-          var no = 1
+    initiateTopWinEachTer(moment().year(),"initiate")
+  }
 
-          $.each(top_win_sip_ter, function(key, value){
-            $.each(value, function(key, value){
-              if(value.id_territory == territory){
+  function initiateTopWinEachTer(year,status){
+    $.ajax({
+      url:"{{url('/getTopWinSipTer')}}?year="+year,
+      type:"GET",
+      success:function(result){
+        console.log("testtt")
+
+        $("#table-win-project-territory").empty()
+        var append = ""
+        var no = 1
+
+        $.each(result, function(key, value){
+          $.each(value, function(key, value){
+            if(value.id_territory == territory){
               append = append + '<tr>'
                 append = append + '<td>'+ no++ +'</td>'
                 append = append + '<td>'+value.name+'</td>'
@@ -557,9 +562,8 @@ Dashboard
           });
         });
         $("#table-win-project-territory").html(append)
-        }
-      })
-    }
+      }
+    })
   }
 
   initiateTableSipWin(moment().year())
@@ -638,6 +642,7 @@ Dashboard
     var ctx17 = document.getElementById("barChartByStatus");
 
     initiateAmountLead(moment().year())
+    var initiateMybarChartByStatus = ''
     function initiateAmountLead(year){
       $.ajax({
         type:"GET",
@@ -645,131 +650,142 @@ Dashboard
         success:function(result){
           var INITIAL = result.data.map(function(e) {
             return e.INITIAL
-        })
+          })
 
-        var OPEN = result.data.map(function(e) {
-            return e.OPEN
-        })
+          var OPEN = result.data.map(function(e) {
+              return e.OPEN
+          })
 
-        var SD = result.data.map(function(e) {
-            return e.SD
-        })
+          var SD = result.data.map(function(e) {
+              return e.SD
+          })
 
-        var TP = result.data.map(function(e) {
-            return e.TP
-        })
+          var TP = result.data.map(function(e) {
+              return e.TP
+          })
 
-        var WIN = result.data.map(function(e) {
-            return e.WIN
-        })
+          var WIN = result.data.map(function(e) {
+              return e.WIN
+          })
 
-        var LOSE = result.data.map(function(e) {
-            return e.LOSE
-        })
+          var LOSE = result.data.map(function(e) {
+              return e.LOSE
+          })
 
-        var amount_INITIAL = result.data.map(function(e) {
-            return e.amount_INITIAL
-        })
+          var amount_INITIAL = result.data.map(function(e) {
+              return e.amount_INITIAL
+          })
 
-        var amount_OPEN = result.data.map(function(e) {
-            return e.amount_OPEN
-        })
+          var amount_OPEN = result.data.map(function(e) {
+              return e.amount_OPEN
+          })
 
-        var amount_SD = result.data.map(function(e) {
-            return e.amount_SD
-        })
+          var amount_SD = result.data.map(function(e) {
+              return e.amount_SD
+          })
 
-        var amount_TP = result.data.map(function(e) {
-            return e.amount_TP
-        })
+          var amount_TP = result.data.map(function(e) {
+              return e.amount_TP
+          })
 
-        var amount_WIN = result.data.map(function(e) {
-            return e.amount_WIN
-        })
+          var amount_WIN = result.data.map(function(e) {
+              return e.amount_WIN
+          })
 
-        var amount_LOSE = result.data.map(function(e) {
-            return e.amount_LOSE
-        })
+          var amount_LOSE = result.data.map(function(e) {
+              return e.amount_LOSE
+          })
 
-        var barChartByStatus = new Chart(ctx17, {
-          type: 'bar',
-          data: {
-                labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Desember"],
-                labels2:[amount_INITIAL,amount_OPEN,amount_SD,amount_TP,amount_WIN,amount_LOSE],        
-            datasets: [{
-                label: "INITIAL",
-                backgroundColor: "#7735a3",
-                borderColor: "#7735a3",
-                data: INITIAL,
-                barPercentage: 0.10,
-                barThickness: barThickness,
-            },
-            {
-                label: "OPEN",
-                  backgroundColor: "#f2562b",
-                  borderColor: "#f2562b",
-                data: OPEN,
-                barPercentage: 0.10,
-                barThickness: barThickness,
-            },
-            {
-                label: "SD",
-                  backgroundColor: "#04dda3",
-                  borderColor: "#04dda3",
-                data: SD,
-                barPercentage: 0.10,
-                barThickness: barThickness,
-            },
-            {
-                label: "TP",
-                  backgroundColor: "#f7e127",
-                  borderColor: "#f7e127",
-                data: TP,
-                barPercentage: 0.10,
-                barThickness: barThickness,
-            },
-            {
-                label: "WIN",
-                  backgroundColor: "#246d18",
-                  borderColor: "#246d18",
-                data: WIN,
-                barPercentage: 0.10,
-                barThickness: barThickness,
-            },
-            {
-                label: "LOSE",
-                  backgroundColor: "#e5140d",
-                  borderColor: "#e5140d",
-                data: LOSE,
-                barPercentage: 0.10,
-                barThickness: barThickness,
-            },
-            ]
-          },
-          options: {
-              tooltips: {
-                callbacks: {
-                  title: function(tooltipItem, data) {
-                    return ['Rp.' + data['labels2'][tooltipItem[0].datasetIndex][tooltipItem[0]['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")]
-                  },
-                  label: function(tooltipItem, data) {
-                    return data.datasets[tooltipItem.datasetIndex].label
-                  },
-                  footer: function(tooltipItem, data) {
-                    return ['Total : ' + data['datasets'][tooltipItem[0].datasetIndex]['data'][tooltipItem[0]['index']]];
-                  },
-                  afterLabel: function(tooltipItem, data) {
-                  }
-                }
-              },
+          if (initiateMybarChartByStatus) {
+            initiateMybarChartByStatus.destroy()
           }
-        });
+
+          var barChartByStatus = new Chart(ctx17, {
+            type: 'bar',
+            data: {
+                  labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Desember"],
+                  labels2:[amount_INITIAL,amount_OPEN,amount_SD,amount_TP,amount_WIN,amount_LOSE],        
+              datasets: [{
+                  label: "INITIAL",
+                  backgroundColor: "#7735a3",
+                  borderColor: "#7735a3",
+                  data: INITIAL,
+                  barPercentage: 0.10,
+                  barThickness: barThickness,
+              },
+              {
+                  label: "OPEN",
+                    backgroundColor: "#f2562b",
+                    borderColor: "#f2562b",
+                  data: OPEN,
+                  barPercentage: 0.10,
+                  barThickness: barThickness,
+              },
+              {
+                  label: "SD",
+                    backgroundColor: "#04dda3",
+                    borderColor: "#04dda3",
+                  data: SD,
+                  barPercentage: 0.10,
+                  barThickness: barThickness,
+              },
+              {
+                  label: "TP",
+                    backgroundColor: "#f7e127",
+                    borderColor: "#f7e127",
+                  data: TP,
+                  barPercentage: 0.10,
+                  barThickness: barThickness,
+              },
+              {
+                  label: "WIN",
+                    backgroundColor: "#246d18",
+                    borderColor: "#246d18",
+                  data: WIN,
+                  barPercentage: 0.10,
+                  barThickness: barThickness,
+              },
+              {
+                  label: "LOSE",
+                    backgroundColor: "#e5140d",
+                    borderColor: "#e5140d",
+                  data: LOSE,
+                  barPercentage: 0.10,
+                  barThickness: barThickness,
+              },
+              ]
+            },
+            options: {
+                tooltips: {
+                  callbacks: {
+                    title: function(tooltipItem, data) {
+                      return ['Rp.' + data['labels2'][tooltipItem[0].datasetIndex][tooltipItem[0]['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")]
+                    },
+                    label: function(tooltipItem, data) {
+                      return data.datasets[tooltipItem.datasetIndex].label
+                    },
+                    footer: function(tooltipItem, data) {
+                      return ['Total : ' + data['datasets'][tooltipItem[0].datasetIndex]['data'][tooltipItem[0]['index']]];
+                    },
+                    afterLabel: function(tooltipItem, data) {
+                    }
+                  }
+                },
+            }
+          });
+
+          return initiateMybarChartByStatus = barChartByStatus
         }
       })   
     }
 
     initiateTotalLead(moment().year())
+    var initiateMyBarChart = ''
     function initiateTotalLead(year){
+      if (initiateMyBarChart) {
+        initiateMyBarChart.destroy()
+      }
+
       $.ajax({
         type:"GET",
         url:"{{url('/getChart')}}?year="+year,
@@ -804,13 +820,18 @@ Dashboard
             }
           });
 
-          return myBarChart
+          return initiateMyBarChart = myBarChart
         }
       })
     }
 
     initiateTotalAmountLead(moment().year())
+    var initiateAreaChart = ''
     function initiateTotalAmountLead(year){
+      if (initiateAreaChart) {
+        initiateAreaChart.destroy()
+      }
+      
       $.ajax({
         type:"GET",
         url:"{{url('/getAreaChart2019')}}?year="+year,
@@ -866,13 +887,18 @@ Dashboard
           },
           });
 
-          return AreaChart
+          return initiateAreaChart = AreaChart
         }
       })
     }
     
     initiateStatusLead(moment().year())
+    var initiateMyPieChart = ''
     function initiateStatusLead(year){
+      if (initiateMyPieChart) {
+        initiateMyPieChart.destroy()
+      }
+
       $.ajax({
         type:"GET",
         url:"getPieChart?year="+year,
@@ -898,10 +924,12 @@ Dashboard
               label: 'mylabel',
               callbacks: {
               label: function(tooltipItem, data) {
-                      return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + ' %';},},
+                return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + ' %';},},
               },
             },
           });
+
+          return initiateMyPieChart = myPieChart
         }
       })
 
@@ -930,7 +958,7 @@ Dashboard
              label: 'mylabel',
              callbacks: {
               label: function(tooltipItem, data) {
-                      return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + ' %';},},
+                return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + ' %';},},
               },
             },
           });
@@ -939,38 +967,44 @@ Dashboard
     }
 
     initiateChartWinLose(moment().year())
+    var initiateMyDoughnutChart = ''
     function initiateChartWinLose(year){
+      if (initiateMyDoughnutChart) {
+        initiateMyDoughnutChart.destroy()
+      }
       $.ajax({
         type:"GET",
         url:"getDoughnutChart?year="+year,
         success:function(result){
-        var myDoughnutChart = new Chart(ctx7, {
-            type: 'doughnut',
-            data: {
-              labels: ["WIN", "LOSE"],
-              indexLabel: "#percent%",
-              percentFormatString: "#0.##",
-              datasets: [{
-                data: result,
-                backgroundColor: ['#246d18', '#e5140d'],
-              }],
-            },
-            options: {
-            showTooltips: true,
-            legend: {
-              display: true
+          var myDoughnutChart = new Chart(ctx7, {
+              type: 'doughnut',
+              data: {
+                labels: ["WIN", "LOSE"],
+                indexLabel: "#percent%",
+                percentFormatString: "#0.##",
+                datasets: [{
+                  data: result,
+                  backgroundColor: ['#246d18', '#e5140d'],
+                }],
               },
-            tooltips: {
-             mode: 'label',
-             label: 'mylabel',
-             callbacks: {
-                label: function(tooltipItem, data) {
-                  return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + '%';
+              options: {
+              showTooltips: true,
+              legend: {
+                display: true
+                },
+              tooltips: {
+               mode: 'label',
+               label: 'mylabel',
+               callbacks: {
+                  label: function(tooltipItem, data) {
+                    return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + '%';
+                  },
                 },
               },
             },
-          },
-        });
+          });
+
+          return initiateMyDoughnutChart = myDoughnutChart
         }
       });
 
@@ -1033,6 +1067,7 @@ Dashboard
           }).change(function(){
             initiateSmallBox(this.value,"filter")
             initiateTopWinTer(this.value)
+            initiateTopWinEachTer(this.value)
             initiateTableSipWin(this.value)
             initiateTableMspWin(this.value)
             initiateChartWinLose(this.value)
