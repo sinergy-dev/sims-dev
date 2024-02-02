@@ -3,7 +3,13 @@
 PMO
 @endsection
 @section('head_css')
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+   <!-- Select2 -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.3/skins/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <style type="text/css">
       .select2{
           width:100%!important;
@@ -62,14 +68,6 @@ PMO
         font-size: 13px;
       }
   </style>
-  <!-- Select2 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-  <link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
 @endsection
 @section('content')
     <section class="content-header">
@@ -113,7 +111,7 @@ PMO
                       </div>
                       <input id="searchBarList" type="text" class="form-control" placeholder="Search Anything">
                       <span class="input-group-btn">
-                        <button id="applyFilterTableSearch" type="button" class="btn btn-default btn-md" style="width: 40px">
+                        <button id="applyFilterTableSearch" name="applyFilterTableSearch"  type="button" class="btn btn-default btn-md" style="width: 40px">
                           <i class="fa fa-fw fa-search"></i>
                         </button>
                       </span>
@@ -627,14 +625,12 @@ PMO
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -869,7 +865,7 @@ PMO
                           		// $("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
                           	}
 
-                          	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                          	return '<button class="btn btn-sm btn-primary" style="width:110px" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         }else if (row.status == 'Reject') {
                           return '<button class="btn btn-sm btn-danger disabled" style="width:110px;"><i class="fa fa-wrench"></i>&nbsp Revision</button>'                            
                         }else if (row.status == 'Done'){
@@ -878,7 +874,7 @@ PMO
                           if (row.type_project == "Implementation + Maintenance & Managed Service") {
                             return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                           }else{
-                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px" name="btnShowProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                           }
                           
                         }
@@ -927,7 +923,7 @@ PMO
                         	}
 
                         	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                          	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                          	return '<button class="btn btn-sm btn-primary" style="width:110px" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         	}else{
                           	return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnAddProjectCharter" 	name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         	}                          
@@ -978,9 +974,9 @@ PMO
         "rowCallback": function( row, data ) {
             if (data.status == "Approve") {
               if ("{{Auth::User()->name}}" != data.sign) {
-                $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" disabled><i class="fa fa-eye"></i>&nbsp Project Charter</button>');
+                $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary disabled" style="width:110px" name="btnShowProjectCharter" disabled><i class="fa fa-eye"></i>&nbsp Project Charter</button>');
               }else{
-                $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + data.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>');           
+                $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary" style="width:110px" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + data.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>');           
               }
             }
             // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
@@ -1822,11 +1818,12 @@ PMO
     }
 
     function btnShowProjectCharter(id_pmo,privilege){
-      if (privilege == 'pm') {
-        window.open("{{url('PMO/project/detail')}}/"+id_pmo + "?showProject", "_blank");
-      }else{
-        window.location.href = "{{url('PMO/project/detail')}}/"+id_pmo + "?showProject";
-      }
+      window.open("{{url('PMO/project/detail')}}/"+id_pmo + "?showProject", "_blank");
+      // if (privilege == 'pm') {
+      //   window.open("{{url('PMO/project/detail')}}/"+id_pmo + "?showProject", "_blank");
+      // }else{
+      //   window.location.href = "{{url('PMO/project/detail')}}/"+id_pmo + "?showProject";
+      // }
     }
 
     function checkDocUpload(element){

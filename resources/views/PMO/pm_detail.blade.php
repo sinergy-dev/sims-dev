@@ -6,7 +6,7 @@ PMO
 	<!-- <link rel="stylesheet" href="https://docs.dhtmlx.com/gantt/codebase/dhtmlxgantt.css?v=6.0.0"> -->
 	<link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" type="text/css"> 
 	<link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
-	<link  rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -5186,7 +5186,11 @@ PMO
 	        formData.append('overall_progress',$("#overall_progress").val())
 	        formData.append('textareaStatusSummary',$("#textareaStatusSummary").val())
 	        formData.append('cbProjectIndicator',cbProjectIndicator)
-	        formData.append('textareaNoteSummaryHealth',$("#textareaNoteSummaryHealth").val())
+	        if ($("#textareaNoteSummaryHealth").length == 1) {
+	        	formData.append('textareaNoteSummaryHealth',$("#textareaNoteSummaryHealth").val())
+	        }else{
+	        	formData.append('textareaNoteSummaryHealth','-')
+	        }
 	        formData.append('arrDisti',JSON.stringify(arrDisti))
 	        // formData.append('arrWeeklyIssue',JSON.stringify(arrWeeklyIssue))
 	        // formData.append('arrWeeklyRisk',JSON.stringify(arrWeeklyRisk))
@@ -5627,8 +5631,10 @@ PMO
 				        	}
 				        })
 
-				        if (result[0].status == "Reject") {
-              				reasonReject(result[0].note_reject,"block","tabGroup")
+				        if (result.length > 0) {
+				        	if (result[0].status == "Reject") {
+	              				reasonReject(result[0].note_reject,"block","tabGroup")
+					        }
 				        }
 				    }else if (n == 1) {
 			      		$(".modal-title").text('Project Milestone')
