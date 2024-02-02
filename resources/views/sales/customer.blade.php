@@ -3,9 +3,7 @@
 Customer
 @endsection
 @section('head_css')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <style type="text/css">
   input[type=number]::-webkit-inner-spin-button, 
   input[type=number]::-webkit-outer-spin-button { 
@@ -691,9 +689,6 @@ Customer
       }
     })
 
-    
-    
-
     function searchCustom(id_table,id_seach_bar){
       $("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
     }
@@ -701,7 +696,5 @@ Customer
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
          $("#alert").slideUp(300);
     });
-
-
   </script>
 @endsection
