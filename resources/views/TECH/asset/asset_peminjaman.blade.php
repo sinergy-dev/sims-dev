@@ -3,12 +3,9 @@
 Technical Asset
 @endsection
 @section('head_css')
-  <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
-  <!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"> -->
-  <!-- Select2 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="preload" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <style type="text/css">
     tr.group,
     tr.group:hover {
@@ -109,9 +106,6 @@ Technical Asset
     .display-block{
       display: block;
     }
-
-    /* Firefox */
-
   </style>
 @endsection
 @section('content')
@@ -570,14 +564,6 @@ Technical Asset
               <select type="text" class="form-control kategori3 select2" style="width: 100%;" placeholder="Select Kategori" name="kategori3" id="kategori3" required>
               </select>
             </div>
-     <!--        <div class="form-group">
-                @if ($message = Session::get('warning'))
-                <div class="alert alert-warning alert-block">
-                  <button type="button" class="close" data-dismiss="alert">×</button> 
-                  <strong>{{ $message }}</strong>
-                </div>
-                @endif
-            </div> -->
             <div class="form-group col-md-6">
               <label>Masukkan kebutuhan</label><br>
               <input type="text" name="qtys" id="qtys" class="qtys" hidden>
@@ -826,8 +812,6 @@ Technical Asset
 
 @section('scriptImport')
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
@@ -1184,7 +1168,6 @@ Technical Asset
         column2.visible(!column2.visible() );
       }
 
-
     $(document).ready(function(){
       if (window.location.href.split("/")[3].split("#")[1] == 'list_asset') {
         $("#list_asset").addClass("active")
@@ -1202,7 +1185,15 @@ Technical Asset
         $("#" + item).show()
       })
 
-      console.log(accesable)
+      // store the currently selected tab in the hash value
+      $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+        var id = $(e.target).attr("href").substr(1);
+        window.location.hash = id;
+      });
+
+      // on load of the page: switch to the currently selected tab
+      var hash = window.location.hash;
+      $('#myTab a[href="' + hash + '"]').tab('show');
     })
 
     //datatable peminjaman staff
@@ -1681,11 +1672,6 @@ Technical Asset
       var qty           = $(".qtysn").val();
       var sn            = $(".detail-product").val();
       var total_sn      = sn.length;
-      /*console.log(qty);
-      console.log(qty);
-      console.log(sn);
-      console.log(sn);*/
-
       if (qty == 0) {
         Swal.fire({
           title: 'Please Wait..!',
@@ -1801,7 +1787,6 @@ Technical Asset
       
     });
     
-
     //ajax peminjaman reject
     $(document).on('click',".btn_reject",function(e) { 
         // console.log(this.value);
@@ -1875,7 +1860,6 @@ Technical Asset
         },
       });
     });
-    //////////////////////////////
 
     $(".detail-product").select2({
       closeOnSelect : false,
@@ -1891,8 +1875,6 @@ Technical Asset
 
     $(document).on('change',"select[id^='kategori3']",function(e) {
       var kategori = $('#kategori3').val();
-      // console.log(kategori);
-
          $.ajax({
           type:"GET",
           url:'/getidkategori',
@@ -1922,7 +1904,6 @@ Technical Asset
         autoclose:true,
         todayHighlight: true
     });
-
 
     function btn_detail(n){
       console.log(n)
@@ -2008,34 +1989,6 @@ Technical Asset
         });*/
     });
 
-    // $('#myTab .nav-link').click(function(e) {
-    //   e.preventDefault();
-    //   $(this).tab('show');
-    //   if ($(this).tab('show').text() == 'Peminjaman Asset') {
-    //     $("#kategori-asset").removeClass('display-block').addClass('display-none');
-
-    //     $("#list-asset").removeClass('display-block').addClass('display-none');
-
-    //     $("#export-excel").removeClass('display-block')
-    //                       .addClass('display-none');
-    //   }else if ($(this).tab('show').text() == 'List Asset') {
-    //     $("#export-excel").removeClass('display-none')
-    //                       .addClass('display-block');
-    //     $("#list-asset").addClass('display-block')
-    //                     .removeClass('display-none');
-    //     $("#kategori-asset").removeClass('display-block')
-    //                         .addClass('display-none');
-    //   }else{
-    //     $("#kategori-asset").removeClass('display-none').addClass('display-block');
-
-    //     $("#list-asset").removeClass('display-block').addClass('display-none');
-
-    //     $("#export-excel").removeClass('display-block')
-    //                       .addClass('display-none');
-    //   }
-    //   console.log($(this).tab('show').text())
-    // });
-
     $('#export-excel').click(function(event) {
         $.ajax({
             url: this.href,
@@ -2053,35 +2006,6 @@ Technical Asset
              }, 2000);  
             }
         });
-        // $.ajax({
-        // url: '@Url.Action("exportExcelTech", "AssetController")',
-        // type: "GET",
-        // success: function(result){
-        // // Swal({
-        // //       title: "Success!",
-        // //       text:  "You have been Export Excel.",
-        // //       type: "success",
-        // //       timer: 3000,
-        // //       showConfirmButton: false
-        // //     });
-        // //   setTimeout(function() {
-        // //     location.reload();
-        // //   }, 2000);  
-        // }, 
-        // });
     });
-
-    // store the currently selected tab in the hash value
-    $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
-      var id = $(e.target).attr("href").substr(1);
-      window.location.hash = id;
-
-      console.log(id)
-    });
-
-    // on load of the page: switch to the currently selected tab
-    var hash = window.location.hash;
-    $('#myTab a[href="' + hash + '"]').tab('show');
-
   </script>
 @endsection
