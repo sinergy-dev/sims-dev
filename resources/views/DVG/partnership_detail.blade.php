@@ -3,287 +3,278 @@
 Partnership
 @endsection
 @section('head_css')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-<link type="text/css" rel="stylesheet" href="{{asset('css/simplePagination.css')}}" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
-<style type="text/css">
-	.pace .pace-progress {
-		background: #ffffff;
-		position: fixed;
-		z-index: 2000;
-		top: 0;
-		right: 100%;
-		width: 100%;
-		height: 2px;
-	}
-
-	.iframe-cont {
-		position: relative;
-		width: 100%;
-		overflow: hidden;
-		;
-		/* 3:2 Aspect Ratio */
-	}
-
-	.responsive-iframe {
-		position: absolute;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		width: 100%;
-		height: 100%;
-		border: none;
-	}
-
-	.image-preview {
-		max-width: 576px;
-	}
-
-	@media only screen and (max-width: 600px) {
-		.image-preview {
+  	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  	<link rel="preload" href="{{asset('css/simplePagination.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  	<link rel="preload" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  	<!-- <link rel="preload" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
+	<style type="text/css">
+		.iframe-cont {
+			position: relative;
 			width: 100%;
-			display: block;
+			overflow: hidden;
+			;
+			/* 3:2 Aspect Ratio */
 		}
 
-		margin:20px auto;
-	}
+		.responsive-iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
 
-	iframe {
-		max-width: 100vw;
-		max-height: 56.25vw;
-		/* 315/560 = .5625 */
-	}
+		.image-preview {
+			max-width: 576px;
+		}
 
-	input {
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
+		@media only screen and (max-width: 600px) {
+			.image-preview {
+				width: 100%;
+				display: block;
+			}
 
-	.select2-container--default.select2-container--disabled .select2-selection--multiple {
-		background-color: rgba(0, 0, 0, 0) !important;
-		outline: 0;
-		border-width: 0 0 1px !important;
-		/*borde-color:  grey !important;*/
-	}
+			margin:20px auto;
+		}
 
-	.select2-container--default .select2-selection--multiple {
-		outline: 0;
-		border-width: 0 0 2px !important;
-		border-color: #00c0ef;
-	}
+		iframe {
+			max-width: 100vw;
+			max-height: 56.25vw;
+			/* 315/560 = .5625 */
+		}
 
-	/*	input[readonly]{
-		background-color:rgba(0,0,0,0) !important;
-    border:none !important;
-	}*/
+		input {
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+		}
 
-	.form-control[disabled] {
-		background-color: rgba(0, 0, 0, 0) !important;
-		border: none !important;
-	}
+		.select2-container--default.select2-container--disabled .select2-selection--multiple {
+			background-color: rgba(0, 0, 0, 0) !important;
+			outline: 0;
+			border-width: 0 0 1px !important;
+			/*borde-color:  grey !important;*/
+		}
 
-	input.transparent-input {
-		/*	outline: 0;
-	  border-width: 0 0 2px;
-	  border-color: #00c0ef*/
-		background-color: rgba(0, 0, 0, 0) !important;
-		border: none !important;
-	}
+		.select2-container--default .select2-selection--multiple {
+			outline: 0;
+			border-width: 0 0 2px !important;
+			border-color: #00c0ef;
+		}
 
-	select.transparent-input {
-		outline: 0;
-		border-width: 0 0 2px;
-		border-color: #00c0ef;
-	}
+		/*	input[readonly]{
+			background-color:rgba(0,0,0,0) !important;
+	    border:none !important;
+		}*/
 
-	table#table-detail td {
-		border: none !important;
-	}
+		.form-control[disabled] {
+			background-color: rgba(0, 0, 0, 0) !important;
+			border: none !important;
+		}
 
-	.avatar-upload {
-		display: inline-block;
-		position: relative;
-		max-width: 205px;
-		margin: 20px auto;
-		margin-right: 10px;
-	}
+		input.transparent-input {
+			/*	outline: 0;
+		  border-width: 0 0 2px;
+		  border-color: #00c0ef*/
+			background-color: rgba(0, 0, 0, 0) !important;
+			border: none !important;
+		}
 
-	.avatar-upload .avatar-edit {
-		position: absolute;
-		right: -5px;
-		z-index: 1;
-		top: -10px;
-	}
+		select.transparent-input {
+			outline: 0;
+			border-width: 0 0 2px;
+			border-color: #00c0ef;
+		}
 
-	.avatar-upload .avatar-edit input {
-		display: none;
-	}
+		table#table-detail td {
+			border: none !important;
+		}
 
-	.avatar-upload .avatar-edit input+label {
-		display: inline-block;
-		width: 34px;
-		height: 34px;
-		margin-bottom: 0;
-		border-radius: 100%;
-		background: #FFFFFF;
-		border: 1px solid transparent;
-		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
-		cursor: pointer;
-		font-weight: normal;
-		transition: all 0.2s ease-in-out;
-	}
+		.avatar-upload {
+			display: inline-block;
+			position: relative;
+			max-width: 205px;
+			margin: 20px auto;
+			margin-right: 10px;
+		}
 
-	.avatar-upload .avatar-edit input+label:hover {
-		background: #f1f1f1;
-		border-color: #d6d6d6;
-	}
+		.avatar-upload .avatar-edit {
+			position: absolute;
+			right: -5px;
+			z-index: 1;
+			top: -10px;
+		}
 
-	.avatar-upload .avatar-edit input+label:after {
-		content: "\f040";
-		font-family: 'FontAwesome';
-		color: #757575;
-		position: absolute;
-		top: 10px;
-		left: 0;
-		right: 0;
-		text-align: center;
-		margin: auto;
-	}
+		.avatar-upload .avatar-edit input {
+			display: none;
+		}
 
-	.avatar-upload .avatar-preview {
-		width: 192px;
-		height: 192px;
-		position: relative;
-		border-radius: 10%;
-		border: 6px solid #F8F8F8;
-		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
-	}
+		.avatar-upload .avatar-edit input+label {
+			display: inline-block;
+			width: 34px;
+			height: 34px;
+			margin-bottom: 0;
+			border-radius: 100%;
+			background: #FFFFFF;
+			border: 1px solid transparent;
+			box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+			cursor: pointer;
+			font-weight: normal;
+			transition: all 0.2s ease-in-out;
+		}
 
-	.avatar-upload .avatar-preview>div {
-		width: 100%;
-		height: 100%;
-		border-radius: 10%;
-		background-size: contain;
-		background-repeat: no-repeat;
-		background-position: center;
-	}
+		.avatar-upload .avatar-edit input+label:hover {
+			background: #f1f1f1;
+			border-color: #d6d6d6;
+		}
 
-	.avatar-upload-mini {
-		display: inline-block;
-		position: relative;
-		/*max-width: 105px;*/
-		margin: 20px auto;
-	}
+		.avatar-upload .avatar-edit input+label:after {
+			content: "\f040";
+			font-family: 'FontAwesome';
+			color: #757575;
+			position: absolute;
+			top: 10px;
+			left: 0;
+			right: 0;
+			text-align: center;
+			margin: auto;
+		}
 
-	.avatar-upload-mini span {
-		position: absolute;
-		visibility: hidden;
-	}
+		.avatar-upload .avatar-preview {
+			width: 192px;
+			height: 192px;
+			position: relative;
+			border-radius: 10%;
+			border: 6px solid #F8F8F8;
+			box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+		}
 
-	.avatar-upload-mini :hover span {
-		visibility: visible;
-		top: 0;
-		left: 100px;
-		z-index: 1;
-	}
+		.avatar-upload .avatar-preview>div {
+			width: 100%;
+			height: 100%;
+			border-radius: 10%;
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
 
-	.avatar-upload-mini .avatar-edit {
-		position: absolute;
-		right: -5px;
-		z-index: 1;
-		top: -10px;
-	}
+		.avatar-upload-mini {
+			display: inline-block;
+			position: relative;
+			/*max-width: 105px;*/
+			margin: 20px auto;
+		}
 
-	.avatar-upload-mini .avatar-edit input {
-		display: none;
-	}
+		.avatar-upload-mini span {
+			position: absolute;
+			visibility: hidden;
+		}
 
-	.avatar-upload-mini .avatar-edit input+label {
-		display: inline-block;
-		width: 34px;
-		height: 34px;
-		margin-bottom: 0;
-		border-radius: 100%;
-		background: #FFFFFF;
-		border: 1px solid transparent;
-		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
-		cursor: pointer;
-		font-weight: normal;
-		transition: all 0.2s ease-in-out;
-	}
+		.avatar-upload-mini :hover span {
+			visibility: visible;
+			top: 0;
+			left: 100px;
+			z-index: 1;
+		}
 
-	.avatar-upload-mini .avatar-edit input+label:hover {
-		background: #f1f1f1;
-		border-color: #d6d6d6;
-	}
+		.avatar-upload-mini .avatar-edit {
+			position: absolute;
+			right: -5px;
+			z-index: 1;
+			top: -10px;
+		}
 
-	.avatar-upload-mini .avatar-edit input+label:after {
-		content: "\f040";
-		font-family: 'FontAwesome';
-		color: #757575;
-		position: absolute;
-		top: 10px;
-		left: 0;
-		right: 0;
-		text-align: center;
-		margin: auto;
-	}
+		.avatar-upload-mini .avatar-edit input {
+			display: none;
+		}
 
-	.avatar-upload-mini .avatar-preview {
-		width: 92px;
-		height: 92px;
-		position: relative;
-		border-radius: 10%;
-		border: 6px solid #F8F8F8;
-		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
-	}
+		.avatar-upload-mini .avatar-edit input+label {
+			display: inline-block;
+			width: 34px;
+			height: 34px;
+			margin-bottom: 0;
+			border-radius: 100%;
+			background: #FFFFFF;
+			border: 1px solid transparent;
+			box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+			cursor: pointer;
+			font-weight: normal;
+			transition: all 0.2s ease-in-out;
+		}
 
-	.avatar-upload-mini .avatar-preview>div {
-		width: 100%;
-		height: 100%;
-		border-radius: 10%;
-		background-size: contain;
-		background-repeat: no-repeat;
-		background-position: center;
-	}
+		.avatar-upload-mini .avatar-edit input+label:hover {
+			background: #f1f1f1;
+			border-color: #d6d6d6;
+		}
 
-	.simple-pagination ul {
-		margin: 0 0 20px;
-		padding: 0;
-		list-style: none;
-		text-align: center;
-	}
+		.avatar-upload-mini .avatar-edit input+label:after {
+			content: "\f040";
+			font-family: 'FontAwesome';
+			color: #757575;
+			position: absolute;
+			top: 10px;
+			left: 0;
+			right: 0;
+			text-align: center;
+			margin: auto;
+		}
 
-	.simple-pagination li {
-		display: inline-block;
-		margin-right: 5px;
-	}
+		.avatar-upload-mini .avatar-preview {
+			width: 92px;
+			height: 92px;
+			position: relative;
+			border-radius: 10%;
+			border: 6px solid #F8F8F8;
+			box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+		}
 
-	.simple-pagination li a,
-	.simple-pagination li span {
-		color: #666;
-		text-decoration: none;
-		border: 1px solid #EEE;
-		background-color: #3c8dbc;
-		box-shadow: 0px 0px 10px 0px #EEE;
-	}
+		.avatar-upload-mini .avatar-preview>div {
+			width: 100%;
+			height: 100%;
+			border-radius: 10%;
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
 
-	.simple-pagination .current {
-		color: #FFF;
-		background-color: #3c8dbc;
-		border-color: #3c8dbc;
-	}
+		.simple-pagination ul {
+			margin: 0 0 20px;
+			padding: 0;
+			list-style: none;
+			text-align: center;
+		}
 
-	.simple-pagination .prev.current,
-	.simple-pagination .next.current {
-		background: #3c8dbc;
-	}
-</style>
+		.simple-pagination li {
+			display: inline-block;
+			margin-right: 5px;
+		}
+
+		.simple-pagination li a,
+		.simple-pagination li span {
+			color: #666;
+			text-decoration: none;
+			border: 1px solid #EEE;
+			background-color: #3c8dbc;
+			box-shadow: 0px 0px 10px 0px #EEE;
+		}
+
+		.simple-pagination .current {
+			color: #FFF;
+			background-color: #3c8dbc;
+			border-color: #3c8dbc;
+		}
+
+		.simple-pagination .prev.current,
+		.simple-pagination .next.current {
+			background: #3c8dbc;
+		}
+	</style>
 @endsection
 @section('content')
 <section class="content-header">
@@ -656,17 +647,12 @@ Partnership
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js">
 </script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<!-- <script type="text/javascript" src="https://adminlte.io/themes/AdminLTE/dist/js/pages/dashboard.js"></script> -->
 <script type="text/javascript" src="{{asset('js/jquery.simplePagination.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
-	// $(".money").mask('000.000.000.000.000', {reverse: true})
 	localStorage.setItem("status", "initial")
 	$(document).ready(function () {
 		// getDetail()
