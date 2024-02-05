@@ -293,7 +293,7 @@ Permission Config
 										<button class="btn btn-success btn-flat" data-toggle="modal" data-target="#modal-config-feature-item">
 											Add Feature Item
 										</button>
-										<select class="form-control select2" id="filterByRoleGroup" style="width: 140px"></select>
+										<select class="form-control select2" id="filterByRoleGroup" style="width: 140px"><option></option></select>
 										<select class="form-control select2" id="filterByFeature" style="width: 180px"></select>
 									</dir>
 									<dir class="col-md-4 text-right" style=" margin-top: 0px;">
@@ -857,46 +857,57 @@ Permission Config
 						}
 					},
 					success:function(result){
-						dataTableFeatureItem = $("#featureItemTable").DataTable({
-							data: result.data,
-							order: [[ 0, 'asc' ]],
-							columns: result.column,
-							paging: false,
-							drawCallback: function ( settings ) {
-								var api = this.api();
-								var rows = api.rows( {page:'current'} ).nodes();
-								var last = null;
+						console.log(result.data.length)
+						if (result.data.length == 0) {
+							dataTableFeatureItem = $("#featureItemTable").DataTable({
+								columns: [
+								    { title: 'Feature' },
+								    { title: 'Item' }
+								]
+							})
+						}else{
+							dataTableFeatureItem = $("#featureItemTable").DataTable({
+								data: result.data,
+								order: [[ 0, 'asc' ]],
+								columns: result.column,
+								paging: false,
+								drawCallback: function ( settings ) {
+									var api = this.api();
+									var rows = api.rows( {page:'current'} ).nodes();
+									var last = null;
 
-								// console.log(api)
+									// console.log(api)
 
-								api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-									if ( last !== group ) {
-										var append = ''
-										append = append + '<tr class="group">'
-										append = append + '	<td colspan="' + (result.column.length + 1) + '">'
-										append = append + '		<b>Feature : <i title="' + group + '">' + group + '</i></b>'
-										append = append + '	</td>'
-										append = append + '</tr>'
-										$(rows).eq( i ).before(
-											append
-										);
+									api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+										if ( last !== group ) {
+											var append = ''
+											append = append + '<tr class="group">'
+											append = append + '	<td colspan="' + (result.column.length + 1) + '">'
+											append = append + '		<b>Feature : <i title="' + group + '">' + group + '</i></b>'
+											append = append + '	</td>'
+											append = append + '</tr>'
+											$(rows).eq( i ).before(
+												append
+											);
 
-										last = group;
-									}
-								});
-							},
-							pageLength:100,
-							fixedHeader: true
-							// columnDefs: [{
-							// 	// The `data` parameter refers to the data for the cell (defined by the
-							// 	// `data` option, which defaults to the column being worked with, in
-							// 	// this case `data: 0`.
-							// 	"render": function ( data, type, row ) {
-							// 		return data +' ('+ row[3]+')';
-							// 	},
-							// 	"targets": 0
-							// }]
-						})
+											last = group;
+										}
+									});
+								},
+								pageLength:100,
+								fixedHeader: true
+								// columnDefs: [{
+								// 	// The `data` parameter refers to the data for the cell (defined by the
+								// 	// `data` option, which defaults to the column being worked with, in
+								// 	// this case `data: 0`.
+								// 	"render": function ( data, type, row ) {
+								// 		return data +' ('+ row[3]+')';
+								// 	},
+								// 	"targets": 0
+								// }]
+							})
+						}
+						
 					},
 					// complete:function(){
 					// 	$('.featureItemCheck').click(function() {
@@ -949,14 +960,15 @@ Permission Config
 			type:"GET",
 			url:"{{url('permission/getFeatureItemParameterByRoleGroup')}}",
 			success:function(result){
-				firstGroup = result[0]
+				firstGroup = "All"
+				console.log(firstGroup)
 				$("#filterByRoleGroup").select2({
 					placeholder: "Filter by Position",
 					data:result
 				})
 			},
 			complete:function(){
-				getFeatureItemByRoleGroup(firstGroup)
+				getFeatureItemByRoleGroup("All")
 			}
 
 		})
