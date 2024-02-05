@@ -909,13 +909,12 @@ Permission Config
 						}
 						
 					},
-					// complete:function(){
-					// 	$('.featureItemCheck').click(function() {
-					// 		console.log("heyyyyy")
-					// 		var data = this.id
-					// 		changeFeatureItem(data.split("-")[0],data.split("-")[1])
-					// 	});
-					// }
+					complete:function(){
+						$('.featureItemCheck').click(function() {
+							var data = this.id
+							changeFeatureItem(data.split("-")[0],data.split("-")[1])
+						});
+					}
 				})	
 			})
 		}
