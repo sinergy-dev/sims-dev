@@ -254,51 +254,52 @@ class PermissionConfigController extends Controller
     }
 
     public function getFeatureItem(Request $req){
-        $column = DB::table('roles')->selectRaw('`id`,`name` AS `title`, REPLACE(`slug`,".","_") AS `name`,CONCAT("condition_",REPLACE(`slug`,".","_")) AS `data`');
         if($req->group == "All") {
-            $column2 = $column->get();
+            // $column2 = [];
+            $return = [];
+
+            return collect(['data' => $return]);
         } else {
+            $column = DB::table('roles')->selectRaw('`id`,`name` AS `title`, REPLACE(`slug`,".","_") AS `name`,CONCAT("condition_",REPLACE(`slug`,".","_")) AS `data`');
+
             $column2 = $column->where('group','=',$req->group)
                 ->get();
-        }
 
-        $column = $column2->map(function ($item, $key) {
+            $column = $column2->map(function ($item, $key) {
                 $item->class = "text-center";
                 return $item;
-        })->filter(function ($item, $key) {
-            return $item->title != "Admin";
-        })->sortBy('title')->values();
+            })->filter(function ($item, $key) {
+                return $item->title != "Admin";
+            })->sortBy('title')->values();
 
-        // return $column;
+            $return = DB::table('feature_item')
+                ->select("feature_item.*");
+                
+            foreach ($column as $key => $value) {
+                $return = $return->addSelect($value->name . ".condition_" . $value->name);
+                $leftJoin = DB::table('roles_feature_item')
+                    ->where('roles_id','=',$value->id);
 
-        $return = DB::table('feature_item')
-            ->select("feature_item.*");
-            
-        foreach ($column as $key => $value) {
-            $return = $return->addSelect($value->name . ".condition_" . $value->name);
-            $leftJoin = DB::table('roles_feature_item')
-                ->where('roles_id','=',$value->id);
-
-            $join = DB::table('feature_item')
-                ->selectRaw('`feature_item`.`id`, CONCAT("' . "<label class='switch'><input class='featureItemCheck' type='checkbox' id='" . $value->id . "-" . '",' . '`feature_item`.`id`' . ',"\' ",' . "IF(`roles_feature_item_filtered`.`id` > 0,'checked','')" . ',"' . "><span class='slider round'></span></label>" . '") AS `condition_' . $value->name . '`')
-                ->leftJoinSub($leftJoin,'roles_feature_item_filtered',function($join){
-                    $join->on('roles_feature_item_filtered.feature_item_id','=','feature_item.id');
+                $join = DB::table('feature_item')
+                    ->selectRaw('`feature_item`.`id`, CONCAT("' . "<label class='switch'><input class='featureItemCheck' type='checkbox' id='" . $value->id . "-" . '",' . '`feature_item`.`id`' . ',"\' ",' . "IF(`roles_feature_item_filtered`.`id` > 0,'checked','')" . ',"' . "><span class='slider round'></span></label>" . '") AS `condition_' . $value->name . '`')
+                    ->leftJoinSub($leftJoin,'roles_feature_item_filtered',function($join){
+                        $join->on('roles_feature_item_filtered.feature_item_id','=','feature_item.id');
+                    });
+                $return = $return->joinSub($join,$value->name,function($join) use ($value){
+                    $join->on($value->name . '.id','=','feature_item.id');
                 });
-            $return = $return->joinSub($join,$value->name,function($join) use ($value){
-                $join->on($value->name . '.id','=','feature_item.id');
-            });
 
-            // $return = $return->selectRaw('CONCAT("' . "<label class='switch'><input type='checkbox' id='checkbox1'><span class='slider round'></span></label>" . '") AS `' . $value->name . '`');
+                // $return = $return->selectRaw('CONCAT("' . "<label class='switch'><input type='checkbox' id='checkbox1'><span class='slider round'></span></label>" . '") AS `' . $value->name . '`');
+                
+                // $return = $return->selectRaw('CONCAT("' . "<label class='switch'><input type='checkbox' id='checkbox1'><span class='slider round'></span></label>" . '") AS `' . $value->name . '`');
+            }
             
-            // $return = $return->selectRaw('CONCAT("' . "<label class='switch'><input type='checkbox' id='checkbox1'><span class='slider round'></span></label>" . '") AS `' . $value->name . '`');
+            $column->prepend(['title' => "Item",'data' => "item_id"]);
+            $column->prepend(['title' => "Feature",'data' => "group"]);
+
+            return collect(['data' => $return->get(),'column' => $column]);
+            // return $return->get();
         }
-
-        $column->prepend(['title' => "Item",'data' => "item_id"]);
-        $column->prepend(['title' => "Feature",'data' => "group"]);
-
-        // return $return->get();
-
-        return collect(['data' => $return->get(),'column' => $column]);
 
         // return DB::table('feature_item')
         //   ->selectRaw("*")
@@ -340,7 +341,7 @@ class PermissionConfigController extends Controller
 
         if(in_array(DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id,$checkForAllFeatureItem)){
             $data = DB::table('roles')->where('group','<>','default')->select('group')->groupBy('group')->pluck('group')->toArray();
-            array_unshift($data, "All");
+            // array_unshift($data, "All");
         } else {
             $data = DB::table('roles')->where('id',DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id)->pluck('group')->toArray();
             // array_unshift($data, "");
