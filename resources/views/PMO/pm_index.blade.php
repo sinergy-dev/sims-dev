@@ -734,7 +734,7 @@ PMO
         // "bFilter": true,
         // "bSort":true,
         // "aaSorting": [[1, 'asc']],
-        // "bLengthChange": false,
+        "bLengthChange": false,
         // "bInfo": false,
         "columns": [
           {
