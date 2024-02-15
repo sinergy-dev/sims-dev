@@ -1419,6 +1419,8 @@
     $("#BtnBack").show()
 
     localStorage.setItem('status_tax',false)
+    localStorage.setItem('tax_pb',0)
+    localStorage.setItem('service_charge',0)
     localStorage.setItem('isPembanding',true)
     $("#showDetail").empty()
     arrReason = []
@@ -1607,19 +1609,31 @@
         appendBottom = appendBottom + '      <div class="form-group">'
         appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-6 col-sm-2 control-label">Total</label>'
         appendBottom = appendBottom + '        <div class="col-sm-4">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreviewData" id="inputGrandTotalProductPreviewData" data-value="'+i+'">'
+        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreviewData" id="inputGrandTotalProductPreviewData" data-value="'+i+'" style="text-align:right">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
         appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
         appendBottom = appendBottom + '        <div class="col-sm-4">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control vat_tax_preview pull-right" id="vat_tax_previewData" data-value="'+i+'">'
+        appendBottom = appendBottom + '          <input readonly="" style="text-align:right" type="text" class="form-control vat_tax_preview" id="vat_tax_previewData" data-value="'+i+'">'
+        appendBottom = appendBottom + '        </div>'
+        appendBottom = appendBottom + '      </div>'
+        appendBottom = appendBottom + '      <div class="form-group">'
+        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">PB1 <span class="title_pb1"></span></label>'
+        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control" style="text-align:right" id="pb1_previewData" data-value="'+i+'">'
+        appendBottom = appendBottom + '        </div>'
+        appendBottom = appendBottom + '      </div>'
+        appendBottom = appendBottom + '      <div class="form-group">'
+        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Service Charge <span class="title_service"></span></label>'
+        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control" style="text-align:right" id="service_previewData" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
         appendBottom = appendBottom + '        <label for="inputEmail5" class="col-sm-offset-6 col-sm-2 control-label">Grand Total</label>'
         appendBottom = appendBottom + '        <div class="col-sm-4">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPriceData" id="inputFinalPageTotalPriceData" data-value="'+i+'">'
+        appendBottom = appendBottom + '          <input readonly="" style="text-align:right" type="text" class="form-control inputFinalPageTotalPriceData" id="inputFinalPageTotalPriceData" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '    </form>'
@@ -1705,6 +1719,8 @@
 
         $("#termPreview").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
         var tempVat = 0
+        var tempPb1 = 0
+        var tempService = 0
         var finalVat = 0
         var tempGrand = 0
         var finalGrand = 0
@@ -1724,13 +1740,14 @@
         //   tempGrand = parseInt(sum)
         // }
 
-        if (result.pr.status_tax == false) {
-          valueVat = 'false'
+        console.log(result.pr.status_tax)
+        if (result.pr.status_tax == "false") {
+          valueVat = ''
         }else{
           valueVat = result.pr.status_tax
         }
         if (!isNaN(valueVat)) {
-          tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
+          tempVat = Math.round((parseFloat(sum) * (valueVat == ''?0:parseFloat(valueVat)) / 100))
 
           finalVat = tempVat
 
@@ -1740,16 +1757,35 @@
 
           tempTotal = sum
 
-          $('.title_tax').text(valueVat + '%')
+          $('.title_tax').text(valueVat == 0?"":valueVat + '%')
         }else{
           tempGrand = sum
 
           $('.title_tax').text("")
         }
 
+        $('.title_pb1').text(result.pr.tax_pb == 0 || result.pr.tax_pb == null?"":result.pr.tax_pb+"%")
+        $('.title_service').text(result.pr.service_charge == 0 || result.pr.service_charge == null?"":result.pr.service_charge+"%")
+        tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
+        tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+
         $("#vat_tax_previewData").val(formatter.format(tempVat))
         $("#inputGrandTotalProductPreviewData").val(formatter.format(sum))
+        $("#pb1_previewData").val(formatter.format(tempPb1))
+        $("#service_previewData").val(formatter.format(tempService))
         $("#inputFinalPageTotalPriceData").val(formatter.format(tempGrand))
+
+        if (result.pr.tax_pb == 'false') {
+          $("#pb1_previewData").closest(".form-group").hide()
+        }else{
+          $("#pb1_previewData").closest(".form-group").show()
+        }
+
+        if (result.pr.service_charge == 'false') {
+          $("#service_previewData").closest(".form-group").hide()
+        }else{
+          $("#service_previewData").closest(".form-group").show()
+        }
       }
     })
   } 
@@ -1929,19 +1965,31 @@
         appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
         appendBottomProduct = appendBottomProduct + '        <label for="inputEmail3" class="col-sm-offset-8 col-sm-2 control-label">Total</label>'
         appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
-        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'" style="text-align:right">'
         appendBottomProduct = appendBottomProduct + '        </div>'
         appendBottomProduct = appendBottomProduct + '      </div>'
         appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
         appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
         appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
-        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputPb1" class="col-sm-offset-8 col-sm-2 control-label">PB1 <span class="title_pb1"></span></label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control inputPb1_preview" id="inputPb1_preview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputServiceCharge" class="col-sm-offset-8 col-sm-2 control-label">Service Charge <span class="title_service"></span></label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control inputServiceCharge_preview" id="inputServiceCharge_preview" data-value="'+i+'">'
         appendBottomProduct = appendBottomProduct + '        </div>'
         appendBottomProduct = appendBottomProduct + '      </div>'
         appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
         appendBottomProduct = appendBottomProduct + '        <label for="inputEmail5" class="col-sm-offset-8 col-sm-2 control-label">Grand Total</label>'
         appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
-        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
         appendBottomProduct = appendBottomProduct + '        </div>'
         appendBottomProduct = appendBottomProduct + '      </div>'
         appendBottomProduct = appendBottomProduct + '    </form>'
@@ -2047,6 +2095,8 @@
           $("#termPreview").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
         }
         var tempVat = 0
+        var tempPb1 = 0
+        var tempService = 0
         var finalVat = 0
         var tempGrand = 0
         var finalGrand = 0
@@ -2071,8 +2121,6 @@
 
           tempGrand = Math.round(parseInt(sum) +  tempVat)
 
-          finalGrand = tempGrand
-
           tempTotal = sum
 
           $('.title_tax').text(valueVat + '%')
@@ -2082,9 +2130,31 @@
           $('.title_tax').text("")
         }
 
+        $('.title_pb1').text(result.pr.tax_pb == 0 || result.pr.tax_pb == null ?"":result.pr.tax_pb+"%")
+        $('.title_service').text(result.pr.service_charge == 0 || result.pr.service_charge == null ?"":result.pr.service_charge+"%")
+
+        tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
+        tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+        finalGrand = tempGrand + tempPb1 + tempService
+
         $("#vat_tax_preview").val(formatter.format(tempVat))
         $("#inputGrandTotalProductPreview").val(formatter.format(sum))
-        $("#inputFinalPageTotalPrice").val(formatter.format(tempGrand))
+        $("#inputPb1_preview").val(formatter.format(tempPb1))
+        $("#inputServiceCharge_preview").val(formatter.format(tempService))
+        $("#inputFinalPageTotalPrice").val(formatter.format(finalGrand))
+
+        if (result.pr.tax_pb == 'false') {
+          console.log("testttt")
+          $("#inputPb1_preview").closest(".form-group").hide()
+        }else{
+          $("#inputPb1_preview").closest(".form-group").show()
+        }
+
+        if (result.pr.service_charge == 'false') {
+          $("#inputServiceCharge_preview").closest(".form-group").hide()
+        }else{
+          $("#inputServiceCharge_preview").closest(".form-group").show()
+        }
       }
     })
   }  
@@ -2221,19 +2291,32 @@
     append = append + '          <div class="form-group">'
     append = append + '            <label for="inputEmail3" class="col-sm-4 control-label">Total</label>'
     append = append + '            <div class="col-sm-8">'
-    append = append + '              <input readonly="" type="text" class="form-control inputGrandTotalProductPembanding" id="inputGrandTotalProductPembanding" data-value="'+i+'">'
+    append = append + '              <input readonly="" type="text" class="form-control inputGrandTotalProductPembanding" id="inputGrandTotalProductPembanding" data-value="'+i+'" style="text-align:right">'
     append = append + '            </div>'
     append = append + '          </div>'
     append = append + '          <div class="form-group">'
     append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat <span class="title_tax_pembanding"></span></label>'
     append = append + '            <div class="col-sm-8">'
-    append = append + '              <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_pembanding" data-value="'+i+'">'
+    append = append + '              <input readonly="" type="text" class="form-control vat_tax" style="text-align:right" id="vat_tax_pembanding" data-value="'+i+'">'
     append = append + '            </div>'
     append = append + '          </div>'
     append = append + '          <div class="form-group">'
+      append = append + '            <label for="inputPb1Pembanding" class="col-sm-4 control-label">PB1 <span class="title_pb1_pembanding" data-value="'+i+'"></span></label>'
+      append = append + '            <div class="col-sm-8">'
+      append = append + '              <input readonly="" type="text" class="form-control inputPb1Pembanding" style="text-align:right" id="inputPb1Pembanding" data-value="'+i+'">'
+      append = append + '            </div>'
+    append = append + '            </div>'
+    append = append + '          <div class="form-group">'
+      append = append + '            <label for="inputServiceChargePembanding" class="col-sm-4 control-label">Service Charge <span class="title_service_pembanding" data-value="'+i+'"></span></label>'
+      append = append + '            <div class="col-sm-8">'
+      append = append + '              <input readonly="" type="text" class="form-control inputServiceChargePembanding" style="text-align:right" id="inputServiceChargePembanding" data-value="'+i+'">'
+      append = append + '            </div>'
+    append = append + '            </div>'
+
+    append = append + '          <div class="form-group">'
     append = append + '            <label for="inputEmail5" class="col-sm-4 control-label">Grand Total</label>'
     append = append + '            <div class="col-sm-8">'
-    append = append + '              <input readonly="" type="text" class="form-control inputFinalPageTotalPricePembanding" id="inputFinalPageTotalPricePembanding" data-value="'+i+'">'
+    append = append + '              <input readonly="" type="text" class="form-control inputFinalPageTotalPricePembanding" id="inputFinalPageTotalPricePembanding" data-value="'+i+'" style="text-align:right">'
     append = append + '            </div>'
     append = append + '          </div>'
     append = append + '        </form>'
@@ -2411,6 +2494,8 @@
     $("#note_pembandingView[data-value='" + i + "']").html(item.note_pembanding) 
 
     var tempVat = 0
+    var tempPb1 = 0
+    var tempService = 0
     var finalVat = 0
     var tempGrand = 0
     var finalGrand = 0
@@ -2456,9 +2541,30 @@
       $('.title_tax_pembanding').text("")
     }
 
+    $(".title_pb1_pembanding[data-value='" + i + "']").text(item.tax_pb == 0 || item.tax_pb == null?"":item.tax_pb+"%")
+    $(".title_service_pembanding[data-value='" + i + "']").text(item.service_charge == 0 || item.tax_pb == null?"":item.service_charge+"%")
+
+    tempPb1 = Math.round((parseFloat(sum) * (item.tax_pb == null || item.tax_pb == 'false' ?tempPb1:parseInt(item.tax_pb) / 100)))
+    tempService = Math.round((parseFloat(sum) * (item.service_charge == null || item.service_charge == 'false'?tempService:parseInt(item.service_charge) / 100)))
+    finalGrand = tempGrand + tempPb1 + tempService
+
     $("#vat_tax_pembanding[data-value='" + i + "']").val(formatter.format(tempVat))
     $("#inputGrandTotalProductPembanding[data-value='" + i + "']").val(formatter.format(sum))
-    $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(tempGrand))
+    $("#inputPb1Pembanding[data-value='" + i + "']").val(formatter.format(tempPb1))
+    $("#inputServiceChargePembanding[data-value='" + i + "']").val(formatter.format(tempService))
+    $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(finalGrand))
+
+    if (item.tax_pb == 'false') {
+      $("#inputPb1Pembanding[data-value='"+ i +"']").closest('.form-group').hide()
+    }else{
+      $("#inputPb1Pembanding[data-value='"+ i +"']").closest('.form-group').show()
+    }
+
+    if (item.service_charge == 'false') {
+      $("#inputServiceChargePembanding[data-value='"+ i +"']").closest('.form-group').hide()
+    }else{
+      $("#inputServiceChargePembanding[data-value='"+ i +"']").closest('.form-group').show()
+    }
 
     accesable.forEach(function(item,index){
       $("." + item).show()
@@ -3232,28 +3338,42 @@
           appendBottom = appendBottom + '<div class="row">'
           appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
-          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPembandingModal" id="inputGrandTotalProductPembandingModal" name="inputGrandTotalProductPembandingModal">'
+          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Total</span>'
+          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;text-align:right" class="form-control inputGrandTotalProductPembandingModal" id="inputGrandTotalProductPembandingModal" name="inputGrandTotalProductPembandingModal">'
           appendBottom = appendBottom + '    </div>'
           appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
           appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '   <div class="pull-right">'
-            appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat <span class="title_tax"></span></span>'
-            appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-            appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_PembandingModal" name="vat_tax_PembandingModal" style="width:150px;">'
-            appendBottom = appendBottom + '     </div>'
+            appendBottom = appendBottom + '   <span style="margin-right: 10px;display:inline">Vat <span class="title_tax"></span></span>'
+            appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax" id="vat_tax_PembandingModal" name="vat_tax_PembandingModal" style="width:150px;text-align:right;display:inline">'
           appendBottom = appendBottom + '    </div>'
           appendBottom = appendBottom + ' </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
-          appendBottom = appendBottom + '    <div class="pull-right">'
-          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
-          appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageTotalPricePembandingModal" id="inputFinalPageTotalPricePembandingModal" name="inputFinalPageTotalPricePembandingModal">'
-          appendBottom = appendBottom + '    </div>'
-          appendBottom = appendBottom + '  </div>'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">PB1 <span class="title_pb1"></span></span>'
+            appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;text-align:right" class="form-control inputPb1PembandingModal" id="inputPb1PembandingModal" name="inputPb1PembandingModal">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Service Charge <span class="title_service"></span></span>'
+            appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;text-align:right" class="form-control inputServiceChargePembandingModal" id="inputServiceChargePembandingModal" name="inputServiceChargePembandingModal">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+            appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;text-align:right" class="form-control inputFinalPageTotalPricePembandingModal" id="inputFinalPageTotalPricePembandingModal" name="inputFinalPageTotalPricePembandingModal">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<hr>'
@@ -3322,6 +3442,8 @@
           $("#termPreviewPembandingModal").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
 
           var tempVat = 0
+          var tempPb1 = 0
+          var tempService = 0
           var finalVat = 0
           var tempGrand = 0
           var finalGrand = 0
@@ -3334,16 +3456,8 @@
               sum += temp;
           });
 
-          // if (result.pr.status_tax == 'True') {
-          //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-          //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
-          // }else{
-          //   tempVat = tempVat
-          //   tempGrand = parseInt(sum)
-          // }
-
-          if (result.pr.status_tax == false) {
-            valueVat = 'false'
+          if (result.pr.status_tax == "false") {
+            valueVat = ''
           }else{
             valueVat = result.pr.status_tax
           }
@@ -3354,7 +3468,7 @@
           localStorage.setItem('status_tax',valueVat)
           if (!isNaN(valueVat)) {
 
-            tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+            tempVat = parseInt(sum) * (valueVat ==''?0:parseFloat(valueVat) / 100)
 
             finalVat = tempVat
 
@@ -3364,7 +3478,7 @@
 
             tempTotal = sum
 
-            $('.title_tax').text(valueVat + '%')
+            $('.title_tax').text(valueVat == ''?'':valueVat + '%')
           }else{
             tempVat = 0
 
@@ -3373,9 +3487,19 @@
             $('.title_tax').text("")
           }
 
+          tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
+          tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+
+          finalGrand = tempGrand + tempPb1 + tempService
+
+          $('.title_pb1').text(result.pr.tax_pb == 0 || result.pr.tax_pb == null ?"":result.pr.tax_pb+"%")
+          $('.title_service').text(result.pr.service_charge == 0 || result.pr.service_charge == null?"":result.pr.service_charge+"%")
+
           $("#vat_tax_PembandingModal").val(formatter.format(tempVat))
+          $("#inputPb1PembandingModal").val(formatter.format(tempPb1))
+          $("#inputServiceChargePembandingModal").val(formatter.format(tempService))
           $("#inputGrandTotalProductPembandingModal").val(formatter.format(sum))
-          $("#inputFinalPageTotalPricePembandingModal").val(formatter.format(tempGrand))
+          $("#inputFinalPageTotalPricePembandingModal").val(formatter.format(finalGrand))
         }
       })
                     
@@ -4296,6 +4420,8 @@
           no_pr:localStorage.getItem('no_pembanding'),
           isRupiah:localStorage.getItem('isRupiah'),
           status_tax:localStorage.getItem('status_tax'),
+          tax_pb:localStorage.getItem('tax_pb'),
+          service_charge:localStorage.getItem('service_charge'),
           _token:"{{csrf_token()}}"
         },
         beforeSend:function(){
@@ -4643,90 +4769,72 @@
     })
   } 
 
-  // var tempVat = 0
-  // var finalVat = 0
-  // var tempGrand = 0
-  // var finalGrand = 0
-  // var tempTotal = 0
-  // var sum = 0
-  // var btnVatStatus = true
   function changeVatValue(value=false){
+
+    console.log(value)
     var tempVat = 0
     var finalVat = 0
     var tempGrand = 0
+    var tempPb1 = 0
+    var tempService = 0
     var finalGrand = 0
     var tempTotal = 0
     var sum = 0
 
     if (value == false) {
-      valueVat = 'false'
+      valueVat = ''
     }else{
-      valueVat = value
+      if (value == 'service' || value == 'pb1') {
+        valueVat = $("#vat_tax").val() == 0?false:parseFloat($('.title_tax_add_pembanding').text().replace("%",""))
+      }else{
+        valueVat = value
+      }
     }
     
-    // btnVatStatus = true
-    localStorage.setItem('status_tax',valueVat)
-
     $('.inputTotalPriceEdit').each(function() {
-        var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
-        console.log(isNaN(temp))
-        sum += temp;
+      var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
+      console.log(isNaN(temp))
+      sum += temp;
     });
+
     $("#inputGrandTotalProduct").val(formatter.format(sum))
 
-    // $('.inputTotalPriceEdit').each(function() {
-    //     var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-    //     sum += temp;
-    // });
-
-    // $("#inputGrandTotalProduct").val(formatter.format(sum))
-
     if (!isNaN(valueVat)) {
-      tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
+      console.log("hoooo")
+      console.log(valueVat)
+      tempVat = Math.round((parseFloat(sum) * (valueVat == false?0:parseFloat(valueVat)) / 100))
+      if (!isNaN(value)) {
+        $('.title_tax_add_pembanding').text(valueVat == '' || valueVat == 0?"":valueVat + '%')
 
-      finalVat = tempVat
-
-      tempGrand = sum +  tempVat
-
-      finalGrand = tempGrand
-
-      tempTotal = sum
-
-      $('.title_tax').text(valueVat + '%')
+        $("#vat_tax").val(formatter.format(tempVat))
+      }
     }else{
-      tempVat = 0
+      console.log("hiiiii")
 
-      tempGrand = sum
-
-      $('.title_tax').text("")
+      if (value == 'pb1' || value == 'service') {
+        tempVat = Math.round((parseFloat(sum) * ($("#vat_tax").val() == ""?0:parseFloat($("#vat_tax").val())) / 100))
+      }else{
+        tempVat = 0
+        $("#vat_tax").val(formatter.format(tempVat))
+      } 
+      
+      // $('.title_tax').text($("#vat_tax").val() == "" ||$("#vat_tax").val() == 0?"":$('.title_tax').text().replace("%","") + '%')
     }
+    tempPb1 = Math.round((parseFloat(sum) * ($("#inputPb1Final").val() == ""?0:parseFloat($("#inputPb1Final").val())) / 100))
+    tempService = Math.round((parseFloat(sum) * ($("#inputServiceChargeFinal").val() == ""?0:parseFloat($("#inputServiceChargeFinal").val())) / 100))
+    $("#inputPb1Nominal").val(formatter.format(tempPb1))
+    $("#inputServiceChargeNominal").val(formatter.format(tempService))
 
-    $("#vat_tax").val(formatter.format(tempVat))
+    tempGrand = sum + tempVat + tempPb1 + tempService
+
+    console.log(tempGrand)
+    console.log(tempPb1)
+    console.log(tempService)
 
     $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
-
-    // if($("#btn-vat").hasClass('btn-default')){
-    //   btnVatStatus = false
-    //   finalVat = 0
-    //   finalGrand = tempTotal
-    //   $("#btn-vat").removeClass('btn-default')
-    //   $("#btn-vat").addClass('btn-danger')
-    //   $("#btn-vat").text('✖')
-    //   $("#vat_tax").val(0)
-    //   $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
-    //   localStorage.setItem("status_tax",'False')
-
-    // } else {
-    //   btnVatStatus = true
-    //   finalVat = tempVat
-    //   finalGrand = tempGrand
-    //   $("#btn-vat").addClass('btn-default')
-    //   $("#btn-vat").removeClass('btn-danger')
-    //   $("#btn-vat").text('✓')
-    //   $("#vat_tax").val(formatter.format(tempVat))
-    //   $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
-    //   localStorage.setItem("status_tax",'True')
-    // }
+    localStorage.setItem('status_tax',valueVat)
+    localStorage.setItem('tax_pb',$("#inputPb1Final").val() == ""?0:parseFloat($("#inputPb1Final").val()))
+    localStorage.setItem('service_charge',$("#inputServiceChargeFinal").val() == ""?0:parseFloat($("#inputServiceChargeFinal").val()))
   }
 
   localStorage.setItem('isRupiah',true)
@@ -4754,8 +4862,10 @@
     }
   }
 
-  var status_tax = localStorage.getItem('status_tax')
-  function addTable(n,status_tax){ 
+  function addTable(n){ 
+    var status_tax = localStorage.getItem('status_tax')
+    var tax_pb = localStorage.getItem('tax_pb')
+    var service_charge = localStorage.getItem('service_charge')
     $.ajax({
         type: "GET",
         url: "{{url('/admin/getProductPembanding')}}",
@@ -4808,61 +4918,66 @@
 
         var appendBottom = ""
         appendBottom = appendBottom + '<hr>'
-        appendBottom = appendBottom + '<div class="row">'
-          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
-          appendBottom = appendBottom + '    <div class="pull-right">'
-          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
-          appendBottom = appendBottom + '    </div>'
-          appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '<div class="row">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
+            appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
-
-          appendBottom = appendBottom + ' <div class="pull-right">'
-          appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
-          appendBottom = appendBottom + '  </span>'
-          appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
-          appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
-          appendBottom = appendBottom + '  <div class="input-group-btn">'
-          appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
-          appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
-          appendBottom = appendBottom + '       </button>'
-          appendBottom = appendBottom + '       <ul class="dropdown-menu">'
-          appendBottom = appendBottom + '       <li>'
-          appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
-          appendBottom = appendBottom + '       </li>'
-          appendBottom = appendBottom + '       <li>'
-          appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
-          appendBottom = appendBottom + '       </li>'
-          appendBottom = appendBottom + '       <li>'
-          appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,1 %</a>'
-          appendBottom = appendBottom + '       </li>'
-          appendBottom = appendBottom + '      </ul>'
-          appendBottom = appendBottom + '     </div>'
-          appendBottom = appendBottom + '    </div>'
-          appendBottom = appendBottom + '  </div>'
-
-
-
-          // appendBottom = appendBottom + '   <div class="pull-right">'
-          //   appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
-          //   appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-          //     appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
-          //       appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
-          //     appendBottom = appendBottom + ' </span>'
-          //   appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
-          //   appendBottom = appendBottom + ' </div>'
-          // appendBottom = appendBottom + ' </div>'
-          appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + ' <div class="pull-right">'
+            appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax_add_pembanding"></span>'
+            appendBottom = appendBottom + '  </span>'
+            appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
+            appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
+            appendBottom = appendBottom + '  <div class="input-group-btn">'
+            appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
+            appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
+            appendBottom = appendBottom + '       </button>'
+            appendBottom = appendBottom + '       <ul class="dropdown-menu">'
+            appendBottom = appendBottom + '       <li>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
+            appendBottom = appendBottom + '       </li>'
+            appendBottom = appendBottom + '       <li>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
+            appendBottom = appendBottom + '       </li>'
+            appendBottom = appendBottom + '       <li>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,1%</a>'
+            appendBottom = appendBottom + '       </li>'
+            appendBottom = appendBottom + '      </ul>'
+            appendBottom = appendBottom + '  </div>'
+            appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
-          appendBottom = appendBottom + '    <div class="pull-right">'
-          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
-          appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
-          appendBottom = appendBottom + '    </div>'
-          appendBottom = appendBottom + '  </div>'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+            appendBottom = appendBottom + '      <div class="checkbox"><label><input type="checkbox" class="minimal" id="cbInputPb1Final">&nbsp&nbspPB1</label></div>'
+            appendBottom = appendBottom + '      <input disabled type="text" style="width:170px;display: inline;margin-left:15px" class="form-control inputPb1Nominal" id="inputPb1Nominal" name="inputPb1Nominal">'
+            appendBottom = appendBottom + '      <input disabled type="text" style="width:80px;display: inline;" class="form-control inputPb1Final" id="inputPb1Final" name="inputPb1Final" onkeyup="changeVatValue('+ "'pb1'"+')">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+            appendBottom = appendBottom + '      <div class="checkbox"><label><input type="checkbox" class="minimal" id="cbInputServiceChargeFinal">&nbsp&nbspService Charge</label></div>'
+            appendBottom = appendBottom + '      <input disabled type="text" style="width:170px;display: inline;margin-left:15px" class="form-control inputServiceChargeNominal" id="inputServiceChargeNominal" name="inputServiceChargeNominal">'
+            appendBottom = appendBottom + '      <input disabled type="text" style="width:80px;display: inline;" class="form-control inputServiceChargeFinal" id="inputServiceChargeFinal" name="inputServiceChargeFinal" onkeyup="changeVatValue('+ "'service'"+')">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+            appendBottom = appendBottom + '      <input disabled type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
 
         $("#bottomProducts").append(appendBottom) 
@@ -4870,6 +4985,61 @@
         if (status_tax != "") {
           changeVatValue(status_tax)
         }
+
+        $('input[type="checkbox"].minimal').iCheck({
+          checkboxClass: 'icheckbox_minimal-blue',
+        })
+
+        if (tax_pb == 0) {
+          toggleIcheckPajak(true)
+        }else{
+          $("#inputPb1Nominal").val(formatter.format(Math.round(($("#inputGrandTotalProduct").val() == ""?0:parseFloat($("#inputGrandTotalProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * tax_pb / 100)))
+          $("#inputPb1Product").val(tax_pb)
+          toggleIcheckPajak(false)
+        }
+
+        if (service_charge == 0) {
+          toggleIcheckPajak(true)
+        }else{
+          $("#inputServiceChargeNominal").val(formatter.format(Math.round(($("#inputGrandTotalProduct").val() == ""?0:parseFloat($("#inputGrandTotalProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * service_charge / 100)))
+          $("#inputServiceChargeProduct").val(service_charge)
+          toggleIcheckPajak(false)
+
+        }
+
+        // $("#inputPb1Final").inputmask("percentage", {
+        //   radixPoint: ".",
+        //   groupSeparator: ",",
+        //   autoGroup: true,
+        //   suffix: " %",
+        //   clearMaskOnLostFocus: false
+        // });
+
+        // $("#inputServiceChargeFinal").inputmask("percentage", {
+        //   radixPoint: ".",
+        //   groupSeparator: ",",
+        //   autoGroup: true,
+        //   suffix: " %",
+        //   clearMaskOnLostFocus: false
+        // });
+
+        $("#inputPb1Final").inputmask({
+          alias:"percentage",
+          integerDigits:2,
+          digits:2,
+          allowMinus:false,
+          digitsOptional: false,
+          placeholder: "0"
+        });
+
+        $("#inputServiceChargeFinal").inputmask({
+          alias:"percentage",
+          integerDigits:2,
+          digits:2,
+          allowMinus:false,
+          digitsOptional: false,
+          placeholder: "0"
+        });
 
           // var sum = 0
           // $('.inputTotalPriceEdit').each(function() {
@@ -4894,6 +5064,35 @@
           // $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
       }
     })
+  }
+
+  function toggleIcheckPajak(value){
+    console.log(value)
+    $('#cbInputPb1Final').on('ifChecked', function(event){
+      $("#inputPb1Final").prop("disabled",false)
+    });
+
+    $('#cbInputPb1Final').on('ifUnchecked', function(event){
+      $("#inputPb1Final").prop("disabled",true)
+      if (value == false) {
+        $("#inputPb1Final").val("")
+        $("#inputPb1Nominal").val("")
+        changeVatValue("pb1")
+      }
+    });
+
+    $('#cbInputServiceChargeFinal').on('ifChecked', function(event){
+      $("#inputServiceChargeFinal").prop("disabled",false)
+    });
+
+    $('#cbInputServiceChargeFinal').on('ifUnchecked', function(event){
+      $("#inputServiceChargeFinal").prop("disabled",true)
+      if (value == false) {
+        $("#inputServiceChargeFinal").val("")
+        $("#inputServiceChargeNominal").val("")
+        changeVatValue("service")
+      }
+    });
   }
 
   $(document).on("click", "#btnDeleteProduk", function() {
