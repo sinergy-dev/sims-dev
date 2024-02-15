@@ -332,6 +332,28 @@
 					<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($amount_tax,2)}}</th>
 					@endif
 				</tr>
+				@if($data->tax_pb != 'false' && $data->tax_pb != 0)
+				<tr>
+					<th></th>
+					<th></th>
+					<th style="text-align:right">PB1 {{$data->tax_pb}}%</th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax_pb,2)}}</th>
+				</tr>
+				@endif
+				@if($data->service_charge != 'false' && $data->service_charge != 0)
+				<tr>
+					<th></th>
+					<th></th>
+					<th style="text-align:right">Service Charge {{$data->service_charge}}%</th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_service_charge,2)}}</th>
+				</tr>
+				@endif
 				<tr style="background-color:#c0c0c0">
 					<th></th>
 					<th></th>
@@ -344,9 +366,9 @@
 					<th></th>
 					<th></th>
 					@if($data->isRupiah == 'true')
-					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal+$amount_tax,2)}}</th>
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($grand_total,2)}}</th>
 					@else
-					<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+$amount_tax,2)}}</th>
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($grand_total,2)}}</th>
 					@endif
 				</tr>
 				@else

@@ -183,70 +183,92 @@
 			@endif
 		</tr>
 		@if($data->status_tax != 'False')
-		<tr>
-			<th></th>
-			<th></th>
-			@if($data->type_of_letter == 'EPR')
-			<th></th>
-			<th></th>
-			@endif
-			@if($data->status_tax == '11')
-			<th style="text-align:right" 11%>VAT 11%</th>
-			@elseif($data->status_tax == '1.1')
-			<th style="text-align:right" 11%>VAT 1.1%</th>
-			@else
-			<th style="text-align:right" 11%></th>
-			@endif
-			<th></th>
-			<th></th>
-			<th></th>
-			@if($data->isRupiah == 'true')
-				@if($data->status_tax == '11')
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax,2)}}</th>
-				@elseif($data->status_tax == '1.1')
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax,2)}}</th>
-				@else
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">0</th>
+			<tr>
+				<th></th>
+				<th></th>
+				@if($data->type_of_letter == 'EPR')
+				<th></th>
+				<th></th>
 				@endif
-			@else
-			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+$amount_tax,2)}}</th>
+				@if($data->status_tax == '11')
+				<th style="text-align:right" 11%>VAT 11%</th>
+				@elseif($data->status_tax == '1.1')
+				<th style="text-align:right" 11%>VAT 1.1%</th>
+				@else
+				<th style="text-align:right" 11%></th>
+				@endif
+				<th></th>
+				<th></th>
+				<th></th>
+				@if($data->isRupiah == 'true')
+					@if($data->status_tax == '11')
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax,2)}}</th>
+					@elseif($data->status_tax == '1.1')
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax,2)}}</th>
+					@else
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">0</th>
+					@endif
+				@else
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+$amount_tax,2)}}</th>
+				@endif
+			</tr>
+			@if($data->tax_pb != 'false' && $data->tax_pb != 0)
+			<tr>
+				<th></th>
+				<th></th>
+				<th style="text-align:right">PB1 {{$data->tax_pb}}%</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax_pb,2)}}</th>
+			</tr>
 			@endif
-		</tr>
-		<tr style="background-color:#c0c0c0">
-			<th></th>
-			<th></th>
-			@if($data->type_of_letter == 'EPR')
-			<th></th>
-			<th></th>
+			@if($data->service_charge != 'false' && $data->service_charge != 0)
+			<tr>
+				<th></th>
+				<th></th>
+				<th style="text-align:right">Service Charge {{$data->service_charge}}%</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_service_charge,2)}}</th>
+			</tr>
 			@endif
-			<th style="text-align:right" >Grand Total</th>
-			<th></th>
-			<th></th>
-			<th></th>
-			@if($data->isRupiah == 'true')
-			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal + $amount_tax,2)}}</th>
-			@else
-			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+ $amount_tax,2)}}</th>
-			@endif
-		</tr>
+			<tr style="background-color:#c0c0c0">
+				<th></th>
+				<th></th>
+				@if($data->type_of_letter == 'EPR')
+				<th></th>
+				<th></th>
+				@endif
+				<th style="text-align:right" >Grand Total</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				@if($data->isRupiah == 'true')
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal + $amount_tax,2)}}</th>
+				@else
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+ $amount_tax,2)}}</th>
+				@endif
+			</tr>
 		@else
-		<tr style="background-color:#c0c0c0">
-			<th></th>
-			<th></th>
-			@if($data->type_of_letter == 'EPR')
-			<th></th>
-			<th></th>
-			@endif
-			<th style="text-align:right" >Grand Total</th>
-			<th></th>
-			<th></th>
-			<th></th>
-			@if($data->isRupiah == 'true')
-			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal,2)}}</th>
-			@else
-			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal,2)}}</th>
-			@endif
-		</tr>
+			<tr style="background-color:#c0c0c0">
+				<th></th>
+				<th></th>
+				@if($data->type_of_letter == 'EPR')
+				<th></th>
+				<th></th>
+				@endif
+				<th style="text-align:right" >Grand Total</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				@if($data->isRupiah == 'true')
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal,2)}}</th>
+				@else
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal,2)}}</th>
+				@endif
+			</tr>
 		@endif
 	</tfoot>
 </table>
