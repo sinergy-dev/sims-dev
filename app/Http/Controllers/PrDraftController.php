@@ -3635,7 +3635,11 @@ class PrDraftController extends Controller
         $tambah->id_draft_pr = $request->no_pr;
         $tambah->operator = Auth::User()->name;
         $tambah->date_add = Carbon::now()->toDateTimeString();
-        $tambah->resolve = 'False';
+        if(Auth::User()->name == 'Ganjar Pramudya Wijaya'){
+            $tambah->resolve = 'True';
+        } else {
+            $tambah->resolve = 'False';
+        }
         $tambah->notes = $request->inputNotes;
         $tambah->save();
 
