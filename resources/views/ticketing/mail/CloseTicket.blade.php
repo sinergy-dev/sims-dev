@@ -8,7 +8,7 @@
 				<h3 style="font-size: 24px;"><b><i>Close Ticket</i></b></h3>
 			</td>
 			<td style="padding-left: 72px;">
-				<img src="{{asset('/img/header-ticketing.jpg')}}">
+				<img src="{{asset('/image/header-ticketing.jpg')}}">
 			</td>
 		</tr>
 	</table>
