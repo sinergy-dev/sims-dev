@@ -2605,6 +2605,15 @@ class PrDraftController extends Controller
                 })
                 ->get();
 
+                // $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                // ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                // ->select('dokumen_name', 'dokumen_location', 'link_drive')
+                // ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
+                // ->where(function($query){
+                //     $query->where('dokumen_name', '!=', 'Penawaran Harga');
+                // })
+                // ->get();
+
                 $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
                 $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
 
@@ -4038,7 +4047,7 @@ class PrDraftController extends Controller
         if ($data->service_charge != 'false') {
             $amount_service_charge = round(($sum_nominal * ($data->service_charge))/100);
         } else {
-            $amount_pb = 0;
+            $amount_service_charge = 0;
         }
 
         $grand_total = $sum_nominal+$amount_tax+$amount_tax_pb+$amount_service_charge;

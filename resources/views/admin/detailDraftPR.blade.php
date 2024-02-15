@@ -1764,10 +1764,10 @@
           $('.title_tax').text("")
         }
 
-        $('.title_pb1').text(result.pr.tax_pb == 0 || result.pr.tax_pb == null?"":result.pr.tax_pb+"%")
-        $('.title_service').text(result.pr.service_charge == 0 || result.pr.service_charge == null?"":result.pr.service_charge+"%")
-        tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
-        tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+        $('.title_pb1').text(result.pr.tax_pb == 'false'?"":result.pr.tax_pb+"%")
+        $('.title_service').text(result.pr.service_charge == 'false'?"":result.pr.service_charge+"%")
+        tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
+        tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
 
         $("#vat_tax_previewData").val(formatter.format(tempVat))
         $("#inputGrandTotalProductPreviewData").val(formatter.format(sum))
@@ -2130,11 +2130,11 @@
           $('.title_tax').text("")
         }
 
-        $('.title_pb1').text(result.pr.tax_pb == 0 || result.pr.tax_pb == null ?"":result.pr.tax_pb+"%")
-        $('.title_service').text(result.pr.service_charge == 0 || result.pr.service_charge == null ?"":result.pr.service_charge+"%")
+        $('.title_pb1').text(result.pr.tax_pb == 'false'?"":result.pr.tax_pb+"%")
+        $('.title_service').text(result.pr.service_charge == 'false'?"":result.pr.service_charge+"%")
 
-        tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
-        tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+        tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
+        tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
         finalGrand = tempGrand + tempPb1 + tempService
 
         $("#vat_tax_preview").val(formatter.format(tempVat))
@@ -2541,11 +2541,11 @@
       $('.title_tax_pembanding').text("")
     }
 
-    $(".title_pb1_pembanding[data-value='" + i + "']").text(item.tax_pb == 0 || item.tax_pb == null?"":item.tax_pb+"%")
-    $(".title_service_pembanding[data-value='" + i + "']").text(item.service_charge == 0 || item.tax_pb == null?"":item.service_charge+"%")
+    $(".title_pb1_pembanding[data-value='" + i + "']").text(item.tax_pb == 'false'?"":item.tax_pb+"%")
+    $(".title_service_pembanding[data-value='" + i + "']").text(item.service_charge == 'false'?"":item.service_charge+"%")
 
-    tempPb1 = Math.round((parseFloat(sum) * (item.tax_pb == null || item.tax_pb == 'false' ?tempPb1:parseInt(item.tax_pb) / 100)))
-    tempService = Math.round((parseFloat(sum) * (item.service_charge == null || item.service_charge == 'false'?tempService:parseInt(item.service_charge) / 100)))
+    tempPb1 = Math.round((parseFloat(sum) * (item.tax_pb == 'false'?tempPb1:parseInt(item.tax_pb) / 100)))
+    tempService = Math.round((parseFloat(sum) * (item.service_charge == 'false'?tempService:parseInt(item.service_charge) / 100)))
     finalGrand = tempGrand + tempPb1 + tempService
 
     $("#vat_tax_pembanding[data-value='" + i + "']").val(formatter.format(tempVat))
@@ -3487,13 +3487,13 @@
             $('.title_tax').text("")
           }
 
-          tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
-          tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+          tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
+          tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
 
           finalGrand = tempGrand + tempPb1 + tempService
 
-          $('.title_pb1').text(result.pr.tax_pb == 0 || result.pr.tax_pb == null ?"":result.pr.tax_pb+"%")
-          $('.title_service').text(result.pr.service_charge == 0 || result.pr.service_charge == null?"":result.pr.service_charge+"%")
+          $('.title_pb1').text(result.pr.tax_pb == 'false' ?"":result.pr.tax_pb+"%")
+          $('.title_service').text(result.pr.service_charge == 'false'?"":result.pr.service_charge+"%")
 
           $("#vat_tax_PembandingModal").val(formatter.format(tempVat))
           $("#inputPb1PembandingModal").val(formatter.format(tempPb1))
