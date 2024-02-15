@@ -7,6 +7,7 @@ PMO
    <!-- Select2 -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <!-- <link rel="preload" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.3/skins/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -625,6 +626,7 @@ PMO
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script> -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
@@ -723,16 +725,17 @@ PMO
 
     
     var table = $('#tbListProject').DataTable({
-        processing: true,
-        serverSide: true,
         ajax:{
           url:"{{url('/PMO/getListDataProject')}}",
           dataSrc:"data",
         },
-        "bFilter": true,
-        "bSort":true,
-        "bLengthChange": false,
-        "bInfo": false,
+        processing: true,
+        serverSide: true,
+        // "bFilter": true,
+        // "bSort":true,
+        // "aaSorting": [[1, 'asc']],
+        // "bLengthChange": false,
+        // "bInfo": false,
         "columns": [
           {
             title: "No",
@@ -848,7 +851,8 @@ PMO
               }                
             }
           },
-          {
+          {   
+              "bSortable":false,
               "title":"Action",
               "data": null,
               render:function(data, type, row)
@@ -970,7 +974,7 @@ PMO
               },
           }
         ],
-        order: [[0, 'asc']],
+        // order: [[0, 'asc']],
         "rowCallback": function( row, data ) {
             if (data.status == "Approve") {
               if ("{{Auth::User()->name}}" != data.sign) {

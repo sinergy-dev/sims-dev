@@ -12,7 +12,7 @@ class PMO extends Model
     protected $fillable = ['current_phase','project_type', 'implementation_type','project_id'];
     public $timestamps = false;
 
-    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status','incrementing_number'];
+    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status'];
 
     public function getIncrementingNumberAttribute()
     {

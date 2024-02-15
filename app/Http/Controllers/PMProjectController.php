@@ -169,29 +169,50 @@ class PMProjectController extends Controller
   //       // return $data;
   //       return array("data" => $data);
 
-        $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
-                        ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
+        // $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+        //                 ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first(); 
 
-        $data =  PMO::LeftjoinSub($getListLeadRegister, 'project_id', function($join){
-                    $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
-                })
-                ->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
-                ->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
+
+        $data =  PMO::select('tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
         if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
             $data = $data->orderBy('tb_pmo.id','desc');
-        } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
-            $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-                ->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc');
         } else {
             $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-                ->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc');
+                ->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','desc');
         }
 
-        $searchFields = ['name_project', 'tb_pmo.project_id', 'current_phase', 'project_type', 'tb_pmo.id', 'implementation_type','project_pc','project_pm'];
+        $orderColumnIndex = $request->order[0]['column'] ?? '0';
+
+        $orderByName = 'project_id';
+        switch($orderColumnIndex){
+            case '1':
+                $orderByName = 'project_id';
+                break;
+            case '2':
+                $orderByName = 'name_project';
+                break;
+            case '3':
+                $orderByName = 'project_type';
+                break;
+            case '4':
+                $orderByName = 'project_pm';
+                break;
+            case '5':
+                $orderByName = 'project_pc';
+                break;
+            case '6':
+                $orderByName = 'current_phase';
+                break;
+            default:
+                $orderByName = 'indicator_project';
+                break;
+        }
+
+        $searchFields = ['name_project', 'project_id', 'current_phase', 'project_type', 'tb_pmo.id', 'implementation_type','project_pc','project_pm'];
 
         if ($request->searchFor != "") { 
             $data = $data->get()->makeHidden('type_project_array');
@@ -215,10 +236,10 @@ class PMProjectController extends Controller
             $totalRecords = $data->count();
             // Apply pagination
             $start = $request->input('start', 0);
-            $length = $request->input('length', 25); // Number of records per page
+            $pageLength = $request->input('length', $request->length); // Number of records per page
 
             $draw = $request->input('draw');
-            $data->skip($start)->take($length);
+            $data->skip($start)->take($pageLength);
 
             $outputArray = [];
             foreach ($data as $item) {
@@ -251,18 +272,24 @@ class PMProjectController extends Controller
             $totalRecords = $data->count();
             // Apply pagination
             $start = $request->input('start', 0);
-            $length = $request->input('length', 25); // Number of records per page
+            $pageLength = $request->input('length', $request->length); // Number of records per page
 
             $draw = $request->input('draw');
 
-            $data->skip($start)->take($length);
-            $data = $data->get()->makeHidden('type_project_array');
+            $data->skip($start)->take($pageLength);
+
+            if ($request->order[0]['dir'] == 'asc') {
+                $data = $data->get()->sortBy($orderByName)->values()->all();
+            }else{
+                $data = $data->get()->sortByDesc($orderByName)->values()->all();
+            }
         }
 
         return response()->json([
             'draw' => $draw,
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $totalRecords,
+            'length' => $pageLength,
             'data' => $data,
         ]);
 	}
@@ -2565,7 +2592,7 @@ class PMProjectController extends Controller
         $store->reporting_date      = $request->date_report_date;
         $store->overall_progress    = $request->overall_progress;
         $store->project_summary     = $request->textareaStatusSummary;
-        if ($request->textareaNoteSummaryHealth == "undefined" || $request->textareaNoteSummaryHealth == undefined || $request->textareaNoteSummaryHealth == '') {
+        if ($request->textareaNoteSummaryHealth == "undefined" || $request->textareaNoteSummaryHealth == '') {
             $store->note                = "-";
         }else{
             $store->note                = $request->textareaNoteSummaryHealth;
