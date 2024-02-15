@@ -180,6 +180,11 @@ class PMProjectController extends Controller
 
         if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
             $data = $data->orderBy('tb_pmo.id','desc');
+        } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
+            $data = $data->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
+                        $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
+                    })
+                    ->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc');
         } else {
             $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
                 ->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','desc');
@@ -3111,7 +3116,7 @@ class PMProjectController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
@@ -3179,7 +3184,7 @@ class PMProjectController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
@@ -3248,7 +3253,7 @@ class PMProjectController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
