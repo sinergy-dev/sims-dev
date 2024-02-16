@@ -5861,6 +5861,7 @@
     }
 
     function addTable(n,status,results=""){ 
+      console.log(results)
       if (window.location.href.split("/")[6] == undefined) {
         if (localStorage.getItem('status_pr') == 'revision') {
           url = "{{url('/admin/getProductPembanding')}}"
@@ -6002,11 +6003,16 @@
 
           if (results != "") {
             changeValueGrandTotal(results.grand_total)
-            if (results.pr.tax_pb == "false" || results.pr.service_charge == "false") {
+            if (results.pr.tax_pb == "false") {
               toggleIcheckPajak(false)
             }else{
               $("#inputPb1Nominal").val(formatter.format(Math.round(($("#inputGrandTotalProduct").val() == ""?0:parseFloat($("#inputGrandTotalProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * results.pr.tax_pb / 100)))
               $("#inputPb1Product").val(results.pr.tax_pb)
+            }
+
+            if (results.pr.service_charge == "false") {
+              toggleIcheckPajak(false)
+            }else{
               $("#inputServiceChargeNominal").val(formatter.format(Math.round(($("#inputGrandTotalProduct").val() == ""?0:parseFloat($("#inputGrandTotalProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * results.pr.service_charge / 100)))
               $("#inputServiceChargeProduct").val(results.pr.service_charge)
               toggleIcheckPajak(true)
