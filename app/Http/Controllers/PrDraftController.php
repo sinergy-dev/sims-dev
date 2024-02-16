@@ -164,6 +164,8 @@ class PrDraftController extends Controller
                                 $query->whereIn('tb_pr_draft.issuance',$listGroup)
                                 ->where('tb_pr_draft.type_of_letter', 'IPR');
                             });
+                        } else {
+                            $getData->orWhere('tb_pr_draft.type_of_letter', "IPR");
                         }
                     }
                 } else {
