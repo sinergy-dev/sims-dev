@@ -342,19 +342,54 @@ class PrDraftController extends Controller
         $date = $getData->pluck('tb_pr_draft.created_at')->toArray();
         sort($date);
 
+        $data = $getData;
+
+        $orderColumnIndex = $request->order[0]['column'] ?? '0';
+
+        $orderByName = 'no_pr';
+        switch($orderColumnIndex){
+            case '0':
+                $orderByName = 'no_pr';
+                break;
+            case '1':
+                $orderByName = 'created_at';
+                break;
+            case '2':
+                $orderByName = 'title';
+                break;
+            case '3':
+                $orderByName = 'name';
+                break;
+            case '4':
+                $orderByName = 'to';
+                break;
+            case '5':
+                $orderByName = 'nominal';
+                break;
+            default:
+                $orderByName = 'status';
+                break;
+        }
+
+        if ($request->order[0]['dir'] == 'asc') {
+            $data = collect($data)->sortBy($orderByName)->values()->all();
+        }else{
+            $data = collect($data)->sortByDesc($orderByName)->values()->all();
+        }
+
+        $totalRecords = collect($data)->count();
         // Apply pagination
         $start = $request->input('start', 0);
-        $length = $request->input('length', 100); // Number of records per page
+        $length = $request->input('length', 5); // Number of records per page
 
-        $getData->skip($start)->take($length);   
-
-        $totalRecords = $getData->count();
+        $data = collect($data)->skip($start)->take($length);
 
         return response()->json([
             'draw' => $request->input('draw'),
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $totalRecords,
-            'data' => $getData->get(),
+            'data' => $data,
+            'length' => $length,
         ]);
 
         // return collect([
@@ -882,14 +917,6 @@ class PrDraftController extends Controller
                 break;
         }
 
-        $totalRecords = $getData->count() + $getDataEPR->count();
-        // Apply pagination
-        $start = $request->input('start', 0);
-        $length = $request->input('length', 100); // Number of records per page
-
-        $getData->skip($start)->take($length);
-        $getDataEPR->skip($start)->take($length);
-
         $getDataFinal = $getData->get();
         $getDataEPRFinal = $getDataEPR->get();
 
@@ -901,11 +928,19 @@ class PrDraftController extends Controller
             $data = $data->sortByDesc($orderByName)->values()->all();
         }
 
+        $totalRecords = collect($data)->count();
+        // Apply pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', $request->input); // Number of records per page
+
+        $data = collect($data)->skip($start)->take($length);
+
         return response()->json([
             'draw' => $request->input('draw'),
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $totalRecords,
             'data' => $data,
+            'length' => $length,
         ]);
 
         // $getData = $getData->get();
