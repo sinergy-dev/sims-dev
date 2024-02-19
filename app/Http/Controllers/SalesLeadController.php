@@ -1967,6 +1967,11 @@ class SalesLeadController extends Controller
         $update->keterangan = $request['keterangan'];
         $update->closing_date = date("Y-m-d");
         $update->result4    = $request['project_type'];
+        $update->year = date("Y");
+        $update->month = date("n");
+        $edate                  = strtotime($request['date_po']);
+        $edate                  = date("Y-m-d",$edate);
+        $update->date_po        = $edate;
         $update->update();
 
         if($request['result'] != 'HOLD' || $request['result'] != 'SPECIAL'){

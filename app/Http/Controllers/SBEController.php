@@ -845,7 +845,7 @@ class SBEController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
@@ -909,7 +909,7 @@ class SBEController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
@@ -989,7 +989,7 @@ class SBEController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($locationFile, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'data' => file_get_contents($locationFile, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
