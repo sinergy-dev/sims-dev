@@ -175,7 +175,6 @@ class PMProjectController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first(); 
 
-
         $data =  PMO::select('tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
         if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
@@ -244,7 +243,6 @@ class PMProjectController extends Controller
             $pageLength = $request->input('length', $request->length); // Number of records per page
 
             $draw = $request->input('draw');
-            $data->skip($start)->take($pageLength);
 
             $outputArray = [];
             foreach ($data as $item) {
@@ -267,26 +265,44 @@ class PMProjectController extends Controller
             }
 
             $data = $outputArray;
-            // $data->where(function($data) use($request, $searchFields){
-            //     foreach ($searchFields as $data_filter) {
-            //         $data->orWhere($data_filter, 'LIKE', '%'. $request->searchFor . '%');
-            //     }
-            // });
+
+            if ($request->order[0]['dir'] == 'asc') {
+                $data = collect($data)->sortBy($orderByName)->values()->all();
+            }else{
+                $data = collect($data)->sortByDesc($orderByName)->values()->all();
+            }
+
+            if ($draw > 1) {
+                $datas = collect($data)->skip($start)->take($pageLength);
+                $data = [];
+                $data = array_values($datas->toArray());
+
+                // return $data;
+            }else{
+                $data = collect($data)->skip($start)->take($pageLength);
+            }
         }else{
-            // Get the total count before pagination
-            $totalRecords = $data->count();
+             // Get the total count before pagination
             // Apply pagination
+            $totalRecords = $data->count();
             $start = $request->input('start', 0);
             $pageLength = $request->input('length', $request->length); // Number of records per page
-
             $draw = $request->input('draw');
-
-            $data->skip($start)->take($pageLength);
 
             if ($request->order[0]['dir'] == 'asc') {
                 $data = $data->get()->sortBy($orderByName)->values()->all();
             }else{
                 $data = $data->get()->sortByDesc($orderByName)->values()->all();
+            }
+
+            if ($draw > 1) {
+                $datas = collect($data)->skip($start)->take($pageLength);
+                $data = [];
+                $data = array_values($datas->toArray());
+
+                // return $data;
+            }else{
+                $data = collect($data)->skip($start)->take($pageLength);
             }
         }
 
