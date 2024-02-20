@@ -76,64 +76,63 @@
 @parent
 <!-- From Sidebar Blade for notification -->
 <!-- Firebase-app 8.6.3-->
-<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script> -->
 <!-- Firebase-database 8.6.3-->
-<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script> -->
 <!-- MomentJS -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
 
 <script type="text/javascript">
-
-	var firebaseConfigSidebar = {
-	    apiKey: "{{env('FIREBASE_APIKEY')}}",
-	    authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
-	    projectId: "{{env('FIREBASE_PROJECTID')}}",
-	    storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
-	    messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
-	    appId: "{{env('FIREBASE_APPID')}}",
-	    measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
-	};
+	//Disabled push notif
+	// var firebaseConfigSidebar = {
+	//     apiKey: "{{env('FIREBASE_APIKEY')}}",
+	//     authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
+	//     projectId: "{{env('FIREBASE_PROJECTID')}}",
+	//     storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
+	//     messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
+	//     appId: "{{env('FIREBASE_APPID')}}",
+	//     measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
+	// };
 	
-  	// Initialize Firebase
-  	firebase.initializeApp(firebaseConfigSidebar);
+ //  	firebase.initializeApp(firebaseConfigSidebar);
 
-	var firebaseRootRef = firebase.database().ref();
+	// var firebaseRootRef = firebase.database().ref();
 
-   	if ("{{Auth::User()->id_division}}" == 'SALES' || "{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
- 		var personale_Ref = firebaseRootRef.child('notif/Lead_Register');
-   	} else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
- 		var personale_Ref = firebaseRootRef.child('notif/ID_Project');
-   	}   	
+ //   	if ("{{Auth::User()->id_division}}" == 'SALES' || "{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+ // 		var personale_Ref = firebaseRootRef.child('notif/Lead_Register');
+ //   	} else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
+ // 		var personale_Ref = firebaseRootRef.child('notif/ID_Project');
+ //   	}   	
 
-   	if (personale_Ref != null) {
-   		personale_Ref.orderByChild("to").equalTo("{{Auth::User()->email}}").on("value", function(snapshot) {
-   		if (true) {}
-		console.log(snapshot.val() + 'hello')
+ //   	if (personale_Ref != null) {
+ //   		personale_Ref.orderByChild("to").equalTo("{{Auth::User()->email}}").on("value", function(snapshot) {
+ //   		if (true) {}
+	// 	console.log(snapshot.val() + 'hello')
 
-	    	if (snapshot.exists()) {
-	    		snapshot_key = snapshot.key
-	    		console.log(snapshot.key)
-		      	snapshot_child = snapshot.val() 
-			    $(".label").each(function(){
-			    	var id 	= $(this).attr("id")
-					if (id == snapshot_key) {
-			         var keys = Object.keys(snapshot.val())
-			         for (var i = 0; i < keys.length; i++) {
-			         	if (snapshot_child[keys[i]].to == "{{Auth::User()->email}}" && snapshot_child[keys[i]].total != 0) {
-			         		$("#"+id).show()
-							$("#"+id).text(snapshot_child[keys[i]].total)
-							$("#"+id+"_arrow-angle").hide()
-			         	}
+	//     	if (snapshot.exists()) {
+	//     		snapshot_key = snapshot.key
+	//     		console.log(snapshot.key)
+	// 	      	snapshot_child = snapshot.val() 
+	// 		    $(".label").each(function(){
+	// 		    	var id 	= $(this).attr("id")
+	// 				if (id == snapshot_key) {
+	// 		         var keys = Object.keys(snapshot.val())
+	// 		         for (var i = 0; i < keys.length; i++) {
+	// 		         	if (snapshot_child[keys[i]].to == "{{Auth::User()->email}}" && snapshot_child[keys[i]].total != 0) {
+	// 		         		$("#"+id).show()
+	// 						$("#"+id).text(snapshot_child[keys[i]].total)
+	// 						$("#"+id+"_arrow-angle").hide()
+	// 		         	}
 
-			         	if(snapshot_child[keys[i]].to != "{{Auth::User()->email}}" && snapshot_child[keys[i]].total == 0){
-			         		$("#"+id).hide()
-							$("#"+id+"_arrow-angle").show()
-			         	}
-			         }
-					}
-				});
-	    	}
-	    });	
-   	}
+	// 		         	if(snapshot_child[keys[i]].to != "{{Auth::User()->email}}" && snapshot_child[keys[i]].total == 0){
+	// 		         		$("#"+id).hide()
+	// 						$("#"+id+"_arrow-angle").show()
+	// 		         	}
+	// 		         }
+	// 				}
+	// 			});
+	//     	}
+	//     });	
+ //   	}
 </script>
 @endsection

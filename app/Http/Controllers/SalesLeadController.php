@@ -2144,7 +2144,8 @@ class SalesLeadController extends Controller
                 Mail::to('hellosinergy@gmail.com')->send(new MailResult($users,$pid_info));
                 Mail::to($users->email)->send(new MailResult($users,$pid_info));
 
-                $jsonInsert = array(
+                //Disabled push notification
+                /*$jsonInsert = array(
                     "company"=> $pid_info->id_company,
                     "heximal" => "#246d18",
                     "lead_id" => $request->lead_id_result,
@@ -2166,7 +2167,7 @@ class SalesLeadController extends Controller
                 ]);
 
                 $this->getNotifBadgeInsert($jsonInsert);
-                $this->getNotifBadgeCountPID($jsonCount);
+                $this->getNotifBadgeCountPID($jsonCount);*/
 
             }
 
@@ -2187,59 +2188,61 @@ class SalesLeadController extends Controller
                 ->whereYear('sales_tender_process.created_at',date('Y'))
                 ->count('sales_tender_process.lead_id');
 
-        $jsonCount = array(
+        //Disabled push notification
+        /*$jsonCount = array(
             "to" => $data->email,
             "total"=> $total
         );
 
-        $this->getNotifCountLead($jsonCount);  
+        $this->getNotifCountLead($jsonCount);*/  
         return "success";
     }
 
-    public function getNotifBadgeCountPID($json){
-        $url = env('FIREBASE_DATABASEURL')."/notif/ID_Project.json?auth=".env('REALTIME_FIREBASE_AUTH');
-        try {
-            $client = new Client();
-            $client->request('PATCH', $url, [
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ],
-                'json' => $json
-            ]);
-        } catch (RequestException $e){
-            $error['error'] = $e->getMessage();
-        }
-    }
+    //Disabled push notification
+    // public function getNotifBadgeCountPID($json){
+    //     $url = env('FIREBASE_DATABASEURL')."/notif/ID_Project.json?auth=".env('REALTIME_FIREBASE_AUTH');
+    //     try {
+    //         $client = new Client();
+    //         $client->request('PATCH', $url, [
+    //             'headers' => [
+    //                 'Content-Type' => 'application/json'
+    //             ],
+    //             'json' => $json
+    //         ]);
+    //     } catch (RequestException $e){
+    //         $error['error'] = $e->getMessage();
+    //     }
+    // }
 
-    public function getNotifCountLead($json){
-        $url = env('FIREBASE_DATABASEURL')."/notif/Lead_Register.json?auth=".env('REALTIME_FIREBASE_AUTH');
-        try {
-            $client = new Client();
-            $client->request('POST', $url, [
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ],
-                'json' => $json
-            ]);
-        } catch (RequestException $e){
-            $error['error'] = $e->getMessage();
-        }
-    }
+    // public function getNotifCountLead($json){
+    //     $url = env('FIREBASE_DATABASEURL')."/notif/Lead_Register.json?auth=".env('REALTIME_FIREBASE_AUTH');
+    //     try {
+    //         $client = new Client();
+    //         $client->request('POST', $url, [
+    //             'headers' => [
+    //                 'Content-Type' => 'application/json'
+    //             ],
+    //             'json' => $json
+    //         ]);
+    //     } catch (RequestException $e){
+    //         $error['error'] = $e->getMessage();
+    //     }
+    // }
 
-    public function getNotifBadgeInsert($json){
-        $url = env('FIREBASE_DATABASEURL')."/notif/web-notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
-        try {
-            $client = new Client();
-            $client->request('POST', $url, [
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ],
-                'json' => $json
-            ]);
-        } catch (RequestException $e){
-            $error['error'] = $e->getMessage();
-        }
-    }
+    // public function getNotifBadgeInsert($json){
+    //     $url = env('FIREBASE_DATABASEURL')."/notif/web-notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
+    //     try {
+    //         $client = new Client();
+    //         $client->request('POST', $url, [
+    //             'headers' => [
+    //                 'Content-Type' => 'application/json'
+    //             ],
+    //             'json' => $json
+    //         ]);
+    //     } catch (RequestException $e){
+    //         $error['error'] = $e->getMessage();
+    //     }
+    // }
 
     public function getPid(Request $request)
     {
@@ -2286,7 +2289,8 @@ class SalesLeadController extends Controller
 
         $total = PID::where('status','requested')->count('id_pid');
 
-        $jsonCount = array(
+        //Disabled push notification
+        /*$jsonCount = array(
             "manager"=>[
                 "to"=> $users->email,
                 "total"=>$total
@@ -2308,7 +2312,7 @@ class SalesLeadController extends Controller
         );
 
         $this->getNotifBadgeInsert($jsonInsert);
-        $this->getNotifBadgeCountPID($jsonCount);
+        $this->getNotifBadgeCountPID($jsonCount);*/
 
         return redirect()->to('/project')->with('success', 'Create PID Successfully!');
     }
@@ -2485,12 +2489,11 @@ class SalesLeadController extends Controller
                 ->where('sales_sd_filtered.nik','=',$user_to)
                 ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');          
 
-        $jsonCount = array(
+        //Disabled push notification
+        /*$jsonCount = array(
             "to"=>$user_to,
             "total"=> $total->first()->progress_counted
         );
-
-        
 
         $jsonInsert = array(
             "heximal" => "#7735a3",
@@ -2504,9 +2507,7 @@ class SalesLeadController extends Controller
         );
 
         $this->getNotifCountLead($jsonCount);
-        $this->getNotifBadgeInsert($jsonInsert);
-        
-        
+        $this->getNotifBadgeInsert($jsonInsert);*/
 
         if (Auth::User()->id_division === 'TECHNICAL PRESALES' && Auth::User()->id_position === 'STAFF') {
             return redirect('project')->with('success', 'Wait for Presales Manager Assign Lead Register!');
@@ -2550,7 +2551,8 @@ class SalesLeadController extends Controller
         $status = 'assign';
         Mail::to($kirim)->send(new AssignPresales($data,$status));
 
-        $user_to = User::select('email','nik')
+        //Disabled push notification
+        /*$user_to = User::select('email','nik')
                             ->where('id_position', 'MANAGER')
                             ->where('id_division', 'TECHNICAL PRESALES')->first();
 
@@ -2607,7 +2609,6 @@ class SalesLeadController extends Controller
                     ->where('sales_sd_filtered.nik','=',$user_to->nik)
                     ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');          
 
-
             $jsonCount = array(
                 "to"=>$kirim->email,
                 "total"=>$total_manager->first()->progress_counted
@@ -2615,9 +2616,10 @@ class SalesLeadController extends Controller
 
             $this->getNotifCountLead($jsonCount);
 
-        }
+        }*/
 
-        $jsonInsert = array(
+        //Disabled push notification
+        /*$jsonInsert = array(
             "heximal" => "#f2562b",
             "lead_id" => $data->lead_id,
             "opty_name" => "(You've been assigned) " . $data->opp_name,
@@ -2629,7 +2631,7 @@ class SalesLeadController extends Controller
 
         );
 
-        $this->getNotifBadgeInsert($jsonInsert);
+        $this->getNotifBadgeInsert($jsonInsert);*/
 
         return redirect('project');
     }
@@ -2738,8 +2740,9 @@ class SalesLeadController extends Controller
             ->where('id_company','1')
             ->where('sales_sd_filtered.nik','=',$data->presales_nik);
 
+        //Disabled push notification
 
-        $i = 0;
+        /*$i = 0;
 
         if ($data->presales_email != $user_to) {
             do {
@@ -2782,9 +2785,9 @@ class SalesLeadController extends Controller
                 $this->getNotifCountLead($jsonCount);
 
             } while ($i < 2);
-        }
+        }*/
 
-        $jsonInsert = array(
+        /*$jsonInsert = array(
             "heximal" => "#f7e127",
             "lead_id" => $lead_id,
             "opty_name" => $data->opp_name,
@@ -2795,9 +2798,7 @@ class SalesLeadController extends Controller
             "date_time"=>Carbon::now()->timestamp
         );
 
-        $this->getNotifBadgeInsert($jsonInsert);
-
-
+        $this->getNotifBadgeInsert($jsonInsert);*/
         return redirect()->back();
     }
 

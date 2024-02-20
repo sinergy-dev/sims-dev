@@ -1965,7 +1965,8 @@ class PrDraftController extends Controller
 
             $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
 
-            $jsonInsertCreate = array(
+            //Disabled push notification
+            /*$jsonInsertCreate = array(
                 "heximal" => "#605ca8",
                 "id_pr" => $detail->id,
                 "title" => $detail->title,
@@ -1977,8 +1978,7 @@ class PrDraftController extends Controller
                 "module"=>"draft"
             );
 
-            $this->getNotifBadgeInsert($jsonInsertCreate);
-
+            $this->getNotifBadgeInsert($jsonInsertCreate);*/
         } else {
             $update = PRDraft::where('id', $request->no_pr)->first();
             $update->nominal = str_replace('.', '', $request['inputGrandTotalProduct']);
@@ -2026,44 +2026,45 @@ class PrDraftController extends Controller
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR Submitted and Ready to Verify', 'detail_approver', 'next_approver'));
 
-            $jsonInsert = array(
-                "heximal" => "#3c8dbc",
-                "id_pr" => $detail->id,
-                "title" => $detail->title,
-                "result"=> 'DRAFT',
-                "showed"=>"true",
-                "status"=>"unread",
-                "to"=> $kirim_user->email,
-                "date_time"=>Carbon::now()->timestamp,
-                "module"=>"draft"
-            );
+            //disabled push notification
+            // $jsonInsert = array(
+            //     "heximal" => "#3c8dbc",
+            //     "id_pr" => $detail->id,
+            //     "title" => $detail->title,
+            //     "result"=> 'DRAFT',
+            //     "showed"=>"true",
+            //     "status"=>"unread",
+            //     "to"=> $kirim_user->email,
+            //     "date_time"=>Carbon::now()->timestamp,
+            //     "module"=>"draft"
+            // );
 
-            if ($cek_role->group == 'sales') {
-                $to_cc = User::select('email')
-                    ->whereRaw("(`name` = '".$listTerritory->name."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
-                    ->get()->pluck('email');
-            } else {
-                $to_cc = User::select('email')
-                    ->whereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'BCD')")
-                    ->get()->pluck('email');
-            }
+            // if ($cek_role->group == 'sales') {
+            //     $to_cc = User::select('email')
+            //         ->whereRaw("(`name` = '".$listTerritory->name."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+            //         ->get()->pluck('email');
+            // } else {
+            //     $to_cc = User::select('email')
+            //         ->whereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+            //         ->get()->pluck('email');
+            // }
 
-            foreach ($to_cc as $data) {
-                $jsonInsert2 = array(
-                    "heximal" => "#3c8dbc",
-                    "id_pr" => $detail->id,
-                    "title" => $detail->title,
-                    "result"=> 'DRAFT',
-                    "showed"=>"true",
-                    "status"=>"unread",
-                    "to"=> $data,
-                    "date_time"=>Carbon::now()->timestamp,
-                    "module"=>"draft"
-                );
-                $this->getNotifBadgeInsert($jsonInsert2);
-            }
+            // foreach ($to_cc as $data) {
+            //     $jsonInsert2 = array(
+            //         "heximal" => "#3c8dbc",
+            //         "id_pr" => $detail->id,
+            //         "title" => $detail->title,
+            //         "result"=> 'DRAFT',
+            //         "showed"=>"true",
+            //         "status"=>"unread",
+            //         "to"=> $data,
+            //         "date_time"=>Carbon::now()->timestamp,
+            //         "module"=>"draft"
+            //     );
+            //     $this->getNotifBadgeInsert($jsonInsert2);
+            // }
 
-            $this->getNotifBadgeInsert($jsonInsert);
+            // $this->getNotifBadgeInsert($jsonInsert);
         
         }
     }
@@ -2126,19 +2127,20 @@ class PrDraftController extends Controller
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR Cancelled', 'detail_approver', 'next_approver'));
 
-        $jsonInsertCreate = array(
-            "heximal" => "#dd4b39", //diisi warna sesuai status
-            "id_pr" => $detail->id,
-            "title" => $detail->title, //diisi subject
-            "result"=> 'CANCEL',
-            "showed"=>"true",
-            "status"=>"unread",
-            "to"=> $kirim_user->email, 
-            "date_time"=>Carbon::now()->timestamp,
-            "module"=>"draft"
-        );
+        //Disabled push notification
+        // $jsonInsertCreate = array(
+        //     "heximal" => "#dd4b39", //diisi warna sesuai status
+        //     "id_pr" => $detail->id,
+        //     "title" => $detail->title, //diisi subject
+        //     "result"=> 'CANCEL',
+        //     "showed"=>"true",
+        //     "status"=>"unread",
+        //     "to"=> $kirim_user->email, 
+        //     "date_time"=>Carbon::now()->timestamp,
+        //     "module"=>"draft"
+        // );
 
-        $this->getNotifBadgeInsert($jsonInsertCreate);
+        // $this->getNotifBadgeInsert($jsonInsertCreate);
     }
 
     public function sendMailDraft(Request $request)
@@ -2307,19 +2309,20 @@ class PrDraftController extends Controller
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR '.$detail->id.' Rejected', 'detail_approver', 'next_approver'));
 
-            $jsonInsertCreate = array(
-                "heximal" => "#dd4b39", //diisi warna sesuai status
-                "id_pr" => $detail->id,
-                "title" => $detail->title, //diisi subject
-                "result"=> 'REJECT',
-                "showed"=>"true",
-                "status"=>"unread",
-                "to"=> $kirim_user->email, 
-                "date_time"=>Carbon::now()->timestamp,
-                "module"=>"draft"
-            );
+            //Disabled push notification
+            // $jsonInsertCreate = array(
+            //     "heximal" => "#dd4b39", //diisi warna sesuai status
+            //     "id_pr" => $detail->id,
+            //     "title" => $detail->title, //diisi subject
+            //     "result"=> 'REJECT',
+            //     "showed"=>"true",
+            //     "status"=>"unread",
+            //     "to"=> $kirim_user->email, 
+            //     "date_time"=>Carbon::now()->timestamp,
+            //     "module"=>"draft"
+            // );
 
-            $this->getNotifBadgeInsert($jsonInsertCreate);
+            // $this->getNotifBadgeInsert($jsonInsertCreate);
 
         } else {
             // return 'verify';
@@ -2465,19 +2468,20 @@ class PrDraftController extends Controller
             $this->uploadPdfMerge($request->no_pr,$approver);
             // $this->mergePdf($request->no_pr);
 
-            $jsonInsertCreate = array(
-                "heximal" => "#00a65a", //diisi warna sesuai status
-                "id_pr" => $detail->id,
-                "title" => $detail->title, //diisi subject
-                "result"=> 'VERIFIED',
-                "showed"=>"true",
-                "status"=>"unread",
-                "to"=> $kirim_user->email, 
-                "date_time"=>Carbon::now()->timestamp,
-                "module"=>"draft"
-            );
+            //Disabled push notification
+            // $jsonInsertCreate = array(
+            //     "heximal" => "#00a65a", //diisi warna sesuai status
+            //     "id_pr" => $detail->id,
+            //     "title" => $detail->title, //diisi subject
+            //     "result"=> 'VERIFIED',
+            //     "showed"=>"true",
+            //     "status"=>"unread",
+            //     "to"=> $kirim_user->email, 
+            //     "date_time"=>Carbon::now()->timestamp,
+            //     "module"=>"draft"
+            // );
 
-            $this->getNotifBadgeInsert($jsonInsertCreate);
+            // $this->getNotifBadgeInsert($jsonInsertCreate);
 
         }
     }
@@ -3407,19 +3411,20 @@ class PrDraftController extends Controller
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
 
-        $jsonInsertCreate = array(
-            "heximal" => "#f39c12", //diisi warna sesuai status
-            "id_pr" => $detail->id,
-            "title" => $detail->title, //diisi subject
-            "result"=> 'CIRCULAR',
-            "showed"=>"true",
-            "status"=>"unread",
-            "to"=> $kirim_user->email, 
-            "date_time"=>Carbon::now()->timestamp,
-            "module"=>"draft"
-        );
+        //Disabled push notification
+        // $jsonInsertCreate = array(
+        //     "heximal" => "#f39c12", //diisi warna sesuai status
+        //     "id_pr" => $detail->id,
+        //     "title" => $detail->title, //diisi subject
+        //     "result"=> 'CIRCULAR',
+        //     "showed"=>"true",
+        //     "status"=>"unread",
+        //     "to"=> $kirim_user->email, 
+        //     "date_time"=>Carbon::now()->timestamp,
+        //     "module"=>"draft"
+        // );
 
-        $this->getNotifBadgeInsert($jsonInsertCreate);
+        // $this->getNotifBadgeInsert($jsonInsertCreate);
     }
 
     public function circulerPr(Request $request)
@@ -3465,7 +3470,8 @@ class PrDraftController extends Controller
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
 
-        $jsonInsertCreate = array(
+        //Disabled Push notification
+        /*$jsonInsertCreate = array(
             "heximal" => "#f39c12", //diisi warna sesuai status
             "id_pr" => $detail->id,
             "title" => $detail->title, //diisi subject
@@ -3477,7 +3483,7 @@ class PrDraftController extends Controller
             "module"=>"draft"
         );
 
-        $this->getNotifBadgeInsert($jsonInsertCreate);
+        $this->getNotifBadgeInsert($jsonInsertCreate);*/
     }
 
     public function submitTtdApprovePR(Request $request)
@@ -3521,7 +3527,8 @@ class PrDraftController extends Controller
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name . ' And Ready To Finalized', 'detail_approver', $next_approver));
 
-            $jsonInsertCreate = array(
+            //Disabled push notificatio
+            /*$jsonInsertCreate = array(
                 "heximal" => "#00a65a", //diisi warna sesuai status
                 "id_pr" => $detail->id,
                 "title" => $detail->title, //diisi subject
@@ -3533,7 +3540,7 @@ class PrDraftController extends Controller
                 "module"=>"draft"
             );
 
-            $this->getNotifBadgeInsert($jsonInsertCreate);
+            $this->getNotifBadgeInsert($jsonInsertCreate);*/
 
         } else {
             $update = PRDraft::where('id', $request->no_pr)->first();
@@ -3581,7 +3588,8 @@ class PrDraftController extends Controller
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name, $detail_approver, $next_approver));
 
-            $jsonInsertCreate = array(
+            //Disabled push notification
+            /*$jsonInsertCreate = array(
                 "heximal" => "#f39c12", //diisi warna sesuai status
                 "id_pr" => $detail->id,
                 "title" => $detail->title, //diisi subject
@@ -3593,7 +3601,7 @@ class PrDraftController extends Controller
                 "module"=>"draft"
             );
 
-            $this->getNotifBadgeInsert($jsonInsertCreate);
+            $this->getNotifBadgeInsert($jsonInsertCreate);*/
         }
         $approver = 'Signed by '.Auth::User()->name;
 
@@ -3660,7 +3668,8 @@ class PrDraftController extends Controller
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Reject By ' . Auth::User()->name,'detail_approver', $next_approver));
 
 
-        $jsonInsertCreate = array(
+        //Disabled push notificati
+        /*$jsonInsertCreate = array(
             "heximal" => "#dd4b39", //diisi warna sesuai status
             "id_pr" => $detail->id,
             "title" => $detail->title, //diisi subject
@@ -3672,7 +3681,7 @@ class PrDraftController extends Controller
             "module"=>"draft"
         );
 
-        $this->getNotifBadgeInsert($jsonInsertCreate);
+        $this->getNotifBadgeInsert($jsonInsertCreate);*/
     }
 
     public function storeNotes(Request $request)
@@ -4005,7 +4014,8 @@ class PrDraftController extends Controller
 
         $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
 
-        $jsonInsertCreate = array(
+        //Disabled push notification
+        /*$jsonInsertCreate = array(
             "heximal" => "#3c8dbc", //diisi warna sesuai status
             "id_pr" => $detail->id,
             "title" => $detail->title, //diisi subject
@@ -4017,7 +4027,7 @@ class PrDraftController extends Controller
             "module"=>"draft"
         );
 
-        $this->getNotifBadgeInsert($jsonInsertCreate);
+        $this->getNotifBadgeInsert($jsonInsertCreate);*/
     }
 
     public function sendEmail($to, $cc, $subject, $body){
@@ -4777,7 +4787,8 @@ class PrDraftController extends Controller
         return $array;
     }
 
-    public function getNotifBadgeInsert($json){
+    //Disabled push notification
+    /*public function getNotifBadgeInsert($json){
         $url = env('FIREBASE_DATABASEURL')."/notif/web-notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
         try {
             $client = new Client();
@@ -4790,7 +4801,7 @@ class PrDraftController extends Controller
         } catch (RequestException $e){
             $error['error'] = $e->getMessage();
         }
-    }
+    }*/
 
     public function getSupplier()
     {

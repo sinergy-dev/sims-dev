@@ -2643,7 +2643,8 @@ class SalesController extends Controller{
                 Mail::to($kirim)->send(new CreateLeadRegister($data));
 
             }
-            $user_to = User::select('email')
+
+            /*$user_to = User::select('email')
                             ->where('id_position', 'MANAGER')
                             ->where('id_division', 'TECHNICAL PRESALES')->first()->email;
 
@@ -2678,9 +2679,7 @@ class SalesController extends Controller{
             );
 
             $this->getNotifCountLead($jsonCount);
-            $this->getNotifBadgeInsert($jsonInsert);
-            
-            
+            $this->getNotifBadgeInsert($jsonInsert);*/
 
             if (Auth::User()->id_division === 'TECHNICAL PRESALES' && Auth::User()->id_position === 'STAFF') {
                 return redirect('project')->with('success', 'Wait for Presales Manager Assign Lead Register!');
@@ -2906,7 +2905,8 @@ class SalesController extends Controller{
         // Notification::send($kirim, new PresalesAssign());
         Mail::to($kirim)->send(new AssignPresales($data,$status));
 
-        $user_to = User::select('email','nik')
+        //Disabled push notif
+        /*$user_to = User::select('email','nik')
                             ->where('id_position', 'MANAGER')
                             ->where('id_division', 'TECHNICAL PRESALES')->first();
 
@@ -2987,7 +2987,7 @@ class SalesController extends Controller{
 
         );
 
-        $this->getNotifBadgeInsert($jsonInsert);
+        $this->getNotifBadgeInsert($jsonInsert);*/
 
         return redirect('project');
     }
@@ -3089,7 +3089,10 @@ class SalesController extends Controller{
 
         
         Mail::to($kirim)->send(new RaiseTender($data));
-        $total_sales = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+
+
+        //Disabled push notif
+        /*$total_sales = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->where('sales_lead_register.nik', $data->nik)
                     ->where('sales_lead_register.result','TP')
                     ->whereYear('sales_tender_process.created_at',date('Y'))
@@ -3179,7 +3182,7 @@ class SalesController extends Controller{
             "date_time"=>Carbon::now()->timestamp
         );
 
-        $this->getNotifBadgeInsert($jsonInsert);
+        $this->getNotifBadgeInsert($jsonInsert);*/
 
 
         return redirect()->back();
@@ -3316,7 +3319,8 @@ class SalesController extends Controller{
                     Mail::to('hellosinergy@gmail.com')->send(new MailResult($users,$pid_info));
                     Mail::to($users->email)->send(new MailResult($users,$pid_info));
 
-                    $jsonInsert = array(
+                    //Disabled push notif
+                    /*$jsonInsert = array(
                         "company"=> $pid_info->id_company,
                         "heximal" => "#246d18",
                         "lead_id" => $lead_id,
@@ -3338,7 +3342,7 @@ class SalesController extends Controller{
                     ]);
 
                     $this->getNotifBadgeInsert($jsonInsert);
-                    $this->getNotifBadgeCountPID($jsonCount);
+                    $this->getNotifBadgeCountPID($jsonCount);*/
 
                 }
 
@@ -3355,7 +3359,8 @@ class SalesController extends Controller{
             }
             $tambah->save();
 
-            $total = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+            //Disabled push notif
+            /*$total = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->where('sales_lead_register.nik', $data->nik)
                     ->where('sales_lead_register.result','TP')
                     ->whereYear('sales_tender_process.created_at',date('Y'))
@@ -3366,7 +3371,7 @@ class SalesController extends Controller{
                 "total"=> $total
             );
 
-            $this->getNotifCountLead($jsonCount);            
+            $this->getNotifCountLead($jsonCount); */           
 
         }    
         return "success";
@@ -5255,8 +5260,9 @@ class SalesController extends Controller{
             Mail::to("hellosinergy@gmail.com")->send(new mailPID($pid_info,$users,'getPmManager','sales'));
         
         }
-        // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
-        $finance = User::where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+
+        //Disabled push notif
+        /*$finance = User::where('id_division','FINANCE')->where('id_position','MANAGER')->first();
 
         $jsonCount = array(
             "manager" => [
@@ -5264,7 +5270,7 @@ class SalesController extends Controller{
                 "total" => PID::where('status','requested')->count('id_pid')
         ]);
             
-        $this->getNotifBadgeCountPID($jsonCount);
+        $this->getNotifBadgeCountPID($jsonCount);*/
 
         return redirect()->to('/salesproject')->with('success', 'Create PID Successfully!');
         
@@ -5311,7 +5317,8 @@ class SalesController extends Controller{
         // return $users
         Mail::to($users->email)->send(new MailResult($users,$pid_info));
 
-        $total = PID::where('status','requested')->count('id_pid');
+        //Disabled push notif
+        /*$total = PID::where('status','requested')->count('id_pid');
 
         $jsonCount = array(
             "manager"=>[
@@ -5335,7 +5342,7 @@ class SalesController extends Controller{
         );
 
         $this->getNotifBadgeInsert($jsonInsert);
-        $this->getNotifBadgeCountPID($jsonCount);
+        $this->getNotifBadgeCountPID($jsonCount);*/
 
         return redirect()->to('/project')->with('success', 'Create PID Successfully!');
     }
@@ -5893,7 +5900,8 @@ class SalesController extends Controller{
             // }
     }
 
-    public function getNotifBadgeCountPID($json){
+    //Disabled push notif
+/*    public function getNotifBadgeCountPID($json){
         $url = env('FIREBASE_DATABASEURL')."/notif/ID_Project.json?auth=".env('REALTIME_FIREBASE_AUTH');
         try {
             $client = new Client();
@@ -5936,5 +5944,5 @@ class SalesController extends Controller{
         } catch (RequestException $e){
             $error['error'] = $e->getMessage();
         }
-    }
+    }*/
 }
