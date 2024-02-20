@@ -372,9 +372,9 @@ class PrDraftController extends Controller
         }
 
         if ($request->order[0]['dir'] == 'asc') {
-            $data = collect($data)->sortBy($orderByName)->values()->all();
+            $data = $data->get()->sortBy($orderByName)->values()->all();
         }else{
-            $data = collect($data)->sortByDesc($orderByName)->values()->all();
+            $data = $data->get()->sortByDesc($orderByName)->values()->all();
         }
 
         $totalRecords = collect($data)->count();
