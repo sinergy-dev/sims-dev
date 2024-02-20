@@ -169,8 +169,8 @@ class PMProjectController extends Controller
   //       // return $data;
   //       return array("data" => $data);
 
-        // $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
-        //                 ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
+        $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+                        ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first(); 
