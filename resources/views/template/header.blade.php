@@ -18,10 +18,11 @@
 			<ul class="nav navbar-nav">
 				<li class="dropdown messages-menu">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" >	
-						<i id="bell-id" class="fa fa-bell-o"></i>
+						<!-- <i id="bell-id" class="fa fa-bell-o"></i> -->
+						<i class="fa fa-bell-slash"></i>
 						<span class="label label-warning" id="notificationCount"></span>					
 					</a>
-					<ul class="dropdown-menu" id="">
+				<!-- 	<ul class="dropdown-menu" id="">
 						<li class="header">New Notifications:</li>
 						<li>
 							<ul class="menu" id="notificationContent">
@@ -30,7 +31,7 @@
 						<li class="footer">
 							<a href="#" onclick="view_all('{{Auth::User()->email}}')">View all</a>
 						</li>
-					</ul>
+					</ul> -->
 				</li>
 				<li class="dropdown user user-menu">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -90,313 +91,311 @@
 @section('scriptNotificationHeader')
 @parent
 <!-- From Header Blade for notification -->
-
 <!-- Firebase-app 8.6.3-->
-<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script> -->
 <!-- Firebase-database 8.6.3-->
-<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script> -->
 <!-- MomentJS -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
 
 <script type="text/javascript">
-	var firebaseConfig = {
-	    apiKey: "{{env('FIREBASE_APIKEY')}}",
-	    authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
-	    projectId: "{{env('FIREBASE_PROJECTID')}}",
-	    storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
-	    messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
-	    appId: "{{env('FIREBASE_APPID')}}",
-	    measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
-	};
+	//Disabled push notif
+	// var firebaseConfig = {
+	//     apiKey: "{{env('FIREBASE_APIKEY')}}",
+	//     authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
+	//     projectId: "{{env('FIREBASE_PROJECTID')}}",
+	//     storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
+	//     messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
+	//     appId: "{{env('FIREBASE_APPID')}}",
+	//     measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
+	// };
 	
-  	// Initialize Firebase
-  	firebase.initializeApp(firebaseConfig);
+ //  	firebase.initializeApp(firebaseConfig);
 
-  	firebase.database().ref('notif/web-notif').once('value', function(snapshot) {
-  	 	snapshot_dump = snapshot.val()
+ //  	firebase.database().ref('notif/web-notif').once('value', function(snapshot) {
+ //  	 	snapshot_dump = snapshot.val()
 
-  	 	var append = ""
-  	 	var count = 0
+ //  	 	var append = ""
+ //  	 	var count = 0
 
-  	 	var keys = Object.keys(snapshot_dump)
-  	 	keys = keys.reverse()
+ //  	 	var keys = Object.keys(snapshot_dump)
+ //  	 	keys = keys.reverse()
 
-  	 	for (var i = 0; i < keys.length; i++) {
-  	 		if (snapshot_dump[keys[i]].status == "unread") {
-  	 			if (!snapshot_dump[keys[i]].module == false) {
+ //  	 	for (var i = 0; i < keys.length; i++) {
+ //  	 		if (snapshot_dump[keys[i]].status == "unread") {
+ //  	 			if (!snapshot_dump[keys[i]].module == false) {
  					
- 					if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
- 						if (snapshot_dump[keys[i]].result == 'DRAFT') {
- 							URL = "{{url('admin/draftPR')}}"
- 							if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
- 								URL = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot_dump[keys[i]].id_pr
- 							}
-				  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",URL)
-				  		}else{
-				  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('admin/detail/draftPR')}}/"+snapshot_dump[keys[i]].id_pr)
-				  		}
-	 				}
-  	 			}else{
-  	 				if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
+ // 					if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
+ // 						if (snapshot_dump[keys[i]].result == 'DRAFT') {
+ // 							URL = "{{url('admin/draftPR')}}"
+ // 							if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+ // 								URL = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot_dump[keys[i]].id_pr
+ // 							}
+	// 			  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",URL)
+	// 			  		}else{
+	// 			  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('admin/detail/draftPR')}}/"+snapshot_dump[keys[i]].id_pr)
+	// 			  		}
+	//  				}
+ //  	 			}else{
+ //  	 				if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
 
-			  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
-			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('salesproject')}}#submitIdProject/"+snapshot_dump[keys[i]].id_pid)
+	// 		  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
+	// 		  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('salesproject')}}#submitIdProject/"+snapshot_dump[keys[i]].id_pid)
 
-			  	 		}else if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
-			  	 			if (snapshot_dump[keys[i]].result == 'INITIAL') {
-				  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",snapshot_dump[keys[i]].lead_id)
-			  	 			}else{
-							    localStorage.setItem("status","read")
-				  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('project/detailSales')}}/"+snapshot_dump[keys[i]].lead_id)
-			  	 			}
+	// 		  	 		}else if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+	// 		  	 			if (snapshot_dump[keys[i]].result == 'INITIAL') {
+	// 			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",snapshot_dump[keys[i]].lead_id)
+	// 		  	 			}else{
+	// 						    localStorage.setItem("status","read")
+	// 			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('project/detailSales')}}/"+snapshot_dump[keys[i]].lead_id)
+	// 		  	 			}
 
-			  	 		}else{
-				  	 		append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('project/detailSales')}}/"+snapshot_dump[keys[i]].lead_id)
-			  	 		}
-			  	 	}
-  	 			}
-	  	 	}
-  	 		count++
-  	 	}
+	// 		  	 		}else{
+	// 			  	 		append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('project/detailSales')}}/"+snapshot_dump[keys[i]].lead_id)
+	// 		  	 		}
+	// 		  	 	}
+ //  	 			}
+	//   	 	}
+ //  	 		count++
+ //  	 	}
 
-  	 	$("#notificationContent").append(append)
+ //  	 	$("#notificationContent").append(append)
 
-  	})
+ //  	})
 
-  	firebase.database().ref('notif/web-notif').on('value', function(snapshot) {
-        snapshot_dump = snapshot.val()
-        var append = ""
-        var count = 0
+ //  	firebase.database().ref('notif/web-notif').on('value', function(snapshot) {
+ //        snapshot_dump = snapshot.val()
+ //        var append = ""
+ //        var count = 0
 
-        var keys = Object.keys(snapshot_dump)
-  	 	keys = keys.reverse()
+ //        var keys = Object.keys(snapshot_dump)
+ //  	 	keys = keys.reverse()
 
-  	 	for (var i = 0; i < keys.length; i++) {
+ //  	 	for (var i = 0; i < keys.length; i++) {
 
-  	 		if (snapshot_dump[keys[i]].status == "unread") {
+ //  	 		if (snapshot_dump[keys[i]].status == "unread") {
 
-  	 			if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
-  	 				count++
+ //  	 			if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
+ //  	 				count++
 
-		  	 	}
+	// 	  	 	}
 
-		  	} 
-        }
+	// 	  	} 
+ //        }
 
-        if(count != 0){ 	
-        	count = count
-        	$("#bell-id").removeClass('fa fa-bell-o').addClass('fa fa-bell')
-			$("#notificationCount").text(count)
+ //        if(count != 0){ 	
+ //        	count = count
+ //        	$("#bell-id").removeClass('fa fa-bell-o').addClass('fa fa-bell')
+	// 		$("#notificationCount").text(count)
 
-        } else {   
-        	$("#bell-id").removeClass('fa fa-bell').addClass('fa fa-bell-o')
-        }		
-    });
+ //        } else {   
+ //        	$("#bell-id").removeClass('fa fa-bell').addClass('fa fa-bell-o')
+ //        }		
+ //    });
 
-    var start = true;
+ //    var start = true;
 
-    firebase.database().ref('notif/web-notif').limitToLast(1).on('child_added', function(snapshot) {
-        if(!start){
-        	if (!snapshot.val().module == false) {
-        		if (snapshot.val().to == "{{Auth::User()->email}}") {
-        			var url = "{{url('admin/draftPR')}}"
-	        		if (snapshot.val().result == 'DRAFT') {
-	        			if (snapshot.val().to == "{{Auth::User()->email}}") {
-	        				if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
-	        					url = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot.val().id_pr
-    							pushNotify(snapshot.val().title,url)
-	        				}else{
-    							pushNotify(snapshot.val().title,url)
-	        				}
-	        			}
+ //    firebase.database().ref('notif/web-notif').limitToLast(1).on('child_added', function(snapshot) {
+ //        if(!start){
+ //        	if (!snapshot.val().module == false) {
+ //        		if (snapshot.val().to == "{{Auth::User()->email}}") {
+ //        			var url = "{{url('admin/draftPR')}}"
+	//         		if (snapshot.val().result == 'DRAFT') {
+	//         			if (snapshot.val().to == "{{Auth::User()->email}}") {
+	//         				if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+	//         					url = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot.val().id_pr
+ //    							pushNotify(snapshot.val().title,url)
+	//         				}else{
+ //    							pushNotify(snapshot.val().title,url)
+	//         				}
+	//         			}
 	        			
-						$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread",url))
-	        		}else{
-	        			if (snapshot.val().to == "{{Auth::User()->email}}") {
-	    					pushNotify(snapshot.val().title,"{{url('admin/detail/draftPR')}}/"+snapshot.val().id_pr);
-	    				}
+	// 					$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread",url))
+	//         		}else{
+	//         			if (snapshot.val().to == "{{Auth::User()->email}}") {
+	//     					pushNotify(snapshot.val().title,"{{url('admin/detail/draftPR')}}/"+snapshot.val().id_pr);
+	//     				}
 	        			
 
-	        			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('admin/detail/draftPR')}}/"+snapshot.val().id_pr))
-	        		}
-        		}
-        	}else{
-        		if (snapshot.val().to == "{{Auth::User()->email}}") {
-		  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
-		  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('salesproject')}}#submitIdProject/"+snapshot.val().id_pid))
+	//         			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('admin/detail/draftPR')}}/"+snapshot.val().id_pr))
+	//         		}
+ //        		}
+ //        	}else{
+ //        		if (snapshot.val().to == "{{Auth::User()->email}}") {
+	// 	  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
+	// 	  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('salesproject')}}#submitIdProject/"+snapshot.val().id_pid))
 
-		  	 		}else if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
-		  	 			if (snapshot.val().result == 'INITIAL') {
-	            			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread",snapshot.val().lead_id)) 
-		  	 			}else{
-						   localStorage.setItem("status","read")
+	// 	  	 		}else if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+	// 	  	 			if (snapshot.val().result == 'INITIAL') {
+	//             			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread",snapshot.val().lead_id)) 
+	// 	  	 			}else{
+	// 					   localStorage.setItem("status","read")
 					
-			  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('project/detailSales')}}/"+snapshot.val().lead_id))
+	// 		  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('project/detailSales')}}/"+snapshot.val().lead_id))
 
-		  	 			}
-		  	 		}else{
-			  	 		$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('project/detailSales')}}/"+snapshot.val().lead_id))
+	// 	  	 			}
+	// 	  	 		}else{
+	// 		  	 		$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('project/detailSales')}}/"+snapshot.val().lead_id))
 
-		  	 		}
-		  	 	}
-        	}
-        } else {
-            start = false
-        }
-    })
+	// 	  	 		}
+	// 	  	 	}
+ //        	}
+ //        } else {
+ //            start = false
+ //        }
+ //    })
 
+ //    function timedRefresh(timeoutPeriod) {
+	// 	setTimeout("location.reload(true);",timeoutPeriod);
+	// }
 
-    function timedRefresh(timeoutPeriod) {
-		setTimeout("location.reload(true);",timeoutPeriod);
-	}
+ //  	function makeNotificationHolder(data,index,status,url){
+ //        var append = ""
+ //        if (data.date_time == null) {
+ //        	date_time = ""
+ //        }else{
+ //        	date_time = moment(data.date_time,"X").fromNow()
+ //        }
 
-  	function makeNotificationHolder(data,index,status,url){
-        var append = ""
-        if (data.date_time == null) {
-        	date_time = ""
-        }else{
-        	date_time = moment(data.date_time,"X").fromNow()
-        }
-
-        if (!data.opty_name == false) {
-        	if (data.opty_name.length > 30) {
-	        	opty_name = data.opty_name.substring(0, 25) + '...'
-	        }else{
-	        	opty_name = data.opty_name
-	        }
-        }else{
-        	opty_name = data.title
-        }
+ //        if (!data.opty_name == false) {
+ //        	if (data.opty_name.length > 30) {
+	//         	opty_name = data.opty_name.substring(0, 25) + '...'
+	//         }else{
+	//         	opty_name = data.opty_name
+	//         }
+ //        }else{
+ //        	opty_name = data.title
+ //        }
         
-        if(status == "unread"){
-			append = append + ' <li style="cursor:pointer">'
-			append = append + '	<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')">'
-			append = append + '	<div class="pull-left">'
-			append = append + '	<img src="{{asset("img/logopng.png")}}" class="img-circle" alt="User Image">'
-			append = append + '	</div>'
-			append = append + '	<h5>'
-			append = append + '<small class="label" style="background-color:'+ data.heximal +'">'+ data.result + '</small>'
-			append = append + '	<small class="pull-right"><i class="fa fa-clock-o"></i> '+ date_time + '</small>'
-			append = append + '	</h5>'
-			append = append + '	<p>'+ opty_name +'</p>'
-			append = append + '	</a>'
-			append = append + '	</li>'
+ //        if(status == "unread"){
+	// 		append = append + ' <li style="cursor:pointer">'
+	// 		append = append + '	<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')">'
+	// 		append = append + '	<div class="pull-left">'
+	// 		append = append + '	<img src="{{asset("img/logopng.png")}}" class="img-circle" alt="User Image">'
+	// 		append = append + '	</div>'
+	// 		append = append + '	<h5>'
+	// 		append = append + '<small class="label" style="background-color:'+ data.heximal +'">'+ data.result + '</small>'
+	// 		append = append + '	<small class="pull-right"><i class="fa fa-clock-o"></i> '+ date_time + '</small>'
+	// 		append = append + '	</h5>'
+	// 		append = append + '	<p>'+ opty_name +'</p>'
+	// 		append = append + '	</a>'
+	// 		append = append + '	</li>'
 
-			// append = append + '<li>'
-			// append = append + '<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"><div class="pull-left"> <small class="label pull-right" style="background-color:'+ data.heximal +'">'+ data.result + '</small> </div>'
-			// append = append + ' <h4>' + opty_name + '</h4>' + '<p><small><i class="fa fa-clock-o"></i> '+ date_time +'</small></p>'
-			// append = append + '</a>'
-			// append = append + '</li>'
-        } 
+	// 		// append = append + '<li>'
+	// 		// append = append + '<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"><div class="pull-left"> <small class="label pull-right" style="background-color:'+ data.heximal +'">'+ data.result + '</small> </div>'
+	// 		// append = append + ' <h4>' + opty_name + '</h4>' + '<p><small><i class="fa fa-clock-o"></i> '+ date_time +'</small></p>'
+	// 		// append = append + '</a>'
+	// 		// append = append + '</li>'
+ //        } 
 
-        return append
-    }
+ //        return append
+ //    }
 
-    function readNotification(index,url){
+ //    function readNotification(index,url){
  
-        firebase.database().ref('notif/web-notif/' + index).once('value').then(function(snapshot) {
-            var data = snapshot.val()
-            if (data.id_pid == null || data.company == null || data.date_time == null) {
-            	id_pid = ""
-            	company = ""
-            	date_time = ""
-            }else{
-            	id_pid = data.id_pid 
-            	company = data.company
-            	date_time = data.date_time
-            }
+ //        firebase.database().ref('notif/web-notif/' + index).once('value').then(function(snapshot) {
+ //            var data = snapshot.val()
+ //            if (data.id_pid == null || data.company == null || data.date_time == null) {
+ //            	id_pid = ""
+ //            	company = ""
+ //            	date_time = ""
+ //            }else{
+ //            	id_pid = data.id_pid 
+ //            	company = data.company
+ //            	date_time = data.date_time
+ //            }
 
-            if (!data.module == false) {
-            	firebase.database().ref('notif/web-notif/' + index).set({
-	                to: data.to,
-	                id_pr: data.id_pr,
-	                title: data.title,
-	                heximal: data.heximal,
-	                status: "read",
-	                result : data.result,
-	                showed : "true",
-	                date_time : data.date_time,
-	                module:"draft"
-	            });
-            }else{
-            	firebase.database().ref('notif/web-notif/' + index).set({
-	            	company:company,
-	                to: data.to,
-	                lead_id: data.lead_id,
-	                opty_name: data.opty_name,
-	                heximal: data.heximal,
-	                status: "read",
-	                result : data.result,
-	                showed : "true",
-	                id_pid : id_pid,
-	                date_time : data.date_time
-	            });
-            }
+ //            if (!data.module == false) {
+ //            	firebase.database().ref('notif/web-notif/' + index).set({
+	//                 to: data.to,
+	//                 id_pr: data.id_pr,
+	//                 title: data.title,
+	//                 heximal: data.heximal,
+	//                 status: "read",
+	//                 result : data.result,
+	//                 showed : "true",
+	//                 date_time : data.date_time,
+	//                 module:"draft"
+	//             });
+ //            }else{
+ //            	firebase.database().ref('notif/web-notif/' + index).set({
+	//             	company:company,
+	//                 to: data.to,
+	//                 lead_id: data.lead_id,
+	//                 opty_name: data.opty_name,
+	//                 heximal: data.heximal,
+	//                 status: "read",
+	//                 result : data.result,
+	//                 showed : "true",
+	//                 id_pid : id_pid,
+	//                 date_time : data.date_time
+	//             });
+ //            }
 
             
 
-            if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
-            	if (snapshot.val().result == 'INITIAL') {
-            		location.reload(true);  
-            		window.location.href = "{{url('project/index')}}/"
+ //            if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+ //            	if (snapshot.val().result == 'INITIAL') {
+ //            		location.reload(true);  
+ //            		window.location.href = "{{url('project/index')}}/"
 
-	            	localStorage.setItem("lead_id",url)
-	            	localStorage.setItem("status","unread")
-            	}else{
-					localStorage.setItem("status","read")
+	//             	localStorage.setItem("lead_id",url)
+	//             	localStorage.setItem("status","unread")
+ //            	}else{
+	// 				localStorage.setItem("status","read")
 
-            		location.reload(true);  
-            		window.location.href = url
-            	}          	           	 
-            }else{
-            	if (window.location.href.split("/")[3].split("#")[1] == 'submitIdProject') {
-	            	location.reload(true);
-	            	window.location.href = url
-	            }else if (window.location.href.split("/")[3] == 'salesproject') {
-	            	window.location.href = url
-	            	location.reload(true);
-	            }else{
-	            	window.location.href = url
-	            }
-            }
-        })
-    }
+ //            		location.reload(true);  
+ //            		window.location.href = url
+ //            	}          	           	 
+ //            }else{
+ //            	if (window.location.href.split("/")[3].split("#")[1] == 'submitIdProject') {
+	//             	location.reload(true);
+	//             	window.location.href = url
+	//             }else if (window.location.href.split("/")[3] == 'salesproject') {
+	//             	window.location.href = url
+	//             	location.reload(true);
+	//             }else{
+	//             	window.location.href = url
+	//             }
+ //            }
+ //        })
+ //    }
 
-    function view_all(){
-        window.location = "{{url('notif_view_all')}}"
-    }
+ //    function view_all(){
+ //        window.location = "{{url('notif_view_all')}}"
+ //    }
 
-    function pushNotify(title,url) {
-    	if (!("Notification" in window)) {
-    		// checking if the user's browser supports web push Notification
-    		alert("Web browser does not support desktop notification");
-    	} else if (Notification.permission === "granted") {
+ //    function pushNotify(title,url) {
+ //    	if (!("Notification" in window)) {
+ //    		// checking if the user's browser supports web push Notification
+ //    		alert("Web browser does not support desktop notification");
+ //    	} else if (Notification.permission === "granted") {
     		
-    		// if notification permissions is granted,
-    		// then create a Notification object
-    		createNotification(title,url);
-    	} else if (Notification.permission !== "denied") {
-    		alert("Going to ask for permission to show web push notification");
-    		// User should give explicit permission
-    		Notification.requestPermission().then((permission) => {
-    			// If the user accepts, let's create a notification
-    			createNotification(title,url);
-    		});
-    	}
-    	// User has not granted to show web push notifications via Browser
-    	// Let's honor his decision and not keep pestering anymore
-    }
+ //    		// if notification permissions is granted,
+ //    		// then create a Notification object
+ //    		createNotification(title,url);
+ //    	} else if (Notification.permission !== "denied") {
+ //    		alert("Going to ask for permission to show web push notification");
+ //    		// User should give explicit permission
+ //    		Notification.requestPermission().then((permission) => {
+ //    			// If the user accepts, let's create a notification
+ //    			createNotification(title,url);
+ //    		});
+ //    	}
+ //    	// User has not granted to show web push notifications via Browser
+ //    	// Let's honor his decision and not keep pestering anymore
+ //    }
 
-    function createNotification(title,url) {
-    	var notification = new Notification('New Notification', {
-    		icon: '{{asset("img/logopng.png")}}',
-    		body: title,
-    	});
-    	// url that needs to be opened on clicking the notification
-    	// finally everything boils down to click and visits right
-    	notification.onclick = function() {
-    		window.open(url);
-    	};
-    }
+ //    function createNotification(title,url) {
+ //    	var notification = new Notification('New Notification', {
+ //    		icon: '{{asset("img/logopng.png")}}',
+ //    		body: title,
+ //    	});
+ //    	// url that needs to be opened on clicking the notification
+ //    	// finally everything boils down to click and visits right
+ //    	notification.onclick = function() {
+ //    		window.open(url);
+ //    	};
+ //    }
 </script>
 @endsection
