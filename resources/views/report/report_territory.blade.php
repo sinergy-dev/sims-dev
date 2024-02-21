@@ -143,12 +143,19 @@ Report Customer
                           <tr class="header">
                             <th>Customer - Sales (SIP)</th>
                             <th>territory</th>
+                            <th></th>
                             <th><center>INITIAL</center></th>
+                            <th></th>
                             <th><center>OPEN</center></th>
+                            <th></th>
                             <th><center>SD</center></th>
+                            <th></th>
                             <th><center>TP</center></th>
+                            <th></th>
                             <th><center>WIN</center></th>
+                            <th></th>
                             <th><center>LOSE</center></th>
+                            <th></th>
                             <th><center>TOTAL</center></th>
                           </tr>
                         </thead>
@@ -348,13 +355,26 @@ Report Customer
             },
             { "data": "id_territory" },
             {
+              "data":"amount_INITIAL",
+              "targets":[3],
+              "searchable":true,
+              "visible": false
+            },
+            {
               render: function ( data, type, row ) {
                 if (row.amount_INITIAL == null) {
                   return '<center> <b>[' + row.INITIAL + ']</center> </b>';
                 }else{
                   return '<center> <b>[' + row.INITIAL + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_INITIAL) + '</p></center>';
                 }
-              }
+              },
+              "orderData":[2],
+            },
+            {
+              "data":"amount_OPEN",
+              "targets":[5],
+              "searchable":true,
+              "visible": false
             },
             {
               render: function ( data, type, row ) {
@@ -363,7 +383,14 @@ Report Customer
                 }else{
                   return '<center> <b>[' + row.OPEN + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_OPEN) + '</p><c/enter>';
                 }
-              }
+              },
+              "orderData":[4],
+            },
+            {
+              "data":"amount_SD",
+              "searchable":true,
+              "visible": false,
+              "targets":[7],
             },
             {
               render: function ( data, type, row ) {
@@ -372,7 +399,14 @@ Report Customer
                 }else{
                   return '<center><b>[' + row.SD + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_SD) + '</p></center>';
                 }
-              }
+              },
+              "orderData":[6],
+            },
+            {
+              "data":"amount_TP",
+              "searchable":true,
+              "targets":[9],
+              "visible": false
             },
             {
               render: function ( data, type, row ) {
@@ -381,7 +415,15 @@ Report Customer
                 }else{
                   return '<center><b>[' + row.TP + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_TP) + '</p></center>';
                 }
-              }
+              },
+              "orderData":[8],
+
+            },
+            {
+              "data":"amount_WIN",
+              "targets":[11],
+              "searchable":true,
+              "visible": false
             },
             {
               render: function ( data, type, row ) {
@@ -390,7 +432,14 @@ Report Customer
                 }else{
                   return '<center><b>[' + row.WIN + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_WIN) + '</p></center>';
                 }
-              }
+              },
+              "orderData":[10],
+            },
+            {
+              "data":"amount_LOSE",
+              "targets":[13],
+              "searchable":true,
+              "visible": false
             },
             {
               render: function ( data, type, row ) {
@@ -399,7 +448,14 @@ Report Customer
                 }else{
                   return '<center><b>[' + row.LOSE + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_LOSE) + '</p></center>';
                 }
-              }
+              },
+              "orderData":[12]
+            },
+            {
+              "data":"amount_All",
+              "visible": false,
+              "searchable":true,
+              "targets":[15],
             },
             {
               render: function ( data, type, row ) {
@@ -408,7 +464,9 @@ Report Customer
                 }else{
                   return '<center><b>[' + row.All + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_All) + '</p></center>';
                 }
-              }
+              },
+              "orderData":[14],
+
             },            
           ],
           "info":false,
