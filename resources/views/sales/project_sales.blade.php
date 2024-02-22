@@ -1726,7 +1726,6 @@ Lead Register
 					})
 
 					$("#filter-com").append(prependFilterCom)
-					// searchCustom("tableLead","company")
 
 					$(".cb-company").click(function(){
 						searchCustom()
@@ -1825,6 +1824,10 @@ Lead Register
 				}
 			})
 
+			if (window.location.href.indexOf("status") == -1) {
+				searchCustom("tableLead","company")
+			}
+
 			filterFromDashboard()	
 
 			$("#year_dif_dir").change(function(){
@@ -1855,8 +1858,8 @@ Lead Register
 	});
 	
 	var timer
-	function searchCustom(id_table,id_seach_bar){
-		console.log(id_seach_bar)
+	function searchCustom(id_table,id_search_bar){
+		console.log(id_search_bar)
 		var temp = 'year[]=', tempCom = 'company[]=', tempSales = 'sales_name[]=', tempPresales = 'presales_name[]=', tempTer = 'territory[]=', tempResult = 'result[]=', tempCustomer = 'customer[]=', tempTech = 'tech_tag[]=', tempProduct = 'product_tag[]=', tempSearch = 'search='
 
 		$.each($(".cb-territory:checked"),function(key,value){
@@ -1990,6 +1993,12 @@ Lead Register
 			checklist = true
 		})
 
+		if (id_search_bar == 'company') {
+			if (tempCom == 'company[]=') {
+	      tempCom = tempCom + 1
+	    }
+		}
+
 		if (tempSearch == 'search=') {
       tempSearch = tempSearch + $('#searchLead').val()
     }else{
@@ -1998,9 +2007,7 @@ Lead Register
 
 		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
 
-		// if (id_seach_bar != 'company') {
-			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
-		// }
+		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
 
 		console.log(tempCom)
 		console.log(tempFiltered)
