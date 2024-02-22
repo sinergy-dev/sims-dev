@@ -68,6 +68,27 @@ PMO
       .select2-selection__rendered, input[type=number], input[type=text], input[type=file], textarea.form-control { 
         font-size: 13px;
       }
+
+     .containerc {
+          display: flex;
+          padding: 4px 4px;
+          border: 1px solid #ccc;
+          background-color: #ED2939;
+          border: 1px solid #ED2939;
+          border-radius: 2px; 
+          font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; 
+          color: #ffffff;
+          text-decoration: none;
+          font-weight:500;
+          display: inline-block;
+          align-items: center;
+      }
+
+      svg {
+          font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; 
+          font-weight: bold;
+          fill: currentColor; /* Use the current text color as the fill color for the SVG */
+      }
   </style>
 @endsection
 @section('content')
@@ -1252,8 +1273,13 @@ PMO
             // $("#inputCompanyLogo").closest(".form-group").after("<div class='form-group'><label>Logo Preview</label><br><img src='{{asset('/')}}"+ result[0].logo_company +"' style='width:100px;height:100px'></div>")
             $('#textAreaProjectDesc').val(result[0].project_description)
             $('#textAreaProjectObj').val(result[0].project_objectives)
-            $('#inputStartDate').val(moment(result[0].estimated_start_date).format('MM/DD/YYYY'))
-            $('#inputFinishDate').val(moment(result[0].estimated_end_date).format('MM/DD/YYYY'))
+            if (result[0].estimated_start_date != null) {
+              $('#inputStartDate').val(moment(result[0].estimated_start_date).format('MM/DD/YYYY'))
+            }
+
+            if (result[0].estimated_end_date != null) {
+              $('#inputFinishDate').val(moment(result[0].estimated_end_date).format('MM/DD/YYYY'))
+            }
 
             $('#selectFlexibility').val(result[0].flexibility)
             $('#selectMarketSegment').val(result[0].market_segment).trigger('change')
@@ -3037,6 +3063,7 @@ PMO
               {
                 Swal.fire(swalSuccess).then((result) => {
                   if (result.value) {
+                    window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname)
                     window.location.href = redirect
                   }
                 })
@@ -3093,6 +3120,14 @@ PMO
 
     function changeNumberEntries(id_table,num){
       $('#'+id_table).DataTable().page.len(num).draw()
+    }
+
+    if (window.location.href.indexOf("status") != -1) {
+      btnAddProjectCharter(0,window.location.href.split("?")[1].split("&")[1].split("=")[1],window.location.href.split("?")[1].split("&")[0].split("=")[1])
+
+      $('#ModalProjectCharter').on('hidden.bs.modal', function () {
+        window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname)
+      })
     }
 </script>
 @endsection
