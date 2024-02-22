@@ -2937,9 +2937,8 @@
       })
     }
 
-    localStorage.setItem('status_pr','')
     function addDraftPr(n){
-      
+      localStorage.setItem('status_tax',false)
       localStorage.setItem('status_pr','')
       let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
@@ -6152,7 +6151,6 @@
     var nama_file_quote_supplier = ""
 
     function nextPrevAdd(n,value) {
-      localStorage.setItem('status_tax',false)
       valueEdit = value
       if (valueEdit == undefined) {
         if (valueEdit == 0) {

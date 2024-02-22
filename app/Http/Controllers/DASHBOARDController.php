@@ -1039,7 +1039,7 @@ class DASHBOARDController extends Controller
                     ->whereYear('sales_lead_register.closing_date',$year)
                     ->where('users.status_karyawan', '!=', 'dummy');
 
-        if ($div == 'SALES' && $pos != 'ADMIN') {
+        if ($div == 'SALES' && $pos == 'STAFF') {
             $count_leads = $count_lead->where('id_territory', $ter)
                 ->where('id_company', '1')
                 ->where('users.nik', $nik)
@@ -1055,6 +1055,19 @@ class DASHBOARDController extends Controller
             $count_loses = $count_lose->where('id_territory', $ter)
                 ->where('id_company', '1')
                 ->where('users.nik', $nik)
+                ->count();
+        }elseif($div == 'SALES' && $pos == 'MANAGER'){
+            $count_leads = $count_lead->where('id_territory', $ter)
+                ->where('id_company', '1')
+                ->count();
+            $count_opens = $count_open->where('id_territory', $ter)
+                ->where('id_company', '1')
+                ->count();
+            $count_wins = $count_win->where('id_territory', $ter)
+                ->where('id_company', '1')
+                ->count();
+            $count_loses = $count_lose->where('id_territory', $ter)
+                ->where('id_company', '1')
                 ->count();
         }else{
             $count_leads = $count_lead->where('id_company', '1')
@@ -1711,8 +1724,9 @@ class DASHBOARDController extends Controller
 
             $top_win_sip_ter = $groups->toArray();
 
-            return $top_win_sip_ter;
         }
+        return $top_win_sip_ter;
+
     }
 
     public function top_win_sip(Request $request){

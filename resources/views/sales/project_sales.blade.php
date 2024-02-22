@@ -1702,112 +1702,132 @@ Lead Register
 			var column1 = table.column(6);
       		column1.visible(!column1.visible() );
 		}
-
-		var prependFilterCom = ""
-		prependFilterCom = prependFilterCom + '<label>Company</label>'
-		$.ajax({
-			type:"GET",
-			url:'{{url("/project/getCompany")}}',
-			success:function(result){
-				var checked = ""
-				$.each(result,function(key,value){
-					prependFilterCom = prependFilterCom + '<div>'
-						if (value.company == "Sinergy Informasi Pratama") {
-							prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'" checked> '
-				    	prependFilterCom = prependFilterCom + value.company
-						}else{
-							prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'"> '
-				    	prependFilterCom = prependFilterCom + value.company
-						}
-				  	
-				  prependFilterCom = prependFilterCom + '</div>'
-				})
-
-				$("#filter-com").append(prependFilterCom)
-				searchCustom("tableLead")
-
-				$(".cb-company").click(function(){
-					searchCustom()
-				})
-			}
-		})
-
-		var prependFilterTer = ""
-		prependFilterTer = prependFilterTer + '<label>Territory</label>'
-		$.ajax({
-			type:"GET",
-			url:'{{url("/project/getTerritory")}}',
-			success:function(result){
-				$.each(result,function(key,value){
-					prependFilterTer = prependFilterTer + '<div>'
-				  	prependFilterTer = prependFilterTer + '<input type="checkbox" class="cb-territory" name="cb-filter" value="'+value.id_territory+'"> '
-				    prependFilterTer = prependFilterTer + value.id_territory
-				  prependFilterTer = prependFilterTer + '</div>'
-				})
-
-				$("#filter-territory").append(prependFilterTer)
-				$(".cb-territory").click(function(){
-					var tempTer = []
-					$.each($(".cb-territory:checked"),function(key,value){
-						tempTer = tempTer + '&territory[]=' + value.value
-					})
-
-					if (tempTer.length !== 0) {
-						var salesFilterTer = "{{url('/project/getSalesByTerritory')}}?"+tempTer
-							
-					}else{
-						var salesFilterTer = "{{url('/project/getSalesByTerritory')}}"
-					}
-
-					// $("filter_sales").select2("destroy").select2()
-
-					$.ajax({
-						url: salesFilterTer,
-						type: "GET",
-						beforeSend:function(){
-							$("#filter_sales").empty('')
-						},
-						success:function(result){
-							$("#filter_sales").select2({
-				      	placeholder: "Select sales",
-						  	multiple:true,
-						  	data:result.results
-						  })
-						}
-					})					
-					searchCustom()
-				})
-
-
-			}
-		})
-
-		var prependFilterStatus = ""
-		prependFilterStatus = prependFilterStatus + '<label>Status Lead</label>'
-		
-		$.ajax({
-			type:"GET",
-			url:'{{url("/project/getResult")}}',
-			success:function(result){
-				$.each(result,function(key,value){
-					prependFilterStatus = prependFilterStatus + '<div>'
-				  	prependFilterStatus = prependFilterStatus + '<input type="checkbox" class="cb-result" name="cb-filter" value="'+value.result_value+'" id="filter_lead_' + value.result_modif + '"> '
-				    prependFilterStatus = prependFilterStatus + '<span>' + value.result_modif + '</span>'
-				  prependFilterStatus = prependFilterStatus + '</div>'
-				})
-
-				$("#filter-result").append(prependFilterStatus)
-				$(".cb-result").click(function(){
-					searchCustom()
-				})
-			}
-		})
   })	
 
 	$(window).on('load', function() {
+			var prependFilterCom = ""
+			prependFilterCom = prependFilterCom + '<label>Company</label>'
+			$.ajax({
+				type:"GET",
+				url:'{{url("/project/getCompany")}}',
+				success:function(result){
+					var checked = ""
+					$.each(result,function(key,value){
+						prependFilterCom = prependFilterCom + '<div>'
+							if (value.company == "Sinergy Informasi Pratama") {
+								prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'" checked> '
+					    	prependFilterCom = prependFilterCom + value.company
+							}else{
+								prependFilterCom = prependFilterCom + '<input type="checkbox" class="cb-company" id="'+ value.id_company +'" name="cb-filter" value="'+value.id_company+'"> '
+					    	prependFilterCom = prependFilterCom + value.company
+							}
+					  	
+					  prependFilterCom = prependFilterCom + '</div>'
+					})
+
+					$("#filter-com").append(prependFilterCom)
+					// searchCustom("tableLead","company")
+
+					$(".cb-company").click(function(){
+						searchCustom()
+					})
+				}
+			})
+
+			var prependFilterTer = ""
+			prependFilterTer = prependFilterTer + '<label>Territory</label>'
+			$.ajax({
+				type:"GET",
+				url:'{{url("/project/getTerritory")}}',
+				success:function(result){
+					$.each(result,function(key,value){
+						prependFilterTer = prependFilterTer + '<div>'
+					  	prependFilterTer = prependFilterTer + '<input type="checkbox" class="cb-territory" name="cb-filter" value="'+value.id_territory+'"> '
+					    prependFilterTer = prependFilterTer + value.id_territory
+					  prependFilterTer = prependFilterTer + '</div>'
+					})
+
+					$("#filter-territory").append(prependFilterTer)
+					$(".cb-territory").click(function(){
+						var tempTer = []
+						$.each($(".cb-territory:checked"),function(key,value){
+							tempTer = tempTer + '&territory[]=' + value.value
+						})
+
+						if (tempTer.length !== 0) {
+							var salesFilterTer = "{{url('/project/getSalesByTerritory')}}?"+tempTer
+								
+						}else{
+							var salesFilterTer = "{{url('/project/getSalesByTerritory')}}"
+						}
+
+						// $("filter_sales").select2("destroy").select2()
+
+						$.ajax({
+							url: salesFilterTer,
+							type: "GET",
+							beforeSend:function(){
+								$("#filter_sales").empty('')
+							},
+							success:function(result){
+								$("#filter_sales").select2({
+					      	placeholder: "Select sales",
+							  	multiple:true,
+							  	data:result.results
+							  })
+							}
+						})					
+						// searchCustom("tableLead","territory")
+					})
+
+
+				}
+			})
+
+			var prependFilterStatus = ""
+			prependFilterStatus = prependFilterStatus + '<label>Status Lead</label>'
+			
+			$.ajax({
+				type:"GET",
+				url:'{{url("/project/getResult")}}',
+				success:function(result){
+					$.each(result,function(key,value){
+						prependFilterStatus = prependFilterStatus + '<div>'
+					  	prependFilterStatus = prependFilterStatus + '<input type="checkbox" class="cb-result" name="cb-filter" value="'+value.result_value+'" id="filter_lead_' + value.result_modif + '"> '
+					    prependFilterStatus = prependFilterStatus + '<span>' + value.result_modif + '</span>'
+					  prependFilterStatus = prependFilterStatus + '</div>'
+					})
+
+					$("#filter-result").append(prependFilterStatus)
+					$(".cb-result").click(function(){
+						searchCustom()
+					})
+
+					if (window.location.href.indexOf("status") != -1) {						
+						$(".cb-result").each(function(item,value){
+							if (window.location.href.split("?")[1].split("=")[1] == 'ALL') {
+						    $("#filter_lead_"+value.value).prop("checked", true)
+						    $("#filter_lead_INITIAL").prop("checked", true)
+							}else{
+								if(value.value == window.location.href.split("?")[1].split("=")[1]){
+									if (window.location.href.split("?")[1].split("=")[1] == "OPEN") {
+						    		$("#filter_lead_OPEN").prop("checked", true)
+						    		$("#filter_lead_SD").prop("checked", true)
+						    		$("#filter_lead_TP").prop("checked", true)
+									}else {
+						    		$("#filter_lead_"+value.value).prop("checked", true)
+									}
+						    }
+							}
+						})
+						searchCustom("tableLead","result")
+					}
+				}
+			})
+
 			filterFromDashboard()	
-	    // Your code here
-	    $("#year_dif_dir").change(function(){
+
+			$("#year_dif_dir").change(function(){
 				$("#year_dif_dir").attr("onchange",searchCustom())
 			})  
 			$("#year_dif2_dir").change(function(){
@@ -1831,10 +1851,12 @@ Lead Register
 			$("#searchTags").change(function(){
 				$("#searchTags").attr("onchange",searchCustom())
 			})
+	    // Your code here
 	});
 	
 	var timer
 	function searchCustom(id_table,id_seach_bar){
+		console.log(id_seach_bar)
 		var temp = 'year[]=', tempCom = 'company[]=', tempSales = 'sales_name[]=', tempPresales = 'presales_name[]=', tempTer = 'territory[]=', tempResult = 'result[]=', tempCustomer = 'customer[]=', tempTech = 'tech_tag[]=', tempProduct = 'product_tag[]=', tempSearch = 'search='
 
 		$.each($(".cb-territory:checked"),function(key,value){
@@ -1976,7 +1998,9 @@ Lead Register
 
 		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
 
-		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
+		// if (id_seach_bar != 'company') {
+			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
+		// }
 
 		console.log(tempCom)
 		console.log(tempFiltered)
@@ -1984,7 +2008,7 @@ Lead Register
 	}
 
 	function filterFromDashboard(){
-		if (window.location.href.split("=")[1]) {	
+		if (window.location.href.indexOf("status") != -1) {	
 			if(window.location.href.split("=")[2]){
 				$("#year_dif_dir").val(window.location.href.split("=")[2]).trigger("change")
 				$("#year_dif").val(window.location.href.split("=")[2]).trigger("change")
@@ -1996,22 +2020,8 @@ Lead Register
 				$('#year_dif').val(currentYear).trigger('change')
 			}
 
-			$(".cb-result").each(function(item,value){
-				if (window.location.href.split("=")[1].split("?")[0] == 'ALL') {
-			    $("#filter_lead_"+value.value).prop("checked", true)
-			    $("#filter_lead_INITIAL").prop("checked", true)
-				}else{
-					if(value.value == window.location.href.split("=")[1].split("?")[0]){
-						if (window.location.href.split("=")[1].split("?")[0] == "OPEN") {
-			    		$("#filter_lead_OPEN").prop("checked", true)
-			    		$("#filter_lead_SD").prop("checked", true)
-			    		$("#filter_lead_TP").prop("checked", true)
-						}else {
-			    		$("#filter_lead_"+value.value).prop("checked", true)
-						}
-			    }
-				}
-			})
+			console.log("siniii")
+			
 		}
 	}
 
