@@ -597,7 +597,10 @@ class PMProjectController extends Controller
                     "project_type"  => $type_project,
                     "sales_owner"   => DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->where('tb_id_project.id_project',$request->selectPIDAssign)->first()->name,
                     "project_pm"    => $user,
-                    "note_reject"   => ''
+                    "note_reject"   => '',
+                    'status'        =>'assignProject',
+                    'id'            => '-',
+                    'type_project'  => '-'
                 ])
             );
             
@@ -625,7 +628,10 @@ class PMProjectController extends Controller
                     "project_type"  => $type_project,
                     "sales_owner"   => DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->where('tb_id_project.id_project',$request->selectPIDAssign)->first()->name,
                     "project_pm"    => $user,
-                    "note_reject"   => ''
+                    "note_reject"   => '',
+                    'status'        =>'assignProject',
+                    'id'            => '-',
+                    'type_project'  => '-'
                 ])
             );
             
@@ -1539,6 +1545,9 @@ class PMProjectController extends Controller
                 "sales_owner"   => DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->select('users.name')->where('id_project',$datas->project_id)->first()->name,
                 "project_pm"    => $user_pm . "/" . $user_pc,
                 "note_reject"   => '',
+                "status"        => 'updateProjectCharter',
+                'id'            => $request->id_pmo,
+                'type_project'  => $datas->project_type
 
             ])
         );
@@ -1709,7 +1718,10 @@ class PMProjectController extends Controller
                 "project_type"  => $datas->type_project,
                 "sales_owner"   => $data->name,
                 "project_pm"    => $user_pm . "/" . $user_pc,
-                "note_reject"   => ''
+                "note_reject"   => '',
+                "status"        => 'approveProjectCharter',
+                "id"            => $request->id_pmo,
+                'type_project'  => $datas->project_type
             ])
         );
         
@@ -1772,7 +1784,10 @@ class PMProjectController extends Controller
                 "project_type"  => $datas->type_project,
                 "sales_owner"   => $data->name,
                 "project_pm"    => $user_pm . "/" . $user_pc,
-                "note_reject"    => $update_pc->note_reject,
+                "note_reject"   => $update_pc->note_reject,
+                "status"        => 'rejectProjectCharter',
+                "id"            => $request->id_pmo,
+                'type_project'  => $datas->project_type
             ])
         );
         
@@ -1830,6 +1845,9 @@ class PMProjectController extends Controller
                 "sales_owner"   => $data->owner,
                 "project_pm"    => $user_pm . "/" . $user_pc,
                 "note_reject"   => $data->note_reject,
+                "status"        => 'rejectFinalReport',
+                "id"            => $request->id_pmo,
+                'type_project'  => $datas->project_type
             ])
         );
         
@@ -2780,6 +2798,9 @@ class PMProjectController extends Controller
                         "sales_owner"   => $data->name,
                         "project_pm"    => $user_pm . "/" . $user_pc,
                         "note_reject"   => '',
+                        "status"        => 'storeFinalReport',
+                        "id"            => $request->id_pmo,
+                        'type_project'  => $datas->project_type
 
                     ])
                 );
@@ -2848,6 +2869,9 @@ class PMProjectController extends Controller
                     "sales_owner"   => $data->name,
                     "project_pm"    => $user_pm . "/" . $user_pc,
                     "note_reject"   => '',
+                    "status"        => 'storeFinalReport',
+                    "id"            => $request->id_pmo,
+                    'type_project'  => $datas->project_type
 
                 ])
             );
@@ -2917,6 +2941,9 @@ class PMProjectController extends Controller
                 "sales_owner"   => $data->owner,
                 "project_pm"    => $user_pm . "/" . $user_pc,
                 "note_reject"   => '',
+                "status"        => 'storeApproveFinalReport',
+                "id"            => $request->id_pmo,
+                'type_project'  => $datas->project_type
             ])
         );
         
@@ -3304,24 +3331,14 @@ class PMProjectController extends Controller
 
     public function getCountDashboard(Request $request)
     {
-        $countInitiating = DB::table('tb_pmo')->whereRaw("(`current_phase` =  'New' OR `current_phase` = 'Waiting')")->count();
-        $countPlanning = DB::table('tb_pmo')->where('current_phase','Planning')->count();
-        $countExecuting = DB::table('tb_pmo')->where('current_phase','Executing')->count();
+        $countInitiating = DB::table('tb_pmo')->whereRaw("(`current_phase` =  'New' OR `current_phase` = 'Waiting')")->where('project_id','like','%'.$request->year)->count();
+        $countPlanning = DB::table('tb_pmo')->where('current_phase','Planning')->where('project_id','like','%'.$request->year)->count();
+        $countExecuting = DB::table('tb_pmo')->where('current_phase','Executing')->where('project_id','like','%'.$request->year)->count();
         $getParent = GanttTaskPmo::select('id')->where('text','Closing')->groupBy('id_pmo');
 
-        // foreach($getParent as $id){
-        //     return $id;
-        //     $getParents = collect([$id]);
-        // }
+        $countClosing = GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->whereIn('parent',$getParent)->where('project_id','like','%'.$request->year)->get()->where('status','On-Going')->groupBy('id_pmo')->count();
 
-        // return $getParents;
-        // return GanttTaskPmo::select(DB::raw('(CASE WHEN status = "Done" THEN end_date ELSE null END) AS end_date'))->whereIn('parent',$getParent)->orderBy('id','desc')->get();
-
-        $countClosing = GanttTaskPmo::whereIn('parent',$getParent)->get()->where('status','On-Going')->groupBy('id_pmo')->count();
-
-        $queryDone =  GanttTaskPmo::select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('id','desc')->get()->groupBy('id_pmo');
-
-        // return $queryDone =  GanttTaskPmo::whereIn('parent',$getParent)->orderby('id','desc')->get()->groupBy('id_pmo')->toArray();
+        $queryDone =  GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('gantt_tasks_pmo.id','desc')->where('project_id','like','%'.$request->year)->get()->groupBy('id_pmo');
 
         $countDone = 0;
         $countDones = 0;
@@ -3348,20 +3365,7 @@ class PMProjectController extends Controller
            $sum += $queryDone[$key]["total"]; 
         }        
 
-        // $countDone = $countDone->groupBy('id_pmo');
-        // return $countDoneFix = DB::table('gantt_tasks_pmo')
-        //         ->leftJoinSub($countDone, 'getCountDone', function($join){
-        //             $join->on('gantt_tasks_pmo.id', '=', 'getCountDone.id');
-        //         })->where('gantt_tasks_pmo.status','Done')->get();
-
-        // $countClosing = DB::table('tb_pmo')->where('current_phase','Closing')
-        //             ->count();
-
-        // $countDone = DB::table('tb_pmo')->where('current_phase','Closing')
-        //         ->whereNotIn('tb_id_project.id_project',function($query) use ($getTaskOnGoingClosing) {
-        //             $query->select('id_project')->whereIn('id_project',$getTaskOnGoingClosing)->from('tb_id_project');
-        //         })->count();
-        $countOnGoing = DB::table('tb_pmo')->whereRaw("(`current_phase` =  'New' OR `current_phase` = 'Waiting' OR `current_phase` = 'Planning' OR `current_phase` = 'Executing' OR `current_phase` = 'Closing')")->count();
+        $countOnGoing = DB::table('tb_pmo')->whereRaw("(`current_phase` =  'New' OR `current_phase` = 'Waiting' OR `current_phase` = 'Planning' OR `current_phase` = 'Executing' OR `current_phase` = 'Closing')")->where('project_id','like','%'.$request->year)->count();
 
         return collect([
             "countInitiating" => $countInitiating,
@@ -3373,46 +3377,46 @@ class PMProjectController extends Controller
         ]);
     }
 
-    public function getTotalProjectType()
+    public function getTotalProjectType(Request $request)
     {
         $data = DB::table('tb_pmo')->select(
                 DB::raw('COUNT(project_type) as count'),
                 // 'project_type',
                 DB::raw('(CASE WHEN project_type = "implementation" THEN "Implementation" WHEN project_type = "maintenance" THEN "Maintenance & Managed Service" WHEN project_type = "supply_only" THEN "Supply Only" ELSE project_type END) AS project_type'),
             )
-            // ->whereYear('tb_pmo.project_id', date('Y'))
+            ->where('project_id','like','%'.$request->year)
             ->groupBy('project_type');
 
         return array("data" => $data->get());
     }
 
-    public function getMarketSegment()
+    public function getMarketSegment(Request $request)
     {
         $data = DB::table('tb_pmo_project_charter')->join('tb_pmo','tb_pmo.id','tb_pmo_project_charter.id_project')->select(
                 DB::raw('COUNT(market_segment) as count'),
                 'market_segment'
             )
             ->where('market_segment', '!=' ,NULL)
-            // ->whereYear('tb_pmo.project_id', date('Y'))
+            ->where('project_id','like','%'.$request->year)
             ->groupBy('market_segment');
 
         return array("data" => $data->get());
     }
 
-    public function getNominalByPeople()
+    public function getNominalByPeople(Request $request)
     {
         $data = DB::table('tb_pmo')->join('tb_id_project', 'tb_id_project.id_project', 'tb_pmo.project_id')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik', 'tb_pmo_assign.nik')
                 ->select(
                     DB::raw('SUM(amount_idr) as amount'),
                     'users.name'
                 )
-                // ->whereYear('project_id', date('Y'))
+                ->where('project_id','like','%'.$request->year)
                 ->groupBy('name');
 
         return array("data" => $data->get());
     }
 
-    public function getProjectValue()
+    public function getProjectValue(Request $request)
     {
 
         // return $data = DB::table('tb_pmo')->join('tb_id_project','tb_pmo.project_id','tb_id_project.id_project')->select('id_project', 'amount_idr')->get();
@@ -3424,26 +3428,28 @@ class PMProjectController extends Controller
                 DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "5000000000" && `tb_id_project`.`amount_idr` <= 10000000000,1,NULL)) AS "five_until_ten_M"'),
                 DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "10000000000",1,NULL)) AS "diatas_10M"')
             )
+            ->where('project_id','like','%'.$request->year)
             ->first();
             // ->whereYear('project_id', date('Y'))
             // ->groupBy('amount_idr');
 
         // return array("data" => $data);
-            return array("data"=>collect([["count"=>$data->dibawah_1M,"label"=>"Dibawah 1M"],["count"=>$data->one_until_five_M,"label"=>"1-5M"],["count"=>$data->five_until_ten_M,"label"=>"5-10M"],["count"=>$data->diatas_10M,"label"=>"Diatas 10M"]]));
+        return array("data"=>collect([["count"=>$data->dibawah_1M,"label"=>"Dibawah 1M"],["count"=>$data->one_until_five_M,"label"=>"1-5M"],["count"=>$data->five_until_ten_M,"label"=>"5-10M"],["count"=>$data->diatas_10M,"label"=>"Diatas 10M"]]));
     }
 
-    public function getProjectStatus()
+    public function getProjectStatus(Request $request)
     {
         $dataOnGoing = DB::table('tb_pmo')->select(
                 DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "New" OR `tb_pmo`.`current_phase` = "Initiating" OR `tb_pmo`.`current_phase` = "Planning" OR `tb_pmo`.`current_phase` = "Executing",1,NULL)) AS "on_going"'),
                 // DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "Closing",1,NULL)) AS "finished"')
             )
+            ->where('project_id','like','%'.$request->year)
             ->first();
 
             // ->whereYear('project_id', date('Y'))
             // ->groupBy('amount_idr');
         $getParent = GanttTaskPmo::select('id')->where('text','Closing')->groupBy('id_pmo');
-        $queryDone =  GanttTaskPmo::select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('id','desc')->get()->groupBy('id_pmo');
+        $queryDone =  GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('gantt_tasks_pmo.id','desc')->where('project_id','like','%'.$request->year)->get()->groupBy('id_pmo');
 
         $countDone = 0;
         $countDones = 0;
@@ -3474,22 +3480,22 @@ class PMProjectController extends Controller
         return array("data"=>collect([["count"=>$dataOnGoing->on_going,"label"=>"On-Going"],["count"=>$sum,"label"=>"Finished"]]));
     }
 
-    public function getProjectPhase()
+    public function getProjectPhase(Request $request)
     {
         $dataAll = DB::table('tb_pmo')->select(
                 DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "Initiating",1,NULL)) AS "initiating"'),
                 DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "Planning" ,1,NULL)) AS "planning"'),
                 DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "Executing",1,NULL)) AS "executing"')
                 // DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "Closing",1,NULL)) AS "closing"')
-            )->first();
+            )->where('project_id','like','%'.$request->year)->first();
             // ->whereYear('project_id', date('Y'))
             // ->groupBy('amount_idr');
 
         $getParent = GanttTaskPmo::select('id')->where('text','Closing')->groupBy('id_pmo');
 
-        $countClosing = GanttTaskPmo::whereIn('parent',$getParent)->get()->where('status','On-Going')->groupBy('id_pmo')->count();
+        $countClosing = GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->whereIn('parent',$getParent)->where('project_id','like','%'.$request->year)->get()->where('status','On-Going')->groupBy('id_pmo')->count();
 
-        $queryDone =  GanttTaskPmo::select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('id','desc')->get()->groupBy('id_pmo');
+        $queryDone =  GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('gantt_tasks_pmo.id','desc')->where('project_id','like','%'.$request->year)->get()->groupBy('id_pmo');
 
         $countDone = 0;
         $countDones = 0;
@@ -3520,12 +3526,16 @@ class PMProjectController extends Controller
         return array("data"=>collect([["count"=>$dataAll->initiating,"label"=>"Initiating"],["count"=>$dataAll->planning,"label"=>"Planning"],["count"=>$dataAll->executing,"label"=>"Executing"],["count"=>$countClosing,"label"=>"Closing"],["count"=>$sum,"label"=>"Done"]]));
     }
 
-    public function getHandoverProject()
+    public function getHandoverProject(Request $request)
     {
-        $data = DB::table('gantt_tasks_pmo')->select(
+        $data = DB::table('gantt_tasks_pmo')
+            ->join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')
+            ->select(
                 DB::raw('COUNT(IF(`text` = "Internal handover project" AND `status` = "Done",1,NULL)) AS "done"'),
                 DB::raw('COUNT(IF(`text` = "Internal handover project" AND `status` = "On-Going",1,NULL)) AS "no"')
-            )->first();
+            )
+            ->where('project_id','like','%'.$request->year)
+            ->first();
             // ->whereYear('project_id', date('Y'))
             // ->groupBy('amount_idr');
 
@@ -3533,10 +3543,10 @@ class PMProjectController extends Controller
         return array("data"=>collect([["count"=>$data->done,"label"=>"Done"],["count"=>$data->no,"label"=>"No"]]));
     }
 
-    public function getProjectHealth()
+    public function getProjectHealth(Request $request)
     {
 
-        $getSupplyOnly = DB::table('gantt_tasks_pmo')->join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->where('project_type','supply_only')->where('parent','!=',0)->select('gantt_tasks_pmo.id as id_task','text','status','tb_pmo.id as id_pmo');
+        $getSupplyOnly = DB::table('gantt_tasks_pmo')->join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->where('project_type','supply_only')->where('parent','!=',0)->select('gantt_tasks_pmo.id as id_task','text','status','tb_pmo.id as id_pmo')->where('project_id','like','%'.$request->year);
         $get_id_min = DB::table($getSupplyOnly,'temp')->groupBy('id_pmo')->selectRaw('MIN(`temp`.`id_task`) as `id_task`')->where('status','On-Going');
         $getAllSupplyOnly = DB::table($get_id_min,'temp2')->join('gantt_tasks_pmo','gantt_tasks_pmo.id','temp2.id_task')->select('temp2.id_task','text','baseline_end','gantt_tasks_pmo.id_pmo');
         $getCountSupplyOnly = DB::table($getAllSupplyOnly,'temp4')->join('gantt_tasks_pmo','gantt_tasks_pmo.id','temp4.id_task')->select(
@@ -3545,7 +3555,7 @@ class PMProjectController extends Controller
             DB::raw('COUNT(IF(`temp4`.`baseline_end` = "'.date('Y-m-d').'",1,NULL)) as "mightDelay"')
         )->first();
 
-        $data = DB::table('tb_pmo_progress_report')->join('tb_pmo','tb_pmo.id','tb_pmo_progress_report.id_project')->select('project_indicator','tb_pmo.id as id_pmo','tb_pmo_progress_report.id','id_project');
+        $data = DB::table('tb_pmo_progress_report')->join('tb_pmo','tb_pmo.id','tb_pmo_progress_report.id_project')->select('project_indicator','tb_pmo.id as id_pmo','tb_pmo_progress_report.id','id_project')->where('project_id','like','%'.$request->year);
 
         $get_id_max = DB::table($data,'temp')->groupBy('id_project')->selectRaw('MAX(`temp`.`id`) as `id`');
         $getAll = DB::table($get_id_max,'temp2')->join('tb_pmo_progress_report','tb_pmo_progress_report.id','temp2.id')->select('temp2.id','project_indicator','id_project');
@@ -3562,10 +3572,10 @@ class PMProjectController extends Controller
         return array("data"=>collect([["count"=>$getCount->onTrack+$getCountSupplyOnly->onTrack,"label"=>"On Schedule"],["count"=>$getCount->mightDelay+$getCountSupplyOnly->mightDelay,"label"=>"Potential Delay"],["count"=>$getCount->delayed+$getCountSupplyOnly->delayed,"label"=>"Delay"]]));
     }
 
-    public function getTotalProject()
+    public function getTotalProject(Request $request)
     {
         $getParent = GanttTaskPmo::select('id')->where('text','Closing')->groupBy('id_pmo');
-        $data = GanttTaskPmo::whereIn('parent',$getParent)->select('text','status','parent','id_pmo','id');
+        $data = GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->whereIn('parent',$getParent)->select('text','status','parent','id_pmo','gantt_tasks_pmo.id')->where('project_id','like','%'.$request->year);
 
         $get_id_max = DB::table($data,'temp')->groupBy('id_pmo')->selectRaw('MAX(`temp`.`id`) as `id_task`');
         $getAll = DB::table($get_id_max,'temp2')->join('gantt_tasks_pmo','gantt_tasks_pmo.id','temp2.id_task')->select('temp2.id_task','text','id_pmo','status as status_done')->where('status','Done');
@@ -3575,39 +3585,7 @@ class PMProjectController extends Controller
             'users.name','users.nik','id_position',
             DB::raw('COUNT(IF(`temp3`.`status_done` = "Done",1,NULL)) AS "finished"'),
             DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "New" OR `tb_pmo`.`current_phase` = "Initiating" OR `tb_pmo`.`current_phase` = "Planning" OR `tb_pmo`.`current_phase` = "Executing",1,NULL)) AS "on_going"')
-        )->groupBy('users.nik')->orderByRaw('FIELD(id_position, "PM SPV", "PM", "SERVICE PROJECT")')->get();
-
-        // return $dataOnGoing = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik', 'tb_pmo_assign.nik')->select(
-        //         DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "New" OR `tb_pmo`.`current_phase` = "Initiating" OR `tb_pmo`.`current_phase` = "Planning" OR `tb_pmo`.`current_phase` = "Executing",1,NULL)) AS "on_going"'),
-        //         'users.name',
-        //         DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "Closing",1,NULL)) AS "finished"')
-        //     )
-        //     ->groupBy('users.name')
-        //     ->get();
-
-
-
-        // $dataOnGoing = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik', 'tb_pmo_assign.nik')->select(
-        //         DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "New" OR `tb_pmo`.`current_phase` = "Initiating" OR `tb_pmo`.`current_phase` = "Planning" OR `tb_pmo`.`current_phase` = "Executing",1,NULL)) AS "on_going"'),
-        //         'users.name',
-        //         DB::raw('COUNT(IF(`tb_pmo`.`current_phase` = "Closing",1,NULL)) AS "finished"')
-        //     )
-        //     ->groupBy('users.name')
-        //     // ->orderByRaw('FIELD(id_position, "PM SPV", "PM", "SERVICE PROJECT")')
-        //     ->get();
-
-        //     // ->whereYear('project_id', date('Y'))
-        //     // ->groupBy('amount_idr');
-        // $getParent = GanttTaskPmo::select('id')->where('text','Closing')->groupBy('id_pmo');
-
-        // $data = GanttTaskPmo::whereIn('parent',$getParent)->orderby('gantt_tasks_pmo.id','desc')->get()->groupBy('parent');
-
-        // return $queryDone = GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik','tb_pmo_assign.nik')->select('text','id_pmo','gantt_tasks_pmo.id','users.name',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('gantt_tasks_pmo.id','desc')->get()->groupBy('name');
-
-        // // return $queryDone =  GanttTaskPmo::join('tb_pmo_assign','tb_pmo_assign.id_project','gantt_tasks_pmo.id')->join('users','users.nik', 'tb_pmo_assign.nik')->select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('gantt_tasks_pmo.id','desc')->get()->groupBy('id_pmo');       
-
-        // return array("data" => $dataOnGoing);
-        // return array("data"=>collect([["count"=>$dataOnGoing->on_going,"label"=>"WIP"],["count"=>$sum,"label"=>"Done"]]));
+        )->where('project_id','like','%'.$request->year)->groupBy('users.nik')->orderByRaw('FIELD(id_position, "PM SPV", "PM", "SERVICE PROJECT")')->get();
     }
 
     public function exportRiskExcel(Request $request)
@@ -3742,5 +3720,63 @@ class PMProjectController extends Controller
         ob_end_clean();
         return $writer->save("php://output");
 
+    }
+
+    public function getYearFilter()
+    {
+        $data = DB::table('tb_pmo')->select( 
+                    DB::raw("SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT `project_id`), '/',-1) AS id"),
+                    DB::raw("SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT `project_id`), '/',-1) AS text"))
+                ->groupBy('project_id')->distinct()->get();
+        return $data;
+        
+    }
+
+    public function getCountDashboardByYear(Request $request)
+    {
+        $countInitiating = DB::table('tb_pmo')->whereRaw("(`current_phase` =  'New' OR `current_phase` = 'Waiting')")->where('project_id','like','%'.$request->year)->count();
+        $countPlanning = DB::table('tb_pmo')->where('current_phase','Planning')->where('project_id','like','%'.$request->year)->count();
+        $countExecuting = DB::table('tb_pmo')->where('current_phase','Executing')->where('project_id','like','%'.$request->year)->count();
+        $getParent = GanttTaskPmo::select('id')->where('text','Closing')->groupBy('id_pmo');
+
+        $countClosing = GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->whereIn('parent',$getParent)->where('project_id','like','%'.$request->year)->get()->where('status','On-Going')->groupBy('id_pmo')->count();
+
+        $queryDone =  GanttTaskPmo::join('tb_pmo','tb_pmo.id','gantt_tasks_pmo.id_pmo')->select('id_pmo',DB::raw('(CASE WHEN status = "Done" THEN 1 ELSE 0 END) AS counts'))->whereIn('parent',$getParent)->orderby('gantt_tasks_pmo.id','desc')->where('project_id','like','%'.$request->year)->get()->groupBy('id_pmo');
+
+        $countDone = 0;
+        $countDones = 0;
+        $countDonesDone = 0;
+        foreach($queryDone as $key => $data){
+            // return $key;
+            foreach($queryDone[$key] as $datas){
+                // var_dump($datas);
+                if ($datas['counts'] == 0) {
+                    $countDones = $datas['counts'];
+                    // var_dump($countDones);
+                    $queryDone[$key]["total"] = 0;
+                }else{
+                    // return "sini";
+                    $countDonesDone = $datas['counts'];
+                    // var_dump($countDonesDone);
+                    $queryDone[$key]["total"] = 1;
+                }
+            } 
+        } 
+
+        $sum = 0;
+        foreach($queryDone as $key => $data){
+           $sum += $queryDone[$key]["total"]; 
+        }        
+
+        $countOnGoing = DB::table('tb_pmo')->whereRaw("(`current_phase` =  'New' OR `current_phase` = 'Waiting' OR `current_phase` = 'Planning' OR `current_phase` = 'Executing' OR `current_phase` = 'Closing')")->where('project_id','like','%'.$request->year)->count();
+
+        return collect([
+            "countInitiating" => $countInitiating,
+            "countPlanning" => $countPlanning,
+            "countExecuting" => $countExecuting,
+            "countClosing" => $countClosing,
+            "countDone" => $sum,
+            "countOnGoing" => $countOnGoing
+        ]);
     }
 }

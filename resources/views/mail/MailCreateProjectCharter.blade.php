@@ -10,7 +10,8 @@
 
 		table, th, td {
 		  border: 0px solid grey;
-		  padding-top: 14px;
+		  padding: 10px;
+		  margin: 10px;
 		}
 
 		table, th {
@@ -43,6 +44,27 @@
 			border-radius: 4px;
 		}
 
+		.button-action {
+          display: flex;
+          padding: 4px;
+          border: 1px solid #ccc;
+          background-color: #ED2939;
+          border: 1px solid #ED2939;
+          border-radius: 2px; 
+          font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; 
+          color: #ffffff;
+          text-decoration: none;
+          font-weight:500;
+          display: inline-block;
+          align-items: center;
+      	}
+
+      	svg {
+          font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; 
+          font-weight: bold;
+          fill: currentColor; /* Use the current text color as the fill color for the SVG */
+      	}
+
 		/*.centered{
 			position: absolute;
 		  	top: 50%;
@@ -52,12 +74,12 @@
 	</style>
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
-<body style="display:block;width:600px;margin-left:auto;margin-right:auto;">
+<body style="display:block;width:800px;margin-left:auto;margin-right:auto;">
 	<div style="line-height: 1.5em">
 		<img src="{{ asset('image/sims_sangar_2.png')}}" style="width: 10%; height: 10%">
 	</div>
 	<div style="line-height: 1.5em">
-		<center><img src="{{asset('image/risk_review.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/project_charter.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
 	</div>
 	<div style="line-height: 1.5em;padding: 10px;">
 		<div style="color: #141414; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -71,6 +93,7 @@
 				<table style="text-align: left;margin: 5px; font-size: 12px" class="tableLead">
 					<thead>
 	                  <tr>
+	                  	<th width="100px">Action</th>
 	                    <th>Project Id</th>
 	                    <th>Project Name</th>
 	                    <th>Project Type</th>
@@ -81,7 +104,23 @@
 					<tbody>
 						@foreach($data['project'] as $project)
 						<tr>
-							<td><a href="{{url('/PMO/project')}}">{{$project->project_id}}</a></td>
+							<td width="100px">
+							@if($project->status_project_charter == 'NEW')
+								<a href="{{url('/PMO/project')}}?status=create&id_pmo={{$project->id}}"><div class="button-action">
+						            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: white;display: inline;">
+						                      <line x1="12" y1="5" x2="12" y2="19"/>
+						                      <line x1="5" y1="12" x2="19" y2="12"/>
+						                  </svg>
+						            <span style="font-size:10px">Project Charter</span>
+						        </div></a>
+							@elseif($project->status_project_charter == 'DRAFT')
+								<a href="{{url('/PMO/project')}}?status=draft&id_pmo={{$project->id}}"><div class="button-action">
+						            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="14" height="14"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"/></svg>
+						            <span style="font-size:10px">Project Charter</span>
+						        </div></a>
+							@endif
+					    	</td>
+							<td>{{$project->project_id}}</td>
 							<td>{{$project->name_project}}</td>
 							@if($project->project_type == 'implementation')
 								<td>Implementation</td>
@@ -93,25 +132,7 @@
 						@endforeach
 					</tbody>
 				</table>
-			</div><br>
-			<p style="font-size: 16px">
-				To access the Application please click the following button.<br><br>
-			</p>
-			<table width="100%" cellspacing="0" cellpadding="0">
-				<tr>
-					<td>
-						<table cellspacing="0" cellpadding="0">
-							<tr>
-								<td style="border-radius: 2px;">
-									<a href="{{url('/PMO/project')}}" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
-										Project
-									</a>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+			</div>
 			<p style="font-size: 16px">
 				Please check again, if there are errors or questions please contact the Developer Team (Ext: 384) or email to development@sinergy.co.id.<br>
 				Thank you.
@@ -125,7 +146,7 @@
 		</div>
 	</div>
 </body>
-<footer style="display:block;width:600px;margin-left:auto;margin-right:auto;">
+<footer style="display:block;width:800px;margin-left:auto;margin-right:auto;">
 	<div style="background-color: #7868e6; padding: 20px; color: #ffffff; font-size: 12px">
 		<p>
 			<center>PT. Sinergy Informasi Pratama</center>

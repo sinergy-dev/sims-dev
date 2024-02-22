@@ -58,21 +58,21 @@
 	</div>
 	<div style="line-height: 1.5em">
 		@if($data['subject_email'] == "Assign Project")
-		<center><img src="{{asset('image/assign_pm.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/assign_pm.png')}}" style="width: 50%; height: 50%" readonly></center>
 		@elseif($data['subject_email'] == "Approve Project Charter")
-		<center><img src="{{asset('image/project_charter_approved.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/project_charter_approved.png')}}" style="width: 50%; height: 50%" readonly></center>
 		@elseif($data['subject_email'] == "Reject Project Charter")
-		<center><img src="{{asset('image/project_charter_unapproved.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/project_charter_unapproved.png')}}" style="width: 50%; height: 50%" readonly></center>
 		@elseif($data['subject_email'] == "New Project Charter")
-		<center><img src="{{asset('image/project_charter.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/project_charter.png')}}" style="width: 50%; height: 50%" readonly></center>
 		@elseif($data['subject_email'] == "New Final Report")
-		<center><img src="{{asset('image/final_report.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/final_report.png')}}" style="width: 50%; height: 50%" readonly></center>
 		@elseif($data['subject_email'] == "Approve Final Report")
-		<center><img src="{{asset('image/final_report_approved.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/final_report_approved.png')}}" style="width: 50%; height: 50%" readonly></center>
 		@elseif($data['subject_email'] == "Reject Final Report")
-		<center><img src="{{asset('image/final_report_rejected.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>		
+		<center><img src="{{asset('image/final_report_rejected.png')}}" style="width: 50%; height: 50%" readonly></center>		
 		@else
-		<center><img src="{{asset('image/project_charter.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/project_charter.png')}}" style="width: 50%; height: 50%" readonly></center>
 		@endif
 	</div>
 	<div style="line-height: 1.5em;padding: 10px;">
@@ -129,9 +129,35 @@
 						<table cellspacing="0" cellpadding="0">
 							<tr>
 								<td style="border-radius: 2px;">
-									<a href="{{url('/PMO/project')}}" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
+									@if($data["status"] == "updateProjectCharter")
+									<a href="{{url('/PMO/project/detail',$data['id'])}}?showProject" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
 										Project
 									</a>
+									@elseif($data["status"] == "approveProjectCharter")
+									<a href="{{url('/PMO/project/detail',$data['id'])}}?showProject" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
+										Project
+									</a>
+									@elseif($data["status"] == "rejectProjectCharter")
+									<a href="{{url('/PMO/project')}}?status=revision&id_pmo={{$data['id']}}" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
+										Project
+									</a>
+									@elseif($data["status"] == "rejectFinalReport")
+									<a href="{{url('/PMO/project/detail',$data['id'])}}?project_type={{$data['type_project']}}&status=update" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
+										Project
+									</a>
+									@elseif($data["status"] == "storeFinalReport")
+									<a href="{{url('/PMO/project/detail',$data['id'])}}?project_type={{$data['type_project']}}&status=verify" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
+										Project
+									</a>
+									@elseif($data["status"] == "storeApproveFinalReport")
+									<a href="{{url('/PMO/project/detail',$data['id'])}}?project_type={{$data['type_project']}}" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
+										Project
+									</a>
+									@else
+									<a href="{{url('/PMO/project')}}?status=create&id_pmo={{$data['id']}}" target="_blank" style="background-color: #ED2939;padding:8px 8px; border: 1px solid #ED2939;border-radius: 2px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; align-items: center;">
+										Project
+									</a>
+									@endif
 								</td>
 							</tr>
 						</table>
