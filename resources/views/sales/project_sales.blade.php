@@ -1754,12 +1754,10 @@ Lead Register
 						})
 
 						if (tempTer.length !== 0) {
-							var salesFilterTer = "{{url('/project/getSalesByTerritory')}}?"+tempTer
-								
+							var salesFilterTer = "{{url('/project/getSalesByTerritory')}}?"+tempTer							
 						}else{
 							var salesFilterTer = "{{url('/project/getSalesByTerritory')}}"
 						}
-
 						// $("filter_sales").select2("destroy").select2()
 
 						$.ajax({
@@ -1775,11 +1773,11 @@ Lead Register
 							  	data:result.results
 							  })
 							}
-						})					
-						// searchCustom("tableLead","territory")
+						})	
+
+						searchCustom("tableLead","territory")
+										
 					})
-
-
 				}
 			})
 
