@@ -1119,6 +1119,7 @@ PMO
 <script type="text/javascript" src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
 <script src="https://export.dhtmlx.com/gantt/api.js"></script> 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -1355,10 +1356,9 @@ PMO
     			$("#btnAddWeekly").hide()
     			$("#btnSendCSS").hide()
     		}
-    		
     	}
     })
-
+	
 	function exportExcelGantt(){
     	gantt.exportToExcel({
 		   name:"document.xlsx", 
@@ -6386,7 +6386,8 @@ PMO
               {
                 Swal.fire(swalSuccess).then((result) => {
                   if (result.value) {
-                    location.reload()
+                  	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+                    location.reload()                    
                   }
                 })
               }
@@ -6610,7 +6611,18 @@ PMO
         console.log(whichtr)
         whichtr.remove();  
 	}
-  	
-  	
+
+	if (window.location.href.indexOf("id_risk") != -1){
+		//from email
+		btnUpdateStatusRisk(window.location.href.split("?")[1].split("=")[1])
+      	$('#ModalRisk').on('hidden.bs.modal', function () {
+        	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+      	})
+	}else if (window.location.href.indexOf("status") != -1) {
+		btnFinalProject(0,window.location.href.split("?")[1].split("&")[1].split("=")[1])
+		$('#ModalFinalProject').on('hidden.bs.modal', function () {
+        	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+      	})
+	}
 </script>
 @endsection
