@@ -7,6 +7,7 @@ PMO
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <style type="text/css">
         .select2{
             width:100%!important;
@@ -41,6 +42,55 @@ PMO
         .table{
             border-top: solid 1px;
         }
+
+        .div-filter-year .btn-flat{
+            border-radius: 5px!important;
+            color: #999;
+            font-weight: 400;
+            width: 100%!important;
+            background-color: #fff;
+        }
+
+        .div-filter-year .btn-flat i {
+          color: lightgray;
+        }
+
+        .div-filter-year .btn-flat:active{
+            color: black;
+            font-weight: 500;
+            width: 100%!important;
+            background-color: #fff;
+            border:3px solid #3c8dbc!important;
+        }
+
+        .div-filter-year .btn-flat:hover{
+            color: black;
+            font-weight: 500;
+            width: 100%!important;
+            background-color: #fff;
+            border: 1px solid #3c8dbc!important;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .div-filter-year .btn-flat:hover i {
+           color: slategray;
+        }
+
+        .div-filter-year .btn-flat.isClicked {
+           color: black;
+           font-weight: 500;
+           width: 100%!important;
+           background-color: #fff;
+           border:3px solid #3c8dbc!important;
+        }
+
+        .div-filter-year .btn-flat.isClicked i {
+           color: slategrey;
+        }
+
+        .div-filter-year .select2-container--default .select2-selection--single{
+            border-radius: 5px!important;
+        }
     </style>
 @endsection
 @section('content')
@@ -55,6 +105,24 @@ PMO
     </section>
 
     <section class="content">
+        <div class="row">
+            <div class="col-md-4">
+              <div class="div-filter-year form-group">
+                  <button class="btn btn-flat btn-default" id="btnThisYear" onclick="clickYear(this.value)"><i class="fa fa-filter"></i> This Year</button>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="div-filter-year form-group">
+                  <button class="btn btn-flat btn-default" id="btnLastYear" onclick="clickYear(this.value)"><i class="fa fa-filter"></i> Last Year</button>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="div-filter-year form-group">
+                  <select class="select2 form-control" style="width: 100%!important;" id="selectYear" onchange="clickYear(this.value)"><option></option></select>
+              </div>
+            </div>
+        </div>
+
         <div class="row" id="BoxId">
             <!--box id-->
         </div>
@@ -176,77 +244,99 @@ PMO
     </section>
 @endsection
 @section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endsection
 @section('script')
     <script type="text/javascript">
-        $(document).ready(function(){
-            DashboardCount()
-            createTableProjectType()
-            createTableMarketSegment()
-            createTableProjectValue()
-            createTableTotalNilaiProject()
-            createTableProjectPhase()
-            createTableProjectStatus()
-            createTableProjectValue()
-            createTableProjectHealth()
-            createTableTotalProject()
-            createTableHandoverProject()
-        })
+        
 
-        function DashboardCount(){
-            console.log("wokee")
+        function DashboardCount(year){
             // $("#BoxId").empty()
-            var countPmo = []
             var i = 0
             var append = ""
             var colors = []
 
             $.ajax({
-            type:"GET",
-            url:"{{url('/PMO/getCountDashboard')}}",
-            success: function(result){
-                    console.log("beda server")
+                type:"GET",
+                url:"{{url('/PMO/getCountDashboard')}}",
+                data:{
+                    year:year
+                },
+                success:function(result){
                     var ArrColors = [{
                         name: 'Initiating',style: 'color:white', color: 'bg-purple', icon: 'fa fa-hand-paper-o',status:"NA",index: 0,value: result.countInitiating
-                    },
-                    {
-                        name: 'Planning',style: 'color:white', color: 'bg-aqua', icon: 'fa fa-tasks',status:"OG",index: 1,value: result.countPlanning
-                    },
-                    {
-                        name: 'Executing',style: 'color:white', color: 'bg-red', icon: 'fa fa-calendar-times-o',status:"DO",index: 2,value: result.countExecuting
-                    },
-                    {
-                        name: 'Closing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-calendar-check-o',status:"ALL",index: 3,value: result.countClosing
-                    },
-                    {
-                        name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check-square',status:"DO",index: 2,value: result.countDone
-                    },
-                    {
-                        name: 'Ongoing',style: 'color:white', color: 'bg-orange', icon: 'fa fa-list-ul',status:"ALL",index: 3,value: result.countOnGoing
-                    },
-                  ]
+                        },
+                        {
+                            name: 'Planning',style: 'color:white', color: 'bg-aqua', icon: 'fa fa-tasks',status:"OG",index: 1,value: result.countPlanning
+                        },
+                        {
+                            name: 'Executing',style: 'color:white', color: 'bg-red', icon: 'fa fa-calendar-times-o',status:"DO",index: 2,value: result.countExecuting
+                        },
+                        {
+                            name: 'Closing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-calendar-check-o',status:"ALL",index: 3,value: result.countClosing
+                        },
+                        {
+                            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check-square',status:"DO",index: 2,value: result.countDone
+                        },
+                        {
+                            name: 'Ongoing',style: 'color:white', color: 'bg-orange', icon: 'fa fa-list-ul',status:"ALL",index: 3,value: result.countOnGoing
+                        },
+                    ]
 
-                  colors.push(ArrColors)
+                    colors.push(ArrColors)
 
-                  $.each(colors[0], function(key, value){
-                    var status = "'"+ value.status +"'"
-                    append = append + '<div class="col-lg-2 col-xs-12">'
-                        append = append + '<div class="small-box '+ value.color +'">'
-                        append = append + '    <div class="inner">'
-                        append = append + '        <h3>'+ value.value +'</h3>'
-                        append = append + '        <p>'+ value.name +'</p>'
-                        append = append + '    </div>'
-                        append = append + '    <div class="icon">'
-                        append = append + '        <i class="'+ value.icon +'" style="'+ value.style +';opacity:0.4"></i>'
-                        append = append + '    </div>'
+                    $.each(colors[0], function(key, value){
+                        append = append + '<div class="col-lg-2 col-xs-12">'
+                            append = append + '<div class="small-box '+ value.color +'">'
+                            append = append + '    <div class="inner">'
+                            append = append + '        <h3 class="counter" data-value="'+ key +'">'+ value.value +'</h3>'
+                            append = append + '        <p>'+ value.name +'</p>'
+                            append = append + '    </div>'
+                            append = append + '    <div class="icon">'
+                            append = append + '        <i class="'+ value.icon +'" style="'+ value.style +';opacity:0.4"></i>'
+                            append = append + '    </div>'
+                            append = append + '</div>'
                         append = append + '</div>'
-                    append = append + '</div>'
-                  id = "count_pmo_"+value.index
-                  countPmo.push(id)
-                  })
+                    })
 
-                  $("#BoxId").append(append)
+                      // $("#BoxId").append(append)
+
+                    if ($("#BoxId").children().length == 0) {
+                        $("#BoxId").append(append)
+                    }else{
+                        $.each(colors[0], function(key, value){
+                            $(".counter[data-value='"+ key +"']").text(value.value)
+                        })
+                    }
+
+                    $('.counter').each(function () {
+                      var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
+                      $(this).prop('Counter', 0).animate({
+                        Counter: $(this).text()
+                      }, {
+                        duration: 1000,
+                        step: function (func) {
+                           $(this).text(parseFloat(func).toFixed(size));
+                        }
+                      });
+                    });
+
+                    var counterValue = $(".counter").text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
+                    var targetValue = $(".counter").text().split(".")[1] ? $(this).text().split(".")[1].length : 0; // Change this to your desired final value
+                    var animationDuration = 2000; // Animation duration in milliseconds
+                    var intervalDuration = 20; // Interval duration for smooth animation
+
+                    var interval = setInterval(function() {
+                        counterValue += Math.ceil(targetValue / (animationDuration / intervalDuration));
+                        if (counterValue >= targetValue) {
+                            counterValue = targetValue;
+                            clearInterval(interval);
+                        }
+                        $(".counter").text(counterValue);
+                    }, intervalDuration);
+
+                    
                 }
             })
         }
@@ -259,7 +349,7 @@ PMO
         // var ctxProjectValueCanvas = document.getElementById("projectValueCanvas");
         // var ctxTotalNilaiProjectCanvas = document.getElementById("totalNilaiProjectCanvas");
 
-
+        let initiateMyChartIdCanvasDouble = ''
         function createDataDouble(label,datas,datasWIP,backgroundColor,borderColor,className,idCanvas){
             const data = {
             labels: label,
@@ -340,14 +430,32 @@ PMO
                 }
             }
 
+            if (initiateMyChartIdCanvasDouble) {
+              initiateMyChartIdCanvasDouble.destroy()
+            }
+
             var ctx_idCanvas = document.getElementById(idCanvas);
             var myChartidCanvas = new Chart(ctx_idCanvas, config);
 
             const chartBox = document.querySelector('.'+className);
-            const tableDiv = document.createElement('DIV');
-            tableDiv.setAttribute('class','tableDiv');
+
+            let tableDiv = '', table = ''
+
+            if (tableDiv == '' ) {
+                if ($(".tableDiv").length == 0) {
+                    tableDiv = document.createElement('DIV');
+                    tableDiv.setAttribute('class','tableDiv');
+                }
+            }
             
-            const table = document.createElement('TABLE');
+            if (table == '') {
+                table = document.createElement('TABLE')
+            }
+
+            // const tableDiv = document.createElement('DIV');
+            // tableDiv.setAttribute('class','tableDiv');
+            
+            // const table = document.createElement('TABLE');
             table.classList.add('chartjsTotalProject-table');
 
             const thead = table.createTHead();
@@ -380,9 +488,29 @@ PMO
 
                 tbody.rows[index].insertCell(0).innerHTML = color + '<span style="display:inline">'+ dataset.label +'</span>'
             })
-            chartBox.appendChild(tableDiv);
-            tableDiv.appendChild(table);
+            // chartBox.appendChild(tableDiv);
+            // tableDiv.appendChild(table);
+
+            if ($(".tableDiv").length == 0) {
+                chartBox.appendChild(tableDiv);
+                tableDiv.appendChild(table);
+                tableDiv.style.paddingTop = "20px"
+            }else{
+                $(".tableDiv").empty()
+                $(".tableDiv").append(table)
+            }
+
+            return initiateMyChartIdCanvasDouble = myChartidCanvas
         }
+
+        let initiateMyChartProjectType = '',
+        initiateMyChartSegmentMarket = '' ,
+        initiateMyChartProjectValue = '',
+        initiateMyChartTotalNilaiProject = '', 
+        initiateMyChartProjectPhase = '', 
+        initiateMyChartProjectStatus = '', 
+        initiateMyChartProjectHealth = '', 
+        initiateMyChartHandoverProject = ''
 
         function createDataSingle(label,datas,backgroundColors,borderColors,labelData,className,idCanvas){
             var formatter = new Intl.NumberFormat(['ban', 'id']);
@@ -413,14 +541,49 @@ PMO
             };
 
             var ctx_idCanvas = document.getElementById(idCanvas);
-            var myChartidCanvas = new Chart(ctx_idCanvas, config);
+
+            if (idCanvas == 'projectTypeCanvas') {
+                resetCanvas(initiateMyChartProjectType)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            }else if (idCanvas == 'marketSegmentCanvas') {
+                resetCanvas(initiateMyChartSegmentMarket)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            }else if (idCanvas == 'projectStatusCanvas') {
+                resetCanvas(initiateMyChartProjectStatus)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            }else if (idCanvas == 'projectPhaseCanvas') {
+                resetCanvas(initiateMyChartProjectPhase)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            }else if (idCanvas == 'projectValueCanvas') {
+                resetCanvas(initiateMyChartProjectValue)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            }else if (idCanvas == 'totalNilaiProjectCanvas') {
+                resetCanvas(initiateMyChartTotalNilaiProject)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            }else if (idCanvas == 'ProjectHealthCanvas') {
+                resetCanvas(initiateMyChartProjectHealth)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            }else if (idCanvas == 'handoverCanvas') {
+                resetCanvas(initiateMyChartHandoverProject)
+                var myChartidCanvasidCanvas = new Chart(ctx_idCanvas, config);
+
+            } 
 
             const chartBox = document.querySelector('.'+className);
-            const tableDiv = document.createElement('DIV');
 
+            const tableDiv = document.createElement('DIV');
             tableDiv.setAttribute('class','table-responsive');
+            $(tableDiv).addClass(className)
             
             const table = document.createElement('TABLE');
+
             table.setAttribute('class','table')
             table.classList.add('chartjs-table');
 
@@ -457,10 +620,46 @@ PMO
 
                 tbody.rows[index].insertCell(0).innerHTML = color + '<span style="display:inline">'+ dataset.label +'</span>'
             })
-            chartBox.appendChild(tableDiv);
-            tableDiv.appendChild(table);
 
-            tableDiv.style.paddingTop = "20px"
+            if ($(".table-responsive."+className).length == 0) {
+                // $("."+className).find("canvas").after(tableDiv)
+                chartBox.appendChild(tableDiv);
+                tableDiv.appendChild(table);
+                tableDiv.style.paddingTop = "20px"
+            }else{
+                $(".table-responsive."+className).remove()
+                $(".table-responsive."+className).empty()
+                $(".table-responsive."+className).append(table)
+                // $("."+className).find("canvas").after(tableDiv)
+
+                chartBox.appendChild(tableDiv);
+                tableDiv.appendChild(table);
+            }   
+
+            if (idCanvas == 'projectTypeCanvas') {                
+                return initiateMyChartProjectType = myChartidCanvasidCanvas
+            }else if (idCanvas == 'marketSegmentCanvas') {                
+                return initiateMyChartSegmentMarket = myChartidCanvasidCanvas
+            }else if (idCanvas == 'projectStatusCanvas') {                
+                return initiateMyChartProjectStatus = myChartidCanvasidCanvas
+            }else if (idCanvas == 'projectPhaseCanvas') {                
+                return initiateMyChartProjectPhase = myChartidCanvasidCanvas
+            }else if (idCanvas == 'projectValueCanvas') {                
+                return initiateMyChartProjectValue = myChartidCanvasidCanvas
+            }else if (idCanvas == 'totalNilaiProjectCanvas') {                
+                return initiateMyChartTotalNilaiProject = myChartidCanvasidCanvas
+            }else if (idCanvas == 'ProjectHealthCanvas') {                
+                return initiateMyChartProjectHealth = myChartidCanvasidCanvas
+            }else if (idCanvas == 'handoverCanvas') {                
+                return initiateMyChartHandoverProject = myChartidCanvasidCanvas
+            } 
+        }
+
+        function resetCanvas(chart) {
+            // Destroy canvas
+            if (chart) {
+                chart.destroy();
+            }  
         }
 
         // function createTableTotalProject(){
@@ -505,12 +704,14 @@ PMO
         //     tableDiv.appendChild(table);
         // }
 
-        function createTableProjectType(){
+        function createTableProjectType(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getTotalProjectType')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -526,12 +727,14 @@ PMO
             })
         }
 
-        function createTableMarketSegment(){
+        function createTableMarketSegment(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getMarketSegment')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -547,12 +750,14 @@ PMO
             })
         }
 
-        function createTableTotalNilaiProject(){
+        function createTableTotalNilaiProject(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getNominalByPeople')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -568,12 +773,14 @@ PMO
             })
         }
 
-        function createTableProjectPhase(){
+        function createTableProjectPhase(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getProjectPhase')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -589,12 +796,14 @@ PMO
             })
         }
 
-        function createTableProjectStatus(){
+        function createTableProjectStatus(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getProjectStatus')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -610,12 +819,14 @@ PMO
             })
         }
 
-        function createTableProjectValue(){
+        function createTableProjectValue(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getProjectValue')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -631,12 +842,14 @@ PMO
             })
         }
 
-        function createTableTotalProject(){
+        function createTableTotalProject(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getTotalProject')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datasDone = []
                     let datasWIP = []
@@ -654,12 +867,14 @@ PMO
             })
         }
 
-        function createTableProjectHealth(){
+        function createTableProjectHealth(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getProjectHealth')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -675,12 +890,14 @@ PMO
             })
         }
 
-        function createTableHandoverProject(){
+        function createTableHandoverProject(year){
             $.ajax({
                 type:"GET",
                 url:"{{url('/PMO/getHandoverProject')}}",
+                data:{
+                    year:year
+                },
                 success:function(result){
-                    console.log(result)
                     let label = []
                     let datas = []
                     let backgroundColor = []
@@ -696,7 +913,69 @@ PMO
             })
         }
 
+        const d = new Date();
+        let year = d.getFullYear();
 
+        initiateSelect2Year(year)
+        function initiateSelect2Year(year){
+            $("#btnThisYear").val(year)
+            $("#btnLastYear").val(year-1)
+            clickYear(year)
+            $.ajax({
+                url:"{{url('/PMO/getYearFilter')}}",
+                type:"GET",
+                success:function(result){
+                    let yearFilter = []
+                    result.forEach(function(item){
+                        if (year != item.id && year-1 != item.id) {
+                            yearFilter.push({id:item.id,text:item.text})
+                        }
+                    })
+                    $("#selectYear").select2({
+                        placeholder:"Other Year",
+                        data:yearFilter
+                    })
+                }
+            })
+        }
 
+        function clickYear(year){
+            if (year != "") {
+                DashboardCount(year)
+                createTableProjectType(year)
+                createTableMarketSegment(year)
+                createTableProjectValue(year)
+                createTableTotalNilaiProject(year)
+                createTableProjectPhase(year)
+                createTableProjectStatus(year)
+                createTableProjectHealth(year)
+                createTableTotalProject(year)
+                createTableHandoverProject(year)
+
+                if ($("#btnThisYear").hasClass("isClicked")) {
+                    $("#btnThisYear").removeClass("isClicked")
+                }else if ($("#btnLastYear").hasClass("isClicked")) {
+                    $("#btnLastYear").removeClass("isClicked")
+                }
+
+                if ($("#selectYear").val() != "") {
+                    if (year != $("#selectYear").val()) {
+                        $("#selectYear").val("").trigger("change")
+                    }
+
+                    if ($("#btnThisYear").val() == year) {
+                        $("#btnThisYear").addClass("isClicked")
+                    }else if ($("#btnLastYear").val() == year) {
+                        $("#btnLastYear").addClass("isClicked")
+                    }
+                }else{
+                    if ($("#btnThisYear").val() == year) {
+                        $("#btnThisYear").addClass("isClicked")
+                    }else if ($("#btnLastYear").val() == year) {
+                        $("#btnLastYear").addClass("isClicked")
+                    }
+                }
+            }
+        }
     </script>
 @endsection

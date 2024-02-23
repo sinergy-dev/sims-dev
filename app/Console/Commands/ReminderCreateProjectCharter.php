@@ -48,14 +48,14 @@ class ReminderCreateProjectCharter extends Command
 
         $dataAll = User::whereIn('users.nik',$getAll)
                     ->select('nik','email','name')
-                    ->get();
+                    ->get(); 
 
         // var_dump($dataAll);
 
         foreach ($dataAll as $key => $data) {
             Mail::to($data->email)->send(new ReminderProjectCharter(collect([
                 "to" => $data->name,
-                "project" => DB::table($get_id_min,'temp2')->join('tb_pmo','tb_pmo.id','temp2.id')->join('tb_id_project','tb_id_project.id_project','tb_pmo.project_id')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik','tb_pmo_assign.nik')->select('temp2.id','project_id','tb_pmo_assign.nik','users.name','project_type','sales_name','name_project')->where('parent_id_drive',NULL)->where('project_type','!=','supply_only')->where('tb_pmo_assign.nik',$data->nik)->get(),
+                "project" => DB::table($get_id_min,'temp2')->join('tb_pmo','tb_pmo.id','temp2.id')->join('tb_id_project','tb_id_project.id_project','tb_pmo.project_id')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik','tb_pmo_assign.nik')->leftjoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->select('temp2.id','project_id','tb_pmo_assign.nik','users.name','project_type','sales_name','name_project',DB::raw("(CASE WHEN (tb_pmo_project_charter.id is null) THEN 'NEW' ELSE 'DRAFT' END) as status_project_charter"))->where('parent_id_drive',NULL)->where('project_type','!=','supply_only')->where('tb_pmo_assign.nik',$data->nik)->get(),
                 ])
             ));
         }
