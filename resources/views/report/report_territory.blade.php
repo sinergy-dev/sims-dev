@@ -99,7 +99,7 @@ Report Customer
                   </select>
                 </div>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2" id="divDropdownFilterSales" style="display:none;">
                 <div class="form-group">
                   <select class="select2 form-control" style="display: none;width:100%!important;" id="select2Sales" name="select2Sales">
                   </select>
