@@ -59,7 +59,7 @@ class ReviewDateRiskPM extends Command
                     ->join('tb_pmo','tb_pmo.id','tb_pmo_identified_risk.id_project')
                     ->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')
                     ->join('users','users.nik','tb_pmo_assign.nik')
-                    ->select('users.email','users.name','risk_description','risk_response','tb_pmo.project_id','risk_owner','review_date','tb_pmo.id as id_pmo')
+                    ->select('users.email','users.name','risk_description','risk_response','tb_pmo.project_id','risk_owner','review_date','tb_pmo.id as id_pmo','tb_pmo_identified_risk.id as id_risk','project_type')
                     ->whereRaw("(`status` =  'Active' OR `status` = 'active')")
                     ->where('tb_pmo_assign.nik',$data->nik)
                     ->where(DB::raw("DATEDIFF(now(), review_date)"), '=', '-1')
