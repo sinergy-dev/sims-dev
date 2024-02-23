@@ -1138,48 +1138,50 @@ Dashboard
     }
 
     function clickYear(year){
-      if ($("#btnThisYear").hasClass("isClicked")) {
-          $("#btnThisYear").removeClass("isClicked")
-      }else if ($("#btnLastYear").hasClass("isClicked")) {
-          $("#btnLastYear").removeClass("isClicked")
-      }
+      if (year != "") {
+        if ($("#btnThisYear").hasClass("isClicked")) {
+            $("#btnThisYear").removeClass("isClicked")
+        }else if ($("#btnLastYear").hasClass("isClicked")) {
+            $("#btnLastYear").removeClass("isClicked")
+        }
 
-      if ($("#selectYear").val() != "") {
-          if (year != $("#selectYear").val()) {
-              $("#selectYear").val("").trigger("change")
-          }
+        if ($("#selectYear").val() != "") {
+            if (year != $("#selectYear").val()) {
+                $("#selectYear").val("").trigger("change")
+            }
 
-          if ($("#btnThisYear").val() == year) {
-              $("#btnThisYear").addClass("isClicked")
-          }else if ($("#btnLastYear").val() == year) {
-              $("#btnLastYear").addClass("isClicked")
-          }
-      }else{
-          if ($("#btnThisYear").val() == year) {
-              $("#btnThisYear").addClass("isClicked")
-          }else if ($("#btnLastYear").val() == year) {
-              $("#btnLastYear").addClass("isClicked")
-          }
-      }
+            if ($("#btnThisYear").val() == year) {
+                $("#btnThisYear").addClass("isClicked")
+            }else if ($("#btnLastYear").val() == year) {
+                $("#btnLastYear").addClass("isClicked")
+            }
+        }else{
+            if ($("#btnThisYear").val() == year) {
+                $("#btnThisYear").addClass("isClicked")
+            }else if ($("#btnLastYear").val() == year) {
+                $("#btnLastYear").addClass("isClicked")
+            }
+        }
 
-      initiateSmallBox(year,"filter")
-      initiateTableSipWin(year)
-      initiateTableMspWin(year)
-      initiateChartWinLose(year)
-      initiateStatusLead(year)
-      initiateTotalAmountLead(year)
-      initiateTotalLead(year)
-      initiateAmountLead(year)
+        initiateSmallBox(year,"filter")
+        initiateTableSipWin(year)
+        initiateTableMspWin(year)
+        initiateChartWinLose(year)
+        initiateStatusLead(year)
+        initiateTotalAmountLead(year)
+        initiateTotalLead(year)
+        initiateAmountLead(year)
 
-      if (accesable.includes('salesWinTerritory')) {
-        initiateTopWinTer(year,"initiate")
-        // initiateTopWinTer(moment().year(),"initiate")
-      }
+        if (accesable.includes('salesWinTerritory')) {
+          initiateTopWinTer(year,"initiate")
+          // initiateTopWinTer(moment().year(),"initiate")
+        }
 
-      if (accesable.includes('BoxTopWinTerritory')) {
-        var top_win_sip_ter =  JSON.parse('@json($top_win_sip_ter)')
-        initiateTopWinEachTer(year,"initiate")
-        // initiateTopWinEachTer(moment().year(),"initiate")
+        if (accesable.includes('BoxTopWinTerritory')) {
+          var top_win_sip_ter =  JSON.parse('@json($top_win_sip_ter)')
+          initiateTopWinEachTer(year,"initiate")
+          // initiateTopWinEachTer(moment().year(),"initiate")
+        }
       }
     }
 </script>
