@@ -1151,6 +1151,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/getAllActivity','PMProjectController@getAllActivity');
 
 	Route::get('/PMO/getPhase','PMProjectController@getPhase');
+	Route::get('/PMO/getYearFilter','PMProjectController@getYearFilter');
+	Route::get('/PMO/getCountDashboardByYear','PMProjectController@getCountDashboardByYear');
 
 	
 
