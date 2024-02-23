@@ -1857,7 +1857,6 @@ Lead Register
 	
 	var timer
 	function searchCustom(id_table,id_search_bar){
-		console.log(id_search_bar)
 		var temp = 'year[]=', tempCom = 'company[]=', tempSales = 'sales_name[]=', tempPresales = 'presales_name[]=', tempTer = 'territory[]=', tempResult = 'result[]=', tempCustomer = 'customer[]=', tempTech = 'tech_tag[]=', tempProduct = 'product_tag[]=', tempSearch = 'search='
 
 		$.each($(".cb-territory:checked"),function(key,value){
@@ -1947,7 +1946,6 @@ Lead Register
 		})
 
 	  $.each($('#searchTags').val(),function(key, value) {
-	  	// console.log(value)
 	    if (value.substr(0,1) == 'p') {
 	    	if (tempProduct == 'product_tag[]=') {
 		      tempProduct = tempProduct + value.substring(1)
@@ -1962,7 +1960,6 @@ Lead Register
 		    	tempTech = tempTech + '&tech_tag[]='+ value.substring(1)
 		    }
 	    }
-	    // console.log(tempProduct)
 	  });
 
 	  $.each($('#filter_customer').val(),function(key,value){
@@ -2006,9 +2003,6 @@ Lead Register
 		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
 
 		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
-
-		console.log(tempCom)
-		console.log(tempFiltered)
 		dashboardCountFilter(tempFiltered)
 	}
 
@@ -2024,8 +2018,6 @@ Lead Register
 				$('#year_dif').val('').trigger('change')
 				$('#year_dif').val(currentYear).trigger('change')
 			}
-
-			console.log("siniii")
 			
 		}
 	}
