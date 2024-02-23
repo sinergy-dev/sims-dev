@@ -3950,8 +3950,10 @@ class ReportController extends Controller
         $pos = $position->id_position;
 
         $territory_loop = DB::table("tb_territory")
-            ->select("id_territory","code_ter")
-            ->where('id_territory','like','TERRITORY%')
+            ->join('users','users.id_territory','tb_territory.id_territory')
+            ->select("tb_territory.id_territory","code_ter")
+            ->where('status_karyawan','!=','dummy')
+            ->where('tb_territory.id_territory','like','TERRITORY%')->groupby('tb_territory.id_territory')
             // ->orWhere('id_territory','=','OPERATION')
             ->get();
 
