@@ -40,6 +40,56 @@ Dashboard
     padding: 2rem;
     font-size: 60px;
   }
+
+  .div-filter-year .btn-flat{
+      border-radius: 5px!important;
+      color: #999;
+      font-weight: 400;
+      width: 100%!important;
+      background-color: #fff;
+  }
+
+  .div-filter-year .btn-flat i {
+    color: lightgray;
+  }
+
+  .div-filter-year .btn-flat:active{
+      color: black;
+      font-weight: 500;
+      width: 100%!important;
+      background-color: #fff;
+      border-color: #3c8dbc!important;
+  }
+
+  .div-filter-year .btn-flat:hover{
+      color: black;
+      font-weight: 500;
+      width: 100%!important;
+      background-color: #fff;
+      border: 1px solid #3c8dbc!important;
+      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .div-filter-year .btn-flat:hover i {
+    color: slategray;
+  }
+
+  .div-filter-year .btn-flat.isClicked {
+    color: black;
+    font-weight: 500;
+    width: 100%!important;
+    background-color: #fff;
+    border:3px solid #3c8dbc!important;
+  }
+
+  .div-filter-year .btn-flat.isClicked i {
+    color: slategrey;
+  }
+
+  .div-filter-year .select2-container--default .select2-selection--single{
+      border-radius: 5px!important;
+  }
+
 </style>
 @endsection
 @section('content')
@@ -55,11 +105,28 @@ Dashboard
 </section>
 <section class="content">
 	<!--Box-->
-  <div style="margin-bottom: 10px;display: none;" id="divSelectYear">
+  <div class="row" id="divSelectYear">
+    <div class="col-md-4">
+      <div class="div-filter-year form-group">
+          <button class="btn btn-flat btn-default" id="btnThisYear" onclick="clickYear(this.value)"><i class="fa fa-filter"></i> This Year</button>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="div-filter-year form-group">
+          <button class="btn btn-flat btn-default" id="btnLastYear" onclick="clickYear(this.value)"><i class="fa fa-filter"></i> Last Year</button>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="div-filter-year form-group">
+          <select class="select2 form-control" style="width: 100%!important;" id="selectYear" onchange="clickYear(this.value)"><option></option></select>
+      </div>
+    </div>
+  </div>
+ <!--  <div style="margin-bottom: 10px;display: none;" id="divSelectYear">
     <select class="form-control" id="selectYear" style="width: 100%!important;">
       <option></option>
     </select>
-  </div>
+  </div> -->
 	<div class="row" id="BoxId" style="display:none;"><!-- ./col --> </div>
 
 	<!--Chart-->
@@ -466,19 +533,13 @@ Dashboard
             }
             $(".counter").text(counterValue);
         }, intervalDuration);
-
-
       }
     })
   }
   
   function clickableDiv(url){
-    window.location = "{{url('/project/index')}}/?=" + url.split('/')[1]
+    window.location = "{{url('/project/index')}}/?status=" + url.split('/')[1]
     // localStorage.setItem('status_lead',url.split('/')[1])
-  }
-
-  if (accesable.includes('salesWinTerritory')) {
-    initiateTopWinTer(moment().year(),"initiate")
   }
 
   function initiateTopWinTer(year,status){
@@ -511,22 +572,15 @@ Dashboard
     })
   }
 
-  if (accesable.includes('BoxTopWinTerritory')) {
-    var territory = ""
-    var top_win_sip_ter =  JSON.parse('@json($top_win_sip_ter)')
-    initiateTopWinEachTer(moment().year(),"initiate")
-  }
-
   function initiateTopWinEachTer(year,status){
     $.ajax({
       url:"{{url('/getTopWinSipTer')}}?year="+year,
       type:"GET",
       success:function(result){
-        console.log("testtt")
-
         $("#table-win-project-territory").empty()
-        var append = ""
-        var no = 1
+        var append = "",
+        no = 1,
+        territory = ""
 
         $.each(result, function(key, value){
           $.each(value, function(key, value){
@@ -566,7 +620,7 @@ Dashboard
     })
   }
 
-  initiateTableSipWin(moment().year())
+  // initiateTableSipWin(moment().year())
   function initiateTableSipWin(year){
     $.ajax({
       url:"{{url('/getTopWinSip')}}?year="+year,
@@ -592,7 +646,7 @@ Dashboard
     })
   }
 
-  initiateTableMspWin(moment().year())
+  // initiateTableMspWin(moment().year())
   function initiateTableMspWin(year){
     $.ajax({
       url:"{{url('/getTopWinMsp')}}?year="+year,
@@ -641,7 +695,7 @@ Dashboard
     var ctx16 = document.getElementById("AreaChart2018");
     var ctx17 = document.getElementById("barChartByStatus");
 
-    initiateAmountLead(moment().year())
+    // initiateAmountLead(moment().year())
     var initiateMybarChartByStatus = ''
     function initiateAmountLead(year){
       $.ajax({
@@ -779,7 +833,7 @@ Dashboard
       })   
     }
 
-    initiateTotalLead(moment().year())
+    // initiateTotalLead(moment().year())
     var initiateMyBarChart = ''
     function initiateTotalLead(year){
       if (initiateMyBarChart) {
@@ -825,7 +879,7 @@ Dashboard
       })
     }
 
-    initiateTotalAmountLead(moment().year())
+    // initiateTotalAmountLead(moment().year())
     var initiateAreaChart = ''
     function initiateTotalAmountLead(year){
       if (initiateAreaChart) {
@@ -892,7 +946,7 @@ Dashboard
       })
     }
     
-    initiateStatusLead(moment().year())
+    // initiateStatusLead(moment().year())
     var initiateMyPieChart = ''
     function initiateStatusLead(year){
       if (initiateMyPieChart) {
@@ -966,7 +1020,7 @@ Dashboard
       })
     }
 
-    initiateChartWinLose(moment().year())
+    // initiateChartWinLose(moment().year())
     var initiateMyDoughnutChart = ''
     function initiateChartWinLose(year){
       if (initiateMyDoughnutChart) {
@@ -1056,29 +1110,77 @@ Dashboard
       }
     });
 
-    initiateSelectYear()
-    function initiateSelectYear(){
+    const d = new Date();
+    let year = d.getFullYear();
+    initiateSelectYear(year)
+
+    function initiateSelectYear(year){
+      $("#btnThisYear").val(year)
+      $("#btnLastYear").val(year-1)
+      clickYear(year)
       $.ajax({
         url:"{{url('/loopYear')}}",
         success:function(result){
+          var othYear = []
+
+          result.forEach(function(item){
+            if (item.id != year && item.id != year-1) {
+              othYear.push({id:item.id,text:item.text})
+            }
+          })
+
           $("#selectYear").select2({
-            data:result,
-            placeholder:"Filter Year"
-          }).change(function(){
-            initiateSmallBox(this.value,"filter")
-            initiateTopWinTer(this.value)
-            initiateTopWinEachTer(this.value)
-            initiateTableSipWin(this.value)
-            initiateTableMspWin(this.value)
-            initiateChartWinLose(this.value)
-            initiateStatusLead(this.value)
-            initiateTotalAmountLead(this.value)
-            initiateTotalLead(this.value)
-            initiateAmountLead(this.value)
+            data:othYear,
+            placeholder:"Other Year"
           })
         }
       })
     }
 
+    function clickYear(year){
+      if ($("#btnThisYear").hasClass("isClicked")) {
+          $("#btnThisYear").removeClass("isClicked")
+      }else if ($("#btnLastYear").hasClass("isClicked")) {
+          $("#btnLastYear").removeClass("isClicked")
+      }
+
+      if ($("#selectYear").val() != "") {
+          if (year != $("#selectYear").val()) {
+              $("#selectYear").val("").trigger("change")
+          }
+
+          if ($("#btnThisYear").val() == year) {
+              $("#btnThisYear").addClass("isClicked")
+          }else if ($("#btnLastYear").val() == year) {
+              $("#btnLastYear").addClass("isClicked")
+          }
+      }else{
+          if ($("#btnThisYear").val() == year) {
+              $("#btnThisYear").addClass("isClicked")
+          }else if ($("#btnLastYear").val() == year) {
+              $("#btnLastYear").addClass("isClicked")
+          }
+      }
+
+      initiateSmallBox(year,"filter")
+      initiateTableSipWin(year)
+      initiateTableMspWin(year)
+      initiateChartWinLose(year)
+      initiateStatusLead(year)
+      initiateTotalAmountLead(year)
+      initiateTotalLead(year)
+      initiateAmountLead(year)
+
+      if (accesable.includes('salesWinTerritory')) {
+        initiateTopWinTer(year,"initiate")
+        // initiateTopWinTer(moment().year(),"initiate")
+      }
+
+      if (accesable.includes('BoxTopWinTerritory')) {
+        var top_win_sip_ter =  JSON.parse('@json($top_win_sip_ter)')
+        initiateTopWinEachTer(year,"initiate")
+        // initiateTopWinEachTer(moment().year(),"initiate")
+      }
+    }
 </script>
 @endsection
