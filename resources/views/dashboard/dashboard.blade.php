@@ -1058,41 +1058,41 @@ Dashboard
             },
           });
 
-          return initiateMyDoughnutChart = myDoughnutChart
-        }
-      });
-
-      $.ajax({
-        type:"GET",
-        url:"getDoughnutChart",
-        success:function(result){
-          var myDoughnutChart2 = new Chart(ctx18, {
-            type: 'doughnut',
-            data: {
-              labels: ["WIN", "LOSE"],
-              indexLabel: "#percent%",
-              percentFormatString: "#0.##",
-              datasets: [{
-                data: result,
-                backgroundColor: ['#246d18', '#e5140d'],
-              }],
-            },
-            options: {
-            showTooltips: true,
-            legend: {
-              display: true
-              },
-            tooltips: {
-             mode: 'label',
-             label: 'mylabel',
-             callbacks: {
-                label: function(tooltipItem, data) {
-                  return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + '%';
+          $.ajax({
+            type:"GET",
+            url:"getDoughnutChart?year="+year,
+            success:function(result){
+              var myDoughnutChart2 = new Chart(ctx18, {
+                type: 'doughnut',
+                data: {
+                  labels: ["WIN", "LOSE"],
+                  indexLabel: "#percent%",
+                  percentFormatString: "#0.##",
+                  datasets: [{
+                    data: result,
+                    backgroundColor: ['#246d18', '#e5140d'],
+                  }],
+                },
+                options: {
+                showTooltips: true,
+                legend: {
+                  display: true
+                  },
+                tooltips: {
+                 mode: 'label',
+                 label: 'mylabel',
+                 callbacks: {
+                    label: function(tooltipItem, data) {
+                      return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + '%';
+                    },
+                  },
                 },
               },
-            },
-          },
+              });
+            }
           });
+
+          return initiateMyDoughnutChart = myDoughnutChart
         }
       });
     }
