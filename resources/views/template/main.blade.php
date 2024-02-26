@@ -18,10 +18,11 @@
 	<!-- PWA  -->
 	<link rel="manifest" href="{{ asset('/manifest.json') }}">
 	<!-- <link rel="manifest" href="{{url('public/manifest.json')}}"> -->
-	<link rel="icon" type="image/png" href="{{url('img/siplogooke.png')}}">
+	<link rel="icon" type="image/png" href="{{url('img/siplogooke.webp')}}">
 	<!-- Tell the browser to be responsive to screen width -->
 	<!-- Bootstrap 3.3.7 -->
 	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"></noscript>
 	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"> -->
 	<!-- Font Awesome -->
 	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -32,6 +33,7 @@
 	@yield('head_css')	
 	<!-- Theme style -->
 	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css"></noscript>
 	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css"> -->
 	@yield('head_css_end')
 	<!-- AdminLTE Skins -->
@@ -79,15 +81,10 @@
 	<!-- jQuery 3.1.1 -->
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script> -->
 	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
 	<!-- Bootstrap 3.3.7 -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	@section('scriptNotificationHeader')
-	@show
-	@section('scriptNotificationSidebar')
-	@show
-	@yield('scriptImport')
-
 	<!-- SlimScroll -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
 	<!-- FastClick -->
@@ -96,6 +93,11 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/adminlte.min.js"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/demo.js"></script>
+	@section('scriptNotificationHeader')
+	@show
+	@section('scriptNotificationSidebar')
+	@show
+	@yield('scriptImport')
 	<script>
 		$(document).ready(function () {
 			$(".activeable_group").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')

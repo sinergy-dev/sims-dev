@@ -1,7 +1,7 @@
 <header class="main-header">
 	<a href="{{url('/')}}" class="logo">
 		<span class="logo-mini">
-			<img src="{{asset('/img/siplogooke.png')}}" alt="icon-mini" width="30px" height="40px">
+			<img src="{{asset('/img/siplogooke.webp')}}" alt="icon-mini" width="30px" height="40px">
 		</span>
 		<span class="logo-lg">
 			<b>SIMS</b>APP
@@ -87,9 +87,7 @@
 		</div>
 	</nav>
 </header>
-
 @section('scriptNotificationHeader')
-@parent
 <!-- From Header Blade for notification -->
 <!-- Firebase-app 8.6.3-->
 <!-- <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script> -->

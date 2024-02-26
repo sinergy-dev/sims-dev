@@ -105,7 +105,7 @@ Dashboard
 </section>
 <section class="content">
 	<!--Box-->
-  <div class="row" id="divSelectYear">
+  <div class="row" style="display: none;" id="divSelectYear">
     <div class="col-md-4">
       <div class="div-filter-year form-group">
           <button class="btn btn-flat btn-default" id="btnThisYear" onclick="clickYear(this.value)"><i class="fa fa-filter"></i> This Year</button>
@@ -411,25 +411,17 @@ Dashboard
 </section>
 @endsection
 @section('scriptImport')
-<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
-  var accesable = @json($feature_item);
+  let accesable = @json($feature_item);
   accesable.forEach(function(item,index){
     $("#" + item).show()
     $("." + item).show()
   })
-
-  $('.money').mask('000,000,000,000,000', {reverse: true});
-
-  function initMoney(){
-    $('.money').mask('000,000,000,000,000', {reverse: true});
-  }
 
   if("{{Auth::User()->isDefaultPassword}}" == 'true'){
       $("#changePassword").modal('show')
@@ -561,7 +553,7 @@ Dashboard
               append = append + '<td>'+value.name+'</td>'
             }
             append = append + '<td align="right">'
-            append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
+            append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
             append = append + '</td>'
             append = append + '<td><center>('+value.leads+')</center></td>'
           append = append + '</tr>'
@@ -590,7 +582,7 @@ Dashboard
                 append = append + '<td>'+value.name+'</td>'
                 // append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
                 append = append + '<td align="right">'
-                append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices)+'</i>'
+                append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices)+'</i>'
                 append = append + '</td>'
                 append = append + '<td><center>('+value.leads+')</center></td>'
               append = append + '</tr>'
@@ -598,7 +590,7 @@ Dashboard
                 territory = value.id_territory
                 append = append + '<tr style="background-color:dodgerblue;color: white;">'
                     append = append + '<td colspan="2">'+ value.id_territory +'</td>'
-                    append = append + '<td align="right">Rp.<i class="money">'+ new Intl.NumberFormat('id').format(value.sum_total)+'</i></td>'
+                    append = append + '<td align="right">Rp.<i>'+ new Intl.NumberFormat('id').format(value.sum_total)+'</i></td>'
                     append = append + '<td style="text-align:center;">'+value.leads_total+'</td>'
                 append = append + '</tr>'
               if(value.id_territory != "TOTAL"){
@@ -607,7 +599,7 @@ Dashboard
                   append = append + '<td>'+value.name+'</td>'
                   // append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
                   append = append + '<td align="right">'
-                  append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
+                  append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
                   append = append + '</td>'
                   append = append + '<td><center>('+value.leads+')</center></td>'
                 append = append + '</tr>'
@@ -635,7 +627,7 @@ Dashboard
             append = append + '<td>'+ no++ +'</td>'
             append = append + '<td>'+value.name+'</td>'
             append = append + '<td align="right">'
-            append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
+            append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
             append = append + '</td>'
             append = append + '<td><center>('+value.leads+')</center></td>'
           append = append + '</tr>'
@@ -661,7 +653,7 @@ Dashboard
             append = append + '<td>'+ no++ +'</td>'
             append = append + '<td>'+value.name+'</td>'
             append = append + '<td align="right">'
-            append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
+            append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
             append = append + '</td>'
             append = append + '<td><center>('+value.leads+')</center></td>'
           append = append + '</tr>'
