@@ -15,9 +15,11 @@ class Sbe extends Model
 
     public function getLinkDocumentAttribute()
     {
-      $data = DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->select('link_drive')->where('tb_sbe.id',$this->id)->orderBy('tb_sbe_document.id','desc')->first();
+      $data = DB::table('tb_sbe_document')->join('tb_sbe','tb_sbe.id','=','tb_sbe_document.id_sbe')->select('link_drive')->where('tb_sbe.id',$this->id)->orderBy('tb_sbe_document.id','desc')->first();
 
-      return empty($data->link_drive)?(empty(DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->select('link_drive')->where('tb_sbe.id',$this->id)->orderBy('tb_sbe_document.id','desc')->first()->link_drive) ? "-" : DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->select('link_drive')->where('tb_sbe.id',$this->id)->orderBy('tb_sbe_document.id','desc')->first()->link_drive):$data->link_drive;
+      return empty($data->link_drive) ? "-" : $data->link_drive;     
+
+      // return empty($data->link_drive)?(empty(DB::table('tb_sbe_document')->join('tb_sbe','tb_sbe.id','=','tb_sbe_document.id_sbe')->select('link_drive')->where('tb_sbe.id',$this->id)->orderBy('tb_sbe_document.id','desc')->first()->link_drive) ? "-" : DB::table('tb_sbe_document')->join('tb_sbe','tb_sbe.id','=','tb_sbe_document.id_sbe')->select('link_drive')->where('tb_sbe.id',$this->id)->orderBy('tb_sbe_document.id','desc')->first()->link_drive):$data->link_drive;
     }
 
     // public function getDetailConfigNominalAttribute()
