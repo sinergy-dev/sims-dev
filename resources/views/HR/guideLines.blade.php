@@ -492,28 +492,27 @@ Bookmark
 	function changeTab(id){
 		console.log(id)
 		datatable.clear().draw();
-      	datatable.ajax.url("{{url('getGuideIndex')}}?type="+id).load();
+    datatable.ajax.url("{{url('getGuideIndex')}}?type="+id).load();
 	}
 
-    $('#myTab a').click(function(e) {
-      e.preventDefault();
-      $(this).tab('show');
-    });
+  $('#myTab a').click(function(e) {
+    e.preventDefault();
+    $(this).tab('show');
+  });
 
-    // store the currently selected tab in the hash value
-    $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
-      var id = $(e.target).attr("href").substr(1);
-      window.location.hash = id;
-    });
+  // store the currently selected tab in the hash value
+  $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+    var id = $(e.target).attr("href").substr(1);
+    window.location.hash = id;
+  });
 
-    // on load of the page: switch to the currently selected tab
-    var hash = window.location.hash;
-    $('#myTab a[href="' + hash + '"]').tab('show');
+  // on load of the page: switch to the currently selected tab
+  var hash = window.location.hash;
+  $('#myTab a[href="' + hash + '"]').tab('show');
 
-    if (window.location.hash.replace('#','') == "") {
-		datatable.ajax.url("{{url('getGuideIndex')}}?type=kebijakan").load();
-	}else{
-      	datatable.ajax.url("{{url('getGuideIndex')}}?type="+window.location.hash.replace('#','')).load();
+  if (window.location.hash.replace('#','') != "") {
+    datatable.ajax.url("{{url('getGuideIndex')}}?type="+window.location.hash.replace('#','')).load();
+		// datatable.ajax.url("{{url('getGuideIndex')}}?type=kebijakan").load();
 	}
   </script>
 </script>
