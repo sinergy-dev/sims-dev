@@ -121,7 +121,7 @@ class PRDraft extends Model
 
     public function getDateAttribute()
 	{
-		return $data = DB::table('tb_pr_draft')->select('created_at')->where('id', $this->id)->first()->created_at;
+		$data = DB::table('tb_pr_draft')->select('created_at')->where('id', $this->id)->first();
 		return empty($data->created_at)?(empty(DB::table('tb_pr')->where('id_draft_pr',$this->id)->first()->date) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->created_at):$data->created_at;
 	}
 
