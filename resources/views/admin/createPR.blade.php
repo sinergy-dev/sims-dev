@@ -972,8 +972,6 @@
   <script type="text/javascript">
     $('.money').mask('#.##0,00', {reverse: true})
 
-    // $(".money").mask('000,000,000,000,000', {reverse: true})
-
     $(document).ready(function(){ 
       currentTab = 0     
       $('input[class="files"]').change(function(){
