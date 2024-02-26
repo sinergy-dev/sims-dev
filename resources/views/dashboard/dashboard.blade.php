@@ -427,9 +427,12 @@ Dashboard
       $("#changePassword").modal('show')
   }
 
-  startTime()
+  $(document).ready(function(){
+    startTime()
+    initiateSmallBox(moment().year(),"initiate")
+  });
 
-  function startTime() {
+   function startTime() {
       var today = new Date();
       var time = moment(today).format('MMMM Do YYYY, h:mm:ss a');
       var h = today.getHours();
@@ -442,14 +445,11 @@ Dashboard
   }
 
   function checkTime(i) {
-      if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-      return i;
+    let i = 0
+    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
   }
 
-  var i = 0
-  $(document).ready(function(){
-    initiateSmallBox(moment().year(),"initiate")
-  });
 
   function initiateSmallBox(year,status){
     $.ajax({
