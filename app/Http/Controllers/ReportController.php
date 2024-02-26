@@ -5972,22 +5972,31 @@ class ReportController extends Controller
 
         if (Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR')
         {
-            $getlogin = array("data" => HistoryAuth::join('users','users.nik','=','tb_history_auth.nik')
+            $getlogin = HistoryAuth::join('users','users.nik','=','tb_history_auth.nik')
                     ->select('name','email','datetime','ip_address')
                     ->where('information','Log In')
-                    ->orderBy('datetime','DESC')->get());
+                    ->orderBy('datetime','DESC');
         }else{
-            $getlogin = array("data" => HistoryAuth::join('users','users.nik','=','tb_history_auth.nik')
+            $getlogin = HistoryAuth::join('users','users.nik','=','tb_history_auth.nik')
                     ->select('name','email','datetime','ip_address')
                     ->where('information','Log In')
                     ->where('tb_history_auth.nik',Auth::User()->nik)
-                    ->orderBy('datetime','DESC')->get());
+                    ->orderBy('datetime','DESC');
         }
+        $totalRecords = $getlogin->count();
+        // Apply pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', $request->length); // Number of records per page
 
-        
+        $data = $getlogin->skip($start)->take($length);
 
-        return $getlogin;
-
+        return response()->json([
+            'draw' => $request->input('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $data->get(),
+            'length' => $length,
+        ]);
     }
 
     public function get_auth_logout(Request $request){

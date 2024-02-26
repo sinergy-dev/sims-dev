@@ -3,11 +3,10 @@
 Record Log History
 @endsection
 @section('head_css')
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+	<link rel="preload" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
 	<!-- Select2 -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-	<!-- DataTables -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+	<link rel="preload" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+	<link rel="preload" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
 @endsection
 @section('content')
 <section class="content-header">
@@ -98,20 +97,19 @@ Record Log History
 	function initTableBefore(){
 		$("#table_login_today").DataTable({
 			"ajax":{
-	                "type":"GET",
-	                "url":"{{url('/get_auth_login_users')}}",
-	                "data":{
-	                }
-	              },
-	              "columns": [
-	                { "data": "name" },  
-	                { "data": "email" },  
-	                { "data": "datetime" },
-	                { "data": "ip_address" }         
-	              ],
-	              "scrollX": false,
-	              "ordering": false,
-	              "processing": true,
+	      "type":"GET",
+        "url":"{{url('/get_auth_login_users')}}",
+      },
+      "columns": [
+        { "data": "name" },  
+        { "data": "email" },  
+        { "data": "datetime" },
+        { "data": "ip_address" }         
+      ],
+      "scrollX": false,
+      "ordering": false,
+      "processing": true,
+      "serverSide":true,
 		});
 
 	}	
@@ -202,46 +200,44 @@ Record Log History
 
     		$("#table_login_today").DataTable({
 				"ajax":{
-	                "type":"GET",
-	                "url":"{{url('/getFilterRecordAuth')}}",
-	                "data":{
-	                	"TagsPersona":TagsPersona,
-                  		"start_date":start_date,
-                  		"end_date":end_date
-	                }
-	              },
-	              "columns": [
-	                { "data": "name" },  
-	                { "data": "email" },  
-	                { "data": "datetime" },
-	                { "data": "ip_address" }         
-	              ],
-	              "scrollX": false,
-	              "ordering": false,
-	              "processing": true,
+          "type":"GET",
+          "url":"{{url('/getFilterRecordAuth')}}",
+          "data":{
+          	"TagsPersona":TagsPersona,
+          		"start_date":start_date,
+          		"end_date":end_date
+          }
+        },
+        "columns": [
+          { "data": "name" },  
+          { "data": "email" },  
+          { "data": "datetime" },
+          { "data": "ip_address" }         
+        ],
+        "scrollX": false,
+        "ordering": false,
+        "processing": true,
 			});
     	}
     });
 
     $("#reload-table").click(function(){
-      	$('#table_login_today').DataTable().clear().destroy();
-
-      	$("#table_login_today").DataTable({
-			"ajax":{
-	                "type":"GET",
-	                "url":"{{url('/get_auth_login_users')}}",
-	                "data":{
-	                }
-	              },
-	              "columns": [
-	                { "data": "name" },  
-	                { "data": "email" },  
-	                { "data": "datetime" },
-	                { "data": "ip_address" }         
-	              ],
-	              "scrollX": false,
-	              "ordering": false,
-	              "processing": true,
+      $('#table_login_today').DataTable().clear().destroy();
+      $("#table_login_today").DataTable({
+				"ajax":{
+          "type":"GET",
+          "url":"{{url('/get_auth_login_users')}}",
+        },
+        "columns": [
+          { "data": "name" },  
+          { "data": "email" },  
+          { "data": "datetime" },
+          { "data": "ip_address" }         
+        ],
+        "scrollX": false,
+        "ordering": false,
+        "processing": true,
+      	"serverSide":true,
 		});
 
       	$("#searchTagsPerson").val(null).trigger("change");
