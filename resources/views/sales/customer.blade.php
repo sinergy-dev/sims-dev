@@ -87,7 +87,7 @@ Customer
               <div class="tab-pane active">
                 <div class="row">
                   <div class="col-md-8">
-                    <button style="width: 100px;display: none;" class="btn btn-success btn-md" id="btn_add_customer" data-target="#add_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
+                    <button style="width: 100px" class="btn btn-success btn-md" id="btn_add_customer" data-target="#add_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
                   </div>
                   <dir class="col-md-4 text-right" style="margin-bottom: 0px; margin-top: 0px;">
                     <div class="input-group pull-right">
@@ -285,7 +285,7 @@ Customer
           </div>
       </div>
 
-      <div id="popUp" class="modal fade" role="dialog">
+<!--       <div id="popUp" class="modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
           <div class="modal-content modal-style">
             <div class="modal-header">
@@ -300,7 +300,7 @@ Customer
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
 <!--       <div id="popUp2" class="modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
@@ -329,53 +329,48 @@ Customer
 @endsection
 @section('script')
   <script type="text/javascript">
-    $(document).keyup(function(e) {
-      if (e.keyCode == 27) {
-          $('#popUp').modal('hide');
-      }
-    }); 
-
     var accesable = @json($feature_item);
+    console.log(accesable)
 
-    if (accesable.includes('popUp')) {
-      Swal.fire({
-        title: "<strong>SALES APP<strong><br><i>(Customer Data)</i>",
-        icon: "info",
-        html: `<div style="text-align:left">
-          <span id="nameRequest">{{Auth::User()->name}}</span><br><br>
-          Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu <span class="AccName">` + @json($roles).name + `</span> untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>,
-          <ul>
+    // if (accesable.includes('popUp')) {
+    //   Swal.fire({
+    //     title: "<strong>SALES APP<strong><br><i>(Customer Data)</i>",
+    //     icon: "info",
+    //     html: `<div style="text-align:left">
+    //       <span id="nameRequest">{{Auth::User()->name}}</span><br><br>
+    //       Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu <span class="AccName">` + @json($roles).name + `</span> untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>,
+    //       <ul>
       
-            <li>Email: <span class="AccEmail">` + @json($roles).email + `</span><br></li>
-            <li>Phone: <span class="AccPhone">` + '+62' + @json($roles).phone + `</span><br><br></li>
-          </ul>
-          Terima kasih.
-          </div>
-        `,
-        showCloseButton: true,
-        showCancelButton: false,
-        focusConfirm: false,
-        confirmButtonAriaLabel: "OK!",
-      });
-    }
+    //         <li>Email: <span class="AccEmail">` + @json($roles).email + `</span><br></li>
+    //         <li>Phone: <span class="AccPhone">` + '+62' + @json($roles).phone + `</span><br><br></li>
+    //       </ul>
+    //       Terima kasih.
+    //       </div>
+    //     `,
+    //     showCloseButton: true,
+    //     showCancelButton: false,
+    //     focusConfirm: false,
+    //     confirmButtonAriaLabel: "OK!",
+    //   });
+    // }
 
-    if (accesable.includes('popUp2')) {
-      Swal.fire({
-        title: "<strong>SALES APP<strong><br><i>(Customer Data)</i>",
-        icon: "info",
-        html: `<div style="text-align:left">
-          <span id="nameRequest">{{Auth::User()->name}}</span><br><br>
-          Terdapat penyesuaian untuk penambahan data customer, dimohon untuk memeriksa tab Request untuk melakukan <i>ACC</i>Request data customer!<br><br>,
-          Terima kasih.
-          </div>
-        `,
-        showCloseButton: true,
-        showCancelButton: false,
-        focusConfirm: false,
-        confirmButtonAriaLabel: "OK!",
-      });
+    // if (accesable.includes('popUp2')) {
+    //   Swal.fire({
+    //     title: "<strong>SALES APP<strong><br><i>(Customer Data)</i>",
+    //     icon: "info",
+    //     html: `<div style="text-align:left">
+    //       <span id="nameRequest">{{Auth::User()->name}}</span><br><br>
+    //       Terdapat penyesuaian untuk penambahan data customer, dimohon untuk memeriksa tab Request untuk melakukan <i>ACC</i>Request data customer!<br><br>,
+    //       Terima kasih.
+    //       </div>
+    //     `,
+    //     showCloseButton: true,
+    //     showCancelButton: false,
+    //     focusConfirm: false,
+    //     confirmButtonAriaLabel: "OK!",
+    //   });
 
-    }
+    // }
 
     function changeTab(val){
       if (val == 'list') {
