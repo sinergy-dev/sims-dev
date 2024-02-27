@@ -293,21 +293,7 @@ Customer
               <h4 class="modal-title">ANNOUNCEMENT</h4>
             </div>
             <div class="modal-body">
-              <center><h4 class="box-title"><b>SALES APP<b><br><i>(Customer Data)</i></h4></center>
-              <div class="row">
-                <div class="col-md-12">
-                  <h5>
-                    <span id="nameRequest"></span><br><br>
-                    <!-- Terdapat penyesuaian untuk penambahan data customer, untuk penambahan data hanya dapat dilakukan oleh Rizki Nugroho, jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br> -->
-                    Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu <span class="AccName"></span> untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>
-                    <ul>
-                      <li>Email: <span class="AccEmail"></span><br></li>
-                      <li>Phone: <span class="AccPhone"></span><br><br></li>
-                    </ul>
-                    Terima kasih.
-                  </h5>
-                </div>
-              </div>
+              
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
@@ -316,7 +302,7 @@ Customer
         </div>
       </div>
 
-      <div id="popUp2" class="modal fade" role="dialog">
+<!--       <div id="popUp2" class="modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
           <div class="modal-content modal-style">
             <div class="modal-header">
@@ -324,23 +310,14 @@ Customer
               <h4 class="modal-title">ANNOUNCEMENT</h4>
             </div>
             <div class="modal-body">
-              <center><h4 class="box-title"><b>SALES APP<b><br><i>(Customer Data)</i></h4></center>
-              <div class="row">
-                <div class="col-md-12">
-                  <h5>
-                    <span id="nameAcc"></span>,<br><br>
-                    Terdapat penyesuaian untuk penambahan data customer, dimohon untuk memeriksa tab Request untuk melakukan <i>ACC</i> Request data customer!<br><br>
-                    Terima kasih.
-                  </h5>
-                </div>
-              </div>
+              
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
   </section>
 @endsection
@@ -359,19 +336,45 @@ Customer
     }); 
 
     var accesable = @json($feature_item);
-    console.log(accesable)
-
 
     if (accesable.includes('popUp')) {
-      $("#popUp").modal("show");
-
-      $("#nameRequest").text("Dear {{Auth::User()->name}}")
+      Swal.fire({
+        title: "<strong>SALES APP<strong><br><i>(Customer Data)</i>",
+        icon: "info",
+        html: `<div style="text-align:left">
+          <span id="nameRequest">{{Auth::User()->name}}</span><br><br>
+          Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu <span class="AccName">` + @json($roles).name + `</span> untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>,
+          <ul>
+      
+            <li>Email: <span class="AccEmail">` + @json($roles).email + `</span><br></li>
+            <li>Phone: <span class="AccPhone">` + '+62' + @json($roles).phone + `</span><br><br></li>
+          </ul>
+          Terima kasih.
+          </div>
+        `,
+        showCloseButton: true,
+        showCancelButton: false,
+        focusConfirm: false,
+        confirmButtonAriaLabel: "OK!",
+      });
     }
 
     if (accesable.includes('popUp2')) {
-      $("#popUp2").modal("show");
+      Swal.fire({
+        title: "<strong>SALES APP<strong><br><i>(Customer Data)</i>",
+        icon: "info",
+        html: `<div style="text-align:left">
+          <span id="nameRequest">{{Auth::User()->name}}</span><br><br>
+          Terdapat penyesuaian untuk penambahan data customer, dimohon untuk memeriksa tab Request untuk melakukan <i>ACC</i>Request data customer!<br><br>,
+          Terima kasih.
+          </div>
+        `,
+        showCloseButton: true,
+        showCancelButton: false,
+        focusConfirm: false,
+        confirmButtonAriaLabel: "OK!",
+      });
 
-      $("#nameAcc").text("Dear {{Auth::User()->name}}")
     }
 
     function changeTab(val){
@@ -677,12 +680,12 @@ Customer
       initTable()
       cRequest =  JSON.parse('@json($count_request)')
 
-      if (accesable.includes('popUp')) {
-          // console.log(value)
-          $('.AccName').text(@json($roles).name)
-          $('.AccEmail').text(@json($roles).email)
-          $('.AccPhone').text('+62' + @json($roles).phone)
-      }
+      // if (accesable.includes('popUp')) {
+      //     // console.log(value)
+      //     $('.AccName').text(@json($roles).name)
+      //     $('.AccEmail').text(@json($roles).email)
+      //     $('.AccPhone').text('+62' + @json($roles).phone)
+      // }
 
       if (cRequest > 0) {
         $('#request-tab').append('<span class="badge">'+ cRequest +'</span>')
