@@ -87,7 +87,7 @@ Customer
               <div class="tab-pane active">
                 <div class="row">
                   <div class="col-md-8">
-                    <button style="width: 100px" class="btn btn-success btn-md" id="btn_add_customer" data-target="#add_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
+                    <button style="width: 100px;display: none;" class="btn btn-success btn-md" id="btn_add_customer" data-target="#add_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
                   </div>
                   <dir class="col-md-4 text-right" style="margin-bottom: 0px; margin-top: 0px;">
                     <div class="input-group pull-right">
