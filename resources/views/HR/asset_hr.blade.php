@@ -3,7 +3,7 @@
 GA Asset
 @endsection
 @section('head_css')
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.cs" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link as="style" onload="this.onload=null;this.rel='stylesheet'" rel="preload" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
@@ -58,11 +58,28 @@ GA Asset
       float: left!important;
     }
   }*/
-
+/*
   #request_table_wrapper {
     margin: 0;
     padding: 0;
   }
+*/
+  .copy-icon {
+      cursor: pointer;
+  }
+
+  .copy-icon:hover {
+      cursor: pointer;
+      background-color: white!important;
+      border: 1px solid #00c0ef!important;
+      color: #00c0ef !important;
+  }
+
+  .copy-icon:focus {
+    background-color: slategrey;
+  }
+
+
 </style>
 @endsection
 @section('content')
@@ -283,7 +300,7 @@ GA Asset
                         <td >{{$data->name}}</td>
                         <td >{{$data->created_at}}</td>
                         <td >{{$data->note}}</td>
-                        <td >{!!nl2br($data->keterangan)!!}</td>
+                        <td ><span style="cursor:pointer;" data-toggle="tooltip" data-placement="right" title="{{$data->keterangan}}">{{str_limit($data->keterangan,25)}}</span></td>
                         <td >
                           <label class="label label-info">Request</label>
                         </td>
@@ -299,14 +316,20 @@ GA Asset
                         <td >{{$datas->name}}</td>
                         <td >{{$datas->created_at}}</td>                        
                         <td >{{$datas->nama}}</td>
-                        <td  class="links{{$datas->id_request}}">{{$datas->link}}</td>
+                        <td >
+                          @if(str_contains($datas->link, 'https://'))
+                            <span class="label label-info copy-icon" onclick="copyLinkUrl('{{$datas->link}}')">Salin</span><span class="link_data" style="cursor:pointer" data-toggle="tooltip" data-placement="right" title="{{$datas->link}}">{{str_limit($datas->link,25)}}</span>
+                          @else
+                            <span class="link_data" style="cursor:pointer" data-toggle="tooltip" data-placement="right" title="{{$datas->link}}">{{str_limit($datas->link,25)}}</span>
+                          @endif
+                        </td>                                      
                         <td >
                           @if($datas->status == 'REQUEST')
                           <label class="label label-info">Request</label>
                           @else
                           <label class="label label-warning">Pending</label>
                           @endif
-                        </td>                     
+                        </td>
                         <td >
                           @if($datas->status == 'REQUEST')
                             <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->nama}}','{{$datas->id_request}}','ACCEPT')">Accept</button>
@@ -2205,5 +2228,31 @@ GA Asset
     // on load of the page: switch to the currently selected tab
     var hash = window.location.hash;
     $('#myTab a[href="' + hash + '"]').tab('show');
+
+    function copyLinkUrl(url) {
+        // Get the link element
+        var linkElement = url;
+        console.log(url)
+
+         if (linkElement) {
+            // Use the Clipboard API for better cross-browser support
+            navigator.clipboard.writeText(linkElement)
+              .then(function() {
+                  // Successful copy
+
+                  // Reset the icon color after a short delay (optional)
+                  setTimeout(function () {
+                    alert('link copied!')
+                  }, 1000);
+              })
+              .catch(function(err) {
+                  // Handle errors
+                  console.error('Unable to copy link:', err);
+              });
+        } else {
+            // Handle the case where the link or its href property is undefined
+            console.error('Link or its href property is undefined.');
+        }
+    }
   </script>
 @endsection
