@@ -4,15 +4,15 @@ Leaving Permitte
 @endsection
 @section('head_css')
   <!-- Select2 -->
-  <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style">
   <!-- DataTables -->
-  <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <!--fixed clumns-->
   <link as="style" onload="this.onload=null;this.rel='stylesheet'" rel="preload" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
   <link as="style" onload="this.onload=null;this.rel='stylesheet'" rel="preload" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.css">
   <link as="style" onload="this.onload=null;this.rel='stylesheet'" rel="preload" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
-  <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-  <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
+  <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" as="style" />
+  <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" as="style">
   <style type="text/css">
     .hari_libur {
       color: red !important;
@@ -698,7 +698,6 @@ Leaving Permitte
         $(column).text('Date of Request');
         var column2 = monthCuti.column(3).header();
         $(column2).text('Time Off');
-        console.log('dinar dindut')
       }
     })
 
@@ -893,8 +892,7 @@ Leaving Permitte
             var daysOfWeekHighlighted = [0,6]
           }
 
-          // console.log(disableDate.indexOf(moment(date).format("L")))
-
+          changeMonth = true
           $('#date_start').datepicker({
             weekStart: 1,
             daysOfWeekDisabled: daysOfWeekDisabled,
@@ -929,8 +927,6 @@ Leaving Permitte
             $('#lihat_hasil').val(' ' + e.dates.length)
             var cutis = $("#sisa_cuti").text();
             var cutiss = $(".lihat_hasil").val();
-            // console.log(cutis)
-            console.log(result.parameterCuti[0].total_cuti)
 
             $("#avaliableDays").val(result.parameterCuti[0].total_cuti - cutiss)
             if (e.dates.length > 0) {
@@ -948,38 +944,32 @@ Leaving Permitte
               $("#tooltip").text("Mohon untuk menginput tanggal cuti Anda!")
             }
           }).on('changeMonth', function(e){
-            console.log(moment(e.date).format("MM/YYYY"));
-
-            const array = hari_libur_nasional_2;
-
-            const substring = moment(e.date).format("MM/YYYY");
-
-            var match = []
-            $('#info_libur').empty()
-            array.forEach(function(item, index){
-              if (item.includes(substring)) {
-
-                match.push(item);
-                
-                $('#info_libur').append('<b>'+item+' - '+hari_libur_nasional_tooltip[index]+'</b><br>')
-              }
-            })
-            // array.find(element => {
-            //   if (element.includes(substring)) {
-
-            //     match.push(element);
-                
-            //     $('#info_libur').append('<b>'+element+'</b><br>')
-            //   }
-            // });
-
-            console.log(match);
-
+            changeMonth = false
+            showKeteranganLibur(e.date)            
           }).on('show.daterangepicker', function(e){
             $('.datepicker.datepicker-dropdown.dropdown-menu').append('<div id="info_libur" style="margin-top: 4px; color: #ff0000; max-width: 100%;"></div>')
+
+            if (changeMonth) {
+              showKeteranganLibur(e.date)
+            }
           });
         },
       });
+
+      function showKeteranganLibur(date){
+        const array = hari_libur_nasional_2;
+
+        const array_combine = hari_libur_nasional_combine_tooltip
+
+        const substring = moment(date).format("MM/YYYY");
+        $('#info_libur').empty()
+
+        array_combine.forEach(function(item){
+          if (item.date.includes(substring)) {               
+            $('#info_libur').append('<b>'+item.date+' - '+item.summary+'</b><br>')
+          }
+        })
+      }
 
       $("#modalCuti").modal("show");
 
@@ -1128,14 +1118,12 @@ Leaving Permitte
                   $("#cuti_fix_reject").val(date_default)
                 });                
 
-                console.log(result[0].length);
                 var date_check = result[0].length;
 
                 $('#tanggal_cuti').append(table);
 
                 var countChecked = function() {
                 var n = $( ".check_date:checked" ).length;
-                console.log( n + (n === 1 ? " is" : " are") + " checked!")
 
                 if ($(".check_date:checked" ).length < 1) {
                   $("#submit_approve").prop("disabled",true);
@@ -1161,17 +1149,14 @@ Leaving Permitte
                   var selector1 = '#detil_cuy tr input:checked'; 
                   var reject = [];
                   var selector2 = '#detil_cuy tr input:checkbox:not(:checked)'
-                  console.log('check')
                   $.each($(selector1), function(idx, val) {
                     var id = $(this).parent().siblings(":first").text();
                     accept.push(id);
-                    console.log($(this).parent().siblings(":first").text())
                     $("#cuti_fix_accept").val(accept)
                   });
                   $.each($(selector2), function(idx, val) {   
                     var id = $(this).parent().siblings(":first").text();                    
                     reject.push(id);
-                    console.log($(this).parent().siblings(":first").text())
                     $("#cuti_fix_reject").val(reject)
                   });
               
@@ -1200,8 +1185,6 @@ Leaving Permitte
               array.push(value.date_off);
 
               $("#Dates_update").val(array);
-
-              console.log(array);
 
               $('#Dates').tooltip("disable");
 
@@ -1360,7 +1343,6 @@ Leaving Permitte
           cuti:id_cuti,
         },
         success: function(result){
-          console.log(decline_reason)
           var table = "";
           $.each(result[0], function(key, value){
             $("#id_cuti_decline").val(value.id_cuti);
@@ -1570,7 +1552,6 @@ Leaving Permitte
           {
             render: function (data, type, row) {
               if({{Auth::User()->nik}} == row.nik){
-                console.log(row.nik)
                 if(row.status == 'n' || row.status == 'R'){
                   return '<button type="button" class="btn btn-xs btn-primary" style="width: 70px" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-edit" style="margin-right: 5px"></i>Edit</button>' 
                   +
@@ -1612,16 +1593,6 @@ Leaving Permitte
           }else{
             activeTab('cuti')
           }
-
-          // var accesable = @json($feature_item);
-          // console.log(accesable)
-          // if (accesable.length == 0) {
-          //   // Get the column API object
-          //   var columns = this.api().columns([5]);
- 
-          //   // Toggle the visibility
-          //   columns.visible(!columns.visible());
-          // }
         },
         "searching": true,
         "lengthChange": true,
@@ -1629,6 +1600,7 @@ Leaving Permitte
         "fixedColumns":   {
             leftColumns: 1
         },
+        scrollX:true,
         "pageLength": 25,
       })
     }
@@ -1682,6 +1654,7 @@ Leaving Permitte
         "fixedColumns":   {
             leftColumns: 1
         },
+        scrollX:true,
         "pageLength": 10,
       })
     }
@@ -1951,12 +1924,9 @@ Leaving Permitte
         
         var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
         get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),start_date,end_date)
-
-        // cb(start,end,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id=" + companyString,$("#division_cuti").val())
     });
 
     $("#pilih").change(function(){
-      console.log(this.value)
       if(this.value == 'date'){
         table.draw();
         $("#datesReport").prop('disabled', false);
@@ -2124,7 +2094,6 @@ Leaving Permitte
 
     @if(Auth::User()->id_position == 'HR MANAGER')
       $(document).on('click',"button[class^='date_off']",function(e) {
-        console.log($(".date_off").val());
           $.ajax({
             type:"GET",
             url:'{{url("/detilcuti")}}',
@@ -2160,7 +2129,6 @@ Leaving Permitte
        });
     @else
       $(document).on('click',"button[class^='date_off']",function(e) {
-        console.log($(".date_off").val());
         $.ajax({
           type:"GET",
           url:'{{url("/detilcuti")}}',
@@ -2222,6 +2190,8 @@ Leaving Permitte
     var hari_libur_nasiona_tambahan = []
     var hari_libur_nasional_2 = []
     var hari_libur_nasional_tooltip = []
+    var hari_libur_nasional_combine_tooltip = []
+
 
     $.ajax({
       type:"GET",
@@ -2236,29 +2206,40 @@ Leaving Permitte
             $.each(result.items,function(key,value){
               if(value.description == "Public holiday"){
                 if (value.summary.indexOf('Joint') == -1) {
-                  console.log(value.summary)
                   if(!liburNasionalException.includes(value.start.date)){
                     hari_libur_nasional.push(moment(value.start.date).format("L"))
                     hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
                     hari_libur_nasional_tooltip.push(value.summary)
+                    hari_libur_nasional_combine_tooltip.push({"date":moment(value.start.date).format("DD/MM/YYYY"),"summary":value.summary})
                   }
                 }
                 if (value.summary.indexOf('Idul Fitri') !== -1 || value.summary.indexOf('Boxing Day') !== -1) {
-                  console.log(value.summary)
                   if(!liburNasionalException.includes(value.start.date)){
                     hari_libur_nasional.push(moment(value.start.date).format("L"))
                     hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
                     hari_libur_nasional_tooltip.push(value.summary)
+                    hari_libur_nasional_combine_tooltip.push({"date":moment(value.start.date).format("DD/MM/YYYY"),"summary":value.summary})
                   }
                 }
               }
             })
+
+            hari_libur_nasional_combine_tooltip = removeDuplicates(hari_libur_nasional_combine_tooltip, 'date');
           }
         })
-
-        console.log(hari_libur_nasiona_tambahan)
       }
     })
+
+    function removeDuplicates(arr, prop) {
+      var uniqueValues = {};
+      return $.grep(arr, function (element) {
+        if (!uniqueValues[element[prop]]) {
+          uniqueValues[element[prop]] = true;
+          return true;
+        }
+        return false;
+      });
+    }
 
     $(".toggle-arrow").click(function(){
       $(this).toggleClass("fa-angle-down");
@@ -2278,7 +2259,6 @@ Leaving Permitte
     $("#filter_com").change(function(){
       var filter_com = this.value;
       var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
-      console.log(filter_com)
       if (companyString == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString).load();
       } else if (companyString == "request") {
@@ -2305,8 +2285,6 @@ Leaving Permitte
 
     function changeTabs(id) {
       com = ($("#filter_com").val() != undefined ? $("#filter_com").val() : "all") 
-      console.log(id)
-      console.log(com)
       if (id == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
       } else if(id == "request") {
