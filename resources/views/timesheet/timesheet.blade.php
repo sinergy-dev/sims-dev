@@ -912,6 +912,10 @@
         $(".timesheet_status").css("background-color","green")
       }
 
+      let startDateFullcalendar = ""
+      var currentView = calendar.fullCalendar('getView');
+      startDateFullcalendar = moment(currentView.intervalStart).format('YYYY-MM-DD');
+
       Pace.restart();
       Pace.track(function(){
         $.ajax({
@@ -920,7 +924,7 @@
           success:function(results){
             $.ajax({
               type:"GET",
-              url:"{{url('/getListCalendarEvent')}}"+ "?nik=" + nik + '&year=' + year,
+              url:"{{url('/getListCalendarEvent')}}"+ "?nik=" + nik + '&year=' + year + '&date=' + startDateFullcalendar,
               success:function(result){
                 var events = [], disabledDates = []
                 if (results.data.length > 0) {
@@ -1378,11 +1382,11 @@
                       $("#tbInfo").empty()
                       var append = ""
                       append = append + '<tr>'
-                      append = append + '  <th>Date</th>'
+                      append = append + '  <th width="100px">Date</th>'
                       append = append + '  <td>'+ moment(calEvent.start).format('YYYY-MM-DD')  +'</td>'
                       append = append + '</tr>'
                       append = append + '<tr>'
-                      append = append + '  <th>Activity</th>'
+                      append = append + '  <th width="100px">Activity</th>'
                       append = append + '  <td>'+ calEvent.activity  +'</td>'
                       append = append + '</tr>'
 
@@ -1472,11 +1476,11 @@
                 $("#tbInfo").empty()
                 var append = ""
                 append = append + '<tr>'
-                append = append + '  <th>Date</th>'
+                append = append + '  <th width="100px">Date</th>'
                 append = append + '  <td>'+ moment(calEvent.start).format('YYYY-MM-DD')  +'</td>'
                 append = append + '</tr>'
                 append = append + '<tr>'
-                append = append + '  <th>Activity</th>'
+                append = append + '  <th width="100px">Activity</th>'
                 append = append + '  <td>'+ calEvent.activity  +'</td>'
                 append = append + '</tr>'
 
