@@ -80,22 +80,23 @@ class TimesheetController extends Controller
         // );
 
         $calenderId = User::where('nik',$request->nik)->first()->email;
-        // Auth::User()->email;
-        //calendar id nya apa aja?
-        //ladinar@sinergy.co.id
 
-        $currentDateTime    = Carbon::now();
-        // $currentDateTime    = Carbon::createFromDate($request->year, 1, 1);
-        $startOfYear        = $currentDateTime->startOfYear()->format('Y-m-d\TH:i:s\Z');
-        $endOfYear          = $currentDateTime->endOfYear()->format('Y-m-d\TH:i:s\Z');
+        if (isset($request->date)) {
+            $startDate = Carbon::parse($request->date)->startOfMonth()->format('Y-m-d\TH:i:s\Z');
+            $endDate = Carbon::parse($request->date)->endOfMonth()->format('Y-m-d\TH:i:s\Z');
+        }else{
+            $currentDateTime    = Carbon::now();
+            $formatMonthToYear   = $currentDateTime->year(date('Y'));
 
-        // $client = new Client();
-        // $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events";
+            $startDate       = $formatMonthToYear->startOfMonth()->format('Y-m-d\TH:i:s\Z');
+            $endDate         = $formatMonthToYear->endOfMonth()->format('Y-m-d\TH:i:s\Z');
+        }
+
         try {
             // Create a new Guzzle HTTP client
             $client = new Client();
             // Make the API request
-            $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events?maxResults=5000" . "&timeMin=" .$startOfYear;
+            $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events" . "?timeMin=" . $startDate  . "&timeMax=" . $endDate;
             $token = $this->getOauth2AccessToken();
 
             $response = $client->request(
@@ -1064,12 +1065,17 @@ class TimesheetController extends Controller
 
     public function getAllActivityByUser(Request $request)
     {
-        // $startDate = Carbon::now()->startOfYear()->format("Y-m-d");
-        // $endDate = Carbon::now()->endOfYear()->format("Y-m-d");
+        if (isset($request->date)) {
+            $startDate = Carbon::parse($request->date)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::parse($request->date)->endOfMonth()->format('Y-m-d');
+        }else{
+            $currentDateTime    = Carbon::now();
+            $formatMonthToYear   = $currentDateTime->year('2024');
 
-        $startDate = Carbon::parse($request->date)->startOfYear()->format('Y-m-d');
-        $endDate = Carbon::parse($request->date)->endOfYear()->format('Y-m-d');
-
+            $startDate       = $formatMonthToYear->startOfMonth()->format('Y-m-d');
+            $endDate         = $formatMonthToYear->endOfMonth()->format('Y-m-d');
+        }
+        
         $hidden = ['planned','threshold'];
 
         $plannedDone = DB::table('tb_timesheet')
@@ -1093,6 +1099,7 @@ class TimesheetController extends Controller
                 $join->on('tb_timesheet.id', '=', 'planned_done.id');
             })->select('tb_timesheet.nik','schedule','start_date','type','pid','task','phase','level','activity','duration','tb_timesheet.status','date_add','end_date','tb_id_project.id_project',DB::raw("(CASE WHEN (id_project is null) THEN 'false' ELSE 'true' END) as status_pid"),'tb_timesheet.id',DB::raw("(CASE WHEN (planned is null) THEN 0 ELSE planned END) as planned"),DB::raw("(CASE WHEN (unplanned is null) THEN 0 ELSE unplanned END) as unplanned"))
             ->where('tb_timesheet.nik',$request->nik)
+            ->whereBetween('tb_timesheet.start_date', [$startDate, $endDate])
             ->orderby('id','asc');
 
         // if (isset($request->phase[1])) {
@@ -1109,7 +1116,7 @@ class TimesheetController extends Controller
 
         $getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
-        $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->orderby('start_date','desc')->get();
+        $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->whereBetween('date_start', [$startDate, $endDate])->orderby('start_date','desc')->get();
 
         $holiday = $this->getWorkDays($startDate,$endDate)["holiday"]->values();
 
@@ -1932,51 +1939,21 @@ class TimesheetController extends Controller
     {
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
-        $startDate = Carbon::parse($request->date)->startOfMonth()->format('Y-m-d');
-        $endDate = Carbon::parse($request->date)->endOfMonth()->format('Y-m-d');
 
-        $now = date('Y-m-d');
+        if (isset($request->date)) {
+            $startDate = Carbon::parse($request->date)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::parse($request->date)->endOfMonth()->format('Y-m-d');
+        }else{
+            $currentDateTime    = Carbon::now();
+            $formatMonthToYear   = $currentDateTime->year(date('Y'));
 
-        $workdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-        // $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as date')->where('tb_cuti.status','v')->whereYear('date_off',date('Y'))->orderby('date','desc');
-
-        // $getPermit = TimesheetPermit::select('start_date');
-        $workdays = count($workdays);
-
-        // $getData = User::select('nik','name')->where('nik',$nik)->get();
-        // $getLeavingPermit = $getLeavingPermit->where('nik',$nik)->get();
-        // $getPermit = $getPermit->where('nik',$nik)->get();
-
-        $dateMonth = Carbon::parse($request->date);
-        $monthNumber = $dateMonth->month;
-
-        $dateYear = Carbon::parse($request->date);
-        $yearNumber  = $dateYear->year;
-
+            $startDate       = $formatMonthToYear->startOfMonth()->format('Y-m-d');
+            $endDate         = $formatMonthToYear->endOfMonth()->format('Y-m-d');
+        }
 
         $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')
-        ->whereMonth('start_date',$monthNumber)
-        ->whereYear('start_date',$yearNumber)
+        ->whereBetween('tb_timesheet.start_date', [$startDate, $endDate])
         ->groupby('tb_timesheet.nik')->get();
-
-        // return count($sumMandays);
-
-        $allWorkdays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-        $allWorkdays = $allWorkdays->toArray();
-
-        // $getAllPermit = collect();
-        // $getPermit = json_decode($getPermit, true);
-
-        // $getAllLeavingPermit = collect();
-        // $getLeavingPermit = json_decode($getLeavingPermit, true);
-
-        // foreach ($getPermit as $value) {
-        //     $getAllPermit->push($value['start_date']);
-        // }
-
-        // foreach ($getLeavingPermit as $value) {
-        //    $getAllLeavingPermit->push($value['date']);
-        // }
 
         $actualPlanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
                 ->where('tb_timesheet.nik',$nik)
@@ -1990,20 +1967,6 @@ class TimesheetController extends Controller
                 ->where('status','Done')
                 ->where('start_date',$request->date)->first();
 
-        // $getAllLeavingPermit = $getAllLeavingPermit->toArray();
-
-        $all = array_merge($allWorkdays);
-
-        // $differenceArray = array_diff($all, $getAllPermit->toArray());
-        // $differenceArrayMerged = array_merge($differenceArray);
-        // $differenceArray2 = array_diff($differenceArrayMerged, $getAllLeavingPermit);
-        // $billable = count($differenceArray2);
-
-        $isEndMonth = 'false';
-        if ($now == $endDate) {
-            $isEndMonth = 'true';
-        }
-
         if (count($sumMandays) == 1) {
             $planned = $sumMandays->map(function ($item, $key) {
                 $planned = $item['plannedMonth'];
@@ -2014,9 +1977,9 @@ class TimesheetController extends Controller
 
             $percentage = number_format($planned[0][1]/$planned[0][0]*100,  2, '.', '');
 
-            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>number_format($actualPlanned->point_mandays,2, '.', ''),'unplannedToday'=>number_format($actualUnplanned->point_mandays,2, '.', '')]);
+            return collect(['percentage'=>$percentage,'name'=>Auth::User()->name,'plannedToday'=>number_format($actualPlanned->point_mandays,2, '.', ''),'unplannedToday'=>number_format($actualUnplanned->point_mandays,2, '.', '')]);
         } else {
-            return collect(['percentage'=>'0','name'=>Auth::User()->name,'isEndMonth'=>$isEndMonth,'plannedToday'=>'0','unplannedToday'=>'0']);
+            return collect(['percentage'=>'0','name'=>Auth::User()->name,'plannedToday'=>'0','unplannedToday'=>'0']);
         } 
     }
 
