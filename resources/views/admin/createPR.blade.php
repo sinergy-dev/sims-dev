@@ -153,19 +153,7 @@
                 
           </div>
           <div class="table-responsive">
-            <table class="table datatable table-striped dataTable" id="draftPr" width="100%" cellspacing="0">
-              <thead>
-                <tr style="text-align: center;">
-                  <th>No. PR</th>
-                  <th>Created at</th>
-                  <th>Subject</th>
-                  <th>Issued By</th>
-                  <th>Supplier</th>
-                  <th>Total Price</th>
-                  <th style="text-align: center;vertical-align: middle;">Status</th>
-                  <th style="text-align: center;vertical-align: middle;">Action</th>
-                </tr>
-              </thead>
+            <table class="table datatable table-striped" id="draftPr" width="100%" cellspacing="0">
               <tbody id="tbodyDraft" name="tbodyDraft">
               </tbody>
             </table>
@@ -1080,17 +1068,31 @@
       var i = 0
       var append = ""
       var colors = []
+      // var ArrColors = [{
+      //       name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:"NA",index: 0
+      //   },
+      //   {
+      //       name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:"OG",index: 1
+      //   },
+      //   {
+      //       name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:"DO",index: 2
+      //   },
+      //   {
+      //       name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:"ALL",index: 3
+      //   },
+      // ]
+
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:"NA",index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: '',status:"NA",index: 0
         },
         {
-            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:"OG",index: 1
+            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: '',status:"OG",index: 1
         },
         {
-            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:"DO",index: 2
+            name: 'Done',style: 'color:white', color: 'bg-green', icon: '',status:"DO",index: 2
         },
         {
-            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:"ALL",index: 3
+            name: 'All',style: 'color:white', color: 'bg-purple', icon: '',status:"ALL",index: 3
         },
       ]
 
@@ -1252,6 +1254,7 @@
           },
           "columns": [
             { 
+              title:"No. PR",
               render: function (data, type, row, meta){
                 if (row.status == "SAVED" || row.status == "DRAFT") {
                   return " - "           
@@ -1261,24 +1264,32 @@
               }
             },
             {
+              title:"Created at",
               orderData:[8],
               render: function (data, type, row, meta){
                return moment(row.date).format("D MMM YYYY");   
               }
             },
             { 
+              title:"Subject",
               render: function (data, type, row, meta){
                 if (row.attention_notes == "False") {
                   return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span>&nbsp<i title="Pay Attention to the Notes!" class="fa fa-warning" style="color:red"></i> ' + row.title         
                 }else{
                   return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
                 }
+                // return "-"
               },
-              width:'300px'
             },
-            { "data": "name"},
-            { "data": "to"},
+            { title:"Issued By", 
+              "data": "name"
+            },
             { 
+              title:"Supplier",
+              "data": "to"
+            },
+            { 
+              title:"Total Price",
               render: function (data, type, row, meta){
                 if (isNaN(row.nominal) == true) {
                   return formatter.format(row.nominal.replace(/\./g,'').replace(',','.').replace(' ',''))       
@@ -1289,6 +1300,7 @@
               className:'text-right'
             },
             { 
+              title:"Status",
               orderData:[7],
               render: function (data, type, row, meta){
                 if (row.status == 'SAVED') {
@@ -1316,6 +1328,7 @@
               className:'text-center'
             },
             { 
+              title:"Action",
               render: function (data, type, row, meta){
                 let onclick = ""
                 let title = ""
@@ -1418,6 +1431,7 @@
               $(".btnCekDraft").prop("disabled",false)
             }
           },
+          columnDefs: [{ width: '50%', targets: 2 }],
           "pageLength":100,
           lengthChange:false,
           // autoWidth:true,
