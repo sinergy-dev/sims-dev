@@ -1431,7 +1431,10 @@
               $(".btnCekDraft").prop("disabled",false)
             }
           },
-          columnDefs: [{ width: '50%', targets: 2 }],
+          columnDefs: [
+          { width: '40%', targets: 2 },
+          { width: '10%', targets: 1 }
+          ],
           "pageLength":100,
           lengthChange:false,
           // autoWidth:true,
