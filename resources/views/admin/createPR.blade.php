@@ -1068,33 +1068,33 @@
       var i = 0
       var append = ""
       var colors = []
-      // var ArrColors = [{
-      //       name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:"NA",index: 0
-      //   },
-      //   {
-      //       name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:"OG",index: 1
-      //   },
-      //   {
-      //       name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:"DO",index: 2
-      //   },
-      //   {
-      //       name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:"ALL",index: 3
-      //   },
-      // ]
-
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: '',status:"NA",index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:"NA",index: 0
         },
         {
-            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: '',status:"OG",index: 1
+            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:"OG",index: 1
         },
         {
-            name: 'Done',style: 'color:white', color: 'bg-green', icon: '',status:"DO",index: 2
+            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:"DO",index: 2
         },
         {
-            name: 'All',style: 'color:white', color: 'bg-purple', icon: '',status:"ALL",index: 3
+            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:"ALL",index: 3
         },
       ]
+
+      // var ArrColors = [{
+      //       name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: '',status:"NA",index: 0
+      //   },
+      //   {
+      //       name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: '',status:"OG",index: 1
+      //   },
+      //   {
+      //       name: 'Done',style: 'color:white', color: 'bg-green', icon: '',status:"DO",index: 2
+      //   },
+      //   {
+      //       name: 'All',style: 'color:white', color: 'bg-purple', icon: '',status:"ALL",index: 3
+      //   },
+      // ]
 
       colors.push(ArrColors)
       $.each(colors[0], function(key, value){
