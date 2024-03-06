@@ -366,14 +366,14 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Duration<span>*</span></label>
+                      <label>Duration*</label>
                       <select class="form-control" name="selectDuration" id="selectDuration_refer" onchange="validateInput(this)"><option></option></select>
                       <span class="help-block" style="display:none">Please select Duration!</span>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Status<span>*</span></label>
+                      <label>Status*</label>
                       <select class="form-control" name="selectStatus" id="selectStatus_refer" onchange="validateInput(this)"><option></option></select>
                       <span class="help-block" style="display:none">Please select Status!</span>
                     </div>
@@ -993,17 +993,26 @@
                   return `${year}-${month}-${day}`;
                 }
 
+                var startDate = "", endDate = ""
                 if (result != "") {
                   result.items.map(item => {
                     if (item.creator != undefined) {
                       if (Object.keys(item.creator).length == 2) {
                         if (item.creator.self == true) {
                           isCreator = true
+                          if (item.start.dateTime || item.end.dateTime) {
+                            startDate = convertToYMD(item.start.dateTime)
+                            endDate = convertToYMD(item.end.dateTime)
+                          }else{
+                            startDate = item.start.date
+                            endDate = item.end.date
+                          }
+
                           arrayData.push({
                             id:item.id,
                             title: item.summary,
-                            start: convertToYMD(item.start.dateTime) || item.start.date, // Use the appropriate start date/time property from the API response
-                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                            start: item.start.date, // Use the appropriate start date/time property from the API response
+                            end: item.end.date, // Use the appropriate end date/time property from the API response
                             activity: item.summary,
                             refer:"gcal",
                           })
@@ -1014,11 +1023,19 @@
                     $.each(item.attendees,function(index,itemX){
                           if (itemX.responseStatus == "accepted") {
                             if (itemX.email == email) {
+                              if (item.start.dateTime || item.end.dateTime) {
+                                startDate = convertToYMD(item.start.dateTime)
+                                endDate = convertToYMD(item.end.dateTime)
+                              }else{
+                                startDate = item.start.date
+                                endDate = item.end.date
+                              }
+
                               arrayData.push({
                                 id:item.id,
                                 title: item.summary,
-                                start: convertToYMD(item.start.dateTime) || item.start.date, // Use the appropriate start date/time property from the API response
-                                end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                                start: startDate, // Use the appropriate start date/time property from the API response
+                                end: endDate, // Use the appropriate end date/time property from the API response
                                 activity: item.summary,
                                 refer:"gcal"
                               })
@@ -1027,6 +1044,8 @@
                       })
                   })
                 }
+
+                console.log(result)
 
                 function filterUniqueObjects(arr, prop1, prop2) {
                   const seen = {};
@@ -1436,7 +1455,9 @@
                           $('#selectTask').prop("disabled",false)
                           $('#selectPhase').prop("disabled",false)
                           $('#selectLevel').prop("disabled",false)
-                          $('#textareaActivity').prop("disabled",false)
+                          $('#textareaActivity').prop("disabled",true)
+                          $('#selectDuration').prop("disabled",false)
+                          $('#selectStatus').prop("disabled",false)
                           $("#ModalUpdateTimesheet").find('.modal-footer').show()
                         }
                       }else{
@@ -1450,7 +1471,9 @@
                         $('#selectTask').prop("disabled",false)
                         $('#selectPhase').prop("disabled",false)
                         $('#selectLevel').prop("disabled",false)
-                        $('#textareaActivity').prop("disabled",false)
+                        $('#textareaActivity').prop("disabled",true)
+                        $('#selectDuration').prop("disabled",false)
+                        $('#selectStatus').prop("disabled",false)
                         $("#ModalUpdateTimesheet").find('.modal-footer').show()
                       }  
                     }else{
@@ -1525,8 +1548,8 @@
                   $('#selectPhase_refer').prop("disabled",true)
                   $('#selectLevel_refer').prop("disabled",true)
                   $('#textareaActivity_refer').prop("disabled",true)
-                  $('#selectDuration_refer').prop("disabled",true)
-                  $('#selectStatus_refer').prop("disabled",true)
+                  $('#selectDuration_refer').prop("disabled",false)
+                  $('#selectStatus_refer').prop("disabled",false)
                 }
               }
             }
@@ -3234,12 +3257,12 @@
       }
     })
 
-    $('#ModalUpdateTimesheet').on('hidden.bs.modal', function () {
-      $("input").val('')
-      $("select").val('').trigger("change")
-      $("select").prop("disabled",false)
-      $("textarea").prop("disabled",false)
-    })
+    // $('#ModalUpdateTimesheet').on('hidden.bs.modal', function () {
+    //   $("input").val('')
+    //   $("select").val('').trigger("change")
+    //   $("select").prop("disabled",false)
+    //   $("textarea").prop("disabled",false)
+    // })
 
     $('#daterange-timesheet').on('hide.daterangepicker',(e,picker) => {
       var range = moment().isBetween(picker.startDate, picker.endDate);
