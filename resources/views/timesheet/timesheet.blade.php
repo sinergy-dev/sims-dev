@@ -993,17 +993,26 @@
                   return `${year}-${month}-${day}`;
                 }
 
+                var startDate = "", endDate = ""
                 if (result != "") {
                   result.items.map(item => {
                     if (item.creator != undefined) {
                       if (Object.keys(item.creator).length == 2) {
                         if (item.creator.self == true) {
                           isCreator = true
+                          if (item.start.dateTime || item.end.dateTime) {
+                            startDate = convertToYMD(item.start.dateTime)
+                            endDate = convertToYMD(item.end.dateTime)
+                          }else{
+                            startDate = item.start.date
+                            endDate = item.end.date
+                          }
+
                           arrayData.push({
                             id:item.id,
                             title: item.summary,
-                            start: convertToYMD(item.start.dateTime) || item.start.date, // Use the appropriate start date/time property from the API response
-                            end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                            start: item.start.date, // Use the appropriate start date/time property from the API response
+                            end: item.end.date, // Use the appropriate end date/time property from the API response
                             activity: item.summary,
                             refer:"gcal",
                           })
@@ -1014,11 +1023,19 @@
                     $.each(item.attendees,function(index,itemX){
                           if (itemX.responseStatus == "accepted") {
                             if (itemX.email == email) {
+                              if (item.start.dateTime || item.end.dateTime) {
+                                startDate = convertToYMD(item.start.dateTime)
+                                endDate = convertToYMD(item.end.dateTime)
+                              }else{
+                                startDate = item.start.date
+                                endDate = item.end.date
+                              }
+                              
                               arrayData.push({
                                 id:item.id,
                                 title: item.summary,
-                                start: convertToYMD(item.start.dateTime) || item.start.date, // Use the appropriate start date/time property from the API response
-                                end: item.end.dateTime || item.end.date, // Use the appropriate end date/time property from the API response
+                                start: startDate, // Use the appropriate start date/time property from the API response
+                                end: endDate, // Use the appropriate end date/time property from the API response
                                 activity: item.summary,
                                 refer:"gcal"
                               })
@@ -1027,6 +1044,8 @@
                       })
                   })
                 }
+
+                console.log(result)
 
                 function filterUniqueObjects(arr, prop1, prop2) {
                   const seen = {};
