@@ -1378,8 +1378,6 @@
               return date.isSame(clickedDate, 'day');
             });
 
-            console.log(calEvent)
-
             setHoliday(start,end,checkDate)
             if (isAllowedDate) {
               var isClickedDate = moment(calEvent.start)
@@ -1440,24 +1438,24 @@
                         var today = moment();
                         var isSameDateToday = momentDate.isSame(today, 'day');
                         if (isSameDateToday) {
-                          $('#selectType').prop("disabled",true)
-                          $('#selectLead').prop("disabled",true)
-                          $('#selectTask').prop("disabled",true)
-                          $('#selectPhase').prop("disabled",true)
-                          $('#selectLevel').prop("disabled",true)
-                          $('#textareaActivity').prop("disabled",true)
-                          $('#selectDuration').prop("disabled",true)
-                          $('#selectStatus').prop("disabled",true)
+                          $('#selectType_refer').prop("disabled",false)
+                          $('#selectLead_refer').prop("disabled",false)
+                          $('#selectTask_refer').prop("disabled",false)
+                          $('#selectPhase_refer').prop("disabled",false)
+                          $('#selectLevel_refer').prop("disabled",false)
+                          $('#textareaActivity_refer').prop("disabled",true)
+                          $('#selectDuration_refer').prop("disabled",false)
+                          $('#selectStatus_refer').prop("disabled",false)
                           $("#ModalUpdateTimesheet").find('.modal-footer').hide()
                         }else{
-                          $('#selectType').prop("disabled",false)
-                          $('#selectLead').prop("disabled",false)
-                          $('#selectTask').prop("disabled",false)
-                          $('#selectPhase').prop("disabled",false)
-                          $('#selectLevel').prop("disabled",false)
-                          $('#textareaActivity').prop("disabled",true)
-                          $('#selectDuration').prop("disabled",false)
-                          $('#selectStatus').prop("disabled",false)
+                          $('#selectType_refer').prop("disabled",false)
+                          $('#selectLead_refer').prop("disabled",false)
+                          $('#selectTask_refer').prop("disabled",false)
+                          $('#selectPhase_refer').prop("disabled",false)
+                          $('#selectLevel_refer').prop("disabled",false)
+                          $('#textareaActivity_refer').prop("disabled",true)
+                          $('#selectDuration_refer').prop("disabled",false)
+                          $('#selectStatus_refer').prop("disabled",false)
                           $("#ModalUpdateTimesheet").find('.modal-footer').show()
                         }
                       }else{
@@ -1466,15 +1464,27 @@
                         var today = moment();
                         // Compare the date components
                         var isSameDateToday = momentDate.isSame(today, 'day');
-                        $('#selectType').prop("disabled",false)
-                        $('#selectLead').prop("disabled",false)
-                        $('#selectTask').prop("disabled",false)
-                        $('#selectPhase').prop("disabled",false)
-                        $('#selectLevel').prop("disabled",false)
-                        $('#textareaActivity').prop("disabled",true)
-                        $('#selectDuration').prop("disabled",false)
-                        $('#selectStatus').prop("disabled",false)
-                        $("#ModalUpdateTimesheet").find('.modal-footer').show()
+                        if (isSameDateToday) {
+                          $('#selectType_refer').prop("disabled",false)
+                          $('#selectLead_refer').prop("disabled",false)
+                          $('#selectTask_refer').prop("disabled",false)
+                          $('#selectPhase_refer').prop("disabled",false)
+                          $('#selectLevel_refer').prop("disabled",false)
+                          $('#textareaActivity_refer').prop("disabled",true)
+                          $('#selectDuration_refer').prop("disabled",false)
+                          $('#selectStatus_refer').prop("disabled",false)
+                          $("#ModalUpdateTimesheet").find('.modal-footer').hide()
+                        }else{
+                          $('#selectType_refer').prop("disabled",false)
+                          $('#selectLead_refer').prop("disabled",false)
+                          $('#selectTask_refer').prop("disabled",false)
+                          $('#selectPhase_refer').prop("disabled",false)
+                          $('#selectLevel_refer').prop("disabled",false)
+                          $('#textareaActivity_refer').prop("disabled",true)
+                          $('#selectDuration_refer').prop("disabled",false)
+                          $('#selectStatus_refer').prop("disabled",false)
+                          $("#ModalUpdateTimesheet").find('.modal-footer').show()
+                        }
                       }  
                     }else{
                       eventUpdateTimesheet(calEvent)
@@ -1548,8 +1558,8 @@
                   $('#selectPhase_refer').prop("disabled",true)
                   $('#selectLevel_refer').prop("disabled",true)
                   $('#textareaActivity_refer').prop("disabled",true)
-                  $('#selectDuration_refer').prop("disabled",false)
-                  $('#selectStatus_refer').prop("disabled",false)
+                  $('#selectDuration_refer').prop("disabled",true)
+                  $('#selectStatus_refer').prop("disabled",true)
                 }
               }
             }
