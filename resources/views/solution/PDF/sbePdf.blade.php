@@ -152,7 +152,7 @@
   
   <div style="page-break-inside: avoid;"> 
     @foreach($getFunction as $keys => $datas)
-      <div style="display: flex;margin-top: -70px;">
+      <div style="display: flex;margin-top: -50px;">
         <div class="left">
           @if($keys == "Implementation")
             <div style="width: 100px;height: 50px;background-color: #789de5;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
