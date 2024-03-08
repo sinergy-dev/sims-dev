@@ -429,7 +429,6 @@ Report Brands
 
   $(document).ready(function (){  
     initproduct()
-    reloadTable()
     initSelectCustomer()
     $.ajax({
       url: "{{url('/getTerritory')}}",

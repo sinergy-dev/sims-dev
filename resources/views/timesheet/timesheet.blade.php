@@ -1437,17 +1437,17 @@
                         // Get today's date
                         var today = moment();
                         var isSameDateToday = momentDate.isSame(today, 'day');
-                        if (isSameDateToday) {
-                          $('#selectType_refer').prop("disabled",false)
-                          $('#selectLead_refer').prop("disabled",false)
-                          $('#selectTask_refer').prop("disabled",false)
-                          $('#selectPhase_refer').prop("disabled",false)
-                          $('#selectLevel_refer').prop("disabled",false)
-                          $('#textareaActivity_refer').prop("disabled",true)
-                          $('#selectDuration_refer').prop("disabled",false)
-                          $('#selectStatus_refer').prop("disabled",false)
-                          $("#ModalUpdateTimesheet").find('.modal-footer').hide()
-                        }else{
+                        // if (isSameDateToday) {
+                        //   $('#selectType_refer').prop("disabled",false)
+                        //   $('#selectLead_refer').prop("disabled",false)
+                        //   $('#selectTask_refer').prop("disabled",false)
+                        //   $('#selectPhase_refer').prop("disabled",false)
+                        //   $('#selectLevel_refer').prop("disabled",false)
+                        //   $('#textareaActivity_refer').prop("disabled",true)
+                        //   $('#selectDuration_refer').prop("disabled",false)
+                        //   $('#selectStatus_refer').prop("disabled",false)
+                        //   $("#ModalUpdateTimesheet").find('.modal-footer').hide()
+                        // }else{
                           $('#selectType_refer').prop("disabled",false)
                           $('#selectLead_refer').prop("disabled",false)
                           $('#selectTask_refer').prop("disabled",false)
@@ -1457,24 +1457,24 @@
                           $('#selectDuration_refer').prop("disabled",false)
                           $('#selectStatus_refer').prop("disabled",false)
                           $("#ModalUpdateTimesheet").find('.modal-footer').show()
-                        }
+                        // }
                       }else{
                         var momentDate = moment(start); // Replace with your own moment date
                         // Get today's date
                         var today = moment();
                         // Compare the date components
                         var isSameDateToday = momentDate.isSame(today, 'day');
-                        if (isSameDateToday) {
-                          $('#selectType_refer').prop("disabled",false)
-                          $('#selectLead_refer').prop("disabled",false)
-                          $('#selectTask_refer').prop("disabled",false)
-                          $('#selectPhase_refer').prop("disabled",false)
-                          $('#selectLevel_refer').prop("disabled",false)
-                          $('#textareaActivity_refer').prop("disabled",true)
-                          $('#selectDuration_refer').prop("disabled",false)
-                          $('#selectStatus_refer').prop("disabled",false)
-                          $("#ModalUpdateTimesheet").find('.modal-footer').hide()
-                        }else{
+                        // if (isSameDateToday) {
+                        //   $('#selectType_refer').prop("disabled",false)
+                        //   $('#selectLead_refer').prop("disabled",false)
+                        //   $('#selectTask_refer').prop("disabled",false)
+                        //   $('#selectPhase_refer').prop("disabled",false)
+                        //   $('#selectLevel_refer').prop("disabled",false)
+                        //   $('#textareaActivity_refer').prop("disabled",true)
+                        //   $('#selectDuration_refer').prop("disabled",false)
+                        //   $('#selectStatus_refer').prop("disabled",false)
+                        //   $("#ModalUpdateTimesheet").find('.modal-footer').hide()
+                        // }else{
                           $('#selectType_refer').prop("disabled",false)
                           $('#selectLead_refer').prop("disabled",false)
                           $('#selectTask_refer').prop("disabled",false)
@@ -1484,7 +1484,7 @@
                           $('#selectDuration_refer').prop("disabled",false)
                           $('#selectStatus_refer').prop("disabled",false)
                           $("#ModalUpdateTimesheet").find('.modal-footer').show()
-                        }
+                        // }
                       }  
                     }else{
                       eventUpdateTimesheet(calEvent)

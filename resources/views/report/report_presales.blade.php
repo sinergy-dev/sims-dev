@@ -5,7 +5,7 @@ Report Presales
 @section('head_css')
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="{{asset('template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<!--   <link rel="preload" onload="this.onload=null;this.rel='stylesheet'" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css"> -->
   <style type="text/css">
     .btn-warning-export{
       background-color: #ffc107;
@@ -307,7 +307,7 @@ Report Presales
 <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
 <!-- bootstrap datepicker -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 @endsection
 @section('script')
@@ -440,13 +440,13 @@ Report Presales
       $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
     }
 
-    $('#enddate').datepicker({
-        autoclose: true
-    })
+    // $('#enddate').datepicker({
+    //     autoclose: true
+    // })
 
-    $('#startdate').datepicker({
-        autoclose: true
-    })
+    // $('#startdate').datepicker({
+    //     autoclose: true
+    // })
 
     var url = {!! json_encode(url('/')) !!}
 
@@ -465,8 +465,8 @@ Report Presales
 	        data:{
 	          data:this.value,
 	          type:type,
-	          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-	          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+	          // start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+	          // end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
 	        },
 	        success: function(result){
 	          $('#report_sd').empty();
@@ -494,8 +494,8 @@ Report Presales
         data:{
           data:this.value,
           type:type,
-          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+          // start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+          // end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
         },
         success: function(result){
           $('#report_tp').empty();
@@ -527,8 +527,8 @@ Report Presales
         data:{
           data:this.value,
           type:type,
-          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+          // start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+          // end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
         },
         success: function(result){
           $('#report_win').empty();
@@ -556,8 +556,8 @@ Report Presales
         data:{
           data:this.value,
           type:type,
-          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+          // start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+          // end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
         },
         success: function(result){
           $('#report_lose').empty();
