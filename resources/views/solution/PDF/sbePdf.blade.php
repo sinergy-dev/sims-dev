@@ -152,7 +152,7 @@
   
   <div style="page-break-inside: avoid;"> 
     @foreach($getFunction as $keys => $datas)
-      <div style="display: flex;">
+      <div style="display: flex;margin-top: -70px;">
         <div class="left">
           @if($keys == "Implementation")
             <div style="width: 100px;height: 50px;background-color: #789de5;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
@@ -217,7 +217,7 @@
             <th style="text-align:right">IDR {{number_format($getNominal)}}</th>
           </tr>
         </table>  
-        <table style="width: 100%;text-align: center;">
+        <table style="width: 100%;text-align: center;margin-top: 20px;">
           <tr>
             @foreach($getSign as $data_sign)
             <td>
