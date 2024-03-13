@@ -912,9 +912,8 @@
         $(".timesheet_status").css("background-color","green")
       }
 
-      let startDateFullcalendar = ""
-      var currentView = calendar.fullCalendar('getView');
-      startDateFullcalendar = moment(currentView.intervalStart).format('YYYY-MM-DD');
+      let startFullcalendar = calendar.fullCalendar('getView').start.format('YYYY-MM-DD');
+      let endFullcalendar = calendar.fullCalendar('getView').end.format('YYYY-MM-DD');
 
       Pace.restart();
       Pace.track(function(){
@@ -924,7 +923,7 @@
           success:function(results){
             $.ajax({
               type:"GET",
-              url:"{{url('/getListCalendarEvent')}}"+ "?nik=" + nik + '&year=' + year + '&date=' + startDateFullcalendar,
+              url:"{{url('/getListCalendarEvent')}}"+ "?nik=" + nik + '&year=' + year + '&dateStart=' + startFullcalendar + '&dateEnd=' + endFullcalendar,
               success:function(result){
                 var events = [], disabledDates = []
                 if (results.data.length > 0) {
@@ -1011,8 +1010,8 @@
                           arrayData.push({
                             id:item.id,
                             title: item.summary,
-                            start: item.start.date, // Use the appropriate start date/time property from the API response
-                            end: item.end.date, // Use the appropriate end date/time property from the API response
+                            start: startDate, // Use the appropriate start date/time property from the API response
+                            end: endDate, // Use the appropriate end date/time property from the API response
                             activity: item.summary,
                             refer:"gcal",
                           })
@@ -1026,7 +1025,9 @@
                               if (item.start.dateTime || item.end.dateTime) {
                                 startDate = convertToYMD(item.start.dateTime)
                                 endDate = convertToYMD(item.end.dateTime)
-                              }else{
+                              }
+
+                              if (item.start.date || item.end.date) {
                                 startDate = item.start.date
                                 endDate = item.end.date
                               }

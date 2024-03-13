@@ -81,16 +81,19 @@ class TimesheetController extends Controller
 
         $calenderId = User::where('nik',$request->nik)->first()->email;
 
-        if (isset($request->date)) {
-            $startDate = Carbon::parse($request->date)->startOfMonth()->format('Y-m-d\TH:i:s\Z');
-            $endDate = Carbon::parse($request->date)->endOfMonth()->format('Y-m-d\TH:i:s\Z');
-        }else{
-            $currentDateTime    = Carbon::now();
-            $formatMonthToYear   = $currentDateTime->year(date('Y'));
+        $startDate = Carbon::parse($request->dateStart)->format('Y-m-d\TH:i:s\Z');
+        $endDate = Carbon::parse($request->dateEnd)->format('Y-m-d\TH:i:s\Z');
+        
+        // if (isset($request->dateStart) || isset($request->dateEnd)) {
+        //     $startDate = Carbon::parse($request->dateStart)->format('Y-m-d\TH:i:s\Z');
+        //     $endDate = Carbon::parse($request->dateEnd)->format('Y-m-d\TH:i:s\Z');
+        // }else{
+        //     $currentDateTime    = Carbon::now();
+        //     $formatMonthToYear   = $currentDateTime->year(date('Y'));
 
-            $startDate       = $formatMonthToYear->startOfMonth()->format('Y-m-d\TH:i:s\Z');
-            $endDate         = $formatMonthToYear->endOfMonth()->format('Y-m-d\TH:i:s\Z');
-        }
+        //     $startDate       = $formatMonthToYear->startOfMonth()->format('Y-m-d\TH:i:s\Z');
+        //     $endDate         = $formatMonthToYear->endOfMonth()->format('Y-m-d\TH:i:s\Z');
+        // }
 
         try {
             // Create a new Guzzle HTTP client
