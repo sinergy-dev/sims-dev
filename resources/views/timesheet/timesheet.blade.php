@@ -919,7 +919,7 @@
       Pace.track(function(){
         $.ajax({
           type:"GET",
-          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter + '&' + dateDifYear,
+          url:"{{'/timesheet/getAllActivityByUser'}}"+ "?nik=" + nik + arrFilter + '&' + dateDifYear + '&dateStart=' + startFullcalendar + '&dateEnd=' + endFullcalendar,
           success:function(results){
             $.ajax({
               type:"GET",
@@ -1045,8 +1045,6 @@
                       })
                   })
                 }
-
-                console.log(result)
 
                 function filterUniqueObjects(arr, prop1, prop2) {
                   const seen = {};
@@ -1293,7 +1291,6 @@
         //   end: '2023-08-31'
         // },
         dayClick: function(date, jsEvent, view) { 
-          console.log(date)
           // if (!$(jsEvent.target).hasClass('fc-day-top')) {   
             localStorage.setItem("isAddTimesheet",true)
             $("#daterange-timesheet").prop("disabled",false)
@@ -1520,8 +1517,6 @@
 
                 $("#tbInfo").append(append)
               }else{
-                console.log(calEvent.originalStartDate)
-
                 if (calEvent.originalStartDate > moment().format('YYYY-MM-DD')) {
                   $('#daterange-timesheet').data('daterangepicker').setStartDate(moment(calEvent.originalStartDate).format('MM/DD/YYYY'));
                   $('#daterange-timesheet').data('daterangepicker').setEndDate(moment(calEvent.originalStartDate).format('MM/DD/YYYY'));
@@ -2204,7 +2199,6 @@
       var pid = pid
       var idValue = idValue
 
-      console.log(pid)
       $.ajax({
         type:"GET",
         url:"{{url('/timesheet/getPidByPic')}}",
@@ -2387,9 +2381,6 @@
     }
 
     function setHoliday(start,end,checkDate){
-      console.log(start)
-      console.log(end)
-
       var disabledDates = [], disDate = ''
       $.ajax({
         type:"GET",
@@ -3010,18 +3001,18 @@
             {
               Swal.fire(swalSuccess).then((result,data) => {
                 if (postParam == 'refer') {
-                  loadData()
+                  loadData(calendar.fullCalendar('getView').title)
                   Swal.close()
                   if (modalName) {
                     $("#"+modalName).modal("hide")
                   }
                 }else{
                   if (result.isConfirmed) {
-                    loadData()
+                    loadData(calendar.fullCalendar('getView').title)
                     Swal.close()
                     eventUpdateTimesheet()
                   }else{
-                    loadData()
+                    loadData(calendar.fullCalendar('getView').title)
                     if (window.location.href.split("/")[4].split("?")[1]) {
                       history.replaceState(null, '', "{{url('timesheet/timesheet')}}")
                     }
