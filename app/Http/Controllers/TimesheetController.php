@@ -1067,17 +1067,20 @@ class TimesheetController extends Controller
     }
 
     public function getAllActivityByUser(Request $request)
-    {
-        if (isset($request->date)) {
-            $startDate = Carbon::parse($request->date)->startOfMonth()->format('Y-m-d');
-            $endDate = Carbon::parse($request->date)->endOfMonth()->format('Y-m-d');
-        }else{
-            $currentDateTime    = Carbon::now();
-            $formatMonthToYear   = $currentDateTime->year('2024');
+    {   
+        $startDate = Carbon::parse($request->dateStart)->format('Y-m-d');
+        $endDate = Carbon::parse($request->dateEnd)->format('Y-m-d');
 
-            $startDate       = $formatMonthToYear->startOfMonth()->format('Y-m-d');
-            $endDate         = $formatMonthToYear->endOfMonth()->format('Y-m-d');
-        }
+        // if (isset($request->date)) {
+        //     $startDate = Carbon::parse($request->date)->startOfMonth()->format('Y-m-d');
+        //     $endDate = Carbon::parse($request->date)->endOfMonth()->format('Y-m-d');
+        // }else{
+        //     $currentDateTime    = Carbon::now();
+        //     $formatMonthToYear   = $currentDateTime->year('2024');
+
+        //     $startDate       = $formatMonthToYear->startOfMonth()->format('Y-m-d');
+        //     $endDate         = $formatMonthToYear->endOfMonth()->format('Y-m-d');
+        // }
         
         $hidden = ['planned','threshold'];
 
