@@ -1756,7 +1756,10 @@
         if (calendarElement.data("fullCalendar")) {
           $("#calendar").fullCalendar('gotoDate',valDate)
         }
-        showAlertRemaining(valDate)
+
+        let date = moment(valDate).format("YYYY-MM-DD")
+
+        showAlertRemaining(date)
       }else{
         showAlertRemaining(moment.utc(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'))
       }
