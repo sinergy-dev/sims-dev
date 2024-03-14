@@ -37,7 +37,7 @@
 
 		table {
 			border-collapse: collapse;
-			page-break-inside:auto 
+			page-break-inside:auto
 		}
 
 		.table_supplier_content th, .table_supplier_content td {
@@ -56,6 +56,11 @@
 		}
 
    		tr{page-break-inside:avoid;page-break-after: auto;}
+
+   		.long-paragraph{
+   			white-space: pre-line;
+        	page-break-before: always;
+   		}
 
 	</style>
 </head>
@@ -263,7 +268,7 @@
 						<td>{{$eachProduct->part_number}}</td>
 						<td>{{$eachProduct->serial_number}}</td>
 						@endif
-						<td>{!! trans($eachProduct->description) !!}</td>
+						<td><pre style="font-family: Lucida Sans Unicode, sans-serif;">{!! $eachProduct->description !!}</pre></td>
 						<td style="text-align:center">{{$eachProduct->qty}}</td>
 						<td style="text-align:center">{{$eachProduct->unit}}</td>
 						@if($data->isRupiah == 'true')
@@ -273,7 +278,6 @@
 						<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->nominal_product,2)}}</td>
 						<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->grand_total,2)}}</td>
 						@endif
-						
 					</tr>
 				@endforeach
 			</tbody>

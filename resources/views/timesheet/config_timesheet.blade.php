@@ -599,17 +599,28 @@
       }
     }
 
-    $.ajax({
-      url: "{{'/timesheet/getAllPid'}}",
-      type: 'GET',
-      success:function(result){
-          $("#selectPIDAssign").select2({
-              multiple:true,
-              data:result,
-              placeholder:'Select PID',
-          })
+    getAllPid(null)
+    function getAllPid(nik){
+      let niks = ""
+
+      if (nik != null) {
+        niks = nik
       }
-    })
+
+      $("#selectPIDAssign").empty()
+
+      $.ajax({
+        url: "{{'/timesheet/getAllPid'}}?nik="+nik,
+        type: 'GET',
+        success:function(result){
+          $("#selectPIDAssign").select2({
+            multiple:true,
+            data:result,
+            placeholder:'Select PID',
+          })
+        }
+      })
+    }    
 
     $.ajax({
       url: "{{'/timesheet/getLockDurationByDivision'}}",
@@ -696,6 +707,9 @@
         $("#selectPICAssign").select2({
             placeholder:"Select PIC",
             data:result,
+        }).on('change', function() {
+          console.log($(this).val())
+          getAllPid($(this).val())
         })
       }
     })

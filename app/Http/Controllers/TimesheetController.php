@@ -860,7 +860,24 @@ class TimesheetController extends Controller
 
     public function getAllPid(Request $request)
     {
-        $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id','id_project as text')->where('id_company', '1')->orderby('tb_id_project.id_pro','desc')->get();
+        if ($request->nik == "") {
+            $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company', '1')->orderby('tb_id_project.id_pro','desc')->get();
+        }else{
+            $cekPid = TimesheetPid::select('pid')->where('nik',$request->nik)->distinct()->pluck('pid');
+
+            // return $cekPid;
+
+            $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company', '1');
+            
+            if ($cekPid->pluck('pid')->isNotEmpty()) {
+                $getAllPid = $getAllPid->whereNotIn('id_project',$cekPid)->get();
+            } else {
+                // Handle the case where $excludedIds is empty
+                $getAllPid = $getAllPid->get(); // Or any other appropriate action
+            }
+          
+        }
+        
 
         return $getAllPid;
     }
@@ -874,17 +891,24 @@ class TimesheetController extends Controller
 
         if (isset($cekPidStatus)) {
             if ($cekPidStatus->status_assign_pid == 'All') {
-                $getPidByPic = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('users','users.nik','sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`opp_name`) AS text"))->where('id_company','1')->orderby('tb_id_project.id_pro','desc')->get();
+                $getPidByPic = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('users','users.nik','sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company','1')->orderby('tb_id_project.id_pro','desc')->get();
 
                 return $getPidByPic;
             }else if ($cekPidStatus->status_assign_pid == 'Pid') {
-                $getPidByPic = DB::table('tb_timesheet_pid')->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`opp_name`) AS text"))->where('tb_timesheet_pid.nik',Auth::User()->nik)->orderby('id','desc')->get();
+                $getPidByPic = DB::table('tb_timesheet_pid')
+                    ->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')
+                    ->groupBy('tb_timesheet_pid.pid','opp_name')
+                    ->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`name_project`) AS text"))
+                    ->where('tb_timesheet_pid.nik',Auth::User()->nik)
+                    ->orderby('id','desc')
+                    ->get();
 
                 return $getPidByPic;
             }
         }else{
 
-            $getPidByPic = DB::table('tb_timesheet_pid')->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`opp_name`) AS text"))->where('tb_timesheet_pid.nik',Auth::User()->nik)->orderby('id','desc')->get();
+            $getPidByPic = DB::table('tb_timesheet_pid')->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`name`) AS text"))->where('tb_timesheet_pid.nik',Auth::User()->nik)->orderby('id','desc')->get();
 
             if (count($getPidByPic) == 0) {
                 $getPidByPic = ['Alert','Please Ask your Manager/Spv to assign pid!'];
@@ -1193,33 +1217,105 @@ class TimesheetController extends Controller
 
 
         if (isset($request->roles)) {
-            // return "boh";
             if ($request->roles == 'DPG') {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division','TECHNICAL')->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division','TECHNICAL')
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
+
+                // $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division','TECHNICAL')->get();
             }else if ($request->roles == 'presales') {
-                // code...
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division','TECHNICAL PRESALES')->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division','TECHNICAL PRESALES')
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
+
+                // $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division','TECHNICAL PRESALES')->get();
             }else {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',$request->roles)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division',$request->roles)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
+
+                // $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',$request->roles)->get();
             }
             
         }else{
             if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division',Auth::User()->id_division)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
             } elseif ($cek_role->name == 'SOL Manager') {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division',Auth::User()->id_division)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
             } elseif ($cek_role->name == 'SID Manager' || $cek_role->name == 'SID SPV') {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division',Auth::User()->id_division)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
             } elseif ($cek_role->name == 'MSM Manager' || $cek_role->name == 'MSM TS SPV') {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division',Auth::User()->id_division)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
             } elseif ($cek_role->name == 'PMO SPV' || $cek_role->name == 'PMO Manager') {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division',Auth::User()->id_division)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
             } elseif ($cek_role->name == 'HR Manager') {
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',Auth::User()->id_division)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
+                ->select(
+                    'users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->where('id_division',Auth::User()->id_division)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
             } else {
                 $getPidByNik = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('pid')->where('tb_timesheet_pid.nik',Auth::User()->nik)->get();
                 $getPid = TimesheetPid::whereIn('pid',$getPidByNik)->get();
-                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('pid','users.name','role')->whereIn('pid',$getPidByNik)->get();
+                $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name',
+                    DB::raw("max(tb_timesheet_pid.pid) as pid"),
+                    DB::raw("max(role) as role")
+                )->whereIn('pid',$getPidByNik)
+                ->groupBy('tb_timesheet_pid.nik','tb_timesheet_pid.pid')
+                ->get();
             }
         }
         

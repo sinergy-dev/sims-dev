@@ -776,7 +776,11 @@ Partnership
             console.log(value)
             prepend = prepend + '<li class="item">'
               prepend = prepend + ' <div class="product-img">'
-                prepend = prepend + '<img class="img-responsive img-circle" style="border:solid #3c8dbc 1.5px" src="{{asset("image/logo_partnership")}}/'+ value.logo+'" alt="Yuki" style="width: 50px;height:50px;position: relative;">'
+                  if(value.logo == null){
+                    prepend = prepend + '<img class="img-responsive img-circle" src="https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg" style="border:solid #3c8dbc 1.5px" alt="Yuki" style="width: 50px;height:50px;position: relative;">'
+                  }else{
+                    prepend = prepend + '<img class="img-responsive img-circle" style="border:solid #3c8dbc 1.5px" src="{{asset("image/logo_partnership")}}/'+ value.logo+'" alt="Yuki" style="position: relative;object-fit:cover">'
+                  }
                   prepend = prepend + '</div>'
                   prepend = prepend + '<div class="product-info">'
                   prepend = prepend + '<a href="{{url("partnership_detail/")}}/'+ value.id_partnership +'" class="product-title">' + value.partner 
