@@ -891,7 +891,7 @@ class TimesheetController extends Controller
 
         if (isset($cekPidStatus)) {
             if ($cekPidStatus->status_assign_pid == 'All') {
-                $getPidByPic = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('users','users.nik','sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company','1')->orderby('tb_id_project.id_pro','desc')->get();
+                $getPidByPic = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('users','users.nik','sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`opp_name`) AS text"))->where('id_company','1')->orderby('tb_id_project.id_pro','desc')->get();
 
                 return $getPidByPic;
             }else if ($cekPidStatus->status_assign_pid == 'Pid') {
@@ -899,7 +899,7 @@ class TimesheetController extends Controller
                     ->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')
                     ->groupBy('tb_timesheet_pid.pid','opp_name')
-                    ->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`name_project`) AS text"))
+                    ->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`opp_name`) AS text"))
                     ->where('tb_timesheet_pid.nik',Auth::User()->nik)
                     ->orderby('id','desc')
                     ->get();
