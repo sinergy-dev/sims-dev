@@ -935,7 +935,9 @@
                         start:value.start_date,
                         end:value.end_date,
                         activity:value.activity,
-                        remarks:value.remarks
+                        remarks:value.remarks,
+                        phase:null,
+                        task:null,
                       })   
 
                       disabledDates.push(moment.utc(value.start_date, 'YYYY-MM-DD'))
@@ -944,7 +946,7 @@
                         title:value.activity,
                         start:value.start_date,
                         originalStartDate:value.start_date,
-                        // end:value.end_date,
+                        end:value.end_date,
                         end:moment(value.end_date).endOf('day'),
                         // moment(value.end_date).endOf('day')
                         id:value.id,
@@ -999,6 +1001,7 @@
                       if (Object.keys(item.creator).length == 2) {
                         if (item.creator.self == true) {
                           isCreator = true
+
                           if (item.start.dateTime || item.end.dateTime) {
                             startDate = convertToYMD(item.start.dateTime)
                             endDate = convertToYMD(item.end.dateTime)
@@ -1007,42 +1010,99 @@
                             endDate = item.end.date
                           }
 
-                          arrayData.push({
-                            id:item.id,
-                            title: item.summary,
-                            start: startDate, // Use the appropriate start date/time property from the API response
-                            end: endDate, // Use the appropriate end date/time property from the API response
-                            activity: item.summary,
-                            refer:"gcal",
-                          })
+                          if (startDate != endDate && item.title === item.title) {
+                            var start = moment(startDate);
+                            var end = moment(endDate);
+
+                            // Create an array to store the dates
+                            var dateRange = [];
+                            // Iterate over the dates within the range and add them to the array
+                            var currentDate = start.clone();
+                            while (currentDate <= end) {
+                                dateRange.push(currentDate.clone());
+                                currentDate.add(1, 'day');
+                            }
+                            // Output the array of dates
+                            dateRange.forEach(function(date) {
+                                arrayData.push({
+                                  id:item.id,
+                                  title: item.summary,
+                                  start: moment(date).format("YYYY-MM-DD"), // Use the appropriate start date/time property from the API response
+                                  end: moment(date).format("YYYY-MM-DD"), // Use the appropriate end date/time property from the API response
+                                  activity: item.summary,
+                                  phase: null,
+                                  task: null,
+                                  refer:"gcal",
+                                })
+                            });
+                          }else{
+                            arrayData.push({
+                              id:item.id,
+                              title: item.summary,
+                              start: startDate, // Use the appropriate start date/time property from the API response
+                              end: endDate, // Use the appropriate end date/time property from the API response
+                              activity: item.summary,
+                              phase: null,
+                              task: null,
+                              refer:"gcal",
+                            })
+                          }                                                 
                         }
                       }
                     }
-
+                   
                     $.each(item.attendees,function(index,itemX){
-                          if (itemX.responseStatus == "accepted") {
-                            if (itemX.email == email) {
-                              if (item.start.dateTime || item.end.dateTime) {
-                                startDate = convertToYMD(item.start.dateTime)
-                                endDate = convertToYMD(item.end.dateTime)
-                              }
+                      if (itemX.responseStatus == "accepted") {
+                        if (itemX.email == email) {
 
-                              if (item.start.date || item.end.date) {
-                                startDate = item.start.date
-                                endDate = item.end.date
-                              }
-
-                              arrayData.push({
-                                id:item.id,
-                                title: item.summary,
-                                start: startDate, // Use the appropriate start date/time property from the API response
-                                end: endDate, // Use the appropriate end date/time property from the API response
-                                activity: item.summary,
-                                refer:"gcal"
-                              })
-                            }
+                          if (item.start.dateTime || item.end.dateTime) {
+                            startDate = convertToYMD(item.start.dateTime)
+                            endDate = convertToYMD(item.end.dateTime)
+                          } else {
+                            startDate = item.start.date
+                            endDate = item.end.date
                           }
-                      })
+
+                          if (startDate != endDate && item.title === item.title) {
+                            var start = moment(startDate);
+                            var end = moment(endDate);
+
+                            // Create an array to store the dates
+                            var dateRange = [];
+                            // Iterate over the dates within the range and add them to the array
+                            var currentDate = start.clone();
+                            while (currentDate <= end) {
+                                dateRange.push(currentDate.clone());
+                                currentDate.add(1, 'day');
+                            }
+                            // Output the array of dates
+                            dateRange.forEach(function(date) {
+                                arrayData.push({
+                                  id:item.id,
+                                  title: item.summary,
+                                  start: moment(date).format("YYYY-MM-DD"), // Use the appropriate start date/time property from the API response
+                                  end: moment(date).format("YYYY-MM-DD"), // Use the appropriate end date/time property from the API response
+                                  activity: item.summary,
+                                  phase: null,
+                                  task: null,
+                                  refer:"gcal",
+                                })
+                            });
+                          }else{
+                            arrayData.push({
+                              id:item.id,
+                              title: item.summary,
+                              start: startDate, // Use the appropriate start date/time property from the API response
+                              end: endDate, // Use the appropriate end date/time property from the API response
+                              activity: item.summary,
+                              phase: null,
+                              task: null,
+                              refer:"gcal",
+                            })
+                          }  
+                        }
+                      }
+                    })
                   })
                 }
 
@@ -1093,7 +1153,7 @@
                 // Filter distinct events based on the title
                 const uniqueEvents = mergedEvents.reduce((unique, event) => {
                   // const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
-                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start);
+                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
                   if (isEventUnique) {
                     unique.push(event);
                   }
@@ -1101,7 +1161,7 @@
                 }, []);
 
                 var arrayCalconcatDb = uniqueEvents
-                
+                                
                 return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji,valDate)
               },
               complete:function(){
@@ -1496,26 +1556,30 @@
               if (disabledDates.some(function(disabledDate) {
                 return calEvent.start.isSame(disabledDate, 'day');
               })) {
-                $("#ModalInfo").modal("show")
-                if (calEvent.remarks == 'Sick' || calEvent.remarks == 'Permit') {
-                  $("#btn_delete_permit").show()
-                  $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
+                if ($(this).css('background-color') == "rgb(0, 166, 90)") {
+                  eventUpdateTimesheet(calEvent)
                 }else{
-                  $("#btn_delete_permit").hide()
-                }
-                $(".modal-title").text("Information")
-                $("#tbInfo").empty()
-                var append = ""
-                append = append + '<tr>'
-                append = append + '  <th width="100px">Date</th>'
-                append = append + '  <td>'+ moment(calEvent.start).format('YYYY-MM-DD')  +'</td>'
-                append = append + '</tr>'
-                append = append + '<tr>'
-                append = append + '  <th width="100px">Activity</th>'
-                append = append + '  <td>'+ calEvent.activity  +'</td>'
-                append = append + '</tr>'
+                  $("#ModalInfo").modal("show")
+                  if (calEvent.remarks == 'Sick' || calEvent.remarks == 'Permit') {
+                    $("#btn_delete_permit").show()
+                    $("#btn_delete_permit").attr("onclick","deletePermit('"+ calEvent.id +"')")
+                  }else{
+                    $("#btn_delete_permit").hide()
+                  }
+                  $(".modal-title").text("Information")
+                  $("#tbInfo").empty()
+                  var append = ""
+                  append = append + '<tr>'
+                  append = append + '  <th width="100px">Date</th>'
+                  append = append + '  <td>'+ moment(calEvent.start).format('YYYY-MM-DD')  +'</td>'
+                  append = append + '</tr>'
+                  append = append + '<tr>'
+                  append = append + '  <th width="100px">Activity</th>'
+                  append = append + '  <td>'+ calEvent.activity  +'</td>'
+                  append = append + '</tr>'
 
-                $("#tbInfo").append(append)
+                  $("#tbInfo").append(append)
+                }
               }else{
                 if (calEvent.originalStartDate > moment().format('YYYY-MM-DD')) {
                   $('#daterange-timesheet').data('daterangepicker').setStartDate(moment(calEvent.originalStartDate).format('MM/DD/YYYY'));
@@ -3195,7 +3259,7 @@
                 }).then((result,data) => {
                   if (result.value) {
                     $("#ModalImport").modal("hide")
-                    loadData()              
+                    loadData(calendar.fullCalendar('getView').title)              
                   }
                 })
               } 
