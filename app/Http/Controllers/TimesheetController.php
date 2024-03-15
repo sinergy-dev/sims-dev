@@ -546,7 +546,8 @@ class TimesheetController extends Controller
                         // Check if the parsed date matches the original input date
                         if ($carbonStartDate->format('m/d/Y') === $dateStartString && $carbonEndDate->format('m/d/Y') === $dateEndString) {
                             $task = DB::table('tb_timesheet_task')->select('id')
-                            ->where('task','LIKE','%'.$value[10].'%')
+                            ->where(DB::raw("REPLACE(task, ' ', '')"), 'LIKE', '%'.$value[10].'%')
+                            ->orWhere('task','LIKE','%'.$value[10].'%')
                             ->first();
 
                             if (isset($task)) {
@@ -623,7 +624,8 @@ class TimesheetController extends Controller
                             }
 
                             $phase = DB::table('tb_timesheet_phase')->select('id')
-                                ->where('phase','LIKE','%['.$rolesAlias.']%')
+                                ->where(DB::raw("REPLACE(phase, ' ', '')"), 'LIKE', '%'.$value[11].'%')
+                                ->orwhere('phase','LIKE','%['.$rolesAlias.']%')
                                 ->where('phase','LIKE','%'.$value[11].'%')->first();
 
                             if (isset($phase)) {
@@ -757,6 +759,32 @@ class TimesheetController extends Controller
 
         return $result;
     }
+
+    // public function checkSimilarTask($stringCompare)
+    // {
+    //     $checkTask = Task::get();
+
+    //     foreach($checkTask as $data){
+    //         if ($this->similar_strings($data->task, $stringCompare)) {
+    //             return true;
+    //             break;
+    //         } else {
+    //             return false;
+    //         }
+    //     }   
+    // }
+
+    // public function similar_strings($str1, $str2, $threshold = 10) {
+    //     // Calculate the Levenshtein distance between the two strings
+    //     $distance = levenshtein($str1, $str2);
+        
+    //     // If the distance is less than or equal to the threshold, consider them similar
+    //     if ($distance <= $threshold) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     public function readCSV($locationFile){
 
