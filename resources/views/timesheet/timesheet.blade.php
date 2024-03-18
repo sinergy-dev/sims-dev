@@ -1007,19 +1007,20 @@
                             endDate = convertToYMD(item.end.dateTime)
                           }else{
                             startDate = item.start.date
-                            endDate = item.end.date
+                            endDate = moment(item.end.date).subtract(1,'day')
                           }
 
                           if (startDate != endDate && item.title === item.title) {
                             var start = moment(startDate);
                             var end = moment(endDate);
+                            // const newEndDate = end.subtract(1, 'day');
 
-                            // Create an array to store the dates
                             var dateRange = [];
-                            // Iterate over the dates within the range and add them to the array
-                            var currentDate = start.clone();
-                            while (currentDate <= end) {
-                                dateRange.push(currentDate.clone());
+
+                            var currentDate = moment(start);
+                            while (currentDate.isSameOrBefore(end)) {
+                                console.log(currentDate.format('YYYY-MM-DD'));
+                                dateRange.push(currentDate.format('YYYY-MM-DD'))
                                 currentDate.add(1, 'day');
                             }
                             // Output the array of dates
@@ -1060,33 +1061,35 @@
                             endDate = convertToYMD(item.end.dateTime)
                           } else {
                             startDate = item.start.date
-                            endDate = item.end.date
+                            endDate = moment(item.end.date).subtract(1,'day')
                           }
 
                           if (startDate != endDate && item.title === item.title) {
                             var start = moment(startDate);
                             var end = moment(endDate);
-
+                            // const newEndDate = end.subtract(1, 'day');
                             // Create an array to store the dates
                             var dateRange = [];
                             // Iterate over the dates within the range and add them to the array
-                            var currentDate = start.clone();
-                            while (currentDate <= end) {
-                                dateRange.push(currentDate.clone());
+
+                            var currentDate = moment(start);
+                            while (currentDate.isSameOrBefore(end)) {
+                                // console.log(currentDate.format('YYYY-MM-DD'));
+                                dateRange.push(currentDate.format('YYYY-MM-DD'))
                                 currentDate.add(1, 'day');
                             }
                             // Output the array of dates
                             dateRange.forEach(function(date) {
-                                arrayData.push({
-                                  id:item.id,
-                                  title: item.summary,
-                                  start: moment(date).format("YYYY-MM-DD"), // Use the appropriate start date/time property from the API response
-                                  end: moment(date).format("YYYY-MM-DD"), // Use the appropriate end date/time property from the API response
-                                  activity: item.summary,
-                                  phase: null,
-                                  task: null,
-                                  refer:"gcal",
-                                })
+                              arrayData.push({
+                                id:item.id,
+                                title: item.summary,
+                                start: moment(date).format("YYYY-MM-DD"), // Use the appropriate start date/time property from the API response
+                                end: moment(date).format("YYYY-MM-DD"), // Use the appropriate end date/time property from the API response
+                                activity: item.summary,
+                                phase: null,
+                                task: null,
+                                refer:"gcal",
+                              })
                             });
                           }else{
                             arrayData.push({
@@ -3067,19 +3070,25 @@
             success: function(results)
             {
               Swal.fire(swalSuccess).then((result,data) => {
+                const dateString = calendar.fullCalendar('getView').title
+                const date = moment(dateString, "MMMM YYYY");
+                date.endOf('month');
+                // Convert to ISO format
+                const isoDateString = date.toISOString(); 
+
                 if (postParam == 'refer') {
-                  loadData(calendar.fullCalendar('getView').title)
+                  loadData(isoDateString)
                   Swal.close()
                   if (modalName) {
                     $("#"+modalName).modal("hide")
                   }
                 }else{
                   if (result.isConfirmed) {
-                    loadData(calendar.fullCalendar('getView').title)
+                    loadData(isoDateString)
                     Swal.close()
                     eventUpdateTimesheet()
                   }else{
-                    loadData(calendar.fullCalendar('getView').title)
+                    loadData(isoDateString)
                     if (window.location.href.split("/")[4].split("?")[1]) {
                       history.replaceState(null, '', "{{url('timesheet/timesheet')}}")
                     }
@@ -3259,7 +3268,12 @@
                 }).then((result,data) => {
                   if (result.value) {
                     $("#ModalImport").modal("hide")
-                    loadData(calendar.fullCalendar('getView').title)              
+                    const dateString = calendar.fullCalendar('getView').title
+                    const date = moment(dateString, "MMMM YYYY");
+                    date.endOf('month');
+                    // Convert to ISO format
+                    const isoDateString = date.toISOString(); 
+                    loadData(isoDateString)              
                   }
                 })
               } 
