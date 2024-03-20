@@ -9,8 +9,9 @@
 			font-family: Lucida Sans Unicode, sans-serif;
 		}
 		@page { 
-			margin: 80px 40px 100px 40px; 
+			margin: 80px 40px 100px 40px;
 		}
+
 		header { 
 			position: fixed; 
 			top: -80px; 
@@ -31,19 +32,12 @@
 		}.
 
 		.table_supplier td, .table_supplier td * {
-			vertical-align: top;
 			align-content: left;
 		}
 
 		table {
-			border-collapse: collapse;
-			page-break-inside:auto
-		}
-
-		.table_supplier_content th, .table_supplier_content td {
-			/*border-collapse: collapse;
-			border: 1px solid;*/
-			vertical-align: top;
+			width: 100%;
+      		border-collapse: collapse;
 		}
 
 		.table_item_content th, .table_item_content td {
@@ -51,17 +45,13 @@
 			border: 1px solid;
 		}
 
-		thead, tbody {
-		    page-break-inside: auto; /* or remove this property altogether */
-		}
-
-   		tr{page-break-inside:avoid;page-break-after: auto;}
-
-   		.long-paragraph{
-   			white-space: pre-line;
-        	page-break-before: always;
-   		}
-
+		/* Set the width of the pre element inside table cells */
+	    td pre {
+	        white-space: wrap; /* Prevent text wrapping */
+	        overflow-wrap: break-word; /* Break long words */
+	        text-align: left !important; /* Align text to the left */
+	        font-family: Lucida Sans Unicode, sans-serif;
+	    }
 	</style>
 </head>
 <body class="bodyEmail">
@@ -169,14 +159,13 @@
 				</td>
 			</tr>
 		</table>
-	</footer>
-	
+	</footer>	
 	<div>
 		<b style="font-size:small;">SUPPLIER</b>
 		<table class="table_supplier" style="width:100%;">
 			<tr style="vertical-align: top;">
 				<td style="width:60%; border: solid black;">
-					<table class="table_supplier_content" style="width: 100%;">
+					<table style="width: 100%;vertical-align: top;">
 						<tr>
 							<th style="text-align: left;">To</th>
 							<th>:</th>
@@ -217,7 +206,7 @@
 					</table>
 				</td>
 				<td style="width:40%; border: solid black;">
-					<table class="table_supplier_content" style="width: 100%;">
+					<table style="width: 100%;vertical-align: top;">
 						<tr>
 							<th style="text-align: right;">Date</th>
 							<th>:</th>
@@ -261,24 +250,68 @@
 			</thead>
 			<tbody>
 				@foreach($product as $key => $eachProduct)
-					<tr>
-						<td style="text-align:center">{{++$key}}</td>
-						<td>{{$eachProduct->name_product}}</td>
-						@if($data->type_of_letter == 'EPR')
-						<td>{{$eachProduct->part_number}}</td>
-						<td>{{$eachProduct->serial_number}}</td>
-						@endif
-						<td><pre style="font-family: Lucida Sans Unicode, sans-serif;">{!! $eachProduct->description !!}</pre></td>
-						<td style="text-align:center">{{$eachProduct->qty}}</td>
-						<td style="text-align:center">{{$eachProduct->unit}}</td>
-						@if($data->isRupiah == 'true')
-						<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->nominal_product,2)}}</td>
-						<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->grand_total,2)}}</td>
+					@php
+					    // Maximum number of characters per row
+					    $maxCharactersPerRow = 3249; // Adjust as needed
+
+					    if($key == 0){
+					    	$maxCharactersPerRow = $maxCharactersPerRow;
+					    }else{
+					    	$maxCharactersPerRow = $maxCharactersPerRow - (strlen($product[$key]->description)-$maxCharactersPerRow) + 400;
+					    }
+					    // Check if the length of the content exceeds the maximum characters per row
+					    if (strlen($eachProduct->description) > $maxCharactersPerRow) {
+					        // Split the content into an array of chunks with maximum characters per row
+					        $contentChunks = str_split($eachProduct->description, $maxCharactersPerRow);
+					    } else {
+					        // If the length of the content does not exceed the maximum characters per row, use the original content as the only chunk
+					        $contentChunks = [$eachProduct->description];
+					    }
+					@endphp
+					@foreach ($contentChunks as $keys => $chunk)
+						@if ($keys == 0)
+						<tr style="page-break-before: always;">
+							<td style="text-align:center;width: 2%">{{++$key}}</td>
+							<td>{{$eachProduct->name_product}}</td>
+							@if($data->type_of_letter == 'EPR')
+							<td style="width: 2%">{{$eachProduct->part_number}}</td>
+							<td style="width: 2%">{{$eachProduct->serial_number}}</td>
+							@endif
+							<td style="width:50%">
+								<pre>
+	          						{!! $chunk !!}
+	          					</pre>
+	          				</td>
+							<td style="text-align:center;width: 2%">{{$eachProduct->qty}}</td>
+							<td style="text-align:center;width: 2%">{{$eachProduct->unit}}</td>
+							@if($data->isRupiah == 'true')
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->nominal_product,2)}}</td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->grand_total,2)}}</td>
+							@else
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->nominal_product,2)}}</td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->grand_total,2)}}</td>
+							@endif
+						</tr>
 						@else
-						<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->nominal_product,2)}}</td>
-						<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->grand_total,2)}}</td>
+						<tr style="page-break-before: always;">
+							<td style="text-align:center;width: 2%"></td>
+							<td></td>
+							@if($data->type_of_letter == 'EPR')
+							<td style="width: 2%">{{$eachProduct->part_number}}</td>
+							<td style="width: 2%">{{$eachProduct->serial_number}}</td>
+							@endif
+							<td style="width:50%">
+								<pre>
+	          						{!! $chunk !!}
+	          					</pre>
+	          				</td>
+							<td style="text-align:center"></td>
+							<td style="text-align:center"></td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;"></td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;"></td>
+						</tr>
 						@endif
-					</tr>
+					@endforeach
 				@endforeach
 			</tbody>
 			<tfoot style="">
