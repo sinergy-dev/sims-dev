@@ -366,14 +366,14 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Duration*</label>
+                      <label>Duration</label>
                       <select class="form-control" name="selectDuration" id="selectDuration_refer" onchange="validateInput(this)"><option></option></select>
                       <span class="help-block" style="display:none">Please select Duration!</span>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Status*</label>
+                      <label>Status</label>
                       <select class="form-control" name="selectStatus" id="selectStatus_refer" onchange="validateInput(this)"><option></option></select>
                       <span class="help-block" style="display:none">Please select Status!</span>
                     </div>
@@ -936,8 +936,7 @@
                         end:value.end_date,
                         activity:value.activity,
                         remarks:value.remarks,
-                        phase:null,
-                        task:null,
+                        refer:null
                       })   
 
                       disabledDates.push(moment.utc(value.start_date, 'YYYY-MM-DD'))
@@ -961,6 +960,7 @@
                         status_pid:value.status_pid,
                         planned:value.planned,
                         unplanned:value.unplanned,
+                        refer:null
                       }) 
                     }
                   })
@@ -1031,9 +1031,8 @@
                                   start: moment(date).format("YYYY-MM-DD"), // Use the appropriate start date/time property from the API response
                                   end: moment(date).format("YYYY-MM-DD"), // Use the appropriate end date/time property from the API response
                                   activity: item.summary,
-                                  phase: null,
-                                  task: null,
                                   refer:"gcal",
+                                  phase:null
                                 })
                             });
                           }else{
@@ -1043,9 +1042,8 @@
                               start: startDate, // Use the appropriate start date/time property from the API response
                               end: endDate, // Use the appropriate end date/time property from the API response
                               activity: item.summary,
-                              phase: null,
-                              task: null,
                               refer:"gcal",
+                              phase:null
                             })
                           }                                                 
                         }
@@ -1086,9 +1084,8 @@
                                 start: moment(date).format("YYYY-MM-DD"), // Use the appropriate start date/time property from the API response
                                 end: moment(date).format("YYYY-MM-DD"), // Use the appropriate end date/time property from the API response
                                 activity: item.summary,
-                                phase: null,
-                                task: null,
                                 refer:"gcal",
+                                phase:null
                               })
                             });
                           }else{
@@ -1098,9 +1095,8 @@
                               start: startDate, // Use the appropriate start date/time property from the API response
                               end: endDate, // Use the appropriate end date/time property from the API response
                               activity: item.summary,
-                              phase: null,
-                              task: null,
                               refer:"gcal",
+                              phase:null
                             })
                           }  
                         }
@@ -1108,64 +1104,41 @@
                     })
                   })
                 }
-
-                function filterUniqueObjects(arr, prop1, prop2) {
-                  const seen = {};
-                  return arr.filter((item) => {
-                    const itemValue1 = item[prop1];
-                    const itemValue2 = item[prop2];
-                    const combinedKey = itemValue1 + '-' + itemValue2; // Create a combined key
-                    
-                    return seen.hasOwnProperty(combinedKey) ? false : (seen[combinedKey] = true);
-                  });
-                }
-
-                const uniqueDatas = filterUniqueObjects(arrayData, 'title', 'start','phase');
-
-                var filteredData = uniqueDatas.filter(function(obj1) {
-                  const found = events.some(el => el.title === obj1.title);
-                  return events.some(function(obj2) {
-                    if (obj1.title) {
-                      return obj2.title
-                    }
-                  });
-                });
-
                 // Merge the arrays
                 const mergedEvents = [...events, ...arrayData];
 
-                const filterDistinctEvents = (events) => {
-                  const uniqueEvents = [];
-                  const uniqueEventMap = new Map();
+                function removeDuplicates(arr) {
+                    let gcalNullFound = false;
+                    let titleStartMap = {};
+                    let result = [];
 
-                  events.forEach((event) => {
-                    const eventKey = `${event.title}-${event.start instanceof Date ? event.start.toISOString() : event.start}-${event.phase}`;
-                    
-                    if (!uniqueEventMap.has(eventKey)) {
-                      uniqueEventMap.set(eventKey, true);
-                      uniqueEvents.push(event);
+                    for (let i = 0; i < arr.length; i++) {
+                        let current = arr[i];
+                        let key = current.title + current.start;
+
+                        // Check if the current item's refer is "gcal" and phase is null
+                        if (current.refer === "gcal" && current.phase === null) {
+                            // Check if we already found such an item
+                            if (!gcalNullFound) {
+                                gcalNullFound = true;
+                                titleStartMap[key] = true;
+                                continue; // Skip adding this item to the result
+                            }
+                        }
+
+                        // Check if the title and start combination is already added
+                        if (!titleStartMap[key] || current.refer !== "gcal") {
+                            titleStartMap[key] = true;
+                            result.push(current);
+                        }
                     }
-                  });
 
-                  return uniqueEvents;
-                };
+                    return result;
+                }
 
-                // Filter distinct events
-                const distinctEvents = filterDistinctEvents(mergedEvents);
+                var filteredData = removeDuplicates(mergedEvents);
 
-                // Filter distinct events based on the title
-                const uniqueEvents = mergedEvents.reduce((unique, event) => {
-                  // const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start && item.phase === event.phase);
-                  const isEventUnique = !unique.some((item) => item.title === event.title && item.start === event.start);
-                  if (isEventUnique) {
-                    unique.push(event);
-                  }
-                  return unique;
-                }, []);
-
-                var arrayCalconcatDb = uniqueEvents
-
-                return showEvents(arrayCalconcatDb,lock_activity,disabledDates,emoji,valDate)
+                return showEvents(filteredData,lock_activity,disabledDates,emoji,valDate)
               },
               complete:function(){
                 Pace.stop();
@@ -1476,6 +1449,8 @@
                       $(".modal-title").text("Update Timesheet")
                       $("#ModalUpdateTimesheet").find('.modal-footer').find(".btn-primary").removeClass("btn-primary").addClass("btn-warning").text('Update')
                       $("#ModalupdateTimesheet").find('.modal-footer').show()
+                      $("select[name='selectDuration']").prev("label").after("<span>*</span>")
+                      $("select[name='selectStatus']").prev("label").after("<span>*</span>")
 
                       $("#id_activity").val(calEvent.id)
                       $('#selectSchedule').prop("disabled",true)
@@ -3340,12 +3315,12 @@
       }
     })
 
-    // $('#ModalUpdateTimesheet').on('hidden.bs.modal', function () {
-    //   $("input").val('')
-    //   $("select").val('').trigger("change")
-    //   $("select").prop("disabled",false)
-    //   $("textarea").prop("disabled",false)
-    // })
+    $('#ModalUpdateTimesheet').on('hidden.bs.modal', function () {
+      $("input").val('')
+      $("select").val('').trigger("change")
+      // $("select").prop("disabled",false)
+      // $("textarea").prop("disabled",false)
+    })
 
     $('#daterange-timesheet').on('hide.daterangepicker',(e,picker) => {
       var range = moment().isBetween(picker.startDate, picker.endDate);
