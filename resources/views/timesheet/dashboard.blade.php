@@ -440,6 +440,34 @@
           </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalManagePID" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span></button>
+              <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Name</label>
+                <input class="form-control" id="manageNamePID" disabled>
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <select class="form-control select2" id="manageRolePID">
+                </select>
+              </div>
+              
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm" id="deleteManageAssign">Delete Assign</button>
+                <button type="button" class="btn btn-primary btn-sm" id="saveManageAssign">Save</button>
+              </div>          
+            </div>
+          </div>
+        </div>
+    </div>
 @endsection
 @section('scriptImport')
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
@@ -449,6 +477,7 @@
   <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -550,11 +579,9 @@
     
     if (accesable.includes('box_pid') || accesable.includes('box_sbe')) {
       if ($("#tbSummaryMandays").is(":visible")) {
-        console.log("sini")
         initiateSumSbe(id="{{Auth::User()->id_division}}")
         initiateAssignPid(id="{{Auth::User()->id_division}}")
       }else{
-        console.log("situ")
         initiateSumSbe(id='')
         initiateAssignPid(id='')
       }
@@ -660,11 +687,20 @@
     }
       
     function initiateAssignPid(id){
+      const dataSet = [
+          ['System Architect','Tiger Nixon', 'Main' ],
+          ['Accountant','Garrett Winters', 'Support' ],
+          ['Junior Technical Author','Ashton Cox', 'Support'],
+          ['Senior Javascript Developer','Cedric Kelly', 'Main' ],
+          ['Accountant','Airi Satou', 'Main' ],
+      ];
+
       var tbPID = $("#tbAssignPID").DataTable({
         "ajax":{
           type:"GET",
           url:"{{url('/timesheet/getAllAssignPidByDivision')}}",
         },
+        // data:dataSet,
         columns: [
           { title: 'pid',
             data: 'pid' 
@@ -674,6 +710,11 @@
           },
           { title: 'Role',
             data: 'role' 
+          },
+          { title: 'Action',
+            render: function (data, type, row, meta){
+              return "<button class='btn btn-sm bg-purple' value='"+ row.id +"'>Manage</button"
+            },
           },
         ],
         columnDefs: [{ visible: false, targets: 0 }],
@@ -691,13 +732,155 @@
                     if (last !== group) {
                         $(rows)
                             .eq(i)
-                            .before('<tr class="group"><td colspan="2"><b>' + group + '</b></td></tr>');
+                            .before('<tr class="group"><td colspan="3"><b>' + group + '</b></td></tr>');
                         last = group;
                     }
                 });
         },
       })
+
+      $('#tbAssignPID tbody').on( 'click', 'button', function () {
+        var id = this.value
+        $.ajax({
+          type:"GET",
+          url:"{{url('/timesheet/getRolePID')}}",
+          data:{
+            id:id
+          },
+          success:function(result){
+            $("#modalManagePID").modal("show")
+            $("#manageNamePID").val(result.name)
+            $("#deleteManageAssign").val(result.id)
+            $("#saveManageAssign").val(result.id)
+
+            $("#manageRolePID").select2({
+              data:[
+                {
+                  id:"Main",text:"Main"
+                },
+                {
+                  id:"Support",text:"Support"
+                },
+              ]
+            }).val(result.role).trigger("change")
+
+            $("#modalManagePID .modal-title").text("Manage "+result.pid)
+          }
+        })
+
+      });
     }
+
+    $("#deleteManageAssign").click(function(){
+      const id = this.value
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Delete this Assign PID!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          $.ajax({
+            type:"POST",
+            url:"{{url('/timesheet/deleteRolePID')}}",
+            data:{
+              _token:"{{csrf_token()}}",
+              id:id
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+              })
+              Swal.showLoading()
+            },
+            success: function(results)
+            {
+              Swal.fire({
+                icon: 'success',
+                title: 'Successfully delete data!',
+                text: 'Click Ok to reload page',
+              }).then((result,data) => {
+                if (result.value) {
+                  Swal.close()
+                  $("#modalManagePID").modal("hide")
+                  $('#tbAssignPID').DataTable().ajax.url("{{url('/timesheet/getAllAssignPidByDivision')}}").load()        
+                }
+              })
+            }
+          })
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
+    })
+
+    $("#saveManageAssign").click(function(){
+      const id = this.value
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Update this Role!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          $.ajax({
+            type:"POST",
+            url:"{{url('/timesheet/updateRolePID')}}",
+            data:{
+              _token:"{{csrf_token()}}",
+              id:id,
+              role:$("#manageRolePID").val()
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+              })
+              Swal.showLoading()
+            },
+            success: function(results)
+            {
+              Swal.fire({
+                icon: 'success',
+                title: 'Successfully update data!',
+                text: 'Click Ok to reload page',
+              }).then((result,data) => {
+                if (result.value) {
+                  Swal.close()
+                  $("#modalManagePID").modal("hide")
+                  $('#tbAssignPID').DataTable().ajax.url("{{url('/timesheet/getAllAssignPidByDivision')}}").load()              
+                }
+              })
+            }
+          })
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
+    })
 
     isTbSummary = false
 
@@ -1088,9 +1271,6 @@
             arrConfig.push({"label":"Over","data":valueLabel,"borderColor":"#FFC300","backgroundColor":"#FFC300",borderWidth:1,minBarLength:2,barThickness:30})
           }
       })
-
-      console.log(arrConfig)
-
       datasetRemaining.push({"datasets":arrConfig})
     }else{
       arrConfig.push({"label":"","data":[0],"borderColor":'',"backgroundColor":'',borderWidth:1,minBarLength:2,barThickness:30})
@@ -1192,12 +1372,10 @@
         }else{
           //set current month
           var arrMonth = [0,0,0,0,0,0,0,0,0,0,0,0,0]
-          if (totalPages == 12) { 
-            console.log("lohh")           
+          if (totalPages == 12) {           
             for (var i = 1; i <= totalPages; i++) {
               if ($("#cbMonth:checked").length) {
                 $.each($("#cbMonth:checked"),function(idx,item){
-                    console.log(item.value)
                     var monthAsMoment = moment(item.value, 'MMMM');
                     var numericMonth = monthAsMoment.month() + 1;
                     if (idx == 0) {
@@ -1233,7 +1411,6 @@
             }
 
           }else{
-            console.log("disinituu")
             for (var i = 1; i <= totalPages; i++) {
               if (i === moment().month() + 1) {
                 $pagination.append('<a href="#" class="pagination-link active">' + i + '</a>');
@@ -1268,8 +1445,6 @@
     var page = parseInt($(this).text()); // Get the clicked page number
     const monthName = moment().month(page-1).format('MMMM')
     $("#span-remaining").text(monthName)
-
-    console.log(monthName)
     $.each($(".pagination-link"),function(idx,value){
       if (value.text == page) {
         customFilter(page,"changePageRemaining")
@@ -1705,7 +1880,6 @@
         })
         $("#pagination").empty("")
         $("#box-remaining").empty("")
-        console.log(yearMatch)
         duplicateCanvasRemaining("timesheet/getFilterRemainingChart?",arrFilter)
       } 
     }

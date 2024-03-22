@@ -1414,6 +1414,9 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('timesheet/deleteActivity','TimesheetController@deleteActivity');
 	Route::post('timesheet/updateDateEvent','TimesheetController@updateDateEvent');
 	Route::get('timesheet/detailActivitybyPid','TimesheetController@detailActivitybyPid');
+	Route::post('timesheet/deleteRolePID','TimesheetController@deleteRolePID');
+	Route::post('timesheet/updateRolePID','TimesheetController@updateRolePID');
+	Route::get('timesheet/getRolePID','TimesheetController@getRolePID');
 
 
 
@@ -1501,6 +1504,8 @@ Route::get('getListDriveId','TestController@getListDriveId');
 
 Route::post('testUploadDocument','TestController@testUploadDocument');
 Route::get('showUploadDocument','TestController@showUploadDocument');
+//Route::get('checkSimilarWord','TestController@checkSimilarWord');
+
 // Route::get('showUploadDocument',function(){
 // 	// echo ini_get('post_max_size');
 // 	// echo "<pre>";
