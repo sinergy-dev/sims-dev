@@ -547,6 +547,7 @@ class TimesheetController extends Controller
                         if ($carbonStartDate->format('m/d/Y') === $dateStartString && $carbonEndDate->format('m/d/Y') === $dateEndString) {
                             $task = DB::table('tb_timesheet_task')->select('id')
                             ->where(DB::raw("REPLACE(task, ' ', '')"), 'LIKE', '%'.$value[10].'%')
+                            ->orWhere(DB::raw("REPLACE(task, 'ing', '')"), 'LIKE', '%'.$value[10].'%')
                             ->orWhere('task','LIKE','%'.$value[10].'%')
                             ->first();
 
@@ -625,6 +626,7 @@ class TimesheetController extends Controller
 
                             $phase = DB::table('tb_timesheet_phase')->select('id')
                                 ->where(DB::raw("REPLACE(phase, ' ', '')"), 'LIKE', '%'.$value[11].'%')
+                                ->orWhere(DB::raw("REPLACE(phase, 'ing', '')"), 'LIKE', '%'.$value[11].'%')
                                 ->orwhere('phase','LIKE','%['.$rolesAlias.']%')
                                 ->where('phase','LIKE','%'.$value[11].'%')->first();
 
