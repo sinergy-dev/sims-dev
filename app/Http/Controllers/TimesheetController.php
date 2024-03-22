@@ -719,7 +719,7 @@ class TimesheetController extends Controller
                                 'type' => $value[3], 
                                 'pid' => $value[4], 
                                 'level' => $value[5], 
-                                'activity' => $value[6], 
+                                'activity' => mb_convert_encoding($value[6], "UTF-8", "ISO-8859-1"), 
                                 'duration' => $value[7], 
                                 'status' => $value[8], 
                                 'task' => $task, 
