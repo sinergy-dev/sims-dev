@@ -1676,13 +1676,27 @@ PMO
 		            	$("#btnAddWeekly").prop("disabled",true)
 		            	$("#btnFinalProject").attr("disabled")
 	            	}else{
-	            		console.log(table.row(0).length)
-	            		if(table.row(0).length > 0){
-		            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-		            		}	
-	            		}
+	            		// if(table.row(0).length > 0){
+		            	// 	if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
+		            	// 		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+		            	// 		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+		            	// 	}	
+	            		// }
+	            		table.rows().every(function() {
+			                var rowData = this.data();
+			                if (rowData.milestone == "Submit Final Project Closing Report") {
+			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+	            				$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
+			                }else{	          
+			                	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+	            				$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+	            				if (rowData.deliverable_document == "true") {
+      								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")	          
+	            				}else{
+      								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","")	          
+	            				}
+			                }
+			            });
 
 	            		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
 		            		$("#btnFinalProject").attr("disabled")
@@ -1700,16 +1714,47 @@ PMO
 	            			$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"update")')
 	            			$("#btnFinalProject").find("i").removeClass("fa fa-plus").addClass("fa fa-wrench")
 	            			$("#btnFinalProject").removeAttr("disabled")
-	            			if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-		            		}
+	            			table.rows().every(function() {
+				                var rowData = this.data()
+				                if (rowData.milestone == "Submit Final Project Closing Report") {
+				                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+		            				$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
+				                }else{
+				                	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+		            				$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+		            				if (rowData.deliverable_document == "true") {
+          								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")	          
+		            				}else{
+          								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","")	          
+		            				}
+				                }
+				            });
+	            			// if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
+		            		// 	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+		            		// 	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+		            		// }
 	            		}else if (result.data.approveFinalReport == '') {
 	            			if (table.data().count() > 0) {
-			            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-			            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-			            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-					            }
+	            				table.rows().every(function() {
+					                var rowData = this.data();
+					                if (rowData.milestone == "Submit Final Project Closing Report") {
+					                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+			            				$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
+					                }else{
+					                	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+			            				$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+			            				console.log(rowData.deliverable_document + rowData.milestone)
+          								if (rowData.deliverable_document == "true") {
+	          								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")	          
+			            				}else{
+	          								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","")	          
+			            				}	          
+					                }
+					            });
+			            		// if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
+			            		// 	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+			            		// 	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+					            // }
 
 					            if (result.data.isIssueRiskClear == "false") {
 				            		$("#btnFinalProject").hover(function(){
@@ -1735,10 +1780,25 @@ PMO
 	            	}	            	
 
 	            	if (table.data().count() > 0) {
-	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-		            		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-		            		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-		            	}
+	            		table.rows().every(function() {
+			                var rowData = this.data();
+			                if (rowData.milestone == "Submit Final Project Closing Report") {
+			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+	            				$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
+			                }else{
+			                	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+	            				$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+	            				if (rowData.deliverable_document == "true") {
+      								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")	          
+	            				}else{
+      								$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","")	          
+			            		}	
+			                }
+			            })
+	            		// if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
+		            	// 	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+		            	// 	$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+		            	// }
 	            	}
 	            	
             	}
@@ -4291,15 +4351,22 @@ PMO
         ],
         "rowCallback": function( row, data ) {
       		if (accesable.includes("cbTaskDone")) {
-          		if (data.deliverable_document != "true") {
-          			$('td:eq(4)', row).html( '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ data.id_gantt +'"> Task Done');
-          			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").prop("disabled",false)
-          			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").closest("div").removeClass("disabled").prop("disabled",false)
-          		}else{
+      			console.log(data.deliverable_document)
+
+          		if (data.deliverable_document == "true") {
           			$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
+          		}else{
+          			$('td:eq(4)', row).html( '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ data.id_gantt +'"> Task Done');
           		}
       		}else{
-          		$("#cbTaskDone").closest("div").css("cursor","not-allowed")
+      			console.log(data.deliverable_document)
+      			if (data.deliverable_document == "true") {
+          			$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
+          		}else{
+          			$('td:eq(4)', row).html( '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ data.id_gantt +'"> Task Done');
+          		}
+
+          		// $("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")
 
       		}
 		    // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
@@ -4307,15 +4374,10 @@ PMO
 		    // }
 		},
         drawCallback: function(settings) {
-        	console.log(accesable)
-	        if (!accesable.includes("cbTaskDone")) {
-	          // $("input[name='cbTaskDone']").prop("disabled",false)	 
-	          $("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
-	        }else{
-	        	// if ($("input[name='cbTaskDone']").prop("disabled") == true) {
-	         //  		$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
-	        	// }
-	        }
+	        // if (!accesable.includes("cbTaskDone")) {	 
+	        //   $("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
+	        // }else{
+	        // }
 
 	        $('input[type="checkbox"].minimal').iCheck({
 		      checkboxClass: 'icheckbox_minimal-blue',
