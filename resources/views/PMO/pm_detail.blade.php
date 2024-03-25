@@ -13,10 +13,9 @@ PMO
 	<link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
 
 	<style type="text/css">
-		#tooltip{
+	/*	#tooltip{
 			margin-left: 274px;
 		    display: none;
-		    /*position: absolute;*/
 		    cursor: pointer;
 		    left: 100px;
 		    top: 50px;
@@ -25,6 +24,17 @@ PMO
 		    padding: 10px;
 		    z-index: 1000;
 		    width: fit-content;
+		}*/
+
+		.alertFinalProject{
+			width: fit-content!important;
+		    margin: 0 auto;
+		    float: inline-end;
+		    display: none;
+		}
+
+		.alertFinalProject:hover{
+			cursor: pointer;
 		}
 
 		.rowColorRed .table-striped{
@@ -280,10 +290,16 @@ PMO
 		                	<!-- <button class="btn btn-sm btn-warning"><i class="fa fa-forward"></i>&nbspNext Phase</button> -->
 		                	<button class="btn btn-sm btn-primary" style="display:none" disabled id="btnSendCSS" onclick="showEmail()"><i class="fa fa-paper-plane"></i>&nbspSend CSS</button>
 		                	<a class="btn btn-sm btn-success" disabled id="btnFinalProject" style="display:none"><i class="fa fa-plus"></i>&nbspFinal Project</a>		                	
-		                	<div id="tooltip">
+		                	<!-- <div id="tooltip" class="alert-box">
 							    Please Make Done Your Issue and Risks Before Create Final Project Report!
-							</div>
+							</div> -->
 	            		</div>
+	            	</div>
+	            	<div class="alertFinalProject">
+	            		<div class="alert alert-warning alert-dismissible">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<i class="icon fa fa-warning"></i>Please Make Done Your Issue and Risks Before Create Final Project Report!
+						</div>
 	            	</div>
 	            </div>
 
@@ -1697,11 +1713,11 @@ PMO
 
 					            if (result.data.isIssueRiskClear == "false") {
 				            		$("#btnFinalProject").hover(function(){
-				            			$("#tooltip").show()
+				            			$(".alertFinalProject").show()
 									});
 
-									$("#tooltip").click(function() {
-									    $(this).hide();
+									$(".alertFinalProject").click(function() {
+									    $(this).hide("slow");
 									});
 
 			            			$("#btnFinalProject").attr("disabled")
