@@ -1714,6 +1714,7 @@ PMO
 					            if (result.data.isIssueRiskClear == "false") {
 				            		$("#btnFinalProject").hover(function(){
 				            			$(".alertFinalProject").show()
+				            			//changes
 									});
 
 									$(".alertFinalProject").click(function() {
