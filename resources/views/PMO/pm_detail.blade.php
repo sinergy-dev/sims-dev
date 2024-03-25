@@ -24,6 +24,7 @@ PMO
 		    background-color: #ffffdd;
 		    padding: 10px;
 		    z-index: 1000;
+		    width: fit-content;
 		}
 
 		.rowColorRed .table-striped{
