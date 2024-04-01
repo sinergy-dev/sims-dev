@@ -5127,23 +5127,23 @@ PMO
 	        	cbProject = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Schedule']:checked").each(function(){
 	        	cbSchedule = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Technical']:checked").each(function(){
 	        	cbTechnical = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Scope']:checked").each(function(){
 	        	cbScope = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Resource']:checked").each(function(){
 	        	cbResource = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Partner']:checked").each(function(){
 	        	cbPartner = $(this).attr('value')
 	        })
 
