@@ -863,7 +863,7 @@ PMO
                 }else{
                   if (row.indicator_project == "onTrack") {
                     return '<span><i class="fa fa-circle" style="color:#257a33"></i>&nbspon Track</span>'
-                  }else if (row.indicator_project == "delay") {
+                  }else if (row.indicator_project == "delayed") {
                     return '<span><i class="fa fa-circle" style="color:#b52f2f"></i>&nbspDelay</span>'
                   }else{
                     return '<span><i class="fa fa-circle" style="color:#faea39"></i>&nbspMight Delay</span>'
