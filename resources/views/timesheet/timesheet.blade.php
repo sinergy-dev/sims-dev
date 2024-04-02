@@ -1126,6 +1126,8 @@
                             if (!gcalNullFound) {
                                 gcalNullFound = true;
                                 titleStartMap[key] = true;
+                                result.push(current);
+
                                 continue; // Skip adding this item to the result
                             }
                         }
@@ -1141,6 +1143,7 @@
                 }
 
                 var filteredData = removeDuplicates(mergedEvents);
+                console.log(mergedEvents)
 
                 return showEvents(filteredData,lock_activity,disabledDates,emoji,valDate)
               },
