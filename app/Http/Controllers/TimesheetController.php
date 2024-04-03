@@ -548,7 +548,8 @@ class TimesheetController extends Controller
                         $carbonStartDate = Carbon::createFromFormat('m/d/Y', $dateStartString);
                         $carbonEndDate = Carbon::createFromFormat('m/d/Y', $dateEndString);
                         // Check if the parsed date matches the original input date
-                        if ($carbonStartDate->format('m/d/Y') === $dateStartString && $carbonEndDate->format('m/d/Y') === $dateEndString) {
+
+                        if ($carbonStartDate->format('n/j/Y') == $dateStartString && $carbonEndDate->format('n/j/Y') == $dateEndString) {
                             $task = DB::table('tb_timesheet_task')->select('id')
                             ->where(DB::raw("REPLACE(task, ' ', '')"), 'LIKE', '%'.$value[10].'%')
                             ->orWhere(DB::raw("REPLACE(task, 'ing', '')"), 'LIKE', '%'.$value[10].'%')
@@ -2164,7 +2165,7 @@ class TimesheetController extends Controller
 
         $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')
         ->whereBetween('tb_timesheet.start_date', [$startDate, $endDate])
-        ->groupby('tb_timesheet.nik')->get();
+        ->groupby('tb_timesheet.nik')->get()->makeHidden(['planned','threshold','plannedMonth']);
 
         $actualPlanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
                 ->where('tb_timesheet.nik',$nik)
