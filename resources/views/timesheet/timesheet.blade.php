@@ -1057,7 +1057,6 @@
                     $.each(item.attendees,function(index,itemX){
                       if (itemX.responseStatus == "accepted") {
                         if (itemX.email == email) {
-
                           if (item.start.dateTime || item.end.dateTime) {
                             startDate = convertToYMD(item.start.dateTime)
                             endDate = convertToYMD(item.end.dateTime)
@@ -1123,10 +1122,10 @@
                         // Check if the current item's refer is "gcal" and phase is null
                         if (current.refer === "gcal" && current.phase === null) {
                             // Check if we already found such an item
-                            if (!gcalNullFound) {
+                            if (gcalNullFound) {
                                 gcalNullFound = true;
                                 titleStartMap[key] = true;
-                                result.push(current);
+                                // result.push(current);
 
                                 continue; // Skip adding this item to the result
                             }
@@ -1143,7 +1142,6 @@
                 }
 
                 var filteredData = removeDuplicates(mergedEvents);
-                console.log(mergedEvents)
 
                 return showEvents(filteredData,lock_activity,disabledDates,emoji,valDate)
               },
