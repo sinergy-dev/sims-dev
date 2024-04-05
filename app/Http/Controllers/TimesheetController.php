@@ -1181,7 +1181,7 @@ class TimesheetController extends Controller
 
         $getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
-        $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->whereBetween('date_start', [$startDate, $endDate])->orderby('start_date','desc')->get();
+        $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->whereBetween('date_off', [$startDate, $endDate])->orderby('start_date','desc')->get();
 
         $holiday = $this->getWorkDays($startDate,$endDate)["holiday"]->values();
 
