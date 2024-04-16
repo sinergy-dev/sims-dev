@@ -1417,6 +1417,7 @@
               return date.isSame(clickedDate, 'day');
             });
 
+            //set holiday merupakan function untuk semua tanggal libur
             setHoliday(start,end,checkDate)
             if (isAllowedDate) {
               var isClickedDate = moment(calEvent.start)
