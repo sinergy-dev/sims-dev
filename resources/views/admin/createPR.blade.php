@@ -2258,7 +2258,8 @@
                 success:function(results){
                   $("#selectTo").select2({
                     data:results,
-                    placeholder:"Select Supplier"
+                    placeholder:"Select Supplier",
+                    dropdownParent:$("#ModalDraftPr")
                   }).val(result.pr.to).trigger("change")
                 }
               })   
@@ -3230,7 +3231,8 @@
             success:function(result){
               $("#selectTo").select2({
                 data:result,
-                placeholder:"Select Supplier"
+                placeholder:"Select Supplier",
+                dropdownParent:$("#ModalDraftPr")
               }).change(function(){
                 $.ajax({
                   url:"{{url('/admin/getSupplierDetail')}}",
@@ -3384,7 +3386,8 @@
             success: function(result) {
               $("#selectQuoteNumber").select2({
                   data: result.data,
-                  placeholder: "Select Quote Number"
+                  placeholder: "Select Quote Number",
+                  dropdownParent:$("#ModalDraftPr")
               })
             }
           }) 
@@ -3396,7 +3399,8 @@
               // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
                   data: result.data,
-                  placeholder: "Select Lead Register"
+                  placeholder: "Select Lead Register",
+                  dropdownParent:$("#ModalDraftPr")
               })
             }
           }) 
@@ -3775,7 +3779,8 @@
               // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
                   data: result.data,
-                  placeholder: "Select Lead Register"
+                  placeholder: "Select Lead Register",
+                  dropdownParent:$("#ModalDraftPr")
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
 
@@ -3801,7 +3806,8 @@
                   },
                   success: function(result) {
                     $("#selectQuoteNumber").select2({
-                        data: result.data
+                      data: result.data,
+                      dropdownParent:$("#ModalDraftPr")
                     })
                   }
                 }) 
@@ -7505,7 +7511,9 @@
 
     $('#makeId').click(function(){
       $('#project_idNew').show()
-      $('#project_id').val("").select2().trigger("change")
+      $('#project_id').val("").select2({
+        dropdownParent:$("#ModalDraftPr")
+      }).trigger("change")
 
       $("#selectPid").closest('.form-group').removeClass('has-error')
       $("#selectPid").closest('select').next('span').next("span").hide(); 
