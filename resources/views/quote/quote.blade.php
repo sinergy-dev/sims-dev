@@ -427,6 +427,7 @@ Quote Number
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/fixedColumns.dataTables.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/fixedColumns.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 @section('script')
@@ -434,9 +435,13 @@ Quote Number
     $(document).ready(function(){
       $('#addBackdate').prop("disabled",true)
     })
-    $('#customer_quote').select2();
+    $('#customer_quote').select2({
+      dropdownParent:$("#modalAdd")
+    });
     // $("#backdate_num").select2();
-    $("#customer_quote_backdate").select2();
+    $("#customer_quote_backdate").select2({
+      dropdownParent:$("#modalAdd")
+    });
     $('#date_backdate').datepicker({
       autoclose: true,
     }).css('background-color','#fff');
