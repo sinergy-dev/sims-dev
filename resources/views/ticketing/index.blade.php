@@ -922,6 +922,9 @@ Ticketing
 									<button class="btn btn-flat btn-primary" onclick="atmAdd()" id="addAtm" style="margin-left: 10px;">
 										Add ATM
 									</button>
+									<button class="btn btn-flat btn-warning" onclick="assignEngineerAtm()" id="addAtm" style="margin-left: 10px;">
+										Assign Engineer
+									</button>
 								</span>
 							</div>
 						</div>
@@ -2135,6 +2138,15 @@ Ticketing
 								</div>
 							</div>
 						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<label for="addAssignEngineer">Engineer</label>
+									<select class="form-control assignEngineerAtm" name="addAssignEngineer" id="addAssignEngineer" style="width:100%!important"><option></option></select>
+								</div>
+							</div>
+						</div>
 						<!-- 
 						<div class="form-group">
 							<label>Serial Number</label>
@@ -2247,6 +2259,15 @@ Ticketing
 								</div>
 							</div>
 						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<label for="editAssignEngineer">Engineer</label>
+									<select class="form-control assignEngineerAtm" name="editAssignEngineer" id="editAssignEngineer" style="width:100%!important"><option></option></select>
+								</div>
+							</div>							
+						</div>
 						<!-- <div class="form-group">
 							<label>Serial Number</label>
 							<input type="text" class="form-control" id="atmSerial">
@@ -2261,6 +2282,50 @@ Ticketing
 					<button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-flat btn-danger pull-left" onclick="deleteAtm()">Delete</button>
 					<button type="button" class="btn btn-flat btn-primary" onclick="saveAtm()">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-assign-engineer-atm">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Assign Engineer ATM</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="row listEngineerAssign">
+							<div class="col-sm-5">
+								<div class="form-group">
+									<label>Engineer*</label>
+									<select class="form-control assignEngineerAtm" style="width:100%!important" name="assignEngineerAtm"><option></option></select>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>ATM Id*</label>
+									<select class="form-control selectAssignAtmId" style="width:100%!important" name="selectAssignAtmId" multiple="multiple"></select>
+								</div>
+							</div>
+							<div class="col-sm-0">
+								<div class="form-group">
+									<label>Action</label>
+									<button class="btn btn-flat btn-danger deleteRowAssign" style="width:40px" disabled><i class="fa fa-trash"></i></button>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div class="form-group">
+						<button class="btn btn-md bg-purple" style="margin:0 auto;display: block;" onclick="addRowAssignEngineerAtm()"><i class="fa fa-plus" style="margin-right:5px"></i>Assign</button>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-flat btn-primary" onclick="submitAssignEngineerAtm()" id="atmAddFormButton">Save</button>
 				</div>
 			</div>
 		</div>
@@ -2521,6 +2586,8 @@ Ticketing
 			</div>
 		</div>
 	</div>
+
+
 @endsection
 @section('scriptImport')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
@@ -2558,7 +2625,6 @@ Ticketing
 		$("#startDateFilter").val("")
 		$("#endDateFilter").val("")
 		getDashboard()
-
 
 		$("#inputReportingTime").val(moment().format('HH:mm:ss'))
 		$('#inputReportingDate').datepicker({
@@ -5671,6 +5737,8 @@ Ticketing
 			complete: function(){
 				$("#modal-setting-atm-add input.form-control, #modal-setting-atm-add textarea.form-control").val("")
 				$("#modal-setting-atm-add").modal('toggle');
+
+				settingListEngineerAssign("add",null,"modal-setting-atm-add")
 			}
 		});
 	}
@@ -5727,6 +5795,7 @@ Ticketing
 				atmAddress:$("#atmAddAddress").val(),
 				atmActivation:$("#atmAddActivation").val(),
 				atmNote:$("#atmAddNote").val(),
+				atmEngineer:$("#addAssignEngineer").val()
 			},
 			success: function (data){
 				if(!$.isEmptyObject(data.error)){
@@ -5734,20 +5803,20 @@ Ticketing
 					data.error.forEach(function(data,index){
 						errorMessage = errorMessage + data + "<br>";
 					})
-                    swalWithCustomClass.fire(
+          swalWithCustomClass.fire(
 						'Error',
 						errorMessage,
 						'error'
 					)
-                } else {
-                	 swalWithCustomClass.fire(
+        } else {
+          swalWithCustomClass.fire(
 						'Success',
 						'ATM Added',
 						'success'
 					)
 					$("#modal-setting-atm-add").modal('toggle');
 					$("#tableAtm").DataTable().ajax.url("/ticketing/setting/getAllAtm").load();
-                }
+        }
 			},
 		})
 	}
@@ -5772,7 +5841,7 @@ Ticketing
 					peripheral_cctv_kecil_type:$("#atmAddPeripheralTypeCCTVKecil").val()
 				},
 				success: function (data){
-	            	swalWithCustomClass.fire(
+	        swalWithCustomClass.fire(
 						'Success',
 						'ATM CCTV Added',
 						'success'
@@ -5793,7 +5862,7 @@ Ticketing
 					peripheralSerial:$("#atmAddPeripheralSerial").val(),
 				},
 				success: function (data){
-	            	swalWithCustomClass.fire(
+	        swalWithCustomClass.fire(
 						'Success',
 						'ATM UPS Added',
 						'success'
@@ -5879,6 +5948,7 @@ Ticketing
 				}
 
 				$("#modal-setting-atm").modal('toggle');
+				settingListEngineerAssign("edit",result.atm.engineer_atm,"modal-setting-atm")
 			}
 		});
 	}
@@ -5899,6 +5969,7 @@ Ticketing
 				atmActivation:$("#atmEditActivation").val(),
 				atmType:$("#atmEditType").val(),
 				atmNote:$("#atmEditNote").val(),
+				atmEngineer:$("#editAssignEngineer").val()
 			},
 			success: function (data){
 				if(!$.isEmptyObject(data.error)){
@@ -6974,7 +7045,6 @@ Ticketing
 	}
 
 	function showPID(item,nik){
-		console.log(nik)
 		let append = ""
 
 		if (!$("#tablePID[data-value='"+ item +"']").is(":visible")) {
@@ -7062,7 +7132,6 @@ Ticketing
 	      "initComplete": function(settings,json){
 	      	$(".dataTables_paginate.paging_simple_numbers").css("display","none")
 			    var input = $('.dataTable[data-value="'+ item +'"] tbody input[type="checkbox"]')
-			    console.log(accesable)
 	      	checkInputCheked()
 
 	      	function checkInputCheked(){
@@ -7170,8 +7239,6 @@ Ticketing
         formData.append("pid",JSON.stringify(arr_pid))
         formData.append("nik",JSON.stringify(nik))
         formData.append("assign",$("#assignFilter").val())
-
-        console.log(formData)
 
         // Initialize the HTML content variable
 				let htmlContent = '<span style="font-size:14px"><label>'+ $(".showPID[data-value='0']").next().next().text() + '</label>' + ' assigned to selected PID : <div style="max-height:100px;overflow:auto"><ul style="text-align:start;">'; // Start an unordered list
@@ -7465,7 +7532,6 @@ Ticketing
 	}
 
 	function showPID(item,nik){
-		console.log(nik)
 		let append = ""
 
 		if (!$("#tablePID[data-value='"+ item +"']").is(":visible")) {
@@ -7553,7 +7619,6 @@ Ticketing
 	      "initComplete": function(settings,json){
 	      	$(".dataTables_paginate.paging_simple_numbers").css("display","none")
 			    var input = $('.dataTable[data-value="'+ item +'"] tbody input[type="checkbox"]')
-			    console.log(accesable)
 	      	checkInputCheked()
 
 	      	function checkInputCheked(){
@@ -7662,8 +7727,6 @@ Ticketing
         formData.append("pid",JSON.stringify(arr_pid))
         formData.append("nik",JSON.stringify(nik))
         formData.append("assign",$("#assignFilter").val())
-
-        console.log(formData)
 
         // Initialize the HTML content variable
 				let htmlContent = '<span style="font-size:14px"><label>'+ $(".showPID[data-value='0']").next().next().text() + '</label>' + ' assigned to selected PID : <div style="max-height:100px;overflow:auto"><ul style="text-align:start;">'; // Start an unordered list
@@ -7858,7 +7921,233 @@ Ticketing
   	showDivSiteBox($("#assignFilter").val(),"/ticketing/setting/getUserShifting")
   }
 
+  function addRowAssignEngineerAtm(){
+  	
+  	var cloneRow = $(".listEngineerAssign:last").clone()
+  	cloneRow.find(".deleteRowAssign").removeAttr("disabled").end()
+  	cloneRow.children("select")
+            .select2("destroy")
+            .end()
 
+  	$(".listEngineerAssign").last().after(cloneRow)
 
+  	$(".deleteRowAssign").click(function(){
+  		$(this).closest(".listEngineerAssign").remove()
+  	})
+
+  	settingListEngineerAssign("add",null,"modal-assign-engineer-atm")
+  	settingListAtmId()
+  }
+
+  function assignEngineerAtm(){
+  	$("#modal-assign-engineer-atm").modal("show")
+  	settingListAtmId()
+  	settingListEngineerAssign("add",null,"modal-assign-engineer-atm")
+  }
+
+  function submitAssignEngineerAtm(){
+  	var inputs = document.querySelectorAll('.listEngineerAssign .form-control');
+		var arrListEnginner = [],engineer = [], atm_id = [];
+		// Iterate over each input element
+
+		var isEmptyField = true, InputLengthEmpty = 0,inputLength = inputs.length
+		
+		inputs.forEach(function(input) {
+				if ($(input).val() == "") {
+					isEmptyField = true
+					InputLengthEmpty-=1
+				}else{
+					InputLengthEmpty+=1
+					if (InputLengthEmpty < inputLength) {
+						isEmptyField = true
+					}else{
+						isEmptyField = false
+					}
+				}
+		    // Push the value of each input to the arrListEnginner array
+		    if(input.name == 'assignEngineerAtm'){
+		        engineer.push(input.value);
+		    }
+
+		    if(input.name == 'selectAssignAtmId'){
+		        atm_id.push($(input).val());
+		    }
+		    
+		});
+
+		for (var i = 0; i < engineer.length; i++) {
+		    // Construct object with elements from both arrays
+		    var combinedObject = {
+		        engineer: engineer[i],
+		        atm_id: atm_id[i]
+		    };
+		    // Push the combined object into the resulting array
+		    arrListEnginner.push(combinedObject);
+		}
+
+		if (isEmptyField == false) {
+			formData = new FormData
+	    formData.append("_token","{{ csrf_token() }}")        
+	    formData.append("arrListEngineerAssign",JSON.stringify(arrListEnginner)) 
+
+	    swalFireCustom = {
+	      title: 'Are you sure?',
+	      text: "Submit Assign Engineer ATM",
+	      icon: 'warning',
+	      showCancelButton: true,
+	      confirmButtonColor: '#3085d6',
+	      cancelButtonColor: '#d33',
+	      confirmButtonText: 'Yes',
+	      cancelButtonText: 'No',
+	    }
+
+	    swalSuccess = {
+	        icon: 'success',
+	        title: 'Assign Engineer Successfully!',
+	        text: 'Click Ok to reload page',
+	    }
+
+	    Swal.fire(swalFireCustom).then((result) => {
+	      if (result.value) {
+	        $.ajax({
+	          type:"POST",
+	          url:"{{url('/ticketing/setting/assignEngineer')}}",
+	          processData: false,
+	          contentType: false,
+	          data:formData,
+	          beforeSend:function(){
+	            Swal.fire({
+	                title: 'Please Wait..!',
+	                text: "It's sending..",
+	                allowOutsideClick: false,
+	                allowEscapeKey: false,
+	                allowEnterKey: false,
+	                customClass: {
+	                    popup: 'border-radius-0',
+	                },
+	            })
+	            Swal.showLoading()
+	          },
+	          success: function(result)
+	          {
+	            Swal.fire(swalSuccess).then((result) => {
+	              if (result.value) {
+	                location.reload()
+	              }
+	            })
+	          }
+	        })
+	      }
+	    })
+		}else{
+			alert("Fill Empty Input Field!")
+		}
+  	
+  }
+
+  function settingListEngineerAssign(status,name,id_modal){
+		$(".assignEngineerAtm").val("")
+  	console.log(name)
+  	$.ajax({
+  		type:"GET",
+  		url:"{{url('/ticketing/setting/getEngineer')}}",
+  		success:function(result){
+  			var selectEngineer = $(".assignEngineerAtm")
+
+  			selectEngineer.select2({
+		      placeholder: 'Select Engineer Name',
+		      dropdownParent: $("#"+id_modal),
+		  		data:result
+		  	})
+
+  			if (status == "edit") {
+		  		if (name != null) {
+		  			selectEngineer.val(name).trigger('change');
+		  		}else{
+		  			selectEngineer
+		  		}
+		  	}else{
+		  		selectEngineer
+		  	}
+
+		  	$(".assignEngineerAtm").next().next().remove()
+  		}
+  	})
+  	
+  	// selectEngineer.select2({
+   //    placeholder: 'Select Engineer Name',
+   //    dropdownParent: $("#"+id_modal),
+  	// 	ajax: {
+   //        url: '{{url("/ticketing/setting/getEngineer")}}',
+   //        dataType: 'json',
+   //        // delay: 250,
+   //        processResults: function(data, params) {
+   //            params.page = params.page || 1;
+			// 		    return {
+			// 		        results: data,
+			// 		        pagination: {
+			// 		            more: (params.page * 10) < data.count_filtered
+			// 		        }
+			// 		    };
+   //        },
+   //    }
+  	// })
+  	
+  }
+
+  function settingListAtmId(){
+  	$(".selectAssignAtmId").select2({
+      placeholder: 'Select ATM Id',
+  		ajax: {
+          url: '{{url("/ticketing/setting/getIdAtm")}}',
+          dataType: 'json',
+          delay: 250,
+          processResults: function(data, params) {
+              params.page = params.page || 1;
+					    return {
+					        results: data,
+					        pagination: {
+					            more: (params.page * 10) < data.count_filtered
+					        }
+					    };
+          },
+      },
+    	// data:[{
+    	// 	id:"VMABC",
+    	// 	text:"VMABC"
+    	// },
+    	// {
+    	// 	id:"VMBCD",
+    	// 	text:"VMBCD"
+    	// },
+    	// {
+    	// 	id:"VMBHG",
+    	// 	text:"VMBHG"
+    	// }],
+  	}).on("change", function () {
+  		 var selectedValues = [];
+		    $('.selectAssignAtmId').not(this).each(function() {
+		      selectedValues = selectedValues.concat($(this).val() || []);
+		    });
+
+		    // Check if any selected value is selected in another Select
+		    var currentSelect = $(this);
+		    var alertShown = false; 
+		    $(this).find('option:selected').each(function() {
+		      var value = $(this).val();
+		      var text = $(this).text();
+
+		      if (selectedValues.includes(value)) {
+		        // Unselect the value in the current Select
+		        currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+		        currentSelect.trigger('change');
+		        alert('ATM Id ' + text + ' cannot duplicate Assign!');
+          	alertShown = true;
+		      }
+		    });
+  	})
+
+  	$(".selectAssignAtmId").next().next().remove()
+  }
 </script>
 @endsection
