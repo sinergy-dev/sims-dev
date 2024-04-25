@@ -1094,6 +1094,7 @@ class TicketingController extends Controller
         $messages = [
 		    'atmID.unique' => 'The ATM ID has already been taken!',
 		    'atmSerial.unique' => 'The Serial Number has already been taken!',
+		    'atmSerial.required' => 'You must fill serial number of ATM',
 		    'atmOwner.required' => 'You must select ATM Owner!',
 		    'atmLocation.required' => 'You must set ATM Location!',
 		    'atmAddress.required' => 'You must select ATM Address!',
@@ -1103,6 +1104,7 @@ class TicketingController extends Controller
     	$validator = Validator::make($request->all(), [
 			'atmID' => 'unique:ticketing__atm,atm_id',
 			'atmSerial' => 'unique:ticketing__atm,serial_number',
+			'atmSerial' => 'required',
 			'atmOwner' => 'required',
 			'atmLocation' => 'required',
 			'atmAddress' => 'required',
@@ -1123,7 +1125,8 @@ class TicketingController extends Controller
 				"note" => $request->atmNote,
 				"machine_type" => $request->atmType,
 				"os_atm" => $request->atmOS,
-				"versi_atm" => $request->atmVersion
+				"versi_atm" => $request->atmVersion,
+				"engineer_atm" => $request->atmEngineer
 			]);
 
 		$newAtm->save();
@@ -1195,7 +1198,8 @@ class TicketingController extends Controller
 				"note" => $request->atmNote,
 				"machine_type" => $request->atmType,
 				"os_atm" => $request->atmOS,
-				"versi_atm" => $request->atmVersion
+				"versi_atm" => $request->atmVersion,
+				"engineer_atm" => $request->atmEngineer
 			]);
 
 		$setAtm->save();
@@ -3524,6 +3528,30 @@ class TicketingController extends Controller
     	$data = DB::table('ticketing__user')->select(DB::raw('`pid` AS `id`,`pid` AS `text`'))->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
 
     	return $data;
+    }
+
+    public function getIdAtm(Request $request)
+    {
+    	$data = TicketingATM::select(DB::raw('`id` AS `id`,`atm_id` AS `text`'))->where('atm_id','like','%'.request('q').'%')->where('engineer_atm',null)->get();
+    	return response()->json($data);
+    }
+
+    public function getEngineer(Request $request)
+    {
+    	return $data = User::select(DB::raw('`name` AS `id`,`name` AS `text`'))->where('id_division','MSM')->where('status_karyawan','!=','dummy')->where('name','like','%'.request('q').'%')->get();
+    }
+
+    public function assignEngineer(Request $request)
+    {
+    	$data = json_decode($request->arrListEngineerAssign,true);
+
+    	foreach ($data as $value) {
+    		foreach ($value['atm_id'] as $values) {
+    			$update = TicketingATM::where('id',$values)->first();
+    			$update->engineer_atm = $value['engineer'];
+    			$update->update();
+    		}
+    	}
     }
 
 }

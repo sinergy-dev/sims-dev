@@ -23,7 +23,8 @@ class TicketingATM extends Model
 		'note',
 		'machine_type',
 		'os_atm',
-		'versi_atm'
+		'versi_atm',
+		'engineer_atm'
 	];
 
 	public function peripheral(){
