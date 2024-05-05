@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use Auth;
 use HttpOz\Roles\Models\Role;
+use App\User;
 
 class PermissionConfigController extends Controller
 {

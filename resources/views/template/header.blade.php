@@ -1,3 +1,10 @@
+<style>
+	.navbar-nav>.user-menu>.dropdown-menu>li.user-header {
+		padding: 10px;
+		text-align: center;
+		height:max-content!important;
+	}
+</style>
 <header class="main-header">
 	<a href="{{url('/')}}" class="logo">
 		<span class="logo-mini">
