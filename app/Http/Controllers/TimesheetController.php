@@ -319,17 +319,13 @@ class TimesheetController extends Controller
 
     public function addTimesheet(Request $request)
     {
-        // return $request->id_activity;
         $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
         $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
 
         $startDateInput = $request->startDate . '00:01:02';
         $endDateInput = $request->endDate . '23:59:59';
 
-        // $toDate = Carbon::parse($startDateInput)->addDays(1);
-        // $fromDate = Carbon::parse($request->endDate)->addDays(1);
         Carbon::setTestNow();
-        // $allDaysPlanned = $days+1;
 
         if ($request->isGCal == 'true') {
             $toDate = Carbon::createFromFormat('Y-m-d', $request->endDate, 'Asia/Jakarta');
@@ -413,23 +409,68 @@ class TimesheetController extends Controller
             }
         } else{
             $arrTimesheet = json_decode($request->arrTimesheet,true);
-            $toDate = Carbon::createFromFormat('Y-m-d', $arrTimesheet[0]['startDate'], 'Asia/Jakarta');
-            $fromDate = Carbon::createFromFormat('Y-m-d', $arrTimesheet[0]['endDate'], 'Asia/Jakarta');
-      
-            $days = $toDate->diffInDays($fromDate);
-            if ($days > 0) {
-                $i=0; 
-                do{
-                    foreach ($arrTimesheet as $value) {
-                        if (isset($value['id_activity'])) {
-                            $addTimesheet = Timesheet::where('id',$value['id_activity'])->first();
-                        } else {
+            foreach ($arrTimesheet as $value) {
+                $startDateActivity = Carbon::createFromFormat('Y-m-d', $value['startDate'], 'Asia/Jakarta');
+                $endDateActivity = Carbon::createFromFormat('Y-m-d', $value['endDate'], 'Asia/Jakarta');
+
+                if (isset($value['id_activity'])) {
+                    $addTimesheet = Timesheet::where('id',$value['id_activity'])->first();
+                    $addTimesheet->start_date = $startDateActivity;
+                    $addTimesheet->end_date = $endDateActivity;
+                    $addTimesheet->nik = Auth::User()->nik;
+                    $addTimesheet->schedule = $value['selectSchedule'];
+                    $addTimesheet->pid = $value['selectLead'];
+                    $addTimesheet->task = $value['selectTask'];
+                    $addTimesheet->phase = $value['selectPhase'];
+                    $addTimesheet->level = $value['selectLevel'];
+                    $addTimesheet->activity = $value['textareaActivity'];
+                    $addTimesheet->status = $value['selectStatus'];
+                    if ($value['selectStatus'] == '') {
+                        $addTimesheet->status = NULL;
+                    } else {
+                        $addTimesheet->status = $value['selectStatus'];
+                    }
+                    $addTimesheet->duration = $value['selectDuration'];
+                    $addTimesheet->type = $value['selectType'];
+                    $getPoint = (int)$value['selectDuration']/480;
+                    $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+                    $addTimesheet->save();
+                } else {
+                    $days = $endDateActivity->diffInDays($startDateActivity) + 1;
+
+                    if ($days > 1) {
+                        // Generate date range between start and end dates
+                        $dateRange = $startDateActivity->range($endDateActivity)->toArray();
+
+                        foreach ($dateRange as $date) {
                             $addTimesheet = new Timesheet();
                             $addTimesheet->date_add = Carbon::now()->toDateTimeString();
-                        }
-                        $startDatePlanned = Carbon::createFromFormat('Y-m-d', $value['startDate'], 'Asia/Jakarta')->addDays($i);
-                        $addTimesheet->start_date = $startDatePlanned;
-                        $addTimesheet->end_date = $startDatePlanned;
+                            $addTimesheet->start_date = $date->toDateString();
+                            $addTimesheet->end_date = $date->toDateString();
+                            $addTimesheet->nik = Auth::User()->nik;
+                            $addTimesheet->schedule = $value['selectSchedule'];
+                            $addTimesheet->pid = $value['selectLead'];
+                            $addTimesheet->task = $value['selectTask'];
+                            $addTimesheet->phase = $value['selectPhase'];
+                            $addTimesheet->level = $value['selectLevel'];
+                            $addTimesheet->activity = $value['textareaActivity'];
+                            $addTimesheet->status = $value['selectStatus'];
+                            if ($value['selectStatus'] == '') {
+                                $addTimesheet->status = NULL;
+                            } else {
+                                $addTimesheet->status = $value['selectStatus'];
+                            }
+                            $addTimesheet->duration = $value['selectDuration'];
+                            $addTimesheet->type = $value['selectType'];
+                            $getPoint = (int)$value['selectDuration']/480;
+                            $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
+                            $addTimesheet->save();
+                        }  
+                    }else{
+                        $addTimesheet = new Timesheet();
+                        $addTimesheet->date_add = Carbon::now()->toDateTimeString();
+                        $addTimesheet->start_date = $startDateActivity;
+                        $addTimesheet->end_date = $endDateActivity;
                         $addTimesheet->nik = Auth::User()->nik;
                         $addTimesheet->schedule = $value['selectSchedule'];
                         $addTimesheet->pid = $value['selectLead'];
@@ -448,48 +489,11 @@ class TimesheetController extends Controller
                         $getPoint = (int)$value['selectDuration']/480;
                         $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
                         $addTimesheet->save();
-
-                        // $storeAll [] = $addTimesheet;
-
-                        $i++;
                     }
-                }while($i <= $days);
-            }else{
-                foreach ($arrTimesheet as $value) {
 
-                    if (isset($value['id_activity'])) {
-                        $addTimesheet = Timesheet::where('id',$value['id_activity'])->first();
-                    } else {
-                        $addTimesheet = new Timesheet();
-                        $addTimesheet->date_add = Carbon::now()->toDateTimeString();
-                    }
-                    $startDatePlanned = Carbon::createFromFormat('Y-m-d', $value['startDate'], 'Asia/Jakarta');
-                    $addTimesheet->start_date = $startDatePlanned;
-                    $addTimesheet->end_date = $startDatePlanned;
-                    $addTimesheet->nik = Auth::User()->nik;
-                    $addTimesheet->schedule = $value['selectSchedule'];
-                    $addTimesheet->pid = $value['selectLead'];
-                    $addTimesheet->task = $value['selectTask'];
-                    $addTimesheet->phase = $value['selectPhase'];
-                    $addTimesheet->level = $value['selectLevel'];
-                    $addTimesheet->activity = $value['textareaActivity'];
-                    if ($value['selectStatus'] == '') {
-                        $addTimesheet->status = NULL;
-                    } else {
-                        $addTimesheet->status = $value['selectStatus'];
-                    }
-                    $addTimesheet->duration = $value['selectDuration'];
-                    $addTimesheet->type = $value['selectType'];
-                    $getPoint = (int)$value['selectDuration']/480;
-                    $addTimesheet->point_mandays = number_format($getPoint, 2, '.', '');
-                    $addTimesheet->save();
-
-                    // $storeAll [] = $addTimesheet;
                 }
             }
         } 
-
-        // return $storeAll;
     }
 
     public function getActivitybyDate(Request $request)
@@ -544,7 +548,8 @@ class TimesheetController extends Controller
                         $carbonStartDate = Carbon::createFromFormat('m/d/Y', $dateStartString);
                         $carbonEndDate = Carbon::createFromFormat('m/d/Y', $dateEndString);
                         // Check if the parsed date matches the original input date
-                        if ($carbonStartDate->format('m/d/Y') === $dateStartString && $carbonEndDate->format('m/d/Y') === $dateEndString) {
+
+                        if ($carbonStartDate->format('n/j/Y') == $dateStartString && $carbonEndDate->format('n/j/Y') == $dateEndString) {
                             $task = DB::table('tb_timesheet_task')->select('id')
                             ->where(DB::raw("REPLACE(task, ' ', '')"), 'LIKE', '%'.$value[10].'%')
                             ->orWhere(DB::raw("REPLACE(task, 'ing', '')"), 'LIKE', '%'.$value[10].'%')
@@ -1176,7 +1181,7 @@ class TimesheetController extends Controller
 
         $getLock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
 
-        $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->whereBetween('date_start', [$startDate, $endDate])->orderby('start_date','desc')->get();
+        $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')->select('date_off as start_date','reason_leave as activity')->where('nik',$request->nik)->where('tb_cuti.status','v')->whereBetween('date_off', [$startDate, $endDate])->orderby('start_date','desc')->get();
 
         $holiday = $this->getWorkDays($startDate,$endDate)["holiday"]->values();
 
@@ -2160,7 +2165,7 @@ class TimesheetController extends Controller
 
         $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->selectRaw('tb_timesheet.nik')->selectRaw('users.name')->selectRaw('SUM(point_mandays) AS `point_mandays`')->where('tb_timesheet.nik',$nik)->where('status','Done')
         ->whereBetween('tb_timesheet.start_date', [$startDate, $endDate])
-        ->groupby('tb_timesheet.nik')->get();
+        ->groupby('tb_timesheet.nik')->get()->makeHidden(['planned','threshold','plannedMonth']);
 
         $actualPlanned = DB::table('tb_timesheet')->select(DB::raw('SUM(point_mandays) as point_mandays'))
                 ->where('tb_timesheet.nik',$nik)
@@ -7984,13 +7989,11 @@ class TimesheetController extends Controller
     }
 
     public function updateDateEvent(Request $request){
-        $update               = Timesheet::where('id',$request->id)->first();
+        $update               = Timesheet::where('id',$request->id)->first()->makeHidden('planned');
         $update->nik          = Auth::User()->nik;
         $update->start_date   = $request->dates;
         $update->end_date     = $request->dates;
-        $update->save();
-
-        return $update;
+        $update->update();
     }
 
     public function detailActivitybyPid(Request $request)
