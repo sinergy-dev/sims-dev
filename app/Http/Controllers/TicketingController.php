@@ -2361,17 +2361,19 @@ class TicketingController extends Controller
 		if($acronym_client != "TTNI" && $acronym_client != "BTNI"){
 			$result = DB::table('ticketing__id')
 				->where('ticketing__detail.id_ticket','LIKE','%' . $period . '%')
-				->where('ticketing__detail.type_ticket',$type)
 				->where('ticketing__detail.id_ticket','LIKE','%' . $acronym_client . '%')
 				->join('ticketing__detail','ticketing__detail.id_ticket','=','ticketing__id.id_ticket')
 				->orderBy('ticketing__detail.id_atm','ASC');
 		} else {
 			$result = DB::table('ticketing__id')
 				->where('ticketing__detail.id_ticket','LIKE','%' . $period . '%')
-				->where('ticketing__detail.type_ticket',$type)
 				->where('ticketing__detail.id_ticket','LIKE','%' . $acronym_client . '%')
 				->join('ticketing__detail','ticketing__detail.id_ticket','=','ticketing__id.id_ticket')
 				->orderBy('ticketing__detail.id_ticket','ASC');
+		}
+
+		if ($type != 'none') {
+			$result = $result->where('type_ticket',$type);
 		}
 
 		$final = [];

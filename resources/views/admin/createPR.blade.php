@@ -324,7 +324,7 @@
             </div>         
             <div style="display: flex;">
  <!--              <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('https://drive.google.com/uc?export=download&id=1IDI8NVdVskSl__qQVfsrugEamr01W4IA')}}" style="cursor:pointer;">link</a></span> -->
-              <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('https://drive.google.com/uc?export=download&id=13ywzNFAJFEDGA8HUIy1GBT7B6OBG4L2W')}}" style="cursor:pointer;">link</a></span>^
+              <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('https://drive.google.com/uc?export=download&id=13ywzNFAJFEDGA8HUIy1GBT7B6OBG4L2W')}}" style="cursor:pointer;">link</a></span>
             </div>
             <div style="display: flex;">
               <span style="margin: 0 auto;">And make sure, the change of template only at row 2, any change on row 1 (header) will be reject</span>
@@ -1344,7 +1344,7 @@
                   onClick = ""
                   title = "Verify"
                   btnClass = "btnCekDraft btn-primary"
-                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
                     isDisabled = ""
                     onclick = "cekByAdmin(0,"+ row.id +")"
                   }else{
@@ -1378,7 +1378,7 @@
                 else if(row.status == 'UNAPPROVED'){
                   title = "Revision"
                   btnClass = "btn-warning"
-                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
                     status = '"revision"'
                     value = status
                     onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
@@ -1399,7 +1399,7 @@
                     isDisabledCancel = ''
                   }
                 }else{
-                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
                     isDisabledCancel = ''
                   }else{
                     isDisabledCancel = 'disabled'

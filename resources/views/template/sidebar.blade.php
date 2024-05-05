@@ -1,3 +1,15 @@
+<style>
+	.user-panel {
+		width: 100%;
+		padding: 10px;
+		overflow: hidden;
+		position: inherit;
+	}
+
+	.sidebar-menu{
+		margin: revert;
+	}
+</style>
 <aside class="main-sidebar">
 	<section class="sidebar">
 		<div class="user-panel">
@@ -14,7 +26,7 @@
 			</div>
 			<div class="pull-left info" >
 				<p>{{ Auth::User()->name }}</p>
-				<a href="#"><i class="fa fa-circle text-success"></i>
+				<a href="#" style="text-wrap: wrap;"><i class="fa fa-circle text-success"></i>
 					{{$initView['userRole']->name}}
 				</a>
 			</div>

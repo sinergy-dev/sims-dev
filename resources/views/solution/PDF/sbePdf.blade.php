@@ -222,7 +222,7 @@
             @foreach($getSign as $data_sign)
             <td>
               <div style="margin-top:15px">
-                @if($data_sign->position == "SOL Manager")
+                @if($data_sign->position == "VP Product Management & Development Solution")
                 Approval By:<br><br>
                 @else
                 Issued By:<br><br>

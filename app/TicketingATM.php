@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TicketingATM extends Model
 {
     //
+    // protected $connection = 'second_db_connection';
     protected $table = 'ticketing__atm';
 	
 	protected $primaryKey = 'id';

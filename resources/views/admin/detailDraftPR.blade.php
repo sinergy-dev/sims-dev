@@ -928,7 +928,7 @@
             //for user privilege
 
             if (result[2].isCircular == 'True') {   
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+              if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
                 $("#btnSirkulasi").prop('disabled',true)
                 if ((window.location.href.split("?")[1] == "hide") == false){
                   $("#btnRevision").show().prop('disabled',false).click(function(){
@@ -980,7 +980,7 @@
             disableResolve = 'disabled'
             disableReply = 'disabled'
           }else{
-            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"Operations Director")->exists()}}") {
+            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Operations Director')->exists()}}") {
               disableResolve
               disableReply
             }else{
@@ -1223,7 +1223,7 @@
   function pressReply(no_pr,id,person){
     var emailMention = []
     //user procurement
-    var user_proc = JSON.parse("{{App\RoleUser::join('users','users.nik','=','role_user.user_id')->join('roles','roles.id','=','role_user.role_id')->select('users.name')->where('roles.name','BCD Procurement')->where('status_karyawan','!=','dummy')->get()}}".replace(/&quot;/g,'"'))
+    var user_proc = JSON.parse("{{App\RoleUser::join('users','users.nik','=','role_user.user_id')->join('roles','roles.id','=','role_user.role_id')->select('users.name')->where('roles.name','Procurement')->where('status_karyawan','!=','dummy')->get()}}".replace(/&quot;/g,'"'))
 
     $.each(user_proc,function(item,value){
       emailMention.push({"name":value.name})
@@ -1830,7 +1830,7 @@
 
         if (accesable.includes('btnSirkulasi','btnPembanding','btnShowPdf') || accesable.includes('btnShowPdf')) {
           $.each(accesable,function(value,item){
-            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
               if(result.pr.status == 'FINALIZED'){
                 $("#btnFinalize").prop('disabled',false)
                 $("#btnSirkulasi").prop('disabled',true)
@@ -1850,7 +1850,7 @@
 
         if (result.getSign == '{{Auth::User()->name}}') {
           //bcd manager & pmo manager bisa circular meskipun belum diresolve
-          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"PMO Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"SOL Manager")->exists()}}") {
+          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Product Management & Development Solution')->exists()}}") {
             $("#btnSirkulasi").prop('disabled',false)
           }else{
             if (result.isNotes == 'False') {
@@ -1864,11 +1864,11 @@
         }
 
         if (result.pr.status == "UNAPPROVED" || result.pr.status == "CIRCULAR") {
-          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}") {
             $("#btnSirkulasi").prop('disabled',true)
           }
         }else{
-          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
             if (result.pr.status == "FINALIZED" || result.pr.status == "SENDED") {
               $("#btnSirkulasi").prop('disabled',true)
             }else{
@@ -2584,7 +2584,7 @@
       success: function(result) {
         if (result[2].isCircular == 'True') {
           if (result[3] != null) {
-            if (result[3].position != "BCD Manager") {
+            if (result[3].position != "VP Supply Chain, CPS & Asset Management") {
               //btn pembanding di procurement disabled
               $("#btnAddPembanding").prop('disabled',true)
               $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
@@ -2652,7 +2652,7 @@
   }
 
   function sirkulasi(n){
-    if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+    if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}") {
       $.ajax({
         type: "GET",
         url: "{{url('/admin/getCountComparing')}}",

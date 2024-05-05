@@ -807,7 +807,7 @@ Lead Register
 	}
 
 	function submitLead(){
-		if ("{{Auth::User()->id_division}}" == "PRESALES") {
+		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Solution Execution Manager')->exists()}}" ) {
 			var owner_sales = $("#owner_sales").val()
 		}else{
 			var owner_sales = 'bukan presales'

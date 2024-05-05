@@ -1323,6 +1323,9 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/setting/getSearchAllData','TicketingController@getSearchAllData');
 	Route::post('/ticketing/setting/storeAssign','TicketingController@storeAssign');
 	Route::post('/ticketing/setting/storeAssign','TicketingController@storeAssign');
+	Route::get('/ticketing/setting/getIdAtm','TicketingController@getIdAtm');
+	Route::get('/ticketing/setting/getEngineer','TicketingController@getEngineer');
+	Route::post('/ticketing/setting/assignEngineer','TicketingController@assignEngineer');
 
 	Route::get('/requestChange','RequestChangeController@index');
 
@@ -1477,6 +1480,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/authentication/{id}','TestController@authentication');
+Route::get('testJoinDb','TestController@testJoinDb');
 Route::get('/getHoliday','TestController@getWorkdays');
 
 Route::get('/testFullCalendar',function(){
