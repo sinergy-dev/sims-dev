@@ -688,11 +688,7 @@ Human Resources
 			                    <tr>
 			                      <td><?=str_replace('/', '', $data->nik)?></td>
 			                      <td>{{ucwords(strtolower($data->name))}}</td>
-			                      @if($data->id_position != '')
 			                      <td>{{$data->roles}}</td>
-			                      @else
-			                      <td>&#8212</td>
-			                      @endif
 			                      <td>{{date('Y-m-d', strtotime($data->date_of_entry))}}</td>
 			                      <td hidden>{{$data->date_of_entrys}}</td>
 			                      <td>
@@ -777,13 +773,9 @@ Human Resources
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
-		                      @if($data->id_position != '')
 		                      <td>
 		                        {{$data->roles}}
 		                      </td>
-		                      @else
-		                      <td>&#8212</td>
-		                      @endif
 		                      <td>
 		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
@@ -838,11 +830,7 @@ Human Resources
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
-		                      @if($data->id_position != '')
 		                      <td>{{$data->roles}}</td>
-		                      @else
-		                      <td>&#8212</td>
-		                      @endif
 		                      <td>
 		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
@@ -893,17 +881,13 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-			                    @if($data->group == 'pmo' || $data->group == 'msm' || $data->group == 'presales' || $data->group == 'DVG' || $data->group == 'DPG' || $data->roles == 'Operations Director' || $data->group == 'bcd')
+			                    @if($data->group == 'Project Management' || $data->group == 'Solution Implementation & Managed Service' || $data->group == 'Product Management & Development' || $data->group == 'Director Operational' || $data->group == 'Supply Chain, CPS & Asset Management')
 			                    <tr>
 			                      <td><?=str_replace('/', '', $data->nik)?></td>
 			                      <td>{{ucwords(strtolower($data->name))}}</td>
-			                      @if($data->id_position != '')
 			                      <td>
 			                       {{$data->roles}}
 			                      </td>
-			                      @else
-			                      <td>&#8212</td>
-			                      @endif
 			                      <td>
 			                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
@@ -954,17 +938,13 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->group == 'hr')
+		                    @if($data->group == 'Human Capital')
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
-		                      @if($data->id_position != '')
 		                      <td>
 		                         {{$data->roles}}
 		                      </td>
-		                      @else
-		                      <td>&#8212</td>
-		                      @endif
 		                      <td>
 		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
@@ -1017,13 +997,9 @@ Human Resources
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
-		                      @if($data->id_position != '')
 		                      <td>
 		                         {{$data->roles}}
 		                      </td>
-		                      @else
-		                      <td>&#8212</td>
-		                      @endif
 		                      <td>
 		                        <button class="btn btn-xs btn-primary"  onclick="showEditTab(this.value,0)" value="{{$data->nik}}"><i class="fa fa-search"></i>&nbspShow</button>
 		                      </td>
