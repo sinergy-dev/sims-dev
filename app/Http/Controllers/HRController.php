@@ -216,7 +216,8 @@ class HRController extends Controller
                 ->join('role_user','users.nik','=','role_user.user_id')
                 ->join('roles','role_user.role_id','=','roles.id')
                 ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja','roles.name as roles','roles.group', DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
-                ->where('users.status_karyawan','!=','dummy')
+                ->where('users.status_karyawan','!=','dummy')                
+                ->where('status_delete','!=','D')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
                 // ->orderBy('users.date_of_entry', 'asc')
@@ -442,6 +443,7 @@ class HRController extends Controller
         $tambah->status_delete = '-';
         $tambah->id_presence_setting = '1';
         $tambah->status_kerja = $request['status_kerja'];
+        $tambah->api_token = Str::random(80);
 
         if ($request['status_kerja'] != "") {
             $tambah->status_kerja = $request['status_kerja'];
