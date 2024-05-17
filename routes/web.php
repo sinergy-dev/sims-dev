@@ -555,7 +555,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getCutiUsers','HRGAController@getCutiUsers');
 	Route::get('/getCutiAuth','HRGAController@getCutiAuth');
 	Route::get('/delete_cuti/{id_cuti}', 'HRGAController@delete_cuti');
-	Route::get('/follow_up/{id_cuti}', 'HRGAController@follow_up');
+	Route::get('/follow_up', 'HRGAController@follow_up');
 	Route::get('/downloadPdfcuti', 'HRGAController@cutipdf');
 	Route::get('/get_list_cuti', 'HRGAController@get_list_cuti');
 	Route::get('/get_cuti_byMonth', 'HRGAController@get_request_cuti_byMonth');
@@ -1476,6 +1476,44 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/career/edit/{id}','CareerController@edit');
 	Route::get('career/data/{id}', 'CareerController@show');
 	Route::get('/career/create','CareerController@create');	
+
+	Route::get('asset/index','AssetMgmtController@index');
+	Route::get('asset/detail','AssetMgmtController@detail_asset');
+	Route::get('asset/dashboard','AssetMgmtController@dashboard');
+	Route::get('asset/getProvince','AssetMgmtController@getProvince');
+	Route::get('asset/getDetailAsset','AssetMgmtController@getDetailAsset');
+	Route::post('asset/storeAsset','AssetMgmtController@storeAsset');
+	Route::get('asset/getLog','AssetMgmtController@getLog');
+	Route::get('asset/getLogById','AssetMgmtController@getLogById');
+	Route::get('asset/getPeripheral','AssetMgmtController@getPeripheral');
+	Route::get('asset/getAssetToAssign','AssetMgmtController@getAssetToAssign');
+	Route::post('asset/storeAssign','AssetMgmtController@storeAssign');
+	Route::get('asset/getTestProvince','TestController@getProvince');
+	Route::get('asset/getClientByPid','AssetMgmtController@getClientByPid');
+	Route::get('asset/getPid','AssetMgmtController@getPid');
+	Route::get('asset/getAssetById','AssetMgmtController@getAssetById');
+	Route::get('asset/getDataAsset','AssetMgmtController@getDataAsset');
+	Route::get('asset/getClient','AssetMgmtController@getClient');
+	Route::post('asset/deleteAssignedAsset','AssetMgmtController@deleteAssignedAsset');
+	Route::post('asset/updateAsset','AssetMgmtController@updateAsset');
+	Route::get('asset/getFilterData','AssetMgmtController@getFilterData');
+	Route::get('asset/getPidByClient','AssetMgmtController@getPidByClient');
+	Route::get('asset/getPidForFilter','AssetMgmtController@getPidForFilter');
+	Route::get('asset/getChartAssetOwner','AssetMgmtController@getChartAssetOwner');
+	Route::get('asset/getChartCategory','AssetMgmtController@getChartCategory');
+	Route::get('asset/getChartVendor','AssetMgmtController@getChartVendor');
+	Route::get('asset/getChartClient','AssetMgmtController@getChartClient');
+	Route::get('asset/getCountDashboard','AssetMgmtController@getCountDashboard');
+	Route::get('asset/getFilterCount','AssetMgmtController@getFilterCount');
+	Route::get('asset/getColor','AssetMgmtController@getColor');
+	Route::get('asset/getVendor','AssetMgmtController@getVendor');
+	Route::get('asset/getTypeDevice','AssetMgmtController@getTypeDevice');
+	Route::get('asset/getCategoryPeripheral','AssetMgmtController@getCategoryPeripheral');
+	Route::get('asset/getLevelSupport','AssetMgmtController@getLevelSupport');
+	Route::get('asset/getIdAtm','AssetMgmtController@getIdAtm');
+	Route::post('asset/assignEngineer','AssetMgmtController@assignEngineer');
+	Route::get('asset/getEngineer','AssetMgmtController@getEngineer');
+	Route::get('asset/getAssignedEngineer','AssetMgmtController@getAssignedEngineer');
 
 });
 

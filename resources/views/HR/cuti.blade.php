@@ -184,7 +184,7 @@ Leaving Permitte
               <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
             </li>
             <li class="tabs_item">
-              {{-- @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+              {{-- @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}")
                 <a href="#staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
               @else
                 <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
@@ -225,7 +225,7 @@ Leaving Permitte
                   <thead>
                     <tr>
                       <th>Employees Name</th>
-                      <th>Division</th>
+                      <th>Role</th>
                       <th id="col-cuti-request">Cuti Request</th>
                       <th>Request Date</th>
                       <!-- <th>Date of Request</th>
@@ -274,7 +274,7 @@ Leaving Permitte
                   <thead>
                     <tr>
                       <th>Employees Name</th>
-                      <th>Division</th>
+                      <th>Role</th>
                       <th>Request Date</th>
                       <th>Dates</th>
                       <th>Approved Date</th>
@@ -605,7 +605,7 @@ Leaving Permitte
             <div class="modal-body">
               <!-- <form method="POST" action="{{url('/decline_cuti')}}" id="reason_decline" name="reason_decline"> -->
                 @csrf
-              <input type="" name="id_cuti_decline" id="id_cuti_decline" hidden="">
+              <input type="" name="id_cuti_decline" id="id_cuti_decline" hidden>
               <div class="form-group">
                 <label for="sow">Decline reason</label>
                 <textarea name="keterangan" id="keterangan" class="form-control" required="" rows="5" style="resize: none;overflow-y: auto;"></textarea>
@@ -613,7 +613,7 @@ Leaving Permitte
 
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-                  <button type="submit" class="btn btn-success-absen" onclick="submitDecline()"><i class="fa fa-check"></i>&nbsp Decline</button>
+                  <button type="button" class="btn btn-success-absen" onclick="submitDecline()"><i class="fa fa-check"></i>&nbsp Decline</button>
                 </div>
             <!-- </form> -->
             </div>
@@ -977,7 +977,7 @@ Leaving Permitte
           if($("input[name='jenis_cuti']:checked").val()){
             Swal.fire({
             title: 'Are you sure?',
-            text: "to submit your leaving permit",
+            text: "Submit your leaving permit",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -993,10 +993,10 @@ Leaving Permitte
                   allowEscapeKey: false,
                   allowEnterKey: false,
                   customClass: {
-                    popup: 'border-radius-0',
+                      popup: 'border-radius-0',
                   },
-                  onOpen: () => {
-                    Swal.showLoading()
+                  didOpen: () => {
+                      Swal.showLoading()
                   }
                 })
                 $.ajax({
@@ -1019,9 +1019,10 @@ Leaving Permitte
                     ).then((result) => {
                       if (result.value) {
                         $("#modalCuti").modal('hide');
-                        location.reload();
                       }
-                    })
+                    }),setTimeout(function(){
+                      $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+                    },2000);
                   }
                 })
               }else if(result.dismiss === Swal.DismissReason.cancel){
@@ -1253,7 +1254,7 @@ Leaving Permitte
 
         Swal.fire({
           title: 'Are you sure?',
-          text: "to update your leaving permite",
+          text: "Update your leaving permite",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -1269,10 +1270,10 @@ Leaving Permitte
               allowEscapeKey: false,
               allowEnterKey: false,
               customClass: {
-                popup: 'border-radius-0',
+                  popup: 'border-radius-0',
               },
-              onOpen: () => {
-                Swal.showLoading()
+              didOpen: () => {
+                  Swal.showLoading()
               }
             })
             $.ajax({
@@ -1295,9 +1296,11 @@ Leaving Permitte
                 ).then((result) => {
                   if (result.value) {
                     $("#modalCuti_edit").modal('hide');
-                    location.reload();
                   }
-                })
+                }),
+                setTimeout(function(){
+                  $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+                },2000);
               }
             })
           }
@@ -1436,8 +1439,8 @@ Leaving Permitte
     $('#submit_approve').click(function(){  
       // $("#cuti_fix").val(updates.join(","));
       Swal.fire({
-        title: 'Submit',
-        text: "kamu yakin?",
+        title: 'Are you sure',
+        text: "Submit the permite?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -1581,7 +1584,8 @@ Leaving Permitte
           },
         ],
         initComplete: function() {
-          if ("{{Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'HR MANAGER'}}") 
+          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','Director Operational')->exists()}}" || 
+            "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}") 
           {
             if (this.api().data().length) 
             {
@@ -1664,24 +1668,66 @@ Leaving Permitte
     }
 
     function submitDecline(){
-
-      $('#tunggu').modal('show');
-      $('#reason_decline').modal('hide')
-
-      $.ajax({
-        type:"POST",
-        url:"{{url('/decline_cuti')}}",
-        data:{
-          _token: "{{ csrf_token() }}",
-          id_cuti:($("#id_cuti_decline").val()),
-          decline_reason:($("#keterangan").val()),
-        },
-        success:function(result){
-          $('#tunggu').modal('hide');
-          $('#reason_decline').modal('hide')
-          location.reload()
+      Swal.fire({
+      title: 'Are you sure?',
+      text: "Decline permite!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes!'
+      }).then((result) => {
+        if (result.value) {
+          var id_cuti = this.value;
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"POST",
+              url:"{{url('decline_cuti')}}",
+              data:{
+                _token: "{{ csrf_token() }}",
+                id_cuti:($("#id_cuti_decline").val()),
+                decline_reason:($("#keterangan").val()),
+              },
+              success: function(result){
+                $('#reason_decline').modal('hide')
+                Swal.fire(
+                  'Declined!',
+                  'Your permite has been declined.',
+                  'success'
+                ),                 
+                setTimeout(function(){
+                  $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+                },2000);
+              }
+            })
         }
       })
+      // $.ajax({
+      //   type:"POST",
+      //   url:"{{url('/decline_cuti')}}",
+      //   data:{
+      //     _token: "{{ csrf_token() }}",
+      //     id_cuti:($("#id_cuti_decline").val()),
+      //     decline_reason:($("#keterangan").val()),
+      //   },
+      //   success:function(result){
+      //     $('#tunggu').modal('hide');
+      //     $('#reason_decline').modal('hide')
+      //     location.reload()
+      //   }
+      // })
     }
 
     $('#datatablew').on('click', '.btn_delete', function(e){
@@ -1696,57 +1742,79 @@ Leaving Permitte
       }).then((result) => {
         if (result.value) {
           var id_cuti = this.value;
-          $('#tunggu').modal('show');
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
+              }
+            })
             $.ajax({
               type:"GET",
               url:"{{url('delete_cuti/')}}/"+id_cuti,
               success: function(result){
                 $('#tunggu').modal('hide');
                 Swal.fire(
-              'Deleted!',
-              'Your file has been deleted.',
-              'success'
-            ),  
-              location.reload()                
-                // setTimeout(function(){
-                //     $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
-                // },2000);
+                  'Deleted!',
+                  'Your file has been deleted.',
+                  'success'
+                ),                 
+                setTimeout(function(){
+                    $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+                },2000);
               }
             })
         }
-      })
-        
+      }) 
     })
 
 
     $('#datatablew').on('click', '.btn_fu', function(e){
         Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        text: "Follow Up Your Permite!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes!'
       }).then((result) => {
+
         if (result.value) {
           var id_cuti = this.value;
-          $('#tunggu').modal('show');
-            $.ajax({
-              type:"GET",
-              url:"{{url('follow_up/')}}/"+id_cuti,
-              success: function(result){
-                $('#tunggu').modal('hide');
-                Swal.fire(
-              'Successfully!',
-              'Your request has been sent.',
-              'success'
-            ),
-                setTimeout(function(){
-                    $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
-                },2000);
-              }
-            })
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's sending..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+                popup: 'border-radius-0',
+            },
+            didOpen: () => {
+                Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"GET",
+            url:"{{url('follow_up')}}?id_cuti="+id_cuti,
+            success: function(result){
+              Swal.fire(
+                'Successfully!',
+                'Your request has been sent.',
+                'success'
+              ),
+              setTimeout(function(){
+                $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+              },2000);
+            }
+          })
         }
       })
         
@@ -2092,7 +2160,7 @@ Leaving Permitte
       }
     })
 
-    @if(Auth::User()->id_position == 'HR MANAGER')
+    @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}")
       $(document).on('click',"button[class^='date_off']",function(e) {
           $.ajax({
             type:"GET",
@@ -2167,7 +2235,6 @@ Leaving Permitte
         $("#details_cuti").modal("show");
       });
     @endif
-    
     
     $("#users").change(function(){
       $.ajax({
@@ -2288,7 +2355,7 @@ Leaving Permitte
       if (id == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
       } else if(id == "request") {
-        @if(Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER')
+        @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}")
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
         @else 
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
