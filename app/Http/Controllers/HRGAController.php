@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
 use App\Barang;
 use Auth;
 use DB;
@@ -1618,7 +1620,7 @@ class HRGAController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
 
-        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nik = Auth::User()->nik;
         $date_now = date('Y-m-d');
@@ -1648,39 +1650,62 @@ class HRGAController extends Controller
         $getStatus  = Cuti::select('status')->where('id_cuti',$id_cuti)->first();
         $status     = $getStatus->status;
 
-        if ($ter != NULL) {
-            if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
-                if ($div == 'PMO' || $div == 'MSM'|| $div == 'BCD') {
-                    $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                } else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
-                    $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-                }else{
-                    $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                }
-            }else if ($ter == 'DPG') {
-                $kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
-            }else if ($div == 'WAREHOUSE'){
-                $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
-            }else if ($cek_role->name_role == 'Operations Director'){
-                $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
-            }else{
-                $kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
+        if(Str::contains($cek_role->name_role, 'VP')){
+            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Operations Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+        } elseif(Str::contains($cek_role->name_role, 'Manager')){
+            if($cek_role->name_role == 'Renumeration, Personalia & GS Manager' &&  $cek_role->name_role == 'Human Capital Manager'){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            } elseif ($cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            } else {
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             }
-            
-        }else{
-            if ($div == 'HR') {
-                if($pos == 'HR MANAGER'){
-                    $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first()->email;
-                }else{
-                    $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first()->email;
+        } elseif(!Str::contains($cek_role->name_role, 'Manager') && !Str::contains($cek_role->name_role, 'Director')) {
+            if ($cek_role->name_role == 'Sales Staff') {
+                $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            } elseif ($cek_role->name_role == 'Finance Staff') {
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('id_company','1')->where('roles.name','Finance & Accounting Manager')->first();
+            } else {
+                if ($cek_role->mini_group == 'Product Management & Solution' || $cek_role->mini_group == 'Supply Chain Management' || $cek_role->mini_group == 'Risk Management, Sys Dev & Compliance') {
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                } else {
+                    if ($hitung >= 5) {
+                        if ($cek_role->mini_group == 'Human Capital') {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                            ->whereRaw(
+                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
+                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                            )
+                            ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        } else {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`group` = ? AND `roles`.`name` LIKE ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager', $cek_role->group, 'VP%']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        }
+                    } else {
+                        if ($cek_role->mini_group == 'Human Capital') {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                            ->whereRaw(
+                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
+                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                            )
+                            ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        } else {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?)", 
+                                    [$cek_role->mini_group, '%Manager']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        }
+                    }
                 }
-            }else if($pos == 'MANAGER'){
-                $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
-            }else{
-                $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first()->email;
             }
-            
-
+        } elseif($cek_role->name_role == 'Operations Director'){
+            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         }
         
         $name_cuti = DB::table('tb_cuti')
@@ -2119,9 +2144,7 @@ class HRGAController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
 
-        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
-
-        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $id_cuti = $request['id_cuti'];
 
@@ -2143,7 +2166,6 @@ class HRGAController extends Controller
             $resultA = array_diff($array, $array2);
             $resultB = array_diff($array2, $array);
 
-
             if ($resultA) {
 
                 foreach ($resultA as $dates) {
@@ -2160,9 +2182,16 @@ class HRGAController extends Controller
                         $add->date_off  = date("Y-m-d",$format_start_s);
                         $add->status    = 'NEW';
                         $add->save();  
-                    }                                  
+                    } else {
+                        $add            = new CutiDetil();
+                        $add->id_cuti   = $id_cuti;
+                        $format_start_s = strtotime($dates);
+                        $add->date_off  = date("Y-m-d",$format_start_s);
+                        $add->status    = 'NEW';
+                        $add->save(); 
+                    }                                 
 
-                    CutiDetil::where('id_cuti',$id_cuti)->whereIn('date_off',$array2)->update(['status' => 'NEW']);
+                    // CutiDetil::where('id_cuti',$id_cuti)->whereIn('date_off',$array2)->update(['status' => 'NEW']);
                 }
             }
 
@@ -2171,43 +2200,65 @@ class HRGAController extends Controller
             $update->status = $request['status_update'];
             $update->update();
 
-            if ($ter != NULL) {
-                if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
-                    if ($div == 'PMO' || $div == 'MSM' || $div == 'BCD') {
-                        $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                    }else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
-                        $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-                    }else{
-                        $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                    }
-                }else if ($ter == 'DPG') {
-                    $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
-                }else if ($div == 'WAREHOUSE'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
-                }else if ($cek_role->name_role == 'Operations Director'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
-                }else{
-                    $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
+            if(Str::contains($cek_role->name_role, 'VP')){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('roles.name','Operations Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            } elseif(Str::contains($cek_role->name_role, 'Manager')){
+                if($cek_role->name_role == 'Renumeration, Personalia & GS Manager' &&  $cek_role->name_role == 'Human Capital Manager'){
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                } elseif ($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                } else {
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 }
-                           
-            
-            }else{
-                if ($div == 'HR') {
-                    if($pos == 'HR MANAGER'){
-                        $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                    }else{
-                        $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+            } elseif(!Str::contains($cek_role->name_role, 'Manager') && !Str::contains($cek_role->name_role, 'Director')) {
+                if ($cek_role->name_role == 'Sales Staff') {
+                    $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->first();
+                } elseif ($cek_role->name_role == 'Finance Staff') {
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('id_company','1')->where('roles.name','Finance & Accounting Manager')->first();
+                }  else {
+                    if ($cek_role->mini_group == 'Product Management & Solution' || $cek_role->mini_group == 'Supply Chain Management' || $cek_role->mini_group == 'Risk Management, Sys Dev & Compliance') {
+                        $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                    } else {
+                        if (sizeof($resultB) >= 5) {
+                            if ($cek_role->mini_group == 'Human Capital') {
+                                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                            } else {
+                                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                    ->whereRaw(
+                                        "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`group` = ? AND `roles`.`name` LIKE ?)", 
+                                        [$cek_role->mini_group, '%Manager', 'Project Manager', $cek_role->group, 'VP%']
+                                    )
+                                    ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                            }
+                        } else {
+                            if ($cek_role->mini_group == 'Human Capital') {
+                                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                            } else {
+                                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                    ->whereRaw(
+                                        "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?)", 
+                                        [$cek_role->mini_group, '%Manager']
+                                    )
+                                    ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                            }
+                        }
                     }
-                }else if($pos == 'MANAGER'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-                }else{
-                    $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
                 }
-                
-            
+            } elseif($cek_role->name_role == 'Operations Director' ){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             }
 
-            $kirim = User::where('email', $nik_kirim->email)->first()->email;
+            // $kirim = User::where('email', $nik_kirim->email)->first()->email;
 
             $name_cuti = DB::table('tb_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
@@ -2248,8 +2299,9 @@ class HRGAController extends Controller
         return redirect()->back();
     }
 
-    public function follow_up($id_cuti)
+    public function follow_up(Request $request)
     {
+        // return $id_cuti;
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -2260,58 +2312,118 @@ class HRGAController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
 
-        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
-        if ($ter != NULL) {
-            if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
-                if ($div == 'PMO') {
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                }else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-                }else{
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                }
-            }else if ($ter == 'DPG') {
-                $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
-            }else if ($div == 'WAREHOUSE'){
-                $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
-            }else if ($cek_role->name_role == 'Operations Director'){
-                $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
-            }else{
-                $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
-            }
+        // if ($ter != NULL) {
+        //     if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
+        //         if ($div == 'PMO') {
+        //             $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+        //         }else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
+        //             $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+        //         }else{
+        //             $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+        //         }
+        //     }else if ($ter == 'DPG') {
+        //         $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
+        //     }else if ($div == 'WAREHOUSE'){
+        //         $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+        //     }else if ($cek_role->name_role == 'Operations Director'){
+        //         $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
+        //     }else{
+        //         $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
+        //     }
             
-        }else{
-            if ($div == 'HR') {
-                if($pos == 'HR MANAGER'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                }else{
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
-                }
-            }else if($div == 'MANAGER'){
-                $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-            }else{
-                $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
-            }
+        // }else{
+        //     if ($div == 'HR') {
+        //         if($pos == 'HR MANAGER'){
+        //             $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+        //         }else{
+        //             $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+        //         }
+        //     }else if($div == 'MANAGER'){
+        //         $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+        //     }else{
+        //         $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
+        //     }
             
+        // }
+
+        $hitung = CutiDetil::where('id_cuti',$request->id_cuti)->where('status','NEW')->count();
+
+        if(Str::contains($cek_role->name_role, 'VP')){
+            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Operations Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+        } elseif(Str::contains($cek_role->name_role, 'Manager')){
+            if($cek_role->name_role == 'Renumeration, Personalia & GS Manager' &&  $cek_role->name_role == 'Human Capital Manager'){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            } elseif ($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            } else {
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            }
+        } elseif(!Str::contains($cek_role->name_role, 'Manager') && !Str::contains($cek_role->name_role, 'Director')) {
+            if ($cek_role->name_role == 'Sales Staff') {
+                $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->where('status_karyawan','!=','dummy')->first();
+            } elseif ($cek_role->name_role == 'Finance Staff') {
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('id_company','1')->where('roles.name','Finance & Accounting Manager')->first();
+            }  else {
+                if ($cek_role->mini_group == 'Product Management & Solution' || $cek_role->mini_group == 'Supply Chain Management' || $cek_role->mini_group == 'Risk Management, Sys Dev & Compliance') {
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                } else {
+                    if ($hitung >= 5) {
+                        if ($cek_role->mini_group == 'Human Capital') {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                            ->whereRaw(
+                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
+                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                            )
+                            ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        } else {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`group` = ? AND `roles`.`name` LIKE ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager', $cek_role->group, 'VP%']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        }
+                    } else {
+                        if ($cek_role->mini_group == 'Human Capital') {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                            ->whereRaw(
+                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
+                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                            )
+                            ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        } else {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?)", 
+                                    [$cek_role->mini_group, '%Manager']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        }
+                    }
+                }
+            }
+        } elseif($cek_role->name_role == 'Operations Director'){
+            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         }
 
-        $update = Cuti::where('id_cuti',$id_cuti)->first();
+        $update = Cuti::where('id_cuti',$request->id_cuti)->first();
         $update->status = 'n';
         $update->save(); 
 
-        $kirim = User::where('email', $nik_kirim->email)->first()->email;
+        // $kirim = User::where('email', $nik_kirim->email)->first()->email;
 
         $name_cuti = DB::table('tb_cuti')
             ->join('users','users.nik','=','tb_cuti.nik')
             ->select('users.name')
-            ->where('id_cuti', $id_cuti)->first();
+            ->where('id_cuti', $request->id_cuti)->first();
 
         $hari_cuti = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
                 ->groupby('tb_cuti_detail.id_cuti')
-                ->where('tb_cuti.id_cuti', $id_cuti)
+                ->where('tb_cuti.id_cuti', $request->id_cuti)
                 ->where('tb_cuti_detail.status','NEW')
                 ->first();
 
@@ -3005,7 +3117,7 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group')->where('user_id',$nik)->first();
 
         if ($request->id == 'all_lis') {
             $cuti_index = DB::table('users')
@@ -3040,129 +3152,203 @@ class HRGAController extends Controller
 
             return array("data"=>$cuti_index->merge($cuti_list));
         } elseif ($request->id == 'request') {
-            $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+            $getCutiDetail = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')->select(DB::raw('group_concat(date_off) as dates'),'nik','tb_cuti.id_cuti',DB::raw('COUNT(`tb_cuti_detail`.`id_cuti`) as days'))->where('tb_cuti_detail.status','NEW')->groupBy('id_cuti');
+
+            // return $getCutiDetail->get();
+
+            $data = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->joinSub($getCutiDetail, 'total_cuti',function($join){
+                        $join->on("total_cuti.id_cuti", '=', 'tb_cuti.id_cuti');
+                    })
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                        'roles.name as id_division',
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','total_cuti.days','users.cuti','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->whereYear('date_req',date('Y'))
-                    ->groupby('nik');
+                    // ->groupby('tb_cuti.id_cuti')
+                    ->whereYear('date_req',date('Y')) 
+                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
+                    ->where('tb_cuti_detail.status','NEW');
 
             if ($request->filter_com == 'all') {
-                $cuti = $cuti
-                    ->where('tb_cuti_detail.status','=','NEW')
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->get();
-            } else {
-                if ($ter != NULL) {
-                    if($div == 'SALES' && $pos == 'MANAGER'){
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('id_territory', $ter)
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->where('tb_cuti_detail.status','=','NEW')                            
-                            ->get();
-                    } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_division','TECHNICAL')
-                            ->where('users.id_territory','DPG')
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")                        
-                            ->get();
-                    } elseif ($div == 'BCD' && $ter == 'OPERATION' && $pos == 'MANAGER') {
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`users`.`id_division` = 'BCD')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")   
-                            ->get();
-                    } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_division','MSM')
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
-                    } elseif ($pos == 'OPERATION DIRECTOR') {
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_position','MANAGER')
-                            ->where('users.id_territory','OPERATION')
-                            ->orwhere('users.id_position','OPERATION DIRECTOR')
-                            ->orwhere('users.id_division','WAREHOUSE')
-                            ->orwhere('users.id_division','PROCUREMENT')
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
-                    } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_territory','PRESALES')
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
-                    } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_division','FINANCE')
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
-                    } else if($cek_role->name_role == 'Operations Director'){
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com) 
-                            ->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")
-                            ->where('tb_cuti_detail.status','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
-                    }else{
-                        $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('users.nik',$nik)
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
+
+                if($div == 'SALES' && $pos == 'MANAGER'){
+                    $data = $datas
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('id_territory', $ter);
+                }  elseif ($cek_role->group == 'Product Management & Development') {
+                    if ($cek_role->name_role == 'VP Product Management & Development Solution') {
+                        $data = $data->where('group','Product Management & Development');
+                    } elseif($cek_role->name_role == 'Application Development Manager'){
+                        $data = $data->whereRaw("(`mini_group` = 'Application Development' OR `tb_cuti`.`nik` = $nik)");
+                        // ->where('mini_group','Application Development')-;
+                    } elseif($cek_role->name_role == 'Customer Relation Manager'){
+                        $data = $data
+                        ->where('mini_group','Customer Relationship Management');
+                    } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
+                        $data = $data
+                        ->where('mini_group','Product Management & Solution');
+                    }else {
+                        $data = $data->where('users.nik',$nik);
                     }
-                } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
-                    $cuti = $cuti
-                        ->where('users.id_company',$request->filter_com)
-                        ->where('tb_cuti_detail.status','=','NEW')
-                        ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                        ->get();
-                } elseif ($pos == 'DIRECTOR') {
-                    $cuti = $cuti
-                        ->where('users.id_company',$request->filter_com)
-                        ->where('tb_cuti_detail.status','=','NEW')
-                        ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'OPERATION')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
-                        ->get();
-                } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
+                    
+                } elseif ($cek_role->group == 'Project Management') {
+                    if ($cek_role->name_role == 'VP Project Management') {
+                        $data = $data->whereRaw("(`group` = 'Project Management' OR `group` = 'Human Capital')");
+                        // ->where('group','Project Management')->orWhere('group','Human Capital');
+                    } elseif($cek_role->name_role == 'Project Management Manager'){
+                        $data = $data
+                        ->where('mini_group','Project Management Office');
+                    }else {
+                        $data = $data->where('users.nik',$nik);
+                    }
+                } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
+                    if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
+                        $data = $data
+                        ->where('group','Solution Implementation & Managed Service');
+                    } elseif($cek_role->name_role == 'Managed Service Manager'){
+                        $data = $data
+                        ->where('mini_group','Managed Service & Problem Solving');
+                    } elseif($cek_role->name_role == 'Solution Architect Manager'){
+                        $data = $data
+                        ->where('mini_group','Solution Architect');
+                    } elseif($cek_role->name_role == 'Solution Execution Manager'){
                         $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com)
-                            ->where('users.nik',$nik)
-                            ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
-                } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {  
-                    $cuti = $cuti
-                            ->where('users.id_company',$request->filter_com) 
-                            ->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")
-                            ->where('tb_cuti_detail.status','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                            ->get();
-                } else {
-                    $cuti = $cuti
-                        ->where('users.id_company',$request->filter_com)
-                        ->where('tb_cuti_detail.status','=','NEW')
-                        ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")                    
-                        ->get();
+                        ->where('mini_group','Solution Execution');
+                    }else {
+                        $data = $data->where('users.nik',$nik);
+                    }
+                } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
+                    if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
+                        $data = $data
+                        ->where('group','Supply Chain, CPS & Asset Management');
+                    } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
+                        $data = $data
+                        ->where('mini_group','Center Point & Asset Management SVC ');
+                    } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
+                        $data = $data
+                        ->where('mini_group','Risk Management, Sys Dev & Compliance');
+                    } elseif($cek_role->name_role == 'Supply Chain Manager'){
+                        $data = $data
+                        ->where('mini_group','Supply Chain Management');
+                    }else {
+                        $data = $data->where('users.nik',$nik);
+                    }
+                } elseif ($cek_role->group == 'Human Capital') {
+                    if ($cek_role->name_role == 'Human Capital Manager') {
+                        $data = $data
+                        ->where('mini_group','Human Capital');
+                    } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+                        $data = $data;
+                    }else {
+                        $data = $data->where('users.nik',$nik);
+                    }
+                } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                    $data = $data
+                        ->where('users.id_division','FINANCE');
+                } else if($cek_role->name_role == 'Operations Director'){
+                    $data =  $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
+                        // ->get();
+                }elseif ($cek_role->name_role == 'President Director') {
+                    $data = $data->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Sales Manager')");
+                } else{
+                    $data = $data
+                        ->where('users.nik',$nik);
+                        // ->get();
                 }
+            } else {
+                // if ($ter != NULL) {
+                    if($div == 'SALES' && $pos == 'MANAGER'){
+                        $data = $datas
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('id_territory', $ter);
+                    }  elseif ($cek_role->group == 'Product Management & Development') {
+                        if ($cek_role->name_role == 'VP Product Management & Development Solution') {
+                            $data = $data->where('group','Product Management & Development');
+                        } elseif($cek_role->name_role == 'Application Development Manager'){
+                            $data = $data->whereRaw("(`mini_group` = 'Application Development' OR `tb_cuti`.`nik` = $nik)");
+                            // ->where('mini_group','Application Development')-;
+                        } elseif($cek_role->name_role == 'Customer Relation Manager'){
+                            $data = $data
+                            ->where('mini_group','Customer Relationship Management');
+                        } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
+                            $data = $data
+                            ->where('mini_group','Product Management & Solution');
+                        }else {
+                            $data = $data->where('users.nik',$nik);
+                        }
+                        
+                    } elseif ($cek_role->group == 'Project Management') {
+                        if ($cek_role->name_role == 'VP Project Management') {
+                            $data = $data->whereRaw("(`group` = 'Project Management' OR `group` = 'Human Capital')");
+                            // ->where('group','Project Management')->orWhere('group','Human Capital');
+                        } elseif($cek_role->name_role == 'Project Management Manager'){
+                            $data = $data
+                            ->where('mini_group','Project Management Office');
+                        }else {
+                            $data = $data->where('users.nik',$nik);
+                        }
+                    } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
+                        if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
+                            $data = $data
+                            ->where('group','Solution Implementation & Managed Service');
+                        } elseif($cek_role->name_role == 'Managed Service Manager'){
+                            $data = $data
+                            ->where('mini_group','Managed Service & Problem Solving');
+                        } elseif($cek_role->name_role == 'Solution Architect Manager'){
+                            $data = $data
+                            ->where('mini_group','Solution Architect');
+                        } elseif($cek_role->name_role == 'Solution Execution Manager'){
+                            $cuti = $cuti
+                            ->where('mini_group','Solution Execution');
+                        }else {
+                            $data = $data->where('users.nik',$nik);
+                        }
+                    } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
+                        if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
+                            $data = $data
+                            ->where('group','Supply Chain, CPS & Asset Management');
+                        } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
+                            $data = $data
+                            ->where('mini_group','Center Point & Asset Management SVC ');
+                        } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
+                            $data = $data
+                            ->where('mini_group','Risk Management, Sys Dev & Compliance');
+                        } elseif($cek_role->name_role == 'Supply Chain Manager'){
+                            $data = $data
+                            ->where('mini_group','Supply Chain Management');
+                        }else {
+                            $data = $data->where('users.nik',$nik);
+                        }
+                    } elseif ($cek_role->group == 'Human Capital') {
+                        if ($cek_role->name_role == 'Human Capital Manager') {
+                            $data = $data
+                            ->where('mini_group','Human Capital');
+                        } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+                            $data = $data;
+                        }else {
+                            $data = $data->where('users.nik',$nik);
+                        }
+                    } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                        $data = $data
+                            ->where('users.id_division','FINANCE');
+                    } else if($cek_role->name_role == 'Operations Director'){
+                        $data = $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
+                            // ->get();
+                    }elseif ($cek_role->name_role == 'President Director') {
+                        $data = $data->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Sales Manager')");
+                    } else{
+                        $data = $data
+                            ->where('users.nik',$nik);
+                            // ->get();
+                    }
+                // } 
             }
 
-            return array("data"=>$cuti);
+            return array("data"=>$data->distinct()->get());
         } else if ($request->id == 'report_') {
             $cuti = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
@@ -3303,7 +3489,9 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+        // return $request->division;
+
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group')->where('user_id',$nik)->first();
 
         if ($request->com == 'all') {
             $com = ['1','2'];
@@ -3313,93 +3501,143 @@ class HRGAController extends Controller
 
         $tb_cuti_filtered = DB::table('tb_cuti_detail');
 
+        $getCutiDetail = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')->select(DB::raw('COUNT(`tb_cuti_detail`.`id_cuti`) as days'),'nik','tb_cuti.id_cuti')->groupBy('tb_cuti_detail.id_cuti');
+        // return $getCutiDetail->get();
+
         $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    // ->joinSub($tb_cuti_filtered, 'tb_cuti_detail_filterd', function ($join) {
-                    //     $join->on('tb_cuti_detail_filterd.id_cuti','=','tb_cuti.id_cuti');
-                    // })
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
-                        DB::raw('COUNT(`tb_cuti_detail`.`id_cuti`) as days'))
+                    ->joinSub($getCutiDetail, 'total_cuti',function($join){
+                        $join->on("total_cuti.id_cuti", '=', 'tb_cuti.id_cuti');
+                    })
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')
+                    ->leftJoin('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
+                    ->select('users.nik','users.name','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','tb_cuti.pic','tb_cuti.updated_at','roles.name as id_division','total_cuti.days')
                     ->orderByRaw('FIELD(tb_cuti.status, "n", "v", "c", "d")')               
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->where('users.id_company',$com)
-                    ->groupby('id_cuti');
+                    ->where('status_karyawan','!=','dummy');
 
 
         if ($request->division == "alldeh") {
-            if ($ter != NULL) {
+            // if ($ter != NULL) {
                 if($div == 'SALES' && $pos == 'MANAGER'){
                     $cuti = $cuti
-                        ->where('id_territory', $ter)
-                        ->get();
-                } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
-                    $cuti = $cuti
-                        ->where('users.id_division','TECHNICAL')
-                        ->where('users.id_territory','DPG')
-                        ->get();
-                } elseif ($div == 'BCD' && $ter == 'OPERATION' && $pos == 'MANAGER') {
-                    $cuti = $cuti
-                        ->whereRaw("(`users`.`id_division` = 'BCD')")
-                        ->where('id_company', '1')
-                        ->get();
-                } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
-                    $cuti = $cuti
-                        ->where('users.id_division','MSM')
-                        ->get();
-                } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
-                    $cuti = $cuti
-                        ->where('users.id_territory','PRESALES')
-                        ->get();
+                        ->where('id_territory', $ter);
+                } elseif ($cek_role->group == 'Product Management & Development') {
+                    if ($cek_role->name_role == 'VP Product Management & Development Solution') {
+                        $cuti = $cuti
+                        ->where('group','Product Management & Development');
+                    } elseif($cek_role->name_role == 'Application Development Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Application Development');
+                    } elseif($cek_role->name_role == 'Customer Relation Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Customer Relationship Management');
+                    } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Product Management & Solution');
+                    }else {
+                        $cuti = $cuti->where('users.nik',$nik);
+                    }
+                    
+                } elseif ($cek_role->group == 'Project Management') {
+                    if ($cek_role->name_role == 'VP Project Management') {
+                        $cuti = $cuti
+                        ->where('group','Project Management')->orWhere('group','Human Capital');
+                    } elseif($cek_role->name_role == 'Project Management Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Project Management Office');
+                    }else {
+                        $cuti = $cuti->where('users.nik',$nik);
+                    }
+
+                } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
+                    if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
+                        $cuti = $cuti
+                        ->where('group','Solution Implementation & Managed Service');
+                    } elseif($cek_role->name_role == 'Managed Service Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Managed Service & Problem Solving');
+                    } elseif($cek_role->name_role == 'Solution Architect Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Solution Architect');
+                    } elseif($cek_role->name_role == 'Solution Execution Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Solution Execution');
+                    }else {
+                        $cuti = $cuti->where('users.nik',$nik);
+                    }
+
+                } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
+                    if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
+                        $cuti = $cuti
+                        ->where('group','Supply Chain, CPS & Asset Management');
+                    } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Center Point & Asset Management SVC ');
+                    } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Risk Management, Sys Dev & Compliance');
+                    } elseif($cek_role->name_role == 'Supply Chain Manager'){
+                        $cuti = $cuti
+                        ->where('mini_group','Supply Chain Management');
+                    }else {
+                        $cuti = $cuti->where('users.nik',$nik);
+                    }
+
+                } elseif ($cek_role->group == 'Human Capital') {
+                    if ($cek_role->name_role == 'Human Capital Manager') {
+                        $cuti = $cuti
+                        ->where('mini_group','Human Capital');
+                    } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+                        $cuti = $cuti->where('date_off', '>=', $request->start_date)
+                            ->where('date_off', '<=', $request->end_date);
+                    }else {
+                        $cuti = $cuti->where('users.nik',$nik);
+                    }
+
                 } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
                     $cuti = $cuti
-                        ->where('users.id_division','FINANCE')
-                        ->get();
-                } else if($cek_role->name_role == 'Operations Director'){
+                        ->where('users.id_division','FINANCE');
+                } else if($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'President Director'){
                      $cuti = $cuti
                         ->where('date_off', '>=', $request->start_date)
-                        ->where('date_off', '<=', $request->end_date)
-                        ->get();
-                } elseif($div == 'PMO' && $pos == 'MANAGER'){
-                    $cuti = $cuti
-                        ->where('users.id_division','PMO')
-                        ->get();
+                        ->where('date_off', '<=', $request->end_date);
+                        // ->get();
                 }else{
                     $cuti = $cuti
-                        ->where('users.nik',$nik)
-                        ->get();
+                        ->where('users.nik',$nik);
+                        // ->get();
                 }
-            } elseif ($div == 'HR' && $pos == 'HR MANAGER' || $pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
-                $cuti = $cuti
-                    ->where('date_off', '>=', $request->start_date)
-                    ->where('date_off', '<=', $request->end_date)
-                    ->get();
-            } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
-                    $cuti = $cuti
-                        ->where('users.nik',$nik)
-                        ->get();
-            } else {
-                $cuti = $cuti
-                    ->get();
-            }
+            // } 
+            // elseif ($div == 'HR' && $pos == 'HR MANAGER' || $pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
+            //     $cuti = $cuti
+            //         ->where('date_off', '>=', $request->start_date)
+            //         ->where('date_off', '<=', $request->end_date)
+            //         ->get();
+            // } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
+            //         $cuti = $cuti
+            //             ->where('users.nik',$nik)
+            //             ->get();
+            // } else {
+            //     $cuti = $cuti
+            //         ->get();
+            // }
         }else{
             if ($div == 'HR' && $pos == 'HR MANAGER' ) {
                 $cuti = $cuti
                 ->where('date_off', '>=', $request->start_date)
                 ->where('date_off', '<=', $request->end_date)
-                ->where('users.id_division',$request->division)
-                ->get(); 
-            }else{
-                $cuti = $cuti
-                ->where('users.id_division',$request->division)
-                ->get(); 
+                ->where('users.id_division',$request->division); 
+            }
+            // else{
+            //     $cuti = $cuti
+            //     ->where('users.id_division',$request->division)
+            //     ->get(); 
                 
-            }           
+            // }           
                   
         }
-        return array("data"=>$cuti);
+        return array("data"=>$cuti->distinct()->get());
     }
 
     public function get_list_cuti(Request $request)
@@ -3633,254 +3871,136 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group')->where('user_id',$nik)->first();
 
-        if ($ter != NULL) {
-            if($div == 'SALES' && $pos == 'MANAGER'){
-                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
+        $getCutiDetail = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')->select(DB::raw('group_concat(date_off) as dates'),'nik','tb_cuti.id_cuti',DB::raw('COUNT(`tb_cuti_detail`.`id_cuti`) as days'))->where('tb_cuti_detail.status','NEW')->groupBy('id_cuti');
+
+        // return $getCutiDetail->get();
+
+        $data = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->joinSub($getCutiDetail, 'total_cuti',function($join){
+                        $join->on("total_cuti.id_cuti", '=', 'tb_cuti.id_cuti');
+                    })
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                        'roles.name as id_division',
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','total_cuti.days','users.cuti','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('id_territory', $ter)
+                    // ->groupby('tb_cuti.id_cuti')
                     ->whereYear('date_req',date('Y')) 
                     ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')
-                    ->groupby('nik')
-                    ->get());
-            } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
-                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_division','TECHNICAL')
-                    ->where('users.id_territory','DPG')
-                    ->whereYear('date_req',date('Y'))  
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')                  
-                    ->groupby('nik')
-                    ->get());
-            } elseif ($div == 'BCD' && $ter == 'OPERATION' && $pos == 'MANAGER') {
-                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_company', '1')
-                    ->whereYear('date_req',date('Y'))
-                    ->whereRaw("(`users`.`id_division` = 'BCD')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
-                    ->where('tb_cuti_detail.status','NEW')                  
-                    ->groupby('nik')
-                    ->get());
-            } elseif ($div == 'PMO' && $ter == 'OPERATION' && $pos == 'MANAGER') {
-                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_division','PMO')
-                    ->whereYear('date_req',date('Y')) 
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')                   
-                    ->groupby('nik')
-                    ->get());
-            } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
-                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_division','MSM')
-                    ->whereYear('date_req',date('Y')) 
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')                  
-                    ->groupby('nik')
-                    ->get());
-            } elseif ($pos == 'OPERATION DIRECTOR') {
-                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_position','MANAGER')
-                    ->where('users.id_territory','OPERATION')
-                    ->orwhere('users.id_position','OPERATION DIRECTOR')
-                    ->orwhere('users.id_division','WAREHOUSE')
-                    ->whereYear('date_req',date('Y')) 
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')                    
-                    ->groupby('nik')
-                    ->get());
-            } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
-                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_territory','PRESALES')
-                    ->whereYear('date_req',date('Y'))  
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')                    
-                    ->groupby('nik')
-                    ->get());
-            } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
-                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_division','FINANCE')
-                    ->whereYear('date_req',date('Y')) 
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')                    
-                    ->groupby('nik')
-                    ->get());
-            } elseif ($cek_role->name_role == 'Operations Director') {
-                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->whereYear('date_req',date('Y'))   
-                    ->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
-                    ->where('tb_cuti_detail.status','NEW')
-                    ->where('users.id_company', '1')
-                    ->groupby('nik')
-                    ->get());
-            }else{
-                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->whereYear('date_req',date('Y')) 
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')                    
-                    ->where('users.nik',$nik)
-                    ->groupby('nik')
-                    ->get());
+                    ->where('tb_cuti_detail.status','NEW');
+
+        if($div == 'SALES' && $pos == 'MANAGER'){
+            $data = $data->where('id_territory', $ter);
+        } elseif ($cek_role->group == 'Product Management & Development') {
+            if ($cek_role->name_role == 'VP Product Management & Development Solution') {
+                $data = $data->where('group','Product Management & Development');
+            } elseif($cek_role->name_role == 'Application Development Manager'){
+                // $data = $data
+                $data = $data->whereRaw("(`mini_group` = 'Application Development')");
+            } elseif($cek_role->name_role == 'Customer Relation Manager'){
+                $data = $data->where('mini_group','Customer Relationship Management');
+            } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
+                $data = $data->where('mini_group','Product Management & Solution');
+            } else {
+                $data = $data->where('users.nik',$nik);
             }
-        } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
-            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->join('tb_position','tb_position.id_position','=','users.id_position')
-                ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                    'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                ->orderBy('date_req','DESC')
-                ->groupby('tb_cuti.id_cuti')
-                ->whereYear('date_req',date('Y'))  
-                ->where('tb_cuti_detail.status','=','NEW')
-                ->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
-                ->groupby('nik')
-                ->get());
-        } elseif ($pos == 'DIRECTOR') {
-            return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->groupby('nik')
-                    ->whereYear('date_req',date('Y'))
-                    ->where('tb_cuti_detail.status','=','NEW')
-                    ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'OPERATION')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")                   
-                    ->get());
             
-        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
-            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->join('tb_position','tb_position.id_position','=','users.id_position')
-                ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                    'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                ->orderBy('date_req','DESC')
-                ->groupby('tb_cuti.id_cuti')
-                ->whereYear('date_req',date('Y')) 
-                ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                ->where('tb_cuti_detail.status','NEW')
-                ->where('users.nik',$nik)
-                ->groupby('nik')
-                ->get());
-
-        } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {
-            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->join('tb_position','tb_position.id_position','=','users.id_position')
-                ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                    'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                ->orderBy('date_req','DESC')
-                ->groupby('tb_cuti.id_cuti')
-                ->whereYear('date_req',date('Y'))   
-                ->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
-                ->where('tb_cuti_detail.status','NEW')
-                ->where('users.id_company', '1')
-                ->groupby('nik')
-                ->get());
-        } else {
-            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->join('tb_position','tb_position.id_position','=','users.id_position')
-                    ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID' ELSE users.id_division END) as id_division"),
-                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-                    ->orderBy('date_req','DESC')
-                    ->groupby('tb_cuti.id_cuti')
-                    ->whereYear('date_req',date('Y')) 
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
-                    ->where('tb_cuti_detail.status','NEW')
-                    ->groupby('nik')
-                    ->get());
+        } elseif ($cek_role->group == 'Project Management') {
+            if ($cek_role->name_role == 'VP Project Management') {
+                $data = $data->whereRaw("(`group` = 'Project Management' OR `group` = 'Human Capital')");
+                // ->where('group','Project Management')->orWhere('group','Human Capital');
+            } elseif($cek_role->name_role == 'Project Management Manager'){
+                $data = $data->where('mini_group','Project Management Office');
+            }else {
+                $data = $data->where('users.nik',$nik);
+            }
+        } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
+            if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
+                $data = $data->where('group','Solution Implementation & Managed Service');
+            } elseif($cek_role->name_role == 'Managed Service Manager'){
+                $data = $data->where('mini_group','Managed Service & Problem Solving');
+            } elseif($cek_role->name_role == 'Solution Architect Manager'){
+                $data = $data->where('mini_group','Solution Architect');
+            } elseif($cek_role->name_role == 'Solution Execution Manager'){
+                $data = $data->where('mini_group','Solution Execution');
+            }else {
+                $data = $data->where('users.nik',$nik);
+            }
+        } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
+            if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
+                $data = $data->where('group','Supply Chain, CPS & Asset Management');
+            } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
+                $data = $data->where('mini_group','Center Point & Asset Management SVC ');
+            } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
+                $data = $data->where('mini_group','Risk Management, Sys Dev & Compliance');
+            } elseif($cek_role->name_role == 'Supply Chain Manager'){
+                $data = $data->where('mini_group','Supply Chain Management');
+            }else {
+                $data = $data->where('users.nik',$nik);
+            }
+        } elseif ($cek_role->group == 'Human Capital') {
+            if ($cek_role->name_role == 'Human Capital Manager') {
+                $data = $data->where('mini_group','Human Capital');
+            } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+                $data = $data;
+            }else {
+                $data = $data->where('users.nik',$nik);
+            }
+        } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+            $data = $data->where('users.id_division','FINANCE');
+        } else if($cek_role->name_role == 'Operations Director'){
+            $data = $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
+                // ->get();
+        }elseif ($cek_role->name_role == 'President Director') {
+            $data = $data->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Sales Manager')");
+        } else{
+            $data = $data->where('users.nik',$nik);
+                // ->get();
         }
+
+        // if ($ter != NULL) {
+            // if($div == 'SALES' && $pos == 'MANAGER'){
+            //     $data = $data->where('id_territory', $ter);
+            // } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
+
+            // } elseif ($div == 'BCD' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+
+            // } elseif ($div == 'PMO' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+
+            // } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+
+            // } elseif ($pos == 'OPERATION DIRECTOR') {
+
+            // } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
+
+            // } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+            //     $data = $data->where('users.id_division','FINANCE');
+            // } elseif ($cek_role->name_role == 'Operations Director') {
+            //     $data = $data->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')");
+            // }else{
+            //     $data = $data->where('users.nik',$nik);
+            // }
+        // } 
+        // elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
+        //     $data = $data;
+        // } elseif ($pos == 'DIRECTOR') {
+        //     $data = $data->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'OPERATION')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')");
+            
+        // } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
+        //     $data = $data->where('users.nik',$nik);
+
+        // } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {
+        //     $data = $data->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')");
+        // } else {
+        //     $data = $data;
+        // }
+
+        return array("data"=>$data->distinct()->get());
         
     }
 
