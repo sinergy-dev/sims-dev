@@ -67,6 +67,10 @@
   #selectPid {
     text-transform:uppercase;
   }
+
+  #draftPr tr td {
+    padding-bottom:25px;
+  }
 </style>
 @endsection
 @section('content')
@@ -154,7 +158,7 @@
                 
           </div>
           <div class="table-responsive">
-            <table class="table datatable table-striped" id="draftPr" width="100%" cellspacing="0">
+            <table class="table datatable table-striped" id="draftPr" width="100%;height:100%" cellspacing="2">
               <tbody id="tbodyDraft" name="tbodyDraft">
               </tbody>
             </table>
@@ -1262,14 +1266,16 @@
                 }else{
                   return row.no_pr         
                 }
-              }
+              },
+              width:"150px"
             },
             {
               title:"Created at",
               orderData:[8],
               render: function (data, type, row, meta){
                return moment(row.date).format("D MMM YYYY");   
-              }
+              },
+              width:"80px"
             },
             { 
               title:"Subject",
@@ -1281,13 +1287,16 @@
                 }
                 // return "-"
               },
+              width:"300px"
             },
             { title:"Issued By", 
-              "data": "name"
+              "data": "name",
+              width:"150px"
             },
             { 
               title:"Supplier",
-              "data": "to"
+              "data": "to",
+              width:"150px"
             },
             { 
               title:"Total Price",
@@ -1326,7 +1335,8 @@
                   return '<span class="label label-danger">'+row.status+'</span>' 
                 }
               },
-              className:'text-center'
+              className:'text-center',
+              width:"100px"
             },
             { 
               title:"Action",
@@ -1339,6 +1349,7 @@
                 let btnId = ""
                 let status = ""
                 let value = ""
+                let btnDetailUnApproved = ""
 
                 if (row.status == 'DRAFT') {
                   onClick = ""
@@ -1385,6 +1396,8 @@
                   }else{
                     isDisabled = "disabled"
                   }
+
+                  btnDetailUnApproved = "<a href='{{url('admin/detail/draftPR')}}/"+ row.id +"?hide' style='width:70px;margin-right:5px' class='btn btn-xs btn-primary' btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"'  id='btnDetail'>Detail</a>"
                 }else{
                   title = "Detail"
                   btnClass = "btn-primary"
@@ -1407,14 +1420,15 @@
                 }
 
                 if (title == 'Detail') {
-                  return "<td><a href="+ onclick +" style='width:70px' class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
+                  return "<td><a href="+ onclick +" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
                 }else {
-                  return "<td><a onclick='"+ onclick +"' "+isDisabled+" style='width:70px' class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
+                  return "<td>"+ btnDetailUnApproved +"<a onclick='"+ onclick +"' "+isDisabled+" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
                 }
                                     
               },
               className:'text-center',
-              "bSortable":false
+              "bSortable":false,
+              width:"250px"
             },//action
             {
               "data":"status_numerical",
@@ -1711,7 +1725,6 @@
     }  
 
     function sortingByDashboard(value){
-      
       var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'searchFor='
 
       if (tempStatus == 'status[]=') {
