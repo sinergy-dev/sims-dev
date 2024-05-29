@@ -342,13 +342,12 @@
                   <h3 class="box-title">Remaining <span id="span-remaining"></span> (Status Done)</h3>
                 </div>
                 <div class="box-body">
-                  <div class="containerBoxRemaining" style="overflow-x: scroll;width: 100%;">
-                    <div id="box-remaining">
+                  <div class="containerBoxRemaining" style="width:100%;max-width: 100%;overflow-x: scroll;">
+                    <div id="box-remaining" style="height:600px">
                     </div>
                   </div>
 
                   <div id="pagination" style="margin-top:20px" class="pull-right">
-                    
                   </div>
                 </div>
               </div>
@@ -590,7 +589,7 @@
 
     function initiateSumSbe(id){
       var isPMO = false
-      if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.group',"PMO")->exists()}}") {
+      if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','Project Management')->exists()}}") {
         isPMO = true
         var colspan = 4
         var enabledClick = true
@@ -1280,7 +1279,7 @@
       labels = labels
     }
 
-    const myChart2 = new Chart(idCtx, {
+    let myChart2 = new Chart(idCtx, {
       type: 'bar',
       data: {
           labels: labels,
@@ -1318,8 +1317,11 @@
     });
 
     const containerBodyRemaining = document.querySelector('#box-remaining');
+    const totalLabels = myChart2.data.labels.length;
+
     if (myChart2.data.labels.length > 7) {
-      containerBodyRemaining.style.width  = '1300px';
+      const newWidth = 700 + ((totalLabels - 7) * 30)
+      containerBodyRemaining.style.width  = `${newWidth}px`;
     }
 
     return remainingBarChart.push(myChart2);
@@ -1356,6 +1358,8 @@
               remainingChart(ctxvalue,value)
           }
         })
+
+        $("#box-remaining").css("width","1990px")
 
         var $myDiv        = $("#box-remaining");
         var itemsPerPage  = 1; // Number of items per page
@@ -1912,8 +1916,6 @@
     //   var monthAsMoment = moment().month(parseInt(numericMonth) - 1);
     //   var monthFullName = monthAsMoment.format('MMMM');
     //   $("#span-remaining").text(monthFullName) 
-
-    //   console.log("sini")
     // }
 
   $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
