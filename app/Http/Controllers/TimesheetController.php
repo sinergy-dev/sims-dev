@@ -2122,35 +2122,6 @@ class TimesheetController extends Controller
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
         }
-        // elseif ($role == 'Supply Chain, CPS & Asset Management') {
-        //     if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
-
-        //         if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
-        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-        //             // ->where('roles.name','not like','%Manager')
-        //             ->where('roles.mini_group','Center Point & Asset Management SVC')
-        //             ->pluck('users.nik');
-        //         } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
-        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-        //             // ->where('roles.name','not like','%Manager')
-        //             ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
-        //             ->pluck('users.nik');
-        //         } else if ($cek_role->name == 'Supply Chain Manager') {
-        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-        //             // ->where('roles.name','not like','%Manager')
-        //             ->where('roles.mini_group','Supply Chain Management')
-        //             ->pluck('users.nik');
-        //         } else {
-        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-        //             // ->where('roles.name','not like','%Manager')
-        //             ->where('roles.group','Supply Chain, CPS & Asset Management')
-        //             ->pluck('users.nik');
-        //         }
-        //         $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
-        //     } else {
-        //         $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
-        //     }
-        // }
 
         $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
             return round($group->sum('point_mandays'),2);
@@ -2981,15 +2952,15 @@ class TimesheetController extends Controller
         if ($request->roles != "") {
             if(Str::contains($cek_role->name, 'VP')){
                 $getUserByGroup = $getUserByGroup->where('roles.group',$request->roles)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 
             } else {
                 $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 
@@ -2997,15 +2968,15 @@ class TimesheetController extends Controller
         } else {
             if(Str::contains($cek_role->name, 'VP')){
                 $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 
             } else {
                 $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 
@@ -3929,15 +3900,15 @@ class TimesheetController extends Controller
 
         if(Str::contains($cek_role->name, 'VP')){
             $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('roles.name','not like','%VP')
+                        ->where('roles.name','not like','%Manager%')
+                        ->where('roles.name','not like','%VP%')
                         ->where('users.status_karyawan','!=','dummy')
                         ->whereNotIn('nik', $data->get()->pluck('nik'))
                         ->get(); 
         } else {
             $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('roles.name','not like','%VP')
+                        ->where('roles.name','not like','%Manager%')
+                        ->where('roles.name','not like','%VP%')
                         ->where('users.status_karyawan','!=','dummy')
                         ->whereNotIn('nik', $data->get()->pluck('nik'))
                         ->get(); 
@@ -4950,12 +4921,37 @@ class TimesheetController extends Controller
 
         $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->select('users.name')
-                        ->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('roles.name','not like','%MSM Helpdesk%')
-                        ->where('roles.name','not like','%MSM Lead Helpdesk%')
-                        ->where('users.status_delete','-');
+                        ->select('users.name');
+
+        if ($request->roles != "") {
+            if(Str::contains($cek_role->name, 'VP')){
+                $getUserByGroup = $getUserByGroup->where('roles.group',$request->roles)
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'));
+            } else {
+                $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'));
+            }
+        } else {
+            if(Str::contains($cek_role->name, 'VP')){
+                $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'));
+            } else {
+                $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'));
+            }
+        }
 
         if ($request->task[0] === null) {
             $data = $data;
@@ -5618,31 +5614,33 @@ class TimesheetController extends Controller
         if ($request->roles != "") {
             if(Str::contains($cek_role->name, 'VP')){
                 $getUserByGroup = $getUserByGroup->where('roles.group',$request->roles)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 
             } else {
                 $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 
             }
+
+            return $getUserByGroup;
         } else {
             if(Str::contains($cek_role->name, 'VP')){
                 $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 
             } else {
                 $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
-                            ->where('roles.name','not like','%Manager')
-                            ->where('roles.name','not like','%VP')
+                            ->where('roles.name','not like','%Manager%')
+                            ->where('roles.name','not like','%VP%')
                             ->where('users.status_karyawan','!=','dummy')
                             ->whereNotIn('nik', $data->get()->pluck('nik'))
                             ->get(); 

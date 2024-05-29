@@ -63,12 +63,6 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       z-index: 9999;
     }
-
-    .containerBoxRemaining{
-      width:100%;
-      max-width: 100%;
-      overflow-x: scroll;
-    }
   </style>
 @endsection
 @section('content')
@@ -348,13 +342,12 @@
                   <h3 class="box-title">Remaining <span id="span-remaining"></span> (Status Done)</h3>
                 </div>
                 <div class="box-body">
-                  <div class="containerBoxRemaining">
-                    <div id="box-remaining">
+                  <div class="containerBoxRemaining" style="width:100%;max-width: 100%;overflow-x: scroll;">
+                    <div id="box-remaining" style="height:600px">
                     </div>
                   </div>
 
                   <div id="pagination" style="margin-top:20px" class="pull-right">
-                    
                   </div>
                 </div>
               </div>
@@ -1286,7 +1279,7 @@
       labels = labels
     }
 
-    const myChart2 = new Chart(idCtx, {
+    let myChart2 = new Chart(idCtx, {
       type: 'bar',
       data: {
           labels: labels,
@@ -1365,6 +1358,8 @@
               remainingChart(ctxvalue,value)
           }
         })
+
+        $("#box-remaining").css("width","1990px")
 
         var $myDiv        = $("#box-remaining");
         var itemsPerPage  = 1; // Number of items per page
