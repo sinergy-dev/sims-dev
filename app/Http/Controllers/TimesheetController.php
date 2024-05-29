@@ -1924,10 +1924,9 @@ class TimesheetController extends Controller
 
         $groupByProject = $getSbe->groupBy('id_project');    
 
-        // return $groupByProject;
-
         // return $getSbe->groupBy('id_project');
         $getSumPointByProject = collect();
+
         foreach($groupByProject as $key_pid => $value){
             $getSumPointByProject->push(['pid' => $key_pid, 'estimated_end_date'=> $value[0]['estimated_end_date']]);
             // return $key_pid;
@@ -1938,48 +1937,47 @@ class TimesheetController extends Controller
         $sumPointMandays = collect();
 
         if (isset($request->roles)) {
-            if ($request->roles == 'pmo' || $request->roles == 'DPG' || $request->roles == 'msm') {
+            if ($request->roles == 'Project Management' || $request->roles == 'Solution Implementation & Managed Service') {
                 foreach($groupByProject as $key_pid => $value){
                     foreach($sumPointByProject as $key_group => $value_group){
                         if ($key_group == $key_pid) {
                             foreach($value as $value_pid){
                                 if ($value_pid['project_type'] == 'Implementation') {
-                                    // return "oke";
                                     if (strstr($value_pid['item'], "PM")) {
-                                        if (isset($getSumPointByProject[$key_group]['PMO'])) {
+                                        if (isset($getSumPointByProject[$key_group]['Project Management'])) {
                                             // return "okee";
-                                            $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                            $sumPointByProject[$key_group]["Project Management"]["sumMandays"] = $sumPointByProject[$key_group]["Project Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                         }else{
-                                            $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                            $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }else{
-                                        if (isset($sumPointByProject[$key_group]['DPG'])) {
-                                            $sumPointByProject[$key_group]["DPG"]["sumMandays"] = $sumPointByProject[$key_group]["DPG"]["sumMandays"] + (int)$value_pid['qty'];
+                                        if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
+                                            $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty'];
                                         }else{
-                                            $sumPointByProject[$key_group]->put("DPG",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("DPG",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                            $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }
                                 }else if($value_pid['project_type'] == 'Supply Only'){
                                     // return $sumPointByProject["PMO"]["sumMandays"] + $value_pid['qty']; 
-                                    if (isset($sumPointByProject[$key_group]['PMO'])) {
+                                    if (isset($sumPointByProject[$key_group]['Project Management'])) {
                                         // return "okee 5";
 
-                                        $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        $sumPointByProject[$key_group]["Project Management"]["sumMandays"] = $sumPointByProject[$key_group]["Project Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                     }else{
-                                        $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
+                                        $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty']]));
                                     }
                                 }else if($value_pid['project_type'] == 'Maintenance'){
                                     if (strstr($value_pid['item'], "PM") === TRUE) {
-                                        if (isset($sumPointByProject[$key_group]['PMO'])) {
-                                            $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        if (isset($sumPointByProject[$key_group]['Project Management'])) {
+                                            $sumPointByProject[$key_group]["Project Management"]["sumMandays"]  = $sumPointByProject[$key_group]["Project Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                         }else{
-                                            $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                            $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }else{
-                                        if (isset($sumPointByProject[$key_group]['MSM'])) {
-                                            $sumPointByProject[$key_group]["MSM"]["sumMandays"] = $sumPointByProject[$key_group]["MSM"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
+                                            $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty']; 
                                         }else{
-                                            $sumPointByProject[$key_group]->put("MSM",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("MSM",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                            $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }
                                 }   
@@ -2017,42 +2015,41 @@ class TimesheetController extends Controller
                     if ($key_group == $key_pid) {
                         foreach($value as $value_pid){
                             if ($value_pid['project_type'] == 'Implementation') {
-                                // return "oke";
                                 if (strstr($value_pid['item'], "PM")) {
-                                    if (isset($getSumPointByProject[$key_group]['PMO'])) {
+                                    if (isset($getSumPointByProject[$key_group]['Project Management'])) {
                                         // return "okee";
-                                        $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        $sumPointByProject[$key_group]["Project Management"]["sumMandays"] = $sumPointByProject[$key_group]["Project Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                     }else{
-                                        $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,""),"name_project"=>$value_pid['name_project']]));
+
+                                        $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }else{
-                                    if (isset($sumPointByProject[$key_group]['DPG'])) {
-                                        $sumPointByProject[$key_group]["DPG"]["sumMandays"] = $sumPointByProject[$key_group]["DPG"]["sumMandays"] + (int)$value_pid['qty'];
+                                    if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
+                                        $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty'];
                                     }else{
-                                        $sumPointByProject[$key_group]->put("DPG",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("DPG",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                        $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }
                             }else if($value_pid['project_type'] == 'Supply Only'){
-                                // return $sumPointByProject["PMO"]["sumMandays"] + $value_pid['qty']; 
-                                if (isset($sumPointByProject[$key_group]['PMO'])) {
+                                // return $sumPointByProject["Project Management"]["sumMandays"] + $value_pid['qty']; 
+                                if (isset($sumPointByProject[$key_group]['Project Management'])) {
                                     // return "okee 5";
-
-                                    $sumPointByProject[$key_group]["PMO"]["sumMandays"] = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    $sumPointByProject[$key_group]["Project Management"]["sumMandays"] = $sumPointByProject[$key_group]["Project Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                 }else{
-                                    $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty']]));
+                                    $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty']]));
                                 }
                             }else if($value_pid['project_type'] == 'Maintenance'){
                                 if (strstr($value_pid['item'], "PM")) {
-                                    if (isset($sumPointByProject[$key_group]['PMO'])) {
-                                        $sumPointByProject[$key_group]["PMO"]["sumMandays"]  = $sumPointByProject[$key_group]["PMO"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    if (isset($sumPointByProject[$key_group]['Project Management'])) {
+                                        $sumPointByProject[$key_group]["Project Management"]["sumMandays"]  = $sumPointByProject[$key_group]["Project Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                     }else{
-                                        $sumPointByProject[$key_group]->put("PMO",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("PMO",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                        $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }else{
-                                    if (isset($sumPointByProject[$key_group]['MSM'])) {
-                                        $sumPointByProject[$key_group]["MSM"]["sumMandays"] = $sumPointByProject[$key_group]["MSM"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
+                                        $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty']; 
                                     }else{
-                                        $sumPointByProject[$key_group]->put("MSM",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("MSM",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                        $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }
                             }   
@@ -2090,14 +2087,6 @@ class TimesheetController extends Controller
                 } 
             }
         }
-
-        // $sumPointSbeFinal = collect();
-        // foreach($sumPointByProject as $value_final){
-        //     $sumPointSbeFinal->push(["pid"=>$value_final[0]["pid"],collect(["PMO"=>])=>$]);
-        // }
-        // $cobaMSM = $this->sumPointMandaysSbe("DPG","006/RTAA/SIP/I/2022");
-        // return $cobaMSM;
-        // return array("data"=>$sumPointByProject);
         
         return array("data"=>$sumPointMandays);
     }
@@ -2132,35 +2121,36 @@ class TimesheetController extends Controller
             } else {
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
-        }elseif ($role == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
-
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Center Point & Asset Management SVC')
-                    ->pluck('users.nik');
-                } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
-                    ->pluck('users.nik');
-                } else if ($cek_role->name == 'Supply Chain Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Supply Chain Management')
-                    ->pluck('users.nik');
-                } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
-                    ->pluck('users.nik');
-                }
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
-            } else {
-                $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
-            }
         }
+        // elseif ($role == 'Supply Chain, CPS & Asset Management') {
+        //     if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
+
+        //         if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
+        //             // ->where('roles.name','not like','%Manager')
+        //             ->where('roles.mini_group','Center Point & Asset Management SVC')
+        //             ->pluck('users.nik');
+        //         } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
+        //             // ->where('roles.name','not like','%Manager')
+        //             ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
+        //             ->pluck('users.nik');
+        //         } else if ($cek_role->name == 'Supply Chain Manager') {
+        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
+        //             // ->where('roles.name','not like','%Manager')
+        //             ->where('roles.mini_group','Supply Chain Management')
+        //             ->pluck('users.nik');
+        //         } else {
+        //             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
+        //             // ->where('roles.name','not like','%Manager')
+        //             ->where('roles.group','Supply Chain, CPS & Asset Management')
+        //             ->pluck('users.nik');
+        //         }
+        //         $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
+        //     } else {
+        //         $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
+        //     }
+        // }
 
         $sumPointByUser = $sumMandays->groupBy('name')->map(function ($group) {
             return round($group->sum('point_mandays'),2);
@@ -2974,33 +2964,52 @@ class TimesheetController extends Controller
     public function getRemainingChart(Request $request)
     {
         $nik = Auth::User()->nik;
-        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group', 'mini_group')->where('user_id', $nik)->first(); 
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group', 'mini_group')->where('user_id', $nik)->first();
 
         $data = DB::table('tb_timesheet')
                 ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status','users.nik')
                     ->where('status_karyawan','!=','dummy')
                     ->where('status_delete','!=','D')
                     ->selectRaw('MONTH(start_date) AS month_number')
-                    ->whereYear('start_date',date('Y'));
+                    ->whereYear('start_date',date('Y'))
+                    ->whereMonth('start_date',Carbon::now()->month);
 
         $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->select('users.name');
 
-        if(Str::contains($cek_role->name, 'VP')){
-            $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('roles.name','not like','%VP')
-                        ->where('users.status_karyawan','!=','dummy')
-                        ->whereNotIn('nik', $data->get()->pluck('nik'))
-                        ->get(); 
+        if ($request->roles != "") {
+            if(Str::contains($cek_role->name, 'VP')){
+                $getUserByGroup = $getUserByGroup->where('roles.group',$request->roles)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            } else {
+                $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            }
         } else {
-            $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
-                        ->where('roles.name','not like','%Manager')
-                        ->where('roles.name','not like','%VP')
-                        ->where('users.status_karyawan','!=','dummy')
-                        ->whereNotIn('nik', $data->get()->pluck('nik'))
-                        ->get(); 
+            if(Str::contains($cek_role->name, 'VP')){
+                $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            } else {
+                $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            }
         }
 
         $month_number = collect();
@@ -3188,7 +3197,7 @@ class TimesheetController extends Controller
                 if ($cek_role->name == 'Managed Service Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
                 } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->where('status_karyawan','!=','dummy')->pluck('nik');
                 } elseif ($cek_role->name == 'Solution Architect Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
                 } else {
@@ -4318,8 +4327,8 @@ class TimesheetController extends Controller
             $arrayMonth->push($numericMonth);
         }      
 
-        $nik = Auth::User()->nik;
-        $cek_role = DB::table('role_user')->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+        $nik = Auth::User()->nik; 
+        $cek_role = DB::table('role_user')->Rightjoin('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','mini_group')->where('user_id', $nik)->first();
 
         $getLeavingPermit = Cuti::join('tb_cuti_detail','tb_cuti_detail.id_cuti','tb_cuti.id_cuti')
                             ->join('users','users.nik','=','tb_cuti.nik')
@@ -4333,14 +4342,21 @@ class TimesheetController extends Controller
 
         $getPermit = TimesheetPermit::select('tb_timesheet_permit.start_date','tb_timesheet_permit.nik','users.name')->join('users','users.nik','=','tb_timesheet_permit.nik')->whereIn(\DB::raw('MONTH(start_date)'),$arrayMonth);
 
-        $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                                        ->select('users.name','users.nik')
-                                        ->where('roles.group',$cek_role->group)
-                                        ->where('roles.name','not like','%Manager')
-                                        ->where('roles.name','not like','%MSM Helpdesk%')
-                                        ->where('roles.name','not like','%MSM Lead Helpdesk%')
-                                        ->where('users.status_delete','-');
+        $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->select('users.name');
+
+        if(Str::contains($cek_role->name, 'VP')){
+            $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('roles.name','not like','%VP')
+                        ->where('users.status_karyawan','!=','dummy'); 
+        } else {
+            $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
+                        ->where('roles.name','not like','%Manager')
+                        ->where('roles.name','not like','%VP')
+                        ->where('users.status_karyawan','!=','dummy'); 
+        }
 
         if ($cek_role->group == 'Project Management') {
             if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
@@ -5550,7 +5566,7 @@ class TimesheetController extends Controller
     public function getFilterRemainingChart(Request $request)
     {
         $nik = Auth::User()->nik;
-        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','mini_group')->where('user_id', $nik)->first(); 
 
         $data = DB::table('tb_timesheet')
                 ->join('users','tb_timesheet.nik','users.nik')->select('name','point_mandays','end_date','status','users.nik')->where('status_karyawan','!=','dummy')->selectRaw('MONTH(start_date) AS month_number');
@@ -5595,27 +5611,66 @@ class TimesheetController extends Controller
 
         $workdays = $this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values()->count();
 
+        $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name');
+
         if ($request->roles != "") {
-            $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                    ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    ->select('users.name')
-                    ->where('roles.group',$request->roles)
-                    ->where('roles.name','not like','%Manager%')
-                    ->where('roles.name','not like','%MSM Helpdesk%')
-                    ->where('roles.name','not like','%MSM Lead Helpdesk%')
-                    ->where('users.status_delete','-')
-                    ->get();
-        }else{
-            $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
-                    ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    ->select('users.name')
-                    ->where('roles.group',$cek_role->group)
-                    ->where('roles.name','not like','%Manager%')
-                    ->where('roles.name','not like','%MSM Helpdesk%')
-                    ->where('roles.name','not like','%MSM Lead Helpdesk%')
-                    ->where('users.status_delete','-')
-                    ->get();
-        }     
+            if(Str::contains($cek_role->name, 'VP')){
+                $getUserByGroup = $getUserByGroup->where('roles.group',$request->roles)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            } else {
+                $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            }
+        } else {
+            if(Str::contains($cek_role->name, 'VP')){
+                $getUserByGroup = $getUserByGroup->where('roles.group',$cek_role->group)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            } else {
+                $getUserByGroup = $getUserByGroup->where('roles.mini_group',$cek_role->mini_group)
+                            ->where('roles.name','not like','%Manager')
+                            ->where('roles.name','not like','%VP')
+                            ->where('users.status_karyawan','!=','dummy')
+                            ->whereNotIn('nik', $data->get()->pluck('nik'))
+                            ->get(); 
+            }
+        }
+        
+
+        // if ($request->roles != "") {
+        //     $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+        //             ->join('roles', 'roles.id', '=', 'role_user.role_id')
+        //             ->select('users.name')
+        //             ->where('roles.group',$request->roles)
+        //             ->where('roles.name','not like','%Manager%')
+        //             ->where('roles.name','not like','%MSM Helpdesk%')
+        //             ->where('roles.name','not like','%MSM Lead Helpdesk%')
+        //             ->where('users.status_delete','-')
+        //             ->get();
+        // }else{
+        //     $getUserByGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+        //             ->join('roles', 'roles.id', '=', 'role_user.role_id')
+        //             ->select('users.name')
+        //             ->where('roles.group',$cek_role->group)
+        //             ->where('roles.name','not like','%Manager%')
+        //             ->where('roles.name','not like','%MSM Helpdesk%')
+        //             ->where('roles.name','not like','%MSM Lead Helpdesk%')
+        //             ->where('users.status_delete','-')
+        //             ->get();
+        // }     
 
         if ($cek_role->group == 'Project Management') {
             if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {

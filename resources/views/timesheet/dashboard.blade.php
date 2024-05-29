@@ -63,6 +63,12 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       z-index: 9999;
     }
+
+    .containerBoxRemaining{
+      width:100%;
+      max-width: 100%;
+      overflow-x: scroll;
+    }
   </style>
 @endsection
 @section('content')
@@ -342,7 +348,7 @@
                   <h3 class="box-title">Remaining <span id="span-remaining"></span> (Status Done)</h3>
                 </div>
                 <div class="box-body">
-                  <div class="containerBoxRemaining" style="overflow-x: scroll;width: 100%;">
+                  <div class="containerBoxRemaining">
                     <div id="box-remaining">
                     </div>
                   </div>
@@ -590,7 +596,7 @@
 
     function initiateSumSbe(id){
       var isPMO = false
-      if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.group',"PMO")->exists()}}") {
+      if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','Project Management')->exists()}}") {
         isPMO = true
         var colspan = 4
         var enabledClick = true
@@ -1318,8 +1324,11 @@
     });
 
     const containerBodyRemaining = document.querySelector('#box-remaining');
+    const totalLabels = myChart2.data.labels.length;
+
     if (myChart2.data.labels.length > 7) {
-      containerBodyRemaining.style.width  = '1300px';
+      const newWidth = 700 + ((totalLabels - 7) * 30)
+      containerBodyRemaining.style.width  = `${newWidth}px`;
     }
 
     return remainingBarChart.push(myChart2);
@@ -1912,8 +1921,6 @@
     //   var monthAsMoment = moment().month(parseInt(numericMonth) - 1);
     //   var monthFullName = monthAsMoment.format('MMMM');
     //   $("#span-remaining").text(monthFullName) 
-
-    //   console.log("sini")
     // }
 
   $('#tbSummaryMandays').on('xhr.dt', function (e, settings, json, xhr) {
