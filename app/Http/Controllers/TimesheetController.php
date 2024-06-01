@@ -544,6 +544,7 @@ class TimesheetController extends Controller
                         // Attempt to parse the input date using the 'mm/dd/yyyy' format
                         $carbonStartDate = Carbon::createFromFormat('m/d/Y', $dateStartString);
                         $carbonEndDate = Carbon::createFromFormat('m/d/Y', $dateEndString);
+
                         // Check if the parsed date matches the original input date
                         if ($carbonStartDate->format('m/d/Y') === $dateStartString && $carbonEndDate->format('m/d/Y') === $dateEndString) {
                             $task = DB::table('tb_timesheet_task')->select('id')
@@ -730,6 +731,13 @@ class TimesheetController extends Controller
                                 'date_add' => Carbon::now()->toDateTimeString()
                             ];
 
+                            if(!empty($insertTimesheet)){
+                                Timesheet::insert($insertTimesheet);
+                                return collect([
+                                    "text" => 'Successfully',
+                                    "status" => 'Success',
+                                ]);
+                            }
                             // var_dump($endformatDate);
                         } else {
                             return collect([
@@ -744,18 +752,7 @@ class TimesheetController extends Controller
                         ]);
                     }
 
-                    
-
                 }
-     
-                if(!empty($insertTimesheet)){
-                    Timesheet::insert($insertTimesheet);
-                    return collect([
-                        "text" => 'Successfully',
-                        "status" => 'Success',
-                    ]);
-                }
-
             } else {
                 return 'Tidak ada activity';
             }
