@@ -550,8 +550,7 @@ class TimesheetController extends Controller
                         $carbonEndDate = Carbon::createFromFormat('m/d/Y', $dateEndString);
 
                         // Check if the parsed date matches the original input date
-
-                        if ($carbonStartDate->format('n/j/Y') == $dateStartString && $carbonEndDate->format('n/j/Y') == $dateEndString) {
+                        if ($carbonStartDate->format('m/d/Y') == $dateStartString && $carbonEndDate->format('m/d/Y') == $dateEndString) {
                             $task = DB::table('tb_timesheet_task')->select('id')
                             ->where(DB::raw("REPLACE(task, ' ', '')"), 'LIKE', '%'.$value[10].'%')
                             ->orWhere(DB::raw("REPLACE(task, 'ing', '')"), 'LIKE', '%'.$value[10].'%')
@@ -735,14 +734,6 @@ class TimesheetController extends Controller
                                 'point_mandays' => $point_mandays, 
                                 'date_add' => Carbon::now()->toDateTimeString()
                             ];
-
-                            if(!empty($insertTimesheet)){
-                                Timesheet::insert($insertTimesheet);
-                                return collect([
-                                    "text" => 'Successfully',
-                                    "status" => 'Success',
-                                ]);
-                            }
                             // var_dump($endformatDate);
                         } else {
                             return collect([
@@ -756,7 +747,14 @@ class TimesheetController extends Controller
                             "status" => 'Error',
                         ]);
                     }
+                }
 
+                if(!empty($insertTimesheet)){
+                    Timesheet::insert($insertTimesheet);
+                    return collect([
+                        "text" => 'Successfully',
+                        "status" => 'Success',
+                    ]);
                 }
             } else {
                 return 'Tidak ada activity';
