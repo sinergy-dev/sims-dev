@@ -13,10 +13,9 @@ PMO
 	<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="{{ url('css/jquery.emailinput.min.css') }}">
 	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" integrity="sha512-OWGg8FcHstyYFwtjfkiCoYHW2hG3PDWwdtczPAPUcETobBJOVCouKig8rqED0NMLcT9GtE4jw6IT1CSrwY87uw==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
 	<style type="text/css">
-		#tooltip{
+	/*	#tooltip{
 			margin-left: 274px;
 		    display: none;
-		    /*position: absolute;*/
 		    cursor: pointer;
 		    left: 100px;
 		    top: 50px;
@@ -25,6 +24,17 @@ PMO
 		    padding: 10px;
 		    z-index: 1000;
 		    width: fit-content;
+		}*/
+
+		.alertFinalProject{
+			width: fit-content!important;
+		    margin: 0 auto;
+		    float: inline-end;
+		    display: none;
+		}
+
+		.alertFinalProject:hover{
+			cursor: pointer;
 		}
 
 		.rowColorRed .table-striped{
@@ -280,10 +290,16 @@ PMO
 		                	<!-- <button class="btn btn-sm btn-warning"><i class="fa fa-forward"></i>&nbspNext Phase</button> -->
 		                	<button class="btn btn-sm btn-primary" style="display:none" disabled id="btnSendCSS" onclick="showEmail()"><i class="fa fa-paper-plane"></i>&nbspSend CSS</button>
 		                	<a class="btn btn-sm btn-success" disabled id="btnFinalProject" style="display:none"><i class="fa fa-plus"></i>&nbspFinal Project</a>		                	
-		                	<div id="tooltip">
+		                	<!-- <div id="tooltip" class="alert-box">
 							    Please Make Done Your Issue and Risks Before Create Final Project Report!
-							</div>
+							</div> -->
 	            		</div>
+	            	</div>
+	            	<div class="alertFinalProject">
+	            		<div class="alert alert-warning alert-dismissible">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<i class="icon fa fa-warning"></i>Please Make Done Your Issue and Risks Before Create Final Project Report!
+						</div>
 	            	</div>
 	            </div>
 
@@ -1638,16 +1654,16 @@ PMO
             	}
 
             	if (result.data.sendCss == 'false') {
-            		if (table.row(0).data()) {
-            			if(table.row(0).data().milestone == "Submit Customer Satisfaction Survey (CSS)" ){
-	            			$("#btnSendCSS").prop("disabled",false)
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-	            		} 
-            		}           		         		
-            		
+            		table.rows().every(function() {
+		                var rowData = this.data()
+		                if (rowData.milestone == "Submit Customer Satisfaction Survey (CSS)") {
+		                	$("#btnSendCSS").prop("disabled",false)
+	            			$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
+	            			$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+		                }
+		            }); 
             	}else{
-            		$("#btnSendCSS").prop("disabled",false)
+            		$("#btnSendCSS").prop("disabled",true)
             	}
 
             	if (result.data.finalreport == 'true') {
@@ -1659,14 +1675,22 @@ PMO
 	            		$("#btnAddMilestone").prop("disabled",true)
 		            	$("#btnAddWeekly").prop("disabled",true)
 		            	$("#btnFinalProject").attr("disabled")
+
+		            	if (table.data().count() == 1) {
+		                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",false)
+		                }
 	            	}else{
-	            		console.log(table.row(0).length)
-	            		if(table.row(0).length > 0){
-		            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-		            		}	
-	            		}
+	            		table.rows().every(function() {
+			                var rowData = this.data();
+
+			                if (table.data().count() == 1) {
+			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+			                }
+			              //   if (rowData.milestone == "Submit Final Project Closing Report") {
+			              //   	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+	            				// // $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
+			              //   }
+			            });
 
 	            		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
 		            		$("#btnFinalProject").attr("disabled")
@@ -1684,45 +1708,41 @@ PMO
 	            			$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"update")')
 	            			$("#btnFinalProject").find("i").removeClass("fa fa-plus").addClass("fa fa-wrench")
 	            			$("#btnFinalProject").removeAttr("disabled")
-	            			if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-		            		}
+	            			table.rows().every(function() {
+				                var rowData = this.data()
+				                if (rowData.milestone == "Submit Final Project Closing Report") {
+				                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+		            				// $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
+				                }
+
+				                if (rowData.length == 1) {
+				                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+				                }
+				            });
 	            		}else if (result.data.approveFinalReport == '') {
-	            			if (table.data().count() > 0) {
-			            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-			            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-			            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-					            }
+	            			// if (table.data().count() > 0) {
+	            				table.rows().every(function() {
+					                var rowData = this.data();					              	
+					                if (table.data().count() == 1) {
+					                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+					                	if (result.data.isIssueRiskClear == "false") {
+						            		$(".alertFinalProject").show()
+					            			$("#btnFinalProject").attr("disabled")
+						            	}else{
+					            			$("#btnFinalProject").removeAttr("disabled")
+				            				$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"create")')
+						            	}
+					                }
+					            });
 
-					            if (result.data.isIssueRiskClear == "false") {
-				            		$("#btnFinalProject").hover(function(){
-				            			$("#tooltip").show()
-									});
 
-									$("#tooltip").click(function() {
-									    $(this).hide();
-									});
-
-			            			$("#btnFinalProject").attr("disabled")
-				            	}else{
-			            			$("#btnFinalProject").removeAttr("disabled")
-		            				$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"create")')
-				            	}
-					        }
+					        // }
 	            		}else{
 	            			$("#btnFinalProject").attr("disabled")
 	            		}
 	            	}else{
 	            		$("#btnFinalProject").attr("disabled")
 	            	}	            	
-
-	            	if (table.data().count() > 0) {
-	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-		            		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-		            		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-		            	}
-	            	}
 	            	
             	}
 
@@ -4268,36 +4288,18 @@ PMO
             { 
             	title:"Action",
               	render: function (data, type, row, meta){
-                	return '<input type="checkbox" disabled class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
+              		if (row.deliverable_document == "true") {
+                		return '<input type="checkbox" disabled class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
+              		}else{
+                		return '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
+              		}
               	}
             },
         ],
-        "rowCallback": function( row, data ) {
-      		if (accesable.includes("cbTaskDone")) {
-          		if (data.deliverable_document != "true") {
-          			$('td:eq(4)', row).html( '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ data.id_gantt +'"> Task Done');
-          			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").prop("disabled",false)
-          			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").closest("div").removeClass("disabled").prop("disabled",false)
-          		}else{
-          			$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
-          		}
-      		}else{
-          		$("#cbTaskDone").closest("div").css("cursor","not-allowed")
-
-      		}
-		    // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
-		    //   $("#btnFinalProject").prop("disabled",false)
-		    // }
-		},
         drawCallback: function(settings) {
-        	console.log(accesable)
-	        if (!accesable.includes("cbTaskDone")) {
-	          // $("input[name='cbTaskDone']").prop("disabled",false)	 
-	          $("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
-	        }else{
-	        	// if ($("input[name='cbTaskDone']").prop("disabled") == true) {
-	         //  		$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
-	        	// }
+        	if (!accesable.includes("cbTaskDone")) {	
+	        	var api = this.api();
+	            api.columns(4).visible(false);    
 	        }
 
 	        $('input[type="checkbox"].minimal').iCheck({
@@ -5125,23 +5127,23 @@ PMO
 	        	cbProject = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Schedule']:checked").each(function(){
 	        	cbSchedule = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Technical']:checked").each(function(){
 	        	cbTechnical = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Scope']:checked").each(function(){
 	        	cbScope = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Resource']:checked").each(function(){
 	        	cbResource = $(this).attr('value')
 	        })
 
-	        $("input[name='radioProject_Project']:checked").each(function(){
+	        $("input[name='radioProject_Partner']:checked").each(function(){
 	        	cbPartner = $(this).attr('value')
 	        })
 
@@ -5429,8 +5431,6 @@ PMO
 			      			append = append + '<table id="tbShowChecklistFinal">'
 
 			    			$.each(resultDoc.data,function(idx,item){
-			    				
-
 			    				append = append + '<tr>	'
 					      			append = append + '<td width="450px">'
 					      				append = append + '<label>'+ item.text +'</label>'
@@ -5747,19 +5747,11 @@ PMO
 
 						   	if (planned > actual) {
 						   		selectScheduleSummary("AheadSchedule")
-						   	
-
 						   	}else if (planned == actual) {
 						   		selectScheduleSummary("OnSchedule")
-						   	
-
 						   	}else{
 						   		selectScheduleSummary("BehindSchedule")
-						   	
-
 						   	}
-
-						   	
 						})			   	
 
 				        $("#nextBtnFinal").attr('onclick','nextPrevAddFinal(1,"'+ status +'")')
