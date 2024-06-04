@@ -23,7 +23,7 @@ class PRNotes extends Model
 		'notes'
 	];
 
-	protected $appends = ['reply', 'no_pr', 'image'];
+	protected $appends = ['reply', 'no_pr', 'image', 'issuance'];
 
 	public function getReplyAttribute()
 	{
@@ -42,4 +42,12 @@ class PRNotes extends Model
 		$data = DB::table('tb_pr_notes')->join('users', 'users.name', 'tb_pr_notes.operator')->select('gambar')->where('id', $this->id)->first();
 		return empty($data->gambar)?'-':$data->gambar;
 	}
+
+	public function getIssuanceAttribute()
+	{
+		$data = DB::table('tb_pr_draft')->join('users', 'users.nik', 'tb_pr_draft.issuance')->where('id', $this->id_draft_pr)->first()->nik;
+		return $data;
+	}
+
+	///////////
 }

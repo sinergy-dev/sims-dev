@@ -980,7 +980,7 @@
             disableResolve = 'disabled'
             disableReply = 'disabled'
           }else{
-            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Operations Director')->exists()}}") {
+            if ({{Auth::User()->nik}} != value.issuance) {
               disableResolve
               disableReply
             }else{
@@ -988,6 +988,7 @@
               disableReply
             }
             span = '<span class="pull-right badge bg-default">Progress</span>'
+            ////////////
           }
           const cals = moment(value.date_add)
           .calendar(null, {
