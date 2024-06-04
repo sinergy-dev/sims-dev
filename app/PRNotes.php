@@ -49,5 +49,5 @@ class PRNotes extends Model
 		return $data;
 	}
 
-
+	///////////
 }

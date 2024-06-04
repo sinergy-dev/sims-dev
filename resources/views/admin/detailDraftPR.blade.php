@@ -988,6 +988,7 @@
               disableReply
             }
             span = '<span class="pull-right badge bg-default">Progress</span>'
+            ////////////
           }
           const cals = moment(value.date_add)
           .calendar(null, {
