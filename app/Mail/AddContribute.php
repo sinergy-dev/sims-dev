@@ -10,18 +10,17 @@ use Illuminate\Queue\SerializesModels;
 class AddContribute extends Mailable
 {
     use Queueable, SerializesModels;
-    public $data,$status;
+    public $data;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data,$status)
+    public function __construct($data)
     {
         //
         $this->data = $data;
-        $this->status = $status;
     }
 
     /**
@@ -31,7 +30,7 @@ class AddContribute extends Mailable
      */
     public function build()
     {
-        return $this->subject('Add Contribute'.' - '.$this->data->lead_id)
+        return $this->subject($this->data['subject_email'].' - '.$this->data['lead_id'])
                     ->view('mail.MailAddContribute');
     }
 }

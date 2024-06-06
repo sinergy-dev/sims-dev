@@ -64,20 +64,24 @@
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 			<p style="font-size: 20px">
-				<b>Dear {{$data->presales_name}}, you are contributed to this project.
+				@if($data['status'] == 'contribute')
+					<b>Dear {{$data['data']->presales_name}}, you are contributed to this project.
+				@else
+					<b>Dear {{$data['data']->presales_name}}, you are cancelled contributed to this project.
+				@endif
 			</p>
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
-				<center><b>{{$data->lead_id}} - {{$data->opp_name}}</b></center>
+				<center><b>{{$data['data']->lead_id}} - {{$data['data']->opp_name}}</b></center>
 				<table style="text-align: left;margin: 5px; font-size: 16px" class="tableLead">
 					<tr>
 						<th>Nama Presales</th>
 						<th> : </th>
-						<td>{{$data->presales_name}}</td>
+						<td>{{$data['data']->presales_name}}</td>
 					</tr>
 					<tr>
 						<th>Amount</th>
 						<th> : </th>
-						<td><div class="money">{{$data->amount}}</div></td>
+						<td><div class="money">{{$data['data']->amount}}</div></td>
 					</tr>
 					<tr>
 						<th>Status</th>
@@ -89,7 +93,9 @@
 			<p style="font-size: 16px">
 				To access the Application please click the following button.<br>
 			</p>
-			<center><a href="{{url('/project/detailSales',$data->lead_id)}}" target="_blank"><button class="button">Lead ID</button></a></center>
+			@if($data['status'] == 'contribute')
+			<center><a href="{{url('/project/detailSales',$data['data']->lead_id)}}" target="_blank"><button class="button">Lead ID</button></a></center>
+			@endif
 			<p style="font-size: 16px">
 				Please check again, if there are errors or questions please contact the Developer Team (Ext: 384) or email to development@sinergy.co.id.<br>
 				Thank you.

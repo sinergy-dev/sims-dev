@@ -10,18 +10,17 @@ use Illuminate\Queue\SerializesModels;
 class AssignPresales extends Mailable
 {
     use Queueable, SerializesModels;
-    public $data,$status;
+    public $data;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data,$status)
+    public function __construct($data)
     {
         //
         $this->data = $data;
-        $this->status = $status;
     }
 
     /**
@@ -31,7 +30,9 @@ class AssignPresales extends Mailable
      */
     public function build()
     {
-        return $this->subject('Assign Presales'.' - '.$this->data->lead_id)
+        // return $this->subject($this->data["title"].' - '.$this->data["data"]["lead_id"])
+        return $this->subject($this->data['title'])
                     ->view('mail.MailAssignPresales');
+        
     }
 }

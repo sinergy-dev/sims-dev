@@ -46,6 +46,8 @@ Route::get('getWin','TestController@getWin');
 
 
 Route::get('testEmailReminder','TestController@testEmailReminder');
+Route::get('testEmailAssetManagement','TestController@testEmailAssetManagement');
+
 Route::get('testContribute', 'TestController@testContribute');
 
 Route::get('testRolesShow','TestController@testRole');
@@ -81,10 +83,12 @@ Route::group(['middleware' => ['auth']], function () {
 	});
 	Route::get('permissionConfig','PermissionConfigController@testPermissionConfig');
 	Route::get('project/getPresales', 'SalesLeadController@getPresales');
+	Route::get('project/getTa', 'SalesLeadController@getTa');
 	Route::get('project/getSales', 'SalesLeadController@getSales');
 	Route::get('project/getCustomer', 'SalesLeadController@getCustomer');
 	Route::get('project/showEditLead', 'SalesLeadController@showEditLead');
 	Route::get('project/getPresalesAssign', 'SalesLeadController@getPresalesAssign');
+	Route::get('project/getTaAssign', 'SalesLeadController@getTaAssign');
 	Route::post('project/update_lead_register', 'SalesLeadController@update_lead_register');
 	Route::get('project/getDetailLead', 'SalesLeadController@getDetailLead');
 	Route::get('project/getChangeLog', 'SalesLeadController@getChangeLog');
@@ -107,6 +111,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('project/storeLead', 'SalesLeadController@storeLead');
 	Route::post('project/assignPresales', 'SalesLeadController@assignPresales');
 	Route::post('project/reassignPresales', 'SalesLeadController@reassignPresales');
+	Route::post('project/reassignTa', 'SalesLeadController@reassignTa');
 	Route::post('project/raiseTender', 'SalesLeadController@raise_to_tender');
 	Route::get('project/getTerritory', 'SalesLeadController@getTerritory');
 	Route::get('project/getUserByTerritory', 'SalesLeadController@getUserByTerritory');
@@ -126,6 +131,12 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('project/updateSbeTag', 'SalesLeadController@updateSbeTag');
 	Route::post('project/changeNominal', 'SalesLeadController@changeNominal');
 	Route::post('project/changeCustomer', 'SalesLeadController@changeCustomer');
+	Route::post('project/assignTechnologyAlliance', 'SalesLeadController@assignTechnologyAlliance');
+	Route::post('project/updateTechnologyAlliance', 'SalesLeadController@updateTechnologyAlliance');
+	Route::post('project/updatePresales', 'SalesLeadController@updatePresales');
+	Route::get('project/getPresalesAssignCont', 'SalesLeadController@getPresalesAssignCont');
+	Route::get('project/getDataUpdatePresales', 'SalesLeadController@getDataUpdatePresales');
+
 	// Route::get('project/getProductTechTag', 'SalesLeadController@getProductTechTag');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
@@ -1242,6 +1253,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/create/getSwitchId','TicketingController@getSwitchId');
 	Route::get('/ticketing/create/getSwitchDetail','TicketingController@getSwitchDetail');
 	Route::get('/ticketing/create/getPidByPic','TicketingController@getPidByPic');
+	Route::get('/ticketing/create/getAssetByPid','TicketingController@getAssetByPid');
+	Route::get('/ticketing/create/getDetailAsset','TicketingController@getDetailAsset');
 
 	Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
 	Route::get('/ticketing/mail/getEmailTemplate','TicketingController@getEmailTemplate');
@@ -1514,6 +1527,12 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('asset/assignEngineer','AssetMgmtController@assignEngineer');
 	Route::get('asset/getEngineer','AssetMgmtController@getEngineer');
 	Route::get('asset/getAssignedEngineer','AssetMgmtController@getAssignedEngineer');
+	Route::get('asset/getSearchData','AssetMgmtController@getSearchData');
+	Route::get('asset/getLocationNameFromLatLng','AssetMgmtController@getLocationNameFromLatLng');
+	Route::get('asset/getTicketId','AssetMgmtController@getTicketId');
+	Route::get('asset/getChangeLog','AssetMgmtController@getChangeLog');
+	Route::post('asset/updateDetailAsset','AssetMgmtController@updateDetailAsset');
+	Route::get('asset/getReminderAsset','AssetMgmtController@getReminderAsset');
 
 });
 

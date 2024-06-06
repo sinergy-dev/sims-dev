@@ -7,7 +7,7 @@ Detail Lead Register
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-barber-shop.min.css" integrity="sha512-7qRUmettmzmL6BrHrw89ro5Ki8CZZQSC/eBJTlD3YPHVthueedR4hqJyYqe1FJIA4OhU2mTes0yBtiRMCIMkzw==" crossorigin="anonymous" referrerpolicy="no-referrer"  as="style" onload="this.onload=null;this.rel='stylesheet'"/>
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" integrity="sha512-OWGg8FcHstyYFwtjfkiCoYHW2hG3PDWwdtczPAPUcETobBJOVCouKig8rqED0NMLcT9GtE4jw6IT1CSrwY87uw==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
 <style type="text/css">
 	.modal-dialog-centered{
 		min-height: calc(100% - (1.75rem * 2));
@@ -321,7 +321,6 @@ Detail Lead Register
     		<div class="box box-solid box-info" id="box-SD">
           <div class="box-header with-border">
             <h3 class="box-title" style="color: white;">Solution Design</h3>
-            <button class="btn btn-primary btn-xs pull-right" id="btnAddContPre" style="display:none;" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
           </div>
           <div class="box-body">
           	<fieldset id="formSD" disabled>
@@ -386,14 +385,16 @@ Detail Lead Register
 		                        <th>Technology Tag</th>
 		                        <th>Price</th>
 		                        <td class="text-center">
-		                          <button class="btn btn-xs btn-primary" id="btn-addTagging" type="button" style="border-radius:50%;width: 25px;height: 25px;">
+		                          <button class="btn btn-xs btn-primary" id="btn-addTagging" type="button" style="border-radius:50%;width: 25px;height: 25px;vertical-align: text-top;">
 								              	<i class="fa fa-plus"></i>
 								              </button> 
 		                        </td>
 		                      </tr>
 			                  </thead>
-			                  <tbody id="tbtagging">
-			                  </tbody>
+			                  <form>
+			                  	<tbody id="tbtagging">
+			                  	</tbody>
+			                  </form>
 			                </table>
 	              		</div>
 
@@ -505,8 +506,9 @@ Detail Lead Register
                     <div class="input-group-addon" style="background-color:#aaa;color:white">
                       <i class="fa fa-calendar"></i>
                     </div>
-                    <input class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter Submit Date" name="submit_date"  id="submit_date" value=""/>
+                    <input class="form-control" type="text" placeholder="Enter Submit Date" name="submit_date"  id="submit_date" value=""/>
                   </div>
+          				<span class="help-block" style="display:none">Please Fill and Submit Date Before Result!</span>
                 </div>
             	</div> 
 
@@ -528,7 +530,7 @@ Detail Lead Register
 
               <div class="form-group">
               	<button type="submit" class="btn btn-md btn-primary" id="btnSubmitTP" style="float: left;">Submit</button>
-             	 	<button type="button" class="btn btn-md btn-success" id="btnResult" style="float:right;" onclick="" >Result</button>
+             	 	<button type="button" class="btn btn-md btn-success" id="btnResult" style="float:right;">Result</button>
               </div>
           	</fieldset>
           </div>
@@ -827,6 +829,57 @@ Detail Lead Register
 		    </div>
 		  </div>
 		</div>
+
+		<div class="modal fade" id="assignModalTechAlliance" role="dialog">
+		  <div class="modal-dialog modal-md">
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h3 class="modal-title">Edit Technology Alliance</h3>
+		      </div>
+		      <div class="modal-body">
+		        <input type="text" name="lead_tech_alliance" id="lead_tech_alliance" value="" hidden>
+	          <input type="text" name="status_tech_alliance" id="status_tech_alliance" value=""  hidden>
+		          @csrf
+		        <div class="form-group">
+		          <label for="">Choose Technology Alliance</label>
+		          <select class="form-control" id="select2-tech-alliance" name="select2-tech-alliance" style="width:100%" required>
+		            <option value="">-- Choose --</option>
+		          </select>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp Close</button>
+		          <button type="button" class="btn bg-purple" id="btnSubmitTechAlliance" onclick="submitEditTechAlliance()"><i class="fa fa-check"> </i>&nbspSave</button>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="modal fade" id="assignModalPresales" role="dialog">
+		  <div class="modal-dialog modal-md">
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h3 class="modal-title">Edit Presales</h3>
+		      </div>
+		      <div class="modal-body">
+		        <input type="text" name="lead_id_presales" id="lead_id_presales" value="" hidden>
+	          <input type="text" name="status_presales" id="status_presales" value=""  hidden>
+		          @csrf
+		        <div class="form-group">
+		          <label for="">Choose Presales or System Designer</label>
+		          <select class="form-control" id="select2-presales" name="select2-presales" style="width:100%" required>
+		          </select>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp Close</button>
+		          <button type="button" class="btn bg-purple" onclick="submitEditPresales()"><i class="fa fa-check"> </i>&nbspSave</button>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
 </section>
 @endsection
 @section('scriptImport')
@@ -885,6 +938,15 @@ Detail Lead Register
 					},
 					success:function(result){
 						showSbe()
+
+						if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+							$("#pov,#assesment,#propossed_design").prop("disabled",true)
+						}else if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','System Designer')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}"){
+							$("#project_budget,#priority,#proyek_size").prop("disabled",true)
+							$("#btn-addTagging").hide()
+							$("#tbtagging").closest("form").prop("disabled",true)
+							$("#tbtagging").find("tr").find("td:last-child").remove()
+						}
 
 						if (result.data[0].result == 'LOSE') {
 							    var i = 0;
@@ -1195,15 +1257,43 @@ Detail Lead Register
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Customer</th>'
-	  		  		append = append + '<td>'+result.data[0].customer_legal_name+'<button class="btn btn-warning btn-edit-customer btn-xs pull-right">Edit</button></td>'
+	  		  		append = append + '<td>'+result.data[0].customer_legal_name+'<button class="btn btn-warning btn-edit-customer btn-xs pull-right" style="width:70px">Edit</button></td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Opty Name</th>'
 	  		  		append = append + '<td>'+result.data[0].opp_name+'</td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
-	  		  		append = append + '<th>Current Presales</th>'
-	  		  		append = append + '<td>'+result.data[0].name_presales+'</td>'
+	  		  		append = append + '<th style="width:20%">Technology Alliance</th>'
+	  		  		append = append + '<td style="width:80%">'
+		  		  		append = append + '<table style="width:100%">'
+
+		  		  			btnEditTechAlliance = "onclick=editTechAlliance('" +  result.data[0].lead_id + "')"
+
+		  		  			append = append + '<tr>'
+		  		  				append = append + '<td style="width:70%">'+result.data[0].name_ta+'</td>'
+		  		  				append = append + '<td style="width:30%"><div class="pull-right"><button id="btnEditTechAlliance" class="btn btn-warning btn-xs" style="width:70px;display:none"'+ btnEditTechAlliance +'>Edit</button></div></td>'
+		  		  			append = append + '</tr>'
+		  		  		append = append + '</table>'
+	  		  		append = append + '</td>'
+	  		  	append = append + '</tr>'
+	  		  	append = append + '<tr>'
+	  		  		append = append + '<th style="width:20%">Current Presales</th>'
+	  		  		append = append + '<td style="width:80%">'
+		  		  		append = append + '<table style="width:100%">'
+
+		  		  			btnEditPresales = "onclick=editPresales('" +  result.data[0].lead_id + "')"
+		  		  			contPre = ""
+		  		  			contPre = result.data[0].name_presales.split(",")
+		  		  			contPre.shift()
+
+		  		  			append = append + '<tr>'
+		  		  				append = append + '<td style="width:70%">'+ '<strong>(Presales)</strong> ' + result.data[0].name_presales.split(",")[0] + '<br>' +  '<strong>(Contribute)</strong> ' + contPre +'</td>'
+		  		  				append = append + '<td style="width:30%"><div class="pull-right"><button class="btn btn-primary btn-xs" id="btnAddContPre" data-toggle="modal" data-target="#contributeModal" style="margin-right:5px;display:none">Contribute</button><button class="btn btn-warning btn-xs" id="btnEditPresales" style="width:70px;display:none"'+ btnEditPresales +'>Edit</button></div></td>'
+
+		  		  			append = append + '</tr>'
+		  		  		append = append + '</table>'
+	  		  		append = append + '</td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Amount</th>'
@@ -1239,6 +1329,10 @@ Detail Lead Register
 	  		  	append = append + '</tr>'
 
 	  		  	$("#tbody-detail").append(append)
+
+	  		  	accesable.forEach(function(item,index){
+				    	$("#" + item).show()
+				  	})
 
 			      current_presales = []
 			      current_presales.push(result.data[0].name_presales)
@@ -1347,19 +1441,6 @@ Detail Lead Register
 				})
 
 				function submitChangeCustomer(textarea,input){
-					Swal.fire({
-	            title: 'Please Wait..!',
-	            text: "It's sending..",
-	            allowOutsideClick: false,
-	            allowEscapeKey: false,
-	            allowEnterKey: false,
-	            customClass: {
-	                popup: 'border-radius-0',
-	            },
-	            onOpen: () => {
-	                Swal.showLoading()
-	            }
-	        })
 	        $.ajax({
 						type:"POST",
 						url:"{{url('/project/changeCustomer')}}",
@@ -1369,6 +1450,21 @@ Detail Lead Register
 							input_cus:input,
 							input_reason:textarea
 						},
+						beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
 						success: function(result) {
                 Swal.showLoading()
                 Swal.fire(
@@ -1387,19 +1483,6 @@ Detail Lead Register
 				}
 
 				function submitChangeAmount(textarea,input){
-					Swal.fire({
-	            title: 'Please Wait..!',
-	            text: "It's sending..",
-	            allowOutsideClick: false,
-	            allowEscapeKey: false,
-	            allowEnterKey: false,
-	            customClass: {
-	                popup: 'border-radius-0',
-	            },
-	            onOpen: () => {
-	                Swal.showLoading()
-	            }
-	        })
 					$.ajax({
 							type:"POST",
 							url:"{{url('/project/changeNominal')}}",
@@ -1409,6 +1492,21 @@ Detail Lead Register
 								input_amount:input.replace(/\./g,''),
 								input_reason:textarea
 							},
+							beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              	})
+            	},
 							success: function(result) {
 	                Swal.showLoading()
 	                Swal.fire(
@@ -1432,7 +1530,7 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						if (result.data != null) {
+						if (result != null) {
 							$("#assesment").val(result.data.assessment)
 							if (result.data.assessment_date != '-') {
 								$("#assessment_last_update").html('<small> Last Update : '+result.data.assessment_date+'</small>')
@@ -1556,7 +1654,6 @@ Detail Lead Register
 	              fd.append('proyek_size',$("#proyek_size").val())
 	              fd.append('_token',"{{csrf_token()}}")
 	              fd.append('lead_id',window.location.href.split("/")[5])
-	              
 
 								$("btnSubmitSD").attr("onclick",btnSubmit(fd,'SD'))
 			  			}							
@@ -1571,22 +1668,24 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						$("#lelang").val(result.data.auction_number)
-						$("#submit_price").val(result.data.submit_price).mask('000.000.000.000', {reverse: true})	
-						$("#project_class").val(result.data.project_class)
-						if (result.data.project_class == 'multiyears' || result.data.project_class == 'blanket') {
-							$("#tahun_jumlah").css("display", "block").val()
-       				$("#total_price_deal").css("display", "block").val()
-        			$("#price_deal").css("display", "block").val()
+						if (result != null) {
+							$("#lelang").val(result.data.auction_number)
+							$("#submit_price").val(result.data.submit_price).mask('000.000.000.000', {reverse: true})	
+							$("#project_class").val(result.data.project_class)
+							if (result.data.project_class == 'multiyears' || result.data.project_class == 'blanket') {
+								$("#tahun_jumlah").css("display", "block").val()
+	       				$("#total_price_deal").css("display", "block").val()
+	        			$("#price_deal").css("display", "block").val()
+							}
+							$("#jumlah_tahun").val(result.data.jumlah_tahun)
+							$("#deal_price_total").unmask().mask('000.000.000.000', {reverse: true});
+	   					$("#deal_price_total").val(result.data.deal_price).trigger("input");
+							$("#deal_price").unmask().mask('000.000.000.000', {reverse: true});
+	   					$("#deal_price").val(result.data.deal_price).trigger("input");	
+							$("#win_prob").val(result.data.win_prob)
+							$("#project_name").val(result.data.project_name)
+							$("#submit_date").val(result.data.submit_date)
 						}
-						$("#jumlah_tahun").val(result.data.jumlah_tahun)
-						$("#deal_price_total").unmask().mask('000.000.000.000', {reverse: true});
-   					$("#deal_price_total").val(result.data.deal_price).trigger("input");
-						$("#deal_price").unmask().mask('000.000.000.000', {reverse: true});
-   					$("#deal_price").val(result.data.deal_price).trigger("input");	
-						$("#win_prob").val(result.data.win_prob)
-						$("#project_name").val(result.data.project_name)
-						$("#submit_date").val(result.data.submit_date)
 
 						var fd = new FormData()
 
@@ -1728,11 +1827,15 @@ Detail Lead Register
 						})
 
 						$("#btnResult").click(function(){
-							if (result.data.deal_price == "") {
+							if(result.data.submit_date == ""){
+								$("#submit_date").closest('.form-group').addClass('has-error')
+								$("#submit_date").closest('div div').next('span').show();
+								$("#submit_date").prev('.input-group-addon').css("background-color","red");
+							}else if (result.data.deal_price == "") {
 								$("#deal_price").closest('.form-group').addClass('has-error')
 								$("#deal_price").closest('div div').next('span').show();
 								$("#deal_price").prev('.input-group-addon').css("background-color","red");
-							}else{
+							} else{
 								$("#btnResult").attr("onclick",btnResult(result.data.lead_id,result.data.id_customer,result.data.opp_name))
 							}
 						})			
@@ -1959,6 +2062,7 @@ Detail Lead Register
       append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip' title='50000' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
       append = append + " <input data-value='" + i + "' class='money form-control new-price-sol' name='new-price-sol' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
+      append = append + " <span class='help-block' style='display:none'>Can't submit because the nominal value is 0 rupiah!</span>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
       append = append + " <button type='button' data-value='"+i+"' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging' value='"+i+"'><i class='fa fa-trash'></i></button><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
@@ -2039,6 +2143,7 @@ Detail Lead Register
       append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip'  style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
       append = append + " <input disabled data-value='" + i + "' class='money form-control col-xs-12 new-price-sol' value='0' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
+      append = append + " <span class='help-block' style='display:none'>Can't submit because the nominal value is 0 rupiah!</span>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
       append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging'><i class='fa fa-pencil'></i></button>"
@@ -2242,17 +2347,6 @@ Detail Lead Register
 				var StringName = value.text;
     		concat_name.push(StringName);
 			})
-
-			Swal.fire({
-        title: 'Please Wait..!',
-        html: "<p style='text-align:center;'>It's processing..</p>",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false,
-        onOpen: () => {
-          Swal.showLoading()
-        }
-      })
 			$.ajax({
 				type:"POST",
 				url:"{{url('/project/addContribute')}}",
@@ -2261,7 +2355,22 @@ Detail Lead Register
 					nik_cont:$("#contribute_presales").val(),
 					concat_name:concat_name.join(','),
 					_token:"{{csrf_token()}}"
-				},success:function(){
+				},
+				beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+        },success:function(){
 					Swal.showLoading()
           Swal.fire(
               'Successfully!',
@@ -2317,25 +2426,27 @@ Detail Lead Register
         confirmButtonText: 'Yes!'
       }).then((result) => {
         if (result.value) {
-          Swal.fire({
-            title: 'Please Wait..!',
-            text: "It's sending..",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            customClass: {
-              popup: 'border-radius-0',
-            },
-            onOpen: () => {
-              Swal.showLoading()
-            }
-          })
           $.ajax({
             type:"POST",
             url:"{{url('/project/raiseTender')}}",
             data:{
               lead_id:window.location.href.split("/")[5],
               _token:"{{ csrf_token() }}"
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
             },
             success: function(result){
               Swal.showLoading()
@@ -2509,7 +2620,6 @@ Detail Lead Register
     			$("#tagging-win-status[data-value='"+dataValue+"']").val("")  
     		} 
     	}
-
     }) 
 
     $(document).on('click','.btn-edit-tagging-sbe-win',function(){
@@ -2539,37 +2649,70 @@ Detail Lead Register
     })
 
     function updateTagging(id_exist,product,techno,price,dataValue){
-  		$.ajax({
-          url: "{{url('/project/updateProductTag')}}",
-          type: 'post',
-          data: {
-          	_token:"{{ csrf_token() }}",
-          	id_exist:id_exist,
-          	id_product:product,
-          	id_techno:techno,
-          	price:price,
-          	lead_id:window.location.href.split("/")[5]
-          },
-        success: function()
-        {
-            Swal.showLoading()
-              Swal.fire(
-                'Successfully!',
-                'success'
-              ).then((result) => {
-                if (result.value) {
-                	localStorage.setItem("status_tagging", "pencil");
-                	$(".select2-customProductSol[data-value='" + dataValue + "']").prop("disabled",true)
-						    	$(".select2-customTechnologySol[data-value='" + dataValue + "']").prop("disabled",true)
-						    	$(".new-price-sol[data-value='" + dataValue + "']").prop("disabled",true)
-						    	$(".btn-edit-tagging[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
-						    	$(".btn-edit-tagging[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
-						    	$("#btn-addTagging").prop('disabled',false).tooltip('disable')
-    							$("#btnSubmitSD").prop("disabled",false)
-                }
-            })
-        }
-      })
+    	if ($(".new-price-sol[data-value='" + dataValue + "']").val() == "" || $(".new-price-sol[data-value='" + dataValue + "']").val() == "0") {
+    		$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').next('.help-block').css('color','red').show()
+    		$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').addClass("has-error")
+    		$(".new-price-sol[data-value='" + dataValue + "']").prev('.input-group-addon').css("background-color","red")
+    	}else{
+    		if ($(".new-price-sol[data-value='" + dataValue + "']").val().replace(/\D/g, "").length < 6) {
+    			$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').next('.help-block').text("Please check again brand price nominal!")
+    			$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').next('.help-block').css('color','red').show()
+    			$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').addClass("has-error")
+    			$(".new-price-sol[data-value='" + dataValue + "']").prev('.input-group-addon').css("background-color","red")
+    		}else{
+    			console.log("tissss")
+	    		$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').next('.help-block').css('color','red').hide()
+					$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').removeClass("has-error")
+					$(".new-price-sol[data-value='" + dataValue + "']").prev('.input-group-addon').css("background-color","background-color:#aaa;color:white")
+
+	    		$.ajax({
+	          url: "{{url('/project/updateProductTag')}}",
+	          type: 'post',
+	          data: {
+	          	_token:"{{ csrf_token() }}",
+	          	id_exist:id_exist,
+	          	id_product:product,
+	          	id_techno:techno,
+	          	price:price,
+	          	lead_id:window.location.href.split("/")[5]
+	          },
+	          beforeSend:function(){
+	            Swal.fire({
+	                title: 'Please Wait..!',
+	                text: "It's sending..",
+	                allowOutsideClick: false,
+	                allowEscapeKey: false,
+	                allowEnterKey: false,
+	                customClass: {
+	                    popup: 'border-radius-0',
+	                },
+	                didOpen: () => {
+	                    Swal.showLoading()
+	                }
+	            })
+	          },
+	          success: function(result) {
+	            Swal.showLoading()
+	            Swal.fire(
+	                'Successfully!',
+	               	'Update Brand Tagging Successfully!',
+	                'success'
+	            ).then((result) => {
+	                if (result.value) {
+	                	localStorage.setItem("status_tagging", "pencil");
+	                	$(".select2-customProductSol[data-value='" + dataValue + "']").prop("disabled",true)
+							    	$(".select2-customTechnologySol[data-value='" + dataValue + "']").prop("disabled",true)
+							    	$(".new-price-sol[data-value='" + dataValue + "']").prop("disabled",true)
+							    	$(".btn-edit-tagging[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
+							    	$(".btn-edit-tagging[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+							    	$("#btn-addTagging").prop('disabled',false).attr("data-toggle", "").attr('title', "")    							
+							    	$("#btnSubmitSD").prop("disabled",false)
+	                }
+	            })
+	        	}
+	      	})
+    		}
+    	}
     }
 
     function updateTaggingSbe(id_exist,tag_sbe,name_sbe,price,dataValue){
@@ -2586,37 +2729,37 @@ Detail Lead Register
           },
         success: function()
         {
-            Swal.showLoading()
-              Swal.fire(
-                'Successfully!',
-                'success'
-              ).then((result) => {
-                if (result.value) {
-                	localStorage.setItem("status_tagging_sbe", "pencil");
-                	$(".tag_sbe[data-value='" + dataValue + "']").prop("disabled",true)
-						    	$(".price_sbe[data-value='" + dataValue + "']").prop("disabled",true)
-						    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
-						    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
-						    	// $("#btn-addSBE").prop('disabled',false).tooltip('disable')
-    							$("#btnSubmitSD").prop("disabled",false)
-                }
-            })
+          Swal.showLoading()
+            Swal.fire(
+              'Successfully!',
+              'success'
+            ).then((result) => {
+              if (result.value) {
+              	localStorage.setItem("status_tagging_sbe", "pencil");
+              	$(".tag_sbe[data-value='" + dataValue + "']").prop("disabled",true)
+					    	$(".price_sbe[data-value='" + dataValue + "']").prop("disabled",true)
+					    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
+					    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+					    	// $("#btn-addSBE").prop('disabled',false).tooltip('disable')
+  							$("#btnSubmitSD").prop("disabled",false)
+              }
+          })
         }
       })
     }
 
     function updateTaggingSbeWin(id_exist,tag_sbe,name_sbe,price,dataValue){
     	$.ajax({
-          url: "{{url('/project/updateSbeTag')}}",
-          type: 'post',
-          data: {
-          	_token:"{{ csrf_token() }}",
-          	id_exist:id_exist,
-          	id_sbe:tag_sbe,
-          	name_sbe:name_sbe,
-          	price:price,
-          	lead_id:window.location.href.split("/")[5]
-          },
+        url: "{{url('/project/updateSbeTag')}}",
+        type: 'post',
+        data: {
+        	_token:"{{ csrf_token() }}",
+        	id_exist:id_exist,
+        	id_sbe:tag_sbe,
+        	name_sbe:name_sbe,
+        	price:price,
+        	lead_id:window.location.href.split("/")[5]
+        },
         success: function()
         {
             Swal.showLoading()
@@ -2683,14 +2826,37 @@ Detail Lead Register
   		if (val == 'SD') {
   			var i = 0
   			var tagProduct = []
+
+  			var storeSD = true
 	      $('#table-tagging #tbtagging .new-tagging').each(function() {
-	        data.append("tagData[tagProduct]["+i+"][tag_price]",$(this).find(".new-price-sol").val().replace(/\D/g, ""))
-	        data.append("tagData[tagProduct]["+i+"][tag_product][productTag]",$(this).find('.select2-customProductSol').select2("data")[0].id.substr(1))
-	        data.append("tagData[tagProduct]["+i+"][tag_product][productTagText]",$(this).find('.select2-customProductSol').select2("data")[0].text)
-	        data.append("tagData[tagProduct]["+i+"][tag_product][techTag]",$(this).find('.select2-customTechnologySol').select2("data")[0].id.substr(1))
-	         data.append("tagData[tagProduct]["+i+"][tag_product][techTagText]",$(this).find('.select2-customTechnologySol').select2("data")[0].text)
-	        i++
+	      	console.log(i)
+	      	if ($(this).find(".new-price-sol").val().replace(/\D/g, "") == "" || $(this).find(".new-price-sol").val().replace(/\D/g, "") == "0") {
+		    		console.log("testt")
+		    		$(this).find(".new-price-sol").closest('.input-group').next('span').css('color','red').show()
+		    		$(this).find(".new-price-sol").closest('.input-group').addClass("has-error")
+		    		$(this).find(".new-price-sol").prev('.input-group-addon').css("background-color","red")
+		    	}else{
+		    		if ($(this).find(".new-price-sol").val().replace(/\D/g, "").length < 6) {
+		    			$(this).find(".new-price-sol").closest('.input-group').next('.help-block').text("Please check again brand price nominal!")
+		    		}else{
+		    			$(this).find(".new-price-sol").closest('.input-group').next('.help-block').css('color','red').hide()
+							$(this).find(".new-price-sol").closest('.input-group').removeClass("has-error")
+							$(this).find(".new-price-sol").prev('.input-group-addon').css("background-color","background-color:#aaa;color:white")
+							data.append("tagData[tagProduct]["+i+"][tag_price]",$(this).find(".new-price-sol").val().replace(/\D/g, ""))
+			        data.append("tagData[tagProduct]["+i+"][tag_product][productTag]",$(this).find('.select2-customProductSol').select2("data")[0].id.substr(1))
+			        data.append("tagData[tagProduct]["+i+"][tag_product][productTagText]",$(this).find('.select2-customProductSol').select2("data")[0].text)
+			        data.append("tagData[tagProduct]["+i+"][tag_product][techTag]",$(this).find('.select2-customTechnologySol').select2("data")[0].id.substr(1))
+			         data.append("tagData[tagProduct]["+i+"][tag_product][techTagText]",$(this).find('.select2-customTechnologySol').select2("data")[0].text)
+		    		}		    		
+					}
+					i++
 	      });
+
+	      if ($('.help-block').is(":visible")) {
+	      	storeSD = false
+	      }else{
+		      storeSD = true
+	      }
 
 	      $('#table-tagging-SBE #tbSBE .new-SBE').each(function() {
 	        data.append("tagData[tagSBE]["+i+"][price_sbe]",$(this).find(".price_sbe").val().replace(/\D/g, ""))
@@ -2705,25 +2871,30 @@ Detail Lead Register
 	      data.append("price_sbe_delete",priceSbe)
 	      data.append("id_exist",idExist)
 
-  			Swal.fire({
-			        title: 'Please Wait..!',
-			        text: "It's sending..",
-			        allowOutsideClick: false,
-			        allowEscapeKey: false,
-			        allowEnterKey: false,
-			        customClass: {
-			            popup: 'border-radius-0',
-			        },
-			        onOpen: () => {
-			            Swal.showLoading()
-			        }
-			    })
-		      $.ajax({
+	      console.log(storeSD)
+
+	      if (storeSD) {
+	      	$.ajax({
 		        type:"POST",
 		        url:"{{url('project/update_sd')}}",
 		        data:data,
 		        contentType: false,
 						processData: false,
+						beforeSend:function(){
+	            Swal.fire({
+	                title: 'Please Wait..!',
+	                text: "It's sending..",
+	                allowOutsideClick: false,
+	                allowEscapeKey: false,
+	                allowEnterKey: false,
+	                customClass: {
+	                    popup: 'border-radius-0',
+	                },
+	                didOpen: () => {
+	                    Swal.showLoading()
+	                }
+	            })
+	          },
 		        success: function(result){
 		          Swal.showLoading()
 		          Swal.fire(
@@ -2737,27 +2908,29 @@ Detail Lead Register
 		          })
 		        }
 		      })
-
+	      }
   		}else{
-  			Swal.fire({
-		        title: 'Please Wait..!',
-		        text: "It's sending..",
-		        allowOutsideClick: false,
-		        allowEscapeKey: false,
-		        allowEnterKey: false,
-		        customClass: {
-		            popup: 'border-radius-0',
-		        },
-		        onOpen: () => {
-		            Swal.showLoading()
-		        }
-		    })
 		    $.ajax({
           type:"POST",
           url:"{{url('project/update_tp')}}",
           data:data,
           contentType: false,
 					processData: false,
+					beforeSend:function(){
+            Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            })
+          },
           success: function(result){
             Swal.showLoading()
             Swal.fire(
@@ -2847,16 +3020,6 @@ Detail Lead Register
   	}
 
   	function submitBtn(){
-  		Swal.fire({
-        title: 'Please Wait..!',
-        html: "<p style='text-align:center;'>It's processing..</p>",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false,
-        onOpen: () => {
-          Swal.showLoading()
-        }
-      })
       $.ajax({
         type:"POST",
         url:"{{url('/project/updateResult')}}",
@@ -2874,6 +3037,21 @@ Detail Lead Register
           quote_number_final:$("#quote_number_final").select2("data")[0].text.split("-")[0].trim(""),
           lead_id_result:window.location.href.split("/")[5],
           _token:"{{ csrf_token() }}"
+        },
+        beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
+              }
+          })
         },
         success: function(){
           Swal.hideLoading()
@@ -3169,17 +3347,6 @@ Detail Lead Register
           arr_sbe:arr_sbe
 
         }
-
-        Swal.fire({
-          title: 'Please Wait..!',
-          html: "<p style='text-align:center;'>It's processing..</p>",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          allowEnterKey: false,
-          onOpen: () => {
-            Swal.showLoading()
-          }
-        })
         $.ajax({
           type:"POST",
           url:"{{url('/project/updateResult')}}",
@@ -3199,6 +3366,21 @@ Detail Lead Register
             // tagsNew:tagsNew,
             tagData:tagData,
             _token:"{{ csrf_token() }}"
+          },
+          beforeSend:function(){
+            Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            })
           },
           success: function(){
             Swal.hideLoading()
@@ -3260,43 +3442,45 @@ Detail Lead Register
 			    cancelButtonText: 'No',
 			}).then((result) => {
 			    if (result.value) {
-			        Swal.fire({
-			            title: 'Please Wait..!',
-			            text: "It's sending..",
-			            allowOutsideClick: false,
-			            allowEscapeKey: false,
-			            allowEnterKey: false,
-			            customClass: {
-			                popup: 'border-radius-0',
-			            },
-			            onOpen: () => {
-			                Swal.showLoading()
-			            }
-			        })
 			        $.ajax({
-			            type: "POST",
-			            url: "{{url('/project/add_changelog_progress')}}",
-			            data: {
-			                _token: "{{ csrf_token() }}",
-			                changelog_lead_id:window.location.href.split("/")[5],
-			                changelog_progress:$("#changelog_progress").val(),
-			                changelog_date:$('#changelog_date').val()
-			            },
-			            success: function(result) {
-			                Swal.showLoading()
-			                Swal.fire(
-			                    'Successfully!',
-			                    'Progress Change Log Added.',
-			                    'success'
-			                ).then((result) => {
-			                    if (result.value) {
-			                    	location.reload()
-			                    	$("#modal_changelog_progress").modal('hide')
-			                    }
-			                })
-			            }
-			        })
-			    }
+		            type: "POST",
+		            url: "{{url('/project/add_changelog_progress')}}",
+		            data: {
+		                _token: "{{ csrf_token() }}",
+		                changelog_lead_id:window.location.href.split("/")[5],
+		                changelog_progress:$("#changelog_progress").val(),
+		                changelog_date:$('#changelog_date').val()
+		            },
+		            beforeSend:function(){
+		              Swal.fire({
+		                  title: 'Please Wait..!',
+		                  text: "It's sending..",
+		                  allowOutsideClick: false,
+		                  allowEscapeKey: false,
+		                  allowEnterKey: false,
+		                  customClass: {
+		                      popup: 'border-radius-0',
+		                  },
+		                  didOpen: () => {
+		                      Swal.showLoading()
+		                  }
+		              })
+		            },
+		            success: function(result) {
+		                Swal.showLoading()
+		                Swal.fire(
+		                    'Successfully!',
+		                    'Progress Change Log Added.',
+		                    'success'
+		                ).then((result) => {
+		                    if (result.value) {
+		                    	location.reload()
+		                    	$("#modal_changelog_progress").modal('hide')
+		                    }
+		                })
+		            }
+		        })
+			   	}
 			})
     }
 
@@ -3361,8 +3545,176 @@ Detail Lead Register
 			  }
 			  ],
 			  "order":[]
-
     })
+
+    $.ajax({
+	    url: "{{url('/project/getPresalesAssignCont')}}",
+	    type: "GET",
+	    data:{
+	    	lead_id:window.location.href.split("/")[5]
+	    },
+	    success: function(result) {
+        $("#select2-presales").select2({
+        	data:result.data,
+        	multiple:true
+        })
+	    }
+		})
+
+		$.ajax({
+	    url: "{{url('/project/getTa')}}",
+	    type: "GET",
+	    success: function(result) {
+        $("#select2-tech-alliance").select2({
+        	data:result.data
+        })
+	    }
+		})
+
+		function editPresales(id){
+			$("#lead_id_presales").val(id)
+
+			$.ajax({
+				type:"GET",
+				url:"{{url('/project/getPresalesAssignCont')}}",
+				data:{
+					lead_id:id
+				},
+				success:function(result){
+					var arrNikPresales = []
+					$.each(result.data,function(item,value){
+						arrNikPresales.push(value.id)
+					})
+
+					$("#select2-presales").select2().val("")
+					$("#select2-presales").val(arrNikPresales).trigger("change")
+				}
+			})
+
+			$("#assignModalPresales").modal('show')	
+		}
+
+		function editTechAlliance(id){
+			$("#lead_tech_alliance").val(id)
+			
+			$.ajax({
+				type:"GET",
+				url:"{{url('/project/getTaAssign')}}",
+				data:{
+					lead_id:id
+				},
+				success:function(result){
+					$("#select2-tech-alliance").select2().val("")
+					$("#select2-tech-alliance").val(result.data.id).trigger("change")
+				}
+			})
+
+			$("#assignModalTechAlliance").modal('show')	
+		}
+
+		function submitEditPresales(){
+		Swal.fire({
+		    title: 'Are you sure?',
+		    text: "Edit for assigned presales",
+		    icon: 'warning',
+		    showCancelButton: true,
+		    confirmButtonColor: '#3085d6',
+		    cancelButtonColor: '#d33',
+		    confirmButtonText: 'Yes',
+		    cancelButtonText: 'No',
+		}).then((result) => {
+		    if (result.value) {
+		      $.ajax({
+            type: "POST",
+            url: "{{url('project/updatePresales')}}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                lead_id:$("#lead_id_presales").val(),
+                nik_presales:$("#select2-presales").val(),
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              Swal.showLoading()
+              Swal.fire(
+                  'Successfully!',
+                  'Presales has been Assigned.',
+                  'success'
+              ).then((result) => {
+                  if (result.value) {
+                  	location.reload()
+                  	$("#assignModal").modal('hide')
+                  }
+              })
+            }
+	        })
+		    }
+		})
+	}
+
+	function submitEditTechAlliance(){
+		Swal.fire({
+		    title: 'Are you sure?',
+		    text: "Edit for technology alliance",
+		    icon: 'warning',
+		    showCancelButton: true,
+		    confirmButtonColor: '#3085d6',
+		    cancelButtonColor: '#d33',
+		    confirmButtonText: 'Yes',
+		    cancelButtonText: 'No',
+		}).then((result) => {
+		    if (result.value) {
+		        $.ajax({
+		            type: "POST",
+		            url: "{{url('project/updateTechnologyAlliance')}}",
+		            data: {
+		                _token: "{{ csrf_token() }}",
+		                lead_id:$("#lead_tech_alliance").val(),
+		                nik_ta:$("#select2-tech-alliance").select2("data")[0].id,
+		            },beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                },
+		            success: function(result) {
+		                Swal.showLoading()
+		                Swal.fire(
+		                    'Successfully!',
+		                    'Technology Alliance has been Edited!',
+		                    'success'
+		                ).then((result) => {
+		                    if (result.value) {
+		                    	location.reload()
+		                    	$("#assignModalTechAlliance").modal('hide')
+		                    }
+		                })
+		            }
+		        })
+		    }
+		})
+	}
 
 </script>
 @endsection

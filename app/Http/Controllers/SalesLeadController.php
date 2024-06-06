@@ -462,7 +462,16 @@ class SalesLeadController extends Controller
     public function getPresales()
     {
         $getPresales = collect(User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))
-            ->whereRaw("(`roles`.`mini_group` = 'Solution Architect' OR `roles`.`name` = 'Technology Alliance')")
+            ->whereRaw("(`roles`.`mini_group` = 'Solution Architect')")
+            ->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
+
+        return array("data" => $getPresales);
+    }
+
+    public function getTa()
+    {
+        $getPresales = collect(User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))
+            ->whereRaw("(`roles`.`name` = 'Technology Alliance')")
             ->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPresales);
@@ -524,9 +533,33 @@ class SalesLeadController extends Controller
 
     public function getPresalesAssign(Request $request)
     {
-        $getPresalesAssign = collect(User::join('sales_solution_design', 'sales_solution_design.nik', '=', 'users.nik')->select(DB::raw('`users`.`nik` AS `id`,`name` AS `text`'))->where('lead_id', $request->lead_id)->get());
+        $getPresalesAssign = collect(User::join('sales_solution_design', 'sales_solution_design.nik', '=', 'users.nik')->select(DB::raw('`users`.`nik` AS `id`,`name` AS `text`'))->where('lead_id', $request->lead_id)->first());
 
         return array("data" => $getPresalesAssign);
+    }
+
+    public function getPresalesAssignCont(Request $request)
+    {
+        $getPresalesAssignCont = collect(User::join('sales_solution_design', 'sales_solution_design.nik', '=', 'users.nik')->select(DB::raw('`users`.`nik` AS `id`,`name` AS `text`'))->where('lead_id', $request->lead_id)->where('sales_solution_design.status','cont')->get());
+
+        return array("data" => $getPresalesAssignCont);
+    }
+
+    public function getDataUpdatePresales(Request $request)
+    {
+        $getPresales = solution_design::where('lead_id',$request->lead_id)->where('status',null)->pluck('nik');
+        $getDataUpdatePresales = collect(User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))
+            ->whereRaw("(`roles`.`mini_group` = 'Solution Architect')")
+            ->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->whereNotIn('nik', $getPresales)->get());
+
+        return array("data" => $getDataUpdatePresales);
+    }
+
+    public function getTaAssign(Request $request)
+    {
+        $getTaAssign = collect(User::join('sales_solution_design', 'sales_solution_design.nik_ta', '=', 'users.nik')->select(DB::raw('`users`.`nik` AS `id`,`name` AS `text`'))->where('lead_id', $request->lead_id)->first());
+
+        return array("data" => $getTaAssign);
     }
 
     public function getTerritory(Request $request)
@@ -584,16 +617,19 @@ class SalesLeadController extends Controller
 
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
-        // return $getPresales->get();
+        $getTa = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik_ta')->selectRaw('`users`.`name` AS `name_ta`, `sales_solution_design`.`nik_ta` AS `nik_ta`')->selectRaw('lead_id')->distinct();
 
         $leadsnow = DB::table('sales_lead_register')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->leftJoinSub($getPresales, 'tb_presales',function($join){
                     $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
                 })
+                ->leftJoinSub($getTa, 'tb_ta',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                })
                 ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
                 ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"),'nik_presales')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"),DB::raw("(CASE WHEN (nik_ta is null) THEN '-' ELSE nik_ta END) as nik_ta"),DB::raw("(CASE WHEN (name_ta is null) THEN '-' ELSE name_ta END) as name_ta"),DB::raw("(CASE WHEN (name_presales is null) THEN '-' ELSE name_presales END) as name_presales"),DB::raw("(CASE WHEN (nik_presales is null) THEN '-' ELSE nik_presales END) as nik_presales"))
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result','!=','hmm')
                 ->whereIn('year',$year)
@@ -610,7 +646,11 @@ class SalesLeadController extends Controller
         if($ter != null && $div != 'BCD' || $cek_role->name_role == 'Operations Director'){
             $leadsnow->where('u_sales.id_company', '1');
             if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance') {
-                $leadsnow->where('nik_presales', 'like', '%'.$nik.'%');
+                if ($cek_role->name_role == 'Technology Alliance') {
+                    $leadsnow->where('nik_presales', 'like', '%'.$nik.'%')->orWhere('nik_ta','like','%'.$nik.'%');
+                } else {
+                    $leadsnow->where('nik_presales', 'like', '%'.$nik.'%');
+                }
             } else if ($cek_role->name_role == 'Sales Manager') {
                 $leadsnow->where('u_sales.id_territory', $ter);
             } else if ($cek_role->name_role == 'Sales Staff') {
@@ -634,6 +674,8 @@ class SalesLeadController extends Controller
 
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
+        $getTa = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik_ta')->selectRaw('`users`.`name` AS `name_ta`, `sales_solution_design`.`nik_ta` AS `nik_ta`')->selectRaw('lead_id')->distinct();
+
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
                         ->groupBy('lead_id');
@@ -654,8 +696,11 @@ class SalesLeadController extends Controller
                 ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
+                ->leftJoinSub($getTa, 'tb_ta',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                })
                 ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'name_presales', 'nik_presales', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"), 'id_product_tag', 'id_tech', 'tb_pid.status')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"), 'id_product_tag', 'id_tech', 'tb_pid.status',DB::raw("(CASE WHEN (nik_ta is null) THEN '-' ELSE nik_ta END) as nik_ta"),DB::raw("(CASE WHEN (name_ta is null) THEN '-' ELSE name_ta END) as name_ta"),DB::raw("(CASE WHEN (name_presales is null) THEN '-' ELSE name_presales END) as name_presales"),DB::raw("(CASE WHEN (nik_presales is null) THEN '-' ELSE nik_presales END) as nik_presales"))
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->orderBy('created_at', 'desc')
                 ->where('status_karyawan', '!=', 'dummy');
@@ -689,11 +734,14 @@ class SalesLeadController extends Controller
 
         if (isset($request->sales_name)) {
             $leads->whereIn('u_sales.nik',$request->sales_name);
-            
         }
 
         if (isset($request->presales_name)) {
-            $leads->whereIn('nik_presales',$request->presales_name);   
+            $leads->whereIn('nik_presales',$request->presales_name)->orWhereIn('nik_ta',$request->presales_name);   
+        }
+
+        if (isset($request->ta_name)) {
+            $leads->whereIn('nik_presales',$request->ta_name)->orWhereIn('nik_ta',$request->ta_name);   
         }
 
         if (isset($request->product_tag)) {
@@ -726,7 +774,10 @@ class SalesLeadController extends Controller
 
 
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
-        // return $getPresales->get();
+
+        $getTa = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik_ta')->selectRaw('`users`.`name` AS `name_ta`, `sales_solution_design`.`nik_ta` AS `nik_ta`')->selectRaw('lead_id')->distinct();
+
+        // return $getTa;
 
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
@@ -747,6 +798,9 @@ class SalesLeadController extends Controller
                 ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
+                ->leftJoinSub($getTa, 'tb_ta',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                })
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->where('status_karyawan', '!=', 'dummy');
                 // ->where('sales_lead_register.result','!=','hmm');
@@ -761,6 +815,9 @@ class SalesLeadController extends Controller
                     })
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
                     })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
@@ -777,6 +834,9 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                    })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
                     // ->where('sales_lead_register.result','');
@@ -791,6 +851,9 @@ class SalesLeadController extends Controller
                     })
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
                     })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
@@ -807,6 +870,9 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                    })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
                     // ->where('sales_lead_register.result','TP');
@@ -821,6 +887,9 @@ class SalesLeadController extends Controller
                     })
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
                     })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
@@ -837,6 +906,9 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                    })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
                     // ->where('sales_lead_register.result','LOSE');
@@ -852,6 +924,9 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                    })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
                     // ->where('sales_lead_register.result','CANCEL');
@@ -866,6 +941,9 @@ class SalesLeadController extends Controller
                     })
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->leftJoinSub($getTa, 'tb_ta',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
                     })
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('status_karyawan', '!=', 'dummy');
@@ -907,7 +985,7 @@ class SalesLeadController extends Controller
             $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_territory',$ter);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_territory',$ter);
             $total_hold->where('sales_lead_register.result',"HOLD")->where('users.id_territory',$ter);
-        } elseif ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance') {
+        } elseif ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' ) {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('nik_presales',$nik);
             $total_open->where('sales_lead_register.result',"")->where('nik_presales',$nik);
             $total_initial->where('sales_lead_register.result',"OPEN")->where('nik_presales',$nik);
@@ -917,6 +995,16 @@ class SalesLeadController extends Controller
             $total_lose->where('sales_lead_register.result',"LOSE")->where('nik_presales',$nik);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('nik_presales',$nik);
             $total_hold->where('sales_lead_register.result',"HOLD")->where('nik_presales',$nik);
+        } elseif ($cek_role->name_role == 'Technology Alliance') {
+            $total_lead->where('sales_lead_register.result',"!=","hmm")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_open->where('sales_lead_register.result',"")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_initial->where('sales_lead_register.result',"OPEN")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_sd->where('sales_lead_register.result',"SD")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_tp->where('sales_lead_register.result',"TP")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_win->where('sales_lead_register.result',"WIN")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_lose->where('sales_lead_register.result',"LOSE")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_cancel->where('sales_lead_register.result',"CANCEL")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
+            $total_hold->where('sales_lead_register.result',"HOLD")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
         } else {
             $total_lead->where('sales_lead_register.result',"!=","hmm");
             $total_open->where('sales_lead_register.result',"");
@@ -1296,18 +1384,26 @@ class SalesLeadController extends Controller
         //                 ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
         //                 ->groupBy('lead_id');
 
+        $getTa = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik_ta')->selectRaw('`users`.`name` AS `name_ta`, `sales_solution_design`.`nik_ta` AS `nik_ta`')->selectRaw('lead_id')->distinct();
+
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
         $lead = DB::table('sales_lead_register')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->joinSub($getPresales, 'tb_presales',function($join){
+                ->leftjoinSub($getPresales, 'tb_presales',function($join){
                     $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
                 })
                 ->leftJoinSub($getListProductLead, 'product_lead', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
                 })
-                ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name', 'sales_lead_register.amount', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','name_presales', 'name', 'customer_legal_name','sales_lead_register.result', DB::raw("(CASE WHEN (name_product_tag is null) THEN '' ELSE name_product_tag END) as name_product_tag"), DB::raw("(CASE WHEN (name_tech is null) THEN '' ELSE name_tech END) as name_tech"), DB::raw("(CASE WHEN (keterangan is null) THEN '' ELSE keterangan END) as keterangan"), 'sales_lead_register.id_customer')
+                ->leftJoinSub($getTa, 'tb_ta',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                })
+                ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name', 'sales_lead_register.amount', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price', 'name', 'customer_legal_name','sales_lead_register.result', DB::raw("(CASE WHEN (name_product_tag is null) THEN '' ELSE name_product_tag END) as name_product_tag"), DB::raw("(CASE WHEN (name_tech is null) THEN '' ELSE name_tech END) as name_tech"), DB::raw("(CASE WHEN (keterangan is null) THEN '' ELSE keterangan END) as keterangan"), 'sales_lead_register.id_customer',
+                    DB::raw("(CASE WHEN (name_presales is null) THEN '-' ELSE name_presales END) as name_presales"),
+                    DB::raw("(CASE WHEN (nik_ta is null) THEN '-' ELSE nik_ta END) as nik_ta"),
+                    DB::raw("(CASE WHEN (name_ta is null) THEN '-' ELSE name_ta END) as name_ta"))
                 ->where('sales_lead_register.lead_id',$request->lead_id)
                 ->get();
 
@@ -1490,6 +1586,8 @@ class SalesLeadController extends Controller
 
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) as nik_presales')->selectRaw('lead_id')->groupBy('lead_id');
 
+        $getTa = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik_ta')->selectRaw('`users`.`name` AS `name_ta`, `sales_solution_design`.`nik_ta` AS `nik_ta`')->selectRaw('lead_id')->distinct();
+
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
                         ->groupBy('lead_id');
@@ -1509,6 +1607,9 @@ class SalesLeadController extends Controller
                 ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
+                ->leftJoinSub($getTa, 'tb_ta',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+                })
                 ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
                 ->leftJoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
                 ->select(
@@ -1525,10 +1626,12 @@ class SalesLeadController extends Controller
                     'sales_lead_register.deal_price',
                     'u_sales.id_territory', 
                     'tb_pid.status',
-                    'tb_presales.name_presales',
-                    'tb_presales.nik_presales',
+                    DB::raw("(CASE WHEN (name_presales is null) THEN '-' ELSE name_presales END) as name_presales"),
+                    DB::raw("(CASE WHEN (nik_presales is null) THEN '-' ELSE nik_presales END) as nik_presales"),
                     'product_lead.id_product_tag',
                     'tech_tag.id_tech_tag',
+                    DB::raw("(CASE WHEN (nik_ta is null) THEN '-' ELSE nik_ta END) as nik_ta"),
+                    DB::raw("(CASE WHEN (name_ta is null) THEN '-' ELSE name_ta END) as name_ta"),
                     DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif", 'id_product_tag', 'id_tech')
                 )
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
@@ -1536,12 +1639,19 @@ class SalesLeadController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->where('status_karyawan', '!=', 'dummy');
 
-        $searchFields = ['sales_lead_register.lead_id', 'opp_name', 'brand_name', 'name', 'id_territory', 'deal_price', 'amount', 'name_presales'];
-
         if($ter != null || $cek_role->name_role != 'Operations Director'){
             // $leads->where('u_sales.id_company','1');
             if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance') {
-                $leads = $leads->where('nik_presales', 'like', '%'.$nik.'%');
+                if ($cek_role->name_role == 'Technology Alliance') {
+                    // $leads = $leads->where('nik_presales', 'like', '%'.$nik.'%')->orWhere('nik_ta','like', '%'.$nik.'%');
+                    $leads = $leads->whereRaw(
+                                        "(`nik_presales` LIKE ? OR `nik_ta` LIKE ? )", 
+                                        ['%'.$nik.'%', '%'.$nik.'%']
+                                    );
+                } else {
+                    $leads = $leads->where('nik_presales', 'like', '%'.$nik.'%');
+                }
+                
             } else if ($cek_role->name_role == 'Sales Manager') {
                 $leads = $leads->where('u_sales.id_territory', $ter);
             } else if ($cek_role->name_role == 'Sales Staff') {
@@ -1553,17 +1663,6 @@ class SalesLeadController extends Controller
 
         if ($cek_role->group == 'sales') {
             $leads->where('u_sales.id_territory', $ter);
-        }
-
-        if(!in_array(null,$request->year)){
-            if($request->search != ""){
-                $leads->where(function($leads) use($request, $searchFields){
-                    $searchWildCard = '%'. $request->search . '%';
-                    foreach ($searchFields as $data) {
-                        $leads->orWhere($data, 'LIKE', $searchWildCard);
-                    }
-                });
-            }
         }
 
         if(!in_array(null,$request->year)){
@@ -1588,12 +1687,17 @@ class SalesLeadController extends Controller
 
         if (!in_array(null,$request->sales_name)) {
             $leads->whereIn('u_sales.nik',$request->sales_name);
-            
         }
 
         if (!in_array(null,$request->presales_name)) {
             foreach ($request->presales_name as $key => $value) {
                 $leads->havingRaw('FIND_IN_SET('. $value .', nik_presales)');
+            }
+        }
+
+        if (!in_array(null,$request->ta_name)) {
+            foreach ($request->ta_name as $key => $value) {
+                $leads->havingRaw('FIND_IN_SET('. $value .', nik_ta)');
             }
         }
 
@@ -1614,6 +1718,69 @@ class SalesLeadController extends Controller
             $leads->whereIn('tb_contact.id_customer',$request->customer);
         }
 
+        $searchFields = ['sales_lead_register.lead_id', 'opp_name', 'brand_name', 'name', 'id_territory', 'deal_price', 'amount', 'name_presales','name_ta'];
+
+        if(!in_array(null,$request->year)){
+            if($request->search != ""){
+                $leads->where(function($leads) use($request, $searchFields){
+                    $searchWildCard = '%'. $request->search . '%';
+                    foreach ($searchFields as $data) {
+                        $leads->orWhere($data, 'LIKE', $searchWildCard);
+                    }
+                });
+            }
+        }
+
+        // if ($request->search != "") { 
+            
+
+        //     $data = $leads->get();
+
+        //     $filtered = $data->filter(function ($value, $key) use($request, $searchFields) { 
+        //         return stripos($value["lead_id"], $request->search) !== false || 
+        //         stripos($value["opp_name"], $request->search) !== false ||
+        //         stripos($value["brand_name"], $request->search) !== false ||
+        //         stripos($value["name"], $request->search) !== false ||
+        //         stripos($value["amount"], $request->search) !== false ||
+        //         stripos($value["name_presales"], $request->search) !== false ||
+        //         stripos($value["name_ta"], $request->search) !== false ||
+        //         stripos($value["result_modif"], $request->search) !== false;
+        //     });
+
+        //     $eloquentCollection = new Collection($filteredUsers);
+
+        //     return $eloquentCollection;
+
+        //     foreach ($filtered as $item) {
+        //         $outputArray = collect([
+        //             "lead_id"=>$item->lead_id,
+        //             "opp_name"=>$item->opp_name,
+        //             "brand_name"=>$item->brand_name,
+        //             "created_at"=>$item->created_at,
+        //             "amount"=>$item->amount,
+        //             "name"=>$item->name,
+        //             "nik"=>$item->nik,
+        //             "keterangan"=>$item->keterangan,
+        //             "year"=>$item->year,
+        //             "closing_date"=>$item->closing_date,
+        //             "deal_price"=>$item->deal_price,
+        //             "id_territory"=>$item->id_territory,
+        //             "status"=>$item->status,
+        //             "name_presales"=>$item->name_presales,
+        //             "nik_presales"=>$item->nik_presales,
+        //             "id_product_tag"=>$item->id_product_tag,
+        //             "id_tech_tag"=>$item->id_tech_tag,
+        //             "nik_ta"=>$item->nik_ta,
+        //             "name_ta"=>$item->name_ta,
+        //             "result_modif"=>$item->result_modif,
+        //         ]);
+        //     }
+
+        //     $data = array("data" => collect($outputArray));
+        // }else{
+        //     $data = array("data" => $leads->get());
+        // }
+
         return array("data" => $leads->get());
     }
 
@@ -1631,6 +1798,68 @@ class SalesLeadController extends Controller
 
         return redirect()->back();
 
+    }
+
+    public function updateTechnologyAlliance(Request $request)
+    {
+        $data = solution_design::where('lead_id',$request->lead_id)->get();
+        // return $count = $data->count();
+        foreach ($data as $value) {
+            $update = solution_design::where('id_sd',$value->id_sd)->first();
+            $update->nik_ta = $request->nik_ta;
+            $update->update();
+        }
+    }
+
+    public function updatePresales(Request $request)
+    {
+        $checkIdSD = solution_design::where('lead_id',$request->lead_id)->get();
+        $dataTa = solution_design::where('lead_id',$request->lead_id)->where('status',null)->first()->nik_ta;
+
+        $kirim = solution_design::join('users','users.nik','=','sales_solution_design.nik')->where('sales_solution_design.lead_id',$request->lead_id)->where('sales_solution_design.status','cont')->select('email','sales_solution_design.nik')->get();
+
+        $nik_presales = $request->nik_presales;
+
+        if (isset($nik_presales)) {
+            $deletedNik = solution_design::where('lead_id',$request->lead_id)->whereNotIn('nik',$request->nik_presales)->where('sales_solution_design.status','cont')->select('nik')->get();
+            $kirim = User::select('email','nik')->whereIn('nik', $deletedNik)->get();
+        }else{
+            $kirim = $kirim;
+        }
+
+        foreach($kirim as $kirim){
+            Mail::to($kirim->email)->send(new AddContribute(collect([
+                "data" => DB::table('sales_lead_register')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
+                    ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+                    ->join('users as presales','presales.nik','=','sales_solution_design.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->where('sales_solution_design.status', 'cont')
+                    ->where('sales_lead_register.lead_id',$request->lead_id)
+                    ->where('sales_solution_design.nik',$kirim->nik)->first(),
+                "status" => 'cancellation',
+                "subject_email" => 'Cancellation Contribute',
+                "lead_id" => $request->lead_id
+            ])));
+        }
+        
+        if (isset($checkIdSD)) {
+            foreach ($checkIdSD as $key => $value) {
+                solution_design::where('id_sd',$value->id_sd)->where('status','cont')->delete(); 
+            }
+        }
+
+        if(isset($nik_presales)){
+            foreach($nik_presales as $value){
+                $store = new solution_design();
+                $store->lead_id = $request['lead_id'];
+                $store->nik_ta = $dataTa;
+                $store->status = 'cont';
+                $store->nik = $value;
+                $store->save();
+            }    
+        }
     }
 
     public function changelogTp(Request $request)
@@ -1660,7 +1889,13 @@ class SalesLeadController extends Controller
         $update->project_name = $request['project_name'];
         $edate = strtotime($_POST['submit_date']); 
         $edate = date("Y-m-d",$edate);
-        $update->submit_date = $edate;
+        if (isset($request->submit_date)) {
+            $edate = strtotime($_POST['submit_date']); 
+            $edate = date("Y-m-d",$edate);
+            $update->submit_date = $edate;
+        } else {
+            $update->submit_date = date("Y-m-d"); 
+        }
         $update->quote_number2 = $request['quote_number'];
         $update->update();
  
@@ -1924,8 +2159,11 @@ class SalesLeadController extends Controller
 
     public function addContribute(Request $request)
     {      
+        $getNikTa = solution_design::where('lead_id',$request->lead_cont)->first()->nik_ta;
+
         foreach ($request->nik_cont as $value) {
             $tambah = new solution_design();
+            $tambah->nik_ta = $getNikTa;
             $tambah->lead_id = $request['lead_cont'];
             $tambah->nik     = $value;
             $tambah->status  = 'cont';
@@ -1938,9 +2176,11 @@ class SalesLeadController extends Controller
         $tambah_log->status = 'Add new contribute '. "(" .$request->concat_name.")";
         $tambah_log->save();
 
-        $kirim = User::select('email')->where('nik', $request->nik_cont)->first();
+        $kirim = User::select('email','nik')->whereIn('nik', $request->nik_cont)->get();
 
-        $data = DB::table('sales_lead_register')
+        foreach($kirim as $kirim){
+            Mail::to($kirim->email)->send(new AddContribute(collect([
+                "data" => DB::table('sales_lead_register')
                     ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik')
@@ -1948,12 +2188,13 @@ class SalesLeadController extends Controller
                     ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
                     ->where('sales_solution_design.status', 'cont')
                     ->where('sales_lead_register.lead_id',$tambah->lead_id)
-                    ->first();
-
-        $status = 'contribute';
-        Mail::to($kirim)->send(new AddContribute($data,$status));
-
-        return redirect()->back();
+                    ->where('sales_solution_design.nik',$kirim->nik)
+                    ->first(),
+                "status" => 'contribute',
+                "subject_email" => 'Add Contribute',
+                "lead_id" => $tambah->lead_id
+            ])));
+        }
     }
 
     public function getProductTechTagDetail(Request $request){
@@ -2457,16 +2698,19 @@ class SalesLeadController extends Controller
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('nik', $nik_sales)
                         ->orWhere('roles.name', 'Operations Director')
+                        ->where('status_karyawan','!=','dummy')
                         ->get();
         } elseif($cek_role->name_role == 'Operations Director'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('roles.name', 'VP Product Management & Development Solution')
+                        ->where('status_karyawan','!=','dummy')
                         ->orWhere('nik', $nik_sales)
                         ->get();
         } elseif($cek_role->group == 'sales'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('roles.name', 'VP Product Management & Development Solution')
                         ->orWhere('roles.name', 'Operations Director')
+                        ->where('status_karyawan','!=','dummy')
                         ->get();
         }
 
@@ -2526,9 +2770,47 @@ class SalesLeadController extends Controller
         }
     }
 
-    public function assignPresales(Request $request)
+    public function assignTechnologyAlliance(Request $request)
     {
         $tambah = new solution_design();
+        $tambah->lead_id = $request['lead_id'];
+        $tambah->nik_ta = $request['nik_ta'];
+        $tambah->save();
+
+        $update = Sales::where('lead_id', $request['lead_id'])->first();
+        $update->result = '';
+        $update->update();
+
+        $tambah = new SalesChangeLog();
+        $tambah->lead_id = $request['lead_id'];
+        $tambah->nik = Auth::User()->nik;
+        $tambah->status = 'Assign Technology Alliance to '. $request->name_ta;
+        $tambah->save();
+
+        $kirim = User::select('email')->where('nik', $request['nik_ta'])->first();
+
+        $data = DB::table('sales_lead_register')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
+                    ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+                    ->join('users as presales','presales.nik','=','sales_solution_design.nik_ta')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->where('sales_lead_register.lead_id',$tambah->lead_id)
+                    ->first();
+
+        Mail::to($kirim)->send(new AssignPresales(collect([
+            "data"   => $data,
+            "status" => 'assign',
+            "title"  => 'Assign Technology Alliance',
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+        ])));
+
+        // return redirect('project');
+    }
+
+    public function assignPresales(Request $request)
+    {
+        $tambah = solution_design::where('lead_id',$request->lead_id)->first();
         $tambah->lead_id = $request['lead_id'];
         $tambah->nik = $request['nik_presales'];
         $tambah->save();
@@ -2538,7 +2820,7 @@ class SalesLeadController extends Controller
         $tambahtp->save();
 
         $update = Sales::where('lead_id', $request['lead_id'])->first();
-        $update->result = '';
+        $update->result = 'SD';
         $update->update();
 
         $tambah = new SalesChangeLog();
@@ -2558,8 +2840,12 @@ class SalesLeadController extends Controller
                     ->where('sales_lead_register.lead_id',$tambah->lead_id)
                     ->first();
 
-        $status = 'assign';
-        Mail::to($kirim)->send(new AssignPresales($data,$status));
+        Mail::to($kirim)->send(new AssignPresales(collect([
+            "data"   => $data,
+            "status" => 'assign',
+            "title"  => 'Assign Presales',
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+        ])));
 
         //Disabled push notification
         /*$user_to = User::select('email','nik')
@@ -2643,7 +2929,7 @@ class SalesLeadController extends Controller
 
         $this->getNotifBadgeInsert($jsonInsert);*/
 
-        return redirect('project');
+        // return redirect('project');
     }
 
     public function reassignPresales(Request $request)
@@ -2668,10 +2954,56 @@ class SalesLeadController extends Controller
                     ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
                     ->where('sales_lead_register.lead_id',$request->lead_id)
                     ->first();
-        $status = 'reAssign';
-        Mail::to($kirim)->send(new AssignPresales($data,$status));
 
-        return redirect('project');
+        Mail::to($kirim)->send(new AssignPresales(collect([
+            "data"   => $data,
+            "status" => 'reAssign',
+            "title"  => 'Re-Assign Presales',
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+        ])));
+
+        // return redirect('project');
+    }
+
+
+    public function reassignTa(Request $request)
+    {
+        $update = solution_design::where('lead_id', $request['lead_id'])->first();
+        $update->nik_ta = $request['nik_ta'];
+        $update->update();
+
+        $tambah = new SalesChangeLog();
+        $tambah->lead_id    = $request['lead_id'];
+        $tambah->nik        = Auth::User()->nik;
+        $tambah->status     = 'Re-Assign Technology Alliance to '. $request->name_ta;
+        $tambah->save();
+
+        $kirim = User::select('email')->where('nik', $request['nik_ta'])->first();
+
+        $data = DB::table('sales_lead_register')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
+                    ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+                    ->join('users as presales','presales.nik','=','sales_solution_design.nik_ta')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->where('sales_lead_register.lead_id',$request->lead_id)
+                    ->first();
+
+        Mail::to($kirim)->send(new AssignPresales(collect([
+            "data"   => DB::table('sales_lead_register')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
+                    ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+                    ->join('users as presales','presales.nik','=','sales_solution_design.nik_ta')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->where('sales_lead_register.lead_id',$request->lead_id)
+                    ->first(),
+            "status" => 'reAssign',
+            "title"  => 'Re-Assign Technology Alliance',
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+        ])));
+
+        // return redirect('project');
     }
 
     public function raise_to_tender(Request $request)
