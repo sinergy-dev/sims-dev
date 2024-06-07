@@ -303,7 +303,7 @@ Lead Register
 							</dir>			    		
 			    	</div>			    	
 			    	<div class="table-responsive">
-			    		<table id="tableLead" class="table table-bordered table-striped display dataTables_wrapper" role="grid" aria-describedby="example1_info">
+			    		<table id="tableLead" class="table table-bordered table-striped display dataTables_wrapper" width="100%" role="grid" aria-describedby="example1_info">
 			        	<thead>
 									<tr>
 										<th>Lead ID</th>

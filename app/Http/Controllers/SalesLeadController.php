@@ -2498,7 +2498,7 @@ class SalesLeadController extends Controller
     public function getPid(Request $request)
     {
         $getPid = DB::table('sales_lead_register')->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id','amount_pid','no_po','date_po','opp_name')
+                ->select('sales_lead_register.lead_id','amount_pid','no_po','tb_pid.date_po','opp_name')
                 ->where('sales_lead_register.lead_id', $request->lead_id)
                 ->get();
 
