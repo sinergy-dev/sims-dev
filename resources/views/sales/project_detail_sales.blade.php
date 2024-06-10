@@ -939,15 +939,6 @@ Detail Lead Register
 					success:function(result){
 						showSbe()
 
-						if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-							$("#pov,#assesment,#propossed_design").prop("disabled",true)
-						}else if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','System Designer')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}"){
-							$("#project_budget,#priority,#proyek_size").prop("disabled",true)
-							$("#btn-addTagging").hide()
-							$("#tbtagging").closest("form").prop("disabled",true)
-							$("#tbtagging").find("tr").find("td:last-child").remove()
-						}
-
 						if (result.data[0].result == 'LOSE') {
 							    var i = 0;
 							    $(".dot:eq(0)").first().animate({
@@ -1297,7 +1288,7 @@ Detail Lead Register
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Amount</th>'
-	  		  		append = append + '<td>'+ new Intl.NumberFormat('id').format(result.data[0].amount) +'<button class="btn btn-warning btn-edit-amount btn-xs pull-right" style="display:none">Edit</button></td>'
+	  		  		append = append + '<td><span class="amount_lead">'+ new Intl.NumberFormat('id').format(result.data[0].amount) +'</span><button class="btn btn-warning btn-edit-amount btn-xs pull-right" style="display:none">Edit</button></td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Closing date</th>'
@@ -1530,7 +1521,9 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						if (result != null) {
+						initmoney()
+						initiateSD()
+						if (result.data != null) {
 							$("#assesment").val(result.data.assessment)
 							if (result.data.assessment_date != '-') {
 								$("#assessment_last_update").html('<small> Last Update : '+result.data.assessment_date+'</small>')
@@ -1551,112 +1544,226 @@ Detail Lead Register
 							$("#pov").height( $("#pov")[0].scrollHeight)
 							$("#propossed_design").height( $("#propossed_design")[0].scrollHeight)
 							$("#assesment").height( $("#assesment")[0].scrollHeight)
+						}else{
+							initiateSD()
 						}
-						
+							
+						$("#btnSubmitSD").click(function(){		
+							if (result.data != null) {
+								if (parseInt($("#project_budget").val().replaceAll(".", "")) > result.data.amount) {
+				  				$("#project_budget").closest('.form-group').addClass('has-error')
+									$("#project_budget").closest('div div').next('span').show();
+									$("#project_budget").prev('.input-group-addon').css("background-color","red");
+				  			}else{
+				  				$("#project_budget").closest('.form-group').removeClass('has-error')
+									$("#project_budget").closest('div div').next('span').hide();
+									$("#project_budget").prev('.input-group-addon').css("background-color","#aaa");
 
-						var fd = new FormData()			
-	
-						$("#btnSubmitSD").click(function(){
-							if (parseInt($("#project_budget").val().replaceAll(".", "")) > result.data.amount) {
-			  				$("#project_budget").closest('.form-group').addClass('has-error')
-								$("#project_budget").closest('div div').next('span').show();
-								$("#project_budget").prev('.input-group-addon').css("background-color","red");
-			  			}else{
-			  				if($("#assesment").val() != result.data.assessment){
-									assessment = $("#assesment").val()
-									$.ajax({
-					            type: "POST",
-					            url: "{{url('/project/changelog_sd')}}",
-					            data: {
-					              _token: "{{ csrf_token() }}",
-					              lead_id:window.location.href.split("/")[5],
-					              status:'Assessment ' + assessment
-					            },
-					        })	
+				  				var fd = new FormData()	
 
-									fd.append('assessment_date',moment().format('YYYY-MM-DD hh:mm:ss'))
+				  				if($("#assesment").val() != result.data.assessment){
+										assessment = $("#assesment").val()
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Assessment ' + assessment
+						            },
+						        })	
+
+										fd.append('assessment_date',moment().format('YYYY-MM-DD hh:mm:ss'))
+									}
+
+									if ($("#propossed_design").val() != result.data.pd) {
+										propossed_design = $("#propossed_design").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Propossed Design ' + propossed_design
+						            },
+						        })		
+
+										fd.append('pd_date',moment().format('YYYY-MM-DD hh:mm:ss'))			
+									}
+
+									if ($("#pov").val() != result.data.pov) {
+										pov = $("#pov").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Proof Of Value ' + pov
+						            },
+						        })
+
+										fd.append('pov_date',moment().format('YYYY-MM-DD hh:mm:ss'))					
+									}
+
+									if ($("#project_budget").val().replaceAll(".","") != result.data.pb) {
+										project_budget = $("#project_budget").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Project Budget ' + project_budget
+						            },
+						        })					
+									}
+
+									if ($("#priority").val() != result.data.priority) {
+										priority = $("#priority").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Priority ' + priority
+						            },
+						        })					
+									}
+
+									if ($("#proyek_size").val() != result.data.project_size) {
+										proyek_size = $("#proyek_size").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Project Size ' + proyek_size
+						            },
+						        })					
+									}
+
+									fd.append('assessment',$("#assesment").val())	
+									fd.append('propossed_design',$("#propossed_design").val())	
+									fd.append('pov',$("#pov").val())	
+		              fd.append('priority',$("#priority").val())
+		              fd.append('project_budget',$("#project_budget").val())
+		              fd.append('proyek_size',$("#proyek_size").val())
+		              fd.append('_token',"{{csrf_token()}}")
+		              fd.append('lead_id',window.location.href.split("/")[5])
+
+									btnSubmit(fd,'SD')	
+				  			}	
+							}else{
+								if (parseInt($("#project_budget").val().replaceAll(".", "")) > parseInt($(".amount_lead").text().replaceAll(".", ""))) {
+									$("#project_budget").closest('.form-group').addClass('has-error')
+									$("#project_budget").closest('div div').next('span').show();
+									$("#project_budget").prev('.input-group-addon').css("background-color","red");
+								}else{
+									$("#project_budget").closest('.form-group').removeClass('has-error')
+									$("#project_budget").closest('div div').next('span').hide();
+									$("#project_budget").prev('.input-group-addon').css("background-color","#aaa");
+
+									var fd = new FormData()
+
+									if ($("#assesment").val() != "") {
+										assessment = $("#assesment").val()
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Assessment ' + assessment
+						            },
+						        })	
+
+										fd.append('assessment_date',moment().format('YYYY-MM-DD hh:mm:ss'))
+									}
+
+									if ($("#propossed_design").val() != "") {
+										propossed_design = $("#propossed_design").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Propossed Design ' + propossed_design
+						            },
+						        })		
+
+										fd.append('pd_date',moment().format('YYYY-MM-DD hh:mm:ss'))			
+									}
+
+									if ($("#pov").val() != "") {
+										pov = $("#pov").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Proof Of Value ' + pov
+						            },
+						        })
+
+										fd.append('pov_date',moment().format('YYYY-MM-DD hh:mm:ss'))					
+									}
+
+									if ($("#project_budget").val() != "") {
+										project_budget = $("#project_budget").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Project Budget ' + project_budget
+						            },
+						        })
+									}
+									
+									if ($("#priority").val() != "") {
+										priority = $("#priority").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Priority ' + priority
+						            },
+						        })	
+									}
+					        
+									if ($("#proyek_size").val() != "") {
+										proyek_size = $("#proyek_size").val()	
+										$.ajax({
+						            type: "POST",
+						            url: "{{url('/project/changelog_sd')}}",
+						            data: {
+						              _token: "{{ csrf_token() }}",
+						              lead_id:window.location.href.split("/")[5],
+						              status:'Project Size ' + proyek_size
+						            },
+						        })
+									}
+
+									fd.append('assessment',$("#assesment").val())	
+									fd.append('propossed_design',$("#propossed_design").val())	
+									fd.append('pov',$("#pov").val())	
+		              fd.append('priority',$("#priority").val())
+		              fd.append('project_budget',$("#project_budget").val())
+		              fd.append('proyek_size',$("#proyek_size").val())
+		              fd.append('_token',"{{csrf_token()}}")
+		              fd.append('lead_id',window.location.href.split("/")[5])
+
+		              btnSubmit(fd,'SD')
 								}
-
-								if ($("#propossed_design").val() != result.data.pd) {
-									propossed_design = $("#propossed_design").val()	
-									$.ajax({
-					            type: "POST",
-					            url: "{{url('/project/changelog_sd')}}",
-					            data: {
-					              _token: "{{ csrf_token() }}",
-					              lead_id:window.location.href.split("/")[5],
-					              status:'Propossed Design ' + propossed_design
-					            },
-					        })		
-
-									fd.append('pd_date',moment().format('YYYY-MM-DD hh:mm:ss'))			
-								}
-
-								if ($("#pov").val() != result.data.pov) {
-									pov = $("#pov").val()	
-									$.ajax({
-					            type: "POST",
-					            url: "{{url('/project/changelog_sd')}}",
-					            data: {
-					              _token: "{{ csrf_token() }}",
-					              lead_id:window.location.href.split("/")[5],
-					              status:'Proof Of Value ' + pov
-					            },
-					        })
-
-									fd.append('pov_date',moment().format('YYYY-MM-DD hh:mm:ss'))					
-								}
-
-								if ($("#project_budget").val().replaceAll(".","") != result.data.pb) {
-									project_budget = $("#project_budget").val()	
-									$.ajax({
-					            type: "POST",
-					            url: "{{url('/project/changelog_sd')}}",
-					            data: {
-					              _token: "{{ csrf_token() }}",
-					              lead_id:window.location.href.split("/")[5],
-					              status:'Project Budget ' + project_budget
-					            },
-					        })					
-								}
-
-								if ($("#priority").val() != result.data.priority) {
-									priority = $("#priority").val()	
-									$.ajax({
-					            type: "POST",
-					            url: "{{url('/project/changelog_sd')}}",
-					            data: {
-					              _token: "{{ csrf_token() }}",
-					              lead_id:window.location.href.split("/")[5],
-					              status:'Priority ' + priority
-					            },
-					        })					
-								}
-
-								if ($("#proyek_size").val() != result.data.project_size) {
-									proyek_size = $("#proyek_size").val()	
-									$.ajax({
-					            type: "POST",
-					            url: "{{url('/project/changelog_sd')}}",
-					            data: {
-					              _token: "{{ csrf_token() }}",
-					              lead_id:window.location.href.split("/")[5],
-					              status:'Project Size ' + proyek_size
-					            },
-					        })					
-								}							
-
-								fd.append('assessment',$("#assesment").val())	
-								fd.append('propossed_design',$("#propossed_design").val())	
-								fd.append('pov',$("#pov").val())	
-	              fd.append('priority',$("#priority").val())
-	              fd.append('project_budget',$("#project_budget").val())
-	              fd.append('proyek_size',$("#proyek_size").val())
-	              fd.append('_token',"{{csrf_token()}}")
-	              fd.append('lead_id',window.location.href.split("/")[5])
-
-								$("btnSubmitSD").attr("onclick",btnSubmit(fd,'SD'))
-			  			}							
+							}												
 						})	
 					}
 				})
@@ -1668,7 +1775,7 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						if (result != null) {
+						if (result.data != null) {
 							$("#lelang").val(result.data.auction_number)
 							$("#submit_price").val(result.data.submit_price).mask('000.000.000.000', {reverse: true})	
 							$("#project_class").val(result.data.project_class)
@@ -1852,6 +1959,25 @@ Detail Lead Register
 			})
 		})
 
+		function initiateSD(){
+			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+				$("#pov,#assesment,#propossed_design").prop("disabled",true)
+			}else if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','System Designer')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}"){
+				$("#project_budget,#priority,#proyek_size").prop("disabled",true)
+				$("#btn-addTagging").hide()
+				$("#tbtagging").closest("form").prop("disabled",true)
+				$("#tbtagging").find("tr").find("td:last-child").remove()
+			}
+			// else{
+			// 	$("#btnSubmitSD").prop("disabled",true)
+			// 	$("#project_budget,#priority,#proyek_size").prop("disabled",true)
+			// 	$("#pov,#assesment,#propossed_design").prop("disabled",true)
+			// 	$("#btn-addTagging").hide()
+			// 	$("#tbtagging").closest("form").prop("disabled",true)
+			// 	$("#tbtagging").find("tr").find("td:last-child").remove()
+			// }
+		}
+
 		function grandTotal(){
     	var sum = 0
       $('.new-price-win').each(function() {
@@ -1987,12 +2113,15 @@ Detail Lead Register
       		$("#btn-addTagging").attr('onclick',addTagging(i++))
 				})
 
-				console.log($('#tbtagging tr').length)
       	if (result.length > 0){
       		if ($('#table-tagging tr').length <= 0) {
 		  			$("#btnRaiseTP").prop("disabled",true)
 		  		}else{
-		  			$("#btnRaiseTP").prop("disabled",false)
+		  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+		  				$("#btnRaiseTP").prop("disabled",true)
+      			}else{
+		  				$("#btnRaiseTP").prop("disabled",false)
+      			}
 		  		}
       	}     		
 
@@ -2003,7 +2132,11 @@ Detail Lead Register
   		if ($('#table-tagging tr').length <= 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
-  			$("#btnRaiseTP").prop("disabled",true)
+  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+  				$("#btnRaiseTP").prop("disabled",true)
+  			}else{
+  				$("#btnRaiseTP").prop("disabled",false)
+  			}
   		}
 
   		$.ajax({
@@ -2087,14 +2220,16 @@ Detail Lead Register
 	    			idExist.push(value.id)
 	      		++i
 	      	})
-	      	console.log(result)
-		    	// sbeResult()
 
 	      	if (result.length > 0){
 	      		if ($('#tbtagging tr').length <= 0) {
 			  			$("#btnRaiseTP").prop("disabled",true)
 			  		}else{
-			  			$("#btnRaiseTP").prop("disabled",false)
+			  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+			  				$("#btnRaiseTP").prop("disabled",true)
+	      			}else{
+			  				$("#btnRaiseTP").prop("disabled",false)
+	      			}
 			  		}
 	      	}else{
 			  		$("#btnRaiseTP").prop("disabled",true)
@@ -2106,7 +2241,6 @@ Detail Lead Register
 
     $(document).on('keypress', '.new-price-sol', function() {
     	if (isMobile == true) {
-    		console.log('oke')
 			  Swal.fire({
 				  title: 'product price',
 				  input: 'text',
@@ -2488,7 +2622,11 @@ Detail Lead Register
 		$(document).on('click', '.btn-trash-tagging', function() {
       $(this).closest("tr").remove();
       if ($('#tbtagging tr').length < 0) {
-  			$("#btnRaiseTP").prop("disabled",false)
+      	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+  				$("#btnRaiseTP").prop("disabled",true)
+  			}else{
+  				$("#btnRaiseTP").prop("disabled",false)
+  			}
   		}else{
   			$("#btnRaiseTP").prop("disabled",true)
   		}
@@ -2501,7 +2639,11 @@ Detail Lead Register
     $(document).on('click', '.btn-trash-tagging-sbe', function() {
       $(this).closest("tr").remove();
       if ($('#tbSbe tr').length < 0) {
-  			$("#btnRaiseTP").prop("disabled",false)
+  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+  				$("#btnRaiseTP").prop("disabled",true)
+  			}else{
+  				$("#btnRaiseTP").prop("disabled",false)
+  			}
   		}else{
   			$("#btnRaiseTP").prop("disabled",true)
   		}
@@ -2600,7 +2742,6 @@ Detail Lead Register
     	var lead_id = window.location.href.split("/")[5]
 
     	id_val = $(this).parents("tr").find("#tagging-win-status").val()
-    	console.log(activeBtnEdit)
     	$("#nextBtn").prop("disabled",true)
 
     	if (id_val == '') {
@@ -2660,7 +2801,6 @@ Detail Lead Register
     			$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').addClass("has-error")
     			$(".new-price-sol[data-value='" + dataValue + "']").prev('.input-group-addon').css("background-color","red")
     		}else{
-    			console.log("tissss")
 	    		$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').next('.help-block').css('color','red').hide()
 					$(".new-price-sol[data-value='" + dataValue + "']").closest('.input-group').removeClass("has-error")
 					$(".new-price-sol[data-value='" + dataValue + "']").prev('.input-group-addon').css("background-color","background-color:#aaa;color:white")
@@ -2786,7 +2926,6 @@ Detail Lead Register
     var id_exist,product,techno,price,dataValue,lead_id = '' 	 
 
     function updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id){
-    	console.log(activeBtnEdit)
   		$.ajax({
           url: "{{url('/project/updateProductTag')}}",
           type: 'post',
@@ -2822,22 +2961,26 @@ Detail Lead Register
       })
     }  
 
-  	function btnSubmit(data,val){  		
+  	function btnSubmit(data,val){ 
   		if (val == 'SD') {
   			var i = 0
   			var tagProduct = []
 
   			var storeSD = true
 	      $('#table-tagging #tbtagging .new-tagging').each(function() {
-	      	console.log(i)
 	      	if ($(this).find(".new-price-sol").val().replace(/\D/g, "") == "" || $(this).find(".new-price-sol").val().replace(/\D/g, "") == "0") {
-		    		console.log("testt")
 		    		$(this).find(".new-price-sol").closest('.input-group').next('span').css('color','red').show()
 		    		$(this).find(".new-price-sol").closest('.input-group').addClass("has-error")
 		    		$(this).find(".new-price-sol").prev('.input-group-addon').css("background-color","red")
+
+		    		console.log('tessss')
 		    	}else{
 		    		if ($(this).find(".new-price-sol").val().replace(/\D/g, "").length < 6) {
-		    			$(this).find(".new-price-sol").closest('.input-group').next('.help-block').text("Please check again brand price nominal!")
+			    		$(this).find(".new-price-sol").closest('.input-group').next('span').css('color','red').show()
+			    		$(this).find(".new-price-sol").closest('.input-group').addClass("has-error")
+			    		$(this).find(".new-price-sol").prev('.input-group-addon').css("background-color","red")
+			    		$(this).find(".new-price-sol").closest('.input-group').next('.help-block').text("Please check again brand price nominal!")
+		    			console.log('tisssss')
 		    		}else{
 		    			$(this).find(".new-price-sol").closest('.input-group').next('.help-block').css('color','red').hide()
 							$(this).find(".new-price-sol").closest('.input-group').removeClass("has-error")
@@ -2871,15 +3014,13 @@ Detail Lead Register
 	      data.append("price_sbe_delete",priceSbe)
 	      data.append("id_exist",idExist)
 
-	      console.log(storeSD)
-
 	      if (storeSD) {
 	      	$.ajax({
+	      		processData: false,
+            contentType: false,
 		        type:"POST",
 		        url:"{{url('project/update_sd')}}",
 		        data:data,
-		        contentType: false,
-						processData: false,
 						beforeSend:function(){
 	            Swal.fire({
 	                title: 'Please Wait..!',
@@ -2911,11 +3052,11 @@ Detail Lead Register
 	      }
   		}else{
 		    $.ajax({
+		    	processData: false,
+          contentType: false,
           type:"POST",
           url:"{{url('project/update_tp')}}",
           data:data,
-          contentType: false,
-					processData: false,
 					beforeSend:function(){
             Swal.fire({
                 title: 'Please Wait..!',
@@ -3122,13 +3263,11 @@ Detail Lead Register
 				          lead_id: window.location.href.split('/')[5],
 				      },success: function(result){
 				    		i = 0
-				    		console.log("tes"+result)
 	 							// $("#tbtagsbe").empty()	 
 				      	$.each(result, function(key,value){
 				      		addSbeResultNotEmpty(value.id,value.tag_sbe,value.price_sbe,i)
 				      		i++
 				      	})
-				     		console.log(result)
 		    				// sbeResult()
 				      	grandTotal()
 				      }
@@ -3241,7 +3380,6 @@ Detail Lead Register
 
 		function submitBtnWin(n){  
       var rowCount = $('#tbtagprice tr').length + $('#tbserviceprice tr').length
-      console.log(rowCount)
       if (rowCount == 0) {
         Swal.fire({
           title: 'Are you sure?',

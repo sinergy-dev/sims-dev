@@ -1730,7 +1730,7 @@ SBE Detail
                             j++
                             append = append + ' <tr>'
                             append = append + '     <td>'
-                            append = append + '       <input type="" class="form-control" name="inputItemsUpdate" id="inputItemsUpdate" value="'+ key +'" placeholder="Ex: PM Maintenance" style="width:300px">'
+                            append = append + '       <input type="" class="form-control" name="inputItemsUpdate" id="inputItemsUpdate" value="'+ key +'" placeholder="Ex: PM Maintenance" style="width:300px" data-attr="'+ i +'">'
                             append = append + '     </td>'
                             append = append + '     <td>'
                             append = append + '       <select type="" style="width: 450px" class="select2 form-control detailItemsUpdate_'+ j +'" name="detailItemsUpdate" id="detailItemsUpdate">'
@@ -1831,6 +1831,13 @@ SBE Detail
 
                     var grandPriceTotalUpdatetempInc = 0
 
+                    if ($("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").length > 1) {
+                        $("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").each(function(item,result){
+                            $(result).find("td").eq(6).html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+                        })
+                    }
+                    
+
                     $("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").each(function(item,result){
                         $(result).find(".form-control").each(function(v,w){
                             if ($(w).attr("data-value") == tempInc){
@@ -1838,11 +1845,10 @@ SBE Detail
                                     $("#tableItemsUpdateConfig_"+tempInc).find("input[name='inputGrandTotal']").val(formatter.format(grandPriceTotalUpdatetempInc += parseInt($(w).attr("data-value",$(w).attr("data-value")).val().replaceAll(".",""))))
                                     
                                 }
-                                // priceGrandTotalUpdate = 0
-                           
                             }
                         })
                     })
+
                     $("#tableItemsUpdateConfig_"+tempInc2).find("tbody tr:not(:first-child)").each(function(item,result){
                         $(result).find(".form-control").each(function(v,w){
                             if(w.name == "inputItemsUpdate"){
@@ -1853,9 +1859,9 @@ SBE Detail
                 })
 
                 
-                $('table[name="tableUpdateConfig"] tbody tr:not(:first-child)').each(function(item,result){
-                    $(this).find("td").eq(6).html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
-                })
+                // $('table[name="tableUpdateConfig"] tbody tr:not(:first-child)').each(function(item,result){
+                //     $(this).find("td").eq(6).html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+                // })
 
                 if ($('table[name="tableUpdateConfig"]').length > 1) {
                     $("#updateItems").after("<button class='btn btn-sm btn-danger' id='removeItemsDetailforUpdate' onclick='removeItemsDetailforUpdate()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
@@ -1875,13 +1881,11 @@ SBE Detail
 
     //updateConfig function
     function updateItemsDetail(val){
-        
-        // var latestItem = $("#tableItemsUpdateConfig_"+val).find("tbody tr").length
-
         var cloneTr = $("#tableItemsUpdateConfig_"+val).find("tbody tr:first").clone()
         // cloneTr
         cloneTr.find("#qtyItemsUpdate").val('').end().find("#priceItemsUpdate").val('').end().find("#manpowerItemsUpdate").val('')
         cloneTr.find("#totalItemsUpdate").val('').end()
+        cloneTr.find(":input[name='inputItemsUpdate']").attr('data-attr',val)
         cloneTr.find(":input[name='inputItemsUpdate']").hide()
         cloneTr.find("#detailItemsUpdate").removeClass("detailItemsUpdate_0").addClass("detailItemsUpdate_"+val)
         cloneTr.find("td:last").html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
@@ -1892,26 +1896,36 @@ SBE Detail
 
         $("#tableItemsUpdateConfig_"+val).append(cloneTr)
         getDropdownDetailItems(val,"Update",val)
-         
+
+        if ($("#tableItemsUpdateConfig_"+val).find("tbody tr").length > 1) {
+            $("#tableItemsUpdateConfig_"+val).find("tbody").find("tr:first").find("td:last").html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+        }
     }
 
     function removeUpdateItemsDetail(val){
         var whichtr = val.closest("tr");
+        var table   = val.closest("table").id
+
         var priceGrandTotal = 0
+        var latesItems = $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").val()
+
         $(val).closest("table").find("tbody tr:not(:eq("+$(val).closest('tr').index()+"))").each(function(item,result){
-            
             $(result).find(".form-control").each(function(itemInput,resultItem){
                 if(resultItem.name == "totalItems"){
                     priceGrandTotal += parseInt($(this).closest("tr").find("td").eq(5).find("input").val().replaceAll(".",""))
-                }
-
-                
+                } 
             })
-        })    
+        })  
 
         $(val).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
-
         whichtr.remove(); 
+        $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").val(latesItems)
+
+        if ($("#"+table).find("tbody tr").length == 1) {
+            $("#"+table).find("tbody").find("tr:first").find("td:last").find(".btn-danger").hide()
+        }
+
+        $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").show()
     }
 
     function updateItems(val){
@@ -1950,7 +1964,7 @@ SBE Detail
         append = append + '     <tbody>'
         append = append + '         <tr>'
         append = append + '             <td>'
-        append = append + '                 <input type="" class="form-control" name="inputItemsUpdate" id="inputItemsUpdate" onkeyup="validateInput(this)" placeholder="Ex: PM Maintenance" style="width:300px">'
+        append = append + '                 <input type="" class="form-control" name="inputItemsUpdate" id="inputItemsUpdate" onkeyup="validateInput(this)" placeholder="Ex: PM Maintenance" style="width:300px" data-attr="'+ countable +'">'
         append = append + '             </td>'
         append = append + '             <td>'
         append = append + '                 <select type="" style="width: 450px" class="select2 form-control detailItemsUpdate_'+ countable +'" name="detailItemsUpdate" id="detailItemsUpdate">'
@@ -2382,8 +2396,9 @@ SBE Detail
                 if (results.id.split("_")[0] == "tableItemsUpdateConfig") {
                     $("#"+results.id).find("tbody tr").each(function(itemTbody,resultTbodyTr){
                         //
-                        $(resultTbodyTr).each(function(itemInput,resultItemTd){
-                            $(resultItemTd).find(".form-control").each(function(itemInput,resultItem){ 
+                        $(resultTbodyTr).each(function(itemInputTr,resultItemTd){
+                            $(resultItemTd).find(".form-control").each(function(itemInputTd,resultItem){ 
+                                console.log(itemInputTr)
                                 if (resultItem.name != "totalItems") {
                                     if ($(resultItem).val() == "") {
 
@@ -2394,7 +2409,10 @@ SBE Detail
                                         arrFalse.push($(resultItem).val())
                                     }else{
                                         if (resultItem.name == 'inputItemsUpdate') {
-                                            itemsUpdateConfig = resultItem.value
+                                            var uniqAttrId = $(resultItem).attr("data-attr")
+                                            console.log(uniqAttrId)
+                                            itemsUpdateConfig = $("td").find(".form-control[name='inputItemsUpdate'][data-attr='"+ uniqAttrId +"']").first().val()
+                                            // itemsUpdateConfig = resultItem.value
                                         }
 
                                         if (resultItem.name == 'detailItemsUpdate') {

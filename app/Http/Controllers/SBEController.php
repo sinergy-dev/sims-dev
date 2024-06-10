@@ -108,8 +108,13 @@ class SBEController extends Controller
         ->whereRaw("(`sales_lead_register`.`result` = '' OR `sales_lead_register`.`result` = 'SD' OR `sales_lead_register`.`result` = 'TP')")
             ->orderBy('year','desc');
 
-        if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->mini_group == 'Solution Architect' || $cek_role->name_role == 'Technology Alliance') {
-        	$data->where('sales_solution_design.nik',$nik)->get();
+        if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->mini_group == 'Solution Architect' || $cek_role->name == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+            if ($cek_role->name == 'Technology Alliance') {
+                $data->where('sales_solution_design.nik',$nik)->orwhere('sales_solution_design.nik_ta',$nik)->get();
+            } else {
+                $data->where('sales_solution_design.nik',$nik)->get();
+            }
+        	
         } else {
         	$data->get();
         }
@@ -428,8 +433,13 @@ class SBEController extends Controller
 
         $data = Sbe::join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_solution_design.nik')->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')->select('tb_sbe.lead_id','tb_sbe.status','opp_name','users.name as presales','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
 
-        if ($cek_role->name == 'Presales' || $cek_role->name == 'System Designer' || $cek_role->name == 'Technology Alliance') {
-            $data->where('sales_solution_design.nik',$nik)->get();
+        if ($cek_role->name == 'Presales' || $cek_role->name == 'System Designer' || $cek_role->name == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+            if ($cek_role->name == 'Technology Alliance') {
+                $data->where('sales_solution_design.nik',$nik)->orwhere('sales_solution_design.nik_ta',$nik)->get();
+            } else {
+                $data->where('sales_solution_design.nik',$nik)->get();
+            }
+            
         } elseif($cek_role->name == 'Sales Staff'){
             $data->where('sales_lead_register.nik',$nik)->get();
         } else if($cek_role->name == 'Sales Manager'){

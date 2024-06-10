@@ -49,13 +49,6 @@
 		  	transform: translate(-50%, -40%);
 		}*/
 	</style>
-	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-	<script type="text/javascript">
-		console.log( $("#amounts").text())
-	    $('.money').mask('000,000,000,000,000', {reverse: true});
-	</script>
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
@@ -81,12 +74,20 @@
 					<tr>
 						<th>Amount</th>
 						<th> : </th>
-						<td><div class="money">{{$data['data']->amount}}</div></td>
+						<td>Rp.{{number_format($data['data']->amount, 2, '.', ',')}}</td>
 					</tr>
 					<tr>
 						<th>Status</th>
 						<th> : </th>
-						<td><span style="padding: 5px;background-color: #f2562b;color: white;border-radius: 3px">Open</span></td>
+						<td>
+							@if($data['data']->result_modif == 'OPEN')
+								<span style="padding: 5px;background-color:#f2562b;color: white;border-radius: 3px">
+							@elseif($data['data']->result_modif == 'Solution Design')
+								<span style="padding: 5px;background-color:#04dda3;color: white;border-radius: 3px">
+							@endif
+								{{$data['data']->result_modif}}
+							</span>
+						</td>
 					</tr>
 				</table>
 			</div>

@@ -1553,15 +1553,13 @@ class SalesLeadController extends Controller
 
     public function getLeadSd(Request $request)
     {
-        $lead = solution_design::join('users','users.nik','=','sales_solution_design.nik')
-                    ->join('sales_lead_register', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-                    ->select('sales_solution_design.lead_id','sales_solution_design.nik', 
-                        DB::raw("(CASE WHEN (assessment is null) THEN '' ELSE assessment END) as assessment"), 
+        $lead = solution_design::join('sales_lead_register', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                    ->select(DB::raw("(CASE WHEN (assessment is null) THEN '' ELSE assessment END) as assessment"), 
                         DB::raw("(CASE WHEN (pov is null) THEN '' ELSE pov END) as pov"), 
                         DB::raw("(CASE WHEN (pd is null) THEN '' ELSE pd END) as pd"), 
                         DB::raw("(CASE WHEN (pb is null) THEN '' ELSE pb END) as pb"), 
                         DB::raw("(CASE WHEN (priority is null) THEN '' ELSE priority END) as priority"), 
-                        DB::raw("(CASE WHEN (project_size is null) THEN '' ELSE project_size END) as project_size"), 'users.name', 
+                        DB::raw("(CASE WHEN (project_size is null) THEN '' ELSE project_size END) as project_size"), 
                         DB::raw("(CASE WHEN (sales_solution_design.status is null) THEN '' ELSE sales_solution_design.status END) as status"), 
                         DB::raw("(CASE WHEN (assessment_date is null) THEN '-' ELSE assessment_date END) as assessment_date"),
                         DB::raw("(CASE WHEN (pd_date is null) THEN '-' ELSE pd_date END) as pd_date"),
@@ -1814,9 +1812,9 @@ class SalesLeadController extends Controller
     public function updatePresales(Request $request)
     {
         $checkIdSD = solution_design::where('lead_id',$request->lead_id)->get();
-        $dataTa = solution_design::where('lead_id',$request->lead_id)->where('status',null)->first()->nik_ta;
+        $dataTa = solution_design::where('lead_id',$request->lead_id)->where('status',null)->orWhere('status','cont')->first()->nik_ta;
 
-        $kirim = solution_design::join('users','users.nik','=','sales_solution_design.nik')->where('sales_solution_design.lead_id',$request->lead_id)->where('sales_solution_design.status','cont')->select('email','sales_solution_design.nik')->get();
+        $kirim = solution_design::join('users','users.nik','=','sales_solution_design.nik')->where('sales_solution_design.lead_id',$request->lead_id)->where('sales_solution_design.status','cont')->select('email','sales_solution_design.nik','users.name')->get();
 
         $nik_presales = $request->nik_presales;
 
@@ -1834,7 +1832,7 @@ class SalesLeadController extends Controller
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'Solution Design' WHEN (result = 'TP') THEN 'Tender Process' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                     ->where('sales_solution_design.status', 'cont')
                     ->where('sales_lead_register.lead_id',$request->lead_id)
                     ->where('sales_solution_design.nik',$kirim->nik)->first(),
@@ -1842,6 +1840,12 @@ class SalesLeadController extends Controller
                 "subject_email" => 'Cancellation Contribute',
                 "lead_id" => $request->lead_id
             ])));
+
+            $tambah_log = new SalesChangeLog();
+            $tambah_log->lead_id = $request['lead_id'];
+            $tambah_log->nik = Auth::User()->nik;
+            $tambah_log->status = 'Cancellation contribute '. "(" .$kirim->name.")";
+            $tambah_log->save();
         }
         
         if (isset($checkIdSD)) {
@@ -1941,8 +1945,6 @@ class SalesLeadController extends Controller
                 }
         }
         $update_lead->update();
-
-        return redirect()->back();
     }
 
     public function checkProductTech(Request $request)
@@ -2060,9 +2062,7 @@ class SalesLeadController extends Controller
 
         $update = Sales::where('lead_id', $request->lead_id)->first();
         $update->result = 'SD';
-        $update->update();        
-
-        return redirect()->back();
+        $update->update();      
     }
 
     public function updateProductTag(Request $request)
@@ -2185,7 +2185,7 @@ class SalesLeadController extends Controller
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'Solution Design' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                     ->where('sales_solution_design.status', 'cont')
                     ->where('sales_lead_register.lead_id',$tambah->lead_id)
                     ->where('sales_solution_design.nik',$kirim->nik)
@@ -2778,7 +2778,9 @@ class SalesLeadController extends Controller
         $tambah->save();
 
         $update = Sales::where('lead_id', $request['lead_id'])->first();
-        $update->result = '';
+        if ($update->result != 'SD' && $update->result != 'TP' && $update->result != 'WIN' && $update->result != 'LOSE') {
+            $update->result = '';
+        }
         $update->update();
 
         $tambah = new SalesChangeLog();
@@ -2794,7 +2796,7 @@ class SalesLeadController extends Controller
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik_ta')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'Solution Design' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                     ->where('sales_lead_register.lead_id',$tambah->lead_id)
                     ->first();
 
@@ -2802,7 +2804,7 @@ class SalesLeadController extends Controller
             "data"   => $data,
             "status" => 'assign',
             "title"  => 'Assign Technology Alliance',
-            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name . ' - ' . Auth::User()->name,
         ])));
 
         // return redirect('project');
@@ -2836,7 +2838,7 @@ class SalesLeadController extends Controller
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'Solution Design' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                     ->where('sales_lead_register.lead_id',$tambah->lead_id)
                     ->first();
 
@@ -2844,7 +2846,7 @@ class SalesLeadController extends Controller
             "data"   => $data,
             "status" => 'assign',
             "title"  => 'Assign Presales',
-            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name . ' - ' . Auth::User()->name
         ])));
 
         //Disabled push notification
@@ -2951,7 +2953,7 @@ class SalesLeadController extends Controller
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'Solution Design' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                     ->where('sales_lead_register.lead_id',$request->lead_id)
                     ->first();
 
@@ -2959,7 +2961,7 @@ class SalesLeadController extends Controller
             "data"   => $data,
             "status" => 'reAssign',
             "title"  => 'Re-Assign Presales',
-            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name . ' - ' . Auth::User()->name
         ])));
 
         // return redirect('project');
@@ -2985,7 +2987,7 @@ class SalesLeadController extends Controller
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik_ta')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'Solution Design' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                     ->where('sales_lead_register.lead_id',$request->lead_id)
                     ->first();
 
@@ -2995,12 +2997,12 @@ class SalesLeadController extends Controller
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik_ta')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'Solution Design' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                     ->where('sales_lead_register.lead_id',$request->lead_id)
                     ->first(),
             "status" => 'reAssign',
             "title"  => 'Re-Assign Technology Alliance',
-            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name
+            "assignBy" => DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','roles.id')->where('user_id', Auth::User()->nik)->first()->name . ' - ' . Auth::User()->name
         ])));
 
         // return redirect('project');

@@ -619,9 +619,7 @@ Lead Register
   	autoclose:true
   })
 
- 	function initMoney(){
-    $('.money').mask('000.000.000.000', {reverse: true});
-  }
+  $('.money').mask('000.000.000.000', {reverse: true});
 
 	var table = $('#tableLead').DataTable({
 		"ajax":{
@@ -2210,6 +2208,11 @@ Lead Register
 		$("#sum_amount_4").mask('000.000.000.000.000', {reverse: true})
 		$("#sum_amount_5").mask('000.000.000.000.000', {reverse: true})
 	}
+
+	function initMoney(){
+    $('.money').mask('000.000.000.000', {reverse: true});
+  }
+
 
 	function initRemoveMask(){
 		$("#sum_amount_0").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})
