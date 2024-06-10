@@ -94,7 +94,7 @@ class SalesLeadController extends Controller
         $presales = false;
 
         if($ter != null){
-            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance') {
+            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
                 $count_lead = $total_lead->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
@@ -645,7 +645,7 @@ class SalesLeadController extends Controller
          
         if($ter != null && $div != 'BCD' || $cek_role->name_role == 'Operations Director'){
             $leadsnow->where('u_sales.id_company', '1');
-            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance') {
+            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
                 if ($cek_role->name_role == 'Technology Alliance') {
                     $leadsnow->where('nik_presales', 'like', '%'.$nik.'%')->orWhere('nik_ta','like','%'.$nik.'%');
                 } else {
@@ -985,7 +985,7 @@ class SalesLeadController extends Controller
             $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_territory',$ter);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_territory',$ter);
             $total_hold->where('sales_lead_register.result',"HOLD")->where('users.id_territory',$ter);
-        } elseif ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' ) {
+        } elseif ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('nik_presales',$nik);
             $total_open->where('sales_lead_register.result',"")->where('nik_presales',$nik);
             $total_initial->where('sales_lead_register.result',"OPEN")->where('nik_presales',$nik);
@@ -1639,7 +1639,7 @@ class SalesLeadController extends Controller
 
         if($ter != null || $cek_role->name_role != 'Operations Director'){
             // $leads->where('u_sales.id_company','1');
-            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance') {
+            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
                 if ($cek_role->name_role == 'Technology Alliance') {
                     // $leads = $leads->where('nik_presales', 'like', '%'.$nik.'%')->orWhere('nik_ta','like', '%'.$nik.'%');
                     $leads = $leads->whereRaw(
@@ -2727,9 +2727,8 @@ class SalesLeadController extends Controller
             Mail::to($kirim)->send(new CreateLeadRegister($data));
 
         }
-        $user_to = User::select('email')
-                        ->where('id_position', 'MANAGER')
-                        ->where('id_division', 'TECHNICAL PRESALES')->first()->email;
+        $user_to = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->where('roles.name', 'VP Product Management & Development Solution')->first()->email;
 
         $sales_sd_filtered = DB::table('sales_solution_design');
 
@@ -3058,9 +3057,8 @@ class SalesLeadController extends Controller
                     ->count('sales_tender_process.lead_id');
 
 
-        $user_to = User::select('email')
-                            ->where('id_position', 'MANAGER')
-                            ->where('id_division', 'TECHNICAL PRESALES')->first()->email;
+        User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->where('roles.name', 'VP Product Management & Development Solution')->first()->email;
 
         $sales_sd_filtered = DB::table('sales_solution_design');
 
