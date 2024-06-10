@@ -462,7 +462,7 @@ class SalesLeadController extends Controller
     public function getPresales()
     {
         $getPresales = collect(User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))
-            ->whereRaw("(`roles`.`mini_group` = 'Solution Architect')")
+            ->whereRaw("(`roles`.`mini_group` = 'Solution Architect' OR `nik` = '1230100050')")
             ->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPresales);

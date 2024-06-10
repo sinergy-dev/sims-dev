@@ -1961,7 +1961,11 @@ Detail Lead Register
 
 		function initiateSD(){
 			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-				$("#pov,#assesment,#propossed_design").prop("disabled",true)
+					if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+						$("#pov,#assesment,#propossed_design").prop("disabled",false)
+					}else{
+						$("#pov,#assesment,#propossed_design").prop("disabled",true)
+					}
 			}else if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','System Designer')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}"){
 				$("#project_budget,#priority,#proyek_size").prop("disabled",true)
 				$("#btn-addTagging").hide()
@@ -2118,7 +2122,11 @@ Detail Lead Register
 		  			$("#btnRaiseTP").prop("disabled",true)
 		  		}else{
 		  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-		  				$("#btnRaiseTP").prop("disabled",true)
+		  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+		  					$("#btnRaiseTP").prop("disabled",false)
+		  				}else{
+		  					$("#btnRaiseTP").prop("disabled",true)
+		  				}
       			}else{
 		  				$("#btnRaiseTP").prop("disabled",false)
       			}
@@ -2133,7 +2141,11 @@ Detail Lead Register
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
   			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-  				$("#btnRaiseTP").prop("disabled",true)
+  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+  					$("#btnRaiseTP").prop("disabled",false)
+  				}else{
+  					$("#btnRaiseTP").prop("disabled",true)
+  				}
   			}else{
   				$("#btnRaiseTP").prop("disabled",false)
   			}
@@ -2226,7 +2238,11 @@ Detail Lead Register
 			  			$("#btnRaiseTP").prop("disabled",true)
 			  		}else{
 			  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-			  				$("#btnRaiseTP").prop("disabled",true)
+			  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+			  					$("#btnRaiseTP").prop("disabled",false)
+			  				}else{
+			  					$("#btnRaiseTP").prop("disabled",true)
+			  				}
 	      			}else{
 			  				$("#btnRaiseTP").prop("disabled",false)
 	      			}
@@ -2623,7 +2639,11 @@ Detail Lead Register
       $(this).closest("tr").remove();
       if ($('#tbtagging tr').length < 0) {
       	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-  				$("#btnRaiseTP").prop("disabled",true)
+      		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+  					$("#btnRaiseTP").prop("disabled",false)
+  				}else{
+  					$("#btnRaiseTP").prop("disabled",true)
+  				}
   			}else{
   				$("#btnRaiseTP").prop("disabled",false)
   			}
@@ -2640,7 +2660,11 @@ Detail Lead Register
       $(this).closest("tr").remove();
       if ($('#tbSbe tr').length < 0) {
   			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-  				$("#btnRaiseTP").prop("disabled",true)
+  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+  					$("#btnRaiseTP").prop("disabled",false)
+  				}else{
+  					$("#btnRaiseTP").prop("disabled",true)
+  				}
   			}else{
   				$("#btnRaiseTP").prop("disabled",false)
   			}
