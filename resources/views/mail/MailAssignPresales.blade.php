@@ -49,13 +49,6 @@
 		  	transform: translate(-50%, -40%);
 		}*/
 	</style>
-	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-	<script type="text/javascript">
-		console.log( $("#amounts").text())
-	    $('.money').mask('000,000,000,000,000', {reverse: true});
-	</script>
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
@@ -64,30 +57,38 @@
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 			<p style="font-size: 20px">
-				<b>Dear {{$data->presales_name}},</b>
-				@if($status == 'assign')
-				<br><p>You are assigned by presales manager</p>		
+				<b>Dear {{$data['data']->presales_name}},</b>
+				@if($data['status'] == 'assign')
+				<br><p style="font-size: 14px">You are assigned by {{$data['assignBy']}}</p>		
 				@else
-				<br><p>You are re-assigned by presales manager</p>
+				<br><p style="font-size: 14px">You are re-assigned by {{$data['assignBy']}}</p>
 				@endif
 			</p>
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
-				<center><b>{{$data->lead_id}} - {{$data->opp_name}}</b></center>
+				<center><b>{{$data['data']->lead_id}} - {{$data['data']->opp_name}}</b></center>
 				<table style="text-align: left;margin: 5px; font-size: 16px" class="tableLead">
 					<tr>
 						<th>Nama Sales</th>
 						<th> : </th>
-						<td>{{$data->sales_name}}</td>
+						<td>{{$data['data']->sales_name}}</td>
 					</tr>
 					<tr>
 						<th>Amount</th>
 						<th> : </th>
-						<td><div class="money">{{$data->amount}}</div></td>
+						<td>Rp.{{number_format($data['data']->amount, 2, '.', ',')}}</td>
 					</tr>
 					<tr>
 						<th>Status</th>
 						<th> : </th>
-						<td><span style="padding: 5px;background-color: #f2562b;color: white;border-radius: 3px">Open</span></td>
+						<td>
+						@if($data['data']->result_modif == 'OPEN')
+							<span style="padding: 5px;background-color:#f2562b;color: white;border-radius: 3px">
+						@elseif($data['data']->result_modif == 'Solution Design')
+							<span style="padding: 5px;background-color:#04dda3;color: white;border-radius: 3px">
+						@endif
+							{{$data['data']->result_modif}}
+						</span>
+						</td>
 					</tr>
 				</table>
 			</div>
@@ -95,7 +96,7 @@
 				To access the Application please click the following button.<br>
 			</p>
 
-			<center><a href="{{url('/project/detailSales',$data->lead_id)}}" target="_blank"><button class="button">Lead ID</button></a></center>
+			<center><a href="{{url('/project/detailSales',$data['data']->lead_id)}}" target="_blank"><button class="button">Lead ID</button></a></center>
 			<p style="font-size: 16px">
 				Please check again, if there are errors or questions please contact the Developer Team (Ext: 384) or email to development@sinergy.co.id.<br>
 				Thank you.

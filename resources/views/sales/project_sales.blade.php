@@ -245,6 +245,11 @@ Lead Register
 							  <select class="form-control select2" style="width: 100%;" id="filter_sales_manager"  name="filter_sales_manager">
 	              </select>
 							</div>
+							<div class="form-group" id="filter-ta" style="display:none;">
+								<label>Technology Alliance</label>
+							  <select class="form-control select2" style="width: 100%;" id="filter_ta"  name="filter_ta">
+	              </select>
+							</div>
 							<div class="form-group" id="filter-presales" style="display:none;">
 								<label>Presales</label>
 							  <select class="form-control select2" style="width: 100%;" id="filter_presales"  name="filter_presales">
@@ -298,7 +303,7 @@ Lead Register
 							</dir>			    		
 			    	</div>			    	
 			    	<div class="table-responsive">
-			    		<table id="tableLead" class="table table-bordered table-striped display dataTables_wrapper" role="grid" aria-describedby="example1_info">
+			    		<table id="tableLead" class="table table-bordered table-striped display dataTables_wrapper" width="100%" role="grid" aria-describedby="example1_info">
 			        	<thead>
 									<tr>
 										<th>Lead ID</th>
@@ -307,6 +312,7 @@ Lead Register
 										<th>Create Date</th>
 										<th>Closing Date</th>
 										<th>Owner</th>
+										<th>Technology Alliance</th>
 										<th>Presales</th>
 										<th>Amount</th>
 										<th>Status</th>
@@ -316,7 +322,7 @@ Lead Register
 								</thead>
 								<tfoot>
 			            <tr>
-			                <th colspan="6" style="text-align:right">Total:</th>
+			                <th colspan="7" style="text-align:right">Total:</th>
 			                <th></th>
 			                <th colspan="3"></th>
 			                <th></th>
@@ -491,19 +497,45 @@ Lead Register
 	    </div>
 	</div>
 
-	<div class="modal fade" id="assignModal" role="dialog">
+	<div class="modal fade" id="assignModalTechAlliance" role="dialog">
 	  <div class="modal-dialog modal-md">
 	    <!-- Modal content-->
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h3 class="modal-title">Presales Assignment</h3>
+	        <h3 class="modal-title">Assign</h3>
+	      </div>
+	      <div class="modal-body">
+	        <input type="text" name="lead_tech_alliance" id="lead_tech_alliance" value="" hidden>
+          <input type="text" name="status_tech_alliance" id="status_tech_alliance" value=""  hidden>
+	          @csrf
+	        <div class="form-group">
+	          <label for="">Choose Technology Alliance</label>
+	          <select class="form-control" id="select2-tech-alliance" name="select2-tech-alliance" style="width:100%" required>
+	            <option value="">-- Choose --</option>
+	          </select>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp Close</button>
+	          <button type="button" class="btn btn-primary" id="btnSubmitTechAlliance" onclick="submitAssignTechAlliance()"><i class="fa fa-plus"> </i>&nbspSubmit</button>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="modal fade" id="assignModalPresales" role="dialog">
+	  <div class="modal-dialog modal-md">
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h3 class="modal-title">Assign</h3>
 	      </div>
 	      <div class="modal-body">
 	        <input type="text" name="lead_id_presales" id="lead_id_presales" value="" hidden>
           <input type="text" name="status_presales" id="status_presales" value=""  hidden>
 	          @csrf
 	        <div class="form-group">
-	          <label for="">Choose Presales</label>
+	          <label for="">Choose Presales or System Designer</label>
 	          <select class="form-control" id="select2-presales" name="select2-presales" style="width:100%" required>
 	            <option value="">-- Choose --</option>
 	          </select>
@@ -587,9 +619,7 @@ Lead Register
   	autoclose:true
   })
 
- 	function initMoney(){
-    $('.money').mask('000.000.000.000', {reverse: true});
-  }
+  $('.money').mask('000.000.000.000', {reverse: true});
 
 	var table = $('#tableLead').DataTable({
 		"ajax":{
@@ -599,12 +629,11 @@ Lead Register
       "columns": [
         { 
         	render: function (data, type, row){
-        		if (row.result_modif == 'INITIAL') {
+      			if (row.result_modif == 'INITIAL') {
         			return row.lead_id	
         		}else{
-        			return '<a href="{{url("project/detailSales")}}/'+row.lead_id+'">'+ row.lead_id + '</a>'
+    					return '<a href="{{url("project/detailSales")}}/'+row.lead_id+'">'+ row.lead_id + '</a>'
         		}
-        		
         	}
         },
         { "data": "brand_name","width":"100px"},
@@ -616,12 +645,13 @@ Lead Register
         },
         { "data": "closing_date"},
         { "data": "name","width":"100px"},
+        { "data": "name_ta"},
         { "data": "name_presales"},
         {
 	        render: function ( data, type, row ) {
 	          return new Intl.NumberFormat('id').format(row.amount)
 	        },
-	        "orderData":[10]
+	        "orderData":[11]
 	      },
         {
           render: function (data, type, row) {
@@ -645,43 +675,56 @@ Lead Register
         },   
         {
         	render: function (data, type, row){
-
         		btnEdit = '<button class="btn btn-xs btn-width-custom btn-warning btnEdit" id="btnEdit" style="display:none;width:50px"><i class="fa fa-edit"></i> Edit</button>'
         		btnDelete = '<button class="btn btn-xs btn-width-custom btn-danger btnDelete" id="btnDelete" style="display:none;width:55px" ><i class="fa fa-trash"></i> Delete</button>'
         		btnIdProject = '<button class="btn btn-xs btn-primary btnReqIdProject" id="btnReqIdProject" style="display:none;width:70px"><i class="fa fa-plus-square"></i> ID Project</button>'
 
-   
-      			if (row.result_modif == 'INITIAL') {
-      				title_assign = 'Assign'
-      				onclickAssign = "onclick=btnAssign('assign',"+row.lead_id+")"
-      				status = 'assign'
-      				btnAssign = 'btnAssign'
+        		let loadBtn = btnEdit + btnDelete
 
-      				return '<button class="btn btn-xs btn-primary '+btnAssign+'" id="btnAssign" value="'+ row.lead_id+','+status+'" style="display:none">'+ title_assign +'</button>'+btnEdit + btnDelete
-      				
-      			}else  {
-      				title_assign = 'Re-Assign'
-      				onclickAssign = "onclick=btnAssign('reassign',"+row.lead_id+")"
-      				status = 'reassign'
-      				if (row.result_modif == 'WIN' || row.result_modif == 'LOSE' || row.result_modif == 'CANCEL') {
-      					if (row.status == 'pending') {
-  								return btnIdProject      								
-  							}else{
-  								return ''
-  							}
-      					btnAssign = ''          					
-      				}else{
-      					btnAssign = 'btnAssign'
-  							return '<button class="btn btn-xs btn-primary '+btnAssign+'" id="btnAssign" value="'+ row.lead_id+','+status+'" style="display:none">'+ title_assign +'</button>'+ btnEdit     								
+    				if (row.result_modif == 'WIN' || row.result_modif == 'LOSE' || row.result_modif == 'CANCEL') {
+    					if (row.status == 'pending') {
+								loadBtn = btnIdProject      								
+							}else{
+								loadBtn = loadBtn
+							}        					
+    				}else{
+    					if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Product Management & Development Solution')->exists()}}")){
+    						if (row.name_ta == '-') {
+      						title_assign = 'Assign'
+		      				onclickAssign = "onclick=btnAssignTechAlliance('assign','"+row.lead_id+"')"
+		      				status = 'assign'
+      					}else{
+      						title_assign = 'Re-Assign'
+		      				onclickAssign = "onclick=btnAssignTechAlliance('reassign','"+row.lead_id+"')"
+		      				status = 'reassign'
+      					}
+
+      					loadBtn = '<button class="btn btn-xs btn-primary"'+ onclickAssign +'>'+ title_assign +'</button>'+btnEdit + btnDelete
       				}
-      			}       			
-      			
+
+      				if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}")){
+      					if (row.name_presales == '-') {
+      						title_assign = 'Assign'
+		      				onclickAssign = "onclick=btnAssignPresales('assign','"+row.lead_id+"')"
+		      				status = 'assign'
+      					}else{
+      						title_assign = 'Re-Assign'
+		      				onclickAssign = "onclick=btnAssignPresales('reassign','"+row.lead_id+"')"
+		      				status = 'reassign'
+      					}
+      					
+      					loadBtn = '<button class="btn btn-xs btn-primary"'+ onclickAssign +'>'+ title_assign +'</button>'+btnEdit + btnDelete
+      				}
+
+    				} 
+
+    				return loadBtn    			
       		}
         	
         },
         {
         	"data":"amount",
-        	"targets":[7],
+        	"targets":[8],
         	"visible":false,
         	"searchable":true
         },
@@ -710,7 +753,7 @@ Lead Register
 	          $( api.column( 5).footer() ).addClass('text-right');
 	          $( api.column( 5 ).footer() ).html("Total Amount");
 
-	          $( api.column(7).footer() ).html(new Intl.NumberFormat('id').format(total));
+	          $( api.column(8).footer() ).html(new Intl.NumberFormat('id').format(total));
 	    },
       initComplete: function () {
       	accesable.forEach(function(item,index){
@@ -735,38 +778,21 @@ Lead Register
 	});
 
 	$.ajax({
-	    url: "{{url('/project/getPresales')}}",
-	    type: "GET",
-	    success: function(result) {
-	        $("#select2-presales").select2({
-	        	data:result.data
-	        })
-
-	        $("#filter_presales").select2({
-	        	placeholder:"Select Presales",
-	        	multiple:true,
-	        	data:result.data
-	        })
-	    }
-	})
-
-	$.ajax({
-	    url: "{{url('/project/getCustomerByLead')}}",
-	    type: "GET",
-	    success: function(result) {
-        $("#filter_customer").select2({
-	      	placeholder: "Select Customer",
-			  	multiple:true,
-			  	data:result.data
-			  })       
-	    }
+    url: "{{url('/project/getCustomerByLead')}}",
+    type: "GET",
+    success: function(result) {
+      $("#filter_customer").select2({
+      	placeholder: "Select Customer",
+		  	multiple:true,
+		  	data:result.data
+		  })       
+    }
 	})
 
 	$.ajax({
 		url: "{{url('/project/getSales')}}",
 		type: "GET",
 		success:function(result){
-
 			$("#owner_sales").select2({
       	placeholder: "Select sales",
 		  	data:result.data
@@ -781,7 +807,6 @@ Lead Register
 			territory:"{{Auth::User()->id_territory}}"
 		},
 		success:function(result){
-
 			$("#filter_sales_manager").select2({
       	placeholder: "Select sales",
 		  	multiple:true,
@@ -791,14 +816,14 @@ Lead Register
 	})	
 
 	$.ajax({
-	    url: "{{url('/project/getCustomer')}}",
-	    type: "GET",
-	    success: function(result) {
-	        $("#contact").select2({
-      			placeholder: "Select Contact",
-	        	data:result.data
-	        })
-	    }
+    url: "{{url('/project/getCustomer')}}",
+    type: "GET",
+    success: function(result) {
+        $("#contact").select2({
+    			placeholder: "Select Contact",
+        	data:result.data
+        })
+    }
 	})
 
 	function add_lead(){
@@ -846,73 +871,116 @@ Lead Register
 			    cancelButtonText: 'No',
 			}).then((result) => {
 				if (result.value) {
-		        Swal.fire({
-		            title: 'Please Wait..!',
-		            text: "It's sending..",
-		            allowOutsideClick: false,
-		            allowEscapeKey: false,
-		            allowEnterKey: false,
-		            customClass: {
-		                popup: 'border-radius-0',
-		            },
-		            onOpen: () => {
-		                Swal.showLoading()
-		            }
-		        })
-		        $.ajax({
-		            type: "POST",
-		            url: "{{url('/project/storeLead')}}",
-		            data: {
-		              _token: "{{ csrf_token() }}",
-									owner_sales:$("#owner_sales").val(),
-									contact:$("#contact").val(),
-									opp_name:$("#opp_name").val(),
-									closing_date:$("#closing_date").val(),
-									amount:$("#amount").val(),
-									note:$("#note").val(),
-		            },
-		            success: function(result) {
-		                Swal.showLoading()
-		                Swal.fire(
-		                    'Successfully!',
-		                   	'Lead Register Created.',
-		                    'success'
-		                ).then((result) => {
-		                    if (result.value) {
-		                    	location.reload()
-		                    	$("#modal_lead").modal('hide')
-		                    }
-		                })
-		            }
-		        })		      
+		      $.ajax({
+            type: "POST",
+            url: "{{url('/project/storeLead')}}",
+            data: {
+              _token: "{{ csrf_token() }}",
+							owner_sales:$("#owner_sales").val(),
+							contact:$("#contact").val(),
+							opp_name:$("#opp_name").val(),
+							closing_date:$("#closing_date").val(),
+							amount:$("#amount").val(),
+							note:$("#note").val(),
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+                Swal.showLoading()
+                Swal.fire(
+                    'Successfully!',
+                   	'Lead Register Created.',
+                    'success'
+                ).then((result) => {
+                    if (result.value) {
+                    	location.reload()
+                    	$("#modal_lead").modal('hide')
+                    }
+                })
+            }
+	        })		      
 			  }
 			})
 		}
 	}
 
-	table.on('click','#btnAssign',function(){
-		lead_id = this.value.split(",")[0]
-		status = this.value.split(",")[1]
+	// table.on('click','#btnAssignPresales',function(){
+	// 	lead_id = this.value.split(",")[0]
+	// 	status = this.value.split(",")[1]
 	
-		$("#lead_id_presales").val(lead_id)
+	// 	$("#lead_id_presales").val(lead_id)
+	// 	$("#status_presales").val(status)
+
+	// 	if (status != "assign") {
+	// 		$.ajax({
+	// 			type:"GET",
+	// 			url:"{{url('/project/getPresalesAssign')}}",
+	// 			data:{
+	// 				lead_id:lead_id
+	// 			},
+	// 			success:function(result){
+	// 				$("#select2-presales").select2().val("")
+	// 				$("#select2-presales").val(result.data.id).trigger("change")
+	// 			}
+	// 		})
+	// 	}
+
+	// 	$("#assignModalPresales").modal('show')		
+	// })
+
+	function btnAssignPresales(status,id){
+		$("#lead_id_presales").val(id)
 		$("#status_presales").val(status)
 
-		if (status != "assign") {
+		if (status == "reassign") {
 			$.ajax({
 				type:"GET",
 				url:"{{url('/project/getPresalesAssign')}}",
 				data:{
-					lead_id:lead_id
+					lead_id:id
 				},
 				success:function(result){
 					$("#select2-presales").select2().val("")
-					$("#select2-presales").val(result.data[0].id).trigger("change")
+					$("#select2-presales").val(result.data.id).trigger("change")
 				}
 			})
 		}
 
-		$("#assignModal").modal('show')		
-	})
+		$("#assignModalPresales").modal('show')	
+	}
+
+	function btnAssignTechAlliance(status,id){
+		$("#lead_tech_alliance").val(id)
+		$("#status_tech_alliance").val(status)
+		
+		if (status == "reassign") {
+			$.ajax({
+				type:"GET",
+				url:"{{url('/project/getTaAssign')}}",
+				data:{
+					lead_id:id
+				},
+				success:function(result){
+					$("#select2-tech-alliance").select2().val("")
+					$("#select2-tech-alliance").val(result.data.id).trigger("change")
+				}
+			})
+		}
+
+		$("#assignModalTechAlliance").modal('show')	
+	}
 
 	function submitAssignPresales(){
 		Swal.fire({
@@ -926,23 +994,69 @@ Lead Register
 		    cancelButtonText: 'No',
 		}).then((result) => {
 		    if (result.value) {
-		        Swal.fire({
-		            title: 'Please Wait..!',
-		            text: "It's sending..",
-		            allowOutsideClick: false,
-		            allowEscapeKey: false,
-		            allowEnterKey: false,
-		            customClass: {
-		                popup: 'border-radius-0',
-		            },
-		            onOpen: () => {
-		                Swal.showLoading()
-		            }
-		        })
 		        if ($("#status_presales").val() == "assign") {
 		        	url = "{{url('/project/assignPresales')}}"
 		        }else{
 		        	url = "{{url('/project/reassignPresales')}}"
+		        }
+
+		      $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                _token: "{{ csrf_token() }}",
+                lead_id:$("#lead_id_presales").val(),
+                nik_presales:$("#select2-presales").select2("data")[0].id,
+                name_presales:$("#select2-presales").select2("data")[0].text
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              Swal.showLoading()
+              Swal.fire(
+                  'Successfully!',
+                  'Presales has been Assigned.',
+                  'success'
+              ).then((result) => {
+                  if (result.value) {
+                  	location.reload()
+                  	$("#assignModal").modal('hide')
+                  }
+              })
+            }
+	        })
+		    }
+		})
+	}
+
+	function submitAssignTechAlliance(){
+		Swal.fire({
+		    title: 'Are you sure?',
+		    text: "Submit for technology alliance",
+		    icon: 'warning',
+		    showCancelButton: true,
+		    confirmButtonColor: '#3085d6',
+		    cancelButtonColor: '#d33',
+		    confirmButtonText: 'Yes',
+		    cancelButtonText: 'No',
+		}).then((result) => {
+		    if (result.value) {
+		        if ($("#status_tech_alliance").val() == "assign") {
+		        	url = "{{url('/project/assignTechnologyAlliance')}}"
+		        }else{
+		        	url = "{{url('/project/reassignTa')}}"
 		        }
 
 		        $.ajax({
@@ -950,20 +1064,34 @@ Lead Register
 		            url: url,
 		            data: {
 		                _token: "{{ csrf_token() }}",
-		                lead_id:$("#lead_id_presales").val(),
-		                nik_presales:$("#select2-presales").select2("data")[0].id,
-		                name_presales:$("#select2-presales").select2("data")[0].text
-		            },
+		                lead_id:$("#lead_tech_alliance").val(),
+		                nik_ta:$("#select2-tech-alliance").select2("data")[0].id,
+		                name_ta:$("#select2-tech-alliance").select2("data")[0].text
+		            },beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                },
 		            success: function(result) {
 		                Swal.showLoading()
 		                Swal.fire(
 		                    'Successfully!',
-		                    'Presales has been Assigned.',
+		                    'Technology Alliance has been Assigned.',
 		                    'success'
 		                ).then((result) => {
 		                    if (result.value) {
 		                    	location.reload()
-		                    	$("#assignModal").modal('hide')
+		                    	$("#assignModalTechAlliance").modal('hide')
 		                    }
 		                })
 		            }
@@ -1291,22 +1419,7 @@ Lead Register
 		    confirmButtonText: 'Yes',
 		    cancelButtonText: 'No',
 		}).then((result) => {
-			if (result.value) {
-	        Swal.fire({
-	            title: 'Please Wait..!',
-	            text: "It's sending..",
-	            allowOutsideClick: false,
-	            allowEscapeKey: false,
-	            allowEnterKey: false,
-	            customClass: {
-	                popup: 'border-radius-0',
-	            },
-	            onOpen: () => {
-	                Swal.showLoading()
-	            }
-	        })
-
-	       
+			if (result.value) {	       
 	        $.ajax({
 	            type: "POST",
 	            url: "{{url('/project/update_lead_register')}}",
@@ -1319,7 +1432,21 @@ Lead Register
 								note_edit:$("#note_edit").val(),
 								tagProduct:tagProduct,
 	      				id:deletedProduct
-	            },
+	            },beforeSend:function(){
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                })
+              },
 	            success: function(result) {
 	                Swal.showLoading()
 	                Swal.fire(
@@ -1359,38 +1486,39 @@ Lead Register
 		    cancelButtonText: 'No',
 		}).then((result) => {
 		    if (result.value) {
-		        Swal.fire({
-		            title: 'Please Wait..!',
-		            text: "It's sending..",
-		            allowOutsideClick: false,
-		            allowEscapeKey: false,
-		            allowEnterKey: false,
-		            customClass: {
-		                popup: 'border-radius-0',
-		            },
-		            onOpen: () => {
-		                Swal.showLoading()
-		            }
-		        })
-		        $.ajax({
-		            type: "GET",
-		            url: "{{url('project/deleteLead')}}",
-		            data: {
-		            	lead_id:value,
-		            },
-		            success: function(result) {
-		                Swal.showLoading()
-		                Swal.fire(
-		                    'Successfully!',
-		                    'Lead Register Deleted.',
-		                    'success'
-		                ).then((result) => {
-		                    if (result.value) {
-		                    	location.reload()
-		                    }
-		                })
-		            }
-		        })
+	        $.ajax({
+            type: "GET",
+            url: "{{url('project/deleteLead')}}",
+            data: {
+            	lead_id:value,
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+                Swal.showLoading()
+                Swal.fire(
+                    'Successfully!',
+                    'Lead Register Deleted.',
+                    'success'
+                ).then((result) => {
+                    if (result.value) {
+                    	location.reload()
+                    }
+                })
+            }
+	        })
 		    }
 		})
 	})
@@ -1438,43 +1566,45 @@ Lead Register
 		    cancelButtonText: 'No',
 		}).then((result) => {
 			if (result.value) {
-	        Swal.fire({
-	            title: 'Please Wait..!',
-	            text: "It's sending..",
-	            allowOutsideClick: false,
-	            allowEscapeKey: false,
-	            allowEnterKey: false,
-	            customClass: {
-	                popup: 'border-radius-0',
-	            },
-	            onOpen: () => {
-	                Swal.showLoading()
-	            }
-	        })
-	        $.ajax({
-	            type: "POST",
-	            url: "{{url('/project/updateResultRequestPid')}}",
-	            data: {
-	              _token: "{{ csrf_token() }}",
-	              lead_id:value,
-	            },
-	            success: function(result) {
-	                Swal.showLoading()
-	                Swal.fire(
-	                    'Successfully!',
-	                   	'Request PID Successfully.',
-	                    'success'
-	                ).then((result) => {
-	                    if (result.value) {
-	                    	location.reload()
-	                    	$("#request_id").modal('hide')
-	                    }
-	                })
-	            }
-	        })		      
+	      $.ajax({
+          type: "POST",
+          url: "{{url('/project/updateResultRequestPid')}}",
+          data: {
+            _token: "{{ csrf_token() }}",
+            lead_id:value,
+          },beforeSend:function(){
+            Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            })
+          },
+          success: function(result) {
+            Swal.showLoading()
+            Swal.fire(
+                'Successfully!',
+               	'Request PID Successfully.',
+                'success'
+            ).then((result) => {
+                if (result.value) {
+                	location.reload()
+                	$("#request_id").modal('hide')
+                }
+            })
+          }
+        })		      
 		  }
 		})
 	}
+
 	$.ajax({
     url:"{{url('/project/getProductTag')}}",
     type:"GET",
@@ -1635,6 +1765,39 @@ Lead Register
 			initMoney()
 		})
 
+		$.ajax({
+	    url: "{{url('/project/getPresales')}}",
+	    type: "GET",
+	    success: function(result) {
+        $("#select2-presales").select2({
+        	data:result.data
+        })
+
+        $("#filter_presales").select2({
+        	placeholder:"Select Presales",
+        	multiple:true,
+        	data:result.data
+        })
+	    }
+		})
+
+		$.ajax({
+	    url: "{{url('/project/getTa')}}",
+	    type: "GET",
+	    success: function(result) {
+
+        $("#select2-tech-alliance").select2({
+        	data:result.data
+        })
+
+        $("#filter_ta").select2({
+        	placeholder:"Select Technology Alliance",
+        	multiple:true,
+        	data:result.data
+        })
+	    }
+		})
+
 		$("#BoxId").prepend(prepend)
 
 		if (!document.getElementById("bg-orange") == false) {
@@ -1697,8 +1860,13 @@ Lead Register
 		}
 
 		if (!accesable.includes('columnPresales')) {
+			var column1 = table.column(7);
+      		column1.visible(!column1.visible());
+		}
+
+		if (!accesable.includes('columnTa')) {
 			var column1 = table.column(6);
-      		column1.visible(!column1.visible() );
+      		column1.visible(!column1.visible());
 		}
   })	
 
@@ -1841,6 +2009,9 @@ Lead Register
 			$("#filter_sales_manager").change(function(){
 				$("#filter_sales_manager").attr("onchange",searchCustom())
 			})
+			$("#filter_ta").change(function(){
+				$("#filter_ta").attr("onchange",searchCustom())
+			})
 			$("#filter_presales").change(function(){
 				$("#filter_presales").attr("onchange",searchCustom())
 			})
@@ -1855,7 +2026,7 @@ Lead Register
 	
 	var timer
 	function searchCustom(id_table,id_search_bar){
-		var temp = 'year[]=', tempCom = 'company[]=', tempSales = 'sales_name[]=', tempPresales = 'presales_name[]=', tempTer = 'territory[]=', tempResult = 'result[]=', tempCustomer = 'customer[]=', tempTech = 'tech_tag[]=', tempProduct = 'product_tag[]=', tempSearch = 'search='
+		var temp = 'year[]=', tempTa = 'ta_name[]=', tempCom = 'company[]=', tempSales = 'sales_name[]=', tempPresales = 'presales_name[]=', tempTer = 'territory[]=', tempResult = 'result[]=', tempCustomer = 'customer[]=', tempTech = 'tech_tag[]=', tempProduct = 'product_tag[]=', tempSearch = 'search='
 
 		$.each($(".cb-territory:checked"),function(key,value){
 			if (tempTer == 'territory[]=') {
@@ -1935,6 +2106,14 @@ Lead Register
 		// 	})
 		// }
 
+		$.each($("#filter_ta").val(),function(key,value){
+			if (tempTa == 'ta_name[]=') {
+	      tempTa = tempTa + value
+	    }else{
+	      tempTa = tempTa + '&ta_name[]='+ value
+	    }
+		})
+
 		$.each($("#filter_presales").val(),function(key,value){
 			if (tempPresales == 'presales_name[]=') {
 	      tempPresales = tempPresales + value
@@ -1998,7 +2177,7 @@ Lead Register
     	tempSearch = tempSearch + '&search=' + $('#searchLead').val()
     }
 
-		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
+		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempTa + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
 
 		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
 		dashboardCountFilter(tempFiltered)
@@ -2029,6 +2208,11 @@ Lead Register
 		$("#sum_amount_4").mask('000.000.000.000.000', {reverse: true})
 		$("#sum_amount_5").mask('000.000.000.000.000', {reverse: true})
 	}
+
+	function initMoney(){
+    $('.money').mask('000.000.000.000', {reverse: true});
+  }
+
 
 	function initRemoveMask(){
 		$("#sum_amount_0").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})

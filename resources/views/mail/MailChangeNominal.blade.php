@@ -45,12 +45,6 @@
 		  	transform: translate(-50%, -40%);
 		}*/
 	</style>
-	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-	<script type="text/javascript">
-		console.log( $("#amounts").text())
-	</script>
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
@@ -99,7 +93,7 @@
 						@if($data["type"] == "Change Customer")
 						<b>Customer Before : </b> {{$data["customer_before"]}}
 						@else
-						<b>Nominal Before : </b> <p class="money"> {{ number_format($data["nominal_before"], 2) }} </p>
+						<b>Nominal Before : </b> Rp.{{ number_format($data["nominal_before"], 2) }} 
 						@endif
 					</li>
 				</ul>
@@ -114,7 +108,7 @@
 						@if($data["type"] == "Change Customer")
 						<b>Customer After : </b> {{$data["customer_after"]}}
 						@else
-						<b>Nominal After : </b> <p class="money"> {{number_format($data["nominal_after"], 2)}} </p>
+						<b>Nominal After : </b> Rp.{{number_format($data["nominal_after"], 2)}}
 						@endif
 					</li>
 				</ul>

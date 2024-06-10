@@ -34,13 +34,6 @@
 		  	transform: translate(-50%, -40%);
 		}*/
 	</style>
-	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-	<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-	<script type="text/javascript">
-		console.log( $("#amounts").text())
-	    $('.money').mask('000,000,000,000,000', {reverse: true});
-	</script>
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
