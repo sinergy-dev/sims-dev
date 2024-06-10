@@ -444,6 +444,8 @@ class SBEController extends Controller
             $data->where('sales_lead_register.nik',$nik)->get();
         } else if($cek_role->name == 'Sales Manager'){
             $data->where('u_sales.id_territory',$ter)->get();
+        } else if($cek_role->name == 'PMO Officer'){
+            $data->where('sales_lead_register.result','WIN')->get();
         }else {
             $data->get();
         }
