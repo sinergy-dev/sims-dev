@@ -3813,10 +3813,7 @@ class PrDraftController extends Controller
         $get_type = PR::where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $get_type->issuance)->first()->id_territory;
-
-         $nik = Auth::User()->nik;
-        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
-        $ter = $territory->id_territory;
+        $nik = Auth::User()->nik;
         $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
         $div = $division->id_division;
 
