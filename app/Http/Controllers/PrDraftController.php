@@ -3839,7 +3839,9 @@ class PrDraftController extends Controller
             }
         } else {
             if ($cek_group->name == 'Sales Staff') {
-                $email_cc = DB::table('users')->select('users.email')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->whereRaw("(`roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Operations Director' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+                $email_cc = DB::table('users')->select('users.email')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
+                    ->whereRaw("(`roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Operations Director' OR `users`.`nik` = '" .$cek_group->user_id. "')")
+                    ->where('status_karyawan','!=','dummy')->where('id_company','1')->get();
             } elseif (Str::contains($cek_group->name, 'Manager')) {
                 $email_cc = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                 ->whereRaw(
