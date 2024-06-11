@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
 use Auth;
 use DB;
 use App\PR;
@@ -76,7 +78,7 @@ class PrDraftController extends Controller
             $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED' OR `status` = 'SENDED')")->whereIn('issuance',$listTerritory)->count();
         } 
         else if ($cek_role->name == 'Renumeration, Personalia & GS Manager'){
-            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
 
             $count_all = PRDraft::whereIn('issuance',$listGroup)->count();
 
@@ -87,7 +89,7 @@ class PrDraftController extends Controller
             $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED' OR `status` = 'SENDED')")->whereIn('issuance',$listGroup)->count();
 
         } else if ($cek_role->name == 'VP Solution Implementation & Managed Service'){
-            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
 
             $count_all = PRDraft::whereIn('issuance',$listGroup)->count();
 
@@ -816,7 +818,7 @@ class PrDraftController extends Controller
                 $getDataEPR = $getDataEPR->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')")
                 ;
             } else {
-                $getDataEPR = $getDataEPR->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'UNAPPROVED')")
+                $getDataEPR = $getDataEPR->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL' AND `status` != 'SENDED')")
                 ;
             }
             
@@ -834,7 +836,7 @@ class PrDraftController extends Controller
                 $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED')")
                 ;
             } else {
-                $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'SAVED' AND `status` != 'UNAPPROVED')")
+                $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'SAVED' AND `status`)")
                 ;
             }
             
@@ -1989,7 +1991,7 @@ class PrDraftController extends Controller
 
             if ($cek_role->group == 'sales') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
-                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `name` = '".$listTerritory->name."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
+                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `users`.`name` = '".$listTerritory->name."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                     ->get()->pluck('email');
             } else {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
@@ -2318,23 +2320,21 @@ class PrDraftController extends Controller
 
             $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name as name', 'roles.group','roles.slug')->where('tb_pr_draft.id', $request['no_pr'])->first();
 
-            if ($cek_group->group == 'pmo') {
+            if ($cek_group->group == 'Project Management') {
                 $posti = 'PMO';
-            } elseif ($cek_group->group == 'msm') {
-                $posti = 'MSM';
-            } elseif ($cek_group->group == 'hr') {
-                if ($cek_group->slug == 'hr.warehouse') {
+            } elseif ($cek_group->group == 'Supply Chain, CPS & Asset Management') {
+                if ($cek_group->slug == 'inventory') {
                     $posti = 'WHO';
                 } else {
-                    $posti = 'HRD';
+                    $posti = 'MSM';
                 }
+                // $posti = 'MSM';
             } elseif ($cek_group->group == 'sales') {
                 $posti = 'SAL';
-            } elseif ($cek_group->group == 'bcd') {
-                $posti = 'BCD';
-            } elseif ($cek_group->group == 'presales') {
+            } elseif ($cek_group->group == 'Product Management & Development') {
                 $posti = 'SOL';
-            } elseif ($cek_group->group == 'DPG') {
+            } elseif ($cek_group->group == 'Solution Implementation & Managed Service') {
+
                 $posti = 'SID';
             } else {
                 $posti = 'HRD';
@@ -3637,7 +3637,7 @@ class PrDraftController extends Controller
 
         if ($cek_role->group == 'sales') {
             $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
-                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `name` = '".$listTerritory->name."')")
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                 ->get()->pluck('email');
         } else {
             $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
@@ -3810,7 +3810,13 @@ class PrDraftController extends Controller
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $get_type->issuance)->first()->id_territory;
 
-        $cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group', 'role_user.user_id')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
+         $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+
+        $cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'group', 'role_user.user_id', 'mini_group')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
 
         $email_to = User::select('users.email as email_to')
                 ->where('name', $request->user)
@@ -3831,7 +3837,36 @@ class PrDraftController extends Controller
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`roles`.`name` = 'Operations Director' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             }
         } else {
-            $email_cc = User::oin('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Operations Director' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            if ($cek_group->name == 'Sales Staff') {
+                $email_cc = DB::table('users')->select('users.email')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->whereRaw("(`roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Operations Director' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            } elseif (Str::contains($cek_group->name, 'Manager')) {
+                $email_cc = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                ->whereRaw(
+                    "(`roles`.`name` LIKE ? AND `roles`.`group` = ? OR `roles`.`name` = ? OR `roles`.`name` = ? OR `users`.`nik` = ?)", 
+                    ['%VP',  $cek_group->group, 'VP Supply Chain, CPS & Asset Management', 'Operations Director',$cek_group->user_id]
+                )
+                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get();
+                // return $cek_group->group;
+            } else {
+                if ($cek_group->mini_group == 'Human Capital') {
+                    $email_cc = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                    ->whereRaw(
+                        "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ? OR `roles`.`name` = ? OR `roles`.`name` = ? OR `users`.`nik` = ?)", 
+                        [$cek_group->mini_group, '%Manager', 'Project Manager', 'VP Project Management', 'VP Supply Chain, CPS & Asset Management', 'Operations Director',$cek_group->user_id]
+                    )
+                    ->where('status_karyawan','!=','dummy')->where('id_company','1')->get();
+                } else {
+                    $email_cc = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                        ->whereRaw(
+                            "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`group` = ? AND `roles`.`name` LIKE ? OR `roles`.`name` = ? OR `roles`.`name` = ? OR `users`.`nik` = ?)", 
+                            [$cek_group->mini_group, '%Manager', 'Project Manager', $cek_group->group, 'VP%', 'VP Supply Chain, CPS & Asset Management', 'Operations Director',$cek_group->user_id]
+                        )
+                        ->where('status_karyawan','!=','dummy')->where('id_company','1')->get();
+                }
+            }
+
+
+            // $email_cc = User::oin('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Operations Director' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
         }
 
         // $email_cc = $email_cc->push(new User(['email' => 'bcd@sinergy.co.id']));
