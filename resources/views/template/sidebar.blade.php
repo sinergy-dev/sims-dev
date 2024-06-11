@@ -6,13 +6,13 @@
 		position: inherit;
 	}
 
-	.sidebar-menu{
-		margin: revert;
+	.img-circle{
+		
 	}
 </style>
 <aside class="main-sidebar">
-	<section class="sidebar">
-		<div class="user-panel">
+	<section class="master-container sidebar">
+		<div class="container-side user-panel">
 			<div class="pull-left image">
 				@if(Auth::User()->avatar != NULL)
 					<img src="{{Auth::User()->avatar}}" class="img-circle">
@@ -24,14 +24,16 @@
 					@endif
 				@endif
 			</div>
-			<div class="pull-left info" >
+			<div class="pull-left info">
 				<p>{{ Auth::User()->name }}</p>
-				<a href="#" style="text-wrap: wrap;"><i class="fa fa-circle text-success"></i>
+				<a href="#" style="text-wrap: wrap;" class="content-side"><i class="fa fa-circle text-success"></i>
 					{{$initView['userRole']->name}}
+					<!-- Operations Director Operations Director Operations Director
+					Operations Director Operations Director Operations Director  -->
 				</a>
 			</div>
 		</div>
-		<ul class="sidebar-menu tree" data-widget="tree">
+		<ul class="container-side sidebar-menu tree" data-widget="tree">
 			<li class="header">MAIN NAVIGATION</li>
 			@foreach($initView['listMenu'] as $key => $group)
 				<li class="treeview activeable_group">
@@ -95,6 +97,34 @@
 <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
 
 <script type="text/javascript">
+	$(document).ready(function() {	
+		loadSidebar()
+	})
+
+	function loadSidebar(){
+		const masterContainer = document.querySelector('.master-container');
+		const firstContainerContentHeight = masterContainer.querySelector('.container-side:first-child .info .content-side')
+		  // const computedStyle = window.getComputedStyle(firstContainerContentHeight)
+		  // const lineHeight = computedStyle.getPropertyValue('line-height')
+		let lineHeight = firstContainerContentHeight.offsetHeight;
+		if (lineHeight >= 14) {
+		  	lineHeight = lineHeight - 14
+		}else{
+		  	lineHeight = lineHeight
+		}
+
+		const containers = masterContainer.querySelectorAll('.container-side');
+
+		containers.forEach(function(container) {
+		    container.style.marginBottom = lineHeight + 'px';
+		});
+	}
+
+	$(".sidebar-toggle").click(function() {
+		setTimeout(function() {
+            loadSidebar()
+        }, 300);
+    });
 	//Disabled push notif
 	// var firebaseConfigSidebar = {
 	//     apiKey: "{{env('FIREBASE_APIKEY')}}",
