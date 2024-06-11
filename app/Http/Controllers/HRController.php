@@ -220,10 +220,10 @@ class HRController extends Controller
                 ->where('status_delete','!=','D')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
-                // ->orderBy('users.date_of_entry', 'asc')
                 ->orderBy('date_of_entrys', 'desc')
-                // ->whereRaw("(`roles`.`name` != 'PMO Admin' AND `users`.`name` != 'Novia Chandra')")
                 ->get();
+
+        $hr = $hr->unique('nik')->toArray();
 
         $data_resign = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
@@ -236,6 +236,8 @@ class HRController extends Controller
                 ->where('roles.name', '!=', 'PMO Admin')
                 ->get();
 
+        $data_resign = $data_resign->unique('nik')->toArray();
+
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                 ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
@@ -245,6 +247,8 @@ class HRController extends Controller
                 ->orderBy('users.date_of_entry', 'asc')
                 ->get();
 
+        $hr_msp = $hr_msp->unique('nik')->toArray();
+
         $data_resign_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                 ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
@@ -252,6 +256,8 @@ class HRController extends Controller
                 ->where('status_delete','D')
                 ->get();
 
+        $data_resign_msp = $data_resign_msp->unique('nik')->toArray();
+        
         $roles = DB::table('roles')->where('name', '!=', 'PMO Admin')->get();
 
         $code = $request['code_input'];     
