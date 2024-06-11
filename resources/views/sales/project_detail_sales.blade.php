@@ -2137,19 +2137,20 @@ Detail Lead Register
     })
 		
   	function addTagging(i){
-  		if ($('#table-tagging tr').length <= 0) {
-  			$("#btnRaiseTP").prop("disabled",false)
-  		}else{
-  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
-  					$("#btnRaiseTP").prop("disabled",false)
-  				}else{
-  					$("#btnRaiseTP").prop("disabled",true)
-  				}
-  			}else{
-  				$("#btnRaiseTP").prop("disabled",false)
-  			}
-  		}
+  		$("#btnRaiseTP").prop("disabled",true)
+  		// if ($('#table-tagging tr').length <= 0) {
+  		// 	$("#btnRaiseTP").prop("disabled",false)
+  		// }else{
+  		// 	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
+  		// 		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+  		// 			$("#btnRaiseTP").prop("disabled",false)
+  		// 		}else{
+  		// 			$("#btnRaiseTP").prop("disabled",true)
+  		// 		}
+  		// 	}else{
+  		// 		$("#btnRaiseTP").prop("disabled",false)
+  		// 	}
+  		// }
 
   		$.ajax({
         url: "{{url('/project/getProductTechTagDetail')}}",
@@ -2637,6 +2638,8 @@ Detail Lead Register
 
 		$(document).on('click', '.btn-trash-tagging', function() {
       $(this).closest("tr").remove();
+			$("#btnSubmitSD").prop("disabled",false)
+
       if ($('#tbtagging tr').length < 0) {
       	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
       		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
