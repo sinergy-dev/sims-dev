@@ -45,6 +45,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Intervention\Image\ImageManagerStatic as Image;
 
 use Illuminate\Http\Request;
+use LDAP\Result;
 
 class PMProjectController extends Controller
 {
@@ -53,7 +54,7 @@ class PMProjectController extends Controller
         set_time_limit(8000000);
     }
 
-	public function getClient()
+    public function getClient()
     {
         $client = new Google_Client();
         $client->setApplicationName('Google Drive API PHP Quickstart');
@@ -102,24 +103,24 @@ class PMProjectController extends Controller
     }
 
     public function pmoPmIndex(){
-		return view('PMO/pm_index')->with([
-			'initView' => $this->initMenuBase(),
-			'feature_item'=>$this->RoleDynamic('pmo')
-		]);
-	}
-
-	public function pmoPmDetail($id_pmo){
-		return view('PMO/pm_detail')->with([
-			'initView' => $this->initMenuBase(),
+        return view('PMO/pm_index')->with([
+            'initView' => $this->initMenuBase(),
             'feature_item'=>$this->RoleDynamic('pmo')
-		]);
-	}
+        ]);
+    }
 
-	public function pmoPMDashboard(){
-		return view('PMO/pm_dashboard')->with([
-			'initView' => $this->initMenuBase()
-		]);
-	}
+    public function pmoPmDetail($id_pmo){
+        return view('PMO/pm_detail')->with([
+            'initView' => $this->initMenuBase(),
+            'feature_item'=>$this->RoleDynamic('pmo')
+        ]);
+    }
+
+    public function pmoPMDashboard(){
+        return view('PMO/pm_dashboard')->with([
+            'initView' => $this->initMenuBase()
+        ]);
+    }
 
     public function mailPMO(Request $request){
         return view('mail/MailPMOProject');
@@ -133,8 +134,8 @@ class PMProjectController extends Controller
         return 'deleted';
     }
 
-	public function getListDataProject(Request $request){
-		// $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+    public function getListDataProject(Request $request){
+        // $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
   //                       ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
 
   //       $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -143,21 +144,21 @@ class PMProjectController extends Controller
   //       $data =  PMO::LeftjoinSub($getListLeadRegister, 'project_id', function($join){
   //                   $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
   //               })
-		// 		->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
-		// 		->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
+        //      ->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
+        //      ->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
   //       if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
-  //       	$data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array','type_project_array']);
+  //        $data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array','type_project_array']);
   //           // $data = PMO::get();
   //       } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
-  //       	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-		// 		->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
-		// 		->get()->makeHidden(['type_project_array','phase']);
+  //        $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
+        //      ->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
+        //      ->get()->makeHidden(['type_project_array','phase']);
   //           // $data = PMO::get();
   //       } else {
-  //       	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-		// 		->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
-		// 		->get()->makeHidden(['type_project_array','phase']);
+  //        $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
+        //      ->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
+        //      ->get()->makeHidden(['type_project_array','phase']);
 
   //           // $data = PMO::where('assign_pm', Auth::User()->nik)->get();
   //       }
@@ -177,7 +178,7 @@ class PMProjectController extends Controller
 
         $data =  PMO::select('tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
-        if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
+        if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager' || $cek_role->name == 'Operations Director' || $cek_role->name == 'VP Product Management & Development Solution') {
             $data = $data->orderBy('tb_pmo.id','desc');
         } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
             $data = $data->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
@@ -313,7 +314,7 @@ class PMProjectController extends Controller
             'length' => $pageLength,
             'data' => $data,
         ]);
-	}
+    }
 
     public function deleteDoc(Request $request)
     {
@@ -343,59 +344,59 @@ class PMProjectController extends Controller
         return array("data"=>$data);
     }
 
-	public function getUser(Request $request)
-	{
-		$getUser = User::selectRaw('`users`.`nik` AS `id`,`users`.`name` AS `text`, `users`.`email`, `users`.`phone`')->where('status_karyawan', '!=', 'dummy')->where('id_company','1');
+    public function getUser(Request $request)
+    {
+        $getUser = User::selectRaw('`users`.`nik` AS `id`,`users`.`name` AS `text`, `users`.`email`, `users`.`phone`')->where('status_karyawan', '!=', 'dummy')->where('id_company','1');
 
-		if (isset($request->nik)) {
-			$getUser->where('users.nik', $request->nik);
-		}
+        if (isset($request->nik)) {
+            $getUser->where('users.nik', $request->nik);
+        }
 
         return array("data" => $getUser->get());
-	}
+    }
 
-	public function getListDataPid(Request $req){
-		$fk_id_project = PMO::select('project_id');
+    public function getListDataPid(Request $req){
+        $fk_id_project = PMO::select('project_id');
         // ->makeHidden(['indicator_project', 'sign', 'type_project','name_project','owner','no_po','project_pm','project_pc','phase']);
         // $fk_id_project->setAppends([]);
         // $fk_id_project = DB::table('tb_pmo')->select('project_id')->get();
 
-		$data = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
-			->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-			->selectRaw('`tb_id_project`.`id_project` AS `id`,`tb_id_project`.`id_project` AS `text`,`sales_lead_register`.`opp_name`')->where('sales_lead_register.result','=','WIN')
-			// ->where('sales_lead_register.year','=',date('Y'))
-			->where('users.id_company', '1')
-			->whereNotIn('tb_id_project.id_project',function($query) use ($fk_id_project) {
-            	$query->select('id_project')->whereIn('id_project',$fk_id_project)->from('tb_id_project');
-        	})
+        $data = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+            ->selectRaw('`tb_id_project`.`id_project` AS `id`,`tb_id_project`.`id_project` AS `text`,`sales_lead_register`.`opp_name`')->where('sales_lead_register.result','=','WIN')
+            // ->where('sales_lead_register.year','=',date('Y'))
+            ->where('users.id_company', '1')
+            ->whereNotIn('tb_id_project.id_project',function($query) use ($fk_id_project) {
+                $query->select('id_project')->whereIn('id_project',$fk_id_project)->from('tb_id_project');
+            })
             ->orderBy('tb_id_project.date','desc');
 
-		if (isset($req->pid)) {
-			$data->where('tb_id_project.id_project','=',$req->pid);
-		}
+        if (isset($req->pid)) {
+            $data->where('tb_id_project.id_project','=',$req->pid);
+        }
 
-		return $data->get();
-	}
+        return $data->get();
+    }
 
-	public function getListforProjectCharterById(Request $request){
-		// $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
-		// 				->join('users','users.nik','=','sales_lead_register.nik')
+    public function getListforProjectCharterById(Request $request){
+        // $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+        //              ->join('users','users.nik','=','sales_lead_register.nik')
   //                       ->select('opp_name as name_project','tb_id_project.id_project as id_project','name as owner','no_po_customer');
 
-		// $data = DB::table("tb_pmo")->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
+        // $data = DB::table("tb_pmo")->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
   //                   $join->on('tb_pmo.project_id', '=', 'project_id.id_project');
   //               })->join('tb_pmo_assign','tb_pmo_assign.id_project','=','tb_pmo.id')
-		// 		->join('users','users.nik','=','tb_pmo_assign.nik')
-		// 		->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',DB::raw('(CASE WHEN role = "Project Manager" THEN name END) AS project_pm'),DB::raw('(CASE WHEN role = "Project Coordinator" THEN name END) AS project_pc'));
+        //      ->join('users','users.nik','=','tb_pmo_assign.nik')
+        //      ->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',DB::raw('(CASE WHEN role = "Project Manager" THEN name END) AS project_pm'),DB::raw('(CASE WHEN role = "Project Coordinator" THEN name END) AS project_pc'));
 
 
         return $data = PMO::where('tb_pmo.id',$request->id_pmo)->get()->makeHidden(['indicator_project', 'sign','type_project','status']);
 
-		// return $data->where('tb_pmo.id',$request->id_pmo)->get();
-	}
+        // return $data->where('tb_pmo.id',$request->id_pmo)->get();
+    }
 
-	public function downloadProjectCharterPdf(Request $request){
-    	// $pdf = PDF::loadView('PMO.Pdf.projectCharter');
+    public function downloadProjectCharterPdf(Request $request){
+        // $pdf = PDF::loadView('PMO.Pdf.projectCharter');
         $data = PMOProjectCharter::join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->where('tb_pmo_project_charter.id_project',$request->id_pmo)->first();
         $data = json_decode($data,true);
 
@@ -417,12 +418,12 @@ class PMProjectController extends Controller
 
     public function downloadProgressMeetingPdf(Request $request){
 
-        $data = PMOProgressReport::join('tb_pmo', 'tb_pmo.id','tb_pmo_progress_report.id_project')->where('tb_pmo_progress_report.id_project', $request->id_pmo)->first();
+        $data = PMOProgressReport::join('tb_pmo', 'tb_pmo.id','tb_pmo_progress_report.id_project')->where('tb_pmo_progress_report.id_project', $request->id_pmo)->orderby('tb_pmo_progress_report.id','desc')->first();
         $data = json_decode($data,true);
 
         // return $data;
 
-    	$pdf = PDF::loadView('PMO.Pdf.progressMeeting', compact('data'));
+        $pdf = PDF::loadView('PMO.Pdf.progressMeeting', compact('data'));
         $fileName = ' Project Progress Report.pdf';
         
         return $pdf->stream($fileName);
@@ -442,7 +443,7 @@ class PMProjectController extends Controller
 
     public function getPMStaff()
     {
-    	$getPMStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_position` = 'PM' OR `id_position` = 'PM SPV')")->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
+        $getPMStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_position` = 'PM' OR `id_position` = 'PM SPV')")->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
         $getPCStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_position` = 'SERVICE PROJECT')")->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPMStaff->merge($getPCStaff));
@@ -450,7 +451,7 @@ class PMProjectController extends Controller
 
     public function getPCStaff()
     {
-    	$getPCStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_position','SERVICE PROJECT')->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
+        $getPCStaff = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_position','SERVICE PROJECT')->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPCStaff);
     }
@@ -459,7 +460,11 @@ class PMProjectController extends Controller
     {
         $get_project_type = PMO::where('id', $request->id_pmo)->first();
         if (count($get_project_type->type_project_array) == 2) {
-            $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
+            if($get_project_type->project_type == $get_project_type->type_project_array[0]){
+                $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
+            } else {
+                $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo-1)->first();
+            }
         } else {
             $get_technology_used = PMO::join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
         }
@@ -474,6 +479,8 @@ class PMProjectController extends Controller
             } elseif ($implementation_type == '["service","license"]'){
                 // return substr($implementation_type, 12,18);
                 $implementation_type = 'license';
+            } elseif($implementation_type == '["service"]'){
+                $implementation_type = 'service';
             }
         }
         
@@ -494,10 +501,10 @@ class PMProjectController extends Controller
             $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Executing')->get();
             $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Closing')->get();
         }
-    	
+        
 
-    	// return $dataInitiating;
-    	return collect([
+        // return $dataInitiating;
+        return collect([
             "Initiating" => $dataInitiating,
             "Planning" => $dataPlanning,
             "Executing" => $dataExecuting,
@@ -643,27 +650,27 @@ class PMProjectController extends Controller
 
     public function storeProjectCharter(Request $request)
     {
-    	$store = new PMOProjectCharter();
-    	$store->id_project = $request['id_pmo'];
-    	$store->customer_name = $request['inputCustomer'];
-    	$store->customer_address = $request['textAreaAddress'];
-    	$store->customer_phone = $request['inputPhone'];
-    	$store->customer_cp = $request['inputContactPerson'];
-    	$store->customer_cp_title = $request['inputCpTitle'];
-    	$store->customer_email = $request['inputEmail'];
-    	$store->customer_cp_phone = $request['inputCpPhone'];
-    	$store->project_description = $request['textAreaProjectDesc'];
-    	$store->project_objectives = $request['textAreaProjectObj'];
+        $store = new PMOProjectCharter();
+        $store->id_project = $request['id_pmo'];
+        $store->customer_name = $request['inputCustomer'];
+        $store->customer_address = $request['textAreaAddress'];
+        $store->customer_phone = $request['inputPhone'];
+        $store->customer_cp = $request['inputContactPerson'];
+        $store->customer_cp_title = $request['inputCpTitle'];
+        $store->customer_email = $request['inputEmail'];
+        $store->customer_cp_phone = $request['inputCpPhone'];
+        $store->project_description = $request['textAreaProjectDesc'];
+        $store->project_objectives = $request['textAreaProjectObj'];
 
-    	$start_date = strtotime($_POST['inputStartDate']); 
-    	$start_date = date("Y-m-d",$start_date);
-    	$store->estimated_start_date = $start_date;
+        $start_date = strtotime($_POST['inputStartDate']); 
+        $start_date = date("Y-m-d",$start_date);
+        $store->estimated_start_date = $start_date;
 
-    	$end_date = strtotime($_POST['inputFinishDate']); 
-    	$end_date = date("Y-m-d",$end_date);
-    	$store->estimated_end_date = $end_date;
+        $end_date = strtotime($_POST['inputFinishDate']); 
+        $end_date = date("Y-m-d",$end_date);
+        $store->estimated_end_date = $end_date;
 
-    	$store->flexibility = $request['selectFlexibility'];
+        $store->flexibility = $request['selectFlexibility'];
         $store->scope_of_work = $request['textAreaSOW'];
         $store->out_of_scope = $request['textAreaOutOfScope'];
         $store->customer_requirement = $request['textAreaCustomerRequirement'];
@@ -693,45 +700,45 @@ class PMProjectController extends Controller
 
         $dataStakeholder = json_decode($request->arrInternalStakeHolder,true);
         foreach ($dataStakeholder as $key => $value) {
-        	$store_stakeholder = new PMOInternalStakeholder();
-	        $store_stakeholder->id_project_charter = $store->id;
+            $store_stakeholder = new PMOInternalStakeholder();
+            $store_stakeholder->id_project_charter = $store->id;
             $store_stakeholder->id_project = $request['id_pmo'];
-	        $store_stakeholder->nik = $value['nik'];
-	        $store_stakeholder->role = $value['role'];
-	        $store_stakeholder->date_time = Carbon::now()->toDateTimeString();
-	        $store_stakeholder->save();
+            $store_stakeholder->nik = $value['nik'];
+            $store_stakeholder->role = $value['role'];
+            $store_stakeholder->date_time = Carbon::now()->toDateTimeString();
+            $store_stakeholder->save();
         }
 
         $dataTechUse = json_decode($request->arrCbTechUse,true);
         foreach ($dataTechUse as $key => $value) {
-        	$store_technology = new PMOTechnologyUsed();
-	        $store_technology->id_project_charter = $store->id;
-	        $store_technology->technology_used = $value;
-	        $store_technology->date_time = Carbon::now()->toDateTimeString();
-	        $store_technology->save();
+            $store_technology = new PMOTechnologyUsed();
+            $store_technology->id_project_charter = $store->id;
+            $store_technology->technology_used = $value;
+            $store_technology->date_time = Carbon::now()->toDateTimeString();
+            $store_technology->save();
         }
 
         $dataRisk = json_decode($request->arrIdentifiedRisk,true);
         foreach ($dataRisk as $key => $value) {
-        	$store_risk = new PMORisk();
+            $store_risk = new PMORisk();
             $store_risk->id_project =  $request->id_pmo;
-        	$store_risk->risk_description = $value['risk'];
-        	$store_risk->risk_owner = $value['owner'];
-        	$store_risk->impact = $value['impact'];
-        	$store_risk->risk_response = $value['response'];
-        	$store_risk->likelihood = $value['likelihood'];
-        	// $store_risk->impact_description = $value['description'];
+            $store_risk->risk_description = $value['risk'];
+            $store_risk->risk_owner = $value['owner'];
+            $store_risk->impact = $value['impact'];
+            $store_risk->risk_response = $value['response'];
+            $store_risk->likelihood = $value['likelihood'];
+            $store_risk->impact_description = $value['impactDescription'];
 
-        	$due_date = strtotime($value['due_date']); 
-	    	$due_date = date("Y-m-d",$due_date);
-        	$store_risk->due_date = $due_date;
+            $due_date = strtotime($value['due_date']); 
+            $due_date = date("Y-m-d",$due_date);
+            $store_risk->due_date = $due_date;
 
-        	$review_date = strtotime($value['review_date']); 
-	    	$review_date = date("Y-m-d",$review_date);
-        	$store_risk->review_date = $review_date;
-        	$store_risk->status = $value['status'];
-        	$store_risk->date_time = Carbon::now()->toDateTimeString();
-        	$store_risk->save();
+            $review_date = strtotime($value['review_date']); 
+            $review_date = date("Y-m-d",$review_date);
+            $store_risk->review_date = $review_date;
+            $store_risk->status = $value['status'];
+            $store_risk->date_time = Carbon::now()->toDateTimeString();
+            $store_risk->save();
         }
 
         $get_id_pmo = PMO::where('id', $request->id_pmo)->first();
@@ -904,7 +911,7 @@ class PMProjectController extends Controller
                 $nameDoc                = $fileName;
                 $extension              = $file->getClientOriginalExtension();
                 $check                  = in_array($extension,$allowedfileExtension);
-                $tambah_dok 			= new PMODocument();
+                $tambah_dok             = new PMODocument();
                 if ($check) {
                     $this->uploadToLocal($request->file('inputDocPendukung')[$key],$directory,$nameDoc);
                     $tambah_dok->document_name             = $data['nameDocPendukung'];
@@ -1062,7 +1069,7 @@ class PMProjectController extends Controller
             $store_risk->risk_response = $value['response'];
             $store_risk->likelihood = $value['likelihood'];
             $store_risk->impact_rank = (int)$value['impact']*(int)$value['likelihood'];
-            // $store_risk->impact_description = $value['description'];
+            $store_risk->impact_description = $value['impactDescription'];
 
             $due_date = strtotime($value['due_date']); 
             $due_date = date("Y-m-d",$due_date);
@@ -1181,7 +1188,7 @@ class PMProjectController extends Controller
 
         // return $end_date . $update->estimated_end_date;
         if ($end_date != $update->estimated_end_date) {
-            $this->postEventCalendar($name_project_calendar,$end_date,array(Auth::User()->email,User::where('id_division','PMO')->where('id_position','MANAGER')->first()->email));
+            $this->postEventCalendar($name_project_calendar,$end_date,array(Auth::User()->email,User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->orwhere('roles.name','VP Project Management')->first()->email));
         }
         // return $update->name_project;
         $update->project_description = $request['textAreaProjectDesc'];
@@ -1531,14 +1538,14 @@ class PMProjectController extends Controller
 
         // }
 
-        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'PMO Manager')->first()->email;
+        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
 
         $mail = new MailPMProject(collect([
                 "image"         => 'project_charter.png',
                 "subject_email" => 'New Project Charter',
                 "subject"       => 'There is new project charter,',
                 "pid"           => $datas->project_id,
-                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'PMO Manager')->select('users.name as name')->first()->name,
+                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->select('users.name as name')->first()->name,
                 "name_project"  => DB::table('tb_id_project')->where('id_project',$datas->project_id)->first()->name_project,
                 // "project_type"  => $project_type,
                 "project_type"  => $datas->type_project,
@@ -1632,11 +1639,28 @@ class PMProjectController extends Controller
             ->where('users.status_karyawan', '!=', 'dummy');
 
         if ($data->project_type == 'maintenance') {
-           $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-           ->orderByRaw('FIELD(position, "PMO Project Coordinator","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
-        } else {
-            $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "PMO Staff","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+            foreach ($sign->get() as $key => $value) {
+                if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                } else{
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                }
+            }
+
+        } else if ($data->project_type == 'implementation'){
+            foreach ($sign->get() as $key => $value) {
+                if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","Operations Director")');
+                    return $sign->get();
+                } else {
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                }
+            }
+            
         }
 
         $status = 'all';
@@ -1856,40 +1880,40 @@ class PMProjectController extends Controller
 
     public function showProjectCharter(Request $request)
     {
-    	$getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
-						->join('users','users.nik','=','sales_lead_register.nik')
-                        ->select('opp_name as name_project','tb_id_project.id_project as id_project','name as owner','no_po_customer','tb_id_project.amount_idr as amount');
+        $getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+                        ->join('users','users.nik','=','sales_lead_register.nik')
+                        ->select('opp_name as name_project','tb_id_project.id_project as id_project','name as owner','no_po_customer','tb_id_project.amount_idr as amount','impact_description');
 
-        	// $data = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
+            // $data = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
           //                   $join->on('tb_pmo.project_id', '=', 'project_id.id_project');
           //               })->join('tb_pmo_assign','tb_pmo_assign.id_project','=','tb_pmo.id')
-        		// 		->join('users','users.nik','=','tb_pmo_assign.nik')
-        		// 		// ->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
-        		// 		->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',
-        		// 			DB::raw('(CASE WHEN role = "Project Manager" THEN name END) AS project_pm'),
-        		// 			DB::raw('(CASE WHEN role = "Project Coordinator" THEN name END) AS project_pc'),
-        		// 			'project_description',
-        		// 			'project_objectives',
-        		// 			'estimated_start_date',
-        		// 			'estimated_end_date',
-        		// 			'flexibility',
-        		// 			'scope_of_work',
-        		// 			'out_of_scope',
-        		// 			'customer_requirement',
-        		// 			'terms_of_payment',
-        		// 			'tb_pmo_project_charter.date_time',	
-        		// 			'customer_name',	
-        		// 			'customer_phone',	
-        		// 			'customer_cp',	
-        		// 			'customer_email',	
-        		// 			'customer_cp_phone',	
-        		// 			'customer_cp_title',
-        		// 			'market_segment', 'customer_address')
+                //      ->join('users','users.nik','=','tb_pmo_assign.nik')
+                //      // ->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
+                //      ->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',
+                //          DB::raw('(CASE WHEN role = "Project Manager" THEN name END) AS project_pm'),
+                //          DB::raw('(CASE WHEN role = "Project Coordinator" THEN name END) AS project_pc'),
+                //          'project_description',
+                //          'project_objectives',
+                //          'estimated_start_date',
+                //          'estimated_end_date',
+                //          'flexibility',
+                //          'scope_of_work',
+                //          'out_of_scope',
+                //          'customer_requirement',
+                //          'terms_of_payment',
+                //          'tb_pmo_project_charter.date_time', 
+                //          'customer_name',    
+                //          'customer_phone',   
+                //          'customer_cp',  
+                //          'customer_email',   
+                //          'customer_cp_phone',    
+                //          'customer_cp_title',
+                //          'market_segment', 'customer_address')
           //               ->where('tb_pmo_project_charter.id_project',$request->id_pmo)->get();
 
         $data = PMOProjectCharter::join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->where('tb_pmo_project_charter.id_project',$request->id_pmo)->get();
 
-    	return $data;
+        return $data;
     }
 
 
@@ -1973,7 +1997,7 @@ class PMProjectController extends Controller
         $pid = PMO::where('id',$request->id_pmo)->first()->project_id;
 
         $milestone = 'false';
-        if(DB::table('tb_pmo_activity')->where('id_project',$request->id_pmo)->where('activity', 'Add Milestone')->exists()){
+        if(DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->exists()){
             $milestone = 'true';
         }
 
@@ -2447,7 +2471,7 @@ class PMProjectController extends Controller
         } else {
             $update_phase->current_phase = 'Planning';
         }
-        $upddate_phase->gantt_status = 'defined';
+        $update_phase->gantt_status = 'defined';
         $update_phase->save();
     }
 
@@ -2630,7 +2654,7 @@ class PMProjectController extends Controller
         $store = new PMOProgressReport;
         $store->reporting_date      = $request->date_report_date;
         $store->overall_progress    = $request->overall_progress;
-        $store->project_summary     = $request->textareaStatusSummary;
+        $store->project_summary     = mb_convert_encoding($request->textareaStatusSummary, "UTF-8", "ISO-8859-1");
         if ($request->textareaNoteSummaryHealth == "undefined" || $request->textareaNoteSummaryHealth == '') {
             $store->note                = "-";
         }else{
@@ -2785,14 +2809,14 @@ class PMProjectController extends Controller
                 $datas = PMO::where('id',$request->id_pmo)->first();
 
 
-                $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'PMO Manager')->first()->email;
+                $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
 
                 $mail = new MailPMProject(collect([
                         "image"         => 'sirkulasi_pr.png',
                         "subject_email" => 'New Final Report',
                         "subject"       => 'There is new final report,',
                         "pid"           => $data->project_id,
-                        "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'PMO Manager')->select('users.name as name')->first()->name,
+                        "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->select('users.name as name')->first()->name,
                         "name_project"  => DB::table('tb_id_project')->where('id_project',$data->project_id)->first()->name_project,
                         "project_type"  => $datas->type_project,
                         "sales_owner"   => $data->name,
@@ -2856,14 +2880,14 @@ class PMProjectController extends Controller
 
             $datas = PMO::where('id',$request->id_pmo)->first();
 
-            $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'PMO Manager')->first()->email;
+            $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
 
             $mail = new MailPMProject(collect([
                     "image"         => 'sirkulasi_pr.png',
                     "subject_email" => 'New Final Report',
                     "subject"       => 'There is new final report,',
                     "pid"           => $data->project_id,
-                    "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'PMO Manager')->select('users.name as name')->first()->name,
+                    "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->select('users.name as name')->first()->name,
                     "name_project"  => DB::table('tb_id_project')->where('id_project',$data->project_id)->first()->name_project,
                     "project_type"  => $datas->type_project,
                     "sales_owner"   => $data->name,
@@ -3195,7 +3219,7 @@ class PMProjectController extends Controller
         $service = new Google_Service_Drive($client);
         $directory = '';
 
-        $data = DB::table('tb_pmo')->join('tb_pmo_progress_report','tb_pmo_progress_report.id_project','tb_pmo.id')->select('parent_id_drive','project_id')->where('tb_pmo.id', $id_pmo)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_progress_report','tb_pmo_progress_report.id_project','tb_pmo.id')->select('parent_id_drive','project_id')->where('tb_pmo.id', $id_pmo)->orderby('tb_pmo_progress_report.id','desc')->first();
         $count_periode = DB::table('tb_pmo_progress_report')->where('tb_pmo_progress_report.id_project',$id_pmo)->count();
         // return $count_periode;
 
@@ -3601,7 +3625,7 @@ class PMProjectController extends Controller
         $spreadsheet->removeSheetByIndex(0);
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->mergeCells('A1:J1');
+        $sheet->mergeCells('A1:K1');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
@@ -3615,18 +3639,18 @@ class PMProjectController extends Controller
         $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID];
         $titleStyle['font']['bold'] = true;
 
-        $sheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+        $sheet->getStyle('A1:K1')->applyFromArray($titleStyle);
         $sheet->setCellValue('A1','Project Risk Management - Id Project [ '. $getIdProject.' ]');
 
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
         $headerStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER];
-        $sheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+        $sheet->getStyle('A2:K2')->applyFromArray($headerStyle);
 
         $headerContent = ["No", "Risk Description", "Risk Owner", "Impact", "Likelihood",  "Impact Rank", "Risk Response", "Due Date", "Review Date", "Status"];
         $sheet->fromArray($headerContent,NULL,'A2');
 
-        $risks = PMORisk::select('risk_description','risk_owner','impact','likelihood','impact_rank','risk_response','due_date','review_date','status')->where('id_project',$request->id_pmo)->get();
+        $risks = PMORisk::select('risk_description','risk_owner','impact','likelihood','impact_rank','impact_description','risk_response','due_date','review_date','status')->where('id_project',$request->id_pmo)->get();
 
         foreach ($risks as $key => $data) {
             $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 3));
@@ -3642,6 +3666,7 @@ class PMProjectController extends Controller
         $sheet->getColumnDimension('H')->setAutoSize(true);
         $sheet->getColumnDimension('I')->setAutoSize(true);
         $sheet->getColumnDimension('J')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setAutoSize(true);
 
 
 

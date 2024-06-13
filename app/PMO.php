@@ -118,7 +118,7 @@ class PMO extends Model
 
     public function getIndicatorProjectAttribute()
     {
-        $data = DB::table('tb_pmo')->join('tb_pmo_progress_report','tb_pmo.id','tb_pmo_progress_report.id_project')->select('project_indicator')->where('tb_pmo_progress_report.id_project',$this->id)->orderBy('tb_pmo_progress_report.reporting_date','desc')->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_progress_report','tb_pmo.id','tb_pmo_progress_report.id_project')->select('project_indicator')->where('tb_pmo_progress_report.id_project',$this->id)->orderBy('tb_pmo_progress_report.id','desc')->first();
 
         return empty($data->project_indicator)?'-':$data->project_indicator;
     }
@@ -187,11 +187,27 @@ class PMO extends Model
             ->where('users.status_karyawan', '!=', 'dummy');
 
         if ($this->project_type == 'maintenance') {
-           $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "PMO Project Coordinator","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+            foreach ($sign->get() as $key => $value) {
+                if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                } else{
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                }
+            }
+
         } else if ($this->project_type == 'implementation'){
-            $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "PMO Staff","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+            foreach ($sign->get() as $key => $value) {
+                if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                } else {
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                }
+            }
+            
         }
 
         // return $sign->get();

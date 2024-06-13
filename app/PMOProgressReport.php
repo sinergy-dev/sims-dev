@@ -20,10 +20,12 @@ class PMOProgressReport extends Model
 
     public function getPeriodeAttribute()
     {
+        $periodeStart = Carbon::parse($this->reporting_date)->subDays(7)->format('Y-m-d');
+        $periodeEnd = Carbon::parse($this->reporting_date)->subDays(1)->format('Y-m-d');
         $startOfWeek = Carbon::now()->startOfWeek()->format('d M Y');
         $endOfWeek = Carbon::now()->endOfWeek()->format('d M Y');
 
-        return $startOfWeek . ' - ' . $endOfWeek;
+        return $periodeStart . ' - ' . $periodeEnd;
     }
 
     public function getProjectPmAttribute()
@@ -42,7 +44,17 @@ class PMOProgressReport extends Model
 
     public function getCpNameAttribute()
     {
-        $data = DB::table('tb_pmo_progress_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_progress_report.id_project')->join('tb_pmo_project_charter', 'tb_pmo.id','tb_pmo_project_charter.id_project')->select('customer_cp')->where('tb_pmo_progress_report.id_project', $this->id_project)->first();
+        $get_project_type = PMO::where('id', $this->id_project)->first();
+        if (count($get_project_type->type_project_array) == 2) {
+            if($get_project_type->project_type == $get_project_type->type_project_array[0]->project_type){
+                $data = DB::table('tb_pmo_progress_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_progress_report.id_project')->join('tb_pmo_project_charter', 'tb_pmo.id','tb_pmo_project_charter.id_project')->select('customer_cp')->where('tb_pmo_progress_report.id_project', $this->id_project)->first();
+            } else {
+                $data = DB::table('tb_pmo')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->select('customer_cp')->where('tb_pmo.id',$this->id_project-1)->first();
+            }
+        } else {
+            $data = DB::table('tb_pmo_progress_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_progress_report.id_project')->join('tb_pmo_project_charter', 'tb_pmo.id','tb_pmo_project_charter.id_project')->select('customer_cp')->where('tb_pmo_progress_report.id_project', $this->id_project)->first();
+        }
+
         return $data->customer_cp;
     }
 
@@ -55,9 +67,18 @@ class PMOProgressReport extends Model
 
     public function getCustomerInfoAttribute()
     {
-    	$data = DB::table('tb_pmo_progress_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_progress_report.id_project')->join('tb_pmo_project_charter', 'tb_pmo_project_charter.id_project', 'tb_pmo.id')->join('tb_id_project', 'tb_id_project.id_project', 'tb_pmo.project_id')->select('logo_company', 'tb_id_project.customer_name', 'name_project')->where('tb_pmo_progress_report.id_project', $this->id_project)->first();
+        $get_project_type = PMO::where('id', $this->id_project)->first();
+        if (count($get_project_type->type_project_array) == 2) {
+            if($get_project_type->project_type == $get_project_type->type_project_array[0]->project_type){
+                $data = DB::table('tb_pmo_progress_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_progress_report.id_project')->join('tb_pmo_project_charter', 'tb_pmo_project_charter.id_project', 'tb_pmo.id')->join('tb_id_project', 'tb_id_project.id_project', 'tb_pmo.project_id')->select('logo_company', 'tb_id_project.customer_name', 'name_project')->where('tb_pmo_progress_report.id_project', $this->id_project)->first();
+            } else {
+                $data = DB::table('tb_pmo')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_id_project', 'tb_id_project.id_project', 'tb_pmo.project_id')->select('logo_company', 'tb_id_project.customer_name', 'name_project')->where('tb_pmo.id',$this->id_project-1)->first();
+            }
+        } else {
+            $data = DB::table('tb_pmo_progress_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_progress_report.id_project')->join('tb_pmo_project_charter', 'tb_pmo_project_charter.id_project', 'tb_pmo.id')->join('tb_id_project', 'tb_id_project.id_project', 'tb_pmo.project_id')->select('logo_company', 'tb_id_project.customer_name', 'name_project')->where('tb_pmo_progress_report.id_project', $this->id_project)->first();
+        }
 
-    	return $data;
+        return $data;
     }
 
     public function getGetMilestoneReachedAttribute()

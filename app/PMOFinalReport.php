@@ -145,13 +145,13 @@ class PMOFinalReport extends Model
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy');
 
-        if ($data->project_type == 'maintenance') {
-           $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER')")
-            ->orderByRaw('FIELD(position, "Project Coordinator","PMO Manager")');
-        } else {
-            $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER')")
-            ->orderByRaw('FIELD(position, "Project Manager","PMO Manager")');
-        }
+            if ($data->project_type == 'maintenance') {
+               $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` =  'Project Management Manager')")
+                ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager")');
+            } else {
+                $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager')")
+                ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager")');
+            }
 
         return $sign->get();
     }

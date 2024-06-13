@@ -1093,7 +1093,7 @@
       </p>
       <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none' width=564>
         <tr style='height:17.5pt'>
-          <td colspan=6 style='border:solid windowtext 1.0pt;background:#1F497D;padding:0in 5.4pt 0in 5.4pt;height:17.5pt'>
+          <td colspan=7 style='border:solid windowtext 1.0pt;background:#1F497D;padding:0in 5.4pt 0in 5.4pt;height:17.5pt'>
             <p class=MsoBodyText align=center style='text-align:center'>
               <b>
                 <span lang=EN-GB style='color:white'>Initial Identified Risk</span>
@@ -1144,6 +1144,13 @@
               </b>
             </p>
           </td>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+            <p class=MsoBodyText>
+              <b>
+                <span lang=EN-GB style='font-size:9.0pt;color:black'>Impact Description</span>
+              </b>
+            </p>
+          </td>
         </tr>
         <?php
           $no=1;$noRisk=1
@@ -1178,6 +1185,11 @@
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt;'>
             <p class=MsoBodyText>
               <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$risk['risk_response']}}</span>
+            </p>
+          </td>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt;'>
+            <p class=MsoBodyText>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$risk['impact_description']}}</span>
             </p>
           </td>
         </tr>
