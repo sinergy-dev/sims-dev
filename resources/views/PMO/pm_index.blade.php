@@ -245,7 +245,7 @@ PMO
 
                   <div class="form-group">
                     <label for="">Phone*</label>
-                    <input autocomplete="off" type="number" class="form-control" placeholder="Customer Phone" id="inputPhone" name="inputPhone" onkeyup="validationCheck(this)">
+                    <input autocomplete="off" class="form-control" placeholder="Customer Phone" id="inputPhone" name="inputPhone" onkeyup="validationCheck(this)">
                     <span class="help-block" style="display:none;">Please fill Customer Phone!</span>
                   </div>    
 
@@ -524,16 +524,16 @@ PMO
                                 </div>
                               </div>
                             </div>
-                   <!--          <div class="form-group">
+                            <!-- <div class="form-group">
                               <label>Rank*</label>
                               <input class="form-control" placeholder="Rank" id="inputRank" name="inputRank" data-value="0" onkeyup="validationCheck(this)"/>
                               <span class="help-block" style="display:none;">Please fill Rank!</span>
-                            </div>
-                            <div class="form-group">
-                              <label>Description*</label>
-                              <textarea class="form-control" placeholder="Description" id="textareaDescription" name="textareaDescription" data-value="0" onkeyup="validationCheck(this)"></textarea>
-                              <span class="help-block" style="display:none;">Please fill Description!</span>
                             </div> -->
+                            <div class="form-group">
+                              <label>Impact Description*</label>
+                              <textarea class="form-control" placeholder="Impact Description" id="txtAreaImpactDesc" name="txtAreaImpactDesc" data-value="0" onkeyup="validationCheck(this)"></textarea>
+                              <span class="help-block" style="display:none;">Please fill Impact Description!</span>
+                            </div>
                             <div class="row">
                               <div class="col-md-12 col-xs-12">
                                 <div class="form-group">
@@ -654,6 +654,7 @@ PMO
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha512-2cbsQGdowNDPcKuoBd2bCcsJky87Mv0LEtD/nunJUgk6MOYTgVMGihS/xCEghNf04DPhNiJ4DZw5BxDd1uyOdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -662,17 +663,7 @@ PMO
       $("#" + item).show()
     })
 
-    $(document).ready(function(){
-      // history.pushState(null, null, window.location.href);
-      // history.back();
-      // window.onpopstate = () => history.forward();
-      // setTimeout("preventBack()", 0);
-      // window.onunload = function () { null };
-    })
-
-    // function preventBack() {
-    //     window.history.forward();
-    // }
+    $("#inputPhone").inputmask({"mask": "999-999-999-999"})
 
     $('input[class="document"]').change(function(){
       var f=this.files[0]
@@ -777,7 +768,7 @@ PMO
               let warning = ''
 
               if (row.status == 'Reject') {
-                if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                   warning = '<br><small style="color:red">Please wait update from PM/PC, this project charter has been rejected</small>'
                 }else{
                   warning = ''
@@ -785,7 +776,7 @@ PMO
               }else{
                 if (row.project_type != 'supply_only') {
                   if(row.status == 'New'){
-                    if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Staff')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Project Coordinator')->exists()}}") {
+                    if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Staff')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                       warning = '<br><small style="color:red">Project Charter will processed soon, please wait for further progress</small>'
                     }else{
                       warning = ''
@@ -926,7 +917,7 @@ PMO
                           		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
                           	}
 
-                        		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                        		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                               if (row.type_project == "Implementation + Maintenance & Managed Service") {
                                 if (row.project_type == "maintenance") {
                                     return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
@@ -947,13 +938,13 @@ PMO
                         		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
                         	}
 
-                        	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                        	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                           	return '<button class="btn btn-sm btn-primary" style="width:110px" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         	}else{
                           	return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnAddProjectCharter" 	name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         	}                          
                       }else if(row.status == 'Reject'){
-                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                           return '<button class="btn btn-sm btn-danger disabled" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
                         }else{
                           return '<button class="btn btn-sm btn-danger" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'revision'" +')"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
@@ -965,13 +956,13 @@ PMO
                         		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
                         	}
 
-                        	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                        	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                           	return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         	}else{
                           	return '<button class="btn btn-sm btn-primary" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'draft'" +')"><i class="fa fa-wrench"></i>&nbsp Project Charter</button>'
                         	} 
                       }else if (row.status == 'Approve') {
-                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                           return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         }else{
                           return '<button class="btn btn-sm bg-purple" style="width:110px" disabled><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
@@ -979,7 +970,7 @@ PMO
                       }else if (row.status == 'Done'){
                         return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                       }else{
-                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                        if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}") {
                           return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                         }else{
                           return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
@@ -1143,9 +1134,9 @@ PMO
           $("#inputRank[data-value='"+ $(data).data("value") +"']").next("span.help-block").hide()
         }
 
-        if ($("#textareaDescription[data-value='"+ $(data).data("value") +"']").val() != "") {
-          $("#textareaDescription[data-value='"+ $(data).data("value") +"']").closest("div").removeClass("has-error")
-          $("#textareaDescription[data-value='"+ $(data).data("value") +"']").next("span.help-block").hide()
+        if ($("#txtAreaImpactDesc[data-value='"+ $(data).data("value") +"']").val() != "") {
+          $("#txtAreaImpactDesc[data-value='"+ $(data).data("value") +"']").closest("div").removeClass("has-error")
+          $("#txtAreaImpactDesc[data-value='"+ $(data).data("value") +"']").next("span.help-block").hide()
         }
 
         if ($("#textareaResponse[data-value='"+ $(data).data("value") +"']").val() != "") {
@@ -1935,7 +1926,7 @@ PMO
             "impact":$(this).find("#inputImpact").val(),
             "likelihood":$(this).find("#inputLikelihood").val(),
             "rank":$(this).find("#inputRank").val(),
-            "description":$(this).find("#textareaDescription").val(),
+            "impactDescription":$(this).find("#txtAreaImpactDesc").val(),
             "response":$(this).find("#textareaResponse").val(),
             "due_date":$(this).find("#due_date").val(),
             "review_date":$(this).find("#review_date").val(),
@@ -2406,9 +2397,9 @@ PMO
             }else if ($("#inputRank[data-value='"+ $(this).find('#inputRank').data("value") +"']").val() == "") {
               $("#inputRank[data-value='"+ $(this).find('#inputRank').data("value") +"']").closest("div").addClass("has-error")
               $("#inputRank[data-value='"+ $(this).find('#inputRank').data("value") +"']").next("span").show()
-            }else if ($("#textareaDescription[data-value='"+ $(this).find('#textareaDescription').data("value") +"']").val() == "") {
-              $("#textareaDescription[data-value='"+ $(this).find('#textareaDescription').data("value") +"']").closest("div").addClass("has-error")
-              $("#textareaDescription[data-value='"+ $(this).find('#textareaDescription').data("value") +"']").next("span").show()
+            }else if ($("#txtAreaImpactDesc[data-value='"+ $(this).find('#txtAreaImpactDesc').data("value") +"']").val() == "") {
+              $("#txtAreaImpactDesc[data-value='"+ $(this).find('#txtAreaImpactDesc').data("value") +"']").closest("div").addClass("has-error")
+              $("#txtAreaImpactDesc[data-value='"+ $(this).find('#txtAreaImpactDesc').data("value") +"']").next("span").show()
             }else if ($("#textareaResponse[data-value='"+ $(this).find('#textareaResponse').data("value") +"']").val() == "") {
               $("#textareaResponse[data-value='"+ $(this).find('#textareaResponse').data("value") +"']").closest("div").addClass("has-error")
               $("#textareaResponse[data-value='"+ $(this).find('#textareaResponse').data("value") +"']").next("span").show()
@@ -2428,7 +2419,7 @@ PMO
                 "impact":$(this).find("#inputImpact").val(),
                 "likelihood":$(this).find("#inputLikelihood").val(),
                 "rank":$(this).find("#inputRank").val(),
-                "description":$(this).find("#textareaDescription").val(),
+                "impactDescription":$(this).find("#txtAreaImpactDesc").val(),
                 "response":$(this).find("#textareaResponse").val(),
                 "due_date":$(this).find("#due_date").val(),
                 "review_date":$(this).find("#review_date").val(),
@@ -2919,10 +2910,10 @@ PMO
       // append = append + '      <label>Rank*</label>'      
       // append = append + '      <input class="form-control" placeholder="Rank" id="inputRank" name="inputRank" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"/>'      
       // append = append + '    </div>'      
-      // append = append + '    <div class="form-group">'      
-      // append = append + '      <label>Description*</label>'      
-      // append = append + '      <textarea class="form-control" placeholder="Description" id="textareaDescription" name="textareaDescription" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"></textarea><span class="help-block" style="display:none;">Please fill Description!</span>'      
-      // append = append + '    </div>'   
+      append = append + '    <div class="form-group">'      
+      append = append + '      <label>Impact Description*</label>'      
+      append = append + '      <textarea class="form-control" placeholder="Impact Description" id="txtAreaImpactDesc" name="txtAreaImpactDesc" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"></textarea><span class="help-block" style="display:none;">Please fill Impact Description!</span>'      
+      append = append + '    </div>'   
       append = append + '    <div class="row">'
       append = append + '        <div class="col-md-12 col-xs-12">'
       append = append + '          <div class="form-group">'

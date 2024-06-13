@@ -290,7 +290,7 @@ PMO
 		                	<!-- <button class="btn btn-sm btn-warning"><i class="fa fa-forward"></i>&nbspNext Phase</button> -->
 		                	<button class="btn btn-sm btn-primary" style="display:none" disabled id="btnSendCSS" onclick="showEmail()"><i class="fa fa-paper-plane"></i>&nbspSend CSS</button>
 		                	<a class="btn btn-sm btn-success" disabled id="btnFinalProject" style="display:none"><i class="fa fa-plus"></i>&nbspFinal Project</a>		                	
-		                	<!-- <div id="tooltip" class="alert-box">
+		                	<!-- <div id="tooltip">
 							    Please Make Done Your Issue and Risks Before Create Final Project Report!
 							</div> -->
 	            		</div>
@@ -1361,7 +1361,7 @@ PMO
     		$(".content-header").show()
     		$(".content").show()
 
-    		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+    		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}") {
     			$("#btnAddMilestone").find("i").removeClass('fa-plus').addClass('fa-eye')
     			$("#btnFinalProject").find("i").removeClass('fa-plus').addClass('fa-eye')
     		}else{
@@ -1640,7 +1640,7 @@ PMO
 		            	}
             		}
             	}else{
-            		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+            		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}") {
 		    			$("#btnAddMilestone").find("i").removeClass('fa-plus').addClass('fa-eye')
 		    			$("#btnFinalProject").find("i").removeClass('fa-plus').addClass('fa-eye')
 		    			if (result.data.ganttStatus == "custom") {
@@ -1658,8 +1658,8 @@ PMO
 		                var rowData = this.data()
 		                if (rowData.milestone == "Submit Customer Satisfaction Survey (CSS)") {
 		                	$("#btnSendCSS").prop("disabled",false)
-	            			$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
-	            			$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+	            			  $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
+	            			  $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
 		                }
 		            }); 
             	}else{
@@ -1686,10 +1686,6 @@ PMO
 			                if (table.data().count() == 1) {
 			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
 			                }
-			              //   if (rowData.milestone == "Submit Final Project Closing Report") {
-			              //   	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
-	            				// // $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
-			              //   }
 			            });
 
 	            		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
@@ -1703,7 +1699,6 @@ PMO
 	            	
             	}else{
             		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
-	            		// $("#btnFinalProject").prop("disabled",false)
 	            		if (result.data.approveFinalReport == 'false') {
 	            			$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"update")')
 	            			$("#btnFinalProject").find("i").removeClass("fa fa-plus").addClass("fa fa-wrench")
@@ -1712,7 +1707,6 @@ PMO
 				                var rowData = this.data()
 				                if (rowData.milestone == "Submit Final Project Closing Report") {
 				                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
-		            				// $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").css("cursor","not-allowed")
 				                }
 
 				                if (rowData.length == 1) {
@@ -1742,8 +1736,7 @@ PMO
 	            		}
 	            	}else{
 	            		$("#btnFinalProject").attr("disabled")
-	            	}	            	
-	            	
+	            	}	            
             	}
 
             	if (result.data.isProgressReport == 'true'){
@@ -2469,7 +2462,7 @@ PMO
 					})
     			})
 
-    			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+    			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}"){
 	    			$("#btnAddSolution").hide()
 	    			$(".btn-danger").prop("disabled",true)
 	    		}
@@ -3422,20 +3415,20 @@ PMO
                   id_pmo:window.location.href.split("/")[6].split("?")[0],
                 },
                 beforeSend:function(){
-                  Swal.fire({
-                      title: 'Please Wait..!',
-                      text: "It's sending..",
-                      allowOutsideClick: false,
-                      allowEscapeKey: false,
-                      allowEnterKey: false,
-                      customClass: {
-                          popup: 'border-radius-0',
-                      },
-                      didOpen: () => {
-                          Swal.showLoading()
-                      }
-                  })
-                },
+	            	Swal.fire({
+	                  	title: 'Please Wait..!',
+	                  	text: "It's sending..",
+	                  	allowOutsideClick: false,
+	                  	allowEscapeKey: false,
+	                  	allowEnterKey: false,
+	                  	customClass: {
+	                      popup: 'border-radius-0',
+	                  	},
+	                  	didOpen: () => {
+	                      Swal.showLoading()
+	                  	}
+	              	})
+	            },
                 success: function(data)
                 {
                   Swal.showLoading()
@@ -3564,14 +3557,14 @@ PMO
 						var position = '', ttd = ''
 
 						$.each(result,function(index,item){
-							
-							if (item.position == 'PMO Staff' || item.position == 'PMO SPV') {
+							if (item.position == 'Project Manager') {
 								position = 'Project Manager'
 								label = 'Prepared By'
-							}else if (item.position == 'PMO Manager') {
-								position = 'PMO Manager'	
+							}else if (item.position == 'Project Management Manager') {
+								position = 'Project Management Manager'	
+
 								label = 'Approved By'						
-							}else if (item.position == 'PMO Project Coordinator') {
+							}else if (item.position == 'Project Coordinator') {
 								position = 'Project Coordinator'	
 								label = 'Prepared By'						
 							}else{
@@ -3828,10 +3821,10 @@ PMO
 					// appendRisk = appendRisk + '	                              <label>Rank</label>'
 					// appendRisk = appendRisk + '	                              <input class="form-control" placeholder="Rank" id="" value="'+ item.rank +'" />'
 					// appendRisk = appendRisk + '	                            </div>'
-					// appendRisk = appendRisk + '	                            <div class="form-group">'
-					// appendRisk = appendRisk + '	                              <label>Description</label>'
-					// appendRisk = appendRisk + '	                              <textarea class="form-control" placeholder="Description" id="" ></textarea>'
-					// appendRisk = appendRisk + '	                            </div>'
+					appendRisk = appendRisk + '	                            <div class="form-group">'
+					appendRisk = appendRisk + '	                              <label>Impact Description</label>'
+					appendRisk = appendRisk + '	                              <textarea class="form-control" placeholder="Impact Description" id="" >'+ item.impact_description +'</textarea>'
+					appendRisk = appendRisk + '	                            </div>'
 					appendRisk = appendRisk + '	                            <div class="row">'
 					appendRisk = appendRisk + '	                                <div class="col-md-12 col-xs-12">'
 					appendRisk = appendRisk + '	                                  <div class="form-group">'
@@ -3915,20 +3908,20 @@ PMO
 			                  id_pmo:window.location.href.split("/")[6].split("?")[0],
 			                },
 			                beforeSend:function(){
-			                  Swal.fire({
-			                      title: 'Please Wait..!',
-			                      text: "It's sending..",
-			                      allowOutsideClick: false,
-			                      allowEscapeKey: false,
-			                      allowEnterKey: false,
-			                      customClass: {
-			                          popup: 'border-radius-0',
-			                      },
-			                      didOpen: () => {
-			                          Swal.showLoading()
-			                      }
-			                  })
-			                },
+				            	Swal.fire({
+				                  	title: 'Please Wait..!',
+				                  	text: "It's sending..",
+				                  	allowOutsideClick: false,
+				                  	allowEscapeKey: false,
+				                  	allowEnterKey: false,
+				                  	customClass: {
+				                      popup: 'border-radius-0',
+				                  	},
+				                  	didOpen: () => {
+				                      Swal.showLoading()
+				                  	}
+				              	})
+				            },
 			                success: function(data)
 			                {
 			                  Swal.showLoading()
@@ -4005,20 +3998,20 @@ PMO
 	                  reason:$("#rejectNotes").val()
 	                },
 	                beforeSend:function(){
-	                  Swal.fire({
-	                      title: 'Please Wait..!',
-	                      text: "It's sending..",
-	                      allowOutsideClick: false,
-	                      allowEscapeKey: false,
-	                      allowEnterKey: false,
-	                      customClass: {
-	                          popup: 'border-radius-0',
-	                      },
-	                      didOpen: () => {
-	                          Swal.showLoading()
-	                      }
-	                  })
-	                },
+		            	Swal.fire({
+		                  	title: 'Please Wait..!',
+		                  	text: "It's sending..",
+		                  	allowOutsideClick: false,
+		                  	allowEscapeKey: false,
+		                  	allowEnterKey: false,
+		                  	customClass: {
+		                      popup: 'border-radius-0',
+		                  	},
+		                  	didOpen: () => {
+		                      Swal.showLoading()
+		                  	}
+		              	})
+		            },
 	                success: function(data)
 	                {
 	                  Swal.showLoading()
@@ -4299,7 +4292,7 @@ PMO
         drawCallback: function(settings) {
         	if (!accesable.includes("cbTaskDone")) {	
 	        	var api = this.api();
-	            api.columns(4).visible(false);    
+	          api.columns(4).visible(false);    
 	        }
 
 	        $('input[type="checkbox"].minimal').iCheck({
@@ -4329,20 +4322,20 @@ PMO
 			                  id_pmo:window.location.href.split("/")[6].split("?")[0]
 			                },
 			                beforeSend:function(){
-			                  Swal.fire({
-			                      title: 'Please Wait..!',
-			                      text: "It's sending..",
-			                      allowOutsideClick: false,
-			                      allowEscapeKey: false,
-			                      allowEnterKey: false,
-			                      customClass: {
-			                          popup: 'border-radius-0',
-			                      },
-			                      didOpen: () => {
-			                          Swal.showLoading()
-			                      }
-			                  })
-			                },
+				            	Swal.fire({
+				                  	title: 'Please Wait..!',
+				                  	text: "It's sending..",
+				                  	allowOutsideClick: false,
+				                  	allowEscapeKey: false,
+				                  	allowEnterKey: false,
+				                  	customClass: {
+				                      popup: 'border-radius-0',
+				                  	},
+				                  	didOpen: () => {
+				                      Swal.showLoading()
+				                  	}
+				              	})
+				            },
 			                success: function(data)
 			                {
 			                  Swal.showLoading()
@@ -5402,14 +5395,9 @@ PMO
 			      	document.getElementById("prevBtnFinal").style.display = "inline";
 			      	if(accesable.includes('btnRejectFinal')){
 			      		document.getElementById("nextBtnFinal").innerHTML = "save";
-			      		// document.getElementById('nextBtnFinal').classList.remove('bg-purple')
-			      		// document.getElementById('nextBtnFinal').classList.add('bg-red')
-			        	// $("#nextBtnFinal").attr('onclick',"btnRejectNotes("+ '"ModalFinal"' +")") 
 			        	$("#nextBtnFinal").before('<button class="btn btn-sm btn-danger" id="btnRejectFinal">Reject</button>')
 			        	$("#btnRejectFinal").attr('onclick',"btnRejectNotes("+ '"ModalFinal"' +")") 
-
 			        	$("#nextBtnFinal").attr('onclick',"saveFinal("+ '"ModalFinal"' +")") 
-
 			      	}else{
 			      		document.getElementById("nextBtnFinal").innerHTML = "Save";
 			        	$("#nextBtnFinal").attr('onclick',"saveFinal("+ '"ModalSave"' +")"); 
@@ -5425,11 +5413,8 @@ PMO
 			    		},
 			    		success:function(resultDoc){
 			      			$("#divShowChecklist").empty("")
-
 			      			append = ""
-
 			      			append = append + '<table id="tbShowChecklistFinal">'
-
 			    			$.each(resultDoc.data,function(idx,item){
 			    				append = append + '<tr>	'
 					      			append = append + '<td width="450px">'
@@ -5444,16 +5429,12 @@ PMO
 					      					append = append + '				<label style="display:inline;"><input type="radio" disabled name="radio_'+ item.text.split(' ').join('_') +'" value="yes" name="">&nbsp Yes</label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'
 											append = append + '				<label style="display:inline;"><input type="radio" disabled name="radio_'+ item.text.split(' ').join('_') +'" checked value="no" name="">&nbsp No</label>'
 					      				}
-										
 										append = append + '			</div>'
 					      			append = append + '</td>'
 					      		append = append + '</tr>'
 			    			})		    			
-
 			      			append = append + '</table>'
-
 			      			$("#divShowChecklist").append(append)	
-	      		
 			    		}
 		    		})
 
@@ -6357,33 +6338,35 @@ PMO
     	Swal.fire(swalFireCustom).then((result) => {
           if (result.value) {
             $.ajax({
-              type:"POST",
-              url:"{{url('/')}}"+url,
-              processData: false,
-              contentType: false,
-              data:data,
-              beforeSend:function(){
-                Swal.fire({
-                    title: 'Please Wait..!',
-                    text: "It's sending..",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    allowEnterKey: false,
-                    customClass: {
-                        popup: 'border-radius-0',
-                    },
-                })
-                Swal.showLoading()
-              },
-              success: function(result)
-              {
-                Swal.fire(swalSuccess).then((result) => {
-                  if (result.value) {
-                  	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+	            type:"POST",
+	            url:"{{url('/')}}"+url,
+	            processData: false,
+	            contentType: false,
+	            data:data,
+	            beforeSend:function(){
+	            	Swal.fire({
+	                  	title: 'Please Wait..!',
+	                  	text: "It's sending..",
+	                  	allowOutsideClick: false,
+	                  	allowEscapeKey: false,
+	                  	allowEnterKey: false,
+	                  	customClass: {
+	                      popup: 'border-radius-0',
+	                  	},
+	                  	didOpen: () => {
+	                      Swal.showLoading()
+	                  	}
+	              	})
+	            },
+              	success: function(result)
+          		{
+            		Swal.fire(swalSuccess).then((result) => {
+                  		if (result.value) {
+                  			window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
                     location.reload()                    
-                  }
-                })
-              }
+                  		}
+            		})
+          		}
             })
           }else{
           	if (url == "/PMO/storeMilestone") {
