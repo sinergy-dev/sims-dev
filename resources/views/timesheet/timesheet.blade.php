@@ -595,7 +595,7 @@
             <form action="" id="" name="">
                 @csrf
                 <div style="display: flex;">
-                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('https://drive.google.com/uc?export=download&id=1D0qQfoBYLNYkDSVnPjVB-liWkf3qL4mo')}}" style="cursor:pointer;">link</a></span>
+                  <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('https://drive.google.com/uc?export=download&id=1EtIvRkBz-xGE6658NbaQ41yfyEzs-VLi')}}" style="cursor:pointer;">link</a></span>
                 </div>
                 <input type="file" name="inputCsv" id="inputCsv" class="form-control">
             </form>
@@ -930,7 +930,65 @@
               type:"GET",
               url:"{{url('/getListCalendarEvent')}}"+ "?nik=" + nik + '&year=' + year + '&dateStart=' + startFullcalendar + '&dateEnd=' + endFullcalendar,
               success:function(result){
+                const apiKey = '{{env("GOOGLE_API_KEY_APP")}}';
+                const timeMin = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(); // 1 year ago
+                const timeMax = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
+
                 var events = [], disabledDates = []
+
+                $.ajax({
+                  url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events",
+                  data: {
+                    key: apiKey,
+                    timeMin: timeMin,
+                    timeMax: timeMax,
+                    singleEvents: true,
+                    orderBy: 'startTime'
+                  },
+                  success: function(response){
+                    const data = response.items;
+                    if (data.length) {
+                      data.forEach(data => {
+                        if(data.description == "Public holiday"){
+                          const start = data.start.dateTime || data.start.date;
+
+                          if (data.summary.indexOf('Joint') == -1) {
+                            console.log(start + data.summary)
+                            // disabledDates.push(moment.utc(start, 'YYYY-MM-DD'))
+
+                            return events.push({
+                              id:data.id,
+                              title:data.summary,
+                              start:start,
+                              end:start,
+                              activity:data.summary,
+                              remarks:"Cuti Bersama",
+                              refer:null
+                            })
+                          }
+                          if (data.summary.indexOf('Idul Fitri') !== -1 || data.summary.indexOf('Boxing Day') !== -1) {
+                            console.log(start + data.summary)
+                            return events.push({
+                              id:data.id,
+                              title:data.summary,
+                              start:start,
+                              end:start,
+                              activity:data.summary,
+                              remarks:"Cuti Bersama",
+                              refer:null
+                            })
+                          }
+                        }
+                      });
+                    }
+                  },
+                  error: function(error) {
+                      console.error('Error fetching events:', error);
+                  }
+                })
+
+                console.log(events)
+
                 if (results.data.length > 0) {
                   $.each(results.data,function(idx,value){
                     if (value.remarks != null) {
@@ -1024,7 +1082,6 @@
 
                             var currentDate = moment(start);
                             while (currentDate.isSameOrBefore(end)) {
-                                console.log(currentDate.format('YYYY-MM-DD'));
                                 dateRange.push(currentDate.format('YYYY-MM-DD'))
                                 currentDate.add(1, 'day');
                             }
@@ -1076,7 +1133,6 @@
 
                             var currentDate = moment(start);
                             while (currentDate.isSameOrBefore(end)) {
-                                // console.log(currentDate.format('YYYY-MM-DD'));
                                 dateRange.push(currentDate.format('YYYY-MM-DD'))
                                 currentDate.add(1, 'day');
                             }
@@ -1342,8 +1398,8 @@
             var start = date
             var end = date
             checkDate = moment(datesInWeek[0])
-            var position = "{{Auth::User()->id_position}}"
-            if (position.includes("MANAGER") || "{{Auth::User()->nik}}" !== nik) {
+            // var position = "{{Auth::User()->id_position}}"
+            if ("{{Auth::User()->nik}}" !== nik) {
               return false
             }else{
               var clickedDate = moment(date).format("YYYY-MM-DD"); 
@@ -2432,16 +2488,47 @@
       })
     }
 
+    setHoliday()
     function setHoliday(start,end,checkDate){
       var disabledDates = [], disDate = ''
+      // $.ajax({
+      //   type:"GET",
+      //   url:"{{url('timesheet/getHoliday')}}",
+      //   success:function(result){
+      //     $.each(result,function (idx,value) {
+      //       disabledDates.push(value.start_date)
+      //     })
+      //     return disDate = disabledDates
+      //   }
+      // })
+
+      const apiKey = '{{env("GOOGLE_API_KEY_APP")}}';
+      const timeMin = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(); // 1 year ago
+      const timeMax = new Date().toISOString();
+
       $.ajax({
-        type:"GET",
-        url:"{{url('timesheet/getHoliday')}}",
-        success:function(result){
-          $.each(result,function (idx,value) {
-            disabledDates.push(value.start_date)
-          })
-          return disDate = disabledDates
+        url:"https://www.googleapis.com/calendar/v3/calendars/id.indonesian%23holiday@group.v.calendar.google.com/events",
+        data: {
+          key: apiKey,
+          timeMin: timeMin,
+          timeMax: timeMax,
+          singleEvents: true,
+          orderBy: 'startTime'
+        },
+        success: function(response){
+          const events = response.items;
+          if (events.length) {
+              events.forEach(event => {
+                  const start = event.start.dateTime || event.start.date;
+                  disabledDates.push(start)
+
+                  // console.log(start + event.summary)
+              });
+              return disDate = disabledDates
+          }
+        },
+        error: function(error) {
+            console.error('Error fetching events:', error);
         }
       })
 
@@ -4199,7 +4286,36 @@
       loadData()
       $(".timesheet_status").html('<i class="fa fa-filter"></i>&nbspFilter Off')
       $(".timesheet_status").css("background-color","red")
-    }
-    
+    }    
+
+    // const apiKey = '{{env("GOOGLE_API_KEY_APP")}}';
+    // const calendarId = 'id.indonesian%23holiday@group.v.calendar.google.com';
+    // const timeMin = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(); // 1 year ago
+    // const timeMax = new Date().toISOString();
+
+    // $.ajax({
+    //   url:"https://www.googleapis.com/calendar/v3/calendars/id.indonesian%23holiday@group.v.calendar.google.com/events",
+    //   data: {
+    //     key: apiKey,
+    //     timeMin: timeMin,
+    //     timeMax: timeMax,
+    //     singleEvents: true,
+    //     orderBy: 'startTime'
+    //   },
+    //   success: function(response){
+    //     const events = response.items;
+    //     if (events.length) {
+    //         events.forEach(event => {
+    //             const start = event.start.dateTime || event.start.date;
+    //             console.log(start + event.summary)
+    //         });
+    //     } else {
+    //         $('#events').append('<p>No past events found.</p>');
+    //     }
+    //   },
+    //   error: function(error) {
+    //       console.error('Error fetching events:', error);
+    //   }
+    // })
   </script>
 @endsection

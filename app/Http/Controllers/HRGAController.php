@@ -1696,8 +1696,8 @@ class HRGAController extends Controller
                         } else {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
-                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?)", 
-                                    [$cek_role->mini_group, '%Manager']
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?  AND `roles`.`name` != ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         }
@@ -2245,11 +2245,11 @@ class HRGAController extends Controller
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                             } else {
                                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
-                                    ->whereRaw(
-                                        "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?)", 
-                                        [$cek_role->mini_group, '%Manager']
-                                    )
-                                    ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?  AND `roles`.`name` != ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                             }
                         }
                     }
@@ -2396,8 +2396,8 @@ class HRGAController extends Controller
                         } else {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
-                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?)", 
-                                    [$cek_role->mini_group, '%Manager']
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?  AND `roles`.`name` != ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         }
@@ -2642,11 +2642,10 @@ class HRGAController extends Controller
         $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
         $endDate = Carbon::now()->format("Y-m-16");
 
-
-
         $total_cuti = "12";
         $cuti_bersama = count($this->getWorkDays($dateStart,$dateEnd)["holiday"]->values());
 
+        // return $this->getWorkDays($dateStart,$dateEnd)["holiday"]->values();
         $getPublicHolidayAdjustment = PublicHolidayAdjustment::whereRaw('`date` BETWEEN "' . $dateStart . '" AND "' . $dateEnd . '"')->whereYear('date',date('Y'))->count();
 
         $cuti_bersama = $cuti_bersama+$getPublicHolidayAdjustment;
@@ -2691,20 +2690,20 @@ class HRGAController extends Controller
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
 
-        $client = new Client();
-        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GCALENDAR_API_KEY'));
-        $variable = json_decode($client->getBody())->items;
+        // $client = new Client();
+        // $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GCALENDAR_API_KEY'));
+        // $variable = json_decode($client->getBody())->items;
 
-        $hitung_cuti_bersama = 0;
-        foreach ($variable as $key => $value) {
-          if(strpos($value->summary,'Cuti Bersama') === 0){
-            // echo $value->start->date . "<br>";
-            if(strpos($value->start->date ,date('Y')) === 0){
-              // echo $value->start->date . " " . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
-              $hitung_cuti_bersama++;
-            }
-          }
-        }
+        // $hitung_cuti_bersama = 0;
+        // foreach ($variable as $key => $value) {
+        //   if(strpos($value->summary,'Cuti Bersama') === 0){
+        //     // echo $value->start->date . "<br>";
+        //     if(strpos($value->start->date ,date('Y')) === 0){
+        //       // echo $value->start->date . " " . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
+        //       $hitung_cuti_bersama++;
+        //     }
+        //   }
+        // }
 
 
         $sipSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
@@ -3055,7 +3054,11 @@ class HRGAController extends Controller
 
     public function getWorkDays($startDate,$endDate){
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
+
+        $formattedStartDate = Carbon::parse($startDate)->toISOString();
+        $formattedEndDate   = Carbon::parse($endDate)->toISOString();
+
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?timeMin='. $formattedStartDate .'&timeMax='. $formattedEndDate .'&key='.env('GCALENDAR_API_KEY'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
@@ -3068,10 +3071,10 @@ class HRGAController extends Controller
         // return $holiday_indonesia;
         
         foreach ($holiday_indonesia["items"] as $value) {
-            if(( (( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate )) && (($value["description"] == 'Public holiday')) && (!strstr($value['summary'], "Joint")  && ($value["summary"] != 'Boxing Day')) )){
-                $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
-                $holiday_indonesia_final_date->push($value["start"]["date"]);
-            }
+            // if(( ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && (strstr($value['summary'], "Joint")) || ( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate ) && ($value["summary"] == 'Boxing Day') )){
+            //     $holiday_indonesia_final_detail->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"]]);
+            //     $holiday_indonesia_final_date->push($value["start"]["date"]);
+            // }
             if(( (( $value["start"]["date"] >= $startDate ) && ( $value["start"]["date"] <= $endDate )) && (($value['summary'] == 'Idul Fitri Joint Holiday') || ($value['summary'] == 'Boxing Day')) )){
                 $holiday_indonesia_final_details->push(["start_date" => $value["start"]["date"],"activity" => $value["summary"],"remarks" => "Cuti Bersama"]);
                 $holiday_indonesia_final_dates->push($value["start"]["date"]);
@@ -3339,7 +3342,7 @@ class HRGAController extends Controller
                         $data = $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
                             // ->get();
                     }elseif ($cek_role->name_role == 'President Director') {
-                        $data = $data->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Sales Manager')");
+                        $data = $data->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Sales Manager' OR `roles`.`name` = 'Finance & Accounting Manager')");
                     } else{
                         $data = $data
                             ->where('users.nik',$nik);
@@ -3599,9 +3602,9 @@ class HRGAController extends Controller
                     $cuti = $cuti
                         ->where('users.id_division','FINANCE');
                 } else if($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'President Director'){
-                     $cuti = $cuti
-                        ->where('date_off', '>=', $request->start_date)
-                        ->where('date_off', '<=', $request->end_date);
+                     $cuti = $cuti;
+                        // ->where('date_off', '>=', $request->start_date)
+                        // ->where('date_off', '<=', $request->end_date);
                         // ->get();
                 }else{
                     $cuti = $cuti
@@ -3957,7 +3960,7 @@ class HRGAController extends Controller
             $data = $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
                 // ->get();
         }elseif ($cek_role->name_role == 'President Director') {
-            $data = $data->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Sales Manager')");
+            $data = $data->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Sales Manager' OR `roles`.`name` = 'Finance & Accounting Manager')");
         } else{
             $data = $data->where('users.nik',$nik);
                 // ->get();
