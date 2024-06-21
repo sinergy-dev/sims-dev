@@ -107,7 +107,7 @@ SBE Detail
 @endsection
 @section('script')
 <script type="text/javascript">
-	// var data = "data":
+    preventBack()
     var formatter = new Intl.NumberFormat(['ban', 'id']);
 
     var accesable = @json($feature_item);
@@ -122,20 +122,35 @@ SBE Detail
             $("#btnBack").click(function(){
                 if (localStorage.getItem('isConfigPage') == 'true') {
                     $("#btnBack").removeAttr('href')
-                    $("#btnBack").attr('onclick','showFunctionConfig()')
-                    localStorage.setItem('isConfigPage',false)
+                    // $("#btnBack").attr('onclick','showFunctionConfig()')
+                    // localStorage.setItem('isConfigPage',false)
                 }else{
                     $("#btnBack").removeAttr('onclick')
                     $("#btnBack").attr('href','{{url("/sbe_index")}}/')
                 }
             })
-            $("#spanLeadId").html("Lead ID - "+ window.location.href.split("?")[1])
+            $("#spanLeadId").html("Lead ID - "+ window.location.href.split("?")[1])            
         }
 
         accesable.forEach(function(item,index){
           $("#" + item).show()
         })
     })
+
+    function preventBack(){
+        const beforeUnloadHandler = (event) => {
+          // Recommended
+          event.preventDefault();
+
+          // Included for legacy support, e.g. Chrome/Edge < 119
+          event.returnValue = true;
+        };
+
+        window.addEventListener("beforeunload", beforeUnloadHandler);
+        // window.onbeforeunload = function() { 
+        //     return "Your work will be lost."; 
+        // };
+    }
 
 
     function cancelConfig(){

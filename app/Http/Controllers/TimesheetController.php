@@ -79,7 +79,6 @@ class TimesheetController extends Controller
         //         // ],
         //     ]
         // );
-
         $calenderId = User::where('nik',$request->nik)->first()->email;
 
         $startDate = Carbon::parse($request->dateStart)->format('Y-m-d\TH:i:s\Z');
@@ -100,6 +99,7 @@ class TimesheetController extends Controller
             // Create a new Guzzle HTTP client
             $client = new Client();
             // Make the API request
+            // $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events" . "?timeMin=" . $startDate  . "&timeMax=" . $endDate;
             $url = "https://www.googleapis.com/calendar/v3/calendars/". $calenderId ."/events" . "?timeMin=" . $startDate  . "&timeMax=" . $endDate;
             $token = $this->getOauth2AccessToken();
 
@@ -836,7 +836,7 @@ class TimesheetController extends Controller
     {
         if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->exists()) {
             // if (DB::table('tb_timesheet_lock_duration')->where('division',Auth::User()->id_division)->first()->division == Auth::User()->id_division) {
-                $lock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
+            $lock = TimesheetLockDuration::where('division',Auth::User()->id_division)->first();
             // } 
         } else {
             $lock = new TimesheetLockDuration();
@@ -1188,8 +1188,11 @@ class TimesheetController extends Controller
     }
 
     public function getWorkDays($startDate,$endDate){
+        $formattedStartDate = Carbon::parse($startDate)->toISOString();
+        $formattedEndDate   = Carbon::parse($endDate)->toISOString();
+
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GCALENDAR_API_KEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?timeMin='. $formattedStartDate .'&timeMax='. $formattedEndDate .'&key='.env('GCALENDAR_API_KEY'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
