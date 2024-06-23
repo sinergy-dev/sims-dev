@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Timesheet extends Model
 {
+    ///////
     protected $table = 'tb_timesheet';
     protected $primaryKey = 'id';
     protected $fillable = ['nik','schedule', 'date','type','pid','task','phase','level','activity','duration','status','date_add','point_mandays'];

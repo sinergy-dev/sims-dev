@@ -39,6 +39,7 @@ use Carbon\Carbon;
 
 class HRGAController extends Controller
 {
+    ////////
     /**
      * Display a listing of the resource.
      *

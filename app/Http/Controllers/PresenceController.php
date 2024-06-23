@@ -31,6 +31,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PresenceController extends Controller
 {
+    ////////
     public function __construct() {
         $this->middleware('auth', ['except' => ['getPresenceParameter','checkIn','checkOut','personalHistoryMsp']]);
     }

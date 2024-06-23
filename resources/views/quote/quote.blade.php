@@ -440,7 +440,7 @@ Quote Number
     });
     // $("#backdate_num").select2();
     $("#customer_quote_backdate").select2({
-      dropdownParent:$("#modalAdd")
+      dropdownParent:$("#letter_backdate")
     });
     $('#date_backdate').datepicker({
       autoclose: true,
@@ -473,7 +473,8 @@ Quote Number
           $('#addBackdate').prop("disabled",false)
           $("#addBackdateNum").css("display","none")
           $("#backdate_num").select2({
-            data:result.results
+            data:result.results,
+            dropdownParent:$("#letter_backdate")
           })
         }
       })       
@@ -548,7 +549,8 @@ Quote Number
               $('#addBackdate').prop("disabled",false)
               $("#backdate_num").prop("disabled",false);
               $("#backdate_num").select2({
-                data:result.results
+                data:result.results,
+                dropdownParent:$("#letter_backdate")
               })             
             }
           }
