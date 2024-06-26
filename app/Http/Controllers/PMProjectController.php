@@ -504,12 +504,18 @@ class PMProjectController extends Controller
         
 
         // return $dataInitiating;
-        return collect([
-            "Initiating" => $dataInitiating,
-            "Planning" => $dataPlanning,
-            "Executing" => $dataExecuting,
-            "Closing" => $dataClosing
-        ]);
+        if ($request->assign) {
+            return collect([
+                "Executing" => $dataExecuting,
+            ]);
+        }else{
+            return collect([
+                "Initiating" => $dataInitiating,
+                "Planning" => $dataPlanning,
+                "Executing" => $dataExecuting,
+                "Closing" => $dataClosing
+            ]);
+        }
     }
 
     public function getPhase(Request $request)
@@ -1697,18 +1703,15 @@ class PMProjectController extends Controller
             $subject = 'Your project is available to run,';
             if ($update->project_pm != '-') {
                 $user = $update->project_pm;
-
                 $email_user = DB::table('users')->where('name',$update->project_pm)->first()->email;
-
             }else{
                 $user = $update->project_pc;
-
                 $email_user = DB::table('users')->where('name',$update->project_pc)->first()->email;
             }
                 $user_pm = $update->project_pm;
                 $user_pc = $update->project_pc;
-            $this->uploadPdfPC($request->id_pmo);
 
+            $this->uploadPdfPC($request->id_pmo);
         } else {
             $update->status = 'Approve';
             $subject_email = 'Approve Project Charter';
@@ -1978,7 +1981,8 @@ class PMProjectController extends Controller
     }
 
     public function getRisk(Request $request){
-        return array("data"=>DB::table('tb_pmo_identified_risk')->where('id_project',$request->id_pmo)->get());
+        return array("data"=>DB::table('tb_pmo_identified_risk')
+                ->select('risk_description','risk_owner','risk_response','impact','likelihood','impact_rank','due_date','review_date','status',DB::raw("(CASE WHEN (impact_description is null) THEN '-' ELSE impact_description  END) as impact_description"))->where('id_project',$request->id_pmo)->get());
     }
 
     public function getDetailIssue(Request $request){
@@ -2002,7 +2006,7 @@ class PMProjectController extends Controller
         }
 
         $kickoff = 'false';
-        if(DB::table('tb_pmo_activity')->where('id_project',$request->id_pmo)->where('activity', 'Completed Task Kick of meeting')->exists()){
+        if(DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text', 'Kick Off Meeting')->where('status','Done')->exists()){
             $kickoff = 'true';
         }
 
@@ -2068,9 +2072,9 @@ class PMProjectController extends Controller
 
     public function getStageWeekly(Request $request){
           // return (String)Carbon::now()->endOfWeek()->format("Y-m-d");
-        $dateFormat = DB::table('gantt_tasks_pmo')->select(DB::raw("DATE_FORMAT(baseline_start, '%d %M %Y') as start_date_format"),DB::raw("DATE_FORMAT(baseline_end, '%d %M %Y') as end_date_format"),'gantt_tasks_pmo.id as id_gantt')->where('parent','!=',0); 
+        $dateFormat = DB::table('gantt_tasks_pmo')->select(DB::raw("DATE_FORMAT(baseline_start, '%d %M %Y') as start_date_format"),DB::raw("DATE_FORMAT(baseline_end, '%d %M %Y') as end_date_format"),'gantt_tasks_pmo.id as id_gantt')->where('parent','!=',0)->where('duration','!=',0); 
 
-        $dataParent = DB::table('gantt_tasks_pmo')->select('id as id_parent','text as text_parent')->where('parent','==',0);  
+        $dataParent = DB::table('gantt_tasks_pmo')->select('id as id_parent','text as text_parent')->where('parent','==',0)->where('duration','!=',0);  
         // return $dataParent->get();
 
         $startOfWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
@@ -2097,6 +2101,7 @@ class PMProjectController extends Controller
                     ->select(DB::raw("CONCAT(format_date_task.`start_date_format`,' - ',format_date_task.`end_date_format`) AS periode"),'text as milestone','format_date_task.id_gantt','parent_text.text_parent', 'deliverable_document')
                     ->where('id_pmo',$request->id_pmo)
                     ->where('status','!=','Done')
+                    ->where('duration','!=',0)
                     // ->where(function($query) use ($startOfWeek, $endOfWeek){
                     //   $query->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
                     //         ->orWhereBetween('baseline_end', [$startOfWeek,$endOfWeek]);
@@ -2122,46 +2127,40 @@ class PMProjectController extends Controller
     }
 
     public function getMilestoneById(Request $request){
-
+        $type = $request->type ;
         $getParent = GanttTaskPmo::where('id_pmo',$request->id_pmo)->where('parent',0)->orderByRaw('FIELD(text, "Initiating", "Planning", "Executing", "Closing")')->get();
         // return $getParent;
         // $dataGantt = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent','!=',0)->groupBy('parent')->get();
         foreach($getParent as $dataParent){
-                $modifiedData = $dataParent->text;
-                if ($dataParent->text == 'Executing') {
-                    // return $dataParent->id;
-                    if ($request->type == 'implementation') {
-                        $getParentKey = GanttTaskPmo::where('id_pmo',$request->id_pmo)->where('parent',$dataParent->id)->get();
-                        // return $getParentKey;
+            $modifiedData = $dataParent->text;
+            if ($dataParent->text == 'Executing') {
+                // return $dataParent->id;
+                if (explode("&",$type)[0] == 'implementation') {
+                    $getParentKey = GanttTaskPmo::where('id_pmo',$request->id_pmo)->where('parent',$dataParent->id)->get();
 
-                        foreach($getParentKey as $dataParentkey){
-                            // return $key;
-                            if ($dataParentkey->duration == 0) {
-                                $milestoneArray[$modifiedData][$dataParentkey->text] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParentkey->id)->get(); 
-                            }
-
-                            if ($dataParentkey->duration != 0) {
-                                $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->get();
-
-                            }
-                                                  
+                    foreach($getParentKey as $dataParentkey){
+                        // return $key;
+                        if ($dataParentkey->duration == 0) {
+                            $milestoneArray[$modifiedData][$dataParentkey->text] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParentkey->id)->get(); 
                         }
-                    }else{
-                        $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->get();
+
+                        if ($dataParentkey->duration != 0) {
+                            $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->get();
+                        }                     
                     }
-                    
-                    // if (!empty($getParentKey)) {
-                        
-                    // }else{
-                    //     $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->get()->orderBy("id")->get()->groupBy('text');
-                    // }                    
                 }else{
                     $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->get();
                 }
-                
-                
-                // $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->orderBy("id")->get()->groupBy('text');
-                // $milestoneArray = $getParentKey;
+                // if (!empty($getParentKey)) {
+                    
+                // }else{
+                //     $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->get()->orderBy("id")->get()->groupBy('text');
+                // }                    
+            }else{
+                $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->get();
+            }  
+            // $milestoneArray[$modifiedData] = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('parent', $dataParent->id)->orderBy("id")->get()->groupBy('text');
+            // $milestoneArray = $getParentKey;
         }
 
         $ganttStatus = DB::table('tb_pmo')->select('gantt_status')->where('id',$request->id_pmo)->first()->gantt_status;
@@ -2267,9 +2266,6 @@ class PMProjectController extends Controller
     }
 
     public function storeMilestone(Request $request){
-        // return $request->arrInitiating;
-        // return $request->arrMainMilestone;
-
         $activity = new PMOActivity();
         $activity->id_project = $request->id_pmo;
         $activity->phase = 'Add Milestone';
@@ -2279,191 +2275,529 @@ class PMProjectController extends Controller
         $activity->save();
 
         if (GanttTaskPmo::where('id_pmo', $request->id_pmo)->exists()) {
-            $data = GanttTaskPmo::where('id_pmo', $request->id_pmo)->get();
-            foreach ($data as $key => $value) {
-                $data = GanttTaskPmo::where('id', $value->id)->delete();
-            }
-        }
+            if ($request->current_save == "form_Initiating") {
+                $parent = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('text','Initiating')->first()->id;
+                GanttTaskPmo::where('parent', $parent)->delete();
 
+                $arrInitiatingMilestone = json_decode($request->arrInitiating,true);
+                foreach($arrInitiatingMilestone as $dataInitiating){
+                    // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first();
 
-        $arrMainMilestone = json_decode($request->arrMainMilestone,true);
-        foreach($arrMainMilestone as $data){
-            $store = new GanttTaskPmo;
-            // return $data;
-            $store->text        = $data;
-            $store->id_pmo      = $request->id_pmo;
-            $store->parent      = 0;
-            $store->duration    = 0;
-            $store->status      = 'Done';
-            $store->save();
+                    // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type->project_type)->where('sub_task', $dataInitiating["labelTask"])->first();
 
-        }
+                    $storeInitiating = new GanttTaskPmo;
 
-        $arrInitiatingMilestone = json_decode($request->arrInitiating,true);
-        foreach($arrInitiatingMilestone as $dataInitiating){
-            // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first();
+                    $storeInitiating->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id; 
+                    $storeInitiating->text        = $dataInitiating["labelTask"];
+                    if ($dataInitiating["startDateMilestone"] != "Invalid date" && $dataInitiating["finishDateMilestone"] != "Invalid date") {
+                        $storeInitiating->start_date  = $dataInitiating["startDateMilestone"];
+                        $storeInitiating->end_date    = $dataInitiating["finishDateMilestone"];
+                        $storeInitiating->duration    = round((strtotime($dataInitiating["finishDateMilestone"]) - strtotime($dataInitiating["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    }
+                    $storeInitiating->bobot       = $dataInitiating["weightMilestone"];
+                    $storeInitiating->id_pmo      = $request["id_pmo"];
+                    if (DB::table('tb_pmo')->where('id', $request->id_pmo)->first()->project_type == 'supply_only') {
+                        $storeInitiating->status      = 'On-Going';
+                    } else {
+                        $storeInitiating->status      = 'Done';
+                    }
+                    $storeInitiating->deliverable_document = $dataInitiating["deliverableDoc"];
+                    $storeInitiating->save();
 
-            // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type->project_type)->where('sub_task', $dataInitiating["labelTask"])->first();
-
-            $storeInitiating = new GanttTaskPmo;
-
-            $storeInitiating->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id; 
-            $storeInitiating->text        = $dataInitiating["labelTask"];
-            $storeInitiating->start_date  = $dataInitiating["startDateMilestone"];
-            $storeInitiating->end_date    = $dataInitiating["finishDateMilestone"];
-            $storeInitiating->duration    = round((strtotime($dataInitiating["finishDateMilestone"]) - strtotime($dataInitiating["startDateMilestone"])) / (60 * 60 * 24)) + 1;
-            $storeInitiating->bobot       = $dataInitiating["weightMilestone"];
-            $storeInitiating->id_pmo      = $request["id_pmo"];
-            if (DB::table('tb_pmo')->where('id', $request->id_pmo)->first()->project_type == 'supply_only') {
-                $storeInitiating->status      = 'On-Going';
-            } else {
-                $storeInitiating->status      = 'Done';
-            }
-            $storeInitiating->deliverable_document = $dataInitiating["deliverableDoc"];
-            $storeInitiating->save();
-
-            $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id;
-            $update = GanttTaskPmo::where('text','Initiating')->where('id_pmo',$request->id_pmo)->first();
-            $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
-            $update->update();
-
-        }
-
-
-        $arrPlanningMilestone = json_decode($request->arrPlanning,true);
-        foreach($arrPlanningMilestone as $dataPlanning){
-
-            // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
-
-            // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataPlanning["labelTask"])->first();
-
-            $storePlanning = new GanttTaskPmo;
-
-            $storePlanning->parent          = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id; 
-            $storePlanning->text            = $dataPlanning["labelTask"];
-            $storePlanning->start_date      = $dataPlanning["startDateMilestone"];
-            $storePlanning->end_date        = $dataPlanning["finishDateMilestone"];
-            $storePlanning->duration        = round((strtotime($dataPlanning["finishDateMilestone"]) - strtotime($dataPlanning["startDateMilestone"])) / (60 * 60 * 24)) + 1;
-            $storePlanning->bobot           = $dataPlanning["weightMilestone"];
-            $storePlanning->id_pmo          = $request["id_pmo"];
-            $storePlanning->status          = 'On-Going';
-            $storePlanning->deliverable_document = $dataPlanning["deliverableDoc"];
-            $storePlanning->save();
-
-            $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id;
-            $update = GanttTaskPmo::where('text','Planning')->where('id_pmo',$request->id_pmo)->first();
-            $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
-            $update->update();
-        }
-
-        $arrExecutingMilestone = json_decode($request->arrExecuting,true);
-        // return $arrExecutingMilestone;
-        // if (count($arrExecutingMilestone) > 1) {
-        //     return "lebih dari satu";
-        // }else{
-        //     return $arrExecutin
-        // foreach($arrExecutingMilestone as $data){
-        //     return $data["labelTask"];
-        // }
-        // return $arrExecutingMilestone;
-            var_dump($arrExecutingMilestone);
-
-        foreach($arrExecutingMilestone as $key => $dataExecuting){
-            // return $key;
-            $cek = var_dump($key, is_numeric($key));
-            // return $cek;
-            if (is_numeric($key)) {
-               // if (is_array($dataExecuting)) {
-                    $storeExecuting = new GanttTaskPmo;               
-                    $storeExecuting->parent         = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
-                    $storeExecuting->text           = $dataExecuting["labelTask"];
-                    $storeExecuting->start_date     = $dataExecuting["startDateMilestone"];
-                    $storeExecuting->end_date       = $dataExecuting["finishDateMilestone"];
-                    $storeExecuting->duration       = round((strtotime($dataExecuting["finishDateMilestone"]) - strtotime($dataExecuting["startDateMilestone"])) / (60 * 60 * 24)) + 1;
-                    $storeExecuting->bobot          = $dataExecuting["weightMilestone"];
-                    $storeExecuting->id_pmo         = $request["id_pmo"];
-                    $storeExecuting->status         = 'On-Going';
-                    $storeExecuting->deliverable_document = $dataExecuting["deliverableDoc"];
-                    $storeExecuting->save();
-                // }                                         
-
-                $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
-                $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
-                $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
-                $update->update();
-                
-            }else{
-                $storeKey = new GanttTaskPmo;
-                $storeKey->text        = $key;
-                $storeKey->id_pmo      = $request->id_pmo;
-                $storeKey->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
-                $storeKey->duration    = 0;
-                $storeKey->status      = 'On-Going';
-                $storeKey->save();
-
-                foreach($dataExecuting as $dataExecutingKey){
-                    $storeExecuting = new GanttTaskPmo;               
-                    $storeExecuting->parent         = $storeKey->id; 
-                    $storeExecuting->text           = $dataExecutingKey["labelTask"];
-                    $storeExecuting->start_date     = $dataExecutingKey["startDateMilestone"];
-                    $storeExecuting->end_date       = $dataExecutingKey["finishDateMilestone"];
-                    $storeExecuting->duration       = round((strtotime($dataExecutingKey["finishDateMilestone"]) - strtotime($dataExecutingKey["startDateMilestone"])) / (60 * 60 * 24)) + 1;
-                    $storeExecuting->bobot          = $dataExecutingKey["weightMilestone"];
-                    $storeExecuting->id_pmo         = $request["id_pmo"];
-                    $storeExecuting->status         = 'On-Going';
-                    $storeExecuting->deliverable_document = $dataExecutingKey["deliverableDoc"];
-                    $storeExecuting->save();
+                    $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id;
+                    $update = GanttTaskPmo::where('text','Initiating')->where('id_pmo',$request->id_pmo)->first();
+                    $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                    $update->update();
                 }                
-
-                $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
-                $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
-                $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
-                $update->update();
-                  
-
+            }else if ($request->current_save == "form_Planning") {
+                $parent = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('text','Planning')->first()->id;
+                GanttTaskPmo::where('parent', $parent)->delete();
                 
+                $arrPlanningMilestone = json_decode($request->arrPlanning,true);
+                foreach($arrPlanningMilestone as $dataPlanning){
+                    $storePlanning = new GanttTaskPmo;
 
-                // $getIdParentKey = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('parent',$storeKey->id)->orderBy('id')->first()->id;
-                // $updateParentKey = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('id',$storeKey->id)->orderBy('id')->first();
-                // $updateParentKey->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getIdParentKey)->orderby('id','asc')->limit('1')->first()->start_date;
-                // $updateParentKey->end_date = DB::table('gantt_tasks_pmo')->where('parent',$getIdParentKey)->orderby('id','desc')->limit('1')->first()->end_date;
-                // $updateParentKey->update();
-                
+                    $storePlanning->parent          = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id; 
+                    $storePlanning->text            = $dataPlanning["labelTask"];
+                    if ($dataPlanning["startDateMilestone"] != "Invalid date" && $dataPlanning["startDateMilestone"] != "Invalid date") {
+                        $storePlanning->start_date      = $dataPlanning["startDateMilestone"];
+                        $storePlanning->end_date        = $dataPlanning["finishDateMilestone"];
+                        $storePlanning->duration        = round((strtotime($dataPlanning["finishDateMilestone"]) - strtotime($dataPlanning["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    }
+                    $storePlanning->bobot           = $dataPlanning["weightMilestone"];
+                    $storePlanning->id_pmo          = $request["id_pmo"];
+                    $storePlanning->status          = 'On-Going';
+                    $storePlanning->deliverable_document = $dataPlanning["deliverableDoc"];
+                    $storePlanning->save();
+
+                    $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id;
+                    $update = GanttTaskPmo::where('text','Planning')->where('id_pmo',$request->id_pmo)->first();
+                    $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                    $update->update();
+                }
+            }else if ($request->current_save == "form_Executing") {
+                $parent = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('text','Executing')->first()->id;
+                GanttTaskPmo::where('parent', $parent)->delete();
+
+                $arrExecutingMilestone = json_decode($request->arrExecuting,true);
+                foreach($arrExecutingMilestone as $key => $dataExecuting){
+                    // return $key;
+                    $cek = var_dump($key, is_numeric($key));
+                    if (is_numeric($key)) {
+                       // if (is_array($dataExecuting)) {
+                            $storeExecuting = new GanttTaskPmo;               
+                            $storeExecuting->parent         = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                            $storeExecuting->text           = $dataExecuting["labelTask"];
+                            if ($dataExecuting["startDateMilestone"] != "Invalid date" && $dataExecuting["finishDateMilestone"] != "Invalid date") {
+                                $storeExecuting->start_date     = $dataExecuting["startDateMilestone"];
+                                $storeExecuting->end_date       = $dataExecuting["finishDateMilestone"];
+                                $storeExecuting->duration       = round((strtotime($dataExecuting["finishDateMilestone"]) - strtotime($dataExecuting["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                            }
+                            $storeExecuting->bobot          = $dataExecuting["weightMilestone"];
+                            $storeExecuting->id_pmo         = $request["id_pmo"];
+                            $storeExecuting->status         = 'On-Going';
+                            $storeExecuting->deliverable_document = $dataExecuting["deliverableDoc"];
+                            $storeExecuting->save();
+                        // }                                         
+
+                        $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                        $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
+                        $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                        $update->update();
+                        
+                    }else{
+                        $storeKey = new GanttTaskPmo;
+                        $storeKey->text        = $key;
+                        $storeKey->id_pmo      = $request->id_pmo;
+                        $storeKey->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                        $storeKey->duration    = 0;
+                        $storeKey->status      = 'On-Going';
+                        $storeKey->save();
+
+                        foreach($arrExecutingMilestone[$key] as $dataExecutingKey){
+                            $storeExecuting = new GanttTaskPmo;               
+                            $storeExecuting->parent         = $storeKey->id; 
+                            if ($dataExecutingKey["labelSolution"] != "") {
+                                $storeExecuting->text           = "[ ".$dataExecutingKey["labelSolution"]." ] - " . $dataExecutingKey["labelTask"];
+                            }else{
+                                $storeExecuting->text           = $dataExecutingKey["labelTask"];
+                            }
+
+                            if ($dataExecutingKey["startDateMilestone"] != "Invalid date" && $dataExecutingKey["finishDateMilestone"] != "Invalid date") {
+                                $storeExecuting->start_date     = $dataExecutingKey["startDateMilestone"];
+                                $storeExecuting->end_date       = $dataExecutingKey["finishDateMilestone"];
+                                $storeExecuting->duration       = round((strtotime($dataExecutingKey["finishDateMilestone"]) - strtotime($dataExecutingKey["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                            }
+                            $storeExecuting->bobot          = $dataExecutingKey["weightMilestone"];
+                            $storeExecuting->id_pmo         = $request["id_pmo"];
+                            $storeExecuting->status         = 'On-Going';
+                            $storeExecuting->deliverable_document = $dataExecutingKey["deliverableDoc"];
+                            $storeExecuting->save();
+                        }                
+
+                        $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                        $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
+                        $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                        $update->update();
+                    }
+                }
+            }else if ($request->current_save == "form_Closing") {
+                $parent = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('text','Closing')->first()->id;
+                GanttTaskPmo::where('parent', $parent)->delete();
+
+                $arrClosingMilestone = json_decode($request->arrClosing,true);
+                    foreach($arrClosingMilestone as $dataClosing){
+                        $storeClosing = new GanttTaskPmo;
+
+                        $storeClosing->parent                   = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;  
+                        $storeClosing->text                     = $dataClosing["labelTask"];
+                        if ($dataClosing["startDateMilestone"] != "Invalid date" && $dataClosing["finishDateMilestone"] != "Invalid date") {
+                            $storeClosing->start_date               = $dataClosing["startDateMilestone"];
+                            $storeClosing->end_date                 = $dataClosing["finishDateMilestone"];
+                            $storeClosing->duration                 = round((strtotime($dataClosing["finishDateMilestone"]) - strtotime($dataClosing["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                        }
+                        $storeClosing->bobot                    = $dataClosing["weightMilestone"];
+                        $storeClosing->id_pmo                   = $request["id_pmo"];
+                        $storeClosing->status                   = 'On-Going';
+                        $storeClosing->deliverable_document     = $dataClosing["deliverableDoc"];
+                        $storeClosing->save();
+
+                        $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;
+                        $update = GanttTaskPmo::where('text','Closing')->where('id_pmo',$request->id_pmo)->first();
+                        $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                        $update->update();
+                    }
+            }
+        }else{
+            $arrMainMilestone = json_decode($request->arrMainMilestone,true);
+            foreach($arrMainMilestone as $data){
+                $store = new GanttTaskPmo;
+                // return $data;
+                $store->text        = $data;
+                $store->id_pmo      = $request->id_pmo;
+                $store->parent      = 0;
+                $store->duration    = 0;
+                $store->status      = 'Done';
+                $store->save();
+
             }
 
-            // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+            if (count(json_decode($request->arrInitiating)) > 0) {
+                $arrInitiatingMilestone = json_decode($request->arrInitiating,true);
+                foreach($arrInitiatingMilestone as $dataInitiating){
+                    // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first();
 
-            // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataExecuting["labelTask"])->first();
+                    // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type->project_type)->where('sub_task', $dataInitiating["labelTask"])->first();
 
-            
+                    $storeInitiating = new GanttTaskPmo;
+
+                    $storeInitiating->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id; 
+                    $storeInitiating->text        = $dataInitiating["labelTask"];
+                    if ($dataInitiating["startDateMilestone"] != "Invalid date" && $dataInitiating["finishDateMilestone"] != "Invalid date") {
+                        $storeInitiating->start_date  = $dataInitiating["startDateMilestone"];
+                        $storeInitiating->end_date    = $dataInitiating["finishDateMilestone"];
+                        $storeInitiating->duration    = round((strtotime($dataInitiating["finishDateMilestone"]) - strtotime($dataInitiating["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    }
+                    $storeInitiating->bobot       = $dataInitiating["weightMilestone"];
+                    $storeInitiating->id_pmo      = $request["id_pmo"];
+                    if (DB::table('tb_pmo')->where('id', $request->id_pmo)->first()->project_type == 'supply_only') {
+                        $storeInitiating->status      = 'On-Going';
+                    } else {
+                        $storeInitiating->status      = 'Done';
+                    }
+                    $storeInitiating->deliverable_document = $dataInitiating["deliverableDoc"];
+                    $storeInitiating->save();
+
+                    $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id;
+                    $update = GanttTaskPmo::where('text','Initiating')->where('id_pmo',$request->id_pmo)->first();
+                    $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                    $update->update();
+                }
+            }
+        
+            if (count(json_decode($request->arrPlanning)) > 0) {
+                $arrPlanningMilestone = json_decode($request->arrPlanning,true);
+                foreach($arrPlanningMilestone as $dataPlanning){
+
+                    // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+
+                    // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataPlanning["labelTask"])->first();
+
+                    $storePlanning = new GanttTaskPmo;
+
+                    $storePlanning->parent          = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id; 
+                    $storePlanning->text            = $dataPlanning["labelTask"];
+                    if ($dataPlanning["startDateMilestone"] != "Invalid date" && $dataPlanning["startDateMilestone"] != "Invalid date") {
+                        $storePlanning->start_date      = $dataPlanning["startDateMilestone"];
+                        $storePlanning->end_date        = $dataPlanning["finishDateMilestone"];
+                        $storePlanning->duration        = round((strtotime($dataPlanning["finishDateMilestone"]) - strtotime($dataPlanning["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    }
+                    $storePlanning->bobot           = $dataPlanning["weightMilestone"];
+                    $storePlanning->id_pmo          = $request["id_pmo"];
+                    $storePlanning->status          = 'On-Going';
+                    $storePlanning->deliverable_document = $dataPlanning["deliverableDoc"];
+                    $storePlanning->save();
+
+                    $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id;
+                    $update = GanttTaskPmo::where('text','Planning')->where('id_pmo',$request->id_pmo)->first();
+                    $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                    $update->update();
+                }
+            }
+
+            if (json_decode($request->arrExecuting) !== null) {
+                $arrExecutingMilestone = json_decode($request->arrExecuting,true);
+                // return $arrExecutingMilestone;
+                // if (count($arrExecutingMilestone) > 1) {
+                //     return "lebih dari satu";
+                // }else{
+                //     return $arrExecutin
+                // foreach($arrExecutingMilestone as $data){
+                //     return $data["labelTask"];
+                // }
+                // return $arrExecutingMilestone
+                foreach($arrExecutingMilestone as $key => $dataExecuting){
+                    // return $key;
+                    $cek = var_dump($key, is_numeric($key));
+                    if (is_numeric($key)) {
+                       // if (is_array($dataExecuting)) {
+                            $storeExecuting = new GanttTaskPmo;               
+                            $storeExecuting->parent         = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                            $storeExecuting->text           = $dataExecuting["labelTask"];
+                            if ($dataExecuting["startDateMilestone"] != "Invalid date" && $dataExecuting["finishDateMilestone"] != "Invalid date") {
+                                $storeExecuting->start_date     = $dataExecuting["startDateMilestone"];
+                                $storeExecuting->end_date       = $dataExecuting["finishDateMilestone"];
+                                $storeExecuting->duration       = round((strtotime($dataExecuting["finishDateMilestone"]) - strtotime($dataExecuting["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                            }
+                            $storeExecuting->bobot          = $dataExecuting["weightMilestone"];
+                            $storeExecuting->id_pmo         = $request["id_pmo"];
+                            $storeExecuting->status         = 'On-Going';
+                            $storeExecuting->deliverable_document = $dataExecuting["deliverableDoc"];
+                            $storeExecuting->save();
+                        // }                                         
+
+                        $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                        $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
+                        $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                        $update->update();
+                        
+                    }else{
+                        $storeKey = new GanttTaskPmo;
+                        $storeKey->text        = $key;
+                        $storeKey->id_pmo      = $request->id_pmo;
+                        $storeKey->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                        $storeKey->duration    = 0;
+                        $storeKey->status      = 'On-Going';
+                        $storeKey->save();
+
+                        foreach($arrExecutingMilestone[$key] as $dataExecutingKey){
+                            $storeExecuting = new GanttTaskPmo;               
+                            $storeExecuting->parent         = $storeKey->id; 
+                            if ($dataExecutingKey["labelSolution"] != "") {
+                                $storeExecuting->text           = "[ ".$dataExecutingKey["labelSolution"]." ] - " . $dataExecutingKey["labelTask"];
+                            }else{
+                                $storeExecuting->text           = $dataExecutingKey["labelTask"];
+                            }
+
+                            if ($dataExecutingKey["startDateMilestone"] != "Invalid date" && $dataExecutingKey["finishDateMilestone"] != "Invalid date") {
+                                $storeExecuting->start_date     = $dataExecutingKey["startDateMilestone"];
+                                $storeExecuting->end_date       = $dataExecutingKey["finishDateMilestone"];
+                                $storeExecuting->duration       = round((strtotime($dataExecutingKey["finishDateMilestone"]) - strtotime($dataExecutingKey["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                            }
+                            $storeExecuting->bobot          = $dataExecutingKey["weightMilestone"];
+                            $storeExecuting->id_pmo         = $request["id_pmo"];
+                            $storeExecuting->status         = 'On-Going';
+                            $storeExecuting->deliverable_document = $dataExecutingKey["deliverableDoc"];
+                            $storeExecuting->save();
+                        }                
+
+                        $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+                        $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
+                        $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                        $update->update();
+                        // $getIdParentKey = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('parent',$storeKey->id)->orderBy('id')->first()->id;
+                        // $updateParentKey = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('id',$storeKey->id)->orderBy('id')->first();
+                        // $updateParentKey->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getIdParentKey)->orderby('id','asc')->limit('1')->first()->start_date;
+                        // $updateParentKey->end_date = DB::table('gantt_tasks_pmo')->where('parent',$getIdParentKey)->orderby('id','desc')->limit('1')->first()->end_date;
+                        // $updateParentKey->update();
+                    }
+                    // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+
+                    // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataExecuting["labelTask"])->first();
+                }
+            }
+
+            if (count(json_decode($request->arrClosing)) > 0) {
+                $arrClosingMilestone = json_decode($request->arrClosing,true);
+                foreach($arrClosingMilestone as $dataClosing){
+
+                    // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+
+                    // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataClosing["labelTask"])->first();
+
+                    $storeClosing = new GanttTaskPmo;
+
+                    $storeClosing->parent                   = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;  
+                    $storeClosing->text                     = $dataClosing["labelTask"];
+                    if ($dataClosing["startDateMilestone"] != "Invalid date" && $dataClosing["finishDateMilestone"] != "Invalid date") {
+                        $storeClosing->start_date               = $dataClosing["startDateMilestone"];
+                        $storeClosing->end_date                 = $dataClosing["finishDateMilestone"];
+                        $storeClosing->duration                 = round((strtotime($dataClosing["finishDateMilestone"]) - strtotime($dataClosing["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    }
+                    $storeClosing->bobot                    = $dataClosing["weightMilestone"];
+                    $storeClosing->id_pmo                   = $request["id_pmo"];
+                    $storeClosing->status                   = 'On-Going';
+                    $storeClosing->deliverable_document     = $dataClosing["deliverableDoc"];
+                    $storeClosing->save();
+
+                    $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;
+                    $update = GanttTaskPmo::where('text','Closing')->where('id_pmo',$request->id_pmo)->first();
+                    $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+                    $update->update();
+                }
+            }
         }
 
-        $arrClosingMilestone = json_decode($request->arrClosing,true);
-        foreach($arrClosingMilestone as $dataClosing){
+        // if (count(json_decode($request->arrInitiating)) > 0) {
+        //     GanttTaskPmo::where('id_pmo', $request->id_pmo)->delete();
 
-            // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+        //     $arrInitiatingMilestone = json_decode($request->arrInitiating,true);
+        //     foreach($arrInitiatingMilestone as $dataInitiating){
+        //         // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first();
 
-            // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataClosing["labelTask"])->first();
+        //         // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type->project_type)->where('sub_task', $dataInitiating["labelTask"])->first();
 
-            $storeClosing = new GanttTaskPmo;
+        //         $storeInitiating = new GanttTaskPmo;
 
-            $storeClosing->parent                   = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;  
-            $storeClosing->text                     = $dataClosing["labelTask"];
-            $storeClosing->start_date               = $dataClosing["startDateMilestone"];
-            $storeClosing->end_date                 = $dataClosing["finishDateMilestone"];
-            $storeClosing->duration                 = round((strtotime($dataClosing["finishDateMilestone"]) - strtotime($dataClosing["startDateMilestone"])) / (60 * 60 * 24)) + 1;
-            $storeClosing->bobot                    = $dataClosing["weightMilestone"];
-            $storeClosing->id_pmo                   = $request["id_pmo"];
-            $storeClosing->status                   = 'On-Going';
-            $storeClosing->deliverable_document     = $dataClosing["deliverableDoc"];
-            $storeClosing->save();
+        //         $storeInitiating->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id; 
+        //         $storeInitiating->text        = $dataInitiating["labelTask"];
+        //         if ($dataInitiating["startDateMilestone"] != "Invalid date" && $dataInitiating["finishDateMilestone"] != "Invalid date") {
+        //             $storeInitiating->start_date  = $dataInitiating["startDateMilestone"];
+        //             $storeInitiating->end_date    = $dataInitiating["finishDateMilestone"];
+        //             $storeInitiating->duration    = round((strtotime($dataInitiating["finishDateMilestone"]) - strtotime($dataInitiating["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+        //         }
+        //         $storeInitiating->bobot       = $dataInitiating["weightMilestone"];
+        //         $storeInitiating->id_pmo      = $request["id_pmo"];
+        //         if (DB::table('tb_pmo')->where('id', $request->id_pmo)->first()->project_type == 'supply_only') {
+        //             $storeInitiating->status      = 'On-Going';
+        //         } else {
+        //             $storeInitiating->status      = 'Done';
+        //         }
+        //         $storeInitiating->deliverable_document = $dataInitiating["deliverableDoc"];
+        //         $storeInitiating->save();
 
-            $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;
-            $update = GanttTaskPmo::where('text','Closing')->where('id_pmo',$request->id_pmo)->first();
-            $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
-            $update->update();
-        }
+        //         $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id;
+        //         $update = GanttTaskPmo::where('text','Initiating')->where('id_pmo',$request->id_pmo)->first();
+        //         $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+        //         $update->update();
+        //     }
+        // }
+        
+        // if (count(json_decode($request->arrPlanning)) > 0) {
+        //     $arrPlanningMilestone = json_decode($request->arrPlanning,true);
+        //     foreach($arrPlanningMilestone as $dataPlanning){
 
+        //         // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+
+        //         // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataPlanning["labelTask"])->first();
+
+        //         $storePlanning = new GanttTaskPmo;
+
+        //         $storePlanning->parent          = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id; 
+        //         $storePlanning->text            = $dataPlanning["labelTask"];
+        //         if ($dataPlanning["startDateMilestone"] != "Invalid date" && $dataPlanning["startDateMilestone"] != "Invalid date") {
+        //             $storePlanning->start_date      = $dataPlanning["startDateMilestone"];
+        //             $storePlanning->end_date        = $dataPlanning["finishDateMilestone"];
+        //             $storePlanning->duration        = round((strtotime($dataPlanning["finishDateMilestone"]) - strtotime($dataPlanning["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+        //         }
+        //         $storePlanning->bobot           = $dataPlanning["weightMilestone"];
+        //         $storePlanning->id_pmo          = $request["id_pmo"];
+        //         $storePlanning->status          = 'On-Going';
+        //         $storePlanning->deliverable_document = $dataPlanning["deliverableDoc"];
+        //         $storePlanning->save();
+
+        //         $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id;
+        //         $update = GanttTaskPmo::where('text','Planning')->where('id_pmo',$request->id_pmo)->first();
+        //         $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+        //         $update->update();
+        //     }
+        // }
+
+        // if (json_decode($request->arrExecuting) !== null) {
+        //     $arrExecutingMilestone = json_decode($request->arrExecuting,true);
+        //     // return $arrExecutingMilestone;
+        //     // if (count($arrExecutingMilestone) > 1) {
+        //     //     return "lebih dari satu";
+        //     // }else{
+        //     //     return $arrExecutin
+        //     // foreach($arrExecutingMilestone as $data){
+        //     //     return $data["labelTask"];
+        //     // }
+        //     // return $arrExecutingMilestone
+        //     foreach($arrExecutingMilestone as $key => $dataExecuting){
+        //         // return $key;
+        //         $cek = var_dump($key, is_numeric($key));
+        //         if (is_numeric($key)) {
+        //            // if (is_array($dataExecuting)) {
+        //                 $storeExecuting = new GanttTaskPmo;               
+        //                 $storeExecuting->parent         = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+        //                 $storeExecuting->text           = $dataExecuting["labelTask"];
+        //                 if ($dataExecuting["startDateMilestone"] != "Invalid date" && $dataExecuting["finishDateMilestone"] != "Invalid date") {
+        //                     $storeExecuting->start_date     = $dataExecuting["startDateMilestone"];
+        //                     $storeExecuting->end_date       = $dataExecuting["finishDateMilestone"];
+        //                     $storeExecuting->duration       = round((strtotime($dataExecuting["finishDateMilestone"]) - strtotime($dataExecuting["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+        //                 }
+        //                 $storeExecuting->bobot          = $dataExecuting["weightMilestone"];
+        //                 $storeExecuting->id_pmo         = $request["id_pmo"];
+        //                 $storeExecuting->status         = 'On-Going';
+        //                 $storeExecuting->deliverable_document = $dataExecuting["deliverableDoc"];
+        //                 $storeExecuting->save();
+        //             // }                                         
+
+        //             $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+        //             $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
+        //             $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+        //             $update->update();
+                    
+        //         }else{
+        //             $storeKey = new GanttTaskPmo;
+        //             $storeKey->text        = $key;
+        //             $storeKey->id_pmo      = $request->id_pmo;
+        //             $storeKey->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+        //             $storeKey->duration    = 0;
+        //             $storeKey->status      = 'On-Going';
+        //             $storeKey->save();
+
+        //             foreach($arrExecutingMilestone[$key] as $dataExecutingKey){
+        //                 $storeExecuting = new GanttTaskPmo;               
+        //                 $storeExecuting->parent         = $storeKey->id; 
+        //                 if ($dataExecutingKey["labelSolution"] != "") {
+        //                     $storeExecuting->text           = "[ ".$dataExecutingKey["labelSolution"]." ] - " . $dataExecutingKey["labelTask"];
+        //                 }else{
+        //                     $storeExecuting->text           = $dataExecutingKey["labelTask"];
+        //                 }
+
+        //                 if ($dataExecutingKey["startDateMilestone"] != "Invalid date" && $dataExecutingKey["finishDateMilestone"] != "Invalid date") {
+        //                     $storeExecuting->start_date     = $dataExecutingKey["startDateMilestone"];
+        //                     $storeExecuting->end_date       = $dataExecutingKey["finishDateMilestone"];
+        //                     $storeExecuting->duration       = round((strtotime($dataExecutingKey["finishDateMilestone"]) - strtotime($dataExecutingKey["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+        //                 }
+        //                 $storeExecuting->bobot          = $dataExecutingKey["weightMilestone"];
+        //                 $storeExecuting->id_pmo         = $request["id_pmo"];
+        //                 $storeExecuting->status         = 'On-Going';
+        //                 $storeExecuting->deliverable_document = $dataExecutingKey["deliverableDoc"];
+        //                 $storeExecuting->save();
+        //             }                
+
+        //             $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
+        //             $update = GanttTaskPmo::where('text','Executing')->where('id_pmo',$request->id_pmo)->first();
+        //             $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+        //             $update->update();
+        //             // $getIdParentKey = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('parent',$storeKey->id)->orderBy('id')->first()->id;
+        //             // $updateParentKey = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('id',$storeKey->id)->orderBy('id')->first();
+        //             // $updateParentKey->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getIdParentKey)->orderby('id','asc')->limit('1')->first()->start_date;
+        //             // $updateParentKey->end_date = DB::table('gantt_tasks_pmo')->where('parent',$getIdParentKey)->orderby('id','desc')->limit('1')->first()->end_date;
+        //             // $updateParentKey->update();
+        //         }
+
+        //         // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+
+        //         // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataExecuting["labelTask"])->first();
+
+                
+        //     }
+        // }
+
+        // if (count(json_decode($request->arrClosing)) > 0) {
+        //     $arrClosingMilestone = json_decode($request->arrClosing,true);
+        //     foreach($arrClosingMilestone as $dataClosing){
+
+        //         // $get_project_type = DB::table('tb_pmo')->where('tb_pmo.id', $request->id_pmo)->first()->project_type;
+
+        //         // $getDeliverableDocument = DB::table('tb_pmo_define_task')->select('tb_pmo_define_task.deliverable_document', 'sub_task')->where('tb_pmo_define_task.project_type',$get_project_type)->where('sub_task', $dataClosing["labelTask"])->first();
+
+        //         $storeClosing = new GanttTaskPmo;
+
+        //         $storeClosing->parent                   = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;  
+        //         $storeClosing->text                     = $dataClosing["labelTask"];
+        //         if ($dataClosing["startDateMilestone"] != "Invalid date" && $dataClosing["finishDateMilestone"] != "Invalid date") {
+        //             $storeClosing->start_date               = $dataClosing["startDateMilestone"];
+        //             $storeClosing->end_date                 = $dataClosing["finishDateMilestone"];
+        //             $storeClosing->duration                 = round((strtotime($dataClosing["finishDateMilestone"]) - strtotime($dataClosing["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+        //         }
+        //         $storeClosing->bobot                    = $dataClosing["weightMilestone"];
+        //         $storeClosing->id_pmo                   = $request["id_pmo"];
+        //         $storeClosing->status                   = 'On-Going';
+        //         $storeClosing->deliverable_document     = $dataClosing["deliverableDoc"];
+        //         $storeClosing->save();
+
+        //         $getId = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;
+        //         $update = GanttTaskPmo::where('text','Closing')->where('id_pmo',$request->id_pmo)->first();
+        //         $update->start_date = DB::table('gantt_tasks_pmo')->where('parent',$getId)->orderby('id','asc')->limit('1')->first()->start_date;
+        //         $update->update();
+        //     }
+        // }
+        
         $update_phase = PMO::where('id', $request->id_pmo)->first();
         // $update_phase->current_phase = 'Planning';
         if (DB::table('tb_pmo')->where('id', $request->id_pmo)->first()->project_type == 'supply_only') {
@@ -2480,10 +2814,11 @@ class PMProjectController extends Controller
         // return $request->arrMainMilestone;
 
         if (GanttTaskPmo::where('id_pmo', $request->id_pmo)->exists()) {
-            $data = GanttTaskPmo::where('id_pmo', $request->id_pmo)->get();
-            foreach ($data as $key => $value) {
-                $data = GanttTaskPmo::where('id', $value->id)->delete();
-            }
+            GanttTaskPmo::where('id_pmo', $request->id_pmo)->delete();
+            // $data = GanttTaskPmo::where('id_pmo', $request->id_pmo)->get();
+            // foreach ($data as $key => $value) {
+            //     $data = 
+            // }
         }
 
 
@@ -2507,9 +2842,13 @@ class PMProjectController extends Controller
 
             $storeInitiating->parent      = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Initiating')->first()->id; 
             $storeInitiating->text        = $dataInitiating["inputTaskMilestone"];
-            $storeInitiating->start_date  = $dataInitiating["startDateMilestone"];
-            $storeInitiating->end_date    = $dataInitiating["finishDateMilestone"];
-            $storeInitiating->duration    = round((strtotime($dataInitiating["finishDateMilestone"]) - strtotime($dataInitiating["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+
+            if ($dataInitiating["startDateMilestone"] != "Invalid date" && $dataInitiating["finishDateMilestone"] != "Invalid date") {
+                $storeInitiating->start_date  = $dataInitiating["startDateMilestone"];
+                $storeInitiating->end_date    = $dataInitiating["finishDateMilestone"];
+                $storeInitiating->duration    = round((strtotime($dataInitiating["finishDateMilestone"]) - strtotime($dataInitiating["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+            }
+            
             $storeInitiating->bobot       = $dataInitiating["weightMilestone"];
             $storeInitiating->id_pmo      = $request["id_pmo"];
             if (DB::table('tb_pmo')->where('id', $request->id_pmo)->first()->project_type == 'supply_only') {
@@ -2535,9 +2874,12 @@ class PMProjectController extends Controller
 
             $storePlanning->parent          = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Planning')->first()->id; 
             $storePlanning->text            = $dataPlanning["inputTaskMilestone"];
-            $storePlanning->start_date      = $dataPlanning["startDateMilestone"];
-            $storePlanning->end_date        = $dataPlanning["finishDateMilestone"];
-            $storePlanning->duration        = round((strtotime($dataPlanning["finishDateMilestone"]) - strtotime($dataPlanning["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+            if ($dataPlanning["startDateMilestone"] != "Invalid date" && $dataPlanning["finishDateMilestone"] != "Invalid date") {
+                $storePlanning->start_date      = $dataPlanning["startDateMilestone"];
+                $storePlanning->end_date        = $dataPlanning["finishDateMilestone"];
+                $storePlanning->duration        = round((strtotime($dataPlanning["finishDateMilestone"]) - strtotime($dataPlanning["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+            }
+            
             $storePlanning->bobot           = $dataPlanning["weightMilestone"];
             $storePlanning->id_pmo          = $request["id_pmo"];
             $storePlanning->status          = 'On-Going';
@@ -2562,9 +2904,12 @@ class PMProjectController extends Controller
                     $storeExecuting = new GanttTaskPmo;               
                     $storeExecuting->parent         = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Executing')->first()->id;
                     $storeExecuting->text           = $dataExecuting["inputTaskMilestone"];
-                    $storeExecuting->start_date     = $dataExecuting["startDateMilestone"];
-                    $storeExecuting->end_date       = $dataExecuting["finishDateMilestone"];
-                    $storeExecuting->duration       = round((strtotime($dataExecuting["finishDateMilestone"]) - strtotime($dataExecuting["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    if ($dataExecuting["startDateMilestone"] != "Invalid date" && $dataExecuting["finishDateMilestone"] != "Invalid date") {
+                        $storeExecuting->start_date     = $dataExecuting["startDateMilestone"];
+                        $storeExecuting->end_date       = $dataExecuting["finishDateMilestone"];
+                        $storeExecuting->duration       = round((strtotime($dataExecuting["finishDateMilestone"]) - strtotime($dataExecuting["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    }
+                    
                     $storeExecuting->bobot          = $dataExecuting["weightMilestone"];
                     $storeExecuting->id_pmo         = $request["id_pmo"];
                     $storeExecuting->status         = 'On-Going';
@@ -2590,9 +2935,12 @@ class PMProjectController extends Controller
                     $storeExecuting = new GanttTaskPmo;               
                     $storeExecuting->parent         = $storeKey->id; 
                     $storeExecuting->text           = $dataExecutingKey["inputTaskMilestone"];
-                    $storeExecuting->start_date     = $dataExecutingKey["startDateMilestone"];
-                    $storeExecuting->end_date       = $dataExecutingKey["finishDateMilestone"];
-                    $storeExecuting->duration       = round((strtotime($dataExecutingKey["finishDateMilestone"]) - strtotime($dataExecutingKey["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    if ($dataExecutingKey["startDateMilestone"] != "Invalid date" && $dataExecutingKey["finishDateMilestone"] != "Invalid date") {
+                        $storeExecuting->start_date     = $dataExecutingKey["startDateMilestone"];
+                        $storeExecuting->end_date       = $dataExecutingKey["finishDateMilestone"];
+                        $storeExecuting->duration       = round((strtotime($dataExecutingKey["finishDateMilestone"]) - strtotime($dataExecutingKey["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+                    }
+                    
                     $storeExecuting->bobot          = $dataExecutingKey["weightMilestone"];
                     $storeExecuting->id_pmo         = $request["id_pmo"];
                     $storeExecuting->status         = 'On-Going';
@@ -2616,9 +2964,12 @@ class PMProjectController extends Controller
 
             $storeClosing->parent                   = DB::table('gantt_tasks_pmo')->where('id_pmo',$request->id_pmo)->where('text','Closing')->first()->id;  
             $storeClosing->text                     = $dataClosing["inputTaskMilestone"];
-            $storeClosing->start_date               = $dataClosing["startDateMilestone"];
-            $storeClosing->end_date                 = $dataClosing["finishDateMilestone"];
-            $storeClosing->duration                 = round((strtotime($dataClosing["finishDateMilestone"]) - strtotime($dataClosing["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+            if ($dataClosing["startDateMilestone"] != "Invalid date" && $dataClosing["finishDateMilestone"] != "Invalid date") {
+                $storeClosing->start_date               = $dataClosing["startDateMilestone"];
+                $storeClosing->end_date                 = $dataClosing["finishDateMilestone"];
+                $storeClosing->duration                 = round((strtotime($dataClosing["finishDateMilestone"]) - strtotime($dataClosing["startDateMilestone"])) / (60 * 60 * 24)) + 1;
+            }
+            
             $storeClosing->bobot                    = $dataClosing["weightMilestone"];
             $storeClosing->id_pmo                   = $request["id_pmo"];
             $storeClosing->status                   = 'On-Going';
@@ -3020,8 +3371,21 @@ class PMProjectController extends Controller
         $data = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('status', 'Done')->sum('bobot');
         if (GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('status', 'Done')->where('parent','!=',0)->limit('1')->orderBy('id','desc')->first()  !== null) {
             $dataLatestMilestone = GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('status', 'Done')->limit('1')->orderBy('id','desc')->first()->parent;
+            $isUpdateCurrentMilestone = GanttTaskPmo::where('parent', $dataLatestMilestone)->where('status', 'Done')->count() > 0 ? "True" : "False";
+
             if (isset($dataLatestMilestone)) {
                 $dataMainLatestMilestone = GanttTaskPmo::where('id', $dataLatestMilestone)->first()->text;
+                if ($dataMainLatestMilestone == "Initiating") {
+                    $dataMainLatestMilestone = $dataMainLatestMilestone;
+                }else if ($dataMainLatestMilestone == "Planning") {
+                    $dataMainLatestMilestone = $dataMainLatestMilestone;
+                }else if ($dataMainLatestMilestone == "Executing") {
+                    $dataMainLatestMilestone = $dataMainLatestMilestone;
+                }else if ($dataMainLatestMilestone == 'Closing') {
+                    $dataMainLatestMilestone = $dataMainLatestMilestone;
+                }else{
+                    $dataMainLatestMilestone = "Executing";
+                }
             } else {
                 $dataMainLatestMilestone = [];
             }
@@ -3029,8 +3393,7 @@ class PMProjectController extends Controller
             $dataMainLatestMilestone = [];
         }
 
-
-        return array("progress"=>collect(["bobot"=>$data,"lates_progress_milestone"=>$dataMainLatestMilestone]));
+        return array("progress"=>collect(["bobot"=>$data,"lates_progress_milestone"=>$dataMainLatestMilestone,"is_update_current_milestone"=>$isUpdateCurrentMilestone]));
     }
 
     public function storeDocument(Request $request)

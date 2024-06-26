@@ -267,7 +267,7 @@ PMO
 @section('content')
 	<section class="content-header" style="display:none">
         <h1>
-    		<button class="btn btn-sm btn-danger" type="button" onclick="btnBack()"><i class="fa fa-arrow-left"></i>&nbsp Back</button>
+    		<button class="btn btn-sm btn-danger" type="button" onclick="btnBack()" id="btnBack"><i class="fa fa-arrow-left"></i>&nbsp Back</button>
             <span class="content-title"></span>
         </h1>
         <ol class="breadcrumb">
@@ -396,6 +396,7 @@ PMO
 	                                <th>Impact</th>
 	                                <th>Likelihood</th>
 	                                <th>Rank</th>
+	                                <th>Impact Description</th>
 	                                <th>Response</th>
 	                                <th>Due Date</th>
 	                                <th>Review Date</th>
@@ -1441,7 +1442,6 @@ PMO
     })
 
     let firstPage = true
-
     function btnBack(){
     	if (firstPage == true) {
     		$(".content-header").hide()
@@ -1449,16 +1449,14 @@ PMO
     		window.location.href = "{{url('PMO/project')}}"
     		// $(".content-title").text("Detail Project")
     		showMilestoneData()
-
     	}else{
-    		firstPage = true
     		location.reload()
+    		firstPage = true
     		$(".milestone").hide()
     		$(".show_project_charter").hide()
     		$(".detail_project").show()
     		// $(".content-title").text("Detail Project")
     		showMilestoneData()
-
     	}
     }
 
@@ -1584,21 +1582,41 @@ PMO
             },success:function(result){
             	if (result.progress.lates_progress_milestone == 'Initiating') {
             		$("#progressbar").addClass('progress-bar-primary')
+            		if (result.progress.is_update_current_milestone == "True") {
+            			$(".fieldset_Initiating").attr("disabled",true)
+            		}
             	}else if (result.progress.lates_progress_milestone == 'Planning') {
             		$("#progressbar").addClass('progress-bar-warning')
+            		$(".fieldset_Initiating").attr("disabled",true)
+            		if (result.progress.is_update_current_milestone == "True") {
+            			$(".fieldset_Planning").attr("disabled",true)
+            		}
             	}else if (result.progress.lates_progress_milestone == 'Executing') {
             		$("#progressbar").addClass('progress-bar-danger')
+            		$(".fieldset_Initiating").attr("disabled",true)
+            		$(".fieldset_Planning").attr("disabled",true)
+            		if (result.progress.is_update_current_milestone == "True") {
+            			$(".fieldset_Executing").attr("disabled",true)
+            		}
             	}else if (result.progress.lates_progress_milestone == 'Closing') {
             		$("#progressbar").addClass('progress-bar-success')
+            		$(".fieldset_Initiating").attr("disabled",true)
+            		$(".fieldset_Planning").attr("disabled",true)
+            		$(".fieldset_Executing").attr("disabled",true)
+            		if (result.progress.is_update_current_milestone == "True") {
+            			$(".fieldset_Closing").attr("disabled",true)
+            		}
+            		if (result.progress.bobot == 100) {
+	            		$(".fieldset_Closing").attr("disabled",true)
+            		}
             	}else{
             		$("#progressbar").addClass('progress-bar-success').css('color','#d2d6de')
-            	}
+            	}          	
 
             	$("#overall_progress").val(result.progress.bobot + '%')
             	$("#progressbar").css("width",result.progress.bobot + '%')
             	$("#progressbar").text(result.progress.bobot + '% complete')
             	
-
             	if (result.progress.bobot == 100) {
             		gantt.config.readonly = true;
             	}
@@ -1761,7 +1779,12 @@ PMO
 		            		end_date = moment(item.Initiating.end_date_final).format('LL')
 		            		statusInitiating = 'Done'
 		            	}
-		            	dateInitiating = '('+ moment(item.Initiating.start_date).format('LL') + ' - ' + end_date +')'
+
+		            	if (item.Initiating.start_date != null) {
+		            		dateInitiating = '('+ moment(item.Initiating.start_date).format('LL') + ' - ' + end_date +')'
+		            	}else{
+		            		dateInitiating = '-'
+		            	}
 
 		            	if (item.Initiating.last_end_date != null) {
 		            		last_end_date = moment(item.Initiating.last_end_date).format('LL')
@@ -1784,7 +1807,12 @@ PMO
 		            		end_date = moment(item.Planning.end_date_final).format('LL')
 		            		statusPlanning = 'Done'
 		            	}
-		            	datePlanning = '('+ moment(item.Planning.start_date).format('LL') + ' - ' + end_date +')'
+
+		            	if (item.Planning.start_date != null) {
+		            		datePlanning = '('+ moment(item.Planning.start_date).format('LL') + ' - ' + end_date +')'
+		            	}else{
+		            		datePlanning = '-'
+		            	}
 
 		            	if (item.Planning.last_end_date != null) {
 		            		last_end_date = moment(item.Planning.last_end_date).format('LL')
@@ -1792,12 +1820,10 @@ PMO
 		            		last_end_date = '-'
 		            	}
 		            	lastActivityDatePlanning = '(<small style="color:blue">'+ item.Planning.last_sub_task +' / ' + last_end_date + '</small>)' 	
-
 		            }else{
 		            	datePlanning = '-'
 		            	statusPlanning = 'Ongoing'
 		            	lastActivityDatePlanning = ' - ' 
-
 		            }
 
 		            if (item.Executing != null) {
@@ -1810,7 +1836,13 @@ PMO
 		            		statusExecuting = 'Done'
 
 		            	}
-		            	dateExecuting = '('+ moment(item.Executing.start_date).format('LL') + ' - ' + end_date +')'
+
+		            	if (item.Executing.start_date != null) {
+		            		dateExecuting = '('+ moment(item.Executing.start_date).format('LL') + ' - ' + end_date +')'
+		            	}else{
+		            		dateExecuting = '-'
+		            	}
+
 		            	if (item.Executing.last_end_date != null) {
 		            		last_end_date = moment(item.Executing.last_end_date).format('LL')
 		            	}else{
@@ -1818,7 +1850,6 @@ PMO
 		            	}
 
 		            	lastActivityDateExecuting = '(<small style="color:blue">'+ item.Executing.last_sub_task +' / ' + last_end_date + '</small>)' 	
-
 		            }else{
 		            	dateExecuting = '-'
 		            	statusExecuting = 'Ongoing'
@@ -1834,14 +1865,19 @@ PMO
 		            		statusClosing = 'Done'
 
 		            	}
-		            	dateClosing = '('+ moment(item.Closing.start_date).format('LL') + ' - ' + end_date +')'
+
+		            	if (item.Closing.start_date != null) {
+		            		dateClosing = '('+ moment(item.Closing.start_date).format('LL') + ' - ' + end_date +')'
+		            	}else{
+		            		dateClosing = '-'
+		            	}
+
 		            	if (item.Closing.last_end_date != null) {
 		            		last_end_date = moment(item.Closing.last_end_date).format('LL')
 		            	}else{
 		            		last_end_date = '-'
 		            	}
 		            	lastActivityDateClosing = '(<small style="color:blue">'+ item.Closing.last_sub_task +' / ' + last_end_date + '</small>)' 	
-
 		            }else{
 		            	dateClosing = '-'
 		            	statusClosing = 'ongoing'
@@ -1867,11 +1903,10 @@ PMO
         })
     }
 
-    function milestone(status,ganttstatus){    	
+    function milestone(status,ganttstatus){ 	
     	firstPage = false
     	$(".content-title").text("Milestone")
     	$("#milestone-container").empty("")
-
     	if (status == "show") {
     		url  = "/PMO/getMilestoneById"
     		data = {
@@ -1889,11 +1924,14 @@ PMO
 	    		
     		}
     	}else{
+    		console.log("siniiii")
     		if (status == "Defined") {
     			url = "/PMO/getDefaultTask"
     			width = "800px"
     			marginRight = ""
     		}else{
+    		console.log("siniiii")
+
     			url = "/PMO/getPhase"
 	    		width = "900px"
 	    		marginRight = "margin-right: 152px;"
@@ -1910,27 +1948,11 @@ PMO
     		type:"GET",
     		data:data,
     		success:function(result){
-    			// 			var timeout;
-
-				// function warning() {
-				//     timeout = setTimeout(function() {
-				//         alert('You stayed');
-				//     }, 1000);
-				//     return "You are leaving the page";
-				// }
-
-				// function noTimeout() {
-				//     clearTimeout(timeout);
-				// }
-
-				// window.onbeforeunload = warning;
-				// window.unload = noTimeout;
     			window.onbeforeunload = function() { 
 					return "Your work will be lost."; 
 				};
-    			append = ""
-    			append = append +' <div style="white-space: nowrap;overflow-x: auto;">'
-    			arrWeightSupplyOnly = ["10","20","60","10"]
+
+				arrWeightSupplyOnly = ["10","20","60","10"]
     			arrWeightImplementation = ["5","15","75","5"]
     			arrWeightMaintenance = ["10","20","60","10"]
 
@@ -1938,6 +1960,9 @@ PMO
     			let inc = 0;
     			let isExecutingWithSolution = false
 
+				var startDate = '' , endDate = '', bobot = ''    				
+    			append = ""
+    			append = append +' <div style="white-space: nowrap;overflow-x: auto;">'
     			$.each(result,function(index,value){
     				$('input[type="checkbox"].minimal').iCheck({
 				      checkboxClass: 'icheckbox_minimal-blue',
@@ -1959,454 +1984,564 @@ PMO
     				
 					// for ($i = 0; $i < 4; $i++){
 					append = append +'<div style="width: 50%;width:'+ width +';display:inline-block;margin-right: 20px;vertical-align:top">'
-					append = append +' <div class="box">'
-					append = append +'  <div class="box-header">'
-					append = append +'   <h3 class="box-title">'+ index +'</h3>'
-					append = append + '	  <div class="box-tools">'
-					append = append + '	    <div class="pull-right"><label style="margin-right:10px;display:inline">Weight</label><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px;" readonly></div>		'
-					append = append + '		</div>'
-					append = append +'   </div>'
-					append = append +'<div class="box-body">'
-						if (index == "Executing") {
-							if (status == "show") {
-								if (ganttstatus == "custom") {
-									append = append +'<form class="form_'+ index +'">'
-									$.each(value,function(idx,values){
-										incIdx++
-
-										append = append +' 	<div class="form-group form_group_'+index+'">'
-											append = append +' 		<div class="row">'
-											append = append +' 			<div class="col-md-4">'
-											append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+ idx +'" placeholder="Start date" value="'+ moment(values.start_date).format('MM/DD/YYYY') +'">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+ idx +'" value="'+ moment(values.end_date).format('MM/DD/YYYY') +'">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-1">'
-											append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="'+ idx +'" value="'+ values.bobot +'">'
-											append = append +' 			</div>'
-											append = append +'			<div class="col-md-2">'
-											if (values.deliverable_document == "true") {
-												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox" checked> Deliverable Doc.<br></label>'
-												append = append +'				</div>'
-											}else{
-												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
-												append = append +'				</div>'
-											}
-											append = append +' 			</div>'
-												append = append + '		<div class="col-sm-1">				'
-												if (idx != 0) {
-													append = append + '			<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-												}
-												append = append + '		</div>'
-											append = append + '</div>'
-											append = append +	'<span class="help-block" style="display:none;color:red"></span>'
-										append = append +' 	</div>'
-									})
-									append = append + '<div  style="display:flex;justify-content:center">'
-									append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
-									append = append + '</div>'
-
-									append = append +'</form>'
-								}else{
-									if (window.location.search.split("=")[1].split("&")[0] == "implementation") {
-										if (isNaN(parseFloat(Object.keys(value)))) {
-											$.each(value,function(idx,values){
-												incIdx++									
-
-												append = append +'<form class="form_'+ index +'">'
-												isExecutingWithSolution = true
-												append = append + "<div class='form-group'>"
-												append = append + "	<label>Solution Name</label>"
-												append = append + "	<input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone' value='"+ idx +"'>"
-												append = append + "	<span style='display:none;color:red' class='help-block'></span>"
-												append = append + "</div>"	
-												$.each(values,function(idx,valuesExecuting){
-													append = append +' 	<div class="form-group">'
-
-														append = append +' 	<label>'+ valuesExecuting.text +'</label>'
-														append = append +' 	<div class="row">'
-															append = append +' 			<div class="col-md-4">'
-															append = append +' 				<div class="input-group">'
-															append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-															append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(valuesExecuting.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-															append = append +'				</div>'
-															append = append +' 			</div>'
-															append = append +' 			<div class="col-md-5">'
-															// append = append +' 				<div class="input-group">'
-															// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-															// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ valuesExecuting[0].index +'">'
-															// append = append +'				</div>'
-															append = append +' 				<div class="input-group">'
-															append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-															append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(valuesExecuting.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-															append = append +'				</div>'
-															append = append +' 			</div>'
-															append = append +' 			<div class="col-md-2">'
-															append = append +' 				<input value="'+ valuesExecuting.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
-															append = append +' 			</div>'
-															append = append + '			<div class="col-sm-1">				'
-																append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-																
-															append = append + '			</div>'
-														append = append +' 	</div>'
-													append = append +' 	</div>'
-												})
-
-												append = append +'</form>'
-											})
-										}else{
+	    				append = append + '<fieldset class="fieldset_'+ index +'">'
+							append = append +' <div class="box">'
+							append = append +'  <div class="box-header">'
+							append = append +'   <h3 class="box-title">'+ index +'</h3>'
+							append = append + '	  <div class="box-tools">'
+							append = append + '	    <div class="pull-right"><label style="margin-right:10px;display:inline">Weight</label><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px;" readonly></div>		'
+							append = append + '		</div>'
+							append = append +'   </div>'
+							append = append +'<div class="box-body">'
+								if (index == "Executing") {
+									if (status == "show") {
+										if (ganttstatus == "custom") {
 											append = append +'<form class="form_'+ index +'">'
 											$.each(value,function(idx,values){
-											incIdx++
-												append = append +' 	<div class="form-group">'
+												if (values.start_date != null) {
+							    					startDate = moment(values.start_date).format('MM/DD/YYYY')
+							    				}else{
+							    					startDate = ''
+							    				}
+
+							    				if (values.end_date != null) {
+							    					endDate = moment(values.end_date).format('MM/DD/YYYY')
+							    				}else{
+							    					endDate = ''
+							    				}
+
+							    				if (values.bobot != null) {
+							    					bobot = values.bobot
+							    				}else{
+							    					bobot = ''
+							    				}
+
+												append = append +' 	<div class="form-group form_group_'+index+'">'
+													append = append +' 		<div class="row">'
+													append = append +' 			<div class="col-md-4">'
+													append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-2">'
+													append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+													append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+ idx +'" placeholder="Select Start date" value="'+ startDate +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-2">'
+													append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+													append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+ idx +'" value="'+ endDate +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-1">'
+													append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="'+ idx +'" value="'+ bobot +'">'
+													append = append +' 			</div>'
+													append = append +'			<div class="col-md-2">'
+													if (values.deliverable_document == "true") {
+														append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+														append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox" checked> Deliverable Doc.<br></label>'
+														append = append +'				</div>'
+													}else{
+														append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+														append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
+														append = append +'				</div>'
+													}
+													append = append +' 			</div>'
+														append = append + '		<div class="col-sm-1">				'
+														if (idx != 0) {
+															append = append + '			<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+														}
+														append = append + '		</div>'
+													append = append + '</div>'
+													append = append +	'<span class="help-block" style="display:none;color:red"></span>'
+												append = append +' 	</div>'
+											})
+											append = append + '<div  style="display:flex;justify-content:center">'
+											append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
+											append = append + '</div>'
+
+											append = append +'</form>'
+										}else{
+											if (window.location.search.split("=")[1].split("&")[0] == "implementation") {
+												if (isNaN(parseFloat(Object.keys(value)))) {
+													$.each(value,function(idx,values){
+														incIdx++								
+
+														append = append +'<form class="form_'+ index +'">'
+														isExecutingWithSolution = true
+														append = append + "<div class='form-group'>"
+														append = append + "	<label>Solution Name</label>"
+														append = append + "	<input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone' value='"+ idx +"'>"
+														append = append + "	<span style='display:none;color:red' class='help-block'></span>"
+														append = append + "</div>"	
+														$.each(values,function(idx,valuesExecuting){
+															var startDateExecuting = '', endDateExecuting = ''
+
+															if (valuesExecuting.start_date != null) {
+										    					startDateExecuting = moment(valuesExecuting.start_date).format('MM/DD/YYYY')
+										    				}else{
+										    					startDateExecuting = ''
+										    				}
+
+										    				if (valuesExecuting.end_date != null) {
+										    					endDateExecuting = moment(valuesExecuting.end_date).format('MM/DD/YYYY')
+										    				}else{
+										    					endDateExecuting = ''
+										    				}	
+
+										    				if (valuesExecuting.bobot != null) {
+										    					bobot = valuesExecuting.bobot
+										    				}else{
+										    					bobot = ''
+										    				}
+
+															append = append +' 	<div class="form-group">'
+																append = append +' 	<label>'+ valuesExecuting.text +'</label>'
+																append = append +' 	<div class="row">'
+																	append = append +' 			<div class="col-md-5">'
+																	append = append +' 				<div class="input-group">'
+																	append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+																	append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="'+ startDateExecuting +'" data-value="'+ incIdx +'" placeholder="Select Start Date">'
+																	append = append +'				</div>'
+																	append = append +' 			</div>'
+																	append = append +' 			<div class="col-md-5" style="margin-left: -10px !important;">'
+																	// append = append +' 				<div class="input-group">'
+																	// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+																	// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ valuesExecuting[0].index +'">'
+																	// append = append +'				</div>'
+																	append = append +' 				<div class="input-group">'
+																	append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+																	append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="'+ endDateExecuting +'" data-value="'+ incIdx +'">'
+																	append = append +'				</div>'
+																	append = append +' 			</div>'
+																	append = append +' 			<div class="col-md-1" style="padding-right:0px">'
+																	append = append +' 				<input value="'+ bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:75px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" data-value="'+ incIdx +'" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
+																	append = append +' 			</div>'
+																	append = append + '			<div class="col-md-1">				'
+																		append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+																	append = append + '			</div>'
+																append = append +' 	</div>'
+																append = append +' <span class="help-block" style="display:none;color:red"></span>'
+															append = append +' 	</div>'
+														})
+
+														append = append +'</form>'
+													})
+												}else{
+													append = append +'<form class="form_'+ index +'">'
+													$.each(value,function(idx,values){
+														var startDateExecuting = '', endDateExecuting = ''
+														incIdx++
+														if (values.start_date != null) {
+									    					startDateExecuting = moment(values.start_date).format('MM/DD/YYYY')
+									    				}
+
+									    				if (values.end_date != null) {
+									    					endDateExecuting = moment(values.end_date).format('MM/DD/YYYY')
+									    				}	
+
+									    				if (values.bobot != null) {
+									    					bobot = values.bobot
+									    				}else{
+									    					bobot = ''
+									    				}
+
+														append = append +' 	<div class="form-group">'
+															append = append +' 		<label>'+ values.text +'</label>'
+															append = append +' 		<div class="row">'
+																append = append +' 			<div class="col-md-5">'
+																append = append +' 				<div class="input-group">'
+																append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+																append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="'+ startDateExecuting +'" data-value="'+ incIdx +'" placeholder="Select Start Date">'
+																append = append +'				</div>'
+																append = append +' 			</div>'
+																append = append +' 			<div class="col-md-5" style="margin-left: -10px !important;">'
+																// append = append +' 				<div class="input-group">'
+																// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+																// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
+																// append = append +'				</div>'
+																append = append +' 				<div class="input-group">'
+																append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+																append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="'+ endDateExecuting +'" data-value="'+ incIdx +'">'
+																append = append +'				</div>'
+																append = append +' 			</div>'
+																append = append +' 			<div class="col-md-1" style="padding-right:0px">'
+																append = append +' 				<input value="'+ bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none" data-value="'+ incIdx +'">'
+																append = append +' 			</div>'
+																append = append + '<div class="col-md-1">				'
+																	if (incIdx != 0) {
+																	append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+																	}
+																append = append + '</div>'												
+															append = append +' 	</div>'
+														append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+														append = append +' </div>'
+													})
+													append = append +'</form>'
+												}
+											}else{
+												append = append +'<form class="form_'+ index +'">'
+												$.each(value,function(idx,values){
+													incIdx++
+													var startDateExecuting = '', endDateExecuting = ''
+
+													if (values.start_date != null) {
+								    					startDateExecuting = moment(values.start_date).format('MM/DD/YYYY')
+								    				}else{
+								    					startDateExecuting = ''
+								    				}
+
+								    				if (values.end_date != null) {
+								    					endDateExecuting = moment(values.end_date).format('MM/DD/YYYY')
+								    				}else{
+								    					endDateExecuting = ''
+								    				}
+
+													append = append + "<div class='form-group'>"
+
 													append = append +' 		<label>'+ values.text +'</label>'
 													append = append +' 		<div class="row">'
-														append = append +' 			<div class="col-md-4">'
+														append = append +' 			<div class="col-md-5">'
 														append = append +' 				<div class="input-group">'
 														append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-														append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+														append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + startDateExecuting +'" data-value="'+ incIdx +'" placeholder="Select Start Date">'
 														append = append +'				</div>'
 														append = append +' 			</div>'
-														append = append +' 			<div class="col-md-5">'
+														append = append +' 			<div class="col-md-5" style="margin-left:-10px">'
 														// append = append +' 				<div class="input-group">'
 														// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
 														// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
 														// append = append +'				</div>'
 														append = append +' 				<div class="input-group">'
 														append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-														append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+														append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + endDateExecuting +'" data-value="'+ incIdx +'">'
 														append = append +'				</div>'
 														append = append +' 			</div>'
-														append = append +' 			<div class="col-md-2">'
-														append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+														append = append +' 			<div class="col-md-1" style="padding-right:0px">'
+														append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none" data-value="'+ incIdx +'">'
 														append = append +' 			</div>'
-														append = append + '<div class="col-sm-1">				'
-															if (incIdx != 0) {
+														append = append + '<div class="col-md-1">				'
 															append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
-															}
-														append = append + '</div>'												
+														append = append +' </div>'	
 													append = append +' 	</div>'
-												append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-												append = append +' </div>'
-											})
-											append = append +'</form>'
+													append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
+													append = append +' 	</div>'
+												})
+												append = append +'</form>'
+											}
 										}
+									}else if (status == "Defined") {
+										append = append +'<form class="form_'+ index +'">'
+											$.each(value,function(idx,values){
+											append = append +' 	<div class="form-group">'
+												append = append +' 		<label>'+ values.sub_task +'</label>'
+
+												append = append +' 		<div class="row">'
+													append = append +' 			<div class="col-md-5">'
+													append = append +' 				<div class="input-group">'
+													append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-5" style="margin-left: -10px !important;">'
+													// append = append +' 				<div class="input-group">'
+													// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+													// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
+													// append = append +'				</div>'
+													append = append +' 				<div class="input-group">'
+													append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-1" style="padding-right:0px">'
+													append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none" data-value="'+ incIdx +'">'
+													append = append +' 			</div>'
+													append = append + '<div class="col-md-1">				'
+														append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+													append = append +'</div>'
+												append = append +' 	</div>'
+												append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+											append = append +' 	</div>'
+											})
+										append = append +'</form>'
 									}else{
 										append = append +'<form class="form_'+ index +'">'
-										$.each(value,function(idx,values){
-											append = append + "<div class='form-group'>"
-
-											append = append +' 		<label>'+ values.text +'</label>'
-											append = append +' 		<div class="row">'
-												append = append +' 			<div class="col-md-4">'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-												append = append +'				</div>'
-												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-4">'
-												// append = append +' 				<div class="input-group">'
-												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
-												// append = append +'				</div>'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-												append = append +'				</div>'
-												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-2">'
-												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-												append = append +' 			</div>'
-												append = append + '<div class="col-sm-1">				'
-													if (incIdx != 0) {
-														append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
-													}
-												append = append +' </div>'	
-											append = append +' 	</div>'
-											append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
-											append = append +' 	</div>'
-										})
-										append = append +'</form>'
-									}
-								}
-							}else if (status == "Defined") {
-								append = append +'<form class="form_'+ index +'">'
-									$.each(value,function(idx,values){
-									append = append +' 	<div class="form-group">'
-										append = append +' 		<label>'+ values.sub_task +'</label>'
-
-										append = append +' 		<div class="row">'
-											append = append +' 			<div class="col-md-4">'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-5">'
-											// append = append +' 				<div class="input-group">'
-											// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-											// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
-											// append = append +'				</div>'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-											append = append +' 			</div>'
-											append = append + '<div class="col-sm-1">				'
-												append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
-											append = append +'</div>'
-										append = append +' 	</div>'
-										append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-									append = append +' 	</div>'
-									})
-								append = append +'</form>'
-							}else{
-								append = append +'<form class="form_'+ index +'">'
-								append = append +' 	<div class="form-group form_group_'+index+'">'
-									append = append +' 		<div class="row">'
-										append = append +' 			<div class="col-md-4">'
-										append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="0" placeholder="Enter Task Name" value="">'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-2">'
-										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-										append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="0" placeholder="Start date" value="">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-2">'
-										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-										append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="0" value="">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-1">'
-										append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="0">'
-										append = append +' 			</div>'
-										append = append +'			<div class="col-md-2">'
-										append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-										append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append + '<div class="col-sm-1">				'
-											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)" disabled><i class="fa fa-trash"></i></button>'
-										append = append +' </div>'
-									append = append +' 	</div>'
-									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-								append = append + '</div>' 
-								append = append + '<div  style="display:flex;justify-content:center">'
-									append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
-								append = append + '</div>'
-								append = append +'</form>'
-							}
-						}else{
-							if (status == "show") {
-								if (ganttstatus == "custom") {
-									append = append +'<form class="form_'+ index +'">'
-									$.each(value,function(idx,values){
-										incIdx++
-
 										append = append +' 	<div class="form-group form_group_'+index+'">'
 											append = append +' 		<div class="row">'
-											append = append +' 			<div class="col-md-4">'
-											append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+ idx +'" placeholder="Start date" value="' + moment(values.start_date).format('MM/DD/YYYY') +'">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'">'
-											append = append +'				</div>'
-											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-1">'
-											append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="'+ idx +'" value="'+ values.bobot +'">'
-											append = append +' 			</div>'
-											append = append +'			<div class="col-md-2">'
-											if (values.deliverable_document == "true") {
-												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox" checked> Deliverable Doc.<br></label>'
-												append = append +'				</div>'
-											}else{
-												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
-												append = append +'				</div>'
-											}
-											append = append +' 			</div>'
-												append = append + '		<div class="col-sm-1">				'
-												if (idx != 0) {
-													append = append + '			<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-												}
-												append = append + '		</div>'
-											append = append + '</div>'
-											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-										append = append +' 	</div>'
-									})
-									append = append + '<div  style="display:flex;justify-content:center">'
-									append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
-									append = append + '</div>'
-
-									append = append +'</form>'
-								}else{
-									append = append +'<form class="form_'+ index +'">'
-										$.each(value,function(idx,values){
-											incIdx++						
-											append = append +' 	<div class="form-group">'
-												append = append +' 		<label>'+ values.text +'</label>'
-												append = append +' 		<div class="row">'
 												append = append +' 			<div class="col-md-4">'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-												append = append +'				</div>'
+												append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="0" placeholder="Enter Task Name" value="">'
 												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-5">'
-												// append = append +' 				<div class="input-group">'
-												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
-												// append = append +'				</div>'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+												append = append +' 			<div class="col-md-2">'
+												append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="0" placeholder="Start date" value="">'
 												append = append +'				</div>'
 												append = append +' 			</div>'
 												append = append +' 			<div class="col-md-2">'
-												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-												append = append +' 			</div>'
-												append = append + '<div class="col-sm-1">				'
-													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
-												append = append + '	</div>'
-												append = append +' 		</div>'
-												append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
-											append = append +' 	</div>'
-										})
-									append = append +'</form>'
-								}
-							}else if (status == "Defined") {
-								append = append +'<form class="form_'+ index +'">'
-									$.each(value,function(idx,values){
-										append = append +' 	<div class="form-group">'
-											append = append +' 		<label>'+ values.sub_task +'</label>'
-											append = append +' 		<div class="row">'
-												append = append +' 			<div class="col-md-4">'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
-												append = append +'				</div>'
-												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-5">'
-												// append = append +' 				<div class="input-group">'
-												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
-												// append = append +'				</div>'
-												append = append +' 				<div class="input-group">'
+												append = append +' 				<div class="input-group" style="margin-left: -15px;">'
 												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
+												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="0" value="">'
 												append = append +'				</div>'
 												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-2">'
-												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+												append = append +' 			<div class="col-md-1">'
+												append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="0"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" style="display:none">'
+												append = append +' 			</div>'
+												append = append +'			<div class="col-md-2">'
+												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+												append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
+												append = append +'				</div>'
 												append = append +' 			</div>'
 												append = append + '<div class="col-sm-1">				'
-													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)" disabled><i class="fa fa-trash"></i></button>'
 												append = append +' </div>'
 											append = append +' 	</div>'
 											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-										append = append +' 	</div>'
-									})
-								append = append +'</form>'
-							}else{
-								append = append +'<form class="form_'+ index +'">'
-								append = append +' 	<div class="form-group form_group_'+index+'">'
-									append = append +' 	<div class="row">'
-										append = append +' 			<div class="col-md-4">'
-										append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-2">'
-										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-										append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="0" placeholder="Start date" value="">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-2">'
-										append = append +' 				<div class="input-group" style="margin-left: -15px;">'
-										append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="0" value="">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-1">'
-										append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+index+'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
-										append = append +' 			</div>'
-										append = append +'			<div class="col-md-2">'
-										append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
-										append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" type="checkbox" class="" style="height: 15px;width: 15px;"> Deliverable Doc.<br></label>'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append + '<div class="col-sm-1">'
-											append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)" disabled><i class="fa fa-trash"></i></button>'
-										append = append +'</div>'
-									append = append +' 	</div>'
-									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-								append = append +' 	</div>'
-								append = append + '<div  style="display:flex;justify-content:center">'
-								append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'" name="btnAddTask"><i class="fa fa-plus"></i>&nbspTask</button>'
-								append = append + '</div>'
-								append = append +'</form>'
-							}
-						}						
-					append = append +'	<div>'
-					if (index == "Closing") {
-						append = append + '<button class="btn btn-sm bg-purple pull-right" style="display:none" id="saveMilestone">Save</button>'
-					}
-					if (index == "Executing") {
-						if (status == "Defined") {
-							if (window.location.search.split("=")[1].split("&")[0] != "supply_only") {
-								append = append +'		<div style="display:flex;justify-content:center">'
-								let text = ''
-								if (window.location.search.split("=")[1].split("&")[0] == 'implementation') {
-									text = 'Solution'
+										append = append + '</div>' 
+										append = append + '<div  style="display:flex;justify-content:center">'
+											append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
+										append = append + '</div>'
+										append = append +'</form>'
+									}
 								}else{
-									text = 'PM'
-								}
+									if (status == "show") {
+										if (ganttstatus == "custom") {
+											append = append +'<form class="form_'+ index +'">'
+											$.each(value,function(idx,values){
+												incIdx++
 
-								if (isExecutingWithSolution == true) {
-									append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button><button style="margin-left:5px" id="removeCloneExecuting" value="'+ text +'" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>'
-									append = append +'		</div>'
-								}else{
-									append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button>'
-									append = append +'		</div>'
-								}
+												if (values.start_date != null) {
+							    					startDate = moment(values.start_date).format('MM/DD/YYYY')
+							    				}else{
+							    					startDate = ''
+							    				}
+
+							    				if (values.end_date != null) {
+							    					endDate = moment(values.end_date).format('MM/DD/YYYY')
+							    				}else{
+							    					endDate = ''
+							    				}
+
+							    				if (values.bobot != null) {
+							    					bobot = values.bobot
+							    				}else{
+							    					bobot = ''
+							    				}
+
+												append = append +' 	<div class="form-group form_group_'+index+'">'
+													append = append +' 		<div class="row">'
+													append = append +' 			<div class="col-md-4">'
+													append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-2">'
+													append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+													append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+ idx +'" placeholder="Select Start date" value="' + startDate +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-2">'
+													append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+													append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + endDate +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-1">'
+													append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="'+ idx +'" value="'+ bobot +'">'
+													append = append +' 			</div>'
+													append = append +'			<div class="col-md-2">'
+													if (values.deliverable_document == "true") {
+														append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+														append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox" checked data-value="'+ incIdx +'"> Deliverable Doc.<br></label>'
+														append = append +'				</div>'
+													}else{
+														append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+														append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox" data-value="'+ idx +'"> Deliverable Doc.<br></label>'
+														append = append +'				</div>'
+													}
+													append = append +' 			</div>'
+														append = append + '		<div class="col-sm-1">				'
+														if (idx != 0) {
+															append = append + '			<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+														}
+														append = append + '		</div>'
+													append = append + '</div>'
+													append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+												append = append +' 	</div>'
+											})
+											append = append + '<div  style="display:flex;justify-content:center">'
+											append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
+											append = append + '</div>'
+
+											append = append +'</form>'
+										}else{
+											append = append +'<form class="form_'+ index +'">'
+												$.each(value,function(idx,values){
+													incIdx++					
+													if (values.start_date != null) {
+								    					startDate = moment(values.start_date).format('MM/DD/YYYY')
+								    				}else{
+								    					startDate = ''
+								    				}
+
+								    				if (values.end_date != null) {
+								    					endDate = moment(values.end_date).format('MM/DD/YYYY')
+								    				}else{
+								    					endDate = ''
+								    				}
+
+								    				if (values.bobot != null) {
+								    					bobot = values.bobot
+								    				}else{
+								    					bobot = ''
+								    				}
+
+													append = append +' 	<div class="form-group">'
+														append = append +' 		<label>'+ values.text +'</label>'
+														append = append +' 		<div class="row">'
+														append = append +' 			<div class="col-md-5">'
+														append = append +' 				<div class="input-group">'
+														append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+														append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="'+ startDate +'" data-value="'+ incIdx +'" placeholder="Select Start Date">'
+														append = append +'				</div>'
+														append = append +' 			</div>'
+														append = append +' 			<div class="col-md-5" style="margin-left: -10px !important;">'
+														// append = append +' 				<div class="input-group">'
+														// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+														// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
+														// append = append +'				</div>'
+														append = append +' 				<div class="input-group">'
+														append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+														append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + endDate +'" data-value="'+ incIdx +'">'
+														append = append +'				</div>'
+														append = append +' 			</div>'
+														append = append +' 			<div class="col-md-1" style="padding-right:0px">'
+														append = append +' 				<input value="'+ bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none" data-value="'+ incIdx +'">'
+														append = append +' 			</div>'
+														append = append + '<div class="col-md-1">				'
+															append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+														append = append + '	</div>'
+														append = append +' 		</div>'
+														append = append +'		<span class="help-block" style="display:none;color:red"></span>'					
+													append = append +' 	</div>'
+												})
+											append = append +'</form>'
+										}
+									}else if (status == "Defined") {
+										append = append +'<form class="form_'+ index +'">'
+											$.each(value,function(idx,values){
+												append = append +' 	<div class="form-group">'
+													append = append +' 		<label>'+ values.sub_task +'</label>'
+													append = append +' 		<div class="row">'
+														append = append +' 			<div class="col-md-5">'
+														append = append +' 				<div class="input-group">'
+														append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+														append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+idx+'" placeholder="Select start date" value="">'
+														append = append +'				</div>'
+														append = append +' 			</div>'
+														append = append +' 			<div class="col-md-5" style="margin-left: -10px !important;">'
+														// append = append +' 				<div class="input-group">'
+														// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+														// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="'+idx+'">'
+														// append = append +'				</div>'
+														append = append +' 				<div class="input-group">'
+														append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+														append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
+														append = append +'				</div>'
+														append = append +' 			</div>'
+														append = append +' 			<div class="col-md-1" style="padding-right:0px">'
+														append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+idx+'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none" data-value="'+ idx +'">'
+														append = append +' 			</div>'
+														append = append + '<div class="col-md-1">				'
+															append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)"><i class="fa fa-trash"></i></button>'
+														append = append +' </div>'
+													append = append +' 	</div>'
+													append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+												append = append +' 	</div>'
+											})
+										append = append +'</form>'
+									}else{
+										append = append +'<form class="form_'+ index +'">'
+										append = append +' 	<div class="form-group form_group_'+index+'">'
+											append = append +' 	<div class="row">'
+												append = append +' 			<div class="col-md-4">'
+												append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-2">'
+												append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="0" placeholder="Start date" value="">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-2">'
+												append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="0" value="">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-1">'
+												append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+index+'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
+												append = append +' 			</div>'
+												append = append +'			<div class="col-md-2">'
+												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+												append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" type="checkbox" class="" style="height: 15px;width: 15px;"> Deliverable Doc.<br></label>'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append + '<div class="col-sm-1">'
+													append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskDefined(this)" disabled><i class="fa fa-trash"></i></button>'
+												append = append +'</div>'
+											append = append +' 	</div>'
+											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+										append = append +' 	</div>'
+										append = append + '<div  style="display:flex;justify-content:center">'
+										append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'" name="btnAddTask"><i class="fa fa-plus"></i>&nbspTask</button>'
+										append = append + '</div>'
+										append = append +'</form>'
+									}
+								}	
+							append = append +'	<div style="margin-top:20px">'
+							//buat button save hanya di closing
+							// if (index == "Closing") {
+							append = append + '<button class="btn btn-sm bg-purple pull-right saveMilestone" style="display:none" id="saveMilestone">Save</button>'
+							// }
+							if (index == "Executing") {
+								// if (status == "Defined") {
+									if (window.location.search.split("=")[1].split("&")[0] != "supply_only") {
+										append = append +'		<div style="display:flex;justify-content:center">'
+										let text = ''
+										if (window.location.search.split("=")[1].split("&")[0] == 'implementation') {
+											text = 'Solution'
+										}else{
+											text = 'PM'
+										}
+
+										if (isExecutingWithSolution == true) {
+											append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button><button style="margin-left:5px" id="removeCloneExecuting" value="'+ text +'" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>'
+											append = append +'		</div>'
+										}else{
+											append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button>'
+											append = append +'		</div>'
+										}
+									}
+								// }
+														
 							}
-						}
-												
-					}
+							append = append +'	</div>'
+							append = append +'   		</div>'
+							append = append +'   	</div>'
+						append = append + '</fieldset>'					
 					append = append +'	</div>'
-					append = append +'   		</div>'
-					append = append +'   	</div>'
-					append = append +'	</div>'
-					// }
-    			})
-				append = append +'</div>'
+
+						// }
+	    			})
+
+					append = append +'</div>'
+
 
     			$("#milestone-container").append(append)
+
+    			$("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
+					autoclose: true,
+					orientation: "bottom"
+				});
 
     			$.each(result,function(index,value){
     				let incIdx = 0
@@ -2462,14 +2597,14 @@ PMO
 					})
     			})
 
-    			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}"){
-	    			$("#btnAddSolution").hide()
-	    			$(".btn-danger").prop("disabled",true)
-	    		}
-
     			if (accesable.includes('saveMilestone')) {
-    				$("#saveMilestone").show()
+    				getProgressBar()
+    				$(".saveMilestone").show()
     			}
+
+    			if (!accesable.includes("saveMilestone")) {
+		    		$("fieldset").attr("disabled",true)
+		    	} 
 
     			let count = 0, incLabel = 1
 				$("#btnAddSolution").click(function(){
@@ -2480,93 +2615,295 @@ PMO
 						$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").hide()
 						let countLastCloneStart = parseInt($('.form_Executing:last').find(".form-group:last").find("#startDateMilestone_Executing").attr("data-value"))
 						let countLastCloneEnd = parseInt($('.form_Executing:last').find(".form-group:last").find("#finishDateMilestone_Executing").attr("data-value"))
+						let countLastWeight = parseInt($('.form_Executing:last').find(".form-group:last").find("#weightMilestone").attr("data-value"))
+						let countLastDeliverable = parseInt($('.form_Executing:last').find(".form-group:last").find("#deliverable_document").attr("data-value")) 
+
 						var append = ''
 
-						$(".form_Executing:last").find(".form-group:nth-last-child(-n+3)").each(function(idx,item){
-							$(item).find("label").each(function(idx,label){
-								// label.innerHTML.replace(count-1,count)
-								append = append + '<div class="form-group">'
-									append = append + '<label>'+ label.innerHTML.replace(label.innerHTML.split("-")[1].replace(" ",""),parseInt(label.innerHTML.split("-")[1].replace(" ",""))+1) +'</label>'
-									append = append + '<div class="row"> 			'
-											append = append + '<div class="col-md-5"> 				'
-												append = append + '<div class="input-group">					'
-													append = append + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>		'			
-														append = append + '<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_Executing" data-value="'+ ++countLastCloneStart +'" placeholder="Select start date" value="">'
-												append = append + '</div> 			'
-											append = append + '</div> 			'
-											append = append + '<div class="col-md-5"> 				'
-												append = append + '<div class="input-group">					'
-													append = append + '<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>	'				
-														append = append + '<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_Executing" data-value="'+ ++countLastCloneEnd +'">'
-												append = append + '</div> 			'
-											append = append + '</div> 			'
-											append = append + '<div class="col-md-2"> 				'
-												append = append + '<input value="" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_Executing" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value=""><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="false" style="display:none"> 			'
-											append = append + '</div> 		'
+						// kode kalau 3 terbawah tidak dihapus
+						// $(".form_Executing:last").find(".form-group:nth-last-child(-n+3)").each(function(idx,item){
+						// 	$(item).find("label").each(function(idx,label){
+						// 		// label.innerHTML.replace(count-1,count)
+						// 		append = append + '<div class="form-group">'
+						// 			append = append + '<label>'+ label.innerHTML.replace(label.innerHTML.split("-")[1].replace(" ",""),parseInt(label.innerHTML.split("-")[1].replace(" ",""))+1) +'</label>'
+						// 			append = append + '<div class="row"> 			'
+						// 					append = append + '<div class="col-md-5"> 				'
+						// 						append = append + '<div class="input-group">					'
+						// 							append = append + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>		'			
+						// 								append = append + '<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_Executing" data-value="'+ ++countLastCloneStart +'" placeholder="Select start date" value="">'
+						// 						append = append + '</div> 			'
+						// 					append = append + '</div> 			'
+						// 					append = append + '<div class="col-md-5" style="margin-left: -10px;"> 				'
+						// 						append = append + '<div class="input-group">					'
+						// 							append = append + '<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>	'				
+						// 								append = append + '<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_Executing" data-value="'+ ++countLastCloneEnd +'">'
+						// 						append = append + '</div> 			'
+						// 					append = append + '</div> 			'
+						// 					append = append + '<div class="col-md-1" style="padding-right: 0px;"> 				'
+						// 						append = append + '<input value="" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_Executing" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value=""><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="false" style="display:none"> 			'
+						// 					append = append + '</div> '
+						// 					append = append + '<div class="col-md-1" style="float: right;padding-left: 25px;">'
+						// 						append = append + '<div class="checkbox">'
+						// 							append = append + '<span>'
+						// 								append = append + '<input type="checkbox">'
+						// 								append = append + 'Doc.'
+						// 							append = append + '</span>'
+						// 						append = append + '</div>'
+						// 					append = append + '</div>'
+						// 				append = append + '</div>'
+						// 				append = append +'<span class="help-block" style="display:none;color:red"></span>'
+						// 			append = append + '</div>'
+						// 		append = append + '</div>'
+						// 	})
+						// })
+
+						//kode kalau 3 terbawah dihapus
+						var isPM = (!isNaN(parseInt($(".form_Executing:last").find(".form-group:last").find("label").text().split(" - ")[1]))) 
+						var arrVarExecutingPM = ["Preventive Maintenance period - ","Submit Preventive Maintenance report period - ","BA PM - "]
+
+						if (isPM) {
+							var labelCount = parseInt($(".form_Executing:last").find(".form-group:last").find("label").text().split(" - ")[1])+1
+						}else{
+							var labelCount = 1
+						}
+
+						$.each(arrVarExecutingPM,function(index,value){
+							append = append + '<div class="form-group">'
+								append = append + '<label>'+ value + labelCount +'</label>'
+								append = append + '<div class="row"> '
+									append = append + '<div class="col-md-5"> '
+										append = append + '<div class="input-group">					'
+											append = append + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>		'
+												append = append + '<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_Executing" placeholder="Select start date" value="">'
+										append = append + '</div> 			'
+									append = append + '</div> 			'
+									append = append + '<div class="col-md-5" style="margin-left: -10px;"> 				'
+										append = append + '<div class="input-group">					'
+											append = append + '<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>	'				
+												append = append + '<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_Executing" >'
+										append = append + '</div> 			'
+									append = append + '</div> 			'
+									append = append + '<div class="col-md-1" style="padding-right: 0px;"> 				'
+										append = append + '<input value="" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_Executing" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" >			'
+									append = append + '</div> '
+									append = append + '<div class="col-md-1">'
+										append = append + '<div class="checkbox">'
+											append = append + '<label class="labelDocMil">'
+												append = append + '<input type="checkbox" id="deliverable_document" name="deliverable_document" value=""> '
+												append = append + 'Doc.'
+											append = append + '</label>'
 										append = append + '</div>'
-										append = append +'<span class="help-block" style="display:none;color:red"></span>'
 									append = append + '</div>'
 								append = append + '</div>'
-							})
+								append = append +'<span class="help-block" style="display:none;color:red"></span>'
+							append = append + '</div>'
 						})
 
 				  		$(".form_Executing:last").find(".form-group:last").after(append)
-					}else{
-						if ($("#inputSolutionMilestone").length == 0) {
-							$(".form_Executing").find(".form-group:first").before("<div class='form-group'><label>Solution Name</label><input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone'><span style='display:none;color:red' class='help-block'></span></div>")
-						}
-					
-						var source = $('.form_Executing:last'),
-				        clone = source.clone();
 
-				        let countLastCloneFinish = parseInt($('.form_Executing:last').find(".form-group:last").find("#finishDateMilestone_Executing").attr("data-value"))
-
-				        let countLastCloneStart = parseInt($('.form_Executing:last').find(".form-group:last").find("#startDateMilestone_Executing").attr("data-value"))
-
-				        clone.find(':input[name="startDateMilestone"]').attr('data-value', function(i, val) {
+				  		$(".form_Executing:last").find(':input[name="startDateMilestone"]').attr('data-value', function(i, val) {
 				            return ++countLastCloneStart
  				        });
 
-		        		clone.find(':input[name="finishDateMilestone"]').attr('data-value', function(i, val) {
-				            return ++countLastCloneFinish
+		        		$(".form_Executing:last").find(':input[name="finishDateMilestone"]').attr('data-value', function(i, val) {
+				            return ++countLastCloneEnd
  				        });
 
-				        $(".form_Executing:last").after(clone)
-				        $(".form_Executing").closest(".box-body").find(".form_Executing:last").before("<hr>")
+ 				        $(".form_Executing:last").find(':input[name="weightMilestone_Executing"]').attr('data-value', function(i, val) {
+				            return ++countLastWeight
+ 				        });
+
+ 				        $(".form_Executing:last").find(':input[name="cbDocMilestone"]').attr('data-value', function(i, val) {
+				            return ++countLastDeliverable
+ 				        });
+
+ 				        $("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
+							autoclose: true,
+							orientation: "bottom"
+						});
+
+						$.each($(".form_Executing"),function(idx,item){
+				        	$(item).find("input[name='startDateMilestone'],input[name='finishDateMilestone']").each(function(idx,itemData){
+				        		$("#finishDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
+				    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+				    					$(this).removeAttr('value')
+				    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
+				    				}else{
+				    					$(this).closest(".form-group").find("span.help-block").hide()
+				    					$(this).closest(".form-group").find("span.help-block").text()
+				    				}
+				    			})
+
+				    			$("#startDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
+				    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+				    					$(this).removeAttr('value')
+				    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
+				    				}else{
+				    					$(this).closest(".form-group").find("span.help-block").hide()
+				    					$(this).closest(".form-group").find("span.help-block").text()
+				    				}
+				    			})
+				        	})
+				        })
+					}else{
+						// if ($("#inputSolutionMilestone").length == 0) {
+						// 	$(".form_Executing").find(".form-group:first").before("<div class='form-group'><label>Solution Name</label><input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone'><span style='display:none;color:red' class='help-block'></span></div>")
+						// }
+
+						$.ajax({
+							type:"GET",
+							url:"{{url('/PMO/getDefaultTask')}}",
+							data:{
+								assign:"assign",
+								id_pmo:window.location.href.split("/")[6].split("?")[0],
+    							type:window.location.search.split("=")[1]  
+							},success:function(result){
+								let countLastCloneFinish = parseInt($('.form_Executing:last').find(".form-group:last").find("#finishDateMilestone_Executing").attr("data-value"))
+
+						        let countLastCloneStart = parseInt($('.form_Executing:last').find(".form-group:last").find("#startDateMilestone_Executing").attr("data-value"))
+
+						        let countLastWeightMilestone = parseInt($('.form_Executing:last').find(".form-group:last").find("#weightMilestone").attr("data-value"))
+
+						        let countLastDeliverable = parseInt($('.form_Executing:last').find(".form-group:last").find("#deliverable_document").attr("data-value")) 
+
+						        if ($("#inputSolutionMilestone").length == 0) {
+									$(".form_Executing").find(".form-group:first").before("<div class='form-group'><label>Solution Name</label><input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone'><span style='display:none;color:red' class='help-block'></span></div>")
+								}
+
+								var append = ""
+
+								append = append + '<form class="form_Executing">'
+									append = append + '<div class="form-group">'
+										append = append + '<label>Solution Name</label>'
+										append = append + '<input class="form-control" placeholder="Fill solution name" id="inputSolutionMilestone" name="inputSolutionMilestone">'
+										append = append + '<span style="display:none;color:red" class="help-block"></span>'
+									append = append + '</div>'
+								$.each(result.Executing,function(index,value){
+									append = append + '<div class="form-group">'
+										append = append + '<label>'+ value.sub_task +'</label>'
+										append = append + '<div class="row"> '
+											append = append + '<div class="col-md-4">'
+												append = append + '<div class="input-group">'
+													append = append + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>		'
+														append = append + '<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_Executing" placeholder="Select start date" value="">'
+												append = append + '</div>'
+											append = append + '</div> '
+											append = append + '<div class="col-md-4" style="margin-left: -10px;"> '
+												append = append + '<div class="input-group">					'
+													append = append + '<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>	'				
+														append = append + '<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_Executing">'
+												append = append + '</div> 			'
+											append = append + '</div> '
+											append = append + '<div class="col-md-1" style="padding-right: 0px;"> '
+												append = append + '<input value="'+ value.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_Executing" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px">	'
+											append = append + '</div> '
+											append = append + '<div class="col-md-2">'
+												append = append + '<div class="checkbox">'
+													append = append + '<label class="labelDocMil">'
+														append = append + '<input type="checkbox" id="deliverable_document" name="deliverable_document" value="">'
+														append = append + 'Deliverable Doc.'
+													append = append + '</label>'
+												append = append + '</div>'
+											append = append + '</div>'
+											append = append + '<div class="col-sm-1">'
+												append = append + '<button class="btn btn-danger" type="button" onclick="btnDeleteTaskCustom(this)"><i class="fa fa-trash"></i></button>'
+											append = append + '</div>'	
+										append = append + '</div>'
+										append = append +'<span class="help-block" style="display:none;color:red"></span>'
+									append = append + '</div>'
+								})
+								append = append + '</form>'
+
+						        $(".form_Executing:last").after(append)
+
+						       	$(".form_Executing:last").find(':input[name="startDateMilestone"]').attr('data-value', function(i, val) {
+						            return ++countLastCloneStart
+		 				        });
+
+				        		$(".form_Executing:last").find(':input[name="finishDateMilestone"]').attr('data-value', function(i, val) {
+						            return ++countLastCloneFinish
+		 				        });
+
+		 				        $(".form_Executing:last").find(':input[name="weightMilestone_Executing"]').attr('data-value', function(i, val) {
+						            return ++countLastWeightMilestone
+		 				        });
+
+		 				        $(".form_Executing:last").find(':input[name="cbDocMilestone"]').attr('data-value', function(i, val) {
+						            return ++countLastDeliverable
+		 				        });
+						        
+						        $(".form_Executing").closest(".box-body").find(".form_Executing:last").before("<hr>")
+
+						        $("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
+									autoclose: true,
+									orientation: "bottom"
+								});
+
+								$.each($(".form_Executing"),function(idx,item){
+						        	$(item).find("input[name='startDateMilestone'],input[name='finishDateMilestone']").each(function(idx,itemData){
+						        		$("#finishDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
+						    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+						    					$(this).removeAttr('value')
+						    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
+						    				}else{
+						    					$(this).closest(".form-group").find("span.help-block").hide()
+						    					$(this).closest(".form-group").find("span.help-block").text()
+						    				}
+						    			})
+
+						    			$("#startDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
+						    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+						    					$(this).removeAttr('value')
+						    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
+						    				}else{
+						    					$(this).closest(".form-group").find("span.help-block").hide()
+						    					$(this).closest(".form-group").find("span.help-block").text()
+						    				}
+						    			})
+						        	})
+						        })
+
+							}
+						})
+
+						// let countLastCloneFinish = parseInt($('.form_Executing:last').find(".form-group:last").find("#finishDateMilestone_Executing").attr("data-value"))
+
+						  //       let countLastCloneStart = parseInt($('.form_Executing:last').find(".form-group:last").find("#startDateMilestone_Executing").attr("data-value"))
+
+						  //       let countLastWeightMilestone = parseInt($('.form_Executing:last').find(".form-group:last").find("#weightMilestone").attr("data-value"))
+
+						  //       let countLastDeliverable = parseInt($('.form_Executing:last').find(".form-group:last").find("#deliverable_document").attr("data-value")) 	
+							
+								// var source = $('.form_Executing:first')
+						  //       clone = source.clone();
+						  //       clone.find(".form-group").find(".row").find(".col-md-5").removeClass("col-md-5").addClass("col-md-4")
+						  //       clone.find(".form-group").find(".row").find("input[name='startDateMilestone']")
+						  //       clone.find(".form-group").find(".row").find("input[name='finishDateMilestone']")
+						  //       clone.find(".form-group").find(".row").find("input[name='weightMilestone_Executing']").val(0)
+
+								// clone.find(".row").find(".col-md-1:first").after('<div class="col-md-2"><div class="checkbox"><label class="labelDocMil"><input type="checkbox" id="cbDocMilestone" name="cbDocMilestone">Deliverable Doc.</label></div></div>')
+
+						  //       clone.find(':input[name="startDateMilestone"]').attr('data-value', function(i, val) {
+						  //           return ++countLastCloneStart
+		 				 //        });
+
+				    //     		clone.find(':input[name="finishDateMilestone"]').attr('data-value', function(i, val) {
+						  //           return ++countLastCloneFinish
+		 				 //        });
+
+		 				 //        clone.find(':input[name="weightMilestone_Executing"]').attr('data-value', function(i, val) {
+						  //           return ++countLastWeightMilestone
+		 				 //        });
+
+		 				 //        clone.find(':input[name="cbDocMilestone"]').attr('data-value', function(i, val) {
+						  //           return ++countLastDeliverable
+		 				 //        });
+
+						  //       $(".form_Executing:last").after(clone)
+						  //       $(".form_Executing").closest(".box-body").find(".form_Executing:last").before("<hr>")
 					}
 
 					$("#btnAddSolution").after("<button style='margin-left:5px' id='removeCloneExecuting' value='"+ $(this)[0].innerText.replace(" ","") +"' class='btn btn-sm btn-danger'><i class='fa fa-trash-o'></></button>")
-		
-			        $("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
-						autoclose: true,
-						orientation: "bottom"
-					});
-
-			        let idx = 0
-			        $.each($(".form_Executing:last"),function(idx,item){
-			        	$(item).find("#finishDateMilestone_Executing").each(function(idx,itemData){
-			        		$("#finishDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
-			    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-			    					$(this).removeAttr('value')
-			    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
-			    				}else{
-			    					$(this).closest(".form-group").find("span.help-block").hide()
-			    					$(this).closest(".form-group").find("span.help-block").text()
-			    				}
-			    			})
-
-			    			$("#startDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
-			    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-			    					$(this).removeAttr('value')
-			    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
-			    				}else{
-			    					$(this).closest(".form-group").find("span.help-block").hide()
-			    					$(this).closest(".form-group").find("span.help-block").text()
-			    				}
-			    			})
-			        	})
-			        })
-					// "<div class='form-group'><label>Solusi</label><div class='row><div class='col-md-6'><div class='input-group'><span class='input-group-addon'><i class='fa fa-calendar'></i></span><input style='display:inline' type='text' class='form-control' id='startDateMilestone' data-value='0'></div></div><div class='col-md-4'><div class='input-group'><span class='input-group-addon'><i style='display:inline' class='fa fa-clock-o'></i></span><input style='display:inline;font-size:12px;width:80px' placeholder='duration' type='text' class='form-control' id='finishDateMilestone' data-value='0'></div></div><div class='col-md-2'><input class='form-control' id='weightMilestone' placeholder='weight %' style='display:inline;width:80px;float:right;font-size:12px'></div></div></div>"
 				})
 
 				$(document).on("click","#removeCloneExecuting",function() {
@@ -2613,131 +2950,144 @@ PMO
 					let arrExecutingCountNull = []
 					let arrClosingCountNull = []
 
-					$(".form_Initiating").each(function(){
-					    $(this).find('input[type!="checkbox"]').each(function(index,value){
-					        if(value.value == ""){
-					            arrInitiatingCountNull.push(value.value)
-					        }
-					        // else{
-					        // 	arrInitiatingCountNull = []
-					        // }
-					    })
-					})
+					if($(this).closest("div").prev("form").attr("class") == "form_Initiating"){
+						$(".form_Initiating").each(function(){
+						    $(this).find('input[type!="checkbox"]').each(function(index,value){
+						        if(value.value == ""){
+						            arrInitiatingCountNull.push(value.value)
+						        }
+						    })
+						})
 
-					$(".form_Planning").each(function(){
-					    $(this).find('input[type!="checkbox"]').each(function(index,value){
-					        if(value.value == ""){
-					            arrPlanningCountNull.push(value.value)
-					        }
-					        // else{
-					        // 	arrPlanningCountNull = []
+						if (arrInitiatingCountNull.length  > 0) {
+							validationEmptyMilestone("weightMilestone_Initiating",false)
+						}else {
+							// if ($("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+								validationEmptyMilestone("weightMilestone_Initiating",true)
+							// }
 
-					        // }
-					    })
-					})
+							$.each($("input[name='weightMilestone_Initiating']"),function(index,value){
+								sumInitiating += parseFloat(value.value.replace(',','.'))
+							})
 
-					$(".form_Executing").each(function(){
-					    $(this).find('input[type!="checkbox"]').each(function(index,value){
-					        if(value.value == ""){
-					            arrExecutingCountNull.push(value.value)
-					        }
-					        // else{
-					        //     arrExecutingCountNull = []
-					        // }
-					    })
-					})
-
-					$(".form_Closing").each(function(){
-					    $(this).find('input[type!="checkbox"]').each(function(index,value){
-					        if(value.value == ""){
-					            arrClosingCountNull.push(value.value)
-					        }
-					        // else{
-					        //     arrClosingCountNull = []
-
-					        // }
-					    })
-					})
+							var valueInputWeight = $(this).closest(".box-body").closest(".box").find("input[name='inputWeight']").val()
+							validationMilestone(sumInitiating,valueInputWeight,"weight_0")
+						}
+					}
 					
-					$.each($("input[name='weightMilestone_Initiating']"),function(index,value){
-						sumInitiating += parseFloat(value.value.replace(',','.'))
-					})
+					if($(this).closest("div").prev("form").attr("class") == "form_Planning"){
+						$(".form_Planning").each(function(){
+						    $(this).find('input[type!="checkbox"]').each(function(index,value){
+						        if(value.value == ""){
+						            arrPlanningCountNull.push(value.value)
+						        }
+						    })
+						})
 
-					$.each($("input[name='weightMilestone_Planning']"),function(index,value){
-						sumPlanning += parseFloat(value.value.replace(',','.'))
-					})
+						if (arrPlanningCountNull.length > 0) {
+							validationEmptyMilestone("weightMilestone_Planning",false)
+						}else {
+							// if ($("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+								validationEmptyMilestone("weightMilestone_Planning",true)
+							// }
 
-					$.each($("input[name='weightMilestone_Executing']"),function(index,value){
-						sumExecuting += parseFloat(value.value.replace(',','.'))
-					})
+							$.each($("input[name='weightMilestone_Planning']"),function(index,value){
+						        if(value.value != ""){
+									sumPlanning += parseFloat(value.value.replace(',','.'))
+						        }
+							})
 
-					$.each($("input[name='weightMilestone_Closing']"),function(index,value){
-						sumClosing += parseFloat(value.value.replace(',','.'))
-					})
+							var valueInputWeight = $(this).closest(".box-body").closest(".box").find("input[name='inputWeight']").val()
+							validationMilestone(sumPlanning,valueInputWeight,"weight_1")
+						} 
+					}
+					
+					if($(this).closest("div").prev("form").attr("class") == "form_Executing"){
+						$(".form_Executing").each(function(){
+						    $(this).find('input[type!="checkbox"]').each(function(index,value){
+						        if(value.value == ""){
+						            arrExecutingCountNull.push(value.value)
+						        }
+						    })
+						})
+
+						if (arrExecutingCountNull.length > 0) {
+							validationEmptyMilestone("weightMilestone_Executing",false)	
+						}else {
+							validationEmptyMilestone("weightMilestone_Executing",true)
+							// if ($("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+								
+							// }
+							$.each($("input[name='weightMilestone_Executing']"),function(index,value){
+								if (value.value != '') {
+									sumExecuting += parseFloat(value.value.replace(',','.'))
+								}
+							})
+
+							var valueInputWeight = $(this).closest(".box-body").closest(".box").find("input[name='inputWeight']").val()
+							validationMilestone(sumExecuting,valueInputWeight,"weight_2")
+						}
+
+						
+					}
+						
+					if($(this).closest("div").prev("form").attr("class") == "form_Closing"){
+						$(".form_Closing").each(function(){
+						    $(this).find('input[type!="checkbox"]').each(function(index,value){
+						        if(value.value == ""){
+						            arrClosingCountNull.push(value.value)
+						        }
+						    })
+						})
+
+						if (arrClosingCountNull.length > 0) {
+							validationEmptyMilestone("weightMilestone_Closing",false)
+						}else {
+							// if ($("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+								validationEmptyMilestone("weightMilestone_Closing",true)
+							// }
+
+							$.each($("input[name='weightMilestone_Closing']"),function(index,value){
+								if (value.value != '') {
+									sumClosing += parseFloat(value.value.replace(',','.'))
+								}
+							})
+							var valueInputWeight = $(this).closest(".box-body").closest(".box").find("input[name='inputWeight']").val()
+							validationMilestone(sumClosing,valueInputWeight,"weight_3")
+						}
+					}
 
 					$.each($("input[name='inputWeight']"),function(index,value){
 						if (value.value != "") {
 							sumWeight += parseFloat(value.value)
-							let x = "weight_"+index
+							// let x = "weight_"+index
 
-							switch(x){
-							  case "weight_0":
-							  	validationMilestone(sumInitiating,value.value,x)
-							    break;
-							  case "weight_1":
-							  	validationMilestone(sumPlanning,value.value,x)
-							    break;
-							  case "weight_2":
-							  	validationMilestone(sumExecuting,value.value,x)
-							    break;
-							  case "weight_3":
-							  	validationMilestone(sumClosing,value.value,x)
-							    break;
-							  default:
-							}
+							// switch(x){
+							//   case "weight_0":
+							//   	validationMilestone(sumInitiating,value.value,x)
+							//     break;
+							//   case "weight_1":
+							//   	validationMilestone(sumPlanning,value.value,x)
+							//     break;
+							//   case "weight_2":
+							//   	validationMilestone(sumExecuting,value.value,x)
+							//     break;
+							//   case "weight_3":
+							//   	validationMilestone(sumClosing,value.value,x)
+							//     break;
+							//   default:
+							// }
 						}
 					})
 
 					if (sumWeight == 0 || sumWeight > 100) {
 						sumWeight = 0
 						alert("Your weight must be 100%")
-					}
-
-					if (arrInitiatingCountNull.length  > 0) {
-						validationEmptyMilestone("weightMilestone_Initiating",false)
-					}else if (arrInitiatingCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
-							validationEmptyMilestone("weightMilestone_Initiating",true)
-						}
-					}
-					
-
-					if (arrPlanningCountNull.length > 0) {
-						validationEmptyMilestone("weightMilestone_Planning",false)
-					}else if (arrPlanningCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
-							validationEmptyMilestone("weightMilestone_Planning",true)
-						}
-					} 
-
-					if (arrExecutingCountNull.length > 0) {
-						validationEmptyMilestone("weightMilestone_Executing",false)					
-					}else if (arrExecutingCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
-							validationEmptyMilestone("weightMilestone_Executing",true)
-						}
-					}
-
-					if (arrClosingCountNull.length > 0) {
-						validationEmptyMilestone("weightMilestone_Closing",false)
-					}else if (arrClosingCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
-							validationEmptyMilestone("weightMilestone_Closing",true)
-						}
 					}											
 
-					if ($(".help-block").is(":visible") == false) {
-						readyToPostMilestone()
+					var classForm = $(this).closest("div").prev("form").attr("class")
+					if ($("."+classForm).find(".form-group").find(".help-block").is(":visible") == false) {
+						readyToPostMilestone(classForm)
 					}else{
 						Swal.fire({
 				            title: 'Wrong Action!',
@@ -2834,10 +3184,36 @@ PMO
 
 				function validationEmptyMilestone(x,status){
 					if (status == true) {
-						$("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").hide()
-						$("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").text("")
+						$.each($("input[name='inputSolutionMilestone']"),function(index,item){
+							$(item).next("span").hide()
+							$(item).next("span").text("")
+						})
+
+						$.each($("input[name='"+ x +"']"),function(index,item){
+							$.each($(item).closest("form").find("input"),function(idx,items){
+								if(items.value != ""){
+									$(items).closest("div").closest(".row").next("span").hide()
+									$(items).closest("div").closest(".row").next("span").text("")
+								}
+							})
+								// $("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").hide()
+								// $("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").text("")
+						})
 					}else{
-						$("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").show().text("Please Fill Empty Milestone Date/Weight!")
+						$.each($("input[name='inputSolutionMilestone']"),function(index,item){
+							if ($(item).val() == "") {
+								$(item).next("span").show().text("Please Fill Empty Solution Name!")
+							}
+						})
+
+						$.each($("input[name='"+ x +"']"),function(index,item){
+							 $.each($(item).closest("form").find("input"),function(idx,items){
+						        if(items.value == ""){
+						            $(items).closest("div").closest(".row").next("span").show().text("Please Fill Empty Milestone Date/Weight!")
+						        }
+						    })
+						})
+							// $("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").show().text("Please Fill Empty Milestone Date/Weight!")
 					}
 				}
 
@@ -2926,16 +3302,16 @@ PMO
 	    			})
 				}
 
-				var arrInitiating = [], arrPlanning = [], arrExecuting = [], arrClosing = [], arrMainMilestone = [], arrSolutionMilestone = []
-				var arrExecutingFinal = '', arrExecutingGroup = ''
+				function readyToPostMilestone(id){
+					var arrInitiating = [], arrPlanning = [], arrExecuting = [], arrClosing = [], arrMainMilestone = [], arrSolutionMilestone = []
+					var arrExecutingFinal = ''
 
-				function readyToPostMilestone(){
-					let isInitiatingHide = $("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").is(':hidden')
-					let isPlanningHide = $("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").is(':hidden')
-					let isExecutingHide = $("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").is(':hidden')
-					let isClosingHide = $("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").is(':hidden')
+					// let isInitiatingHide = $("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").is(':hidden')
+					// let isPlanningHide = $("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").is(':hidden')
+					// let isExecutingHide = $("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").is(':hidden')
+					// let isClosingHide = $("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").is(':hidden')
 
-					if (isInitiatingHide == true && isPlanningHide == true && isExecutingHide == true && isClosingHide == true) {
+					// if (isInitiatingHide == true && isPlanningHide == true && isExecutingHide == true && isClosingHide == true) {
 						swalFireCustom = {
 				          title: 'Are you sure?',
 				          text: "Submit Milestone",
@@ -2947,12 +3323,11 @@ PMO
 				          cancelButtonText: 'No',
 				        }
 
-				        let startdateMilestone = '', finishDateMilestone = '', weightMilestone = '', labelTask = '', deliverableDoc = '', solutionMilestone = '',arrExecutingGroup = ''
+				        let startdateMilestone = '', finishDateMilestone = '', weightMilestone = '', labelTask = '', deliverableDoc = '', solutionMilestone = '', arrExecutingNew = ''
 
 				        arrMainMilestone = ['Initiating','Planning','Executing','Closing']
 
 						if (window.location.href.split("/")[6].split('?')[1].split('=')[2] == "custom") {
-							console.log("wohhh")
 							$.each(arrMainMilestone,function(index,value){
 								$(".form_"+value).find(".form_group_"+value).each(function(idx,item){
 							        if (value == "Initiating") {
@@ -3062,8 +3437,6 @@ PMO
 								        })
 
 							        	arrExecuting.push({"inputTaskMilestone":itemTaskMilestone,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":cbDocMilestone})
-
-							        	arrExecutingGroup = arrExecuting  
 							        }else{
 							        	$(item).find("div.row").find("#inputLabelTask").each(function(idx,itemsTask){
 								            // arrInitiating.push({"dateMilestone":itemsDate.value})
@@ -3140,7 +3513,7 @@ PMO
 							        arrInitiating.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
 							    })
 							})
-
+						
 							$(".form_Planning").find(".form-group").each(function(idx,item){
 							    $(item).find("label").each(function(idx,label){
 							    	$(item).find("label").each(function(idx,label){
@@ -3176,58 +3549,60 @@ PMO
 							        arrPlanning.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
 							    })
 							})
+							
+							arrExecutingNew = ''
 
 							for (var i = 0; i <= $(".form_Executing").length-1 ; i++) {		
 								if ($(".form_Executing").length > 1) {
 									$(".form_Executing:eq("+ i +")").find(".form-group").not(":eq(0)").each(function(idx,item){
 										// if (label.innerHTML != 'Solution Name') {
 											// arrExecuting[i] =  new Array()
-											$(item).find("label").each(function(idx,label){
+											$(item).each(function(idx,label){
 												$(".form_Executing:eq("+ i +")").find(".form-group").eq(0).each(function(idx,itemLabelSol){
-									            // arrInitiating.push({"dateMilestone":itemsDate.value})
 										            $(itemLabelSol).find("input[name='inputSolutionMilestone']").each(function(idx,label){
 									            		solutionMilestone = label.value
 										            })
-									            	// arrExecutingSolution[itemsMilestone.value] = new Array
-									      
 										        })
 
 												$(item).find("label").each(function(idx,label){
-										            // arrInitiating.push({"dateMilestone":itemsDate.value})
-										            if (label.innerHTML != 'Solution Name') {
-										            	labelTask = label.innerHTML
+										            if (label.innerHTML != 'Solution Name' && !$(label).hasClass('labelDocMil')) {
+										            	if (label.innerHTML.split(" - ")[1] != undefined) {
+										            		labelTask = label.innerHTML.split(" - ")[1]
+										            	}else{
+										            		labelTask = label.innerHTML
+										            	}
+										            	
 										            }
 										        })
 
 										     	$(item).find("div.row").find("#startDateMilestone_Executing").each(function(idx,itemsDate){
-										            // arrInitiating.push({"dateMilestone":itemsDate.value})
 										            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-										            
 										        })
 
 										        $(item).find("div.row").find("#finishDateMilestone_Executing").each(function(idx,itemsDuration){
-										            
 										            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-										            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
 										        })
 										    
 										        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-										            
-										            weightMilestone = itemsWeight.value
-										            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-										            
+										            weightMilestone = itemsWeight.value										            
 										        })
 
 										        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-											            deliverableDoc = itemsDeliverDoc.value
-											            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-											            
+										        	if (itemsDeliverDoc.value != "") {
+										        		deliverableDoc = itemsDeliverDoc.value 
+										        	}else{
+										        		if ($(itemsDeliverDoc).is(":checked")) {
+															deliverableDoc = "true"
+														}else{
+															deliverableDoc = "false"
+														}
+										        	}    
 											    })
 
 											    // if (arrExecuting[i] == null)
 										     //        arrExecuting[i] = arrExecutingSolution;
 										     //    else
-										            arrExecuting.push({"labelSolution":solutionMilestone,"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
+										        arrExecuting.push({"labelSolution":solutionMilestone,"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
 											})
 									        // arrExecuting[i].push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
 
@@ -3248,7 +3623,7 @@ PMO
 									//   }, {}); // empty object is the initial value for result object
 									// };
 
-									arrExecutingGroup = arrExecuting.reduce((result, currentValue) => {
+									arrExecutingNew = arrExecuting.reduce((result, currentValue) => {
 									    // If an array already present for key, push it to the array. Else create an array and push the object
 									    (result[currentValue['labelSolution']] = result[currentValue['labelSolution']] || []).push(
 									      currentValue
@@ -3258,57 +3633,64 @@ PMO
 									}, {});
 								}else{
 									$(".form_Executing:eq("+ i +")").find(".form-group").each(function(idx,item){
-										// if (label.innerHTML != 'Solution Name') {
-											// arrExecuting[i] =  new Array()
+									// if (label.innerHTML != 'Solution Name') {
+										// arrExecuting[i] =  new Array()
+										$(item).each(function(idx,label){
 											$(item).find("label").each(function(idx,label){
-												$(item).find("label").each(function(idx,label){
-										            // arrInitiating.push({"dateMilestone":itemsDate.value})
-										            if (label.innerHTML != 'Solution Name') {
-										            	labelTask = label.innerHTML
-										            }
-										        })
+									            if (label.innerHTML != 'Solution Name' && !$(label).hasClass('labelDocMil')) {
+									            	labelTask = label.innerHTML
+									            }
+									        })
 
-										     	$(item).find("div.row").find("#startDateMilestone_Executing").each(function(idx,itemsDate){
-										            // arrInitiating.push({"dateMilestone":itemsDate.value})
-										            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-										            
-										        })
+									     	$(item).find("div.row").find("#startDateMilestone_Executing").each(function(idx,itemsDate){
+									            // arrInitiating.push({"dateMilestone":itemsDate.value})
+									            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+									            
+									        })
 
-										        $(item).find("div.row").find("#finishDateMilestone_Executing").each(function(idx,itemsDuration){
-										            
-										            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-										            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
-										        })
-										    
-										        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-										            
-										            weightMilestone = itemsWeight.value
+									        $(item).find("div.row").find("#finishDateMilestone_Executing").each(function(idx,itemsDuration){
+									            
+									            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+									            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+									        })
+									    
+									        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+									            
+									            weightMilestone = itemsWeight.value
+									            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+									            
+									        })
+
+									        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
+									        	if (itemsDeliverDoc.value != "") {
+									        		deliverableDoc = itemsDeliverDoc.value 
+									        	}else{
+									        		if ($(itemsDeliverDoc).is(":checked")) {
+														deliverableDoc = "true"
+													}else{
+														deliverableDoc = "false"
+													}
+									        	}
+										            // deliverableDoc = itemsDeliverDoc.value
 										            // arrInitiating.push({"weightMilestone":itemsWeight.value})
 										            
-										        })
+										    })
 
-										        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-											            deliverableDoc = itemsDeliverDoc.value
-											            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-											            
-											    })
-
-											    // if (arrExecuting[i] == null)
-										     //        arrExecuting[i] = arrExecutingSolution;
-										     //    else
-										            arrExecuting.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
-											})
+										    // if (arrExecuting[i] == null)
+									     //        arrExecuting[i] = arrExecutingSolution;
+									     //    else
+									            arrExecuting.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
+										})
 
 
-									        // arrExecuting[i].push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
+								        // arrExecuting[i].push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
 
-									    // }
+								    // }
 
 									})
-									arrExecutingGroup = arrExecuting
 								}	
 							}
-
+						
 							$(".form_Closing").find(".form-group").each(function(idx,item){
 							    $(item).find("label").each(function(idx,label){
 							    	$(item).find("label").each(function(idx,label){
@@ -3350,25 +3732,22 @@ PMO
 						formData.append("id_pmo",window.location.href.split("/")[6].split("?")[0])		
 						formData.append("arrMainMilestone",JSON.stringify(arrMainMilestone))		
 						formData.append("arrInitiating",JSON.stringify(arrInitiating))		
-						formData.append("arrPlanning",JSON.stringify(arrPlanning))		
-						formData.append("arrExecuting",JSON.stringify(arrExecutingGroup))		
+						formData.append("arrPlanning",JSON.stringify(arrPlanning))
+						if (arrExecutingNew != '') {
+							formData.append("arrExecuting",JSON.stringify(arrExecutingNew))		
+						}else{
+							formData.append("arrExecuting",JSON.stringify(arrExecuting))		
+						}	
 						formData.append("arrClosing",JSON.stringify(arrClosing))	
-						formData.append("type_milestone",window.location.href.split("/")[6].split('?')[1].split('=')[2])	
+						formData.append("type_milestone",window.location.href.split("/")[6].split('?')[1].split('=')[2])
+						formData.append("current_save",id)		
 
-				        // data = {
-				        //   _token:"{{ csrf_token() }}",
-				        //   id_pmo:window.location.href.split("/")[6].split("?")[0],
-				        //   arrMainMilestone:JSON.stringify(arrMainMilestone),
-				        //   arrInitiating:JSON.stringify(arrInitiating),
-				        //   arrPlanning:JSON.stringify(arrPlanning),
-				        //   arrExecuting:JSON.stringify(arrExecuting),
-				        //   arrClosing:JSON.stringify(arrClosing)
-				        // }
 
 				        swalSuccess = {
 				        	icon: 'success',
-          					title: 'Milestone has been added!',
-          					text: 'Click Ok to reload page',
+          					title: 'Milestone has been saved!',
+          					// text: 'Click Ok to reload page',
+          					text: 'You can create/saved another milestone!',
 				        }
 
 				        if (window.location.href.split("/")[6].split('?')[1].split('=')[2] == "custom") {
@@ -3376,14 +3755,7 @@ PMO
 				        }else{
 							createPost(swalFireCustom,formData,swalSuccess,url="/PMO/storeMilestone")
 				        }
-					}
-
-					
-					// chunks = _.chunk(arrInitiating, 3);
-					
-					
-					
-					
+					// }
 				}
 
 				$("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
@@ -4189,6 +4561,11 @@ PMO
             { "data":"impact" },
             { "data":"likelihood" },
             { "data":"impact_rank" },
+            { 
+            	render: function(data, type, row, meta){
+            		return row.impact_description.replaceAll('\n','<br>')
+            	}
+            },
             { 
             	render: function(data, type, row, meta){
             		return row.risk_response.replaceAll('\n','<br>')
@@ -5651,12 +6028,14 @@ PMO
 				    			id_pmo:window.location.href.split("/")[6].split("?")[0]
 				    		},
 				    		beforeSend:function(){
-				                // Swal.showLoading()
+				                Swal.showLoading()
 				            },
 				    		success:function(results){
-				    			// Swal.hideLoading()
+				                Swal.hideLoading()
+
 					    		append = ""
 				    				$.each(results,function(index,value){
+
 					    			append = append + '<tr>'
 									    append = append + '	<th colspan="3">'
 									    	append = append + '<legend>' + index + '</legend>'
@@ -6362,8 +6741,9 @@ PMO
           		{
             		Swal.fire(swalSuccess).then((result) => {
                   		if (result.value) {
-                  			window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
-                    location.reload()                    
+                  			// window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+                    	// 	location.reload() 
+                    		Swal.hideLoading()                   
                   		}
             		})
           		}
@@ -6578,13 +6958,11 @@ PMO
 
 	function btnDeleteTaskCustom(val){
         var whichtr = val.closest("div").closest(".row").closest(".form-group");
-        console.log(whichtr)
         whichtr.remove();  
 	}
 
 	function btnDeleteTaskDefined(val){
         var whichtr = val.closest("div").closest(".row").closest(".form-group");
-        console.log(whichtr)
         whichtr.remove();  
 	}
 
