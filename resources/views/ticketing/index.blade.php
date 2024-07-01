@@ -423,7 +423,7 @@ Ticketing
 									<label class="col-sm-2 control-label">Type</label>
 									<div class="col-sm-4">
 										<select class="form-control" id="inputTypeTicket">
-											<option selected="selected" value="none">Chose Type</option>
+											<option selected="selected" value="">Chose Type</option>
 											<option value="Trouble Ticket">Trouble Ticket</option>
 											<option value="Preventive Maintenance">Preventive Maintenance Ticket</option>
 											<option value="Permintaan Layanan">Permintaan Layanan Ticket</option>
@@ -509,7 +509,7 @@ Ticketing
 								<div class="form-group" id="engineerDiv" style="display: none;">
 									<label for="inputEmail" class="col-sm-2 control-label">Engineer*</label>
 									<div class="col-sm-10">
-										<input type="text" class="form-control" id="inputEngineerOpen" placeholder="" required>
+										<input type="text" class="form-control" id="inputEngineerOpen" placeholder="" required value="">
 										<span class="help-block" style="margin-bottom: 0px; display: none;">Engineer must be fill!</span>
 									</div>
 								</div>
@@ -879,9 +879,9 @@ Ticketing
 							<button class="btn btn-flat btn-default" onclick="emailSetting()">
 								Email Setting
 							</button>
-							<button class="btn btn-flat btn-default" onclick="atmSetting()">
+				<!-- 			<button class="btn btn-flat btn-default" onclick="atmSetting()">
 								ATM Setting
-							</button>
+							</button> -->
 							<button class="btn btn-flat btn-default" onclick="absenSetting()">
 								Absen Setting
 							</button>
@@ -2946,8 +2946,8 @@ Ticketing
 					$("#nomorDiv").show();
 					$("#clientDiv").show();
 					$("#formNewTicket").show();
-
 					$("#createIdTicket").hide();
+					$("#inputTypeTicket").val("")
 				},
 			});
 		} else {
@@ -2990,6 +2990,8 @@ Ticketing
 							$("#selectPID").select2({
 								placeholder:"Select PID",
 								data:result
+							}).change(function(){
+								getBankAtm(clientBanking)
 							})
 						}
 					})
@@ -3025,6 +3027,8 @@ Ticketing
 							$("#selectPID").select2({
 								placeholder:"Select PID",
 								data:result
+							}).change(function(){
+								getBankAtm(clientBanking)
 							})
 						}
 					})
@@ -3049,9 +3053,21 @@ Ticketing
 
 		if($(this).val() == "Preventive Maintenance"){
 			$("#inputSeverity").attr("disabled",true)
+			prepareNewParameter()
 			$("#problemDiv label").text("Activity*")
 			$("#reportDiv label").text("Schedule PM*")
 			$("#engineerDiv").show();
+			$("#inputLocation").val("")
+			$("#inputSerial").val("")
+			$("#inputEngineerOpen").val("")
+
+			showInputDetailTicket()
+		} else if ($(this).val() == "Trouble Ticket") {
+			prepareNewParameter()
+			$("#engineerDiv").show();
+			$("#inputLocation").val("")
+			$("#inputSerial").val("")
+			$("#inputEngineerOpen").val("")
 
 			showInputDetailTicket()
 		} else if ($(this).val() == "Permintaan Layanan") {
@@ -3426,15 +3442,37 @@ Ticketing
 	}
 
 	function getBankAtm(clientBanking){
+		console.log(clientBanking + "tsssss")
 		if(clientBanking){
+			// $.ajax({
+			// 	type:"GET",
+			// 	url:"{{url('ticketing/create/getAtmId')}}",
+			// 	data:{
+			// 		acronym:$("#inputClient option:selected").text().split(" - ")[0],
+			// 		client_id:$("#inputClient").val()
+			// 	},
+			// 	success: function(result){
+			// 		$("#typeDiv").show();
+			// 		$("#inputATMid").show();
+			// 		$("#categoryDiv").show();
+			// 		if ($('#inputATM').hasClass("select2-hidden-accessible")) {
+			// 			$("#inputATM").select2('destroy');
+			// 		}
+			// 		result.unshift('Select One')
+			// 		$("#inputATM").select2({
+			// 			data:result
+			// 		});
+			// 		$("#locationDiv .col-sm-2").text('Location')
+			// 	}
+			// });
 			$.ajax({
 				type:"GET",
-				url:"{{url('ticketing/create/getAtmId')}}",
+				url:"{{url('/ticketing/create/getAssetByPid')}}",
 				data:{
-					acronym:$("#inputClient option:selected").text().split(" - ")[0],
-					client_id:$("#inputClient").val()
+					pid:$("#selectPID").val(),
 				},
 				success: function(result){
+					$("#inputATM").empty()
 					$("#typeDiv").show();
 					$("#inputATMid").show();
 					$("#categoryDiv").show();
@@ -3447,7 +3485,7 @@ Ticketing
 					});
 					$("#locationDiv .col-sm-2").text('Location')
 				}
-			});
+			})
 		} else {
 			if($("#inputClient option:selected").text().includes("Absensi")){
 				$.ajax({
@@ -3496,42 +3534,57 @@ Ticketing
 			$("#inputSerial").val("");
 			$("#inputType").val("");
 		} else {
-			if($("#inputClient option:selected").text().includes("CCTV") || $("#inputClient option:selected").text().includes("UPS")){
-				if($("#inputClient option:selected").text().includes("CCTV")){
-					var type = "CCTV"
-				} else if($("#inputClient option:selected").text().includes("UPS")) {
-					var type = "UPS"
+			$.ajax({
+				type:"GET",
+				url:"{{url('ticketing/create/getDetailAsset')}}",
+				data:{
+					id_asset:this.value,
+					// type:type
+				},
+				success: function(result){
+					$("#inputLocation").val(result.detail_lokasi);
+					$("#inputSerial").val(result.serial_number);
+					$("#inputEngineerOpen").val(result.engineer_atm);
+					localStorage.setItem("id_device_customer",result.id_device_customer)
+					// $("#inputATMAddres").val(result.address);
 				}
-				$.ajax({
-					type:"GET",
-					url:"{{url('ticketing/create/getAtmPeripheralDetail')}}",
-					data:{
-						id_atm:this.value,
-						type:type
-					},
-					success: function(result){
-						$("#inputLocation").val("[" + result.type + "] " + result.atm.location);
-						$("#inputSerial").val(result.serial_number);
-						$("#inputType").val(result.machine_type);
-						$("#inputATMAddres").val(result.address);
-					}
-				});
-			} else {
-				$.ajax({
-					type:"GET",
-					url:"{{url('ticketing/create/getAtmDetail')}}",
-					data:{
-						id_atm:this.value
-					},
-					success: function(result){
-						$("#inputLocation").val(result.location);
-						$("#inputSerial").val(result.serial_number);
-						$("#inputType").val(result.machine_type);
-						$("#inputATMAddres").val(result.address);
+			});
+			// if($("#inputClient option:selected").text().includes("CCTV") || $("#inputClient option:selected").text().includes("UPS")){
+			// 	if($("#inputClient option:selected").text().includes("CCTV")){
+			// 		var type = "CCTV"
+			// 	} else if($("#inputClient option:selected").text().includes("UPS")) {
+			// 		var type = "UPS"
+			// 	}
+			// 	$.ajax({
+			// 		type:"GET",
+			// 		url:"{{url('ticketing/create/getAtmPeripheralDetail')}}",
+			// 		data:{
+			// 			id_atm:this.value,
+			// 			type:type
+			// 		},
+			// 		success: function(result){
+			// 			$("#inputLocation").val("[" + result.type + "] " + result.atm.location);
+			// 			$("#inputSerial").val(result.serial_number);
+			// 			$("#inputType").val(result.machine_type);
+			// 			$("#inputATMAddres").val(result.address);
+			// 		}
+			// 	});
+			// } else {
+			// 	$.ajax({
+			// 		type:"GET",
+			// 		url:"{{url('ticketing/create/getAtmDetail')}}",
+			// 		data:{
+			// 			id_atm:this.value
+			// 		},
+			// 		success: function(result){
+			// 			$("#inputLocation").val(result.location);
+			// 			$("#inputSerial").val(result.serial_number);
+			// 			$("#inputType").val(result.machine_type);
+			// 			$("#inputATMAddres").val(result.address);
 
-					}
-				});
-			}
+			// 		}
+			// 	});
+			// }
 
 		}
 	});
@@ -3619,8 +3672,9 @@ Ticketing
 								} else if ($("#inputTemplateEmail").val() == "ATM Template"){
 									var subject = "Permohonan Open Tiket " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " " + result.client_name.split(' - ')[0] + " " + $("#inputLocation").val()
 								} else if ($("#inputTemplateEmail").val() == "PTT Template"){
-									
 									var subject = "Request Support - " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " - " + $("#inputProblem").val() + " (" + moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("DD/MM/YYYY") + ")"
+								} else if ($("#inputTemplateEmail").val() == "On Call Template - Permintaan Penawaran"){
+									var subject = "[Penawaran On call - "+ $("#inputticket").val() +" - "+ localStorage.getItem("id_device_customer") +" - SLM]"
 								} else {
 									var subject = "Open Tiket " + $("#inputLocation").val() + " [" + $("#inputProblem").val() +"]"
 								}
@@ -7924,11 +7978,13 @@ Ticketing
   	
   	var cloneRow = $(".listEngineerAssign:last").clone()
   	cloneRow.find(".deleteRowAssign").removeAttr("disabled").end()
-  	cloneRow.children("select")
-            .select2("destroy")
-            .end()
 
   	$(".listEngineerAssign").last().after(cloneRow)
+
+  	cloneRow.children("select")
+            .select2("destroy")
+            .val("")
+            .end()
 
   	$(".deleteRowAssign").click(function(){
   		$(this).closest(".listEngineerAssign").remove()
@@ -8045,7 +8101,6 @@ Ticketing
   }
 
   function settingListEngineerAssign(status,name,id_modal){
-		$(".assignEngineerAtm").val("")
   	console.log(name)
   	$.ajax({
   		type:"GET",
