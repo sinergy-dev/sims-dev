@@ -1487,13 +1487,15 @@ PMO
                     $("#selectNameStakeholder[data-value='"+ index +"']").select2({
                       data:result.data,
                       placeholder:"Select Name Stakeholder",
-                      dropdownCssClass: "myFont" 
+                      dropdownCssClass: "myFont",
+                      dropdownParent:$("#ModalProjectCharter") 
                     }).val(parseInt(item.nik)).trigger('change')
 
                     $("#selectNameStakeholder[data-value='"+ index +"']").select2({
                       data:result.data,
                       placeholder:"Select Name Stakeholder",
-                      dropdownCssClass: "myFont" 
+                      dropdownCssClass: "myFont",
+                      dropdownParent:$("#ModalProjectCharter")  
                     }).on('select2:select', function (e) {
                       let filteredEmailPhone = filterByStakeholderName(e.params.data.id)
                       // let filteredPhone = filterByStakeholderName(e.params.data.id)
@@ -2802,7 +2804,8 @@ PMO
           $(".selectNameStakeholder").select2({
             placeholder:"Select Name Stakeholder",
             data:result.data,
-            dropdownCssClass: "myFont" 
+            dropdownCssClass: "myFont",
+            dropdownParent:$("#ModalProjectCharter") 
           }).on('select2:select', function (e) {
             let filteredEmailPhone = filterByStakeholderName(e.params.data.id)
             // let filteredPhone = filterByStakeholderName(e.params.data.id)
