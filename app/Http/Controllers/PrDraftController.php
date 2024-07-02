@@ -130,6 +130,25 @@ class PrDraftController extends Controller
 
         if (in_array(null, $request->type_of_letter) && in_array(null, $request->status) && in_array(null, $request->user) && $request->startDate == "" && $request->endDate == "" && $request->searchFor == "") {
             $getData->whereYear('tb_pr_draft.updated_at',date('Y'))->whereRaw("(`tb_pr_draft`.`status` != 'CANCEL' && `tb_pr_draft`.`status` != 'SENDED')");
+            $data = $getData->get();
+            $totalRecords = collect($data)->count();
+            // Apply pagination
+            $start = $request->input('start', 0);
+            $pageLength = $request->input('length', 5); // Number of records per page
+
+            // $order = ["CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL"];
+
+            // $data = $data->sort(function ($a, $b) use ($order) {
+            //     // return array_search($item->status, $order);
+            //     $statusComparison = array_search($a->status, $order) <=> array_search($b->status, $order);
+
+            //     if ($statusComparison === 0) {
+            //         return strtotime($a->date) <=> strtotime($b->date); // Gantilah 'date' dengan nama kolom tanggal yang sesuai
+            //     }
+
+            //     return $statusComparison;
+            // });
+
         }else{
             if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'VP Project Management') {
                 if (!in_array(null, $request->type_of_letter)) {
@@ -145,7 +164,7 @@ class PrDraftController extends Controller
                     if(in_array("IPR", $request->type_of_letter)){
                         // return 'false';
                         if ($cek_role->name == 'VP Product Management & Development Solution') {
-                            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->whereRaw("(`id_company` = '1' AND `roles`.`group` = 'bcd ' AND `roles`.`name` != 'Procurement')")->pluck('nik');
+                            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->whereRaw("(`id_company` = '1')")->pluck('nik');
                             $getData->orWhere(function ($query) use ($listGroup){
                                 $query->whereIn('tb_pr_draft.issuance',$listGroup)
                                 ->where('tb_pr_draft.type_of_letter', 'IPR');
@@ -163,18 +182,18 @@ class PrDraftController extends Controller
                 } else {
                     // return 'disini';
                     if ($cek_role->name == 'VP Product Management & Development Solution') {
-                        $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->whereRaw("(`id_company` = '1' AND `roles`.`group` = 'bcd ' AND `roles`.`name` != 'Procurement')")->pluck('nik');
+                        $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->whereRaw("(`id_company` = '1')")->pluck('nik');
                         $getData->orWhere(function ($query) use ($listGroup){
                             $query->whereIn('tb_pr_draft.issuance',$listGroup)
                             ->where('tb_pr_draft.type_of_letter', 'IPR');
-                        });
+                        })->whereIn('tb_pr_draft.status', $request->status);
                         $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
                     } else if ($cek_role->name == 'VP Project Management') {
                         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
                         $getData->orWhere(function ($query) use ($listGroup){
                             $query->whereIn('tb_pr_draft.issuance',$listGroup)
                             ->where('tb_pr_draft.type_of_letter', 'IPR');
-                        });
+                        })->whereIn('tb_pr_draft.status', $request->status);
                         $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
                     } 
 
@@ -306,74 +325,196 @@ class PrDraftController extends Controller
                 $getData->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
             }
 
+            // $searchFields = ['tb_pr.no_pr', 'tb_pr_draft.status', 'tb_pr_draft.to', 'tb_pr.to', 'tb_pr_draft.title', 'tb_pr.title', 'name', 'tb_pr_draft.status'];
+
+            // if($request->searchFor != ""){
+            //     $getData->where(function($getData) use($request, $searchFields){
+            //         // $searchWildCard = '%'. $request->searchFor . '%';
+            //         foreach ($searchFields as $data) {
+            //             $getData->orWhere($data, 'LIKE', '%'. $request->searchFor . '%');
+            //         }
+            //     });
+            // }
+
             $searchFields = ['tb_pr.no_pr', 'tb_pr_draft.status', 'tb_pr_draft.to', 'tb_pr.to', 'tb_pr_draft.title', 'tb_pr.title', 'name', 'tb_pr_draft.status'];
+            $data = $getData->get();
 
-            if($request->searchFor != ""){
-                $getData->where(function($getData) use($request, $searchFields){
-                    // $searchWildCard = '%'. $request->searchFor . '%';
-                    foreach ($searchFields as $data) {
-                        $getData->orWhere($data, 'LIKE', '%'. $request->searchFor . '%');
-                    }
+
+            if ($request->searchFor != "") { 
+
+                $filtered = $data->filter(function ($value, $key) use($request, $searchFields) { 
+                   return stripos($value["no_pr"], $request->searchFor) !== false || 
+                        stripos($value["status"], $request->searchFor) !== false ||
+                        stripos($value["to"], $request->searchFor) !== false ||
+                        stripos($value["title"], $request->searchFor) !== false ||
+                        stripos($value["name"], $request->searchFor) !== false ||
+                        stripos($value["status"], $request->searchFor) !== false ||
+                        stripos($value["circularby"], $request->searchFor) !== false;
                 });
+
+                $data = $filtered;
+
+                $totalRecords = $data->count();
+                // Apply pagination
+                $start = $request->input('start', 0);
+                $pageLength = $request->input('length', $request->length); // Number of records per page
+
+                $draw = $request->input('draw');
+
+                $order = ["CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL"];
+
+                $data = $data->sort(function ($a, $b) use ($order) {
+                    // return array_search($item->status, $order);
+                    $statusComparison = array_search($a->status, $order) <=> array_search($b->status, $order);
+
+                    if ($statusComparison === 0) {
+                        return strtotime($a->date) <=> strtotime($b->date); // Gantilah 'date' dengan nama kolom tanggal yang sesuai
+                    }
+
+                    return $statusComparison;
+                });
+
+                $outputArray = [];
+                foreach ($data as $item) {
+                    $outputArray[] = collect([
+                        "no_pr"=>$item->no_pr,
+                        "status"=>$item->status,
+                        "to"=>$item->to,
+                        "title"=>$item->title,
+                        "name"=>$item->name,
+                        "circularby"=>$item->circularby,
+                        "id"=>$item->id,
+                        "nominal"=>$item->nominal,
+                        "type_of_letter"=>$item->type_of_letter,
+                        "date"=>$item->date,
+                        "created_at"=>$item->created_at
+                    ]);
+                }
+
+                $data = $outputArray;
+
+                if ($request->order[0]['dir'] == 'asc') {
+                    // $data = collect($data)->sortBy($orderByName)->values()->all();
+                    $data = collect($data)->values()->all();
+                }else{
+                    // $data = collect($data)->sortByDesc($orderByName)->values()->all();
+                    $data = collect($data)->values()->all();
+                }
+
+                if ($draw > 1) {
+                    $datas = collect($data)->skip($start)->take($pageLength);
+                    $data = [];
+                    $data = array_values($datas->toArray());
+
+                    // return $data;
+                }else{
+                    $data = collect($data)->skip($start)->take($pageLength);
+                }
+                $totalRecords = collect($data)->count();
+            }else{
+                 // Get the total count before pagination
+                // Apply pagination
+                $totalRecords = $data->count();
+                $start = $request->input('start', 0);
+                $pageLength = $request->input('length', $request->length); // Number of records per page
+                $draw = $request->input('draw');
+
+                $order = ["CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL"];
+
+                $data = $data->sort(function ($a, $b) use ($order) {
+                    // return array_search($item->status, $order);
+                    $statusComparison = array_search($a->status, $order) <=> array_search($b->status, $order);
+
+                    if ($statusComparison === 0) {
+                        return strtotime($a->date) <=> strtotime($b->date); // Gantilah 'date' dengan nama kolom tanggal yang sesuai
+                    }
+
+                    return $statusComparison;
+                });
+
+                if ($request->order[0]['dir'] == 'asc') {
+                    // $data = collect($data)->sortBy($orderByName)->values()->all();
+                    $data = collect($data)->values()->all();
+                }else{
+                    // $data = collect($data)->sortByDesc($orderByName)->values()->all();
+                    $data = collect($data)->values()->all();
+                }
+
+                if ($draw > 1) {
+                    $datas = collect($data)->skip($start)->take($pageLength);
+                    $data = [];
+                    $data = array_values($datas->toArray());
+
+                    // return $data;
+                }else{
+                    $data = collect($data)->skip($start)->take($pageLength);
+                }
             }
+            // $totalRecords = collect($data)->count();
         }
 
-        $date = $getData->pluck('tb_pr_draft.created_at')->toArray();
-        sort($date);
-
-        $data = $getData;
-
-        $orderColumnIndex = $request->order[0]['column'] ?? '0';
-
-        $orderByName = 'no_pr';
-        switch($orderColumnIndex){
-            case '0':
-                $orderByName = 'no_pr';
-                break;
-            case '1':
-                $orderByName = 'created_at';
-                break;
-            case '2':
-                $orderByName = 'title';
-                break;
-            case '3':
-                $orderByName = 'name';
-                break;
-            case '4':
-                $orderByName = 'to';
-                break;
-            case '5':
-                $orderByName = 'nominal';
-                break;
-            default:
-                $orderByName = 'status';
-                break;
-        }
-
-        if ($request->order[0]['dir'] == 'asc') {
-            $data = $data->get()->sortBy($orderByName)->values()->all();
-        }else{
-            $data = $data->get()->sortByDesc($orderByName)->values()->all();
-        }
-
-        $totalRecords = collect($data)->count();
-        // Apply pagination
-        $start = $request->input('start', 0);
-        $length = $request->input('length', 5); // Number of records per page
-
-        $data = collect($data)->skip($start)->take($length);
 
         return response()->json([
             'draw' => $request->input('draw'),
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $totalRecords,
+            'length' => $pageLength,
             'data' => $data,
-            'length' => $length,
         ]);
 
-        // return collect([
-        //     "data" => $getData->get()
+        // $date = $getData->pluck('tb_pr_draft.created_at')->toArray();
+        // sort($date);
+
+        // $data = $getData;
+
+        // $orderColumnIndex = $request->order[0]['column'] ?? '0';
+
+        // $orderByName = 'no_pr';
+        // switch($orderColumnIndex){
+        //     case '0':
+        //         $orderByName = 'no_pr';
+        //         break;
+        //     case '1':
+        //         $orderByName = 'created_at';
+        //         break;
+        //     case '2':
+        //         $orderByName = 'title';
+        //         break;
+        //     case '3':
+        //         $orderByName = 'name';
+        //         break;
+        //     case '4':
+        //         $orderByName = 'to';
+        //         break;
+        //     case '5':
+        //         $orderByName = 'nominal';
+        //         break;
+        //     default:
+        //         $orderByName = 'status';
+        //         break;
+        // }
+
+        // if ($request->order[0]['dir'] == 'asc') {
+        //     $data = $data->get()->sortBy($orderByName)->values()->all();
+        // }else{
+        //     $data = $data->get()->sortByDesc($orderByName)->values()->all();
+        // }
+
+        // $totalRecords = collect($data)->count();
+        // // Apply pagination
+        // $start = $request->input('start', 0);
+        // $length = $request->input('length', 5); // Number of records per page
+
+        // $data = collect($data)->skip($start)->take($length);
+
+        // return response()->json([
+        //     'draw' => $request->input('draw'),
+        //     'recordsTotal' => $totalRecords,
+        //     'recordsFiltered' => $totalRecords,
+        //     'data' => $data,
+        //     'length' => $length,
         // ]);
+
     }
 
     public function getDropdownFilterPr(Request $request)
@@ -607,7 +748,7 @@ class PrDraftController extends Controller
             $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED' OR `status` = 'SENDED')")->whereIn('issuance',$listGroup);
 
         } else if ($cek_role->name == 'VP Product Management & Development Solution'){
-            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->whereRaw("(`id_company` = '1' AND `roles`.`group` = 'bcd ' AND `roles`.`name` != 'Procurement')")->pluck('nik');
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->whereRaw("(`id_company` = '1')")->pluck('nik');
 
             $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listGroup);
 
@@ -871,42 +1012,63 @@ class PrDraftController extends Controller
 
         // return $nik;
 
-        $orderColumnIndex = $request->order[0]['column'] ?? '0';
+        // $getDataEPR = $getDataEPR->orderByRaw('FIELD(status, "CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL")');
+        // $getData = $getData->orderByRaw('FIELD(status, "CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL")');
+        // return $getDataEPR->get();
 
-        $orderByName = 'no_pr';
-        switch($orderColumnIndex){
-            case '0':
-                $orderByName = 'no_pr';
-                break;
-            case '1':
-                $orderByName = 'created_at';
-                break;
-            case '2':
-                $orderByName = 'title';
-                break;
-            case '3':
-                $orderByName = 'name';
-                break;
-            case '4':
-                $orderByName = 'to';
-                break;
-            case '5':
-                $orderByName = 'nominal';
-                break;
-            default:
-                $orderByName = 'status';
-                break;
-        }
+        // return $request->order;
+
+        // $orderColumnIndex = $request->order[0]['column'] ?? '0';
+
+        // $orderByName = 'no_pr';
+        // switch($orderColumnIndex){
+        //     case '0':
+        //         $orderByName = 'no_pr';
+        //         break;
+        //     case '1':
+        //         $orderByName = 'created_at';
+        //         break;
+        //     case '2':
+        //         $orderByName = 'title';
+        //         break;
+        //     case '3':
+        //         $orderByName = 'name';
+        //         break;
+        //     case '4':
+        //         $orderByName = 'to';
+        //         break;
+        //     case '5':
+        //         $orderByName = 'nominal';
+        //         break;
+        //     default:
+        //         $orderByName = 'status';
+        //         break;
+        // }
 
         $getDataFinal = $getData->get();
         $getDataEPRFinal = $getDataEPR->get();
 
         $data = $getDataFinal->merge($getDataEPRFinal);
 
+        $order = ["CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL"];
+
+        $data = $data->sort(function ($a, $b) use ($order) {
+            // return array_search($item->status, $order);
+            $statusComparison = array_search($a->status, $order) <=> array_search($b->status, $order);
+
+            if ($statusComparison === 0) {
+                return strtotime($a->date) <=> strtotime($b->date); // Gantilah 'date' dengan nama kolom tanggal yang sesuai
+            }
+
+            return $statusComparison;
+        });
+
         if ($request->order[0]['dir'] == 'asc') {
-            $data = $data->sortBy($orderByName)->values()->all();
+            // $data = $data->sortBy($orderByName)->values()->all();
+            $data = $data->values()->all();
         }else{
-            $data = $data->sortByDesc($orderByName)->values()->all();
+            // $data = $data->sortByDesc($orderByName)->values()->all();
+            $data = $data->values()->all();
         }
 
         $totalRecords = collect($data)->count();

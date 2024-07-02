@@ -1626,6 +1626,7 @@ PMO
     }
 
     function showMilestoneData(){
+    	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
     	let dateInitiating = '',datePlanning = '',dateExecuting = '',dateClosing = ''
     	$.ajax({
     		type:"GET",
@@ -6774,8 +6775,9 @@ PMO
             		Swal.fire(swalSuccess).then((result) => {
                   		if (result.value) {
                   			// window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
-                    	// 	location.reload() 
-                    		Swal.hideLoading()                   
+                  			// window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?" + window.location.href.split("?")[1])
+                    		location.reload() 
+                    		Swal.close()                   
                   		}
             		})
           		}
@@ -6998,7 +7000,8 @@ PMO
         whichtr.remove();  
 	}
 
-	if (window.location.href.indexOf("id_risk") != -1){
+
+  	if (window.location.href.indexOf("id_risk") != -1){
 		//from email
 		btnUpdateStatusRisk(window.location.href.split("?")[1].split("=")[1])
       	$('#ModalRisk').on('hidden.bs.modal', function () {
@@ -7009,6 +7012,13 @@ PMO
 		$('#ModalFinalProject').on('hidden.bs.modal', function () {
         	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
       	})
+	}else if (window.location.href.split("?")[1].split("&")[1] != undefined) {
+		if (window.location.href.split("?")[1].split("&")[1].split("=")[1] == 'defined') {
+			btnshowMilestone('show','defined')
+		}else{
+			btnshowMilestone('show','custom')
+		}
 	}
+	
 </script>
 @endsection

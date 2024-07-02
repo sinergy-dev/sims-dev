@@ -46,7 +46,6 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 use Illuminate\Http\Request;
 use LDAP\Result;
-
 class PMProjectController extends Controller
 {
     public function __construct()
@@ -1982,7 +1981,7 @@ class PMProjectController extends Controller
 
     public function getRisk(Request $request){
         return array("data"=>DB::table('tb_pmo_identified_risk')
-                ->select('risk_description','risk_owner','risk_response','impact','likelihood','impact_rank','due_date','review_date','status',DB::raw("(CASE WHEN (impact_description is null) THEN '-' ELSE impact_description  END) as impact_description"))->where('id_project',$request->id_pmo)->get());
+                ->select('id','risk_description','risk_owner','risk_response','impact','likelihood','impact_rank','due_date','review_date','status',DB::raw("(CASE WHEN (impact_description is null) THEN '-' ELSE impact_description  END) as impact_description"))->where('id_project',$request->id_pmo)->get());
     }
 
     public function getDetailIssue(Request $request){
