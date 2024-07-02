@@ -1397,7 +1397,7 @@
                     isDisabled = "disabled"
                   }
 
-                  btnDetailUnApproved = "<a href='{{url('admin/detail/draftPR')}}/"+ row.id +"?hide' style='width:70px;margin-right:5px' class='btn btn-xs btn-primary' btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"'  id='btnDetail'>Detail</a>"
+                  btnDetailUnApproved = "<a href='{{url('admin/detail/draftPR')}}/"+ row.id +"?hide' style='width:70px;margin-right:5px' class='btn btn-xs btn-primary' btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"'  id='btnDetail' target='_blank'>Detail</a>"
                 }else{
                   title = "Detail"
                   btnClass = "btn-primary"
@@ -1420,9 +1420,9 @@
                 }
 
                 if (title == 'Detail') {
-                  return "<td><a href="+ onclick +" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
+                  return "<td><a href="+ onclick +" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"' target='_blank'>"+ title +"</a>" + " " + "<button class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
                 }else {
-                  return "<td>"+ btnDetailUnApproved +"<a onclick='"+ onclick +"' "+isDisabled+" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
+                  return "<td>"+ btnDetailUnApproved +"<a onclick='"+ onclick +"' "+isDisabled+" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"' target='_blank'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
                 }
                                     
               },
@@ -1566,6 +1566,7 @@
         //     }
         //   }
         // })
+
         $.ajax({
           url:"{{url('/admin/getDropdownFilterPr')}}",
           type:"GET",
@@ -1652,7 +1653,12 @@
         // var table = $("#draftPr").DataTable()
         // table.destroy()
         console.log(temp)
+        // if ( $.fn.DataTable.isDataTable('#draftPr') ) {
+        //   $('#draftPr').DataTable().destroy();
+        // }
+        // $('#draftPr tbody').empty();
         $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
+        console.log("woyyyyyy")
         InitiateFilterParam(arrStatusBack,arrTypeBack)
         // $.ajax({
         //   url:"{{url('/admin/getFilterDraft')}}" + temp,
@@ -1790,64 +1796,65 @@
       return localStorage.setItem("arrFilter", temp) 
     }
 
-    // window.onload = function() {
-    //   console.log(localStorage.getItem("arrFilter"))
-    //   localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
+    window.onload = function() {
+      console.log(localStorage.getItem("arrFilter"))
+      localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
 
-    //   var arrStatus = [], arrType = [], arr = []
-    //   if (localStorage.getItem("arrFilter")) {
-    //     // 
-    //     arr = localStorage.getItem("arrFilter").split("?")[1].split("&")
+      var arrStatus = [], arrType = [], arr = []
+      if (localStorage.getItem("arrFilter")) {
+        // 
+        arr = localStorage.getItem("arrFilter").split("?")[1].split("&")
 
-    //     if (localStorage.getItem("arrFilter").split("?")[1].split("&")[0].split('=')[1] != '') {
-    //         $.each(arr,function(item,value){
-    //         if(value.indexOf("type") != -1){
-    //           // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
-    //           arrType.push(value.split("=")[1])
-    //         }
-    //       })
-    //     }
+        if (localStorage.getItem("arrFilter").split("?")[1].split("&")[0].split('=')[1] != '') {
+            $.each(arr,function(item,value){
+            if(value.indexOf("type") != -1){
+              // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
+              arrType.push(value.split("=")[1])
+            }
+          })
+        }
 
-    //     if(localStorage.getItem("arrFilter").split("?")[1].split("&")[1].split('=')[1] != ''){
-    //         $.each(arr,function(item,value){
-    //         if(value.indexOf("status") != -1){
-    //           // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
-    //           arrStatus.push(value.split("=")[1])
-    //         }
-    //       })
-    //     }
+        if(localStorage.getItem("arrFilter").split("?")[1].split("&")[1].split('=')[1] != ''){
+            $.each(arr,function(item,value){
+            if(value.indexOf("status") != -1){
+              // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
+              arrStatus.push(value.split("=")[1])
+            }
+          })
+        }
 
-    //   }
+      }
+
+      localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
 
       // if (localStorage.getItem('isTemp') === 'true') {
-      //   localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
       //   // var returnArray = searchCustom()
       //   // localStorage.setItem("arrFilter", returnArray);
       // }else{
       //   localStorage.removeItem("arrFilterBack")
       // }
 
-      // console.log(localStorage.getItem("arrFilterBack")+"testt")
-      // if(localStorage.getItem("arrFilterBack") != undefined && localStorage.getItem("arrFilterBack") != null && localStorage.getItem("arrFilterBack") != ''){
-      //   // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
-      //   // DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
-      //   var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
-      //   var arrStatus = [], arrType = []
+      console.log(localStorage.getItem("arrFilterBack")+"testt")
+      if(localStorage.getItem("arrFilterBack") != undefined && localStorage.getItem("arrFilterBack") != null && localStorage.getItem("arrFilterBack") != ''){
+        // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
+        // DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
+        var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
+        var arrStatus = [], arrType = []
 
-      //   $.each(arr,function(item,value){
-      //     if(value.indexOf("status") != -1){
-      //         arrStatus.push(value.split("=")[1])
-      //     }
+        $.each(arr,function(item,value){
+          if(value.indexOf("status") != -1){
+              arrStatus.push(value.split("=")[1])
+          }
 
-      //     if(value.indexOf("type") != -1){
-      //         arrType.push(value.split("=")[1])
-      //     }
-      //   })
-      //   InitiateFilterParam(arrStatus,arrType)
-      // }else{
-      //   InitiateFilterParam()
-      // }     
-    // }
+          if(value.indexOf("type") != -1){
+              arrType.push(value.split("=")[1])
+          }
+        })
+        InitiateFilterParam(arrStatus,arrType)
+      }else{
+        InitiateFilterParam()
+      }     
+    }
 
     $('#clearFilterTable').click(function(){
       localStorage.setItem('isTemp',false)

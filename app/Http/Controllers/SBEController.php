@@ -431,23 +431,37 @@ class SBEController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        $data = Sbe::join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_solution_design.nik')->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')->select('tb_sbe.lead_id','tb_sbe.status','opp_name','users.name as presales','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
+
+        $getTa = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik_ta')->selectRaw('`users`.`name` AS `name_ta`, `sales_solution_design`.`nik_ta` AS `nik_ta`')->selectRaw('lead_id')->distinct();
+
+        $data = Sbe::join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')
+        ->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')
+        // ->join('users','users.nik','sales_solution_design.nik')
+        ->leftJoinSub($getPresales, 'tb_presales',function($join){
+            $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+        })
+        ->leftJoinSub($getTa, 'tb_ta',function($join){
+            $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
+        })
+        ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+        ->select('tb_sbe.lead_id','tb_sbe.status','opp_name','name_presales as presales','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
 
         if ($cek_role->name == 'Presales' || $cek_role->name == 'System Designer' || $cek_role->name == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
             if ($cek_role->name == 'Technology Alliance') {
-                $data->where('sales_solution_design.nik',$nik)->orwhere('sales_solution_design.nik_ta',$nik)->get();
+                $data->where('tb_presales.nik_presales',$nik)->orwhere('tb_ta.nik_ta',$nik)->distinct()->get();
             } else {
-                $data->where('sales_solution_design.nik',$nik)->get();
+                $data->where('tb_presales.nik',$nik)->distinct()->get();
             }
             
         } elseif($cek_role->name == 'Sales Staff'){
-            $data->where('sales_lead_register.nik',$nik)->get();
+            $data->where('sales_lead_register.nik',$nik)->distinct()->get();
         } else if($cek_role->name == 'Sales Manager'){
-            $data->where('u_sales.id_territory',$ter)->get();
+            $data->where('u_sales.id_territory',$ter)->distinct()->get();
         } else if($cek_role->name == 'PMO Officer'){
-            $data->where('sales_lead_register.result','WIN')->get();
+            $data->where('sales_lead_register.result','WIN')->distinct()->get();
         }else {
-            $data->get();
+            $data->distinct()->get();
         }
 
         return array("data"=>$data->get());
