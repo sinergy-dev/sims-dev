@@ -501,6 +501,10 @@
                       </div>
                     </div>
                   </div>
+
+                  <div class="form-group" hidden>
+                    <label>exist Date</label><input type="text" class="form-control" id="existingDate_0" name="existingDate">
+                  </div>
                 </div>
               </div>
             </div>
@@ -1112,7 +1116,6 @@
                     $.each(item.attendees,function(index,itemX){
                       if (itemX.responseStatus == "accepted") {
                         if (itemX.email == email) {
-
                           if (item.start.dateTime || item.end.dateTime) {
                             startDate = convertToYMD(item.start.dateTime)
                             endDate = convertToYMD(item.end.dateTime)
@@ -1177,9 +1180,11 @@
                         // Check if the current item's refer is "gcal" and phase is null
                         if (current.refer === "gcal" && current.phase === null) {
                             // Check if we already found such an item
-                            if (!gcalNullFound) {
+                            if (gcalNullFound) {
                                 gcalNullFound = true;
                                 titleStartMap[key] = true;
+                                // result.push(current);
+
                                 continue; // Skip adding this item to the result
                             }
                         }
@@ -1470,6 +1475,7 @@
               return date.isSame(clickedDate, 'day');
             });
 
+            //set holiday merupakan function untuk semua tanggal libur
             setHoliday(start,end,checkDate)
             if (isAllowedDate) {
               var isClickedDate = moment(calEvent.start)
@@ -3012,8 +3018,8 @@
               arrTimesheet.push({
                 id_activity:$(items).find(".box-body").find("#id_activity_"+index).val(),
                 selectSchedule:$(items).find(".box-body").find("#scheduleInput_"+index).val(),
-                startDate:startDate,
-                endDate:endDate,
+                startDate:$("#existingDate_"+index).data('daterangepicker').startDate.format('YYYY-MM-DD'),
+                endDate:$("#existingDate_"+index).data('daterangepicker').endDate.format('YYYY-MM-DD'),
                 selectType:$(items).find(".box-body").find("#selectType_"+index).val(),
                 selectLead:lead_id,
                 selectTask:$(items).find(".box-body").find("#selectTask_"+index).val(),
@@ -3591,21 +3597,24 @@
       appendfieldset = appendfieldset + '            <span class="help-block" style="display:none">Please fill Activity!</span>'
       appendfieldset = appendfieldset + '          </div>'
       appendfieldset = appendfieldset + '          <div class="row">'
-      appendfieldset = appendfieldset + '            <div class="col-md-6">'
-      appendfieldset = appendfieldset + '              <div class="form-group">'
-      appendfieldset = appendfieldset + '                <label>Duration</label>'
-      appendfieldset = appendfieldset + '                <select class="form-control" name="selectDuration" id="selectDuration" onchange="validateInput(this)"><option></option></select>'
-      appendfieldset = appendfieldset + '                <span class="help-block" style="display:none">Please select Duration!</span>'
-      appendfieldset = appendfieldset + '              </div>'
-      appendfieldset = appendfieldset + '            </div>'
-      appendfieldset = appendfieldset + '            <div class="col-md-6">'
-      appendfieldset = appendfieldset + '              <div class="form-group">'
-      appendfieldset = appendfieldset + '                <label>Status</label>'
-      appendfieldset = appendfieldset + '                <select class="form-control" name="selectStatus" id="selectStatus" onchange="validateInput(this)"><option></option></select>'
-      appendfieldset = appendfieldset + '                <span class="help-block" style="display:none">Please select Status!</span>'
-      appendfieldset = appendfieldset + '              </div>'
-      appendfieldset = appendfieldset + '            </div>'
+        appendfieldset = appendfieldset + '            <div class="col-md-6">'
+          appendfieldset = appendfieldset + '              <div class="form-group">'
+          appendfieldset = appendfieldset + '                <label>Duration</label>'
+          appendfieldset = appendfieldset + '                <select class="form-control" name="selectDuration" id="selectDuration" onchange="validateInput(this)"><option></option></select>'
+          appendfieldset = appendfieldset + '                <span class="help-block" style="display:none">Please select Duration!</span>'
+          appendfieldset = appendfieldset + '              </div>'
+        appendfieldset = appendfieldset + '            </div>'
+        appendfieldset = appendfieldset + '            <div class="col-md-6">'
+          appendfieldset = appendfieldset + '              <div class="form-group">'
+          appendfieldset = appendfieldset + '                <label>Status</label>'
+          appendfieldset = appendfieldset + '                <select class="form-control" name="selectStatus" id="selectStatus" onchange="validateInput(this)"><option></option></select>'
+          appendfieldset = appendfieldset + '                <span class="help-block" style="display:none">Please select Status!</span>'
+          appendfieldset = appendfieldset + '              </div>'
+        appendfieldset = appendfieldset + '            </div>'
       appendfieldset = appendfieldset + '          </div>'
+      appendfieldset = appendfieldset + '<div class="form-group" hidden>'
+        appendfieldset = appendfieldset + '<label>exist date</label><input class="form-control" name="existingDate">'
+      appendfieldset = appendfieldset + '</div>'
       appendfieldset = appendfieldset + '        </div>'
       appendfieldset = appendfieldset + '      </div>'
       appendfieldset = appendfieldset + '    </div>'
@@ -3641,6 +3650,7 @@
       $("#fieldset_"+countable).find($("i[name='idClosePid']")).attr("onclick","closePidAdjustment("+countable+")")
       $("#fieldset_"+countable).find($("input[name='id_activity']")).attr("id","id_activity_"+countable)
       $("#fieldset_"+countable).find($("textarea[name='textareaActivity']")).attr("id","textareaActivity_"+countable)
+      $("#fieldset_"+countable).find($("input[name='existingDate']")).attr("id","existingDate"+countable)
 
       $("#fieldset_"+countable).find($("input[name='id_activity']")).val("")
       $("#fieldset_"+countable).find("#btn_add_activity").val(countable)
@@ -4046,6 +4056,9 @@
                     append = append + '</div>'
                   append = append + '</div>'
                 append = append + '</div>'
+                append = append + '<div class="form-group" hidden>'
+                  append = append + '<label>exist date</label><input class="form-control" id="existingDate_'+ index +'">'
+                append = append + '</div>'
               append = append + '</div>'
             append = append + '</div>'
           append = append + '</div>'
@@ -4093,6 +4106,13 @@
         $('#selectDuration_'+index).val(item.duration).trigger('change')
         $('#selectStatus_'+index).val(item.status).trigger('change')
         $('#selectType_'+index).val(item.type).trigger('change')
+
+        $("#existingDate_"+index).daterangepicker()
+
+        if ($("#id_activity_"+index).val() != '') {
+          $("#existingDate_"+index).data('daterangepicker').setStartDate(moment(item.start_date).format('MM/DD/YYYY')); // Set start date for second daterangepicker
+          $("#existingDate_"+index).data('daterangepicker').setEndDate(moment(item.start_date).format('MM/DD/YYYY'));
+        }
 
         if (item.type == "Project") {
           if (item.status_pid == 'true') {
@@ -4198,6 +4218,7 @@
             $('#selectDuration_0').val('').trigger('change')
             $('#selectStatus_0').val('').trigger('change')
             $('#textareaActivity_0').val('').prop("disabled",false)
+
             $("fieldset:not(:first)").remove()
             if (!$("#fieldset_0").find('.form-group').last().find('#btn_add_activity').length) {
               $("#fieldset_0").find('.form-group').last().append('<button type="button" class="btn btn-primary btn-flat" id="btn_add_activity" value="0"><i class="fa fa-plus"></i></button>')
