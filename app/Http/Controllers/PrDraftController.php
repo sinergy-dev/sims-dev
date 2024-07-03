@@ -127,26 +127,90 @@ class PrDraftController extends Controller
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
         if (in_array(null, $request->type_of_letter) && in_array(null, $request->status) && in_array(null, $request->user) && $request->startDate == "" && $request->endDate == "" && $request->searchFor == "") {
-            $getData->whereYear('tb_pr_draft.updated_at',date('Y'))->whereRaw("(`tb_pr_draft`.`status` != 'CANCEL' && `tb_pr_draft`.`status` != 'SENDED')");
-            $data = $getData->get();
+
+            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'VP Project Management' || $cek_role->name == 'VP Product Management & Development Solution') {
+                $getDataEPR = PRDraft::where('type_of_letter', 'EPR');
+                if ($cek_role->name == 'Procurement') {
+                    $getDataEPR = $getDataEPR->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')")
+                    ;
+                } else {
+                    $getDataEPR = $getDataEPR->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL' AND `status` != 'SENDED')")
+                    ;
+                }
+                
+            } else if ($cek_role->name == 'Sales Manager'){
+                $listTerritory = User::where('id_territory',$territory)->pluck('nik');
+                $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            } else {
+                $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            }
+
+            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
+                $getData = PRDraft::where('type_of_letter', 'IPR');
+                if ($cek_role->name == 'Procurement') {
+                    $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED')")
+                    ;
+                } else {
+                    $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED' AND `status` != 'SAVED' AND `status`)")
+                    ;
+                }
+                
+            } else if ($cek_role->name == 'Sales Manager'){
+                $listTerritory = User::where('id_territory',$territory)->pluck('nik');
+                $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            } else if ($cek_role->name == 'VP Project Management'){
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+                $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            } else if ($cek_role->name == 'Renumeration, Personalia & GS Manager'){
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
+                $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            } else if ($cek_role->name == 'VP Product Management & Development Solution'){
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->pluck('nik');
+                $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            } else if ($cek_role->name == 'VP Solution Implementation & Managed Service'){
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            } else {
+                $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
+            }
+
+            $getDataFinal = $getData->get();
+            $getDataEPRFinal = $getDataEPR->get();
+
+            $data = $getDataFinal->merge($getDataEPRFinal);
+
+            $order = ["CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL"];
+
+            $data = $data->sort(function ($a, $b) use ($order) {
+                $statusComparison = array_search($a->status, $order) <=> array_search($b->status, $order);
+
+                if ($statusComparison === 0) {
+                    return strtotime($a->date) <=> strtotime($b->date); // Gantilah 'date' dengan nama kolom tanggal yang sesuai
+                }
+
+                return $statusComparison;
+            });
+
+            if ($request->order[0]['dir'] == 'asc') {
+                $data = $data->values()->all();
+            }else{
+                $data = $data->values()->all();
+            }
+
             $totalRecords = collect($data)->count();
             // Apply pagination
             $start = $request->input('start', 0);
-            $pageLength = $request->input('length', 5); // Number of records per page
+            $pageLength = $request->input('length', $request->input); // Number of records per page
 
-            // $order = ["CIRCULAR", "COMPARING", "VERIFIED", "FINALIZED", "DRAFT", "SAVED", "UNAPPROVED", "REJECT", "SENDED", "CANCEL"];
+            $draw = $request->input('draw');
 
-            // $data = $data->sort(function ($a, $b) use ($order) {
-            //     // return array_search($item->status, $order);
-            //     $statusComparison = array_search($a->status, $order) <=> array_search($b->status, $order);
-
-            //     if ($statusComparison === 0) {
-            //         return strtotime($a->date) <=> strtotime($b->date); // Gantilah 'date' dengan nama kolom tanggal yang sesuai
-            //     }
-
-            //     return $statusComparison;
-            // });
-
+            if ($draw > 1) {
+                $datas = collect($data)->skip($start)->take($pageLength);
+                $data = [];
+                $data = array_values($datas->toArray());
+            }else{
+                $data = collect($data)->skip($start)->take($pageLength);
+            }
         }else{
             if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'VP Project Management') {
                 if (!in_array(null, $request->type_of_letter)) {
@@ -285,7 +349,7 @@ class PrDraftController extends Controller
                 } else {
                     $getData->whereIn('users.name', $listTerritoryName);
                 }
-            }  else if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management'){
+            } else if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management'){
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Supply Chain, CPS & Asset Management')->pluck('nik');
                 $listGroupName = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Supply Chain, CPS & Asset Management')->pluck('users.name');
 
@@ -449,7 +513,6 @@ class PrDraftController extends Controller
             }
             // $totalRecords = collect($data)->count();
         }
-
 
         return response()->json([
             'draw' => $request->input('draw'),
@@ -1070,8 +1133,15 @@ class PrDraftController extends Controller
         // Apply pagination
         $start = $request->input('start', 0);
         $length = $request->input('length', $request->input); // Number of records per page
+        $draw = $request->input('draw');
 
-        $data = collect($data)->skip($start)->take($length);
+        if ($draw > 1) {
+            $datas = collect($data)->skip($start)->take($length);
+            $data = [];
+            $data = array_values($datas->toArray());
+        }else{
+            $data = collect($data)->skip($start)->take($length);
+        }
 
         return response()->json([
             'draw' => $request->input('draw'),
