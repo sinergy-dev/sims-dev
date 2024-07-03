@@ -137,14 +137,14 @@
                   <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
                   <div class="input-group-btn">
                     <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                      Show 10 
+                      Show 100
                       <span class="fa fa-caret-down"></span>
                     </button>
                     <ul class="dropdown-menu" id="selectShowEntryTicket">
-                      <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                      <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                      <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                      <li class="active"><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                      <li id="10"><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+                      <li id="25"><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+                      <li id="50"><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+                      <li id="100" class="active"><a href="#" onclick="changeNumberEntries(100)">100</a></li>
                     </ul>
                   </div>
                   <span class="input-group-btn">
@@ -1230,32 +1230,32 @@
           "ajax":{
             "type":"GET",
             "url":"{{url('/admin/getDraftPr')}}",
-            "dataSrc": function (json){
-              json.data.forEach(function(data,index){
-                if (data.status == 'REJECT') {
-                  data.status_numerical = 1
-                }else if (data.status == 'UNAPPROVED') {
-                  data.status_numerical = 2
-                }else if (data.status == 'SAVED') {
-                  data.status_numerical = 3
-                }else if (data.status == 'DRAFT') {
-                  data.status_numerical = 4
-                }else if (data.status == 'VERIFIED') {
-                  data.status_numerical = 5
-                }else if (data.status == 'COMPARING') {
-                  data.status_numerical = 6
-                }else if (data.status == 'CIRCULAR') {
-                  data.status_numerical = 7
-                }else if (data.status == 'FINALIZED') {
-                  data.status_numerical = 8
-                }else if (data.status == 'SENDED') {
-                  data.status_numerical = 9
-                }else if (data.status == 'CANCEL') {
-                  data.status_numerical = 10
-                }
-              })
-              return json.data
-            }
+            // "dataSrc": function (json){
+            //   json.data.forEach(function(data,index){
+            //     if (data.status == 'REJECT') {
+            //       data.status_numerical = 1
+            //     }else if (data.status == 'UNAPPROVED') {
+            //       data.status_numerical = 2
+            //     }else if (data.status == 'SAVED') {
+            //       data.status_numerical = 3
+            //     }else if (data.status == 'DRAFT') {
+            //       data.status_numerical = 4
+            //     }else if (data.status == 'VERIFIED') {
+            //       data.status_numerical = 5
+            //     }else if (data.status == 'COMPARING') {
+            //       data.status_numerical = 6
+            //     }else if (data.status == 'CIRCULAR') {
+            //       data.status_numerical = 7
+            //     }else if (data.status == 'FINALIZED') {
+            //       data.status_numerical = 8
+            //     }else if (data.status == 'SENDED') {
+            //       data.status_numerical = 9
+            //     }else if (data.status == 'CANCEL') {
+            //       data.status_numerical = 10
+            //     }
+            //   })
+            //   return json.data
+            // }
           },
           "columns": [
             { 
@@ -1420,7 +1420,7 @@
                 }
 
                 if (title == 'Detail') {
-                  return "<td><a href="+ onclick +" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"' target='_blank'>"+ title +"</a>" + " " + "<button class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
+                  return "<td><a href='"+ onclick +"' style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"' target='_blank'>"+ title +"</a>" + " " + "<button class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
                 }else {
                   return "<td>"+ btnDetailUnApproved +"<a onclick='"+ onclick +"' "+isDisabled+" style='width:70px' class='btn btn-xs "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"' target='_blank'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-xs btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"' style='width:70px'>Cancel</button></td>"
                 }
@@ -1430,11 +1430,11 @@
               "bSortable":false,
               width:"250px"
             },//action
-            {
-              "data":"status_numerical",
-              "visible":false,
-              "targets":[5]
-            },
+            // {
+            //   "data":"status_numerical",
+            //   "visible":false,
+            //   "targets":[5]
+            // },
             {
               "data":"created_at",
               "visible":false,
@@ -1652,13 +1652,11 @@
       Pace.track(function() {
         // var table = $("#draftPr").DataTable()
         // table.destroy()
-        console.log(temp)
         // if ( $.fn.DataTable.isDataTable('#draftPr') ) {
         //   $('#draftPr').DataTable().destroy();
         // }
         // $('#draftPr tbody').empty();
         $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
-        console.log("woyyyyyy")
         InitiateFilterParam(arrStatusBack,arrTypeBack)
         // $.ajax({
         //   url:"{{url('/admin/getFilterDraft')}}" + temp,
@@ -1753,6 +1751,10 @@
         }else{
           tempStatus = tempStatus + '&status[]=' + value
         }
+
+        if(value == ''){
+          localStorage.removeItem("arrFilterBack")
+        }
       })
 
       $.each($('#inputFilterUser').val(),function(key,value){
@@ -1760,6 +1762,10 @@
           tempUser = tempUser + value
         }else{
           tempUser = tempUser + '&user[]=' + value
+        }
+
+        if(value == ''){
+          localStorage.removeItem("arrFilterBack")
         }
       })
 
@@ -1769,91 +1775,96 @@
         }else{
           tempType = tempType + '&type_of_letter[]=' + value
         }
+
+        if(value == ''){
+          localStorage.removeItem("arrFilterBack")
+        }
       })
 
       tempAnything = tempAnything + $("#inputSearchAnything").val()
 
+      if($("#inputSearchAnything").val() == ''){
+        localStorage.removeItem("arrFilterBack")
+      }
+
       if (startDate != undefined) {
         tempStartDate = tempStartDate + startDate
+      }else{
+        localStorage.removeItem("arrFilterBack")
       }
 
       if (endDate != undefined) {
         tempEndDate = tempEndDate + endDate
+      }else{
+        localStorage.removeItem("arrFilterBack")
       }
 
       var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
       showFilterData(temp)
       DashboardCounterFilter(temp)
 
-      // if (tempStatus || tempType) {
-      //   localStorage.setItem('isTemp',true)
-      //   // localStorage.setItem("arrFilterBack",true)
-      // }else{
-      //   localStorage.setItem('isTemp',false)
-      //   // localStorage.removeItem("arrFilterBack",true)
-      // }
+      if (tempStatus || tempType) {
+        localStorage.setItem('isTemp',true)
+        // localStorage.setItem("arrFilterBack",true)
+      }else{
+        localStorage.setItem('isTemp',false)
+        // localStorage.removeItem("arrFilterBack",true)
+      }
 
       return localStorage.setItem("arrFilter", temp) 
     }
 
     window.onload = function() {
-      console.log(localStorage.getItem("arrFilter"))
       localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
 
-      var arrStatus = [], arrType = [], arr = []
-      if (localStorage.getItem("arrFilter")) {
-        // 
-        arr = localStorage.getItem("arrFilter").split("?")[1].split("&")
+      if (localStorage.getItem("arrFilterBack") != undefined) {
+        var arrStatus = [], arrType = [], arr = []
+        if (localStorage.getItem("arrFilter")) {
+            // 
+          arr = localStorage.getItem("arrFilter").split("?")[1].split("&")
 
-        if (localStorage.getItem("arrFilter").split("?")[1].split("&")[0].split('=')[1] != '') {
+          if (localStorage.getItem("arrFilter").split("?")[1].split("&")[0].split('=')[1] != '') {
+              $.each(arr,function(item,value){
+              if(value.indexOf("type") != -1){
+                arrType.push(value.split("=")[1])
+              }
+            })
+          }
+
+          if(localStorage.getItem("arrFilter").split("?")[1].split("&")[1].split('=')[1] != ''){
+              $.each(arr,function(item,value){
+              if(value.indexOf("status") != -1){
+                arrStatus.push(value.split("=")[1])
+              }
+            })
+          }
+
+          if (localStorage.getItem('isTemp') === 'true') {
+            var returnArray = searchCustom()
+            localStorage.setItem("arrFilter", returnArray);
+          }else{
+            localStorage.removeItem("arrFilterBack")
+          }
+
+          if(localStorage.getItem("arrFilterBack") != undefined && localStorage.getItem("arrFilterBack") != null && localStorage.getItem("arrFilterBack") != ''){
+            // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
+            // DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
+            var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
+            var arrStatus = [], arrType = []
+
             $.each(arr,function(item,value){
-            if(value.indexOf("type") != -1){
-              // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
-              arrType.push(value.split("=")[1])
-            }
-          })
-        }
+              if(value.indexOf("status") != -1){
+                  arrStatus.push(value.split("=")[1])
+              }
 
-        if(localStorage.getItem("arrFilter").split("?")[1].split("&")[1].split('=')[1] != ''){
-            $.each(arr,function(item,value){
-            if(value.indexOf("status") != -1){
-              // showFilterData(localStorage.getItem("arrFilter"),arrStatus,arrType)
-              arrStatus.push(value.split("=")[1])
-            }
-          })
-        }
-
+              if(value.indexOf("type") != -1){
+                  arrType.push(value.split("=")[1])
+              }
+            })
+          }
+          InitiateFilterParam(arrStatus,arrType)
+        } 
       }
-
-      localStorage.setItem("arrFilterBack",localStorage.getItem("arrFilter"))
-
-      // if (localStorage.getItem('isTemp') === 'true') {
-      //   // var returnArray = searchCustom()
-      //   // localStorage.setItem("arrFilter", returnArray);
-      // }else{
-      //   localStorage.removeItem("arrFilterBack")
-      // }
-
-      console.log(localStorage.getItem("arrFilterBack")+"testt")
-      if(localStorage.getItem("arrFilterBack") != undefined && localStorage.getItem("arrFilterBack") != null && localStorage.getItem("arrFilterBack") != ''){
-        // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
-        // DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
-        var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
-        var arrStatus = [], arrType = []
-
-        $.each(arr,function(item,value){
-          if(value.indexOf("status") != -1){
-              arrStatus.push(value.split("=")[1])
-          }
-
-          if(value.indexOf("type") != -1){
-              arrType.push(value.split("=")[1])
-          }
-        })
-        InitiateFilterParam(arrStatus,arrType)
-      }else{
-        InitiateFilterParam()
-      }     
     }
 
     $('#clearFilterTable').click(function(){
@@ -1864,6 +1875,7 @@
       $("#inputFilterUser").empty();
       DashboardCounter()
       localStorage.removeItem("arrFilterBack");
+      localStorage.removeItem("arrFilter");
       InitiateFilterParam()
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
@@ -1879,6 +1891,7 @@
       $("#inputFilterUser").empty();
       DashboardCounter()
       localStorage.removeItem("arrFilterBack");
+      localStorage.removeItem("arrFilter");
       InitiateFilterParam()
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
@@ -1888,6 +1901,8 @@
 
     function changeNumberEntries(number){
       $("#btnShowEntryTicket").html('Show ' + number + ' <span class="fa fa-caret-down"></span>')
+      $("#selectShowEntryTicket").find("li").removeClass("active")
+      $("#selectShowEntryTicket").find("li#"+number).addClass("active")
       $("#draftPr").DataTable().page.len( number ).draw();
     }
 
@@ -4896,7 +4911,6 @@
       
       $('.inputTotalPriceEdit').each(function() {
         var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
-        console.log(isNaN(temp))
         sum += temp;
       });
 
@@ -5906,7 +5920,6 @@
     }
 
     function addTable(n,status,results=""){ 
-      console.log(results)
       if (window.location.href.split("/")[6] == undefined) {
         if (localStorage.getItem('status_pr') == 'revision') {
           url = "{{url('/admin/getProductPembanding')}}"
@@ -6141,7 +6154,6 @@
     }
 
     function toggleIcheckPajak(value){
-      console.log(value)
       $('#cbInputPb1Product').on('ifChecked', function(event){
         $("#inputPb1Product").prop("disabled",false)
       });
@@ -7545,6 +7557,5 @@
       $('#project_idNew').hide('slow')
       $('#projectIdInputNew').val('')
     })
-
   </script>
 @endsection
