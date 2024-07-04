@@ -1625,6 +1625,7 @@ PMO
     	
     }
 
+    /////////
     function showMilestoneData(){
     	if (window.location.search.split("?")[1] != 'showProject') {
     		window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
