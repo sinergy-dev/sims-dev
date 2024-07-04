@@ -1625,8 +1625,11 @@ PMO
     	
     }
 
+    /////////
     function showMilestoneData(){
-    	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+    	if (window.location.search.split("?")[1] != 'showProject') {
+    		window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+    	}
     	let dateInitiating = '',datePlanning = '',dateExecuting = '',dateClosing = ''
     	$.ajax({
     		type:"GET",
@@ -6981,6 +6984,7 @@ PMO
         	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
       	})
 	}else if (window.location.href.split("?")[1].split("&")[1] != undefined) {
+		console.log("woyyyy")
 		if (window.location.href.split("?")[1].split("&")[1].split("=")[1] == 'defined') {
 			btnshowMilestone('show','defined')
 		}else{

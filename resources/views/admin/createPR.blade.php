@@ -2297,8 +2297,26 @@
                     placeholder:"Select Supplier",
                     dropdownParent:$("#ModalDraftPr")
                   }).val(result.pr.to).trigger("change")
+
+                  $("#selectTo").change(function(){
+                    $.ajax({
+                      url:"{{url('/admin/getSupplierDetail')}}",
+                      type:"GET",
+                      data:{
+                        to:this.value
+                      },success:function(result){
+                        $.each(result,function(index,value){
+                          $("#inputEmail").val(value.email)
+                          $("#inputPhone").val(value.phone)
+                          $("#inputAddress").val(value.address)
+                        })
+                      }
+                    })
+                  })
                 }
               })   
+
+              ///////////////
 
               $("#otherTo").click(function(){
                 $("#divInputTo").show("slow")
