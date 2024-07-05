@@ -7,6 +7,7 @@ ID Project
   <link rel="preload" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" integrity="sha512-OWGg8FcHstyYFwtjfkiCoYHW2hG3PDWwdtczPAPUcETobBJOVCouKig8rqED0NMLcT9GtE4jw6IT1CSrwY87uw==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <style type="text/css">
       div.dataTables_processing { z-index: 1; }
       .DTFC_LeftBodyLiner {
@@ -145,40 +146,6 @@ ID Project
 
 	            <div id="pid-table" style="display:none">
 	           	  <table class="table table-bordered table-striped display" id="table-pid" width="100%" cellspacing="0">
-	                <thead>
-	                    <tr>
-	                      <th>Date</th>
-	                      <th>ID Project</th>
-	                      <th>Lead ID</th>
-	                      <th>No. PO Customer</th>
-	                      <th>No. Quotation</th>
-	                      <th>Customer Name</th>
-	                      <th>Project Name</th>
-	                      <th>Amount IDR</th>
-	                      <th>Amount Before Tax</th>
-	                      <th>Note</th>
-	                      <th>Invoice</th>
-	                      <th>Status</th>	
-	                      <th>Sales</th>
-	                      <th>Action</th>
-	                    </tr>
-	                </thead>
-	                <tfoot>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                    <th></th>
-	                </tfoot>
 	              </table>
 	            </div>
               
@@ -456,10 +423,10 @@ ID Project
             <input type="date" name="date_edit" id="inputDateEdit" class="form-control" required>
           </div>
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Note</label>
             <input type="text" placeholder="Enter Note" name="note_edit" id="note_edit" class="form-control">
-          </div>
+          </div> -->
 
           <!-- <label for="">Invoice info</label><a class="check-reset">(<i class="fa  fa-refresh"></i> Reset)</a><br>
 
@@ -565,7 +532,7 @@ ID Project
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
@@ -662,9 +629,29 @@ ID Project
 
   function initiateTablePID(id,year){
     var accesable = @json($feature_item);
+    if (id == "SIP") {
+      if ($.fn.DataTable.isDataTable('#table-pid')) {
+        $('#table-pid').DataTable().clear().destroy();
+        $('#table-pid').empty();
+      }
 
-    if (!$.fn.DataTable.isDataTable('#table-pid')) {
-      var table = $("#table-pid").DataTable({
+      if ((accesable.includes('amount_pid'))) {
+        $("#table-pid").append('<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>')
+      }
+      
+      $.extend($.fn.dataTable.defaults, {
+          sDom: '<"top"i>rCt<"footer"><"bottom"flp><"clear">'
+      });
+
+      table = $("#table-pid").DataTable({
+        fnFooterCallback: function(nRow, aaData, iStart, iEnd, aiDisplay) {
+          var api = this.api();
+          var size = 0;
+          aaData.forEach(function(x) {
+              size += (x['size']);
+          });
+          $('.footer').html(size);
+        },
         "footerCallback": function( row, data, start, end, display ) {
           var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
 
@@ -702,12 +689,26 @@ ID Project
         "ajax":{
             "type":"GET",
             "url":"{{url('getPIDIndex')}}",
+            "data":{
+              id:id,
+              year_filter:$("#year_filter").val()
+            }
         },
         "columns": [
-          { "data": "date" },
-          { "data": "id_project" },
-          { "data": "lead_id" },
+          { 
+            "title":"Date",
+            "data": "date" 
+          },
+          { 
+            "title":"ID Project",
+            "data": "id_project" 
+          },
+          {
+            "title":"Lead ID", 
+            "data": "lead_id" 
+          },
           { // No Po
+            "title":"No. PO Customer",
             render: function ( data, type, row ) {
               if (row.id_company == 1) {
                 if (row.no_po_customer == null) {
@@ -729,6 +730,7 @@ ID Project
             }
           },
           { // No Quotation
+            "title":"No. Quotation",
             render: function ( data, type, row ) {
               if (row.id_company == 1) {
                 return "-";
@@ -744,6 +746,7 @@ ID Project
             }
           },
           { // Customer Name
+            "title":"Customer Name",
             render: function ( data, type, row ) {
               if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
                 return row.customer_name
@@ -754,34 +757,23 @@ ID Project
               }
             }
           },
-          { "data": "name_project" },
+          { 
+            "title":"Project Name",
+            "data": "name_project" },
           {
+            "title":"Amount IDR",
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.amount_idr)
             }
           },
           {
+            "title":"Amount Before Tax",
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.amount_idr_before_tax).includes(",") ? Intl.NumberFormat('id').format(row.amount_idr_before_tax) : Intl.NumberFormat('id').format(row.amount_idr_before_tax) + ",000"
             }
           },
-          // { "data": "amount_idr" },
-          // { "data": "amount_idr_before_tax" },
-          { "data": "note" },
-          { // Invoice
-            render: function ( data, type, row ) {
-              if (row.invoice == 'H') {
-                return "Setengah Bayar";  
-              }else if (row.invoice == 'F') {
-                return "Sudah Bayar";
-              }else if (row.invoice == 'N') {
-                return "Belum Bayar";
-              }else{
-                return "";
-              }
-            }
-          },
           { // Status
+            "title":"Status",
             render: function ( data, type, row ) {
               if (row.progres == null) {
                 return "UnProgress";  
@@ -791,6 +783,7 @@ ID Project
             }
           },
           { // Sales
+            "title":"Sales",
             render: function ( data, type, row ) {
               if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
                 return row.sales_name;  
@@ -799,7 +792,16 @@ ID Project
               }
             }
           },
+          {
+            "title":"Project Type",
+            "data": "project_type"
+          },
+          { 
+            "title":"Current Phase",
+            "data": "current_phase" 
+          },
           { // Action
+            "title":"Action",
             render: function ( data, type, row ) {
               if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
                   return ''
@@ -844,15 +846,12 @@ ID Project
             targets: [14] ,
             visible: false,
             searchable: false
-          },{
+          }
+          ,{
             targets: [15] ,
             visible: false,
             searchable: false
-          },{
-            targets: [11, 10] ,
-            visible: false,
-            searchable: false
-          },
+          }
         ]
       });
 
@@ -868,12 +867,226 @@ ID Project
       if (!(accesable.includes('btnEdit'))) {
         //action
         var column3 = table.column(13);
-        column3.visible(!column3.visible() );
+        column3.visible(!column3.visible());
       }
-
-      console.log(id + "owkey")
     }else{
-      $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
+      $('#table-pid').DataTable().clear().destroy();
+      $('#table-pid').empty();
+
+      $("#table-pid").append('<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>')
+
+      $.extend($.fn.dataTable.defaults, {
+          sDom: '<"top"i>rCt<"footer"><"bottom"flp><"clear">'
+      });
+
+      $("#table-pid").DataTable({
+        fnFooterCallback: function(nRow, aaData, iStart, iEnd, aiDisplay) {
+          var api = this.api();
+          var size = 0;
+          aaData.forEach(function(x) {
+              size += (x['size']);
+          });
+          $('.footer').html(size);
+        },
+        "footerCallback": function( row, data, start, end, display ) {
+          var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
+
+          var api = this.api(),data;
+          var footer = $(this).append('<tfoot><tr></tr></tfoot>');
+          this.api().columns().every(function () {
+            var column = this;
+            $(footer).append('<th></th>');
+          });  
+          // Remove the formatting to get integer data for summation
+
+          // console.log(api.column(7))
+          // Remove the formatting to get integer data for summation
+
+          var total = api.column(12, {page:'current'}).data().sum();
+
+          var filtered = api.column(12, {"filter": "applied"} ).data().sum();
+
+          var totalpage = api.column(12).data().sum();
+
+          var filteredgrand = api.column(13, {"filter": "applied"} ).data().sum();
+
+          var totalpagegrand = api.column(13).data().sum();
+
+          $( api.column( 6 ).footer() ).addClass('text-right');
+          $( api.column( 6 ).footer() ).html("Total Amount");
+
+
+          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(totalpage));
+
+
+          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(filtered));
+
+
+          $( api.column( 8 ).footer() ).html(new Intl.NumberFormat('id').format(totalpagegrand));
+
+
+          $( api.column( 8 ).footer() ).html(new Intl.NumberFormat('id').format(filteredgrand));
+        },
+        "ajax":{
+            "type":"GET",
+            "url":"{{url('getPIDIndex')}}",
+            "data":{
+              id:id,
+              year_filter:year,
+            }
+        },
+        "columns": [
+          { 
+            "title":"Date",
+            "data": "date" 
+          },
+          { 
+            "title":"ID Project",
+            "data": "id_project" 
+          },
+          {
+            "title":"Lead ID", 
+            "data": "lead_id" 
+          },
+          { // No Po
+            "title":"No. PO Customer",
+            render: function ( data, type, row ) {
+              if (row.id_company == 1) {
+                if (row.no_po_customer == null) {
+                  return row.quote_number_final 
+                }else if (row.no_po_customer) {
+                  return row.no_po_customer
+                }else{
+                  return "-"
+                }
+              }else{
+                if (row.lead_id == "MSPPO") {
+                  return row.no_po_customer
+                }else if (row.no_po) {
+                  return row.no_po
+                }else{
+                  return "-"
+                }
+              }
+            }
+          },
+          { // No Quotation
+            "title":"No. Quotation",
+            render: function ( data, type, row ) {
+              if (row.id_company == 1) {
+                return "-";
+              }else{
+                if (row.lead_id == "MSPQUO") {
+                  return row.no_po_customer;
+                }else if (row.quote_number) {
+                  return row.quote_number;  
+                }else{
+                  return "-";  
+                }
+              }
+            }
+          },
+          { // Customer Name
+            "title":"Customer Name",
+            render: function ( data, type, row ) {
+              if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+                return row.customer_name
+              }else if (row.customer_legal_name) {
+                return row.customer_legal_name
+              }else{
+                return "-" 
+              }
+            }
+          },
+          { 
+            "title":"Project Name",
+            "data": "name_project" },
+          {
+            "title":"Amount IDR",
+            render: function ( data, type, row ) {
+              return new Intl.NumberFormat('id').format(row.amount_idr)
+            }
+          },
+          {
+            "title":"Amount Before Tax",
+            render: function ( data, type, row ) {
+              return new Intl.NumberFormat('id').format(row.amount_idr_before_tax).includes(",") ? Intl.NumberFormat('id').format(row.amount_idr_before_tax) : Intl.NumberFormat('id').format(row.amount_idr_before_tax) + ",000"
+            }
+          },
+          { // Status
+            "title":"Status",
+            render: function ( data, type, row ) {
+              if (row.progres == null) {
+                return "UnProgress";  
+              }else {
+                return row.progres;
+              }
+            }
+          },
+          { // Sales
+            "title":"Sales",
+            render: function ( data, type, row ) {
+              if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+                return row.sales_name;  
+              }else{
+                return row.name;  
+              }
+            }
+          },
+          { // Action
+            "title":"Action",
+            render: function ( data, type, row ) {
+              if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+                  return ''
+              }else{
+                return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
+              }
+                              
+            }
+          },
+          { 
+            "data": "amount_idr"
+          },
+          { 
+            "data": "amount_idr_before_tax"
+          },
+        ],
+        "scrollX": true,
+        "pageLength": 25,
+        "order": [[ 1, "desc" ]],
+        "processing": true,
+        "language": {
+          'loadingRecords': '&nbsp;',
+          'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+        }, 
+        "scrollCollapse":true,
+        fixedColumns:   {
+          leftColumns: 2,
+          rightColumns: 1
+        },
+        columnDefs: [
+          {
+            targets: [7],
+            orderData: [12],
+            className: 'text-right',
+          },
+          {
+            targets: [8],
+            orderData: [13],
+            className: 'text-right'
+          },
+          {
+            targets: [12] ,
+            visible: false,
+            searchable: false
+          }
+          ,{
+            targets: [13] ,
+            visible: false,
+            searchable: false
+          }
+        ]
+      });
     }
 
     $('#searchBarTicket').keyup(function(){
@@ -1167,7 +1380,6 @@ ID Project
     });
 
     function changeTabs(id) {
-      console.log(id)
       year = $("#year_filter").val()
       if (id == "SIP") {
       	$('#export-table').css("display","block")
@@ -1250,51 +1462,40 @@ ID Project
  	$("#modal_status").modal("show");
  })
 
- $("#year_filter").change(function(){
-  var filterYear = this.value;
-    // $.ajax({
-    //   url:"getFilterYearPID",
-    //   type:"GET",
-    //   data:{
-    //     filterYear:this.value,
-    //   },
-    //   success:function(result){
-        
-    //     console.log(result)
+ $("#year_filter").change(function(){ 
+    var companyString = $('.tabs_item.active').text()
+    var year = this.value
+
+    initiateTablePID(companyString,year)
+    // @if(Auth::User()->id_division == 'FINANCE')
+      
+    //   var companyString = $('.tabs_item.active').text()
+    //   // console.log(companyString)
+    //   var com_id
+    //   if (companyString == "SIP") {
+    //     com_id = 1
+    //   }else{
+    //     com_id = 2
     //   }
-    // })
-    
-    @if(Auth::User()->id_division == 'FINANCE')
-      
-      var companyString = $('.tabs_item.active').text()
-      // console.log(companyString)
-      var com_id
-      if (companyString == "SIP") {
-        com_id = 1
-      }else{
-        com_id = 2
-      }
-      if(companyString == "SIP" || companyString == "MSP"){
-        $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + com_id).load();
-      } 
+    //   if(companyString == "SIP" || companyString == "MSP"){
+    //     $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+companyString+"&year_filter=" + this.value).load();
+    //   } 
 
-    @else
-      var companyString = $('.tabs_item.active').text()
-      // console.log(companyString)
-      var com_id
-      if (companyString == "SIP") {
-        com_id = 1
-      }else{
-        com_id = 2
-      }
-      if(companyString == "SIP" || companyString == "MSP"){
-        $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + com_id).load();
-      } 
-      // $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
-    @endif
+    // @else
+    //   // console.log(companyString)
+    //   var com_id
+    //   if (companyString == "SIP") {
+    //     com_id = 1
+    //   }else{
+    //     com_id = 2
+    //   }
+    //   if(companyString == "SIP" || companyString == "MSP"){
+    //     $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+companyString+"&year_filter=" + this.value).load();
 
-    
-      
+    //     // $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + com_id).load();
+    //   } 
+    //   // $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
+    // @endif 
  })
 
 </script>
