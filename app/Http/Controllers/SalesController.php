@@ -4606,14 +4606,43 @@ class SalesController extends Controller{
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    // ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','current_phase')
                     // ->where('sales_lead_register.nik',$nik)
                     ->where('id_territory', $ter)
                     // ->orWhere('tb_id_project.sales_name',Auth::User()->name)
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.date',date('Y'))
                     ->get();
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
                 
             }else{
 
@@ -4692,11 +4721,40 @@ class SalesController extends Controller{
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    // ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','invoice')
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.date',$request->year_filter)
                     ->get(); 
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
 
             }else if ($request->id == "MSP") {
                 $pid = DB::table('tb_id_project')
@@ -4720,16 +4778,47 @@ class SalesController extends Controller{
                     ->where('tb_id_project.status','!=','WO')
                     ->get();
             }else{
-                
+
                 $pid = DB::table('tb_id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    // ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.date',date('Y'))
                     ->get();
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
+
+                // return $pid->distinct();
             }  
 
             return array("data" => $pid);   
@@ -4747,6 +4836,35 @@ class SalesController extends Controller{
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.date',date('Y'))
                     ->get();
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
+
             }else{
 
                 $pid = DB::table('tb_id_project')
@@ -4798,6 +4916,34 @@ class SalesController extends Controller{
                     ->where('users.id_company',$req->id)
                     ->whereYear('tb_id_project.date',$req->filterYear)
                     ->get();
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
                 
             }else{
 
@@ -4824,11 +4970,40 @@ class SalesController extends Controller{
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    // ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
                     ->where('users.id_company',$req->id)
                     ->whereYear('tb_id_project.date',$req->filterYear)
                     ->get(); 
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
 
             }else{
 
@@ -4855,11 +5030,40 @@ class SalesController extends Controller{
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    // ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','invoice')
                     ->where('users.id_company',$req->id)
                     ->whereYear('tb_id_project.date',$req->filterYear)
                     ->get(); 
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
 
             }else if ($req->id == 2) {
                 $pid = DB::table('tb_id_project')
@@ -4887,8 +5091,9 @@ class SalesController extends Controller{
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','current_phase')
                     ->where('users.id_company','1')
                     ->whereYear('tb_id_project.date',$req->filterYear)
                     ->get();
@@ -4902,11 +5107,40 @@ class SalesController extends Controller{
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    // ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','sales_lead_register.lead_id',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','users.id_company','tb_id_project.amount_idr','tb_id_project.sales_name')
                     ->where('users.id_company',$req->id)
                     ->whereYear('tb_id_project.date',$req->filterYear)
                     ->get();
+
+                $id_project = $pid->pluck('id_project');
+
+                foreach ($id_project as $key => $value) {
+                   $projectDetails = DB::table('tb_pmo')
+                        ->select('project_type', 'current_phase')
+                        ->where('project_id', $value)
+                        ->get();
+
+                    $projectTypes = $projectDetails->pluck('project_type')->toArray(); // Convert to array for easier handling
+                    $currentPhase = $projectDetails->pluck('current_phase')->first(); // Get the first current_phase
+
+                    if (in_array("implementation", $projectTypes) && in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Implementation + Maintenance & Managed Service';
+                    } elseif (in_array("implementation", $projectTypes)) {
+                        $projectType = 'Implementation';
+                    } elseif (in_array("maintenance", $projectTypes)) {
+                        $projectType = 'Maintenance & Managed Service';
+                    } elseif (in_array("supply_only", $projectTypes)) {
+                        $projectType = 'Supply Only';
+                    } else {
+                        $projectType = 'Unknown'; // Default value if no known project type matches
+                    }
+
+                    $pid[$key]->project_type = $projectType;
+                    $pid[$key]->current_phase = $currentPhase;
+
+                }
             }else{
 
                 $pid = DB::table('tb_id_project')
