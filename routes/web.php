@@ -1533,6 +1533,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getChangeLog','AssetMgmtController@getChangeLog');
 	Route::post('asset/updateDetailAsset','AssetMgmtController@updateDetailAsset');
 	Route::get('asset/getReminderAsset','AssetMgmtController@getReminderAsset');
+	Route::post('asset/storeServicePoint','AssetMgmtController@storeServicePoint');
+	Route::get('asset/getServicePoint','AssetMgmtController@getServicePoint');
+	Route::get('asset/getAssetOwner','AssetMgmtController@getAssetOwner');
+	Route::post('asset/storeCategory','AssetMgmtController@storeCategory');
+	Route::get('asset/getCategory','AssetMgmtController@getCategory');
 
 });
 

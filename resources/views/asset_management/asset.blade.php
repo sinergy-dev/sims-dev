@@ -8,7 +8,7 @@
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" integrity="sha512-OWGg8FcHstyYFwtjfkiCoYHW2hG3PDWwdtczPAPUcETobBJOVCouKig8rqED0NMLcT9GtE4jw6IT1CSrwY87uw==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <style type="text/css">
-    @media screen and (max-width: 1805px) {
+    /*@media screen and (max-width: 1805px) {
       .searchBarBox{
         width: 70%!important;
       }
@@ -25,9 +25,9 @@
         padding-left:0px;
         padding-right:0px;
       }
-    }
+    }*/
 
-    @media screen and (min-width: 1805px) {
+    /*@media screen and (min-width: 1805px) {
       .searchBarBox{
         width: 50%!important;
       }
@@ -45,7 +45,7 @@
         padding-right: 5px;
         min-width: 220px;
       }
-    }
+    }*/
 
     .dataTables_filter {display: none;}
 
@@ -59,6 +59,10 @@
 
     textarea{
       resize:vertical;
+    }
+
+    .pac-container {
+      z-index: 1100 !important;
     }
   </style>
 @endsection
@@ -75,13 +79,11 @@
   <section class="content">
     <div class="row">
       <div class="col-lg-3 col-xs-12">
-        <div class="small-box bg-aqua">
+        <div class="small-box bg-purple">
           <div class="inner">
             <h3 id="countAll" class="counter"></h3>
-            <p>Total Assets</p>
           </div>
           <div class="icon">
-            <i class="fa fa-table"></i>
           </div>
           <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a> -->
         </div>
@@ -90,12 +92,21 @@
       <div class="col-lg-3 col-xs-12">
         <div class="small-box bg-green">
           <div class="inner">
-            <h3 id="countInstalled" class="counter">0</h3>
-            <p>Installed</p>
+            <h3 id="countInstalled" class="counter"></h3>
           </div>
         <div class="icon">
-          <i class="fa fa-gear"></i>
         </div>
+          <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a> -->
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-xs-12">
+        <div class="small-box bg-aqua">
+          <div class="inner">
+            <h3 id="countAvailable" class="counter"></h3>
+          </div>
+          <div class="icon">
+          </div>
           <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a> -->
         </div>
       </div>
@@ -103,24 +114,9 @@
       <div class="col-lg-3 col-xs-12">
         <div class="small-box bg-yellow">
           <div class="inner">
-            <h3 id="countAvailable" class="counter">0</h3>
-            <p>Available</p>
+            <h3 id="countTemporary" class="counter"></h3>
           </div>
           <div class="icon">
-            <i class="fa fa-archive"></i>
-          </div>
-          <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a> -->
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-xs-12">
-        <div class="small-box bg-red">
-          <div class="inner">
-            <h3 id="countRma" class="counter">0</h3>
-            <p>RMA</p>
-          </div>
-          <div class="icon">
-            <i class="fa fa-list"></i>
           </div>
           <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a> -->
         </div>
@@ -166,45 +162,47 @@
         <div class="box box-primary">
           <div class="box-header">
             <div class="row">
-              <div class="col-md-6 col-xs-12">
-                <div class="form-group">
-                  <button class="btn btn-sm bg-purple pull-left" onclick="btnAddAsset(0)" style="display:none" id="btnAddAsset"><i class="fa fa-plus"></i> Asset</button>
-                  <button class="btn btn-warning btn-sm btnAssignEngineer" onclick="btnAssignEngineer()" style="margin-left:5px;display: none;"><i class="fa fa-cog"></i> Assign Engineer</button>
+              <div class="col-md-12 col-xs-12">
+                <div class="pull-left">
+                  <button class="btn btn-sm bg-purple" onclick="btnAddAsset(0)" style="display:none" id="btnAddAsset"><i class="fa fa-plus"></i> Asset</button>
+                  <button class="btn btn-sm btn-primary" onclick="btnAddServicePoint()" id="btnAddServicePoint" style="display:none"><i class="fa fa-plus"></i> Service Point</button>
+                  <button class="btn btn-sm bg-maroon" onclick="btnAddCategory()" id="btnAddCategory" style="display:none"><i class="fa fa-plus"></i> Category</button>
+                  <button class="btn btn-sm btn-warning btnAssignEngineer" onclick="btnAssignEngineer()" style="display: none;"><i class="fa fa-cog"></i> Assign Engineer</button>
                 </div>
-              </div>
-              <div class="col-md-4 col-xs-12">
-                <div class="input-group">
-                  <input id="searchBar" type="text" class="form-control" placeholder="Search Anything..." onkeyup="searchBarEntries('tableAsset','searchBar')">
-                  <div class="input-group-btn">
-                    <button type="button" id="btnShowEntryAsset" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                      Show 10 
-                      <span class="fa fa-caret-down"></span>
-                    </button>
-                    <ul class="dropdown-menu" id="selectShowEntryAsset">
-                      <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                      <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                      <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                      <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-                    </ul>
+                <div class="pull-right" style="display: flex;">
+                  <div class="input-group" style="margin-right:10px">
+                    <input id="searchBar" type="text" class="form-control" placeholder="Search Anything..." onkeyup="searchBarEntries('tableAsset','searchBar')">
+                    <div class="input-group-btn">
+                      <button type="button" id="btnShowEntryAsset" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        Show 10 
+                        <span class="fa fa-caret-down"></span>
+                      </button>
+                      <ul class="dropdown-menu" id="selectShowEntryAsset">
+                        <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+                        <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+                        <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+                        <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="col-md-2 col-xs-12">
-                <div class="input-group">
-                  <span class="input-group-btn">
-                    <button type="button" id="btnShowColumnAsset" class="btn btn-default btn-flat dropdown-toggle btn-dropdown-menu" data-toggle="dropdown" aria-expanded="false">
-                      <span class="fa fa-caret-down"></span>
-                    </button>
-                    <ul class="dropdown-menu" style="padding-left:45px;padding-right: 5px;min-width: 220px;" id="selectShowColumnTicket">
-                      <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="0"><span class="text">ID Asset</span></li>
-                      <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="5"><span class="text">Type Device</span></li>
-                      <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="6"><span class="text">Serial Number</span></li>
-                      <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="7"><span class="text">Spesifikasi</span></li>
-                      <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="8"><span class="text">RMA</span></li>
-                      <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="9"><span class="text">Current PID</span></li>
-                      <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="10"><span class="text">Notes</span></li>
-                    </ul>
-                  </span>
+                  <div class="input-group">
+                    <span class="input-group-btn">
+                      <button type="button" id="btnShowColumnAsset" class="btn btn-default btn-flat dropdown-toggle btn-dropdown-menu" data-toggle="dropdown" aria-expanded="false">
+                        Displayed Column
+                        <span class="fa fa-caret-down"></span>
+                      </button>
+                      <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="0"><span class="text">ID Asset</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="5"><span class="text">Type Device</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="6"><span class="text">ID Device Customer</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="7"><span class="text">Serial Number</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="8"><span class="text">Spesifikasi</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="9"><span class="text">RMA</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="10"><span class="text">Current PID</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="11"><span class="text">Notes</span></li>
+                      </ul>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -220,7 +218,7 @@
     </div>
   </section>
   
-  <div class="modal fade" id="ModalAddAsset" role="dialog">
+  <div class="modal fade" id="modal-add-asset" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -232,13 +230,13 @@
           <form method="POST">
           @csrf  
             <div class="tab-add">
-              <div class="form-group">
+            <!--   <div class="form-group">
                 <label for="">Choose Asset*</label>
                 <select id="selectAsset" name="selectAsset" class="form-control" onchange="fillInput('selectAsset')">
                   <option></option>
                 </select>
                 <span class="help-block" style="display:none;">Please fill Asset!</span>
-              </div> 
+              </div>  -->
 
               <div class="form-group divPeripheral" style="display:none;">
                 <label for="">Category Peripheral*</label>
@@ -247,10 +245,16 @@
                 </select>
                 <span class="help-block" style="display:none;">Please fill Category Peripheral!</span>
               </div>
-
-              <div class="form-group divPeripheral" style="display:none;">
+             <!--  <div class="form-group divPeripheral" style="display:none;">
                 <label for="">Assign</label>
                 <select id="selectAssigntoPeripheral" name="selectAssigntoPeripheral divPeripheral" class="form-control" onchange="fillInput('selectAssigntoPeripheral')" style="display:none;">
+                  <option></option>
+                </select>
+              </div> -->
+
+              <div class="form-group">
+                <label for="">Assign</label>
+                <select id="selectAssigntoPeripheral" name="selectAssigntoPeripheral" class="form-control" onchange="fillInput('selectAssigntoPeripheral')" style="display:none;">
                   <option></option>
                 </select>
               </div>
@@ -262,6 +266,8 @@
                 </select>
                 <span class="help-block" style="display:none;">Please fill Asset Owner!</span>
               </div>
+
+
 
               <div class="row">
                 <div class="col-sm-6">
@@ -285,7 +291,7 @@
 
               <div class="form-group">
                 <label for="">Vendor*</label>
-                <select id="selectVendor" name="selectVendor" class="form-control" onchange="fillInput('selectVendor')"><option></option></select>
+                <select id="selectVendor" name="selectVendor" class="form-control" onchange="fillInput('selectVendor')" onkeyup=""><option></option></select>
                 <span class="help-block" style="display:none;">Please fill Vendor!</span>
               </div>
 
@@ -302,7 +308,7 @@
               </div>
 
               <div class="form-group">
-                <label for="">Spesifikasi*</label>
+                <label for="">Spesifikasi</label>
                 <input id="inputSpesifikasi" name="inputSpesifikasi" class="form-control" onkeyup="fillInput('inputSpesifikasi')">
                 <span class="help-block" style="display:none;">Please fill Spesifikasi!</span>
               </div>
@@ -311,6 +317,36 @@
                 <label for="">RMA</label>
                 <input id="inputRMA" name="inputRMA" class="form-control" onkeyup="fillInput('inputRMA')">
                 <span class="help-block" style="display:none;">Please fill RMA!</span>
+              </div>
+
+              <div class="form-group">
+                <label for="">Tanggal Pembelian</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input id="inputTglBeli" name="inputTglBeli" class="form-control" onchange="fillInput('inputTglBeli')">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="">Harga</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <strong>RP</strong>
+                  </div>
+                  <input id="inputHarga" type="text" name="inputHarga" class="form-control money" onkeyup="fillInput('inputHarga')">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="">Nilai Buku</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <strong>RP</strong>
+                  </div>
+                  <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money" onkeyup="fillInput('inputNilaiBuku')">
+                </div>
               </div>
 
               <div class="form-group">
@@ -360,9 +396,33 @@
               </div>
 
               <div class="form-group">
-                <label for="">Detail Location*</label>
-                <textarea onkeyup="fillInput('txtAreaLocation')" id="txtAreaLocation" name="txtAreaLocation" class="form-control"></textarea>
+                <label>Detail Location</label>
+                <input class="form-control" placeholder="Search Location..." type="text" onkeyup="fillInput('txtAreaLocation')" id="txtAreaLocation" name="txtAreaLocation">
                 <span class="help-block" style="display:none;">Please fill Detail Location!</span>
+              </div>
+
+              <div class="form-group">
+                <div id="map" style="height: 350px;width: 100%;margin:auto;display: block;background-color: #000;"></div>
+              </div>
+                
+              <div class="row">
+                <dir class="col-md-6">
+                  <div class="form-group">
+                    <label>Latitude</label>
+                    <input class="form-control" placeholder="" type="text" id="lat" name="lat" onkeyup="fillInput('lat')" >
+                  </div>
+                </dir>
+                <dir class="col-md-6">
+                  <div class="form-group">
+                    <label>Longitude</label>
+                    <input class="form-control" placeholder="" type="text" id="lng" name="lng" onkeyup="fillInput('lng')" >
+                  </div>
+                </dir>
+              </div>
+
+              <div class="form-group">
+                <label>Service Point</label>
+                <select class="form-control" placeholder="" type="text" id="service_point" name="service_point" onchange="fillInput('service_point')"><option></option></select>
               </div>
             </div>
             <div class="tab-add" style="display:none">
@@ -413,7 +473,7 @@
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
-                    <label for="">Operating System*</label>
+                    <label for="">Operating System</label>
                     <input autofocus type="text" class="form-control" onchange="fillInput('inputOS')" id="inputOS" name="inputOS">
                     <span class="help-block" style="display:none;">Please fill Operating System!</span>
                   </div>
@@ -421,7 +481,7 @@
 
                 <div class="col-sm-6">
                   <div class="form-group">
-                    <label for="">Version*</label>
+                    <label for="">Version</label>
                     <input autocomplete="off" type="" class="form-control" id="inputVersion" name="inputVersion" onkeyup="fillInput('inputVersion')">
                     <span class="help-block" style="display:none;">Please fill Version!</span>
                   </div>
@@ -554,6 +614,87 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="modal-add-service-point">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Add Service Point</h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label>Service Point</label>
+              <input class="form-control" name="inputServicePoint" id="inputServicePoint" placeholder="Service Point">
+            </div>
+            <div class="form-group">
+              <label>Detail Location</label>
+              <input class="form-control" name="inputDetailLocationSP" id="inputDetailLocationSP" placeholder="Search Location...">
+            </div>
+            <div class="form-group">
+              <div id="map-sp" style="height: 350px;width: 100%;margin:auto;display: block;background-color: #000;"></div>
+            </div>
+            <div class="row">
+              <dir class="col-md-6">
+                <div class="form-group">
+                  <label>Latitude</label>
+                  <input class="form-control" placeholder="" type="text" id="lat-sp" name="lat-sp">
+                </div>
+              </dir>
+              <dir class="col-md-6">
+                <div class="form-group">
+                  <label>Longitude</label>
+                  <input class="form-control" placeholder="" type="text" id="lng-sp" name="lng-sp">
+                </div>
+              </dir>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-flat btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-flat btn-primary" onclick="saveServicePoint()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-add-category">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Add Category</h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label>Category Code</label>
+              <input class="form-control" name="inputCatCode" id="inputCatCode" placeholder="Input Code (MAX 3 variable)" maxlength="3" style="text-transform:uppercase">
+              <span class="help-block" style="display:none;color: red;"></span>
+            </div>
+            <div class="form-group">
+              <label>Category Name</label>
+              <input class="form-control" name="inputCatName" id="inputCatName" placeholder="Input Category Name">
+              <span class="help-block" style="display:none;color: red;"></span>
+            </div>
+       <!--      <div class="form-group">
+              <label>Description</label>
+              <textarea class="form-control" name="txtAreaDescCat" id="txtAreaDescCat" placeholder="Input Description"></textarea>
+            </div> -->
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-flat btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-flat btn-primary" onclick="saveCategory()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 @section('scriptImport')
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.2.6/jquery.inputmask.bundle.min.js"></script>
@@ -562,7 +703,10 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY_GLOBAL')}}&libraries=places" async defer></script>
 @endsection
 @section('script')
   <script type="text/javascript">
@@ -572,6 +716,8 @@
       $("#" + item).show()
     })
 
+    $('.money').mask('000.000.000.000', {reverse: true});
+    
     InitiateCountDashboard("{{url('asset/getCountDashboard')}}")
 
     if (!accesable.includes('box-filter')) {
@@ -632,6 +778,8 @@
               bgColor = "bg-aqua"
             }else if (row.status == 'RMA') {
               bgColor = "bg-red"
+            }else if (row.status == 'Temporary') {
+              bgColor = "bg-yellow"
             }
 
             return '<span class="label '+ bgColor +'" style="font-size:80%!important">'+ row.status +'</span>'
@@ -660,6 +808,18 @@
             }
             
             return type_device
+          }
+        },
+        {
+          title:"ID Device Customer",
+          render: function (data, type, row, meta){
+            let id_device_customer = row.id_device_customer
+
+            if (row.id_device_customer == null) {
+              id_device_customer == '-'
+            }
+            
+            return id_device_customer
           }
         },
         {
@@ -725,13 +885,13 @@
         {
           title:"Action",
           render: function (data, type, row, meta){
-           return "<a href='{{url('asset/detail')}}?id_asset="+ row.id_asset +"' class='btn btn-sm btn-warning' target='_blank'>Detail</a>"
+           return "<a href='{{url('asset/detail')}}?id_asset="+ row.id +"' class='btn btn-sm btn-primary' target='_blank'>Detail</a>"
           }
         },
       ],
       "columnDefs": [
         {
-            "targets": [0,5,6,7,8,9,10], // Index of the column you want to hide (0-based index)
+            "targets": [0,5,6,7,8,9,10,11], // Index of the column you want to hide (0-based index)
             "visible": false,
             "searchable": false // Optional: if you don't want the column to be searchable
         }
@@ -758,6 +918,10 @@
           document.getElementById("prevBtnAdd").innerHTML = "Back";
           $("#prevBtnAdd").attr('onclick','nextPrev(-1)')        
         }else{
+          if ($("#lat").val() != "" && $("#lng").val() != "") {
+            initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+          }
+          initMap()
           var select2Element = $('#selectCity');
           if (select2Element.find('option').length < 2) {
             $.ajax({
@@ -770,7 +934,8 @@
               success: function(response) {
                 $("#selectCity").select2({
                   placeholder:"Select City",
-                  data:response
+                  data:response,
+                  dropdownParent:$("#modal-add-asset")
                 })
               },
               error: function(xhr, status, error) {
@@ -779,6 +944,18 @@
               }
             });
           }
+
+          $.ajax({
+            url: '{{url("asset/getServicePoint")}}',
+            type: 'GET',
+            success: function(response) {
+              $("#service_point").select2({
+                placeholder:"Select Service Point",
+                data:response
+              })
+            },
+          });
+          
           document.getElementById("prevBtnAdd").innerHTML = "Cancel";
           $("#prevBtnAdd").attr('onclick','closeModal()')   
         }
@@ -787,8 +964,8 @@
         document.getElementById("prevBtnAdd").style.display = "inline";
         document.getElementById("nextBtnAdd").innerHTML = "Next";
       }
-      // $("#ModalAddAsset").modal({backdrop: 'static', keyboard: false})  
-      $("#ModalAddAsset").modal("show")
+      // $("#modal-add-asset").modal({backdrop: 'static', keyboard: false})  
+      $("#modal-add-asset").modal("show")
     }
 
     function btnAssignEngineer(){
@@ -990,23 +1167,29 @@
 
     //select2 filter
     $("#selectFilterAssetOwner").select2({
+      ajax : {
+        url: '{{url("asset/getAssetOwner")}}',
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
       placeholder:"Select Asset Owner",
-      data:[
-        {id:"SIP",text:"SIP"},
-        {id:"Distributor",text:"Distributor"},
-        {id:"Principal",text:"Principal"}
-      ]
     })
 
     $("#selectFilterCategory").select2({
+      ajax:{
+        url: '{{url("asset/getCategory")}}',
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
       placeholder:"Select Category",
-      data:[
-        {id:"ATM",text:"ATM"},
-        {id:"Network",text:"Network"},
-        {id:"CRM",text:"CRM"},
-        {id:"Security",text:"Security"},
-        {id:"Peripheral",text:"Peripheral"},
-      ]
     })
 
     $("#selectFilterClient").select2({
@@ -1070,32 +1253,138 @@
     }).val("asset").trigger("change")
 
     $("#selectAssetOwner").select2({
+      ajax : {
+        url: '{{url("asset/getAssetOwner")}}',
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
       placeholder:"Select Asset Owner",
-      data:[
-        {id:"SIP",text:"SIP"},
-        {id:"Distributor",text:"Distributor"},
-        {id:"Principal",text:"Principal"},
-      ]
+      dropdownParent:$("#modal-add-asset")
     })
 
     $("#selectCategory").select2({
+      ajax:{
+        url: '{{url("asset/getCategory")}}',
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
       placeholder:"Select Category",
-      data:[
-        {id:"ATM",text:"ATM"},
-        {id:"Network",text:"Network"},
-        {id:"CRM",text:"CRM"},
-        {id:"Security",text:"Security"},
-      ]
-    })
+      dropdownParent: $("#modal-add-asset"),
+    }).on('select2:select', function (e) {
+      console.log(e.params.data.text)
+      if (e.params.data.text == "Computer") {
+        $.each($(".tab-add").find("select"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+            label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
+            $("#"+data.id).closest(".form-group").find("label").text(label_changed)
+          }
+        })
+
+        $.each($(".tab-add").find("input"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+            label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
+            $("#"+data.id).closest(".form-group").find("label").text(label_changed)
+          }
+        })
+
+        $.each($(".tab-add").find("textarea"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+            label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
+            $("#"+data.id).closest(".form-group").find("label").text(label_changed)
+          }
+        })
+
+        $.each($(".tab-add:nth(0)").find("input"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+              if (data.id != "inputIPAddress" && data.id != "inputPort" && data.id != "inputServer") {
+                if ($(data).val() == "") {
+                  $("#"+data.id).closest(".form-group").find(".help-block").hide()
+                  $("#"+data.id).closest(".form-group").removeClass("has-error")
+                }
+              }
+          }
+        })
+
+        $.each($(".tab-add:nth(0)").find("select"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+              if (data.id != "inputIPAddress" && data.id != "inputPort" && data.id != "inputServer") {
+                if ($(data).val() == "") {
+                  $("#"+data.id).closest(".form-group").find(".help-block").hide()
+                  $("#"+data.id).closest(".form-group").removeClass("has-error")
+                }
+              }
+          }
+        })
+
+        $.each($(".tab-add:nth(0)").find("textarea"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+              if (data.id != "inputIPAddress" && data.id != "inputPort" && data.id != "inputServer") {
+                if ($(data).val() == "") {
+                  $("#"+data.id).closest(".form-group").find(".help-block").hide()
+                  $("#"+data.id).closest(".form-group").removeClass("has-error")
+                }
+              }
+          }
+        })
+      }else{
+        $.each($(".tab-add").find("select"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+            label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
+            $("#"+data.id).closest(".form-group").find("label").text(label_changed+"*")
+          }
+        })
+
+        $.each($(".tab-add").find("input"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+            if ($(data)[0].id != "inputSpesifikasi" && $(data)[0].id != "inputRMA" && $(data)[0].id != "inputIPAddress" && $(data)[0].id != "inputServer" && $(data)[0].id != "inputPort" && $(data)[0].id != "inputTglBeli" && $(data)[0].id != "inputHarga" && $(data)[0].id != "inputNilaiBuku"&& $(data)[0].id != "inputOS" && $(data)[0].id != "inputVersion") {
+              label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
+              $("#"+data.id).closest(".form-group").find("label").text(label_changed+"*")
+            }
+          }
+        })
+
+        $.each($(".tab-add").find("textarea"),function(item,data){
+          var $el = $(this);
+          if ($el.css("display") !== "none") {
+            if ($(data)[0].id != "txtAreaNotes") {
+              label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
+              $("#"+data.id).closest(".form-group").find("label").text(label_changed+"*")
+            }
+          }
+        })
+      }
+    });
 
     $("#selectStatus").select2({
       placeholder:"Select Status",
+      dropdownParent: $("#modal-add-asset"),
       data:[
         {id:"Installed",text:"Installed"},
         {id:"Available",text:"Available"},
         {id:"RMA",text:"RMA"},
+        {id:"Temporary",text:"Temporary"},
       ]
     })
+
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
     $("#selectVendor").select2({
       ajax: {
@@ -1109,7 +1398,25 @@
       },
       placeholder:"Select Vendor",
       tags:true,
-    })
+      createTag: function(params) {
+          // Capitalize the first letter of the new tag
+          const capitalizedTag = capitalizeFirstLetter(params.term);
+          return {
+              id: capitalizedTag,
+              text: capitalizedTag
+          };
+      },
+      dropdownParent:$("#modal-add-asset")
+    }).on('select2:select', function(e) {
+      const selectedOption = e.params.data;
+      const capitalizedOption = capitalizeFirstLetter(selectedOption.text);
+      
+      // Update the displayed text and value
+      $('#selectVendor option[value="' + selectedOption.id + '"]').text(capitalizedOption).val(capitalizedOption);
+      
+      // Trigger a change event to update the Select2 display
+      $('#selectVendor').trigger('change');
+    });
 
     $("#selectPeripheral").select2({
       ajax: {
@@ -1122,7 +1429,8 @@
         },
       },
       placeholder:"Select Category Peripheral",
-      tags:true
+      tags:true,
+      dropdownParent: $("#modal-add-asset"),
     })
 
     $("#selectTypeDevice").select2({
@@ -1136,8 +1444,26 @@
         },
       },
       placeholder:"Select Type Device",
-      tags:true
-    })
+      tags:true,
+      createTag: function(params) {
+          // Capitalize the first letter of the new tag
+          const capitalizedTag = capitalizeFirstLetter(params.term);
+          return {
+              id: capitalizedTag,
+              text: capitalizedTag
+          };
+      },
+      dropdownParent:$("#modal-add-asset")
+    }).on('select2:select', function(e) {
+      const selectedOption = e.params.data;
+      const capitalizedOption = capitalizeFirstLetter(selectedOption.text);
+      
+      // Update the displayed text and value
+      $('#selectTypeDevice option[value="' + selectedOption.id + '"]').text(capitalizedOption).val(capitalizedOption);
+      
+      // Trigger a change event to update the Select2 display
+      $('#selectTypeDevice').trigger('change');
+    });
 
     $("#selectLevelSupport").select2({
       ajax: {
@@ -1150,11 +1476,13 @@
         },
       },
       placeholder:"Select 2nd Level Support",
-      tags:true
+      tags:true,
+      dropdownParent: $("#modal-add-asset"),
     })
 
     $("#selectStatusCustomer").select2({
       placeholder:"Select Status Customer",
+      dropdownParent: $("#modal-add-asset"),
       tags:true,
       data:[
         {id:"Beli",text:"Beli"},
@@ -1172,7 +1500,9 @@
           };
         },
       },
+      allowClear:true,
       placeholder:"Select ID Assign to Assign",
+      dropdownParent: $("#modal-add-asset"),
     })
 
     $("#selectPID").select2({
@@ -1186,6 +1516,7 @@
         },
       },
       placeholder: 'Select PID',
+      dropdownParent: $("#modal-add-asset")
     }).on('select2:select', function (e) {
       let pid = e.params.data.id
       $.ajax({
@@ -1230,33 +1561,40 @@
       format: 'dd/mm/yyyy'
     })
 
+    $('#inputTglBeli').datepicker({
+      placeholder:"dd/mm/yyyy",
+      autoclose: true,
+      format: 'dd/mm/yyyy'
+    })
+
     // $("#inputServer").inputmask("ip")
     // $("#inputIPAddress").inputmask("ip")
     currentTab = 0
     function nextPrev(n){
       if (currentTab == 0) {
-        $.each($(".tab-add:first").find("select"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-              if ($(data).val() == "") {
-                  $("select[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
-                  $("select[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
-              }
-          }
-        })
+        if ($("#selectCategory").val() != "COM") {
+          $.each($(".tab-add:first").find("select"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
+                if ($(data).val() == "") {
+                    $("select[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
+                    $("select[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
+                }
+            }
+          })
 
-        $.each($(".tab-add:first").find("input"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-              if (data.id != "inputRMA") {
+          $.each($(".tab-add:first").find("input"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
+              if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku") {
                 if ($(data).val() == "") {
                   $("input[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
                   $("input[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
                 }
               }
-              
-          }
-        })
+            }
+          })
+        }
 
         if ($(".tab-add:first").find(".form-group").hasClass("has-error") == false) {
           let x = document.getElementsByClassName("tab-add");
@@ -1270,37 +1608,40 @@
           btnAddAsset(currentTab);
         }
       }else if (currentTab == 1) {
-        $.each($(".tab-add:nth(1)").find("select"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-              if ($(data).val() == "") {
+        if ($("#selectCategory").val() != "COM") {
+          $.each($(".tab-add:nth(1)").find("select"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
+                if ($(data).val() == "") {
+                    $("#"+data.id).closest(".form-group").find(".help-block").show()
+                    $("#"+data.id).closest(".form-group").addClass("has-error")
+                }
+            }
+          })
+
+          $.each($(".tab-add:nth(1)").find("input"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
+              if (data.id != "inputClient") {
+                if ($(data).val() == "") {
                   $("#"+data.id).closest(".form-group").find(".help-block").show()
                   $("#"+data.id).closest(".form-group").addClass("has-error")
+                }
               }
-          }
-        })
+            }
+          })
 
-        $.each($(".tab-add:nth(1)").find("input"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-            if (data.id != "inputClient") {
+          $.each($(".tab-add:nth(1)").find("textarea"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
               if ($(data).val() == "") {
                 $("#"+data.id).closest(".form-group").find(".help-block").show()
                 $("#"+data.id).closest(".form-group").addClass("has-error")
               }
             }
-          }
-        })
-
-        $.each($(".tab-add:nth(1)").find("textarea"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-            if ($(data).val() == "") {
-              $("#"+data.id).closest(".form-group").find(".help-block").show()
-              $("#"+data.id).closest(".form-group").addClass("has-error")
-            }
-          }
-        })
+          })
+        }
+        
 
         if ($(".tab-add:nth(1)").find(".form-group").hasClass("has-error") == false) {
           let x = document.getElementsByClassName("tab-add");
@@ -1332,55 +1673,58 @@
       let checkInput = ""
 
       if (type == "peripheral") {
-        $.each($(".tab-add:first").find("select"),function(item,data){
-          if ($(data).val() == "") {
+        if ($("#selectCategory").val() != "COM") {
+          $.each($(".tab-add:first").find("select"),function(item,data){
+            if ($(data).val() == "") {
               $("select[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
               $("select[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
-          }
-          // var $el = $(this);
-          // if ($el.css("display") !== "none") {
-              
-          // }
-        })
+            }
+          })
 
-        $.each($(".tab-add:first").find("input"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-              if (data.id != "inputRMA") {
+          $.each($(".tab-add:first").find("input"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
+              if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku") {
                 if ($(data).val() == "") {
                   $("input[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
                   $("input[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
                 }
-              }
-              
-          }
-        })
+              } 
+            }
+          })
 
-        checkInput = $(".tab-add:first").find(".form-group").hasClass("has-error")
+          checkInput = $(".tab-add:first").find(".form-group").hasClass("has-error")
+        }
       }else{
-        $.each($(".tab-add:nth(2)").find("select"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-              if ($(data).val() == "") {
-                  $("#"+data.id).closest(".form-group").find(".help-block").show()
-                  $("#"+data.id).closest(".form-group").addClass("has-error")
-              }
-          }
-        })
-
-        $.each($(".tab-add:nth(2)").find("input"),function(item,data){
-          var $el = $(this);
-          if ($el.css("display") !== "none") {
-              if (data.id != "inputIPAddress" && data.id != "inputPort" && data.id != "inputServer") {
+        if ($("#selectCategory").val() != "COM") {
+          $.each($(".tab-add:nth(2)").find("select"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
                 if ($(data).val() == "") {
-                  $("#"+data.id).closest(".form-group").find(".help-block").show()
-                  $("#"+data.id).closest(".form-group").addClass("has-error")
+                    $("#"+data.id).closest(".form-group").find(".help-block").show()
+                    $("#"+data.id).closest(".form-group").addClass("has-error")
                 }
-              }
-          }
-        })
+            }
+          })
 
-        checkInput = $(".tab-add:nth(2)").find(".form-group").hasClass("has-error")
+          $.each($(".tab-add:nth(2)").find("input"),function(item,data){
+            var $el = $(this);
+            if ($el.css("display") !== "none") {
+                if (data.id != "inputIPAddress" && data.id != "inputPort" && data.id != "inputServer" && data.id != "inputOS" && data.id != "inputVersion") {
+                  if ($(data).val() == "") {
+                    $("#"+data.id).closest(".form-group").find(".help-block").show()
+                    $("#"+data.id).closest(".form-group").addClass("has-error")
+                  }
+                }
+            }
+          })
+
+          if ($(".tab-add:first").is(":visible")) {
+            checkInput = $(".tab-add:first").find(".form-group").hasClass("has-error")
+          }else{
+            checkInput = $(".tab-add:nth(2)").find(".form-group").hasClass("has-error")
+          }
+        }
       }
       
       if (checkInput == false) {
@@ -1395,19 +1739,6 @@
           cancelButtonText: 'No',
         }).then((result) => {
           if (result.value) {
-            Swal.fire({
-                title: 'Please Wait..!',
-                text: "It's sending..",
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                allowEnterKey: false,
-                customClass: {
-                    popup: 'border-radius-0',
-                },
-                didOpen: () => {
-                    Swal.showLoading()
-                }
-            })
             $.ajax({
               type:"POST",
               url:"{{url('asset/storeAsset')}}",
@@ -1443,17 +1774,37 @@
                 typeAsset:$("#selectAsset").val(),
                 assetOwner:$("#selectAssetOwner").val(),
                 category:$("#selectCategory").val(),
-                assignTo:$("#selectAssigntoPeripheral").val()
+                category_text:$("#selectCategory").select2("data")[0].text,
+                assignTo:$("#selectAssigntoPeripheral").val(),
+                latitude:$("#lat").val(),
+                longitude:$("#lng").val(),
+                servicePoint:$("#service_point").val(),
+                tanggalBeli:moment(($("#inputTglBeli").val()), "DD/MM/YYYY").format("YYYY-MM-DD"),
+                hargaBeli:$("#inputHarga").val(),
+                nilaiBuku:$("#inputNilaiBuku").val()
+              },beforeSend:function(){
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                })
               },
               success: function(result){
                 Swal.close()
                 Swal.fire({
                   title: 'Add Asset Successsfully!',
-                  type: 'success',
                   icon: 'success',
                   confirmButtonText: 'Reload',
                 }).then((result) => {
-                  $("#ModalAddAsset").modal("hide")
+                  $("#modal-add-asset").modal("hide")
                   $('#tableAsset').DataTable().ajax.url("{{url('asset/getDataAsset')}}").load();
                   InitiateCountDashboard("{{url('asset/getCountDashboard')}}")
                 })
@@ -1475,7 +1826,7 @@
         tempCategory = "category=" + $("#selectFilterCategory").val() 
 
         //show button
-        if ($("#selectFilterCategory").val() == "ATM") {
+        if ($("#selectFilterCategory").val() == "ATM" || $("#selectFilterCategory").val() == "CRM") {
           if(accesable.includes('btnAssignEngineer')){
             $(".btnAssignEngineer").show()
           }else{
@@ -1525,27 +1876,43 @@
     }
 
     function closeModal(){
-      $("#ModalAddAsset").modal("hide")  
+      $("#modal-add-asset").modal("hide")  
     }
 
     function fillInput(argument) {
-      if (argument == "selectAsset") {
-        let assetVal = $("#selectAsset").val()
-        if (assetVal == 'asset') {
-          $(".tab-add").find(".form-group.divPeripheral").css('display','none') 
+      // if (argument == "selectAsset") {
+      //   let assetVal = $("#selectAsset").val()
+      //   if (assetVal == 'asset') {
+      //     $(".tab-add").find(".form-group.divPeripheral").css('display','none') 
 
+      //     $("#nextBtnAdd").attr('onclick','nextPrev(1)')
+      //     document.getElementById("prevBtnAdd").style.display = "inline";
+      //     document.getElementById("prevBtnAdd").innerHTML = "Cancel";
+      //     document.getElementById("nextBtnAdd").innerHTML = "Next";
+      //   }else if (assetVal == 'peripheral') {
+      //     $(".tab-add").find(".form-group.divPeripheral").css('display','block') 
+
+      //     document.getElementById("prevBtnAdd").style.display = "inline";
+      //     $("#prevBtnAdd").attr('onclick','closeModal()')   
+      //     document.getElementById("prevBtnAdd").innerHTML = "Cancel";
+      //     $("#nextBtnAdd").attr('onclick','saveAsset("peripheral")')
+      //     document.getElementById("nextBtnAdd").innerHTML = "Save";
+      //   }
+      // }
+
+      if (argument == "selectAssigntoPeripheral") {
+        let assetVal = $("#selectAssigntoPeripheral").val()
+        if (assetVal != "") {
+          document.getElementById("prevBtnAdd").style.display = "inline";
+          $("#prevBtnAdd").attr('onclick','closeModal()')   
+          document.getElementById("prevBtnAdd").innerHTML = "Cancel";
+          $("#nextBtnAdd").attr('onclick','saveAsset("asset")')
+          document.getElementById("nextBtnAdd").innerHTML = "Save";
+        }else{
           $("#nextBtnAdd").attr('onclick','nextPrev(1)')
           document.getElementById("prevBtnAdd").style.display = "inline";
           document.getElementById("prevBtnAdd").innerHTML = "Cancel";
           document.getElementById("nextBtnAdd").innerHTML = "Next";
-        }else if (assetVal == 'peripheral') {
-          $(".tab-add").find(".form-group.divPeripheral").css('display','block') 
-
-          document.getElementById("prevBtnAdd").style.display = "inline";
-          $("#prevBtnAdd").attr('onclick','closeModal()')   
-          document.getElementById("prevBtnAdd").innerHTML = "Cancel";
-          $("#nextBtnAdd").attr('onclick','saveAsset("peripheral")')
-          document.getElementById("nextBtnAdd").innerHTML = "Save";
         }
       }
 
@@ -1555,14 +1922,18 @@
       }
     }
 
-    $('#ModalAddAsset').on('hidden.bs.modal', function () {
+    $('#modal-add-asset').on('hidden.bs.modal', function () {
       currentTab = 0
       $(".tab-add").css("display","none")
       $(".tab-add").find("select").val("").trigger("change")
-      $(".tab-add").find("input").val("").trigger("change")
-      $(".tab-add").find("textarea").val("").trigger("change")
+      $(".tab-add").find("input").val("")
+      $(".tab-add").find("textarea").val("")
       $(".tab-add").find(".form-group").removeClass("has-error")
       $(".tab-add").find(".form-group").find(".help-block").hide()
+    });
+
+    $('#modal-add-service-point').on('hidden.bs.modal', function () {
+      $("input").val("")
     });
 
     function InitiateCountDashboard(url){
@@ -1571,9 +1942,24 @@
         type:"GET",
         success:function(response){
           $("#countAll").text(response.countAll)
+          $("#countAll").next().remove()
+          $("#countAll").after("<p>Total Assets</p>")
+          $("#countAll").closest("div").next(".icon").html("<i class='fa fa-table'></i>")
+
           $("#countInstalled").text(response.countInstalled)
+          $("#countInstalled").next().remove()
+          $("#countInstalled").after("<p>Installed</p>")
+          $("#countInstalled").closest("div").next(".icon").html("<i class='fa fa-gear'></i>")
+
           $("#countAvailable").text(response.countAvailable)
-          $("#countRma").text(response.countRma)
+          $("#countAvailable").next().remove()
+          $("#countAvailable").after("<p>Available</p>")
+          $("#countAvailable").closest("div").next(".icon").html("<i class='fa fa-archive'></i>")
+
+          $("#countTemporary").text(response.countTemporary)
+          $("#countTemporary").next().remove()
+          $("#countTemporary").after("<p>Temporary</p>")
+          $("#countTemporary").closest("div").next(".icon").html("<i class='fa fa-list'></i>")
 
           $('.counter').each(function () {
             var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
@@ -1586,6 +1972,419 @@
               }
             });
           });
+        }
+      })
+    }
+
+    var map, marker, map_sp, marker_sp;
+    var lat = '',lang = '', lat_sp = '', lang_sp = ''
+    function initMap(lat='',lang='',inputLat=false,inputLang=false){
+      if (lat == '') {
+        lat = -6.2297419
+        lat_sp = -6.2297419
+        inputLat = false
+      }else{
+        lat = lat
+        lat_sp = -6.2297419
+        inputLat = true
+      }
+
+      if (lang == '') {
+        lang = 106.759478
+        lang_sp = 106.759478
+        inputLang = false
+      }else{
+        lang = lang
+        lang_sp = 106.759478
+        inputLang = true
+      }
+
+      //map add asset
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: lat, lng: lang},
+        zoom: 10,
+        // zoomControl: false,
+        mapTypeControl: false,
+        scaleControl: false,
+        streetViewControl: false,
+        rotateControl: false,
+        fullscreenControl: false
+      });
+
+      // //map add service point
+      map_sp = new google.maps.Map(document.getElementById('map-sp'), {
+        center: {lat: lat_sp, lng: lang_sp},
+        zoom: 10,
+        // zoomControl: false,
+        mapTypeControl: false,
+        scaleControl: false,
+        streetViewControl: false,
+        rotateControl: false,
+        fullscreenControl: false
+      });
+
+      //add asset
+      map.addListener('click', function(result) {
+        marker.setVisible(false);
+        marker.setPosition(result.latLng);
+        marker.setVisible(true);
+        $("#lat").val(result.latLng.lat());
+        $("#lng").val(result.latLng.lng());
+      });
+
+      //marker asset
+      marker = new google.maps.Marker({
+        map: map,
+        anchorPoint: new google.maps.Point(0, -29),
+        draggable: true,
+        animation: google.maps.Animation.BOUNCE
+      });
+
+      //add service point
+      map_sp.addListener('click', function(result) {
+        marker_sp.setVisible(false);
+        marker_sp.setPosition(result.latLng);
+        marker_sp.setVisible(true);
+        $("#lat-sp").val(result.latLng.lat());
+        $("#lng-sp").val(result.latLng.lng());
+      });
+
+      //marker service point
+      marker_sp = new google.maps.Marker({
+        map: map_sp,
+        anchorPoint: new google.maps.Point(0, -29),
+        draggable: true,
+        animation: google.maps.Animation.BOUNCE
+      });
+
+      if (inputLat == true && inputLang == true) {
+        $.ajax({
+          type:"GET",
+          url:"https://maps.googleapis.com/maps/api/geocode/json?latlng="+ lat +","+ lang +"&key={{env('GOOGLE_API_KEY_GLOBAL')}}",
+          success: function(resultGoogle){
+            if ($("#inputDetailLocationSP").is(":visible")) {
+              $("#inputDetailLocationSP").val(resultGoogle.results[0].formatted_address)
+              map_sp.setCenter({lat: lat_sp, lng: lang_sp});
+              marker_sp.setPosition({lat:lat_sp , lng: lang_sp});
+              marker_sp.setVisible(true);
+              map_sp.setZoom(17);
+            }else{
+              $("#txtAreaLocation").closest(".form-group").find(".help-block").hide()
+              $("#txtAreaLocation").closest(".form-group").removeClass("has-error")
+              $("#txtAreaLocation").val(resultGoogle.results[0].formatted_address)
+              map.setCenter({lat: lat, lng: lang});
+              marker.setPosition({lat:lat , lng: lang});
+              marker.setVisible(true);
+              map.setZoom(17);
+            }
+          }
+        })
+      }
+      
+      // const myTimeout = setTimeout(initiateLocSP, 1000);
+
+      // console.log($("#modal-add-service-point").find("#inputDetailLocationSP").is(":visible"))
+
+      // function initiateLocSP() {
+      //   if ($("#modal-add-service-point").find("#inputDetailLocationSP").is(":visible")) {
+      //     return true
+      //   }
+      // }
+
+      setTimeout(function() {
+        if ($("#modal-add-service-point").find("#inputDetailLocationSP").is(":visible")) {
+          var autocomplete_sp = new google.maps.places.Autocomplete((document.getElementById('inputDetailLocationSP')));
+
+          autocomplete_sp.addListener('place_changed', function() {
+            google.maps.event.trigger(map_sp, 'resize');
+            marker_sp.setVisible(false);
+            var place_sp = autocomplete_sp.getPlace();
+
+            if (!place_sp.geometry) {
+              window.alert("No details available for input: " + place_sp.name);
+              return;
+            }
+
+            if (place_sp.geometry.viewport) {
+              map_sp.fitBounds(place_sp.geometry.viewport);
+            } else {
+              map_sp.setCenter(place_sp.geometry.location);
+              map_sp.setZoom(17);
+            }
+            marker_sp.setPosition(place_sp.geometry.location);
+            marker_sp.setVisible(true);
+            $("#lat-sp").val(place_sp.geometry.location.lat());
+            $("#lng-sp").val(place_sp.geometry.location.lng());
+          });
+
+          google.maps.event.addListener(marker_sp, 'dragend', function (evt) {
+            $("#lat-sp").val(evt.latLng.lat());
+            $("#lng-sp").val(evt.latLng.lng());
+          });
+        }else{
+          var autocomplete = new google.maps.places.Autocomplete((document.getElementById('txtAreaLocation')));
+
+          autocomplete.addListener('place_changed', function() {
+            google.maps.event.trigger(map, 'resize');
+            marker.setVisible(false);
+            var place = autocomplete.getPlace();
+
+            if (!place.geometry) {
+              window.alert("No details available for input: " + place.name);
+              return;
+            }
+
+            if (place.geometry.viewport) {
+              map.fitBounds(place.geometry.viewport);
+            } else {
+              map.setCenter(place.geometry.location);
+              map.setZoom(17);
+            }
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+
+            $("#lat").closest(".form-group").find(".help-block").hide()
+            $("#lat").closest(".form-group").removeClass("has-error")
+
+            $("#lng").closest(".form-group").find(".help-block").hide()
+            $("#lng").closest(".form-group").removeClass("has-error")
+
+            $("#lat").val(place.geometry.location.lat());
+            $("#lng").val(place.geometry.location.lng());
+          });
+
+          google.maps.event.addListener(marker, 'dragend', function (evt) {
+            $("#lat").val(evt.latLng.lat());
+            $("#lng").val(evt.latLng.lng());
+          });
+        }
+      }, 1000);
+      // if (myTimeout == 27) {
+      //   var autocomplete_sp = new google.maps.places.Autocomplete((document.getElementById('inputDetailLocationSP')));
+
+      //   autocomplete_sp.addListener('place_changed', function() {
+      //     google.maps.event.trigger(map_sp, 'resize');
+      //     marker_sp.setVisible(false);
+      //     var place_sp = autocomplete_sp.getPlace();
+
+      //     if (!place_sp.geometry) {
+      //       window.alert("No details available for input: " + place_sp.name);
+      //       return;
+      //     }
+
+      //     if (place_sp.geometry.viewport) {
+      //       map_sp.fitBounds(place_sp.geometry.viewport);
+      //     } else {
+      //       map_sp.setCenter(place_sp.geometry.location);
+      //       map_sp.setZoom(17);
+      //     }
+      //     marker_sp.setPosition(place_sp.geometry.location);
+      //     marker_sp.setVisible(true);
+      //     $("#lat-sp").val(place_sp.geometry.location.lat());
+      //     $("#lng-sp").val(place_sp.geometry.location.lng());
+      //   });
+
+      //   google.maps.event.addListener(marker_sp, 'dragend', function (evt) {
+      //     $("#lat-sp").val(evt.latLng.lat());
+      //     $("#lng-sp").val(evt.latLng.lng());
+      //   });
+      // }else{
+      //   var autocomplete = new google.maps.places.Autocomplete((document.getElementById('txtAreaLocation')));
+
+      //   autocomplete.addListener('place_changed', function() {
+      //     google.maps.event.trigger(map, 'resize');
+      //     marker.setVisible(false);
+      //     var place = autocomplete.getPlace();
+
+      //     if (!place.geometry) {
+      //       window.alert("No details available for input: " + place.name);
+      //       return;
+      //     }
+
+      //     if (place.geometry.viewport) {
+      //       map.fitBounds(place.geometry.viewport);
+      //     } else {
+      //       map.setCenter(place.geometry.location);
+      //       map.setZoom(17);
+      //     }
+      //     marker.setPosition(place.geometry.location);
+      //     marker.setVisible(true);
+
+      //     $("#lat").closest(".form-group").find(".help-block").hide()
+      //     $("#lat").closest(".form-group").removeClass("has-error")
+
+      //     $("#lng").closest(".form-group").find(".help-block").hide()
+      //     $("#lng").closest(".form-group").removeClass("has-error")
+
+      //     $("#lat").val(place.geometry.location.lat());
+      //     $("#lng").val(place.geometry.location.lng());
+      //   });
+
+      //   google.maps.event.addListener(marker, 'dragend', function (evt) {
+      //     $("#lat").val(evt.latLng.lat());
+      //     $("#lng").val(evt.latLng.lng());
+      //   });
+      // }
+    }
+
+    $("#lat-sp").keyup(function(){
+      if ($("#lng-sp").val() == '') {
+        initMap(parseFloat($("#lat-sp").val()),'')
+      }else{
+        initMap(parseFloat($("#lat-sp").val()),parseFloat($("#lng-sp").val()))
+      }
+    })
+
+    $("#lng-sp").keyup(function(){
+      if ($("#lat-sp").val() == '') {
+        initMap('',parseFloat($("#lng-sp").val()))
+      }else{
+        initMap(parseFloat($("#lat-sp").val()),parseFloat($("#lng-sp").val()))
+      }
+    })
+
+    $("#lat").keyup(function(){
+      if ($("#lng").val() == '') {
+        initMap(parseFloat($("#lat").val()),'')
+      }else{
+        initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+      }
+    })
+
+    $("#lng").keyup(function(){
+      if ($("#lat").val() == '') {
+        initMap('',parseFloat($("#lng").val()))
+      }else{
+        initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+      }
+    })
+
+    function btnAddServicePoint(){
+      initMap()
+      $("#modal-add-service-point").modal("show")
+    }
+
+    function btnAddCategory(){
+      $("#modal-add-category").modal("show")
+      $("#inputCatCode").val("")
+      $("#inputCatName").val("")
+    }
+
+    function saveServicePoint(){
+      Swal.fire({
+          title: 'Are you sure?',  
+          text: "Save Service Point",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          $.ajax({
+            type: "POST",
+            url:"{{url('/asset/storeServicePoint')}}",
+            data: {
+              _token:"{{csrf_token()}}",
+              servicePoint:$("#inputServicePoint").val(),
+              latitude:$("#lat-sp").val(),
+              longitude:$("#lng-sp").val(),
+              detailLokasi:$("#inputDetailLocationSP").val()
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              Swal.showLoading()
+              Swal.fire(
+                  'Successfully!',
+                  'Added Service Point.',
+                  'success'
+              ).then((result) => {
+                  if (result.value) {
+                    $("#modal-add-service-point").modal("hide")
+                  }
+              })
+            }
+          })          
+        }
+      })
+    }
+
+    function saveCategory(){
+      Swal.fire({
+          title: 'Are you sure?',  
+          text: "Save Category",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+      }).then((result) => {
+        $("#inputCatCode").next("span").hide()
+        $("#inputCatName").next("span").hide()
+        
+        if (result.value) {
+          $.ajax({
+            type: "POST",
+            url:"{{url('/asset/storeCategory')}}",
+            data: {
+              _token:"{{csrf_token()}}",
+              id_category:$("#inputCatCode").val(),
+              name:$("#inputCatName").val(),
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              Swal.showLoading()
+              Swal.fire(
+                  'Successfully!',
+                  'Added Category.',
+                  'success'
+              ).then((result) => {
+                  if (result.value) {
+                    $("#modal-add-category").modal("hide")
+                  }
+              })
+            },
+            error:function (xhr, ajaxOptions, thrownError) {
+              Swal.close()
+              $.each(xhr.responseJSON,function(idx,value){
+                $.each(value,function(idxs,values){
+                  $("#"+values.split(":")[0].replace(/{|"/g, '')).next("span").show()
+                  $("#"+values.split(":")[0].replace(/{|"/g, '')).next("span").text(values.split(":")[1].replace(/}|"/g, ''))
+                })
+              })
+              
+            }
+          })          
         }
       })
     }
