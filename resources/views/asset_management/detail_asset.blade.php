@@ -30,8 +30,8 @@
   <section class="content">
     <div class="box box-primary">
       <div class="box-body">
-        <fieldset id="fieldsetDivAssetDetail">
-          <div class="row divAsset" style="margin-bottom:50px;display:none;" >
+        <fieldset class="fieldsetDivAssetDetail">
+          <div class="row divAsset" style="margin-bottom:50px;display:none;">
             <div class="col-lg-4 col-xs-12">
               <div class="form-group">
                 <label>Asset Owner</label>
@@ -39,19 +39,14 @@
                 </select>
               </div>
 
-              <div class="row">
-                <div class="col-md-6 col-xs-12">
-                  <div class="form-group">
-                    <label>Category</label>
-                    <select id="selectCategory" name="selectCategory" class="form-control" readonly></select>
-                  </div>
-                </div>
-                <div class="col-md-6 col-xs-12">
-                  <div class="form-group">
-                    <label>Status</label>
-                    <select id="selectStatus" name="selectStatus" class="form-control"></select>
-                  </div>
-                </div>
+              <div class="form-group">
+                <label>Category</label>
+                <select id="selectCategory" name="selectCategory" class="form-control" readonly></select>
+              </div>
+
+              <div class="form-group">
+                <label>Status</label>
+                <select id="selectStatus" name="selectStatus" class="form-control"></select>
               </div>
 
               <div class="form-group">
@@ -59,47 +54,194 @@
                 <select id="selectVendor" name="selectVendor" class="form-control"><option></option></select>
               </div>
 
+              <div class="form-group">
+                <label>Type Device</label>
+                  <select id="selectTypeDevice" name="selectTypeDevice" class="form-control"><option></option></select>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-xs-12">
+              <div class="form-group">
+                <label>RMA</label>
+                <input id="inputRMA" name="inputRMA" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Serial Number</label>
+                <input id="inputSerialNumber" name="inputSerialNumber" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="">Tanggal Pembelian</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input id="inputTglBeli" name="inputTglBeli" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="">Harga</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <strong>RP</strong>
+                  </div>
+                  <input id="inputHarga" type="text" name="inputHarga" class="form-control money">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="">Nilai Buku</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <strong>RP</strong>
+                  </div>
+                  <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-xs-12">
+              <div class="form-group">
+                <label>Spesifikasi</label>
+                <textarea class="form-control" id="inputSpesifikasi" name="inputSpesifikasi"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Notes</label>
+                <textarea class="form-control" id="txtAreaNotes" name="txtAreaNotes"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Engineer Assigned</label>
+                <select class="form-control" fdprocessedid="qzhe4c" id="selectEngAssign" name="selectEngAssign"><option></option></select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row divPeripheral" style="margin-bottom:50px;display:none;">
+            <div class="col-lg-4 col-xs-12">
+              <!--   <div class="form-group">
+                <label>Category Peripheral</label>
+                <select id="selectCatPeripheral" name="selectCatPeripheral" class="form-control" disabled>
+                </select>
+              </div> -->
+
+              <div class="form-group">
+                <label>Asset Owner</label>
+                <select id="selectAssetOwnerPeripheral" name="selectAssetOwnerPeripheral" class="form-control">
+                  <option></option>
+                </select>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 col-xs-12">
+                  <div class="form-group">
+                    <label>Category</label>
+                    <select id="selectCategoryPeripheral" name="selectCategoryPeripheral" class="form-control" readonly>
+                      <option></option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xs-12">
+                  <div class="form-group">
+                    <label>Status</label>
+                    <select id="selectStatusPeripheral" name="selectStatusPeripheral" class="form-control">
+                      <option></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               <div class="row">
                 <div class="col-md-6 col-xs-12">
                   <div class="form-group">
                     <label>Type Device</label>
-                      <select id="selectTypeDevice" name="selectTypeDevice" class="form-control"><option></option></select>
+                    <select id="selectTypeDevicePeripheral" name="selectTypeDevicePeripheral" class="form-control"><option></option></select>
                   </div>
                 </div>
                 <div class="col-md-6 col-xs-12">
                   <div class="form-group">
                     <label>Serial Number</label>
-                    <input id="inputSerialNumber" name="inputSerialNumber" class="form-control">
+                    <input id="inputSerialNumberPeripheral" name="inputSerialNumberPeripheral" class="form-control">
                   </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label>Spesifikasi</label>
-                <input class="form-control" id="inputSpesifikasi" name="inputSpesifikasi">
-              </div>
-
-             <!--  <div class="form-group">
-                <label>Accessoris</label>
-                <input class="form-control" id="inputAccessoris" name="inputAccessoris">
-              </div> -->
-
-              <div class="form-group">
-                <label>RMA</label>
-                <input id="inputRMA" name="inputRMA" class="form-control">
-              </div>
-
-              <div class="form-group">
-                <label>Notes</label>
-                <textarea class="form-control" id="txtAreaNotes" name="txtAreaNotes"></textarea>
-              </div>
-
-              <div class="form-group">
-                <h3><strong>Engineer Assigned</strong></h3>
-                <select class="form-control" fdprocessedid="qzhe4c" id="selectEngAssign" name="selectEngAssign"><option></option></select>
+                <label>Vendor</label>
+                <select class="form-control" id="selectVendorPeripheral" name="selectVendorPeripheral"><option></option></select>
               </div>
             </div>
             <div class="col-lg-4 col-xs-12">
+              <div class="form-group">
+                <label>Spesifikasi</label>
+                <input class="form-control" id="inputSpesifikasiPeripheral" name="inputSpesifikasiPeripheral">
+              </div>
+              
+              <div class="form-group">
+                <label for="">Tanggal Pembelian</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input id="inputTglBeliPeripheral" name="inputTglBeliPeripheral" class="form-control">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="">Harga</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <strong>RP</strong>
+                  </div>
+                  <input id="inputHargaPeripheral" type="text" name="inputHargaPeripheral" class="form-control money">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="">Nilai Buku</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <strong>RP</strong>
+                  </div>
+                  <input id="inputNilaiBukuPeripheral" type="text" name="inputNilaiBukuPeripheral" class="form-control money">
+                </div>
+              </div>             
+            </div>
+            <div class="col-lg-4 col-xs-12">
+              <!-- <div class="form-group">
+                <label>Accessoris</label>
+                <input class="form-control" id="inputAccessoris" name="inputAccessoris">
+              </div> -->
+              <div class="form-group">
+                <label>RMA</label>
+                <input id="inputRMAPeripheral" name="inputRMAPeripheral" class="form-control">
+              </div>
+
+              <div class="form-group" style="padding-bottom: 20px">
+                <label>Notes</label>
+                <textarea class="form-control" id="txtAreaNotesPeripheral" name="txtAreaNotesPeripheral"></textarea>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- <div style="position: absolute;bottom: 0;left: 0;padding-left: 15px;padding-bottom: 20px;display: none;" class="divPeripheral" id="divBtnAssign"> -->
+        <div style="position: absolute;bottom: 0;left: 0;padding-left: 15px;padding-bottom: 20px;display: none;" id="divBtnAssign">
+          <button class="btn btn-sm btn-primary" style="width:90px;" onclick="AssignPeripheral()" id="btnAssignPeripheral">Assign</button>
+        </div>
+
+        <div style="position: absolute;bottom: 0;right: 0;padding-right: 15px;padding-bottom: 20px;display: none;" id="divBtnUpdate">
+          <button class="btn btn-sm btn-danger" style="width:90px;margin-right: 10px;" onclick="resetData()">Cancel</button>
+          <button class="btn btn-sm btn-warning" style="width:90px;" id="updateAsset">Update Asset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-primary" id="boxDetailAsset" style="display:none;">
+      <div class="box-header with-border">
+        <h3 class="box-title"><strong>Detail Asset</strong></h3>
+      </div>
+      <div class="box-body">
+        <fieldset class="fieldsetDivAssetDetail">
+          <div class="row divAsset" style="margin-bottom:50px;display:none;">
+            <div class="col-lg-6 col-xs-12">
               <div class="row">
                 <div class="col-md-6 col-xs-12">
                   <div class="form-group">
@@ -132,9 +274,46 @@
 
               <div class="form-group">
                 <label>Detail Location</label>
-                <textarea class="form-control" id="txtAreaLocation" name="txtAreaLocation"></textarea>
+                <input class="form-control" placeholder="Search Location..." type="text" id="txtAreaLocation" name="txtAreaLocation">
+                <span class="help-block" style="display:none;">Please fill Detail Location!</span>
+              </div>
+              
+              <div class="form-group">
+                <div id="map" style="height: 200px;width: 100%;margin:auto;display: block;background-color: #000;"></div>
+              </div>
+                
+              <div class="row">
+                <dir class="col-md-6">
+                  <div class="form-group">
+                    <label>Latitude</label>
+                    <input class="form-control" placeholder="" type="text" id="lat" name="lat">
+                  </div>
+                </dir>
+                <dir class="col-md-6">
+                  <div class="form-group">
+                    <label>Longitude</label>
+                    <input class="form-control" placeholder="" type="text" id="lng" name="lng">
+                  </div>
+                </dir>
               </div>
 
+              <div class="form-group">
+                <label>Service Point</label>
+                <select class="form-control" placeholder="" type="text" id="service_point" name="service_point"><option></option></select>
+              </div>
+
+              <div class="form-group">
+                <label>Distance</label>
+                <div class="input-group">
+                  <input class="form-control" placeholder="" type="text" id="distance" name="distance" readonly value="0">
+                  <div class="input-group-addon" style="background-color:#eee">
+                    <strong>KM</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6 col-xs-12">
               <div class="row">
                 <div class="col-md-4 col-xs-12">
                   <div class="form-group">
@@ -165,8 +344,7 @@
                 <label>2nd Level Support</label>
                 <select class="form-control" id="selectLevelSupport" name="selectLevelSupport"></select>
               </div>
-            </div>
-            <div class="col-lg-4 col-xs-12">
+
               <div class="row">
                 <div class="col-md-6 col-xs-12">
                   <div class="form-group">
@@ -185,7 +363,7 @@
               <div class="form-group">
                 <label>Installed Date</label>
                 <div class="input-group">
-                  <input class="form-control" id="inputInstalledDate" name="inputInstalledDate" onkeyup="fillInput('installed_date')">
+                  <input class="form-control" id="inputInstalledDate" name="inputInstalledDate">
                   <div class="input-group-addon">
                     <i class="fa fa-calendar"></i>
                   </div>
@@ -202,7 +380,7 @@
                   <div class="form-group">
                     <label for="">License Start*</label>
                     <div class="input-group">
-                      <input type="text" class="form-control" onkeyup="fillInput('license_start')" id="inputLicenseStart" name="inputLicenseStart">
+                      <input type="text" class="form-control" id="inputLicenseStart" name="inputLicenseStart">
                       <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </div>
@@ -215,7 +393,7 @@
                   <div class="form-group">
                     <label for="">License End*</label>
                     <div class="input-group">
-                      <input autocomplete="off" type="" class="form-control" id="inputLicenseEnd" name="inputLicenseEnd" onkeyup="fillInput('license_end')">
+                      <input autocomplete="off" type="" class="form-control" id="inputLicenseEnd" name="inputLicenseEnd">
                       <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </div>
@@ -230,7 +408,7 @@
                   <div class="form-group">
                     <label for="">Maintenance Start*</label>
                     <div class="input-group">
-                      <input type="text" class="form-control" onkeyup="fillInput('maintenance_start')" id="inputMaintenanceStart" name="inputMaintenanceStart">
+                      <input type="text" class="form-control" id="inputMaintenanceStart" name="inputMaintenanceStart">
                       <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </div>
@@ -243,7 +421,7 @@
                   <div class="form-group">
                     <label for="">Maintenance End*</label>
                     <div class="input-group">
-                      <input autocomplete="off" type="" class="form-control" id="inputMaintenanceEnd" name="inputMaintenanceEnd" onkeyup="fillInput('mainetnance_end')">
+                      <input autocomplete="off" type="" class="form-control" id="inputMaintenanceEnd" name="inputMaintenanceEnd">
                       <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </div>
@@ -257,7 +435,7 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="">SLA Uptime</label>
-                    <input type="text" class="form-control" onkeyup="fillInput('SLA')" id="inputSLAUptime" name="inputSLAUptime" readonly>
+                    <input type="text" class="form-control" id="inputSLAUptime" name="inputSLAUptime" readonly>
                     <span class="help-block" style="display:none;">Please fill License Start!</span>
                   </div>
                 </div>
@@ -265,152 +443,57 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="">Total Ticket*</label>
-                    <input autocomplete="off" type="" class="form-control" id="inputTotalTicket" name="inputTotalTicket" onkeyup="fillInput('total_ticket')" readonly>
+                    <input autocomplete="off" type="" class="form-control" id="inputTotalTicket" name="inputTotalTicket" readonly>
                     <span class="help-block" style="display:none;">Please fill Total Ticket!</span>
                   </div>
                 </div>
               </div>
-
     
-              <strong style="font-size: 20px;">Peripheral</strong>
-              <table class="table" id="tb_peripheral" style="border-collapse: collapse;">
-                <!-- <tr>
-                  <td style="border-top: none;padding-left: 0px;width: 100%;">
-                    <div class="form-group">
-                      <label>(Peripheral Name)</label>
-                      <input class="form-control" id="inputSerialNumber" name="inputSerialNumber">
-                    </div>
-                  </td>
-                  <td style="border-top: none;">
-                    <button class="btn btn-sm btn-danger" style="width: 35px;height: 33px;margin-top: 25px;float: right;"><i class="fa fa-trash"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="border-top: none;padding-left: 0px;width: 100%;">
-                    <div class="form-group">
-                      <label>(Peripheral Name)</label>
-                      <input class="form-control" id="inputSerialNumber" name="inputSerialNumber">
-                    </div>
-                  </td>
-                  <td style="border-top: none;">
-                    <button class="btn btn-sm btn-danger" style="width: 35px;height: 33px;margin-top: 25px;float: right;"><i class="fa fa-trash"></i></button>
-                  </td>
-                </tr> -->
+              <strong style="font-size: 20px;">Related Asset</strong>
+              <table class="table" id="tablePeripheral" style="border-collapse: collapse;">
               </table>
-            </div>
-          </div>
-
-          <div class="row divPeripheral" style="margin-bottom:50px;display:none;" >
-            <div class="col-lg-4 col-xs-12">
-              <div class="form-group">
-                <label>Category Peripheral</label>
-                <select id="selectCatPeripheral" name="selectCatPeripheral" class="form-control" disabled>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>Asset Owner</label>
-                <select id="selectAssetOwnerPeripheral" name="selectAssetOwnerPeripheral" class="form-control">
-                  <option></option>
-                </select>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6 col-xs-12">
-                  <div class="form-group">
-                    <label>Category</label>
-                    <select id="selectCategoryPeripheral" name="selectCategoryPeripheral" class="form-control" readonly>
-                      <option></option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-6 col-xs-12">
-                  <div class="form-group">
-                    <label>Status</label>
-                    <select id="selectStatusPeripheral" name="selectStatusPeripheral" class="form-control">
-                      <option></option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4 col-xs-12">
-              <div class="form-group">
-                <label>Vendor</label>
-                <select class="form-control" id="selectVendorPeripheral" name="selectVendorPeripheral"><option></option></select>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6 col-xs-12">
-                  <div class="form-group">
-                    <label>Type Device</label>
-                    <select id="selectTypeDevicePeripheral" name="selectTypeDevicePeripheral" class="form-control"><option></option></select>
-                  </div>
-                </div>
-                <div class="col-md-6 col-xs-12">
-                  <div class="form-group">
-                    <label>Serial Number</label>
-                    <input id="inputSerialNumberPeripheral" name="inputSerialNumberPeripheral" class="form-control">
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label>Spesifikasi</label>
-                <input class="form-control" id="inputSpesifikasiPeripheral" name="inputSpesifikasiPeripheral">
-              </div>
-            </div>
-            <div class="col-lg-4 col-xs-12">
-              <!-- <div class="form-group">
-                <label>Accessoris</label>
-                <input class="form-control" id="inputAccessoris" name="inputAccessoris">
-              </div> -->
-
-              <div class="form-group">
-                <label>RMA</label>
-                <input id="inputRMAPeripheral" name="inputRMAPeripheral" class="form-control">
-              </div>
-
-              <div class="form-group" style="padding-bottom: 20px">
-                <label>Notes</label>
-                <textarea class="form-control" id="txtAreaNotesPeripheral" name="txtAreaNotesPeripheral"></textarea>
-              </div>
             </div>
           </div>
         </fieldset>
 
-        <div style="position: absolute;bottom: 0;left: 0;padding-left: 15px;padding-bottom: 20px;display: none;" class="divPeripheral" id="divBtnAssign">
-          <button class="btn btn-sm btn-primary" style="width:90px;" onclick="AssignPeripheral()" id="btnAssignPeripheral">Assign</button>
-        </div>
-
-        <div style="position: absolute;bottom: 0;right: 0;padding-right: 15px;padding-bottom: 20px;display: none;" id="divBtnUpdate">
+        <div style="position: absolute;bottom: 0;right: 0;padding-right: 15px;padding-bottom: 20px;display: none;" id="divBtnUpdateDetail">
           <button class="btn btn-sm btn-danger" style="width:90px;margin-right: 10px;" onclick="resetData()">Cancel</button>
-          <button class="btn btn-sm btn-warning" style="width:90px;" id="updateAsset">Update Asset</button>
+          <button class="btn btn-sm btn-warning" style="width:90px;" id="updateAssetDetail">Update Detail</button>
         </div>
       </div>
     </div>
 
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Change Log</h3>
+        <h3 class="box-title"><strong>History Project ID</strong></h3>
       </div>
       <div class="box-body">
         <div class="table-responsive">
-          <table class="table" id="tb_logAsset" style="width: 100%">
-            <thead>
-              <th>Location</th>
-              <th>Customer</th>
-              <th>PID</th>
-              <th>Period</th>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Jakarta</td>
-                <td>BPJS</td>
-                <td>BPJS/VII/2024</td>
-                <td>II</td>
-              </tr>
-            </tbody>
+          <table class="table" id="tableHistoryPid" style="width: 100%">
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-primary">
+      <div class="box-header">
+        <h3 class="box-title"><strong>Change Log</strong></h3>
+      </div>
+      <div class="box-body">
+        <div class="table-responsive">
+          <table class="table" id="tableChangeLog" style="width: 100%">
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-primary" style="display:none;">
+      <div class="box-header">
+        <h3 class="box-title"><strong>Ticket History</strong></h3>
+      </div>
+      <div class="box-body">
+        <div class="table-responsive">
+          <table class="table" id="tableTicketHistory" style="width: 100%">
           </table>
         </div>
       </div>
@@ -418,7 +501,7 @@
   </section>
 
   <div class="modal fade" id="modalAssignPeripheral" role="dialog">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-md">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -447,26 +530,24 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 @endsection
 @section('script')
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY_GLOBAL')}}&libraries=places&callback=initMap"></script>
   <script type="text/javascript">
     $("select").select2()
-    
-    var accesable = @json($feature_item);
-    accesable.forEach(function(item,index){
-      $("#" + item).show()
-    })
 
-    if (!accesable.includes('divBtnUpdate')) {
-      $("select").prop('disabled', true)
-      $("#fieldsetDivAssetDetail").prop('disabled',true)
+    function initMoney(){
+      $('.money').mask('000.000.000.000', {reverse: true});
     }
+    initMoney()
 
-    InitiateLogAsset()
-    function InitiateLogAsset(){
-      if(!$.fn.DataTable.isDataTable('#tb_logAsset')){
-        $("#tb_logAsset").DataTable({
+    function InitiateHistoryPid(type){
+      var table = ''
+      if(!$.fn.DataTable.isDataTable('#tableHistoryPid')){
+        table = $("#tableHistoryPid").DataTable({
           "aaSorting": [],
           "ajax":{
             "type":"GET",
@@ -501,19 +582,141 @@
                return row.periode
               }
             },
+            {
+              title:"Operator",
+              render: function (data, type, row, meta){
+               return row.operator
+              }
+            },
+            {
+              title:"Related Id Asset",
+              render: function (data, type, row, meta){
+               return row.related_id_asset
+              }
+            },
           ],
         })
       }else{
-        $('#tb_logAsset').DataTable().ajax.url("{{url('asset/getLogById')}}").load()
+        table = $('#tableHistoryPid').DataTable().ajax.url("{{url('asset/getLogById')}}?id_asset="+window.location.href.split("=")[1]).load()
+      } 
+
+      // if (type == 'asset') {
+      //   var column1 = table.column(5);
+      //   column1.visible(!column1.visible());
+      // }
+    }
+
+    function InitiateHistoryTicket(){
+      if(!$.fn.DataTable.isDataTable('#tableTicketHistory')){
+        $("#tableTicketHistory").DataTable({
+          "aaSorting": [],
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('asset/getTicketId')}}",
+            "data":{
+              id_asset:window.location.href.split("=")[1]
+            }
+          },
+          "columns": [
+            { 
+              title:"ID Ticket",
+              render: function (data, type, row, meta){
+                return row.id_ticket
+              },
+            },
+            {
+              title:"Problem",
+              render: function (data, type, row, meta){
+               return row.concatenate_problem_ticket
+              }
+            },
+            {
+              title:"PIC",
+              render: function (data, type, row, meta){
+               return row.pic
+              }
+            },
+            {
+              title:"Type Ticket",
+              render: function (data, type, row, meta){
+               return row.concatenate_type_ticket
+              }
+            },
+            {
+              title:"Open Ticket",
+              render: function (data, type, row, meta){
+               return row.first_activity_ticket.date
+              }
+            },
+            {
+              title:"Close Ticket",
+              render: function (data, type, row, meta){
+               return row.lastest_activity_ticket.date
+              }
+            },
+          ],
+        })
+      }else{
+        $('#tableTicketHistory').DataTable().ajax.url("{{url('asset/getTicketId')}}?id_asset="+window.location.href.split("=")[1]).load()
+      } 
+    }
+
+    function InitiateChangeLog(){
+      if(!$.fn.DataTable.isDataTable('#tableChangeLog')){
+        $("#tableChangeLog").DataTable({
+          "aaSorting": [],
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('asset/getChangeLog')}}",
+            "data":{
+              id_asset:window.location.href.split("=")[1]
+            }
+          },
+          "columns": [
+            {
+              title:"Operator",
+              render: function (data, type, row, meta){
+               return row.operator
+              }
+            },
+            {
+              title:"Activity",
+              render: function (data, type, row, meta){
+               return row.activity
+              }
+            },
+            {
+              title:"Date Time",
+              render: function (data, type, row, meta){
+               return row.date_add
+              }
+            },
+          ],
+        })
+      }else{
+        $('#tableChangeLog').DataTable().ajax.url("{{url('asset/getChangeLog')}}?id_asset="+window.location.href.split("=")[1]).load()
       } 
     }
     
     function AssignPeripheral(){
       $("#modalAssignPeripheral").modal("show")
+
+      // $.ajax({
+      //   url:"{{url('/asset/getAssetToAssign')}}",
+      //   type:"GET",
+      //   success:function(results){
+      //     console.log(results)
+      //     $("#selectAssign").select2({
+      //       data:results,
+      //       placeholder:"Select ID Assign to Assign",
+      //       dropdownParent:$("#modalAssignPeripheral")
+      //     })
+      //   }
+      // })  
     }
 
     function showPeripheral(id_asset){
-      $("#tb_peripheral").empty("")
+      $("#tablePeripheral").empty("")
 
       $.ajax({
         type:"GET",
@@ -523,13 +726,12 @@
         },
         success:function(result){
           var append = ""
-
           if (result.length > 0) {
             $.each(result,function(item,data){
               append = append +'<tr>'
                 append = append +'<td style="border-top: none;padding-left: 0px;width: 90%;">'
                   append = append +'<div class="form-group">'
-                    append = append +'<label>'+ data.category_peripheral +'</label>'
+                    append = append +'<label>'+ data.id_asset +'</label>'
                     let text = data.text
                     if (data.text == null) {
                       text = "-"
@@ -538,22 +740,20 @@
                   append = append +'</div>'
                 append = append +'</td>'
                 append = append +'<td style="border-top: none;">'
-                  append = append +'<button class="btn btn-sm btn-danger" style="width: 35px;height: 33px;margin-top: 10px;float: right;" onclick="deletePeripheral(' + "'" + data.id_asset + "'" +')"><i class="fa fa-trash"></i></button>'
+                  append = append +'<button class="btn btn-sm btn-danger" style="width: 35px;height: 33px;margin-top: 10px;float: right;" onclick="deletePeripheral(' + "'" + data.id + "'" +')"><i class="fa fa-trash"></i></button>'
                 append = append +'</td>'
               append = append +'</tr>'
             })
 
-            $("#tb_peripheral").append(append)
-            $("#tb_peripheral").prev('strong').show()
+            $("#tablePeripheral").append(append)
+            $("#tablePeripheral").prev('strong').show()
           }else{
-            $("#tb_peripheral").prev('strong').hide()
+            $("#tablePeripheral").prev('strong').hide()
           }
-          
         }
       })
     }
     
-
     //select2 btn assign id to assign
     $("#selectAssign").select2({
       ajax: {
@@ -581,7 +781,7 @@
       }).then((result) => {
         if (result.value) {
           InitiateDetailPage()
-          InitiateLogAsset()
+          InitiateHistoryPid()
         }
       })
     }
@@ -621,12 +821,11 @@
             success: function(result){
               Swal.fire({
                 title: 'Delete Peripheral Asset Successsfully!',
-                type: 'success',
                 icon: 'success',
                 confirmButtonText: 'Reload',
               }).then((result) => {
                 InitiateDetailPage()
-                InitiateLogAsset()
+                InitiateHistoryPid()
               })
             }
           })
@@ -643,13 +842,34 @@
           id_asset:window.location.href.split("=")[1]
         },
         success:function(result){
+          var accesable = @json($feature_item);
+          accesable.forEach(function(item,index){
+            $("#" + item).show()
+          })
+
+          if (!accesable.includes('divBtnUpdate')) {
+            $("select").prop('disabled', true)
+            $(".fieldsetDivAssetDetail").prop('disabled',true)
+          }
+
+          InitiateChangeLog()
           $("#titleDetailIdAsset").text(result.id_asset)
-          if (result.type == 'asset') {
-            $("#inputSLAUptime").val(result.slaUptime)
+
+          if(result.status == "Available"){
+            $("#btnAssignPeripheral").show()
+          }else if(result.status == "Installed"){
+            $("#btnAssignPeripheral").hide()
+          }
+
+          $("#inputSLAUptime").val(result.slaUptime)
             $("#inputTotalTicket").val(result.countTicket)
             $(".divAsset").show()
             $(".divPeripheral").hide()
-            showPeripheral(result.id_asset)
+            showPeripheral(result.id)
+            $("#tableTicketHistory").closest(".box-primary").show()
+            InitiateHistoryTicket()
+            InitiateHistoryPid('asset')
+            $("#boxDetailAsset").show()
 
             if ($("#selectCity").find('option').length == 0) {
               $.ajax({
@@ -671,9 +891,43 @@
                 }
               });
             }
+
+            $("#service_point").select2({
+              ajax: {
+                url: '{{url("asset/getServicePoint")}}',
+                processResults: function (data) {
+                  // Transforms the top-level key of the response object from 'items' to 'results'
+                  return {
+                    results: data
+                  };
+                },
+              },
+              placeholder:"Select Service Point",
+            })
+
+            // Fetch the preselected item, and add to the control
+            if (result.service_point != null) {
+              var service_point = $("#service_point");
+              var option = new Option(result.service_point, result.service_point, true, true);
+              service_point.append(option).trigger('change');
+            }
+
+            if (result.distance != null) {
+              $("#distance").val(Math.round(result.distance))
+            }else{
+              $("#distance").val(0)
+            }
             
             $("#updateAsset").click(function(){
-              $("#updateAsset").attr("onclick",UpdateAsset(result.id_asset,"asset"))
+              $("#updateAsset").attr("onclick",UpdateAsset(result.id,"asset"))
+            })
+
+            $("#saveAssignPeripheral").click(function(){
+              $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id))
+            })
+
+            $("#updateAssetDetail").click(function(){
+              $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
             })
 
             $("#selectEngAssign").select2({
@@ -694,47 +948,179 @@
               var engAssignSelect = $("#selectEngAssign");
               var option = new Option(result.engineer_atm, result.engineer_atm, true, true);
               engAssignSelect.append(option).trigger('change');
-            }            
-          }else if (result.type == 'peripheral') {
-            $(".divAsset").hide()
-            $(".divPeripheral").show()
-            $("#saveAssignPeripheral").click(function(){
-              $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id_asset))
-            })
+            }
 
-            $("#updateAsset").click(function(){
-              $("#updateAsset").attr("onclick",UpdateAsset(result.id_asset,"peripheral"))
-            })
-          }
-          
-          if(result.status == "Available"){
-            $(".divPeripheral").find("#btnAssignPeripheral").show()
-          }else if(result.status == "Installed"){
-            $(".divPeripheral").find("#btnAssignPeripheral").hide()
-          }
+            current_date = moment().format('YYYY-MM-DD')
+            if (result.maintenance_end >= current_date) {
+              $("#selectPID").prop("disabled",true)
+            }else{
+              $("#selectPID").prop("disabled",false)
+            }   
+
+          // if (result.type == 'asset') {
+          //   $("#inputSLAUptime").val(result.slaUptime)
+          //   $("#inputTotalTicket").val(result.countTicket)
+          //   $(".divAsset").show()
+          //   $(".divPeripheral").hide()
+          //   showPeripheral(result.id)
+          //   $("#tableTicketHistory").closest(".box-primary").show()
+          //   InitiateHistoryTicket()
+          //   InitiateHistoryPid('asset')
+          //   $("#boxDetailAsset").show()
+
+          //   if ($("#selectCity").find('option').length == 0) {
+          //     $.ajax({
+          //       url: '{{url("asset/getProvince")}}',
+          //       type: 'GET',
+          //       beforeSend: function() {
+          //         // Show loading indicator before AJAX request starts
+          //         $("#select2-selectCity-container").html("loading...")
+          //       },
+          //       success: function(response) {
+          //         $("#selectCity").select2({
+          //           placeholder:"Select City",
+          //           data:response
+          //         }).val(result.kota).trigger("change")
+          //       },
+          //       error: function(xhr, status, error) {
+          //           // Handle errors
+          //           console.error(status, error);
+          //       }
+          //     });
+          //   }
+
+          //   $("#service_point").select2({
+          //     ajax: {
+          //       url: '{{url("asset/getServicePoint")}}',
+          //       processResults: function (data) {
+          //         // Transforms the top-level key of the response object from 'items' to 'results'
+          //         return {
+          //           results: data
+          //         };
+          //       },
+          //     },
+          //     placeholder:"Select Service Point",
+          //   })
+
+          //   // Fetch the preselected item, and add to the control
+          //   if (result.service_point != null) {
+          //     var service_point = $("#service_point");
+          //     var option = new Option(result.service_point, result.service_point, true, true);
+          //     service_point.append(option).trigger('change');
+          //   }
+
+          //   $("#distance").val(Math.round(result.distance))
+            
+          //   $("#updateAsset").click(function(){
+          //     $("#updateAsset").attr("onclick",UpdateAsset(result.id,"asset"))
+          //   })
+
+          //   $("#saveAssignPeripheral").click(function(){
+          //     $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id))
+          //   })
+
+          //   $("#updateAssetDetail").click(function(){
+          //     $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
+          //   })
+
+          //   $("#selectEngAssign").select2({
+          //     ajax: {
+          //       url: '{{url("asset/getEngineer")}}',
+          //       processResults: function (data) {
+          //         // Transforms the top-level key of the response object from 'items' to 'results'
+          //         return {
+          //           results: data
+          //         };
+          //       },
+          //     },
+          //     placeholder:"Select Engineer",
+          //   })
+
+          //   // Fetch the preselected item, and add to the control
+          //   if (result.engineer_atm != null) {
+          //     var engAssignSelect = $("#selectEngAssign");
+          //     var option = new Option(result.engineer_atm, result.engineer_atm, true, true);
+          //     engAssignSelect.append(option).trigger('change');
+          //   }
+
+          //   current_date = moment().format('YYYY-MM-DD')
+          //   if (result.maintenance_end >= current_date) {
+          //     $("#selectPID").prop("disabled",true)
+          //   }else{
+          //     $("#selectPID").prop("disabled",false)
+          //   }            
+          // }else if (result.type == 'peripheral') {
+          //   $(".divAsset").hide()
+          //   $(".divPeripheral").show()
+          //   InitiateHistoryPid('peripheral')
+
+          //   $("#saveAssignPeripheral").click(function(){
+          //     $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id))
+          //   })
+
+          //   $("#updateAsset").click(function(){
+          //     $("#updateAsset").attr("onclick",UpdateAsset(result.id,"peripheral"))
+          //   })
+          // }
 
           $(".divBtnUpdate").show()
-          //select2 detail asset
+
           $("select[name='selectAssetOwner'],select[name='selectAssetOwnerPeripheral']").select2({
-            placeholder:"Select Asset Owner",
-            data:[
-              {id:"SIP",text:"SIP"},
-              {id:"Distributor",text:"Distributor"},
-              {id:"Principal",text:"Principal"},
-            ]
-          }).val(result.asset_owner).trigger("change")
+            ajax : {
+              url: '{{url("asset/getAssetOwner")}}',
+              processResults: function (data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                  results: data
+                };
+              },
+            },
+            placeholder:"Select Asset Owner"
+          })
 
-          $("select[name='selectCategory'],select[name='selectCategoryPeripheral']").select2({
+          if (result.asset_owner != null) {
+            var vendorSelect = $("#selectAssetOwner,#selectAssetOwnerPeripheral");
+            var option = new Option(result.asset_owner, result.asset_owner, true, true);
+            vendorSelect.append(option).trigger('change');
+          }
+
+          $("#selectCategory").select2({
+            ajax:{
+              url: '{{url("asset/getCategory")}}',
+              processResults: function (data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                  results: data
+                };
+              },
+            },
             placeholder:"Select Category",
-            data:[
-              {id:"ATM",text:"ATM"},
-              {id:"Network",text:"Network"},
-              {id:"CRM",text:"CRM"},
-              {id:"Security",text:"Security"},
-            ]
-          }).val(result.category).trigger("change").attr("disabled",true)
+          })
 
-          $("select[name='selectStatus'],select[name='selectStatusPeripheral']").select2({
+          // Fetch the preselected item, and add to the control
+          if (result.category_code != null) {
+            var categorySelect = $("#selectCategory");
+            var option = new Option(result.category_text, result.category_code, true, true);
+            categorySelect.append(option).trigger('change');
+
+            if (result.category_code == "CRM" || result.category_code == "ATM") {
+              $("#selectEngAssign").closest(".form-group").show() 
+            }else{
+              $("#selectEngAssign").closest(".form-group").hide() 
+            }
+          }
+
+          $("select[name='selectStatus']").select2({
+            placeholder:"Select Status",
+            data:[
+              {id:"Installed",text:"Installed"},
+              {id:"Available",text:"Available"},
+              {id:"RMA",text:"RMA"},
+              {id:"Temporary",text:"Temporary"},
+            ]
+          }).val(result.status).trigger("change")
+
+          $("select[name='selectStatusPeripheral']").select2({
             placeholder:"Select Status",
             data:[
               {id:"Installed",text:"Installed",disabled: true},
@@ -792,9 +1178,11 @@
           })
 
           // Fetch the preselected item, and add to the control
-          var vendorSelect = $("#selectVendor,#selectVendorPeripheral");
-          var option = new Option(result.vendor, result.vendor, true, true);
-          vendorSelect.append(option).trigger('change');
+          if (result.vendor != null) {
+            var vendorSelect = $("#selectVendor,#selectVendorPeripheral");
+            var option = new Option(result.vendor, result.vendor, true, true);
+            vendorSelect.append(option).trigger('change');
+          }
 
           $("#selectCatPeripheral").select2({
             ajax: {
@@ -818,7 +1206,6 @@
             ajax: {
               url: '{{url("asset/getTypeDevice")}}',
               processResults: function (data) {
-                console.log(data)
                 // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
                   results: data
@@ -829,9 +1216,11 @@
             tags:true
           })
 
-          var typeDeviceSelect = $("#selectTypeDevice,#selectTypeDevicePeripheral");
-          var optionTypeDevice = new Option(result.type_device, result.type_device, true, true);
-          typeDeviceSelect.append(optionTypeDevice).trigger('change');
+          if (result.type_device != null) {
+            var typeDeviceSelect = $("#selectTypeDevice,#selectTypeDevicePeripheral");
+            var optionTypeDevice = new Option(result.type_device, result.type_device, true, true);
+            typeDeviceSelect.append(optionTypeDevice).trigger('change');
+          }
 
           $("#selectLevelSupport").select2({
             ajax: {
@@ -847,10 +1236,12 @@
             tags:true
           })
 
-          var levelSupportSelect = $("#selectLevelSupport");
-          var optionLevelSupport = new Option(result.second_level_support, result.second_level_support, true, true);
-          levelSupportSelect.append(optionLevelSupport).trigger('change');
-
+          if (result.second_level_support != null) {
+            var levelSupportSelect = $("#selectLevelSupport");
+            var optionLevelSupport = new Option(result.second_level_support, result.second_level_support, true, true);
+            levelSupportSelect.append(optionLevelSupport).trigger('change');
+          }
+          
           $("#inputClient").val(result.client).prop("disabled",true)
           $("input[name='inputSerialNumber']").val(result.serial_number)
           $("input[name='inputSpesifikasi']").val(result.spesifikasi)
@@ -865,11 +1256,24 @@
           $("input[name='inputIdDeviceCustomer']").val(result.id_device_customer)
           $("#txtAreaAddress").val(result.alamat_lokasi)
           $("#txtAreaLocation").val(result.detail_lokasi)
+          setLatLngLoc(result.detail_lokasi)
           $("#inputIPAddress").val(result.ip_address)
           $("#inputServer").val(result.server)
           $("#inputPort").val(result.port)
           $("#inputOS").val(result.operating_system)
           $("#inputVersion").val(result.version_os)
+          initMoney()
+          $("input[name='inputHarga'],input[name='inputHargaPeripheral']").val(result.harga_beli)
+          $("input[name='inputHarga'],input[name='inputHargaPeripheral']").unmask().mask('000.000.000.000', {reverse: true})
+          $("input[name='inputNilaiBuku'],input[name='inputNilaiBukuPeripheral']").val(result.nilai_buku)
+          $("input[name='inputNilaiBuku'],input[name='inputNilaiBukuPeripheral']").unmask().mask('000.000.000.000', {reverse: true})
+          $("input[name='inputTglBeli'],input[name='inputTglBeliPeripheral']").datepicker({
+            placeholder:"yyyy-mm-dd",
+            autoclose: true,
+            format: 'yyyy-mm-dd',
+          })
+          $('#inputTglBeli,#inputTglBeliPeripheral').datepicker("setDate",result.tanggal_pembelian)
+
           $('#inputInstalledDate').datepicker({
             placeholder:"yyyy-mm-dd",
             autoclose: true,
@@ -912,7 +1316,8 @@
     function SaveAssignPeripheral(id_asset){
       Swal.fire({
         title: 'Are you sure?',
-        text: "Assign this Peripheral!",
+        // text: "Assign this Peripheral!",
+        text: "Assign this asset!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -945,13 +1350,13 @@
             success: function(result){
               Swal.fire({
                 title: 'Assign Successsfully!',
-                type: 'success',
                 icon: 'success',
                 confirmButtonText: 'Reload',
               }).then((result) => {
                 $("#modalAssignPeripheral").modal("hide")
                 InitiateDetailPage()
-                InitiateLogAsset()
+                InitiateHistoryPid()
+                InitiateChangeLog()
               })
             }
           })          
@@ -960,7 +1365,7 @@
     }
 
     function UpdateAsset(id_asset,type){
-      let rma = "", notes = "", assetOwner = "", vendor = "", typeDevice = "", serialNumber = "", spesifikasi = ""
+      let rma = "", notes = "", assetOwner = "", vendor = "", typeDevice = "", serialNumber = "", spesifikasi = "", tanggalBeli = "", hargaBeli = "", nilaiBuku = ""
       if (type == "peripheral") {
         rma = $("input[name='inputRMAPeripheral']").val()
         notes = $("textarea[name='txtAreaNotesPeripheral']").val()
@@ -970,6 +1375,11 @@
         serialNumber = $("input[name='inputSerialNumberPeripheral']").val()
         spesifikasi = $("input[name='inputSpesifikasiPeripheral']").val()
         status = $("select[name='selectStatusPeripheral']").val()
+        tanggalBeli = $("input[name='inputTglBeliPeripheral']").val()
+        hargaBeli = $("input[name='inputHargaPeripheral']").val()
+        nilaiBuku = $("input[name='inputNilaiBukuPeripheral']").val()
+
+        url = "{{url('asset/updateAsset')}}"
       }else{
         rma = $("input[name='inputRMA']").val()
         notes = $("textarea[name='txtAreaNotes']").val()
@@ -979,18 +1389,98 @@
         serialNumber = $("input[name='inputSerialNumber']").val()
         spesifikasi = $("input[name='inputSpesifikasi']").val()
         status = $("select[name='selectStatus']").val()
+        tanggalBeli = $("input[name='inputTglBeli']").val()
+        hargaBeli = $("input[name='inputHarga']").val()
+        nilaiBuku = $("input[name='inputNilaiBuku']").val()
+
+        var data = '', url = '', alert = '', alertSuccess = ''
+        if (type == 'asset') {
+          url = "{{url('asset/updateAsset')}}"
+
+          data = {
+            _token:"{{csrf_token()}}",
+            id_asset:id_asset,
+            status:status,
+            vendor:vendor,
+            typeDevice:typeDevice,
+            serialNumber:serialNumber,
+            spesifikasi:spesifikasi,
+            rma:rma,
+            notes:notes,
+            engineer:$("#selectEngAssign").val(),
+            assetOwner:assetOwner,
+            tanggalBeli:tanggalBeli,
+            hargaBeli:hargaBeli,
+            nilaiBuku:nilaiBuku,
+          }
+
+          alert = {
+            title: 'Are you sure?',
+            text: "Update Asset",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          }
+
+          alertSuccess = {
+            title: 'Update Asset Successsfully!',
+            icon: 'success',  
+            confirmButtonText: 'Reload',
+          }
+
+        }else if (type == 'detail') {
+          url = "{{url('asset/updateDetailAsset')}}"
+
+          data = {
+            _token:"{{csrf_token()}}",
+            id_asset:id_asset,
+            idDeviceCustomer:$("#inputIdDeviceCustomer").val(),
+            client:$("#inputClient").val(),
+            pid:$("#selectPID").val(),
+            kota:$("#selectCity").val(),
+            alamatLokasi:$("#txtAreaAddress").val(),
+            detailLokasi:$("#txtAreaLocation").val(),
+            latitude:$("#lat").val(),
+            longitude:$("#lng").val(),
+            ipAddress:$("#inputIPAddress").val(),
+            ipServer:$("#inputServer").val(),
+            port:$("#inputPort").val(),
+            statusCust:$("#selectStatusCustomer").val(),
+            secondLevelSupport:$("#selectLevelSupport").val(),
+            operatingSystem:$("#inputOS").val(),
+            versionOs:$("#inputVersion").val(),
+            installedDate:$("#inputInstalledDate").val(),
+            license:$("#inputLicense").val(),
+            licenseStartDate:$("#inputLicenseStart").val(),
+            licenseEndDate:$("#inputLicenseEnd").val(),
+            maintenanceStart:$("#inputMaintenanceStart").val(),
+            maintenanceEnd:$("#inputMaintenanceEnd").val(),
+            servicePoint:$("#service_point").val()
+          }
+
+          alert = {
+            title: 'Are you sure?',
+            text: "Update Detail Asset",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          }
+
+          alertSuccess = {
+            title: 'Update Detail Asset Successsfully!',
+            icon: 'success',  
+            confirmButtonText: 'Reload',
+          }
+        }
       }
 
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "Update Asset",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
+      Swal.fire(alert).then((result) => {
         if (result.value) {
           Swal.fire({
               title: 'Please Wait..!',
@@ -1007,56 +1497,155 @@
           })
           $.ajax({
             type:"POST",
-            url:"{{url('asset/updateAsset')}}",
-            data:{
-              _token:"{{csrf_token()}}",
-              id_asset:id_asset,
-              idDeviceCustomer:$("#inputIdDeviceCustomer").val(),
-              client:$("#inputClient").val(),
-              pid:$("#selectPID").val(),
-              kota:$("#selectCity").val(),
-              alamatLokasi:$("#txtAreaAddress").val(),
-              detailLokasi:$("#txtAreaLocation").val(),
-              ipAddress:$("#inputIPAddress").val(),
-              ipServer:$("#inputServer").val(),
-              port:$("#inputPort").val(),
-              statusCust:$("#selectStatusCustomer").val(),
-              secondLevelSupport:$("#selectLevelSupport").val(),
-              operatingSystem:$("#inputOS").val(),
-              versionOs:$("#inputVersion").val(),
-              installedDate:$("#inputInstalledDate").val(),
-              license:$("#inputLicense").val(),
-              licenseStartDate:$("#inputLicenseStart").val(),
-              licenseEndDate:$("#inputLicenseEnd").val(),
-              maintenanceStart:$("#inputMaintenanceStart").val(),
-              maintenanceEnd:$("#inputMaintenanceEnd").val(),
-              status:status,
-              vendor:vendor,
-              typeDevice:typeDevice,
-              serialNumber:serialNumber,
-              spesifikasi:spesifikasi,
-              rma:rma,
-              notes:notes,
-              categoryPeripheral:$("#selectPeripheral").val(),
-              typeAsset:$("#selectAsset").val(),
-              assetOwner:assetOwner,
-              assignTo:$("#selectAssigntoPeripheral").val(),
-              engineer:$("#selectEngAssign").val()
-            },
+            url:url,
+            data:data,
             success: function(result){
-              Swal.fire({
-                title: 'Update Asset Successsfully!',
-                type: 'success',
-                icon: 'success',  
-                confirmButtonText: 'Reload',
-              }).then((result) => {
+              Swal.fire(alertSuccess).then((result) => {
                 InitiateDetailPage()
-                InitiateLogAsset()
+                InitiateHistoryPid()
+                InitiateChangeLog()
               })
             }
           })
         }
       })
+    }
+
+    var map, marker, autocomplete;
+    var lat = '',lang = ''
+    function initMap(lat='',lang='',inputLat=false,inputLang=false){
+      if (lat == '') {
+        lat = -6.2297419
+        inputLat = false
+      }else{
+        lat = lat
+        inputLat = true
+      }
+
+      if (lang == '') {
+        lang = 106.759478
+        inputLang = false
+      }else{
+        lang = lang
+        inputLang = true
+      }
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: lat, lng: lang},
+        zoom: 10,
+        // zoomControl: false,
+        mapTypeControl: false,
+        scaleControl: false,
+        streetViewControl: false,
+        rotateControl: false,
+        fullscreenControl: false
+      });
+
+      map.addListener('click', function(result) {
+        marker.setVisible(false);
+        marker.setPosition(result.latLng);
+        marker.setVisible(true);
+        $("#lat").val(result.latLng.lat());
+        $("#lng").val(result.latLng.lng());
+      });
+
+      marker = new google.maps.Marker({
+        map: map,
+        anchorPoint: new google.maps.Point(0, -29),
+        draggable: true,
+        animation: google.maps.Animation.BOUNCE
+      });
+
+      if (inputLat == true && inputLang == true) {
+        $.ajax({
+          type:"GET",
+          url:"https://maps.googleapis.com/maps/api/geocode/json?latlng="+ lat +","+ lang +"&key={{env('GOOGLE_API_KEY_GLOBAL')}}",
+          success: function(resultGoogle){
+
+            $("#txtAreaLocation").val(resultGoogle.results[0].formatted_address)
+            map.setCenter({lat: lat, lng: lang});
+            marker.setPosition({lat:lat , lng: lang});
+            marker.setVisible(true);
+            map.setZoom(17);
+          }
+        })
+      }
+
+      autocomplete = new google.maps.places.Autocomplete((document.getElementById('txtAreaLocation')));
+
+      autocomplete.addListener('place_changed', function() {
+        google.maps.event.trigger(map, 'resize');
+        marker.setVisible(false);
+        var place = autocomplete.getPlace();
+
+        if (!place.geometry) {
+          window.alert("No details available for input: " + place.name);
+          return;
+        }
+
+        if (place.geometry.viewport) {
+          map.fitBounds(place.geometry.viewport);
+        } else {
+          map.setCenter(place.geometry.location);
+          map.setZoom(17);
+        }
+        marker.setPosition(place.geometry.location);
+        marker.setVisible(true);
+        $("#lat").val(place.geometry.location.lat());
+        $("#lng").val(place.geometry.location.lng());
+      });
+
+      google.maps.event.addListener(marker, 'dragend', function (evt) {
+        $("#lat").val(evt.latLng.lat());
+        $("#lng").val(evt.latLng.lng());
+      });      
+    }
+
+    $("#lat").keyup(function(){
+      if ($("#lng").val() == '') {
+        initMap(parseFloat($("#lat").val()),'')
+      }else{
+        initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+      }
+    })
+
+    $("#lng").keyup(function(){
+      if ($("#lat").val() == '') {
+        initMap('',parseFloat($("#lng").val()))
+      }else{
+        initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+      }
+    })
+
+    function setLatLngLoc(location){
+      if (location != '' && location != null) {
+        const geocoder = new google.maps.Geocoder();
+        // Make Geocoding request
+        geocoder.geocode({ address: location }, function(results, status) {
+          if (status === 'OK') {
+            const location = results[0].geometry.location;
+            const latitude = location.lat();
+            const longitude = location.lng();
+
+            $("#lat").val(latitude)
+            $("#lng").val(longitude)
+
+            $.ajax({
+              type:"GET",
+              url:"https://maps.googleapis.com/maps/api/geocode/json?latlng="+ parseFloat($("#lat").val()) +","+ parseFloat($("#lng").val()) +"&key={{env('GOOGLE_API_KEY_GLOBAL')}}",
+              success: function(resultGoogle){
+                map.setCenter({lat: parseFloat($("#lat").val()), lng: parseFloat($("#lng").val())});
+                marker.setPosition({lat:parseFloat($("#lat").val()) , lng: parseFloat($("#lng").val())});
+                marker.setVisible(true);
+                map.setZoom(17);
+              }
+            })
+            // initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+          } else {
+            console.error("Geocode was not successful for the following reason:", status);
+          }
+        });
+      }
     }
   </script>
 @endsection
