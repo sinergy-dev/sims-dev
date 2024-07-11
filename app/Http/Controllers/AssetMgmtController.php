@@ -225,6 +225,8 @@ class AssetMgmtController extends Controller
     public function storeAsset(Request $request)
     {
         // return $request->typeAsset;
+            // return $request->assignTo;
+
         if ($request->typeAsset == 'peripheral') {
             $category = $request->category;
             $inc = AssetMgmt::select('category')
@@ -316,11 +318,11 @@ class AssetMgmtController extends Controller
             $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
             $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-                ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start')
+                ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','latitude','longitude','service_point')
                 ->where('tb_asset_management_detail.id_asset',$request->assignTo)
                 ->first();
 
-            return gettype($data->latitude) . $data->latitude;
+            // return gettype($data->latitude) . $data->latitude;
 
             $storeDetail = new AssetMgmtDetail();
             $storeDetail->id_asset = $store->id;
@@ -349,11 +351,11 @@ class AssetMgmtController extends Controller
 
             $storeAssign = new AssetMgmtAssign();
             $storeAssign->id_asset_induk = $request->assignTo;
-            $storeAssign->id_asset_peripheral = $id;
+            $storeAssign->id_asset_peripheral = $store->id;
             $storeAssign->date_add = Carbon::now()->toDateTimeString();
             $storeAssign->save();
 
-            $updateAsset = AssetMgmt::where('id_asset',$request->assignTo)->first();
+            $updateAsset = AssetMgmt::where('id',$request->assignTo)->first();
             $updateAsset->status = 'Installed';
             $updateAsset->save();
 
@@ -930,7 +932,7 @@ class AssetMgmtController extends Controller
 
         $getData = collect($getAll);
 
-        if ($getAll->category_peripheral == '-') {
+        if ($getAll->category_peripheral == '-' || $getAll->category_peripheral == null) {
             if ($getAll->category_code == 'COM') {
                 $sla = 0;
             }else{
@@ -996,6 +998,7 @@ class AssetMgmtController extends Controller
     public function getPeripheral(Request $request)
     {
         $data = AssetMgmtAssign::where('tb_asset_management_assign.id_asset_induk',$request->id_asset)->get();
+
 
         $collectData = collect();
 
@@ -1481,9 +1484,10 @@ class AssetMgmtController extends Controller
 
         foreach ($data as $value) {
             foreach ($value['id_asset'] as $values) {
+                $id = AssetMgmt::where('id_asset',$values)->first();
                 $store = new AssetMgmtAssignEngineer();
                 $store->engineer_atm = $value['engineer'];
-                $store->id_asset = $values;
+                $store->id_asset = $id->id;
                 $store->save();
             }
         }
