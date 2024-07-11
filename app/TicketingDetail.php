@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class TicketingDetail extends Model
 {
@@ -28,6 +29,8 @@ class TicketingDetail extends Model
 		'reporting_time',
 		'severity'
 	];
+
+    protected $appends = ['concatenate_problem_ticket','concatenate_type_ticket'];
 
 	public function id_detail(){
 		return $this->hasOne('App\Ticketing','id_ticket','id_ticket');
@@ -58,5 +61,17 @@ class TicketingDetail extends Model
 
 	public function absen_machine(){
 		return $this->hasOne('App\TicketingAbsen','id','id_atm');
+	}
+
+	public function getConcatenateProblemTicketAttribute(){
+		$concat_problem_ticket = DB::table('ticketing__detail')->select(DB::raw("CONCAT(`location`,' - ',`problem`) AS problem"))->where('id_ticket',$this->id_ticket)->first()->problem;
+
+		return $concat_problem_ticket;
+	}
+
+	public function getConcatenateTypeTicketAttribute(){
+		$concat_problem_ticket = DB::table('ticketing__detail')->select(DB::raw("(CASE WHEN `type_ticket` = 'PL' THEN 'Permintaan Layanan Ticket' WHEN `type_ticket` = 'TT' THEN 'Trouble Ticket' WHEN `type_ticket` = 'PM' THEN 'Preventive Maintenance Ticket' ELSE '-' END) as type"))->where('id_ticket',$this->id_ticket)->first()->type;
+
+		return $concat_problem_ticket;
 	}
 }

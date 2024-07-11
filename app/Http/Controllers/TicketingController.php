@@ -21,6 +21,8 @@ use App\TicketingEmail;
 use App\User;
 use App\SalesProject;
 use App\TicketingUser;
+use App\AssetMgmt;
+use App\AssetMgmtDetail;
 
 use Auth;
 use Mail;
@@ -117,6 +119,23 @@ class TicketingController extends Controller
 		    `activity`) AS `ticketing_activity`"),'ticketing_activity.activity','=','ticketing__condition.name','left')
 		    ->get()->keyBy('name');
 
+		// $result2 = DB::table('ticketing__condition')
+		// 	->select('name','id_ticket')
+		// 	->join(DB::raw("(SELECT
+		// 		        `activity`,`id_ticket`
+		// 		    FROM
+		// 		        `ticketing__activity`
+		// 		    WHERE
+		// 		        `id` IN(
+		// 		        SELECT
+		// 		            MAX(`id`) AS `activity`
+		// 		        FROM
+		// 		            `ticketing__activity`
+		// 		        GROUP BY
+		// 		            `id_ticket`
+		// 		    )) AS `ticketing_activity`"),'ticketing_activity.activity','=','ticketing__condition.name','left')
+		//     ->get()->keyBy('name');
+
 		// return $result2;
 
 		$all = 0;
@@ -178,8 +197,110 @@ class TicketingController extends Controller
 
 		$severity_label = TicketingSeverity::select('id','name')->orderBy('id','DESC')->get();
 
-		// $time_elapsed_secs = microtime(true) - $start;
-		// return $time_elapsed_secs;
+
+		$occurring_ticket = DB::table('ticketing__activity')
+		    ->select('id_ticket', 'activity')
+		    ->whereIn('id', function ($query) {
+		        $query->select(DB::raw("MAX(id) AS activity"))
+		            ->from('ticketing__activity')
+		            ->groupBy('id_ticket');
+		    })
+		    ->where('activity', '<>', 'CANCEL')
+		    ->where('activity', '<>', 'CLOSE')
+		    ->get()
+		    ->pluck('id_ticket');
+
+		$tickets = TicketingDetail::with([
+		    'first_activity_ticket:id_ticket,date,operator',
+		    'lastest_activity_ticket',
+		    'id_detail:id_ticket,id' 
+		])
+		->join('ticketing__id','ticketing__id.id_ticket','ticketing__detail.id_ticket')
+		->join('ticketing__client','ticketing__client.id','=','ticketing__id.id_client')
+		->whereIn('ticketing__detail.id_ticket', $occurring_ticket)
+		->orderBy('ticketing__detail.id', 'DESC')
+		->get();
+
+
+		$currentMonth = date('n'); 
+		$currentYear = date('Y');
+		$totalDaysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
+		$totalHoursInMonth = 30 * 24; // Total hours in the current month
+
+		// Initialize arrays for tracking SLA metrics by client and month
+		$slaMetricsByClient = [];
+
+		foreach ($tickets as $ticket) {
+			// return $ticket;
+		    $client = $ticket->client_acronym; 
+		    $month = Carbon::parse($ticket->created_at)->format('Y-m'); 
+		   	
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    if ($firstActivity && $lastActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		        $closeTime = strtotime($lastActivity->date);
+
+				if ($closeTime > $openTime){
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $closeTime - $openTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				} else {
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $openTime - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				}
+
+		    } else {
+		    	$slaResolutionPercentage = '-';
+		    }
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
+		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+
+		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
+
+		    } else {
+		        $ticket->response_time_percentage = '-'; 
+		    }
+
+		    if (!isset($slaMetricsByClient[$client][$month])) {
+		        $slaMetricsByClient[$client][$month] = [
+		            'total_tickets' => 0,
+		            'total_sla_resolution_percentage' => 0,
+		            'total_response_time_percentage' => 0
+		        ];
+		    }
+
+		    $slaMetricsByClient[$client][$month]['total_tickets']++;
+		    $slaMetricsByClient[$client][$month]['total_sla_resolution_percentage'] += $slaResolutionPercentage;
+		    $slaMetricsByClient[$client][$month]['total_response_time_percentage'] += $responseTimePercentage;
+		}
+
+		foreach ($slaMetricsByClient as $client => $months) {
+		    foreach ($months as $month => $metrics) {
+		        $slaMetricsByClient[$client][$month]['average_sla_resolution_percentage'] = $metrics['total_sla_resolution_percentage'] / $metrics['total_tickets'];
+		        $slaMetricsByClient[$client][$month]['average_response_time_percentage'] = $metrics['total_response_time_percentage'] / $metrics['total_tickets'];
+		    }
+		}
 
 		return collect([
 			"counter_condition" => $result2,
@@ -190,8 +311,13 @@ class TicketingController extends Controller
 				"label" => $count_ticket_by_client->pluck('client_acronym'),
 				"data" => $count_ticket_by_client->pluck('ticket_count')
 			],
-			"severity_label" => $severity_label
+			"severity_label" => $severity_label,
+			"sla_all_client" => $slaMetricsByClient
 		]);
+	}
+
+	public function calculateSlaResolutionPercentage($resolutionTimeInHours, $totalHoursInMonth) {
+	    return (($resolutionTimeInHours / $totalHoursInMonth) * 100) - 100;
 	}
 
 	public function getCreateParameter(){
@@ -247,6 +373,22 @@ class TicketingController extends Controller
 		]);
 	}
 
+	public function getAssetByPid(Request $request)
+	{
+		$getId = AssetMgmt::leftjoin('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
+
+        // return $getLastId->id_last_asset;
+
+        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management.id',
+            	// DB::raw('CONCAT(`id_device_customer`," - ", `alamat_lokasi`," - ", `serial_number`) AS `text`'),
+            	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', serial_number) END) as text"))
+            ->orderBy('tb_asset_management.created_at','desc')->where('pid',$request->pid)->get();
+
+        return $data;
+	}
+
 	public function getAtmId(Request $request){
 		if($request->acronym == "BDIY"){
 			$request->client_id = 19;
@@ -286,6 +428,23 @@ class TicketingController extends Controller
 			)
 			->get()->all();
 	}
+
+	public function getDetailAsset(Request $request)
+    {
+    	// return $request->id_asset;
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
+        // return $getLastId->id_last_asset;
+
+        $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management','tb_asset_management_detail.id_asset','tb_asset_management.id')->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
+            ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','category','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),'engineer_atm')
+            ->where('tb_asset_management_detail.id_asset',$request->id_asset)
+            ->first();
+
+        $getData = collect($getAll);
+
+        return $getData;
+    }
 
 	public function getAtmDetail(Request $request){
 		return TicketingATM::where('id',$request->id_atm)->first();
@@ -335,14 +494,13 @@ class TicketingController extends Controller
 				])
 				->first();
 
-
 			$ticket_reciver = Ticketing::where('id',$idTicket)
 				->first()
 				->client_ticket;
 
 			if(isset($ticket_data->id_atm)){
 				if( str_contains($ticket_reciver->client_name,"UPS")){
-					$ticket_data->atm_detail = TicketingATMPeripheral::where('id_atm',TicketingATM::where('atm_id',$ticket_data->id_atm)->first()->id)->where('type','UPS')->first();
+					$ticket_data->atm_detail = AssetMgmt::where('id',$ticket_data->id_atm)->first();
 				}
 			} else {
 				$ticket_data->atm_detail = null;
@@ -364,8 +522,6 @@ class TicketingController extends Controller
 		$return->where('name','=',$req->email_name);
 
 		// dd();
-
-		// return;
 
 		return view(["template" => $return->first()->body]);
 		// return view('ticketing.mail.OpenTicketHitachi');
@@ -390,8 +546,8 @@ class TicketingController extends Controller
 			$detailTicketOpen->id_atm = $request->switchLocation;
 		} else {
 			if($request->id_atm != null){
-				$atm = TicketingATM::find($request->id_atm);
-				$detailTicketOpen->id_atm = $atm->atm_id;
+				$atm = AssetMgmtDetail::find($request->id_atm);
+				$detailTicketOpen->id_atm = $atm->id_device_customer;
 			} else {
 				$detailTicketOpen->id_atm = $request->id_atm;
 			}
@@ -450,6 +606,9 @@ class TicketingController extends Controller
 
 	public function getPerformanceAll(){
 		// sleep(5);
+
+		$isHighlithResponse = 'false';
+		$isHighlithResolution = 'false';
 
 		$getPid = TicketingUser::select('pid')->where('nik',Auth::User()->nik);
 
@@ -513,8 +672,109 @@ class TicketingController extends Controller
 
 		$result = $occurring_ticket_result->merge($residual_ticket_result)->merge($occurring_ticket_result_pid)->merge($residual_ticket_result_pid);
 
+		$result = $occurring_ticket_result->merge($residual_ticket_result)
+		    ->merge($occurring_ticket_result_pid)
+		    ->merge($residual_ticket_result_pid);
+
+		$currentMonth = date('n');
+		$currentYear = date('Y');
+
+		$totalDaysInMonth = $this->getDaysInMonth($currentMonth, $currentYear);
+		$totalHoursInMonth = 30 * 24; 
+
+		foreach ($result as $ticket) {
+			// return $ticket->reporting_time;
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    if ($firstActivity && $lastActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		        $closeTime = strtotime($lastActivity->date);
+
+				if ($closeTime > $openTime){
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // $slaResolutionPercentage = $resolutionTimeInHours;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $closeTime - $openTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				} else {
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $openTime - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				}
+
+		        // $resolutionTimeInSeconds = $closeTime - $openTime;
+		        // $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+		        // // Calculate SLA
+		        // $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+
+		        if ($slaResolutionPercentage <= 80) {
+		            $ticket->highlight_sla_resolution = true;
+		        } else {
+		            $ticket->highlight_sla_resolution = false;
+		        }
+
+		        $ticket->sla_resolution_percentage = $slaResolutionPercentage . "%";
+		    } else {
+		        $ticket->sla_resolution_percentage = '-'; 
+		        $ticket->highlight_sla_resolution = false;
+		    }
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
+		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+
+		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
+
+		        $ticket->response_time_percentage = $responseTimePercentage . "%";
+
+		        if ($responseTimePercentage <= 80) {
+		            $ticket->highlight_sla_response = true;
+		        } else {
+		            $ticket->highlight_sla_response = false;
+		        }
+		    } else {
+		        $ticket->response_time_percentage = '-';
+		        $ticket->highlight_sla_response = false;
+		    }
+		}
+
 		return array("data" => $result);
 
+		// return array("data" => $result);
+	}
+
+	function calculateResponseTimePercentage($responseTimeInMinutes) {
+	    if ($responseTimeInMinutes <= 30) {
+	        return 100;
+	    } elseif ($responseTimeInMinutes > 30 && $responseTimeInMinutes <= 45) {
+	        return 100 - round((50 * ($responseTimeInMinutes - 30) / 15),2); // Linear decrease to 50%
+	    } elseif ($responseTimeInMinutes > 45) {
+	        return round(max(0, 50 - (50 * ($responseTimeInMinutes - 45) / 45)),2); // Linear decrease to 0%
+	    } else {
+	        return 0; // Default to 0% for any unexpected values
+	    }
+	}
+
+	function getDaysInMonth($month, $year) {
+	    return cal_days_in_month(CAL_GREGORIAN, $month, $year);
 	}
 
 	public function getPerformanceByClient(Request $request){
@@ -584,6 +844,91 @@ class TicketingController extends Controller
 
 		// $time_elapsed_secs = microtime(true) - $start;
 		// return $time_elapsed_secs;
+
+		$currentMonth = date('n'); // Numeric representation of a month without leading zeros
+		$currentYear = date('Y');
+
+		$totalDaysInMonth = $this->getDaysInMonth($currentMonth, $currentYear);
+		$totalHoursInMonth = 30 * 24; // Total hours in the current month
+
+		// Calculate SLA for each ticket
+		foreach ($result as $ticket) {
+			// return $ticket->reporting_time;
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    if ($firstActivity && $lastActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		        $closeTime = strtotime($lastActivity->date);
+
+				if ($closeTime > $openTime){
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $closeTime - $openTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				} else {
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $openTime - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				}
+
+		        // $resolutionTimeInSeconds = $closeTime - $openTime;
+		        // $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+		        // // Calculate SLA
+		        // $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+
+		        if ($slaResolutionPercentage <= 80) {
+		            $ticket->highlight_sla_resolution = true;
+		        } else {
+		            $ticket->highlight_sla_resolution = false;
+		        }
+
+		        $ticket->sla_resolution_percentage = $slaResolutionPercentage . "%";
+		    } else {
+		        $ticket->sla_resolution_percentage = '-'; 
+		        $ticket->highlight_sla_resolution = false;
+		    }
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
+		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+
+		        // Calculate Response Time Percentage
+		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
+
+		        // Add Response Time Percentage to ticket
+		        $ticket->response_time_percentage = $responseTimePercentage . "%";
+
+		        if ($responseTimePercentage <= 80) {
+		            $ticket->highlight_sla_response = true;
+		        } else {
+		            $ticket->highlight_sla_response = false;
+		        }
+		    } else {
+		        $ticket->response_time_percentage = '-'; // or any default value
+		        $ticket->highlight_sla_response = false;
+		    }
+		}
 
 		return array("data" => $result);
 	}
@@ -696,6 +1041,92 @@ class TicketingController extends Controller
 			->get();
 
 		$result = $occurring_ticket_result->merge($finish_ticket_result);
+
+		$currentMonth = date('n'); // Numeric representation of a month without leading zeros
+		$currentYear = date('Y');
+
+		$totalDaysInMonth = $this->getDaysInMonth($currentMonth, $currentYear);
+		$totalHoursInMonth = 30 * 24; // Total hours in the current month
+
+		// Calculate SLA for each ticket
+		foreach ($result as $ticket) {
+			// return $ticket->reporting_time;
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    if ($firstActivity && $lastActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		        $closeTime = strtotime($lastActivity->date);
+
+				if ($closeTime > $openTime){
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $closeTime - $openTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				} else {
+					if(isset($openTime)){
+						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					} else {
+						$resolutionTimeInSeconds = $openTime - $closeTime;
+				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+				        // Calculate SLA
+				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+					}
+				}
+
+		        // $resolutionTimeInSeconds = $closeTime - $openTime;
+		        // $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+
+		        // // Calculate SLA
+		        // $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
+
+		        if ($slaResolutionPercentage <= 80) {
+		            $ticket->highlight_sla_resolution = true;
+		        } else {
+		            $ticket->highlight_sla_resolution = false;
+		        }
+
+		        $ticket->sla_resolution_percentage = $slaResolutionPercentage . "%";
+
+		    } else {
+		        $ticket->sla_resolution_percentage = '-'; 
+		        $ticket->highlight_sla_resolution = false;
+		    }
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
+		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+
+		        // Calculate Response Time Percentage
+		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
+
+		        // Add Response Time Percentage to ticket
+		        $ticket->response_time_percentage = $responseTimePercentage . "%";
+
+		        if ($responseTimePercentage <= 80) {
+		            $ticket->highlight_sla_response = true;
+		        } else {
+		            $ticket->highlight_sla_response = false;
+		        }
+		    } else {
+		        $ticket->response_time_percentage = '-';
+		        $ticket->highlight_sla_response = false;
+		    }
+		}
 
 		return array("data" => $result);
 	}
@@ -3098,7 +3529,7 @@ class TicketingController extends Controller
     	$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name')->where('user_id', Auth::User()->nik)->first();
 
-        if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+        if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Managed Service Manager') {
         	$data = DB::table('presence__shifting_user')->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')->join('users','users.nik','presence__shifting_user.nik')->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location')->where('status_karyawan','!=','dummy')->orderBy('project_name','asc')->get();
 
 	    	$dataNonShifting = DB::table('users')
@@ -3485,6 +3916,7 @@ class TicketingController extends Controller
 
     public function getPidByPic(Request $request)
     {
+
     	if ($request->client_acronym == 'BPJS') {
     		$client_acronym = 'BKES';
     	} elseif($request->client_acronym == 'PBLG'){
@@ -3501,10 +3933,19 @@ class TicketingController extends Controller
     		$client_acronym = $request->client_acronym;
     	}
 
-    	$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
+    	$cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
+
+    	if($cek_role->name_role == 'Operations Director'){
+    		$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
+    			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
+    			->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
+    	} else {
+    		$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
     			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
     			->where('pid', 'like', '%'.$client_acronym.'%')
     			->where('ticketing__user.nik',Auth::User()->nik)->get();
+    	} 		
+    	
 
     	return $data;
     }

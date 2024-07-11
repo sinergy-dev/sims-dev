@@ -848,6 +848,12 @@ Ticketing
 											Status
 										</th>
 										<th style="text-align: center;vertical-align: middle;">
+											SLA Response Time
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
+											SLA Resolution Time
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
 											Operator
 										</th>
 										<th style="text-align: center;vertical-align: middle;">
@@ -3104,6 +3110,7 @@ Ticketing
 				$("#serialDiv").hide();
 				$("#typeDiv").show();
 				$("#inputAbsenLocation").show();
+				$("#inputSwitchLocation").hide();
 				$("#inputLocation").remove();
 				$("#ipMechineDiv").show();
 				$("#ipServerDiv").show();
@@ -3120,6 +3127,7 @@ Ticketing
 				$("#inputLocation").remove();
 				$("#typeDiv").show();
 				$("#inputSwitchLocation").show();
+				$("#inputAbsenLocation").hide();
 				$("#ipMechineDiv").show();
 				// $("#ipServerDiv").show();
 
@@ -3442,7 +3450,6 @@ Ticketing
 	}
 
 	function getBankAtm(clientBanking){
-		console.log(clientBanking + "tsssss")
 		if(clientBanking){
 			// $.ajax({
 			// 	type:"GET",
@@ -3465,6 +3472,7 @@ Ticketing
 			// 		$("#locationDiv .col-sm-2").text('Location')
 			// 	}
 			// });
+			console.log(clientBanking)
 			$.ajax({
 				type:"GET",
 				url:"{{url('/ticketing/create/getAssetByPid')}}",
@@ -3490,33 +3498,85 @@ Ticketing
 			if($("#inputClient option:selected").text().includes("Absensi")){
 				$.ajax({
 					type:"GET",
-					url:"{{url('ticketing/create/getAbsenId')}}",
+					url:"{{url('/ticketing/create/getAssetByPid')}}",
+					data:{
+						pid:$("#selectPID").val(),
+					},
 					success: function(result){
-						if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
-							$("#inputAbsenLocation").select2('destroy');
+						$('#inputSwitchLocation').hide()
+						if ($('#inputSwitchLocation').select2()) {
+							$('#inputSwitchLocation').select2('destroy')
 						}
-						result.unshift('Select One')
 
-						$("#inputAbsenLocation").select2({
-							data:result
-						});
+						$('#inputAbsenLocation').show()
+						if ($('#inputAbsenLocation').is(":visible")) {
+							$('#inputAbsenLocation').empty()
+							if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
+								$("#inputAbsenLocation").select2('destroy');
+							}
+							result.unshift('Select One')
+
+							$("#inputAbsenLocation").select2({
+								data:result
+							});
+						}
 					}
-				});
+				})
+				// $.ajax({
+				// 	type:"GET",
+				// 	url:"{{url('ticketing/create/getAbsenId')}}",
+				// 	success: function(result){
+				// 		if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
+				// 			$("#inputAbsenLocation").select2('destroy');
+				// 		}
+				// 		result.unshift('Select One')
+
+				// 		$("#inputAbsenLocation").select2({
+				// 			data:result
+				// 		});
+				// 	}
+				// });
 			} else if($("#inputClient option:selected").text().includes("Switch")){
 				$.ajax({
 					type:"GET",
-					url:"{{url('ticketing/create/getSwitchId')}}",
+					url:"{{url('/ticketing/create/getAssetByPid')}}",
+					data:{
+						pid:$("#selectPID").val(),
+					},
 					success: function(result){
-						if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
-							$("#inputSwitchLocation").select2('destroy');
+						$('#inputAbsenLocation').hide()
+						if ($('#inputAbsenLocation').select2()) {
+							$('#inputAbsenLocation').select2('destroy')
 						}
-						result.unshift('Select One')
 
-						$("#inputSwitchLocation").select2({
-							data:result
-						});
+						$('#inputSwitchLocation').show()
+						if ($('#inputSwitchLocation').is(":visible")) {
+							$('#inputSwitchLocation').empty()
+							if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
+								$("#inputSwitchLocation").select2('destroy');
+							}
+							result.unshift('Select One')
+
+							$("#inputSwitchLocation").select2({
+								data:result
+							});
+						}
 					}
-				});
+				})
+				// $.ajax({
+				// 	type:"GET",
+				// 	url:"{{url('ticketing/create/getSwitchId')}}",
+				// 	success: function(result){
+				// 		if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
+				// 			$("#inputSwitchLocation").select2('destroy');
+				// 		}
+				// 		result.unshift('Select One')
+
+				// 		$("#inputSwitchLocation").select2({
+				// 			data:result
+				// 		});
+				// 	}
+				// });
 			} else {
 				$("#locationDiv .col-sm-2").text('Location*')
 				$("#inputATM").val("");
@@ -3595,16 +3655,28 @@ Ticketing
 			$("#inputIpMechine").val("");
 			$("#inputIpServer").val("");
 		} else {
+			// $.ajax({
+			// 	type:"GET",
+			// 	url:"{{url('/ticketing/create/getAbsenDetail')}}",
+			// 	data:{
+			// 		id_absen:this.value
+			// 	},
+			// 	success: function(result){
+			// 		$("#inputType").val(result.type_machine);
+			// 		$("#inputIpMechine").val(result.ip_machine);
+			// 		$("#inputIpServer").val(result.ip_server);
+			// 	}
+			// });
 			$.ajax({
 				type:"GET",
-				url:"{{url('/ticketing/create/getAbsenDetail')}}",
+				url:"{{url('/ticketing/create/getDetailAsset')}}",
 				data:{
 					id_absen:this.value
 				},
 				success: function(result){
 					$("#inputType").val(result.type_machine);
-					$("#inputIpMechine").val(result.ip_machine);
-					$("#inputIpServer").val(result.ip_server);
+					$("#inputIpMechine").val(result.ip_address);
+					$("#inputIpServer").val(result.server);
 				}
 			});
 		}
@@ -3616,9 +3688,22 @@ Ticketing
 			$("#inputType").val("");
 			$("#inputIpMechine").val("");
 		} else {
+			// $.ajax({
+			// 	type:"GET",
+			// 	url:"{{url('/ticketing/create/getSwitchDetail')}}",
+			// 	data:{
+			// 		id_switch:this.value
+			// 	},
+			// 	success: function(result){
+			// 		$("#inputSerial").val(result.serial_number);
+			// 		$("#inputType").val(result.type + " - " + result.port);
+			// 		$("#inputIpMechine").val(result.ip_management);
+			// 		// $("#inputIpServer").val(result.ip_server);
+			// 	}
+			// });
 			$.ajax({
 				type:"GET",
-				url:"{{url('/ticketing/create/getSwitchDetail')}}",
+				url:"{{url('/ticketing/create/getDetailAsset')}}",
 				data:{
 					id_switch:this.value
 				},
@@ -3626,7 +3711,7 @@ Ticketing
 					$("#inputSerial").val(result.serial_number);
 					$("#inputType").val(result.type + " - " + result.port);
 					$("#inputIpMechine").val(result.ip_management);
-					// $("#inputIpServer").val(result.ip_server);
+					$("#inputIpServer").val(result.server);
 				}
 			});
 		}
@@ -4099,6 +4184,16 @@ Ticketing
 						width:"3%"
 					},
 					{ 
+            data:'response_time_percentage',
+						className:'text-center',
+						width:"3%"
+					},
+					{ 
+            data:'sla_resolution_percentage',
+						className:'text-center',
+						width:"3%"
+					},
+					{ 
 						data:'lastest_operator',
 						className:'text-center',
 						width:"3%"
@@ -4124,6 +4219,15 @@ Ticketing
 					},
 				],
 				// order: [[10, "DESC" ]],
+        "createdRow": function(row, data, dataIndex) {
+          if (data.highlight_sla_response == true) {
+            $('td', row).eq(8).css('color', '#ff0a23')
+          } 
+
+          if (data.highlight_sla_resolution == true) {
+            $('td', row).eq(9).css('color', '#ff0a23')
+          }
+        },
 				autoWidth:false,
 				lengthChange: false,
 				searching:true,
@@ -4167,9 +4271,8 @@ Ticketing
 						// column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
 						$(item).prop('checked', column.visible())
 					})
-				},
+				}
 			})
-
 		}
 	}
 
@@ -5220,7 +5323,6 @@ Ticketing
 									}
 									
 									$(".holderCloseIDATM").text(result.ticket_data.id_atm);
-
 									$(".holderCloseNote").text("");
 									$(".holderCloseEngineer").text(result.ticket_data.engineer);
 
@@ -5253,9 +5355,12 @@ Ticketing
 									if(result.ticket_reciver.client_name.includes("UPS")) {
 										$(".holderCloseIDATM2").show();
 										$(".holderCloseUPSSerial2").show()
-										$(".holderCloseUPSSerial").text(result.ticket_data.atm_detail.serial_number)
+										console.log(result.ticket_data.atm_detail)
+										if (result.ticket_data.atm_detail != null) {
+											$(".holderCloseUPSSerial").text(result.ticket_data.atm_detail.serial_number)
+											$(".holderCloseUPSType").text(result.ticket_data.atm_detail.type_device)
+										}
 										$(".holderCloseUPSType2").show()
-										$(".holderCloseUPSType").text(result.ticket_data.atm_detail.machine_type)
 										$(".holderCloseSerial").parent().hide()	
 									} else if (result.ticket_reciver.client_name.includes("CCTV")) {
 
