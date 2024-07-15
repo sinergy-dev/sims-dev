@@ -383,7 +383,7 @@ class TicketingController extends Controller
         $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
             ->select('tb_asset_management.id',
             	// DB::raw('CONCAT(`id_device_customer`," - ", `alamat_lokasi`," - ", `serial_number`) AS `text`'),
-            	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', serial_number) END) as text"))
+            	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ', type_device, ' - ', serial_number) END) as text"))
             ->orderBy('tb_asset_management.created_at','desc')->where('pid',$request->pid)->get();
 
         return $data;
@@ -3593,7 +3593,7 @@ class TicketingController extends Controller
                 })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN' AND `id_position` != 'MANAGER')")
                 ->select('users.name',DB::raw("CONCAT('Not-Set') AS `project_name`"),'users.nik',DB::raw("CONCAT('-') AS `id_location`"),'tb_pid.pid',DB::raw("CONCAT('-') AS `brand_name`"))->orderBy('project_name','asc');
 
-            if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+            if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
             	$dataNonShifting = $dataNonShifting;
             } else{
             	$dataNonShifting = $dataNonShifting->where('users.nik',Auth::User()->nik);
@@ -3680,7 +3680,7 @@ class TicketingController extends Controller
 	    			->selectRaw('GROUP_CONCAT(DISTINCT `tb_contact`.`brand_name`) AS `brand_name`')
 	    			->selectRaw('presence__shifting_project.project_name')->where('status_karyawan','!=','dummy')->groupBy('presence__shifting_project.project_name');
 
-	    	if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+	    	if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
             	$data = $data;
             } else{
             	// $data = $data;
@@ -3834,7 +3834,7 @@ class TicketingController extends Controller
     				->where('users.status_karyawan','!=','dummy')
     				->orderBy('project_name','asc');
 
-    		if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+    		if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
             	$dataNonShifting = $dataNonShifting->get();
             	$dataAll = $dataAll->get();
             } else{
@@ -3876,7 +3876,7 @@ class TicketingController extends Controller
 	    			->selectRaw('GROUP_CONCAT( DISTINCT `pid`, " - ", `name_project`) AS `pid`')
 	    			->selectRaw('presence__shifting_project.project_name')->where('status_karyawan','!=','dummy')->groupBy('presence__shifting_project.project_name');
 
-	    	if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+	    	if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
             	$dataAll = $dataAll;
             } else{
             	$dataAll = $dataAll->where('presence__shifting_user.nik',Auth::User()->nik);
@@ -3935,7 +3935,7 @@ class TicketingController extends Controller
 
     	$cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
 
-    	if($cek_role->name_role == 'Operations Director'){
+    	if($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Managed Service Manager'){
     		$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
     			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
     			->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();

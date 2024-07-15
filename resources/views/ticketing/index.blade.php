@@ -423,7 +423,7 @@ Ticketing
 									<label class="col-sm-2 control-label">Type</label>
 									<div class="col-sm-4">
 										<select class="form-control" id="inputTypeTicket">
-											<option selected="selected" value="">Chose Type</option>
+											<option selected="selected" value="">Choose Type</option>
 											<option value="Trouble Ticket">Trouble Ticket</option>
 											<option value="Preventive Maintenance">Preventive Maintenance Ticket</option>
 											<option value="Permintaan Layanan">Permintaan Layanan Ticket</option>
@@ -466,7 +466,7 @@ Ticketing
 									<label for="inputCreator" class="col-sm-2 control-label">Category</label>
 									<div class="col-sm-10">
 										<select class="form-control" id="inputCategory" required>
-											<option selected="selected">Chose problem category</option>
+											<option selected="selected">Choose problem category</option>
 											<option value="Aktivasi">Aktivasi</option>
 											<option value="Cash Handler Fatal">Cash Handler Fatal</option>
 											<option value="Cassette Fatal">Cassette Fatal</option>
@@ -511,6 +511,12 @@ Ticketing
 									<div class="col-sm-10">
 										<input type="text" class="form-control" id="inputEngineerOpen" placeholder="" required value="">
 										<span class="help-block" style="margin-bottom: 0px; display: none;">Engineer must be fill!</span>
+									</div>
+								</div>
+								<div class="form-group" id="slmDiv" style="display: none;">
+									<label for="inputEmail" class="col-sm-2 control-label">SLM</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="inputSlm" disabled>
 									</div>
 								</div>
 								<div class="form-group" id="serialDiv" style="display: none;">
@@ -888,12 +894,12 @@ Ticketing
 				<!-- 			<button class="btn btn-flat btn-default" onclick="atmSetting()">
 								ATM Setting
 							</button> -->
-							<button class="btn btn-flat btn-default" onclick="absenSetting()">
+							<!-- <button class="btn btn-flat btn-default" onclick="absenSetting()">
 								Absen Setting
 							</button>
 							<button class="btn btn-flat btn-default" onclick="switchSetting()">
 								Switch Setting
-							</button>
+							</button> -->
 							<button class="btn btn-flat btn-default" onclick="userSetting()">
 								User Setting
 							</button>
@@ -1114,7 +1120,7 @@ Ticketing
 							<div class="form-group">
 								<label>Select Type</label>
 								<select id="selectReportingType" class="form-control">
-									<option>Chose One</option>
+									<option>Choose One</option>
 									<option value="finishReport">Finish Report</option>
 									<option value="finishReportPid">Finish Report PID</option>
 									<option value="helpdeskReport">Helpesk Report</option>
@@ -1141,7 +1147,7 @@ Ticketing
 							<div class="form-group">
 								<label>Select Type Ticket</label>
 								<select class="form-control" id="selectTypeTicket">
-									<option selected="selected" value="none">Chose Type</option>
+									<option selected="selected" value="none">Choose Type</option>
 									<option value="TT">Trouble Ticket</option>
 									<option value="PM">Preventive Maintenance Ticket</option>
 									<option value="PL">Permintaan Layanan Ticket</option>
@@ -2764,7 +2770,7 @@ Ticketing
 				// });
 
 				// $("#clientList").html(append);
-				var clientList = [{id:0,text:"Chose the client"}]
+				var clientList = [{id:0,text:"Choose the client"}]
 
 				$.each(result.customer_list,function(key,value){
 					clientList.push({
@@ -2786,10 +2792,10 @@ Ticketing
 
 				var severityFilterAll = [
 					{
-						text:"Chose the Severity", 
+						text:"Choose the Severity", 
 						children:severityFilter
 					},{
-						text:"Chose the Type", 
+						text:"Choose the Type", 
 						children:[
 							{
 								id:"TT",
@@ -3043,7 +3049,7 @@ Ticketing
 		}
 
 
-		if($("#inputSeverity").val() != "Chose the severity"){
+		if($("#inputSeverity").val() != "Choose the severity"){
 			showInputDetailTicket();
 			getBankAtm(clientBanking);
 		}
@@ -3052,6 +3058,8 @@ Ticketing
 	});
 
 	$("#inputTypeTicket").change(function(){
+		// $("#inputATMid").show();
+		// $("#categoryDiv").show();
 		$("#inputSeverity").attr("disabled",false)
 		$("#problemDiv label").text("Problem*")
 		$("#reportDiv label").text("Report Time*")
@@ -3105,9 +3113,11 @@ Ticketing
 			$("#noteDiv").show();
 			$("#serialDiv").show();
 			$("#reportDiv").show();
+			$("#slmDiv").hide();
 
 			if($("#inputClient option:selected").text().includes("Absensi")){
 				$("#serialDiv").hide();
+				$("#slmDiv").hide();
 				$("#typeDiv").show();
 				$("#inputAbsenLocation").show();
 				$("#inputSwitchLocation").hide();
@@ -3129,6 +3139,7 @@ Ticketing
 				$("#inputSwitchLocation").show();
 				$("#inputAbsenLocation").hide();
 				$("#ipMechineDiv").show();
+				$("#slmDiv").hide()
 				// $("#ipServerDiv").show();
 
 			} 
@@ -3171,7 +3182,7 @@ Ticketing
 			$("#inputReportingDate").css("border-color",'#d2d6de')
 			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon").css("border-color",'#d2d6de')
 			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon i").css("color",'#555')
-		} else if($("#inputTypeTicket").val() != "Preventive Maintenance" && $("#inputSeverity").val() == "Chose the severity"){
+		} else if($("#inputTypeTicket").val() != "Preventive Maintenance" && $("#inputSeverity").val() == "Choose the severity"){
 			$("#inputSeverity").parent().parent().addClass('has-error')
 			// $("#reportDiv").addClass('has-error')
 			// $("#reportDiv .col-sm-5.secondReport .help-block").show()
@@ -3408,12 +3419,12 @@ Ticketing
 			type:"GET",
 			url:"{{url('ticketing/create/getParameter')}}",
 			success: function (result){
-				var appendClient = "<option selected='selected'>Chose the client</option> ";
-				var appendSeverity = "<option selected='selected' val='None'>Chose the severity</option> ";
-				var appendEmailTemplate = "<option selected='selected' value='none'>Chose Template Email</option> ";
+				var appendClient = "<option selected='selected'>Choose the client</option> ";
+				var appendSeverity = "<option selected='selected' val='None'>Choose the severity</option> ";
+				var appendEmailTemplate = "<option selected='selected' value='none'>Choose Template Email</option> ";
 
-				var arrayClient = [{id:0,text:"Chose the client"}]
-				var arraySeverity = [{id:'None',text:"Chose the severity"}]
+				var arrayClient = [{id:0,text:"Choose the client"}]
+				var arraySeverity = [{id:'None',text:"Choose the severity"}]
 
 				$.each(result.client,function(key,value){
 					var getPerformanceAppend = "getPerformance('" + value.client_acronym + "')";
@@ -3482,8 +3493,10 @@ Ticketing
 				success: function(result){
 					$("#inputATM").empty()
 					$("#typeDiv").show();
-					$("#inputATMid").show();
-					$("#categoryDiv").show();
+					if ($("#inputTypeTicket").val() != "") {
+						$("#inputATMid").show();
+						$("#categoryDiv").show();
+					}
 					if ($('#inputATM').hasClass("select2-hidden-accessible")) {
 						$("#inputATM").select2('destroy');
 					}
@@ -3503,6 +3516,8 @@ Ticketing
 						pid:$("#selectPID").val(),
 					},
 					success: function(result){
+						$("#inputATMid").hide();
+
 						$('#inputSwitchLocation').hide()
 						if ($('#inputSwitchLocation').select2()) {
 							$('#inputSwitchLocation').select2('destroy')
@@ -3544,6 +3559,8 @@ Ticketing
 						pid:$("#selectPID").val(),
 					},
 					success: function(result){
+						$("#inputATMid").hide();
+
 						$('#inputAbsenLocation').hide()
 						if ($('#inputAbsenLocation').select2()) {
 							$('#inputAbsenLocation').select2('destroy')
@@ -3593,6 +3610,7 @@ Ticketing
 			$("#inputATMAddres").val("");
 			$("#inputSerial").val("");
 			$("#inputType").val("");
+			$("#slmDiv").hide();
 		} else {
 			$.ajax({
 				type:"GET",
@@ -3602,8 +3620,11 @@ Ticketing
 					// type:type
 				},
 				success: function(result){
-					$("#inputLocation").val(result.detail_lokasi);
+					$("#inputLocation").val(result.alamat_lokasi);
+					$("#inputType").val(result.type_device);
 					$("#inputSerial").val(result.serial_number);
+					$("#slmDiv").show();
+					$("#inputSlm").val(result.second_level_support);
 					$("#inputEngineerOpen").val(result.engineer_atm);
 					localStorage.setItem("id_device_customer",result.id_device_customer)
 					// $("#inputATMAddres").val(result.address);
@@ -3674,7 +3695,7 @@ Ticketing
 					id_absen:this.value
 				},
 				success: function(result){
-					$("#inputType").val(result.type_machine);
+					$("#inputType").val(result.type_device);
 					$("#inputIpMechine").val(result.ip_address);
 					$("#inputIpServer").val(result.server);
 				}
@@ -3709,8 +3730,8 @@ Ticketing
 				},
 				success: function(result){
 					$("#inputSerial").val(result.serial_number);
-					$("#inputType").val(result.type + " - " + result.port);
-					$("#inputIpMechine").val(result.ip_management);
+					$("#inputType").val(result.type_device + " - " + result.port);
+					$("#inputIpMechine").val(result.ip_address);
 					$("#inputIpServer").val(result.server);
 				}
 			});
