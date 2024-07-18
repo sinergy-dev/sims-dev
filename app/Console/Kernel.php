@@ -17,6 +17,12 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\ClosingDateEmail',
     ];
 
+
+    protected $routeMiddleware = [
+        // Other middlewares
+        'noindex' => \App\Http\Middleware\NoIndexMiddleware::class,
+    ];
+    
     /**
      * Define the application's command schedule.
      *
@@ -30,6 +36,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('ReviewDateRiskPM:daily')->daily()->at('07:00');
 
         $schedule->command('ReminderCreateProjectCharter:daily')->daily()->at('07:30');
+        $schedule->command('ReminderMaintenanceEndAsset:daily')->daily()->at('07:40');
+
+        $schedule->command('AssetManagementScheduling:daily')->daily()->at('00:40');
+
+
 
         // $schedule->command('UpdateStatusTimesheet:daily')->daily()->at('23:59:59');
 

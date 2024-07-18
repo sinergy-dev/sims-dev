@@ -1506,7 +1506,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getPid','AssetMgmtController@getPid');
 	Route::get('asset/getAssetById','AssetMgmtController@getAssetById');
 	Route::get('asset/getDataAsset','AssetMgmtController@getDataAsset');
-	Route::get('asset/getClient','AssetMgmtController@getClient');
+	Route::get('asset/getClient','AssetMgmtController@getClientAsset');
 	Route::post('asset/deleteAssignedAsset','AssetMgmtController@deleteAssignedAsset');
 	Route::post('asset/updateAsset','AssetMgmtController@updateAsset');
 	Route::get('asset/getFilterData','AssetMgmtController@getFilterData');
@@ -1538,6 +1538,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getAssetOwner','AssetMgmtController@getAssetOwner');
 	Route::post('asset/storeCategory','AssetMgmtController@storeCategory');
 	Route::get('asset/getCategory','AssetMgmtController@getCategory');
+	Route::get('asset/testQr','AssetMgmtController@testQr');
+	Route::get('asset/assetScheduling','AssetMgmtController@asset_scheduling');
+	Route::get('asset/getIdAssetScheduling','AssetMgmtController@getIdAsset');
+	Route::get('asset/getPidScheduling','AssetMgmtController@getPidScheduling');
+	Route::get('asset/getDataScheduling','AssetMgmtController@getDataScheduling');
+	Route::get('asset/testScheduling','AssetMgmtController@testScheduling');
+	Route::post('asset/storeScheduling','AssetMgmtController@storeScheduling');
 
 });
 
@@ -1617,6 +1624,8 @@ Route::post('/solution/store','SolutionController@store');
 Route::get('/solution/edit/{id}','SolutionController@edit');
 Route::put('/solution/update/{id}','SolutionController@update');
 Route::delete('/solution/delete/{id}','SolutionController@destroy');
+
+Route::get('/getWarning','TestController@getWarning');
 
 
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');
