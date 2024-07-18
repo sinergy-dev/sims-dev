@@ -15,6 +15,18 @@
     textarea{
       resize:vertical;
     }
+
+    .image-upload>input {
+      display: none;
+    }
+
+    input[type=file]::-webkit-file-upload-button{
+     display: none;
+    }
+
+    input::file-selector-button {
+     display: none;
+    }
   </style>
 @endsection
 @section('content')
@@ -106,6 +118,11 @@
               <div class="form-group">
                 <label>Notes</label>
                 <textarea class="form-control" id="txtAreaNotes" name="txtAreaNotes"></textarea>
+              </div>
+              <div class="form-group" style="display: none;">
+                <label>Reason*</label>
+                <textarea class="form-control" id="txtAreaReason" name="txtAreaReason"></textarea>
+                <span class="help-block" style="display:none">Please Fill Reason! (for temporary/unavailable status)</span>
               </div>
               <div class="form-group">
                 <label>Engineer Assigned</label>
@@ -214,7 +231,7 @@
                 <input id="inputRMAPeripheral" name="inputRMAPeripheral" class="form-control">
               </div>
 
-              <div class="form-group" style="padding-bottom: 20px">
+              <div class="form-group">
                 <label>Notes</label>
                 <textarea class="form-control" id="txtAreaNotesPeripheral" name="txtAreaNotesPeripheral"></textarea>
               </div>
@@ -311,7 +328,19 @@
                   </div>
                 </div>
               </div>
-            </div>
+
+              <div class="form-group">
+                <label>Bukti Asset</label>
+                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                  <label for="inputBuktiAsset" style="margin-bottom:0px">
+                    <span class="fa fa-cloud-upload" style="display:inline"></span>
+                    <input autocomplete="off" style="display: inline;" type="file" name="inputBuktiAsset" class="files" id="inputBuktiAsset">
+                  </label>
+                </div>
+                <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
+                <span style="display:none;" id="span_link_drive_bukti_asset"><a id="link_bukti_asset" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
+              </div>
+            </div>            
 
             <div class="col-lg-6 col-xs-12">
               <div class="row">
@@ -408,7 +437,7 @@
                   <div class="form-group">
                     <label for="">Maintenance Start*</label>
                     <div class="input-group">
-                      <input type="text" class="form-control" id="inputMaintenanceStart" name="inputMaintenanceStart">
+                      <input type="text" class="form-control" id="inputMaintenanceStart" name="inputMaintenanceStart" placeholder="yyyy-mm-dd">
                       <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </div>
@@ -421,7 +450,7 @@
                   <div class="form-group">
                     <label for="">Maintenance End*</label>
                     <div class="input-group">
-                      <input autocomplete="off" type="" class="form-control" id="inputMaintenanceEnd" name="inputMaintenanceEnd">
+                      <input autocomplete="off" type="" class="form-control" id="inputMaintenanceEnd" name="inputMaintenanceEnd" placeholder="yyyy-mm-dd">
                       <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </div>
@@ -842,6 +871,42 @@
           id_asset:window.location.href.split("=")[1]
         },
         success:function(result){
+
+          $('input[class="files"]').change(function(){
+            var f=this.files[0]
+            var filePath = f;
+         
+            // Allowing file type
+            var allowedExtensions =
+            /(\.jpg|\.jpeg|\.png)$/i;
+
+            var ErrorText = []
+            // 
+            if (f.size > 50000000|| f.fileSize > 50000000) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Invalid file size, just allow file with size less than 50MB!',
+              }).then((result) => {
+                this.value = ''
+              })
+            }
+
+            var ext = filePath.name.split(".");
+            ext = ext[ext.length-1].toLowerCase();      
+            var arrayExtensions = ["jpg" , "jpeg", "png"];
+
+            if (arrayExtensions.lastIndexOf(ext) == -1) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Invalid file type, just allow png/jpg file',
+              }).then((result) => {
+                this.value = ''
+              })
+            }
+          })
+          
           var accesable = @json($feature_item);
           accesable.forEach(function(item,index){
             $("#" + item).show()
@@ -857,9 +922,17 @@
 
           if(result.status == "Available"){
             $("#btnAssignPeripheral").show()
+            $("#txtAreaReason").closest(".form-group").hide()
           }else if(result.status == "Installed"){
             $("#btnAssignPeripheral").hide()
+            $("#txtAreaReason").closest(".form-group").hide()
+          }else if(result.status == "Temporary" || result.status == "Unavailable"){
+            $("#txtAreaReason").closest(".form-group").show()
+            $("#txtAreaReason").val(result.reason_status)
+          }else{
+            $("#txtAreaReason").closest(".form-group").hide()
           }
+
 
           $("#inputSLAUptime").val(result.slaUptime)
             $("#inputTotalTicket").val(result.countTicket)
@@ -1103,10 +1176,19 @@
             var option = new Option(result.category_text, result.category_code, true, true);
             categorySelect.append(option).trigger('change');
 
-            if (result.category_code == "CRM" || result.category_code == "ATM") {
-              $("#selectEngAssign").closest(".form-group").show() 
+            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Managed Service Manager')->exists()}}") {
+              console.log(result.pid)
+              if (result.pid != null) {
+                $("#selectEngAssign").closest(".form-group").show() 
+              }else{
+                $("#selectEngAssign").closest(".form-group").hide()
+              }
             }else{
-              $("#selectEngAssign").closest(".form-group").hide() 
+              if (result.category_code == "CRM" || result.category_code == "ATM") {
+                $("#selectEngAssign").closest(".form-group").show() 
+              }else{
+                $("#selectEngAssign").closest(".form-group").hide() 
+              }
             }
           }
 
@@ -1117,8 +1199,21 @@
               {id:"Available",text:"Available"},
               {id:"RMA",text:"RMA"},
               {id:"Temporary",text:"Temporary"},
+              {id:"Unavailable",text:"Unavailable"},
             ]
-          }).val(result.status).trigger("change")
+          }).on('select2:select', function (e) { 
+            var id = e.params.data.id
+            if (id == "Unavailable" || id == "Temporary") {
+              $("#txtAreaReason").closest(".form-group").show()
+              if ($("#txtAreaReason").val() == "") {
+                $("#txtAreaReason").closest(".form-group").addClass("has-error")
+              }
+            }else{
+              $("#txtAreaReason").closest(".form-group").hide()
+            }
+          })
+
+          $("select[name='selectStatus']").val(result.status).trigger("change")
 
           $("select[name='selectStatusPeripheral']").select2({
             placeholder:"Select Status",
@@ -1128,8 +1223,6 @@
               {id:"RMA",text:"RMA"},
             ]
           }).val(result.status).trigger("change")
-
-          $('#selectPID').select2('data', {id: result.pid, text: result.pid});
 
           $.ajax({
             "type":"GET",
@@ -1153,6 +1246,10 @@
               });
             }
           })
+
+          if (result.pid != "" && result.pid != null) {
+            $('#selectPID').select2('data', {id: result.pid, text: result.pid})
+          }
 
           $("#selectStatusCustomer").select2({
             placeholder:"Select Status Customer",
@@ -1302,6 +1399,20 @@
             placeholder:"yyyy-mm-dd",
             autoclose: true,
             format: 'yyyy-mm-dd',
+          }).change(function(){
+            console.log("masuk")
+            if ($('#inputMaintenanceStart').val() != "") {
+               if ($('#inputMaintenanceStart').val() >= this.value) {
+                Swal.fire({
+                  title: "<strong>Oopzz!</strong>",
+                  icon: "info",
+                  html: `
+                    Maintenance date must be greater than maintenance start!
+                  `,
+                })
+                $(this).val("")
+              }
+            }
           })
           $('#inputMaintenanceEnd').datepicker("setDate",result.maintenance_end)
           $("#inputLicense").val(result.license)
@@ -1309,6 +1420,25 @@
           // $("#inputAccessoris").val()
           $("#inputSLAUptime").val()
           $("#inputTotalTicket").val()
+
+          const fileAsset = document.querySelector('input[type="file"][name="inputBuktiAsset"]');
+
+          if (result.document_name != '' && result.document_name != null) {
+            const myFileBuktiAsset = new File(['{{asset("/")}}"'+ result.document_location +'"'], '/'+ result.document_location,{
+              type: 'text/plain',
+              lastModified: new Date(),
+            });
+
+            // Now let's create a DataTransfer to get a FileList
+            const dataTransferBuktiAsset = new DataTransfer();
+            dataTransferBuktiAsset.items.add(myFileBuktiAsset);
+            fileAsset.files = dataTransferBuktiAsset.files;
+
+            if (result.link_drive != '' && result.link_drive != null) {
+              $("#span_link_drive_bukti_asset").show()
+              $("#link_bukti_asset").attr("href",result.link_drive)
+            }
+          }
         }
       })
     }
@@ -1392,123 +1522,209 @@
         tanggalBeli = $("input[name='inputTglBeli']").val()
         hargaBeli = $("input[name='inputHarga']").val()
         nilaiBuku = $("input[name='inputNilaiBuku']").val()
+        if ($("textarea[name='txtAreaReason']").is(":visible") == true) {
+          reason = $("textarea[name='txtAreaReason']").val()
+        }else{
+          reason = ''
+        }
 
         var data = '', url = '', alert = '', alertSuccess = ''
-        if (type == 'asset') {
-          url = "{{url('asset/updateAsset')}}"
 
-          data = {
-            _token:"{{csrf_token()}}",
-            id_asset:id_asset,
-            status:status,
-            vendor:vendor,
-            typeDevice:typeDevice,
-            serialNumber:serialNumber,
-            spesifikasi:spesifikasi,
-            rma:rma,
-            notes:notes,
-            engineer:$("#selectEngAssign").val(),
-            assetOwner:assetOwner,
-            tanggalBeli:tanggalBeli,
-            hargaBeli:hargaBeli,
-            nilaiBuku:nilaiBuku,
-          }
+        if ($("#txtAreaReason").is(":visible") == true) {
+          if ($("#txtAreaReason").val() == "") {
+            $("#txtAreaReason").closest(".form-group").addClass("has-error")
+            $("#txtAreaReason").next(".help-block").show()
+          }else{
+            $("#txtAreaReason").closest(".form-group").removeClass("has-error")
+            $("#txtAreaReason").next(".help-block").hide()
 
-          alert = {
-            title: 'Are you sure?',
-            text: "Update Asset",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-          }
+            url = "{{url('asset/updateAsset')}}"
 
-          alertSuccess = {
-            title: 'Update Asset Successsfully!',
-            icon: 'success',  
-            confirmButtonText: 'Reload',
-          }
+            var formData = new FormData
 
-        }else if (type == 'detail') {
-          url = "{{url('asset/updateDetailAsset')}}"
+            formData.append('_token',"{{csrf_token()}}")
+            formData.append('id_asset',id_asset)
+            formData.append('status',status)
+            formData.append('vendor',vendor)
+            formData.append('typeDevice',typeDevice)
+            formData.append('serialNumber',serialNumber)
+            formData.append('spesifikasi',spesifikasi)
+            formData.append('rma',rma)
+            formData.append('notes',notes)
+            formData.append('engineer',$("#selectEngAssign").val())
+            formData.append('assetOwner',assetOwner)
+            formData.append('tanggalBeli',tanggalBeli)
+            formData.append('hargaBeli',hargaBeli)
+            formData.append('nilaiBuku',nilaiBuku)
+            formData.append('reason',reason)
+            alert = {
+              title: 'Are you sure?',
+              text: "Update Asset",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }
 
-          data = {
-            _token:"{{csrf_token()}}",
-            id_asset:id_asset,
-            idDeviceCustomer:$("#inputIdDeviceCustomer").val(),
-            client:$("#inputClient").val(),
-            pid:$("#selectPID").val(),
-            kota:$("#selectCity").val(),
-            alamatLokasi:$("#txtAreaAddress").val(),
-            detailLokasi:$("#txtAreaLocation").val(),
-            latitude:$("#lat").val(),
-            longitude:$("#lng").val(),
-            ipAddress:$("#inputIPAddress").val(),
-            ipServer:$("#inputServer").val(),
-            port:$("#inputPort").val(),
-            statusCust:$("#selectStatusCustomer").val(),
-            secondLevelSupport:$("#selectLevelSupport").val(),
-            operatingSystem:$("#inputOS").val(),
-            versionOs:$("#inputVersion").val(),
-            installedDate:$("#inputInstalledDate").val(),
-            license:$("#inputLicense").val(),
-            licenseStartDate:$("#inputLicenseStart").val(),
-            licenseEndDate:$("#inputLicenseEnd").val(),
-            maintenanceStart:$("#inputMaintenanceStart").val(),
-            maintenanceEnd:$("#inputMaintenanceEnd").val(),
-            servicePoint:$("#service_point").val()
-          }
+            alertSuccess = {
+              title: 'Update Asset Successsfully!',
+              icon: 'success',  
+              confirmButtonText: 'Reload',
+            }
 
-          alert = {
-            title: 'Are you sure?',
-            text: "Update Detail Asset",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-          }
-
-          alertSuccess = {
-            title: 'Update Detail Asset Successsfully!',
-            icon: 'success',  
-            confirmButtonText: 'Reload',
-          }
-        }
-      }
-
-      Swal.fire(alert).then((result) => {
-        if (result.value) {
-          Swal.fire({
-              title: 'Please Wait..!',
-              text: "It's sending..",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              customClass: {
-                  popup: 'border-radius-0',
-              },
-              didOpen: () => {
-                  Swal.showLoading()
+            Swal.fire(alert).then((result) => {
+              if (result.value) {
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                })
+                $.ajax({
+                  type:"POST",
+                  url:url,
+                  data:formData,
+                  processData: false,
+                  contentType: false,
+                  success: function(result){
+                    Swal.fire(alertSuccess).then((result) => {
+                      InitiateDetailPage()
+                      InitiateHistoryPid()
+                      InitiateChangeLog()
+                    })
+                  }
+                })
               }
-          })
-          $.ajax({
-            type:"POST",
-            url:url,
-            data:data,
-            success: function(result){
-              Swal.fire(alertSuccess).then((result) => {
-                InitiateDetailPage()
-                InitiateHistoryPid()
-                InitiateChangeLog()
+            })
+          }
+        }else{
+          var formData = new FormData
+
+          if (type == 'asset') {
+            url = "{{url('asset/updateAsset')}}"
+
+            formData.append('_token',"{{csrf_token()}}")
+            formData.append('id_asset',id_asset)
+            formData.append('status',status)
+            formData.append('vendor',vendor)
+            formData.append('typeDevice',typeDevice)
+            formData.append('serialNumber',serialNumber)
+            formData.append('spesifikasi',spesifikasi)
+            formData.append('rma',rma)
+            formData.append('notes',notes)
+            formData.append('engineer',$("#selectEngAssign").val())
+            formData.append('assetOwner',assetOwner)
+            formData.append('tanggalBeli',tanggalBeli)
+            formData.append('hargaBeli',hargaBeli)
+            formData.append('nilaiBuku',nilaiBuku)
+            formData.append('reason',reason)
+
+            alert = {
+              title: 'Are you sure?',
+              text: "Update Asset",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }
+
+            alertSuccess = {
+              title: 'Update Asset Successsfully!',
+              icon: 'success',  
+              confirmButtonText: 'Reload',
+            }
+          }else if (type == 'detail') {
+            url = "{{url('asset/updateDetailAsset')}}"
+
+            formData.append('_token',"{{csrf_token()}}")
+            formData.append('id_asset',id_asset)
+            formData.append('idDeviceCustomer',$("#inputIdDeviceCustomer").val())
+            formData.append('client',$("#inputClient").val())
+            formData.append('pid',$("#selectPID").val() == null?'':$("#selectPID").val())
+            formData.append('kota',$("#selectCity").val() == null?'':$("#selectCity").val())
+            formData.append('alamatLokasi',$("#txtAreaAddress").val())
+            formData.append('detailLokasi',$("#txtAreaLocation").val())
+            formData.append('latitude',$("#lat").val())
+            formData.append('longitude',$("#lng").val())
+            formData.append('ipAddress',$("#inputIPAddress").val())
+            formData.append('ipServer',$("#inputServer").val())
+            formData.append('port',$("#inputPort").val())
+            formData.append('statusCust',$("#selectStatusCustomer").val() == null?'':$("#selectStatusCustomer").val())
+            formData.append('secondLevelSupport',$("#selectLevelSupport").val())
+            formData.append('operatingSystem',$("#inputOS").val())
+            formData.append('versionOs',$("#inputVersion").val())
+            formData.append('installedDate',$("#inputInstalledDate").val())
+            formData.append('license',$("#inputLicense").val())
+            formData.append('licenseStartDate',$("#inputLicenseStart").val())
+            formData.append('licenseEndDate',$("#inputLicenseEnd").val())
+            formData.append('maintenanceStart',$("#inputMaintenanceStart").val())
+            formData.append('maintenanceEnd',$("#inputMaintenanceEnd").val())
+            formData.append('servicePoint',$("#service_point").val())
+            formData.append('servicePoint',$("#service_point").val())
+            formData.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
+
+            alert = {
+              title: 'Are you sure?',
+              text: "Update Detail Asset",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }
+
+            alertSuccess = {
+              title: 'Update Detail Asset Successsfully!',
+              icon: 'success',  
+              confirmButtonText: 'Reload',
+            }
+          }
+
+          Swal.fire(alert).then((result) => {
+            if (result.value) {
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+              $.ajax({
+                type:"POST",
+                url:url,
+                data:formData,
+                processData: false,
+                contentType: false,
+                success: function(result){
+                  Swal.fire(alertSuccess).then((result) => {
+                    InitiateDetailPage()
+                    InitiateHistoryPid()
+                    InitiateChangeLog()
+                  })
+                }
               })
             }
           })
-        }
-      })
+        }        
+      }
     }
 
     var map, marker, autocomplete;

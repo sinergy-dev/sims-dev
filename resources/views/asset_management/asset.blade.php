@@ -64,6 +64,18 @@
     .pac-container {
       z-index: 1100 !important;
     }
+
+    .image-upload>input {
+      display: none;
+    }
+
+    input[type=file]::-webkit-file-upload-button{
+     display: none;
+    }
+
+    input::file-selector-button {
+     display: none;
+    }
   </style>
 @endsection
 @section('content')
@@ -267,8 +279,6 @@
                 <span class="help-block" style="display:none;">Please fill Asset Owner!</span>
               </div>
 
-
-
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
@@ -289,17 +299,28 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label for="">Vendor*</label>
-                <select id="selectVendor" name="selectVendor" class="form-control" onchange="fillInput('selectVendor')" onkeyup=""><option></option></select>
-                <span class="help-block" style="display:none;">Please fill Vendor!</span>
+              <div class="form-group" style="display:none;">
+                <label for="">Reason*</label>
+                <textarea id="txtAreaReason" name="txtAreaReason" class="form-control" onkeyup="fillInput('txtAreaReason')"></textarea>
+                <span class="help-block" style="display:none;">Please fill Reason!</span>
               </div>
 
-              <div class="form-group">
-                <label for="">Type Device*</label>
-                <select id="selectTypeDevice" name="selectTypeDevice" class="form-control" onchange="fillInput('selectTypeDevice')"><option></option></select>
-                <span class="help-block" style="display:none;">Please fill Type Device!</span>
-              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="">Vendor*</label>
+                    <select id="selectVendor" name="selectVendor" class="form-control" onchange="fillInput('selectVendor')" onkeyup=""><option></option></select>
+                    <span class="help-block" style="display:none;">Please fill Vendor!</span>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="">Type Device*</label>
+                    <select id="selectTypeDevice" name="selectTypeDevice" class="form-control" onchange="fillInput('selectTypeDevice')"><option></option></select>
+                    <span class="help-block" style="display:none;">Please fill Type Device!</span>
+                  </div>
+                </div>
+              </div>             
 
               <div class="form-group">
                 <label for="">Serial Number*</label>
@@ -307,16 +328,21 @@
                 <span class="help-block" style="display:none;">Please fill Serial Number!</span>
               </div>
 
-              <div class="form-group">
-                <label for="">Spesifikasi</label>
-                <input id="inputSpesifikasi" name="inputSpesifikasi" class="form-control" onkeyup="fillInput('inputSpesifikasi')">
-                <span class="help-block" style="display:none;">Please fill Spesifikasi!</span>
-              </div>
-
-              <div class="form-group">
-                <label for="">RMA</label>
-                <input id="inputRMA" name="inputRMA" class="form-control" onkeyup="fillInput('inputRMA')">
-                <span class="help-block" style="display:none;">Please fill RMA!</span>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="">Spesifikasi</label>
+                    <input id="inputSpesifikasi" name="inputSpesifikasi" class="form-control" onkeyup="fillInput('inputSpesifikasi')">
+                    <span class="help-block" style="display:none;">Please fill Spesifikasi!</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="">RMA</label>
+                    <input id="inputRMA" name="inputRMA" class="form-control" onkeyup="fillInput('inputRMA')">
+                    <span class="help-block" style="display:none;">Please fill RMA!</span>
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">
@@ -329,23 +355,28 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label for="">Harga</label>
-                <div class="input-group">
-                  <div class="input-group-addon">
-                    <strong>RP</strong>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="">Harga</label>
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <strong>RP</strong>
+                      </div>
+                      <input id="inputHarga" type="text" name="inputHarga" class="form-control money" onkeyup="fillInput('inputHarga')">
+                    </div>
                   </div>
-                  <input id="inputHarga" type="text" name="inputHarga" class="form-control money" onkeyup="fillInput('inputHarga')">
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label for="">Nilai Buku</label>
-                <div class="input-group">
-                  <div class="input-group-addon">
-                    <strong>RP</strong>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="">Nilai Buku</label>
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <strong>RP</strong>
+                      </div>
+                      <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money" onkeyup="fillInput('inputNilaiBuku')">
+                    </div>
                   </div>
-                  <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money" onkeyup="fillInput('inputNilaiBuku')">
                 </div>
               </div>
 
@@ -353,6 +384,17 @@
                 <label for="">Notes</label>
                 <textarea id="txtAreaNotes" name="txtAreaNotes" class="form-control" onkeyup="fillInput('txtAreaNotes')"></textarea>
                 <span class="help-block" style="display:none;">Please fill Notes!</span>
+              </div>
+
+              <div class="form-group">
+                <label>Bukti Asset</label>
+                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                  <span for="inputBuktiAsset" style="margin-bottom:0px">
+                    <i class="fa fa-cloud-upload" style="display:inline"></i>
+                    <input autocomplete="off" style="display: inline;" type="file" class="files" name="inputBuktiAsset" id="inputBuktiAsset" onchange="fillInput('inputBuktiAsset')">
+                  </span>                  
+                </div>
+                
               </div>
 
             </div>  
@@ -682,15 +724,36 @@
               <input class="form-control" name="inputCatName" id="inputCatName" placeholder="Input Category Name">
               <span class="help-block" style="display:none;color: red;"></span>
             </div>
-       <!--      <div class="form-group">
-              <label>Description</label>
-              <textarea class="form-control" name="txtAreaDescCat" id="txtAreaDescCat" placeholder="Input Description"></textarea>
-            </div> -->
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-flat btn-danger" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-flat btn-primary" onclick="saveCategory()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-show-Qr">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">QR Code</h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div id="print-area">
+              <div id="divShowQr" style="text-align: center;">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-flat btn-default pull-left" id="printQr"><i class="fa fa-print"></i> Print QR</button>
+          <button type="button" class="btn btn-flat btn-danger" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -707,6 +770,7 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY_GLOBAL')}}&libraries=places" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 @endsection
 @section('script')
   <script type="text/javascript">
@@ -724,6 +788,41 @@
       $("#box-table-asset").removeClass("col-md-10")
       $("#box-table-asset").addClass("col-md-12")
     }
+
+    $('input[class="files"]').change(function(){
+      var f=this.files[0]
+      var filePath = f;
+   
+      // Allowing file type
+      var allowedExtensions =
+      /(\.jpg|\.jpeg|\.png)$/i;
+
+      var ErrorText = []
+      // 
+      if (f.size > 50000000|| f.fileSize > 50000000) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Invalid file size, just allow file with size less than 50MB!',
+        }).then((result) => {
+          this.value = ''
+        })
+      }
+
+      var ext = filePath.name.split(".");
+      ext = ext[ext.length-1].toLowerCase();      
+      var arrayExtensions = ["jpg" , "jpeg", "png"];
+
+      if (arrayExtensions.lastIndexOf(ext) == -1) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Invalid file type, just allow png/jpg file',
+        }).then((result) => {
+          this.value = ''
+        })
+      }
+    }) 
 
     var tableAsset = $("#tableAsset").DataTable({
       "aaSorting": [],
@@ -780,6 +879,8 @@
               bgColor = "bg-red"
             }else if (row.status == 'Temporary') {
               bgColor = "bg-yellow"
+            }else if (row.status == 'Unavailable') {
+              bgColor = "bg-grey"
             }
 
             return '<span class="label '+ bgColor +'" style="font-size:80%!important">'+ row.status +'</span>'
@@ -885,7 +986,7 @@
         {
           title:"Action",
           render: function (data, type, row, meta){
-           return "<a href='{{url('asset/detail')}}?id_asset="+ row.id +"' class='btn btn-sm btn-primary' target='_blank'>Detail</a>"
+           return "<a href='{{url('asset/detail')}}?id_asset="+ row.id +"' class='btn btn-sm btn-primary' target='_blank'>Detail</a><button class='btn btn-sm bg-purple' onclick='showQRDetail("+ row.id +","+ '"' + row.id_asset + '"' + ")' style='margin-left:5px'>Show QR</button>"
           }
         },
       ],
@@ -1244,13 +1345,13 @@
     }
     
     //select2 modal add
-    $("#selectAsset").select2({
-      placeholder:"Select Asset",
-      data:[
-        {id:"asset",text:"Main Asset"},
-        {id:"peripheral",text:"Peripheral"},
-      ]
-    }).val("asset").trigger("change")
+    // $("#selectAsset").select2({
+    //   placeholder:"Select Asset",
+    //   data:[
+    //     {id:"asset",text:"Main Asset"},
+    //     {id:"peripheral",text:"Peripheral"},
+    //   ]
+    // }).val("asset").trigger("change")
 
     $("#selectAssetOwner").select2({
       ajax : {
@@ -1352,7 +1453,7 @@
         $.each($(".tab-add").find("input"),function(item,data){
           var $el = $(this);
           if ($el.css("display") !== "none") {
-            if ($(data)[0].id != "inputSpesifikasi" && $(data)[0].id != "inputRMA" && $(data)[0].id != "inputIPAddress" && $(data)[0].id != "inputServer" && $(data)[0].id != "inputPort" && $(data)[0].id != "inputTglBeli" && $(data)[0].id != "inputHarga" && $(data)[0].id != "inputNilaiBuku"&& $(data)[0].id != "inputOS" && $(data)[0].id != "inputVersion") {
+            if ($(data)[0].id != "inputSpesifikasi" && $(data)[0].id != "inputRMA" && $(data)[0].id != "inputIPAddress" && $(data)[0].id != "inputServer" && $(data)[0].id != "inputPort" && $(data)[0].id != "inputTglBeli" && $(data)[0].id != "inputHarga" && $(data)[0].id != "inputNilaiBuku"&& $(data)[0].id != "inputOS" && $(data)[0].id != "inputVersion" && $(data)[0].id != "inputBuktiAsset") {
               label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
               $("#"+data.id).closest(".form-group").find("label").text(label_changed+"*")
             }
@@ -1369,7 +1470,7 @@
           }
         })
       }
-    });
+    })
 
     $("#selectStatus").select2({
       placeholder:"Select Status",
@@ -1379,7 +1480,15 @@
         {id:"Available",text:"Available"},
         {id:"RMA",text:"RMA"},
         {id:"Temporary",text:"Temporary"},
+        {id:"Unavailable",text:"Unavailable"},
       ]
+    }).on('select2:select', function (e) { 
+      var id = e.params.data.id
+      if (id == "Unavailable" || id == "Temporary") {
+        $("#txtAreaReason").closest(".form-group").show()
+      }else{
+        $("#txtAreaReason").closest(".form-group").hide()
+      } 
     })
 
     function capitalizeFirstLetter(string) {
@@ -1416,7 +1525,7 @@
       
       // Trigger a change event to update the Select2 display
       $('#selectVendor').trigger('change');
-    });
+    })
 
     $("#selectPeripheral").select2({
       ajax: {
@@ -1463,7 +1572,7 @@
       
       // Trigger a change event to update the Select2 display
       $('#selectTypeDevice').trigger('change');
-    });
+    }) 
 
     $("#selectLevelSupport").select2({
       ajax: {
@@ -1488,7 +1597,7 @@
         {id:"Beli",text:"Beli"},
         {id:"Sewa",text:"Sewa"},
       ]
-    }) 
+    })
 
     $("#selectAssigntoPeripheral").select2({
       ajax: {
@@ -1529,7 +1638,7 @@
           $("#inputClient").val(result).prop("disabled",true)
         }
       })
-    });     
+    })   
 
     $('#inputInstalledDate').datepicker({
       placeholder:"dd/mm/yyyy",
@@ -1586,7 +1695,7 @@
           $.each($(".tab-add:first").find("input"),function(item,data){
             var $el = $(this);
             if ($el.css("display") !== "none") {
-              if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku") {
+              if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku" && data.id != "inputBuktiAsset") {
                 if ($(data).val() == "") {
                   $("input[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
                   $("input[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
@@ -1739,62 +1848,69 @@
           cancelButtonText: 'No',
         }).then((result) => {
           if (result.value) {
+            var dataForm = new FormData();
+
+            dataForm.append('_token','{{ csrf_token() }}');
+            dataForm.append('idDeviceCustomer',$("#inputIdDeviceCustomer").val())
+            dataForm.append('client',$("#inputClient").val())
+            dataForm.append('pid',$("#selectPID").val())
+            dataForm.append('kota',$("#selectCity").val())
+            dataForm.append('alamatLokasi',$("#txtAddressLocation").val())
+            dataForm.append('detailLokasi',$("#txtAreaLocation").val())
+            dataForm.append('ipAddress',$("#inputIPAddress").val())
+            dataForm.append('ipServer',$("#inputServer").val())
+            dataForm.append('port',$("#inputPort").val())
+            dataForm.append('statusCust',$("#selectStatusCustomer").val())
+            dataForm.append('secondLevelSupport',$("#selectLevelSupport").val())
+            dataForm.append('operatingSystem',$("#inputOS").val())
+            dataForm.append('versionOs',$("#inputVersion").val())
+            dataForm.append('installedDate',moment(($("#inputInstalledDate").val()),"DD/MM/YYYY").format("YYYY-MM-DD"))
+            dataForm.append('license',$("#inputLicense").val())
+            dataForm.append('licenseStartDate',moment(($("#inputLicenseStart").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
+            dataForm.append('licenseEndDate',moment(($("#inputLicenseEnd").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
+            dataForm.append('maintenanceStart',moment(($("#inputMaintenanceStart").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
+            dataForm.append('maintenanceEnd',moment(($("#inputMaintenanceEnd").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
+            dataForm.append('status',$("#selectStatus").val())
+            dataForm.append('vendor',$("#selectVendor").val())
+            dataForm.append('typeDevice',$("#selectTypeDevice").val())
+            dataForm.append('serialNumber',$("#inputSerialNumber").val())
+            dataForm.append('spesifikasi',$("#inputSpesifikasi").val())
+            dataForm.append('rma',$("#inputRMA").val())
+            dataForm.append('notes',$("#txtAreaNotes").val())
+            dataForm.append('categoryPeripheral',$("#selectPeripheral").val())
+            dataForm.append('typeAsset',$("#selectAsset").val())
+            dataForm.append('assetOwner',$("#selectAssetOwner").val())
+            dataForm.append('category',$("#selectCategory").val())
+            dataForm.append('category_text',$("#selectCategory").select2("data")[0].text)
+            dataForm.append('assignTo',$("#selectAssigntoPeripheral").val())
+            dataForm.append('latitude',$("#lat").val())
+            dataForm.append('longitude',$("#lng").val())
+            dataForm.append('servicePoint',$("#service_point").val())
+            dataForm.append('tanggalBeli',moment(($("#inputTglBeli").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
+            dataForm.append('hargaBeli',$("#inputHarga").val())
+            dataForm.append('nilaiBuku',$("#inputNilaiBuku").val())
+            dataForm.append('reason',$("#txtAreaReason").val())
+            dataForm.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
+
             $.ajax({
               type:"POST",
               url:"{{url('asset/storeAsset')}}",
-              data:{
-                _token:"{{csrf_token()}}",
-                idDeviceCustomer:$("#inputIdDeviceCustomer").val(),
-                client:$("#inputClient").val(),
-                pid:$("#selectPID").val(),
-                kota:$("#selectCity").val(),
-                alamatLokasi:$("#txtAddressLocation").val(),
-                detailLokasi:$("#txtAreaLocation").val(),
-                ipAddress:$("#inputIPAddress").val(),
-                ipServer:$("#inputServer").val(),
-                port:$("#inputPort").val(),
-                statusCust:$("#selectStatusCustomer").val(),
-                secondLevelSupport:$("#selectLevelSupport").val(),
-                operatingSystem:$("#inputOS").val(),
-                versionOs:$("#inputVersion").val(),
-                installedDate:moment(($("#inputInstalledDate").val()), "DD/MM/YYYY").format("YYYY-MM-DD"),
-                license:$("#inputLicense").val(),
-                licenseStartDate:moment(($("#inputLicenseStart").val()), "DD/MM/YYYY").format("YYYY-MM-DD"),
-                licenseEndDate:moment(($("#inputLicenseEnd").val()), "DD/MM/YYYY").format("YYYY-MM-DD"),
-                maintenanceStart:moment(($("#inputMaintenanceStart").val()), "DD/MM/YYYY").format("YYYY-MM-DD"),
-                maintenanceEnd:moment(($("#inputMaintenanceEnd").val()), "DD/MM/YYYY").format("YYYY-MM-DD"),
-                status:$("#selectStatus").val(),
-                vendor:$("#selectVendor").val(),
-                typeDevice:$("#selectTypeDevice").val(),
-                serialNumber:$("#inputSerialNumber").val(),
-                spesifikasi:$("#inputSpesifikasi").val(),
-                rma:$("#inputRMA").val(),
-                notes:$("#txtAreaNotes").val(),
-                categoryPeripheral:$("#selectPeripheral").val(),
-                typeAsset:$("#selectAsset").val(),
-                assetOwner:$("#selectAssetOwner").val(),
-                category:$("#selectCategory").val(),
-                category_text:$("#selectCategory").select2("data")[0].text,
-                assignTo:$("#selectAssigntoPeripheral").val(),
-                latitude:$("#lat").val(),
-                longitude:$("#lng").val(),
-                servicePoint:$("#service_point").val(),
-                tanggalBeli:moment(($("#inputTglBeli").val()), "DD/MM/YYYY").format("YYYY-MM-DD"),
-                hargaBeli:$("#inputHarga").val(),
-                nilaiBuku:$("#inputNilaiBuku").val()
-              },beforeSend:function(){
+              data:dataForm,
+              processData: false,
+              contentType: false,
+              beforeSend:function(){
                 Swal.fire({
-                    title: 'Please Wait..!',
-                    text: "It's sending..",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    allowEnterKey: false,
-                    customClass: {
-                        popup: 'border-radius-0',
-                    },
-                    didOpen: () => {
-                        Swal.showLoading()
-                    }
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
                 })
               },
               success: function(result){
@@ -1930,6 +2046,8 @@
       $(".tab-add").find("textarea").val("")
       $(".tab-add").find(".form-group").removeClass("has-error")
       $(".tab-add").find(".form-group").find(".help-block").hide()
+      $(".tab-add").find("textarea[id='txtAreaReason']").closest(".form-group").hide()
+      $(".tab-add").find("textarea[id='txtAreaReason']").val("")
     });
 
     $('#modal-add-service-point').on('hidden.bs.modal', function () {
@@ -2387,6 +2505,81 @@
           })          
         }
       })
+    }
+
+    function showQRDetail(id_detail,id_asset){
+      $("#modal-show-Qr").modal('show')
+      $("#printQr").attr("onclick","printQRCode("+ '"' + id_asset + '"' + ")")
+      var url = "{{url('asset/detail')}}?id_asset="+ id_detail
+      // if (!url) {
+      //   alert("Please enter a valid URL.");
+      //   return;
+      // }
+
+      // var qrcodeContainer = document.getElementById('divShowQr');
+      // qrcodeContainer.innerHTML = ""; // Clear previous QR code
+
+      // new QRCode(qrcodeContainer, {
+      //   text: url,
+      //   width: 250,
+      //   height: 250,
+      //   colorDark: "#000000",
+      //   colorLight: "#ffffff",
+      //   correctLevel: QRCode.CorrectLevel.H
+      // });
+
+      var qr = qrcode(0, 'L');
+      qr.addData(url);
+      qr.make();
+      
+      var canvas = document.createElement('canvas');
+      canvas.width = 200;
+      canvas.height = 200;
+      // canvas.style.margin = "0 auto"; 
+
+      var context = canvas.getContext('2d');
+      var cellSize = 200 / qr.getModuleCount();
+      for (var row = 0; row < qr.getModuleCount(); row++) {
+        for (var col = 0; col < qr.getModuleCount(); col++) {
+            context.fillStyle = qr.isDark(row, col) ? '#000000' : '#ffffff';
+            context.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+
+      document.getElementById('divShowQr').innerHTML = '';
+      document.getElementById('divShowQr').appendChild(canvas);
+      $(canvas).after("<br><label style='font-size:20px'>"+ id_asset +"</label>")
+    }
+
+    function printQRCode(id_asset){
+      var qrCodeDiv = document.getElementById('divShowQr');
+      var canvas = qrCodeDiv.querySelector('canvas');
+      var dataUrl = canvas.toDataURL();
+
+      var printWindow = window.open('', '_blank');
+      printWindow.document.open();
+      printWindow.document.write(`
+          <html>
+              <head>
+                  <title>Print QR Code</title>
+                  <style>
+                      body {
+                          text-align: center;
+                      }
+                      img {
+                          width: 100px;
+                          height: 100px;
+                      }
+                  </style>
+              </head>
+              <body onload="window.print(); window.close();">
+                  <img src="${dataUrl}" alt="QR Code">
+                  <br>
+                  <label style="font-size:10px">${id_asset}</label>
+              </body>
+          </html>
+      `);
+      printWindow.document.close();
     }
   </script>
 @endsection
