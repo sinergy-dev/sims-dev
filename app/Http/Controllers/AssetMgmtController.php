@@ -2109,7 +2109,7 @@ class AssetMgmtController extends Controller
 
     public function getDataScheduling()
     {
-        $data = AssetMgmtScheduling::join('tb_asset_management','tb_asset_management.id','tb_asset_management_scheduling.id_asset')->select('tb_asset_management.id_asset','pid','maintenance_start','maintenance_end','tb_asset_management_scheduling.status')->where('tb_asset_management_scheduling.status','PENDING');
+        $data = AssetMgmtScheduling::join('tb_asset_management','tb_asset_management.id','tb_asset_management_scheduling.id_asset')->select('tb_asset_management.id_asset','pid','maintenance_start','maintenance_end','tb_asset_management_scheduling.status','tb_asset_management_scheduling.id')->where('tb_asset_management_scheduling.status','PENDING');
 
         return array("data" => $data->get());
     }
@@ -2167,6 +2167,11 @@ class AssetMgmtController extends Controller
         }
 
         return $cek;
+    }
+
+    public function deleteScheduling(Request $request)
+    {
+        $delete = AssetMgmtScheduling::where('id',$request->id)->delete();
     }
 
     // public function getAssignedEngineer(Request $request)
