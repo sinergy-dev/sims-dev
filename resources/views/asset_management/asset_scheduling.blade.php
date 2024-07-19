@@ -67,6 +67,7 @@
                     <th>Maintenance Start</th>
                     <th>Maintenance End</th>
                     <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
               </table>
@@ -201,6 +202,11 @@
           return "<span class='label label-warning'>"+ row.status +"</span>"
         },
       },
+      {
+        render: function ( data, type, row){
+          return "<button onclick='deleteScheduling("+ row.id +")' class='btn btn-sm btn-danger' style='width:30px;height:30px'><i class='fa fa-trash'></></button>"
+        }
+      }
     ],
     "aaSorting": [],
   })
@@ -522,6 +528,61 @@
     $("input").val("")
     $("select").empty("")
   });
+
+  function deleteScheduling(id){
+    swalFireCustom = {
+      title: 'Are you sure?',
+      text: "Delete Asset Scheduling",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }
+
+    swalSuccess = {
+        icon: 'success',
+        title: 'Asset Scheduling Deleted!',
+        text: 'Click Ok to reload page',
+    } 
+
+    Swal.fire(swalFireCustom).then((result) => {
+      if (result.value) {
+        $.ajax({
+          type:"POST",
+          url:"{{url('asset/deleteScheduling')}}",
+          data:{
+            _token:"{{csrf_token()}}",
+            id:id
+          },
+          beforeSend:function(){
+            Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
+            })
+            Swal.showLoading()
+          },
+          success: function(result)
+          {
+            Swal.fire(swalSuccess).then((result) => {
+              if (result.value) {
+                $('#modal-add-asset-schedule').modal('hide')
+                Swal.close()
+                $('#table-asset-scheduling').DataTable().ajax.url("{{url('asset/getDataScheduling')}}").load()
+              }
+            })
+          }
+        })
+      }
+    })
+  }
 
 </script>
 @endsection

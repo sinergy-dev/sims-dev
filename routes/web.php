@@ -1545,6 +1545,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getDataScheduling','AssetMgmtController@getDataScheduling');
 	Route::get('asset/testScheduling','AssetMgmtController@testScheduling');
 	Route::post('asset/storeScheduling','AssetMgmtController@storeScheduling');
+	Route::post('asset/deleteScheduling','AssetMgmtController@deleteScheduling');
 
 });
 
