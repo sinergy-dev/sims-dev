@@ -870,8 +870,10 @@ ID Project
         column3.visible(!column3.visible());
       }
     }else{
-      $('#table-pid').DataTable().clear().destroy();
-      $('#table-pid').empty();
+      if ($.fn.DataTable.isDataTable('#table-pid')) {
+        $('#table-pid').DataTable().clear().destroy();
+        $('#table-pid').empty();
+      }
 
       $("#table-pid").append('<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>')
 
