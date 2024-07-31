@@ -76,6 +76,11 @@
     input::file-selector-button {
      display: none;
     }
+
+    .select2-selection__choice {
+      white-space: normal !important; /* Allow text to wrap */
+      word-wrap: break-word; /* Break long words */
+    }
   </style>
 @endsection
 @section('content')
@@ -126,7 +131,7 @@
       <div class="col-lg-3 col-xs-12">
         <div class="small-box bg-yellow">
           <div class="inner">
-            <h3 id="countTemporary" class="counter"></h3>
+            <h3 id="countRent" class="counter"></h3>
           </div>
           <div class="icon">
           </div>
@@ -179,7 +184,7 @@
                   <button class="btn btn-sm bg-purple" onclick="btnAddAsset(0)" style="display:none" id="btnAddAsset"><i class="fa fa-plus"></i> Asset</button>
                   <button class="btn btn-sm btn-primary" onclick="btnAddServicePoint()" id="btnAddServicePoint" style="display:none"><i class="fa fa-plus"></i> Service Point</button>
                   <button class="btn btn-sm bg-maroon" onclick="btnAddCategory()" id="btnAddCategory" style="display:none"><i class="fa fa-plus"></i> Category</button>
-                  <button class="btn btn-sm btn-warning btnAssignEngineer" onclick="btnAssignEngineer()" style="display: none;"><i class="fa fa-cog"></i> Assign Engineer</button>
+                  <button class="btn btn-sm btn-warning btnAssignEngineer" id="btnAssignEngineer" onclick="btnAssignEngineer()" style="display: none;"><i class="fa fa-cog"></i> Assign Engineer</button>
                 </div>
                 <div class="pull-right" style="display: flex;">
                   <div class="input-group" style="margin-right:10px">
@@ -210,8 +215,9 @@
                         <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="7"><span class="text">Serial Number</span></li>
                         <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="8"><span class="text">Spesifikasi</span></li>
                         <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="9"><span class="text">RMA</span></li>
-                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="10"><span class="text">Current PID</span></li>
-                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="11"><span class="text">Notes</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="10"><span class="text">Client</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="11"><span class="text">Current PID</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="12"><span class="text">Notes</span></li>
                       </ul>
                     </span>
                   </div>
@@ -613,31 +619,70 @@
     </div>
   </div>
 
-  <div class="modal fade" id="modal-assign-engineer-atm">
-    <div class="modal-dialog">
+  <div class="modal fade" id="modal-assignBy">
+    <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h4 class="modal-title">Assign Engineer ATM</h4>
+          <h4 class="modal-title">Assign Engineer</h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label>Assign Engineer By</label>
+              <select id="assignBy" class="form-control" style="width:100%important!" placeholder="Select Option"><option></option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-flat btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-flat btn-primary" onclick="assignBy()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-assign-engineer-atm">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Assign Engineer</h4>
         </div>
         <div class="modal-body">
           <form role="form">
             <div class="row listEngineerAssign">
-              <div class="col-sm-5">
+              <div class="col-sm-4">
+                <div class="form-group divAssetToggle" style="display:none;">
+                  <label>Asset*</label>
+                  <select class="form-control selectAssignAtmId" style="width:100%!important;display: none;" name="selectAssignAtmId" multiple="multiple"></select>
+                </div>
+
+                <div class="form-group divPidToggle" style="display:none">
+                  <label>Project Id*</label>
+                  <select class="form-control selectPidAssignEng" style="width:100%!important;display: none;" name="selectPidAssignEng"><option></option></select>
+                </div>
+              </div>
+
+              <div class="col-sm-4">
                 <div class="form-group">
                   <label>Engineer*</label>
                   <select class="form-control assignEngineerAtm" style="width:100%!important" name="assignEngineerAtm"><option></option></select>
                 </div>
               </div>
-              <div class="col-sm-6">
+              
+              <div class="col-sm-3">
                 <div class="form-group">
-                  <label>ATM Id*</label>
-                  <select class="form-control selectAssignAtmId" style="width:100%!important" name="selectAssignAtmId" multiple="multiple"></select>
+                  <label>Roles*</label>
+                  <select class="form-control selectRolesEngineer" style="width:100%!important" name="selectRolesEngineer"><option></option></select>
                 </div>
               </div>
-              <div class="col-sm-0">
+              <div class="col-sm-1">
                 <div class="form-group">
                   <label>Action</label>
                   <button class="btn btn-flat btn-danger deleteRowAssign" style="width:40px" disabled><i class="fa fa-trash"></i></button>
@@ -651,7 +696,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-flat btn-primary" onclick="submitAssignEngineerAtm()" id="atmAddFormButton">Save</button>
+          <button type="button" class="btn btn-flat btn-primary" id="submitAssignEngineer">Save</button>
         </div>
       </div>
     </div>
@@ -875,9 +920,7 @@
               bgColor = "bg-green"
             }else if (row.status == "Available") {
               bgColor = "bg-aqua"
-            }else if (row.status == 'RMA') {
-              bgColor = "bg-red"
-            }else if (row.status == 'Temporary') {
+            }else if (row.status == 'Rent') {
               bgColor = "bg-yellow"
             }else if (row.status == 'Unavailable') {
               bgColor = "bg-grey"
@@ -957,6 +1000,18 @@
             }
 
             return rma
+          }
+        },
+        {
+          title:"Client",
+          render: function (data, type, row, meta){
+            let client = row.client
+
+            if (row.client == null) {
+              client == '-'
+            }
+
+            return client
           }
         },
         {
@@ -1070,12 +1125,34 @@
     }
 
     function btnAssignEngineer(){
-      $("#modal-assign-engineer-atm").modal("show")
-      settingListAtmId()
-      settingListEngineerAssign("add",null,"modal-assign-engineer-atm")
+      $("#modal-assignBy").modal("show")
+      $("#assignBy").select2({
+        placeholder:"Select Option",
+        data:[
+          {id:"pid",text:"Project Id"},
+          {id:"asset",text:"Asset"},
+        ],
+        dropdownParent:$("#modal-assignBy")
+      })
     }
 
-    function settingListAtmId(){
+    function assignBy(){
+      $("#modal-assignBy").modal("hide")
+      $("#modal-assign-engineer-atm").modal("show")
+      if ($("#assignBy").val() == "pid") {
+        settingPidAssignEngineer("modal-assign-engineer-atm")
+        $("#submitAssignEngineer").attr("onclick","submitAssignEngineerAtm('pid')")
+      }else{
+        settingListAtmId("modal-assign-engineer-atm")
+        $("#submitAssignEngineer").attr("onclick","submitAssignEngineerAtm('asset')")
+        // settingListEngineerAssign("add",null,"modal-assign-engineer-atm","asset")
+        // settingRolesEngineer("modal-assign-engineer-atm","asset")
+      }
+    }
+
+    function settingListAtmId(id_modal){
+      $(".divAssetToggle").show()
+      $(".selectAssignAtmId").show()
       $(".selectAssignAtmId").select2({
         placeholder: 'Select ATM Id',
         ajax: {
@@ -1092,92 +1169,286 @@
                 };
             },
         },
+        dropdownParent:$("#"+id_modal)
       }).on("change", function () {
-         var selectedValues = [];
-          $('.selectAssignAtmId').not(this).each(function() {
-            selectedValues = selectedValues.concat($(this).val() || []);
-          });
+        var selectedValues = [];
+        $('.selectAssignAtmId').not(this).each(function() {
+          selectedValues = selectedValues.concat($(this).val() || []);
+        });
 
-          // Check if any selected value is selected in another Select
-          var currentSelect = $(this);
-          var alertShown = false; 
-          $(this).find('option:selected').each(function() {
-            var value = $(this).val();
-            var text = $(this).text();
+        // Check if any selected value is selected in another Select
+        var currentSelect = $(this);
+        var alertShown = false; 
+        $(this).find('option:selected').each(function() {
+          var value = $(this).val();
+          var text = $(this).text();
 
-            if (selectedValues.includes(value)) {
-              // Unselect the value in the current Select
-              currentSelect.find('option[value="' + value + '"]').prop('selected', false);
-              currentSelect.trigger('change');
-              alert('ATM Id ' + text + ' cannot duplicate Assign!');
-              alertShown = true;
-            }
-          });
+          if (selectedValues.includes(value)) {
+            // Unselect the value in the current Select
+            currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+            currentSelect.trigger('change');
+            Swal.fire({
+              title: "<strong>Oopzz!</strong>",
+              icon: "info",
+              html: `
+                'Asset -  ${text} cannot duplicate Assign!'
+              `,
+            })
+            alertShown = true;
+          }
+        });
+        settingListEngineerAssign("add",null,"modal-assign-engineer-atm","asset",$(this))
       })
-
       $(".selectAssignAtmId").next().next().remove()
     }
 
     function addRowAssignEngineerAtm(){
       var cloneRow = $(".listEngineerAssign:last").clone()
-      cloneRow.find(".deleteRowAssign").removeAttr("disabled").end()
-      cloneRow.children("select")
-              .select2("destroy")
-              .val("")
-              .end()
+      cloneRow.find(".deleteRowAssign").removeAttr("disabled")
 
       $(".listEngineerAssign").last().after(cloneRow)
+      $(".listEngineerAssign:last").find(".assignEngineerAtm").next("span").find("span span").text("")
+      $(".listEngineerAssign:last").find(".selectRolesEngineer ").next("span").find("span span").text("")
+      destroySelect2Instances()
 
       $(".deleteRowAssign").click(function(){
         $(this).closest(".listEngineerAssign").remove()
       })
 
-      settingListEngineerAssign("add",null,"modal-assign-engineer-atm")
-      settingListAtmId()
+      if ($("#assignBy").val() == 'pid') {
+        settingPidAssignEngineer("modal-assign-engineer-atm")
+        // settingListEngineerAssign("add",null,"modal-assign-engineer-atm","pid")
+        // settingRolesEngineer("modal-assign-engineer-atm","asset")
+      }else{
+        settingListAtmId("modal-assign-engineer-atm")
+        // settingListEngineerAssign("add",null,"modal-assign-engineer-atm","asset")
+        // settingRolesEngineer("modal-assign-engineer-atm","asset")
+      }
     }
 
-    function settingListEngineerAssign(status,name,id_modal){
+    function destroySelect2Instances() {
+      $(".listEngineerAssign:last").find('select').each(function() {
+        if ($(this).data('select2')) {
+          $(this).select2('destroy');
+        }
+      });
+    }
+
+    function settingListEngineerAssign(status,name,id_modal,type,param){
+      var id = param.val()
+      var url = ''
+      if (type == "pid") {
+        url = "{{url('/asset/getEngineerById?pid=')}}"+id
+      }else{
+        url = "{{url('/asset/getEngineerById?id_asset=')}}"+id
+      }
       $.ajax({
         type:"GET",
-        url:"{{url('/asset/getEngineer')}}",
+        url:url,
         success:function(result){
-          var selectEngineer = $(".assignEngineerAtm")
-
-          selectEngineer.select2({
+          // var selectEngineer = param.closest(".col-sm-4").next(".col-sm-4").find("select")
+          // var selectEngineer = $(".assignEngineerAtm")
+          param.closest(".col-sm-4").next(".col-sm-4").find("select").select2({
             placeholder: 'Select Engineer Name',
             dropdownParent: $("#"+id_modal),
             data:result
+          }).on("change", function () {
+            var selectedValuesEngineer = [], selectedValuesPid = [];
+
+            var pidValue = $(this).closest(".col-sm-4").prev(".col-sm-4").find(".divPidToggle").find(".selectPidAssignEng ") 
+
+            $('.selectPidAssignEng').not($(pidValue)).each(function() {
+              selectedValuesPid = selectedValuesPid.concat($(this).val() || []);
+            });
+
+            $('.assignEngineerAtm').not(this).each(function() {
+              selectedValuesEngineer = selectedValuesEngineer.concat($(this).val() || []);
+            });
+
+            let count = countOccurrences(selectedValuesPid, $(pidValue).val());
+
+            if (count == 1) {
+              var currentSelect = $(this);
+              var alertShown = false; 
+
+              //Check if any selected value is selected in another Select
+              $(this).find('option:selected').each(function() {
+                var value = $(this).val();
+                var text = $(this).text();
+
+                if (selectedValuesEngineer.includes(value)) {
+                  // Unselect the value in the current Select
+                  currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+                  currentSelect.trigger('change');
+                  Swal.fire({
+                    title: "<strong>Oopzz!</strong>",
+                    icon: "info",
+                    html: `
+                      'Engineer -  ${text} cannot duplicate Assign!'
+                    `,
+                  })
+                  alertShown = true;
+                }
+              });
+            }
+
+            if (type == "pid") {
+              settingRolesEngineer("modal-assign-engineer-atm","pid",param,$(this).val())
+            }else{
+              settingRolesEngineer("modal-assign-engineer-atm","asset",param,$(this).val())
+            }
           })
 
-          if (status == "edit") {
-            if (name != null) {
-              selectEngineer.val(name).trigger('change');
-            }else{
-              selectEngineer
-            }
-          }else{
-            selectEngineer
-          }
+          // if (status == "edit") {
+          //   if (name != null) {
+          //     selectEngineer.val(name).trigger('change');
+          //   }else{
+          //     selectEngineer
+          //   }
+          // }else{
+          //   selectEngineer
+          // }
 
           $(".assignEngineerAtm").next().next().remove()
         }
       })    
     }
 
-    function submitAssignEngineerAtm(){
+    function settingRolesEngineer(id_modal,type,param,engineer){
+      var id = param.val()
+
+      var url = ''
+      if (type == "pid") {
+        url = "{{url('/asset/getRolesById?pid=')}}"+id+"&engineer="+engineer
+      }else{
+        url = "{{url('/asset/getRolesById?id_asset=')}}"+id+"&engineer="+engineer
+      }
+      $.ajax({
+        type:"GET",
+        url:url,
+        success:function(result){
+          // $(".selectRolesEngineer")
+          param.closest(".col-sm-4").next(".col-sm-4").next(".col-sm-3").find("select").select2({
+            placeholder: 'Select Engineer Roles',
+            dropdownParent: $("#"+id_modal),
+            data:result
+          }).on("change", function () {
+            var selectedValuesRoles = [], selectedValuesPid = [];
+
+            var pidValue = $(this).closest(".col-sm-3").prev(".col-sm-4").prev(".col-sm-4").find(".divPidToggle").find(".selectPidAssignEng ") 
+
+            $('.selectPidAssignEng').not($(pidValue)).each(function() {
+              selectedValuesPid = selectedValuesPid.concat($(this).val() || []);
+            });
+
+            $('.selectRolesEngineer').not(this).each(function() {
+              selectedValuesRoles = selectedValuesRoles.concat($(this).val() || []);
+            });
+
+            let count = countOccurrences(selectedValuesPid, $(pidValue).val());
+
+            if (count == 1) {
+              var currentSelect = $(this);
+              var alertShown = false; 
+
+              //Check if any selected value is selected in another Select
+              $(this).find('option:selected').each(function() {
+                var value = $(this).val();
+                var text = $(this).text();
+
+                if (selectedValuesRoles.includes(value)) {
+                  // Unselect the value in the current Select
+                  currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+                  currentSelect.trigger('change');
+                  Swal.fire({
+                    title: "<strong>Oopzz!</strong>",
+                    icon: "info",
+                    html: `
+                      'Engineer roles cannot duplicate Assign!'
+                    `,
+                  })
+                  alertShown = true;
+                }
+              });
+            }
+          })
+          
+          $(".selectRolesEngineer").next().next().remove()
+        }
+      }) 
+    }
+
+    function settingPidAssignEngineer(id_modal){
+      $(".divPidToggle").show()
+      $(".selectPidAssignEng").show()
+      $(".selectPidAssignEng").select2({
+        ajax: {
+          url: '{{url("/asset/getPidAsset")}}',
+          processResults: function (data) {
+            // Transforms the top-level key of the response object from 'items' to 'results'
+            return {
+              results: data
+            };
+          },
+        },
+        placeholder: 'Select Project Id',
+        dropdownParent: $("#"+id_modal)
+      }).on("change", function () {
+        var selectedValues = [];
+        $('.selectPidAssignEng').not(this).each(function() {
+          selectedValues = selectedValues.concat($(this).val() || []);
+        });
+
+        //Check if any selected value is selected in another Select
+        var currentSelect = $(this);
+        var alertShown = false; 
+        $(this).find('option:selected').each(function() {
+          var value = $(this).val();
+          var text = $(this).text();
+
+          let count = countOccurrences(selectedValues, value);
+
+          if (count > 1) {
+            // Unselect the value in the current Select
+            currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+            currentSelect.trigger('change');
+            Swal.fire({
+              title: "<strong>Oopzz!</strong>",
+              icon: "info",
+              html: `
+                PID cannot be added more than twice!
+              `,
+            })
+            alertShown = true;
+          }
+        });
+
+        settingListEngineerAssign("add",null,"modal-assign-engineer-atm","pid",$(this))
+      })
+      $(".selectPidAssignEng").next().next().remove()
+    }
+
+    function countOccurrences(arr, variable) {
+      return arr.filter(item => item === variable).length;
+    }
+
+    function submitAssignEngineerAtm(type){
       var inputs = document.querySelectorAll('.listEngineerAssign .form-control');
-      var arrListEnginner = [],engineer = [], atm_id = [];
+      var arrListEnginner = [],engineer = [], atm_id = [], roles = [];
       // Iterate over each input element
 
-      var isEmptyField = true, InputLengthEmpty = 0,inputLength = inputs.length
+      var isEmptyField = true, InputLengthEmpty = 0
       
       inputs.forEach(function(input) {
+        if ($(input).is(":visible") == true) {
+          inputLength = inputs.length
+
           if ($(input).val() == "") {
             isEmptyField = true
             InputLengthEmpty-=1
           }else{
             InputLengthEmpty+=1
-            if (InputLengthEmpty < inputLength) {
+            if (InputLengthEmpty < inputLength-$('.listEngineerAssign').length) {
               isEmptyField = true
             }else{
               isEmptyField = false
@@ -1188,25 +1459,50 @@
               engineer.push(input.value);
           }
 
-          if(input.name == 'selectAssignAtmId'){
-              atm_id.push($(input).val());
+          if (type == 'pid') {
+            if(input.name == 'selectPidAssignEng'){
+                atm_id.push($(input).val());
+            }
+          }else{
+            if(input.name == 'selectAssignAtmId'){
+                atm_id.push($(input).val());
+            }
           }
-          
+
+          if(input.name == 'selectRolesEngineer'){
+              roles.push(input.value);
+          }
+        }
       });
 
-      for (var i = 0; i < engineer.length; i++) {
+      if (type == 'pid') {
+        for (var i = 0; i < engineer.length; i++) {
           // Construct object with elements from both arrays
           var combinedObject = {
               engineer: engineer[i],
-              id_asset: atm_id[i]
+              pid: atm_id[i],
+              role:roles[i]
           };
           // Push the combined object into the resulting array
           arrListEnginner.push(combinedObject);
+        }
+      }else{
+        for (var i = 0; i < engineer.length; i++) {
+          // Construct object with elements from both arrays
+          var combinedObject = {
+              engineer: engineer[i],
+              id_asset: atm_id[i],
+              role:roles[i]
+          };
+          // Push the combined object into the resulting array
+          arrListEnginner.push(combinedObject);
+        }
       }
 
       if (isEmptyField == false) {
         formData = new FormData
-        formData.append("_token","{{ csrf_token() }}")        
+        formData.append("_token","{{ csrf_token() }}")
+        formData.append("type",type)                
         formData.append("arrListEngineerAssign",JSON.stringify(arrListEnginner)) 
 
         swalFireCustom = {
@@ -1261,7 +1557,6 @@
       }else{
         alert("Fill Empty Input Field!")
       }
-      
     }
 
     $("select").select2()
@@ -1380,7 +1675,6 @@
       placeholder:"Select Category",
       dropdownParent: $("#modal-add-asset"),
     }).on('select2:select', function (e) {
-      console.log(e.params.data.text)
       if (e.params.data.text == "Computer") {
         $.each($(".tab-add").find("select"),function(item,data){
           var $el = $(this);
@@ -1478,13 +1772,12 @@
       data:[
         {id:"Installed",text:"Installed"},
         {id:"Available",text:"Available"},
-        {id:"RMA",text:"RMA"},
-        {id:"Temporary",text:"Temporary"},
+        {id:"Rent",text:"Rent"},
         {id:"Unavailable",text:"Unavailable"},
       ]
     }).on('select2:select', function (e) { 
       var id = e.params.data.id
-      if (id == "Unavailable" || id == "Temporary") {
+      if (id == "Unavailable" || id == "Rent") {
         $("#txtAreaReason").closest(".form-group").show()
       }else{
         $("#txtAreaReason").closest(".form-group").hide()
@@ -1942,15 +2235,15 @@
         tempCategory = "category=" + $("#selectFilterCategory").val() 
 
         //show button
-        if ($("#selectFilterCategory").val() == "ATM" || $("#selectFilterCategory").val() == "CRM") {
-          if(accesable.includes('btnAssignEngineer')){
-            $(".btnAssignEngineer").show()
-          }else{
-            $(".btnAssignEngineer").hide()
-          }
-        }else{
-          $(".btnAssignEngineer").hide()
-        }
+        // if ($("#selectFilterCategory").val() == "ATM" || $("#selectFilterCategory").val() == "CRM") {
+        //   if(accesable.includes('btnAssignEngineer')){
+        //     $(".btnAssignEngineer").show()
+        //   }else{
+        //     $(".btnAssignEngineer").hide()
+        //   }
+        // }else{
+        //   $(".btnAssignEngineer").hide()
+        // }
       }
 
       if ($("#selectFilterClient").val() != "" && $("#selectFilterClient").val() != null) {
@@ -1978,7 +2271,7 @@
       $("#selectFilterPID").empty("")
       InitiateFilterPID()
       $('#tableAsset').DataTable().ajax.url("{{url('asset/getDataAsset')}}").load();
-      $(".btnAssignEngineer").hide()
+      // $(".btnAssignEngineer").hide()
     }
 
     function changeNumberEntries(number){
@@ -2050,6 +2343,19 @@
       $(".tab-add").find("textarea[id='txtAreaReason']").val("")
     });
 
+    $('#modal-assign-engineer-atm').on('hidden.bs.modal', function () {
+      $(".divAssetToggle").hide()
+      $(".divPidToggle").hide()
+      $(".selectPidAssignEng").hide()
+      $(".selectAssignAtmId").hide()
+      $(".divPidToggle").hide()
+      $(this).find("select").val("").trigger("change")
+      $("#assignBy").val("").trigger("change")
+      if ($(".listEngineerAssign").length > 1) {
+        $(".listEngineerAssign").last().remove()
+      }
+    });
+
     $('#modal-add-service-point').on('hidden.bs.modal', function () {
       $("input").val("")
     });
@@ -2074,10 +2380,10 @@
           $("#countAvailable").after("<p>Available</p>")
           $("#countAvailable").closest("div").next(".icon").html("<i class='fa fa-archive'></i>")
 
-          $("#countTemporary").text(response.countTemporary)
-          $("#countTemporary").next().remove()
-          $("#countTemporary").after("<p>Temporary</p>")
-          $("#countTemporary").closest("div").next(".icon").html("<i class='fa fa-list'></i>")
+          $("#countRent").text(response.countRent)
+          $("#countRent").next().remove()
+          $("#countRent").after("<p>Rent</p>")
+          $("#countRent").closest("div").next(".icon").html("<i class='fa fa-list'></i>")
 
           $('.counter').each(function () {
             var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;

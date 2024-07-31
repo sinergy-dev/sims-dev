@@ -129,11 +129,11 @@ class AssetMgmtController extends Controller
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
         $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
+            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer','client')
             // ->where('category_peripheral','-')
             ->orderBy('tb_asset_management.created_at','desc'); 
 
-        $searchFields = ['asset_owner', 'tb_asset_management_detail.pid', 'serial_number', 'tb_asset_management.id_asset', 'type_device', 'vendor', 'rma', 'spesifikasi','notes','id_device_customer'];
+        $searchFields = ['asset_owner', 'tb_asset_management_detail.pid', 'serial_number', 'tb_asset_management.id_asset', 'type_device', 'vendor', 'rma', 'spesifikasi','notes','id_device_customer','client','pid'];
 
         if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
@@ -195,8 +195,7 @@ class AssetMgmtController extends Controller
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
         $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
-            // ->where('category_peripheral','-')
+            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer','client')
             ->orderBy('tb_asset_management.created_at','desc'); 
 
         if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
@@ -233,7 +232,7 @@ class AssetMgmtController extends Controller
 
     public function getLevelSupport(Request $request)
     {
-        $data = DB::table('tb_asset_management_detail')->select('second_level_support as id','second_level_support as text')->where('second_level_support','!=',null)->where('second_level_support','like','%'.request('q').'%')->distinct()->get();
+        $data = DB::table('tb_asset_management_detail')->select('second_level_support as id','second_level_support as text')->where('second_level_support','!=',null)->where('second_level_support','!=','null')->where('second_level_support','like','%'.request('q').'%')->distinct()->get();
 
         return $data;
     }
@@ -251,7 +250,7 @@ class AssetMgmtController extends Controller
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
         $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management_category','tb_asset_management_category.name','tb_asset_management.category')
-            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','related_id_asset','tb_asset_management.id','id_device_customer')->orderBy('tb_asset_management.created_at','desc'); 
+            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','related_id_asset','tb_asset_management.id','id_device_customer','client')->orderBy('tb_asset_management.created_at','desc'); 
 
         if (isset($request->pid)) {
             $data->where('pid',$request->pid);
@@ -607,6 +606,11 @@ class AssetMgmtController extends Controller
         $update = AssetMgmt::where('id',$request->id_asset)->first();
         if ($update->asset_owner != $request->assetOwner) {
 
+            $dateAsset = DB::table('tb_asset_management')
+                ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(id_asset, '-', 3), '-', -1) as id_extracted"))
+                ->where('id', $request->id_asset)
+                ->first()->id_extracted;
+
             if ($request->typeAsset == 'peripheral') {
                 $category = $update->categoryPeripheral;
                 $inc = AssetMgmt::select('category_peripheral')
@@ -660,7 +664,7 @@ class AssetMgmtController extends Controller
 
             }
 
-            $id =  $request->assetOwner . '-' . $cat . '-' . date('m') . date('y') . '-' . $nomor;
+            $id =  $request->assetOwner . '-' . $cat . '-' . $dateAsset . '-' . $nomor;
 
             $updateAsset = AssetMgmt::where('id',$request->id_asset)->first();
             $updateAsset->id_asset = $id;
@@ -758,7 +762,6 @@ class AssetMgmtController extends Controller
         }
         $update->tanggal_pembelian = $request->tanggalBeli;
 
-
         if ($update->nilai_buku != str_replace('.', '', $request['nilaiBuku'])) {
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
@@ -798,18 +801,25 @@ class AssetMgmtController extends Controller
         }
 
         if (isset($request->engineer)) {
-            $store = new AssetMgmtAssignEngineer();
-            $store->id_asset = $request->id_asset;
-            $store->engineer_atm = $request->engineer;
-            $store->date_add = Carbon::now()->toDateTimeString();
-            $store->save();
+            $data = json_decode($request->engineer,true);
 
-            $storeLog = new AssetMgmtLog();
-            $storeLog->id_asset = $request->id_asset;
-            $storeLog->operator = Auth::User()->name;
-            $storeLog->date_add = Carbon::now()->toDateTimeString();
-            $storeLog->activity = 'Assign Engineer ' .$request->engineer. ' to asset ' . AssetMgmt::where('id',$request->id_asset)->first()->id_asset;
-            $storeLog->save();
+            $delete_engineer_assign = AssetMgmtAssignEngineer::where('id_asset',$request->id_asset)->delete();
+
+            foreach ($data as $value) {
+                $store = new AssetMgmtAssignEngineer();
+                $store->id_asset     = $request->id_asset;
+                $store->engineer_atm = $value['name'];
+                $store->role         = $value['roles'];
+                $store->date_add     = Carbon::now()->toDateTimeString();
+                $store->save();
+
+                $storeLog = new AssetMgmtLog();
+                $storeLog->id_asset = $request->id_asset;
+                $storeLog->operator = Auth::User()->name;
+                $storeLog->date_add = Carbon::now()->toDateTimeString();
+                $storeLog->activity = 'Assign Engineer ' .$value['name'] . ' as ' . $value['roles'] . ' Engineer to asset ' . AssetMgmt::where('id',$request->id_asset)->first()->id_asset;
+                $storeLog->save();
+            } 
         }
 
         // $storeLog = new AssetMgmtLog();
@@ -1115,7 +1125,7 @@ class AssetMgmtController extends Controller
 
         $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
             ->leftjoin('tb_asset_management_category','tb_asset_management.category','tb_asset_management_category.name')
-            ->select('tb_asset_management.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','tb_asset_management_category.id_category as category_code','category as category_text','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),'engineer_atm','service_point','latitude','longitude','tanggal_pembelian','nilai_buku','harga_beli','tb_asset_management.id','reason_status','link_drive','document_name','document_location')
+            ->select('tb_asset_management.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','tb_asset_management_category.id_category as category_code','category as category_text','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),'service_point','latitude','longitude','tanggal_pembelian','nilai_buku','harga_beli','tb_asset_management.id','reason_status','link_drive','document_name','document_location')
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
             ->first();
 
@@ -1127,6 +1137,12 @@ class AssetMgmtController extends Controller
             ->where('ticketing__activity.activity', 'OPEN')->where('t2.activity', 'CLOSE')->whereIn('ticketing__activity.id_ticket',$getIdTicket)->get()->SUM('time_diff_seconds');
 
         $countTicket = DB::table('ticketing__detail')->where('serial_device',$getAll->serial_number)->whereBetween('reporting_time', [$getAll->maintenance_start . " 00:00:00", $getAll->maintenance_end . " 23:59:59"])->count();
+
+        $getEngineer = DB::table('tb_asset_management_assign_engineer')->select('engineer_atm','role','id')->where('id_asset',$request->id_asset)->get()->groupby('role');
+
+        if ($getAll) {
+            $getAll->engineers = $getEngineer;
+        }
 
         $getData = collect($getAll);
 
@@ -1631,33 +1647,45 @@ class AssetMgmtController extends Controller
 
         $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
             ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
-            // ->where('category_peripheral','-')
             ->orderBy('tb_asset_management.created_at','desc'); 
+
+        $dataInstalled = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
+            ->orderBy('tb_asset_management.created_at','desc')->where('status','Installed'); 
+
+        $dataAvailable = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
+            ->orderBy('tb_asset_management.created_at','desc')->where('status','Available'); 
+
+
+        $dataRent = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
+            ->orderBy('tb_asset_management.created_at','desc')->where('status','Rent'); 
 
         if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $countAll = $data->count();
-            $countInstalled = $data->where('status','Installed')->count();
-            $countAvailable = $data->where('status','Available')->count();
-            $countTemporary = $data->where('status','Temporary')->count();
+            $countInstalled = $dataInstalled->count();
+            $countAvailable = $dataAvailable->count();
+            $countRent = $dataRent->count();
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $countAll = $data->whereIn('pid',$getPid)->count();
-            $countInstalled = $data->where('status','Installed')->whereIn('pid',$getPid)->count();
-            $countAvailable = $data->where('status','Available')->whereIn('pid',$getPid)->count();
-            $countTemporary = $data->where('status','Temporary')->whereIn('pid',$getPid)->count();
+            $countInstalled = $dataInstalled->whereIn('pid',$getPid)->count();
+            $countAvailable = $dataInstalled->whereIn('pid',$getPid)->count();
+            $countRent = $dataRent->whereIn('pid',$getPid)->count();
 
             // $data = $data->whereIn('pid',$getPid);
         } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
             $countAll = $data->whereIn('pid',$getPidPm)->count();
-            $countInstalled = $data->where('status','Installed')->whereIn('pid',$getPidPm)->count();
-            $countAvailable = $data->where('status','Available')->whereIn('pid',$getPidPm)->count();
-            $countTemporary = $data->where('status','Temporary')->whereIn('pid',$getPidPm)->count();
+            $countInstalled = $dataInstalled->whereIn('pid',$getPidPm)->count();
+            $countAvailable = $dataInstalled->whereIn('pid',$getPidPm)->count();
+            $countRent = $dataRent->whereIn('pid',$getPidPm)->count();
 
             // $data = $data->whereIn('pid',$getPidPm);
         } else if ($cek_role->name_role == 'Managed Service Manager' ) {
             $countAll = $data->where('pid','!=','INTERNAL')->count();
-            $countInstalled = $data->where('status','Installed')->where('pid','!=','INTERNAL')->count();
-            $countAvailable = $data->where('status','Available')->where('pid','!=','INTERNAL')->count();
-            $countTemporary = $data->where('status','Temporary')->where('pid','!=','INTERNAL')->count();
+            $countInstalled = $dataInstalled->where('pid','!=','INTERNAL')->count();
+            $countAvailable = $dataInstalled->where('pid','!=','INTERNAL')->count();
+            $countRent = $dataRent->where('pid','!=','INTERNAL')->count();
         }
 
 
@@ -1665,9 +1693,9 @@ class AssetMgmtController extends Controller
         // $countAll = AssetMgmt::count();
         // $countInstalled = AssetMgmt::where('status','Installed')->count();
         // $countAvailable = AssetMgmt::where('status','Available')->count();
-        // $countTemporary = AssetMgmt::where('status','Temporary')->count();
+        // $countRent = AssetMgmt::where('status','Temporary')->count();
 
-        return collect(["countAll"=>$countAll,"countInstalled"=>$countInstalled,"countAvailable"=>$countAvailable,"countTemporary"=>$countTemporary]);
+        return collect(["countAll"=>$countAll,"countInstalled"=>$countInstalled,"countAvailable"=>$countAvailable,"countRent"=>$countRent]);
     }
 
     public function getFilterCount(Request $request)
@@ -1690,71 +1718,71 @@ class AssetMgmtController extends Controller
         $countAvailable = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
             ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes')->where('status','Available');
 
-        $countTemporary = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+        $countRent = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
             ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes')->where('status','Temporary');
 
         if (isset($request->pid)) {
             $countAll->where('pid',$request->pid);
             $countInstalled->where('pid',$request->pid);
             $countAvailable->where('pid',$request->pid);
-            $countTemporary->where('pid',$request->pid);
+            $countRent->where('pid',$request->pid);
         }
 
         if (isset($request->assetOwner)) {
             $countAll->where('asset_owner',$request->assetOwner);
             $countInstalled->where('asset_owner',$request->assetOwner);
             $countAvailable->where('asset_owner',$request->assetOwner);
-            $countTemporary->where('asset_owner',$request->assetOwner);
+            $countRent->where('asset_owner',$request->assetOwner);
         }
 
         if (isset($request->category)) {
             $countAll->where('category',$request->category);
             $countInstalled->where('category',$request->category);
             $countAvailable->where('category',$request->category);
-            $countTemporary->where('category',$request->category);
+            $countRent->where('category',$request->category);
         } 
 
         if (isset($request->category)) {
             $countAll->where('category',$request->category);
             $countInstalled->where('category',$request->category);
             $countAvailable->where('category',$request->category);
-            $countTemporary->where('category',$request->category);
+            $countRent->where('category',$request->category);
         }
         
         if (isset($request->client)) {
             $countAll->where('client',$request->client);
             $countInstalled->where('client',$request->client);
             $countAvailable->where('client',$request->client);
-            $countTemporary->where('client',$request->client);
+            $countRent->where('client',$request->client);
         } 
 
         if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $countAll = $countAll;
             $countInstalled = $countInstalled;
             $countAvailable = $countAvailable;
-            $countTemporary = $countTemporary;
+            $countRent = $countRent;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $countAll = $countAll->whereIn('pid',$getPid);
             $countInstalled = $countInstalled->whereIn('pid',$getPid);
             $countAvailable = $countAvailable->whereIn('pid',$getPid);
-            $countTemporary = $countTemporary->whereIn('pid',$getPid);
+            $countRent = $countRent->whereIn('pid',$getPid);
 
             // $data = $data->whereIn('pid',$getPid);
         } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
             $countAll = $countAll->whereIn('pid',$getPidPm);
             $countInstalled = $countInstalled->whereIn('pid',$getPidPm);
             $countAvailable = $countAvailable->whereIn('pid',$getPidPm);
-            $countTemporary = $countTemporary->whereIn('pid',$getPidPm);
+            $countRent = $countRent->whereIn('pid',$getPidPm);
 
             // $data = $data->whereIn('pid',$getPidPm);
         } else if ($cek_role->name_role == 'Managed Service Manager' ) {
             $countAll = $countAll->where('pid','!=','INTERNAL');
             $countInstalled = $countInstalled->where('pid','!=','INTERNAL');
             $countAvailable = $countAvailable->where('pid','!=','INTERNAL');
-            $countTemporary = $countTemporary->where('pid','!=','INTERNAL');
+            $countRent = $countRent->where('pid','!=','INTERNAL');
         }
 
-        return collect(["countAll"=>$countAll->count('tb_asset_management.id_asset'),"countInstalled"=>$countInstalled->count('tb_asset_management.id_asset'),"countAvailable"=>$countAvailable->count('tb_asset_management.id_asset'),"countTemporary"=>$countTemporary->count('tb_asset_management.id_asset')]);
+        return collect(["countAll"=>$countAll->count('tb_asset_management.id_asset'),"countInstalled"=>$countInstalled->count('tb_asset_management.id_asset'),"countAvailable"=>$countAvailable->count('tb_asset_management.id_asset'),"countRent"=>$countRent->count('tb_asset_management.id_asset')]);
     }
 
     public function getColor(Request $request)
@@ -1769,15 +1797,65 @@ class AssetMgmtController extends Controller
     {
         $data = json_decode($request->arrListEngineerAssign,true);
 
-        foreach ($data as $value) {
-            foreach ($value['id_asset'] as $values) {
-                $id = AssetMgmt::where('id_asset',$values)->first();
-                $store = new AssetMgmtAssignEngineer();
-                $store->engineer_atm = $value['engineer'];
-                $store->id_asset = $id->id;
-                $store->save();
+        if ($request->type == 'pid') {
+            foreach ($data as $value) {
+                $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+                $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
+
+                $dataAsset = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+                    ->select('tb_asset_management_detail.pid','tb_asset_management_detail.id_asset')->where('pid',$value['pid'])->get();
+
+                foreach ($dataAsset as $values) {
+                    $id = AssetMgmt::where('id_asset',$values->id_asset)->first();
+                    if (AssetMgmtAssignEngineer::where('id_asset',$values->id_asset)->where('role','Primary')->exists()) {
+                        $store = AssetMgmtAssignEngineer::where('id_asset',$values->id_asset)->where('role','Primary')->first();
+                        $store->engineer_atm = $value['engineer'];
+                        $store->id_asset = $values->id_asset;
+                        $store->date_add = Carbon::now()->toDateTimeString();
+                    } else {
+                        $store = new AssetMgmtAssignEngineer();
+                        $store->engineer_atm = $value['engineer'];
+                        $store->id_asset = $values->id_asset;
+                        $store->role = $value['role'];
+                        $store->date_add = Carbon::now()->toDateTimeString();
+                    }
+                    // $store = new AssetMgmtAssignEngineer();
+                    $store->save();
+                }
             }
+        } else {
+           foreach ($data as $value) {
+                foreach ($value['id_asset'] as $values) {
+                    $id = AssetMgmt::where('id_asset',$values)->first();
+                    if (AssetMgmtAssignEngineer::where('id_asset',$values)->where('role','Primary')->exists()) {
+                        $store = AssetMgmtAssignEngineer::where('id_asset',$values)->where('role','Primary')->first();
+                        $store->engineer_atm = $value['engineer'];
+                        $store->id_asset = $values;
+                        $store->date_add = Carbon::now()->toDateTimeString();
+                    } else {
+                        $store = new AssetMgmtAssignEngineer();
+                        $store->engineer_atm = $value['engineer'];
+                        $store->id_asset = $values;
+                        $store->role = $value['role'];
+                        $store->date_add = Carbon::now()->toDateTimeString();
+                    }
+                    // $store = new AssetMgmtAssignEngineer();
+                    $store->save();
+                }
+            } 
         }
+        
+    }
+
+    public function getPidAsset()
+    {
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
+
+        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management_detail.pid as id','tb_asset_management_detail.pid as text')->where('pid','!=',null)->where('pid','like','%'.request('q').'%')->distinct()->get();
+
+        return $data;
     }
 
     public function getIdAtm(Request $request)
@@ -1789,7 +1867,7 @@ class AssetMgmtController extends Controller
         $getLastId = DB::table($getLastId,'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->select('tb_asset_management_detail.id_asset','pid','id_last_asset');
 
         $data = DB::table($getLastId, 'temp3')->join('tb_asset_management','tb_asset_management.id','temp3.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp3.id_last_asset')
-            ->select(DB::raw('`tb_asset_management`.`id_asset` AS `id`,`tb_asset_management_detail`.`id_device_customer` AS `text`'));
+            ->select('tb_asset_management.id as id',DB::raw("CONCAT(`tb_asset_management`.`id_asset`, ' - ', `id_device_customer`, ' - ', `alamat_lokasi`, ' - ', `type_device`, ' - ', `serial_number`) AS `text`"));  
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first(); 
@@ -1809,6 +1887,53 @@ class AssetMgmtController extends Controller
     public function getEngineer(Request $request)
     {
         return $data = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`users`.`name` AS `id`,`users`.`name` AS `text`'))->where('roles.name','Engineer on Site')->where('status_karyawan','!=','dummy')->where('users.name','like','%'.request('q').'%')->get();
+    }
+
+    public function getEngineerById(Request $request)
+    {   
+        $ids = $request->pid ? 'pid' : 'id_asset';
+
+        if ($ids == 'pid') {
+            $id_asset = AssetMgmtDetail::select('id_asset')->where("pid",$request->pid)->orderby('pid','DESC')->limit(1)->first();
+
+            $enginAssign = AssetMgmtAssignEngineer::select('engineer_atm')->where('id_asset',$id_asset->id_asset)->where('role','Primary')->get();
+        }else{
+            $enginAssign = AssetMgmtAssignEngineer::select('engineer_atm')->whereIn('id_asset',array_map('intval', explode(',', $request->id_asset)))->where('role','Primary')->get();
+        }
+
+        $data = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`users`.`name` AS `id`,`users`.`name` AS `text`'))->where('roles.name','Engineer on Site')->where('status_karyawan','!=','dummy')->where('users.name','like','%'.request('q').'%')->whereNotIn('users.name',$enginAssign)->get();
+
+        return $data;
+    }
+
+    public function getRolesById(Request $request)
+    {
+        $ids = $request->pid ? 'pid' : 'id_asset';
+
+        if ($ids == 'pid') {
+            $id_asset = AssetMgmtDetail::select('id_asset')->where("pid",$request->pid)->orderby('pid','DESC')->limit(1)->first();
+
+            $enginAssign = AssetMgmtAssignEngineer::select(DB::raw('(CASE WHEN role = "Primary" THEN true ELSE false END) AS status'))->where('id_asset',$id_asset->id_asset)->where('engineer_atm',$request->engineer)->first();
+        }else{
+            $enginAssign = AssetMgmtAssignEngineer::select(DB::raw('(CASE WHEN role = "Primary" THEN true ELSE false END) AS status'))->whereIn('id_asset',array_map('intval', explode(',', $request->id_asset)))->where('engineer_atm',$request->engineer)->first();
+        }
+
+        if (isset($enginAssign->status)) {
+            $data = collect([
+                ['id' => 'Primary', 'text' => 'Primary'],
+                ['id' => 'Secondary', 'text' => 'Secondary'],
+            ]);
+        }else{
+            $data = collect([
+                ['id'=>'Secondary','text'=>'Secondary']
+            ]);
+            // $data = collect([
+            //     ['id' => 'Primary', 'text' => 'Primary'],
+            //     ['id' => 'Secondary', 'text' => 'Secondary'],
+            // ]);
+        }
+
+        return $data;
     }
 
     public function getLocationNameFromLatLng(Request $request) {
@@ -2063,9 +2188,14 @@ class AssetMgmtController extends Controller
     {
         $id = AssetMgmtScheduling::where('status','PENDING')->pluck('id_asset');
 
-        $data = AssetMgmt::select('id as id', 'id_asset as text')
-            ->where('id_asset', 'like', '%' . request('q') . '%')
-            ->whereNotIn('id',$id)
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
+
+        // $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')->select(DB::raw('`tb_asset_management`.`id` AS `id`'),DB::raw("CONCAT(`tb_asset_management`.`id_asset`, ' - ', `alamat_lokasi`, ' - ', `serial_number`) AS `text`"))
+
+        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')->select('tb_asset_management.id as id', DB::raw("CONCAT(`tb_asset_management`.`id_asset`, ' - ', `id_device_customer`, ' - ', `alamat_lokasi`, ' - ', `type_device`, ' - ', `serial_number`) AS `text`"))
+            ->where('tb_asset_management.id_asset', 'like', '%' . request('q') . '%')
+            ->whereNotIn('tb_asset_management.id',$id)
             ->distinct()
             ->get();
 
@@ -2077,17 +2207,38 @@ class AssetMgmtController extends Controller
         $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
-        $pid = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-            ->select('tb_asset_management_detail.pid')->where('tb_asset_management_detail.id_asset',$request->id_asset)->pluck('pid'); 
+        if (isset($request->id_asset)) {
+            $pid = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management_detail.pid')->where('tb_asset_management_detail.id_asset',$request->id_asset)->pluck('pid');
 
-        $getClient = DB::table('tb_id_project')->whereIn('id_project',$pid)->select('customer_name')->pluck('customer_name');
+            $getClient = DB::table('tb_id_project')->whereIn('id_project',$pid)->select('customer_name')->pluck('customer_name');
+            $getDate = DB::table('tb_id_project')->whereIn('id_project',$pid)->select('date')->first()->date;
 
-        $data = DB::table('tb_id_project')->select('id_project as id', 'id_project as text')
-            ->where('id_project', 'like', '%' . request('q') . '%')
-            ->whereNotIn('id_project',$pid)
-            ->whereIn('customer_name',$getClient)
-            ->distinct()
-            ->get();
+            $data = DB::table('tb_id_project')->select('id_project as id', 'id_project as text')
+                ->where('id_project', 'like', '%' . request('q') . '%')
+                ->whereNotIn('id_project',$pid)
+                ->whereIn('customer_name',$getClient)
+                ->where('date', '>', $getDate)
+                ->distinct()
+                ->get();
+
+        } else {
+            $pid = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management_detail.pid')->where('tb_asset_management_detail.pid',$request->pid)->pluck('pid');
+
+            $getClient = DB::table('tb_id_project')->whereIn('id_project',$pid)->select('customer_name')->pluck('customer_name');
+            $getDate = DB::table('tb_id_project')->whereIn('id_project',$pid)->select('date')->first()->date;
+
+            $data = DB::table('tb_id_project')->select('id_project as id', 'id_project as text')
+                ->where('id_project', 'like', '%' . request('q') . '%')
+                ->whereNotIn('id_project',$pid)
+                ->whereIn('customer_name',$getClient)
+                ->where('date', '>', $getDate)
+                ->distinct()
+                ->get();
+        }
+
+        
 
         return $data;
     }
@@ -2096,14 +2247,69 @@ class AssetMgmtController extends Controller
     {
         $data = json_decode($request->arrListAsset,true);
 
-        foreach ($data as $value) {
-            $store = new AssetMgmtScheduling();
-            $store->id_asset = $value['id_asset'];
-            $store->pid = $value['pid'];
-            $store->maintenance_end = $value['date_end'];
-            $store->maintenance_start = $value['date_start'];
-            $store->status = 'PENDING';
-            $store->save();
+        if ($request->type == 'pid') {
+            foreach ($data as $value) {
+                $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+                $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
+
+                $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+                    ->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')
+                    ->select('tb_asset_management_detail.id_asset','pid','maintenance_start','maintenance_end')
+                    ->where('tb_asset_management_detail.pid',$value['pid_before'])
+                    ->get();
+
+                foreach ($getAll as $data) {
+
+                    $start_before = $data->maintenance_end;
+                    $start_after = Carbon::parse($start_before)
+                                    ->addDay(1)->format('Y-m-d');
+
+                    $start_after_carbon = Carbon::parse($start_after);
+                    $end_after = $start_after_carbon->copy()->addMonth($value['periode']);
+
+                    if ($end_after->day != $start_after_carbon->day) {
+                        $end_after = $end_after->subDays($end_after->day)->endOfMonth();
+                    }
+
+                    $end_after_formatted = $end_after->format('Y-m-d');
+
+                    $store = new AssetMgmtScheduling();
+                    $store->id_asset = $data->id_asset;
+                    $store->pid = $value['pid_after'];
+                    $store->maintenance_start = $start_after;
+                    $store->maintenance_end = $end_after_formatted;
+                    $store->status = 'PENDING';
+                    $store->date_add = Carbon::now()->toDateTimeString();
+                    $store->save();
+
+                    $id_asset = AssetMgmt::where('id',$store->id_asset)->first()->id_asset;
+                    $storeLog = new AssetMgmtLog();
+                    $storeLog->id_asset = $store->id_asset;
+                    $storeLog->operator = Auth::User()->name;
+                    $storeLog->date_add = Carbon::now()->toDateTimeString();
+                    $storeLog->activity = 'Add Schedulling ' . $id_asset;
+                    $storeLog->save();
+                }
+            }
+        } else {
+            foreach ($data as $value) {
+                $store = new AssetMgmtScheduling();
+                $store->id_asset = $value['id_asset'];
+                $store->pid = $value['pid'];
+                $store->maintenance_end = $value['date_end'];
+                $store->maintenance_start = $value['date_start'];
+                $store->status = 'PENDING';
+                $store->date_add = Carbon::now()->toDateTimeString();
+                $store->save();
+
+                $id_asset = AssetMgmt::where('id',$store->id_asset)->first()->id_asset;
+                $storeLog = new AssetMgmtLog();
+                $storeLog->id_asset = $value['id_asset'];
+                $storeLog->operator = Auth::User()->name;
+                $storeLog->date_add = Carbon::now()->toDateTimeString();
+                $storeLog->activity = 'Add Schedulling ' . $id_asset;
+                $storeLog->save();
+            }
         }
     }
 
@@ -2173,7 +2379,6 @@ class AssetMgmtController extends Controller
     {
         $delete = AssetMgmtScheduling::where('id',$request->id)->delete();
     }
-
     // public function getAssignedEngineer(Request $request)
     // {
     //     $data = AssetMgmtAssignEngineer::join('tb_asset_management','tb_asset_management.id_asset','tb_asset_management_assign_engineer.id_asset')->select(DB::raw('`name` AS `id`,`users`.`name` AS `text`'))->get();
