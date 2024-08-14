@@ -15,12 +15,9 @@ class TicketingEmailSLM extends Model
 	
 	protected $fillable = [
 		'second_level_support',
-		'open_dear',
-		'open_to',
-		'open_cc',
-		'close_dear',
-		'close_to',
-		'close_cc'
+		'dear',
+		'to',
+		'cc'
 	];
 
 }

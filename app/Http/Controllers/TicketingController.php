@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Str;
+
 
 use App\Ticketing;
 use App\TicketingDetail;
@@ -23,6 +25,14 @@ use App\SalesProject;
 use App\TicketingUser;
 use App\AssetMgmt;
 use App\AssetMgmtDetail;
+use App\TicketingEmailSetting;
+use App\TicketingEmailSLM;
+use App\AssetManagement;
+use App\AssetManagementAssignEngineer;
+use App\TB_Contact;
+
+use App\Service\TelegramService;
+
 
 use Auth;
 use Mail;
@@ -46,6 +56,12 @@ use App\RequestChange;
 
 class TicketingController extends Controller
 {
+
+	public function __construct(TelegramService $telegram)
+    {
+        $this->telegram = $telegram;
+    }
+
 	public function index() {
 
 		$clients = DB::table('ticketing__client')
@@ -66,6 +82,19 @@ class TicketingController extends Controller
 			]);
 	}
 
+	public function getClientByPid(Request $request)
+	{
+		if ($request->pid == "INTERNAL") {
+			$getData = collect([
+				["id"=>"INTERNAL"]
+			]);
+		}else{
+			$getData = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select(DB::raw("CONCAT(`tb_contact`.`code`, ' - ', `customer_legal_name`) AS `id`"),DB::raw("CONCAT(`tb_contact`.`code`, ' - ', `customer_legal_name`) AS `text`"))->where('id_project',$request->pid)->get();
+		}
+
+		return $getData;
+	}
+
 	public function storeAddMail(Request $request)
 	{
 		$store = new TicketingClient();
@@ -83,6 +112,35 @@ class TicketingController extends Controller
 		$store->save();
 	}
 
+	public function storeAddMailSetting(Request $request)
+	{
+		if (TicketingEmailSetting::where('pid',$request->pid)->exists()) {
+			return response()->json(['data' => 'Data already exist!'], 500);
+		}else{
+			$store = new TicketingEmailSetting();
+			$store->pid = $request->pid;
+			$store->client = $request->client_acronym;
+			$store->dear = $request->dear;
+			$store->to = $request->to;
+			$store->cc = $request->cc;
+			$store->save();
+		}
+	}
+
+	public function storeAddMailSLM(Request $request)
+	{
+		if (TicketingEmailSLM::where('second_level_support',$request->secondLevelSupport)->exists()) {
+			return response()->json(['data' => 'Data already exist!'], 500);
+		}else{
+			$store = new TicketingEmailSLM();
+			$store->second_level_support = $request->secondLevelSupport;
+			$store->dear = $request->dear;
+			$store->to = $request->to;
+			$store->cc = $request->cc;
+			$store->save();
+		}
+	}
+
 	public function getSettingEmail()
 	{
 		$clients = TicketingClient::select('id', 'client_acronym', 'client_name', 'open_dear', 'close_dear')
@@ -90,6 +148,28 @@ class TicketingController extends Controller
 			->selectRaw("REPLACE(`open_cc`,';','<br>') AS `open_cc`")
 			->selectRaw("REPLACE(`close_to`,';','<br>') AS `close_to`")
 			->selectRaw("REPLACE(`close_cc`,';','<br>') AS `close_cc`")
+			->orderBy('id', 'desc')
+			->get();
+
+		return array("data" => $clients);
+	}
+
+	public function getSettingEmailbyPID()
+	{
+		$clients = TicketingEmailSetting::select('id', 'client', 'pid', 'dear')
+			->selectRaw("REPLACE(`to`,';','<br>') AS `to`")
+			->selectRaw("REPLACE(`cc`,';','<br>') AS `cc`")
+			->orderBy('id', 'desc')
+			->get();
+
+		return array("data" => $clients);
+	}
+
+	public function getSettingEmailSLM()
+	{
+		$clients = TicketingEmailSLM::select('id','second_level_support', 'dear')
+			->selectRaw("REPLACE(`to`,';','<br>') AS `to`")
+			->selectRaw("REPLACE(`cc`,';','<br>') AS `cc`")
 			->orderBy('id', 'desc')
 			->get();
 
@@ -152,11 +232,19 @@ class TicketingController extends Controller
 		$result2->forget("ON PROGRESS");
 		// return $result2;
 
-		$get_client = DB::table('ticketing__client')
-			->select('id','client_name','client_acronym')
-			->where('situation','=','1')
-			->get();
-		// return $get_client;
+		// $get_client = DB::table('ticketing__client')
+		// 	->select('id','client_name','client_acronym')
+		// 	->where('situation','=','1')
+		// 	->get();
+
+		$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+			->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+			->orderBy('code')
+			->groupBy('tb_contact.id_customer','code','brand_name')->get();
+
+		$get_client = $get_client->prepend((object)(['id' => 'INTERNAL','client_acronym' => 'INTERNAL','client_name' => 'INTERNAL']))->prepend((object)(['id' => '13','client_acronym' => 'ADMF','client_name' => 'ADMF']));
 
 		$count_ticket_by_client = DB::table('ticketing__id')
 			->selectRaw('`ticketing__client`.`client_acronym`, COUNT(*) AS ticket_count')
@@ -321,10 +409,37 @@ class TicketingController extends Controller
 	}
 
 	public function getCreateParameter(){
-		$client = TicketingClient::where('situation','=',1)
-			->select('id','client_name','client_acronym')
-			->orderBy('client_acronym')
-			->get();
+		// $client = TicketingClient::where('situation','=',1)
+		// 	->select('id','client_name','client_acronym')
+		// 	->orderBy('client_acronym')
+		// 	->get();\
+		$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name')->where('user_id', Auth::User()->nik)->first();
+
+   //      $client = SalesProject::rightJoin('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+			// ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+			// ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+			// ->select('tb_contact.id_customer as id','code','brand_name')
+			// ->orderBy('code')
+			// ->groupBy('tb_contact.id_customer','code','brand_name');
+		if ($cek_role->name == "Customer Care") {
+			$client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+			->select('tb_contact.id_customer as id','code','brand_name')
+			->orderBy('code')
+			->groupBy('tb_contact.id_customer','code','brand_name')->get();
+
+			$client = $client->prepend((object)(['id' => 'INTERNAL','code' => 'INTERNAL','brand_name' => 'INTERNAL']))->prepend((object)(['id' => '13','code' => 'ADMF','brand_name' => 'ADMF']));
+		}else{
+			$client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+			->select('tb_contact.id_customer as id','code','brand_name')
+			->orderBy('code')
+			->groupBy('tb_contact.id_customer','code','brand_name')
+			->where('ticketing__user.nik',Auth::User()->nik)->get();
+		}
 
 		$severity = TicketingSeverity::select('id','name','description')->get();
 
@@ -342,35 +457,58 @@ class TicketingController extends Controller
 	}
 
 	public function setReserveIdTicket(Request $req){
-
 		$newTicketId = new Ticketing();
-		$newTicketId->id = $req->id;
-		$newTicketId->id_ticket = $req->id_ticket;
-		$client = TicketingClient::find($req->id_client);
-		$newTicketId->id_client = $client->id;
-		$newTicketId->operator = Auth::user()->name;
+		$newTicketId->id_ticket 	= $req->id_ticket;
+		// $client 					= TicketingClient::find($req->id_client);
+		// $newTicketId->id_client 	= $client->id;
+		$newTicketId->operator 		= Auth::user()->name;
+		$client = TicketingEmailSetting::where('pid',$req->pid)->first();
+		$newTicketId->id_client_pid = $client->id;
+		// if (isset($req->pid)) {
+		// 	$client = TicketingEmailSetting::where('pid',$req->pid)->first();
+		// 	$newTicketId->id_ticket_pid = $client->id;
+		// }else{
+		// 	$client 					= TicketingClient::find($req->id_client);
+		// 	$newTicketId->id_client 	= $client->id;
+		// }
 
 		$newTicketId->save();
 
 		// return $client;
-		return collect([
-			"banking" => $client->banking,
-			"wincor" => $client->wincor
-		]);
+		// return collect([
+		// 	"banking" => $client->banking,
+		// 	"wincor" => $client->wincor
+		// ]);
 	}
 
 	public function putReserveIdTicket(Request $req){
-
+		return $req->id_ticket_before . $req->id_ticket_after;
 		$updateTicketId = Ticketing::where('id_ticket',$req->id_ticket_before)->first();
 		$updateTicketId->id_ticket = $req->id_ticket_after;
-		$client = TicketingClient::find($req->id_client);
-		$updateTicketId->id_client = $client->id;
-
+		$client = TicketingEmailSetting::where('pid',$req->pid)->first();
+		$updateTicketId->id_client_pid = $client->id;
+		// if (isset($req->pid)) {
+		// 	$client = TicketingEmailSetting::where('pid',$req->pid)->first();
+		// 	$updateTicketId->id_ticket_pid = $client->id;
+		// }else{
+		// 	$client 					= TicketingClient::find($req->id_client);
+		// 	$updateTicketId->id_client 	= $client->id;
+		// }
 		$updateTicketId->save();
-		return collect([
-			"banking" => $client->banking,
-			"wincor" => $client->wincor
-		]);
+		// return collect([
+		// 	"banking" => $client->banking,
+		// 	"wincor" => $client->wincor
+		// ]);
+	}
+
+	public function checkPidReserve(Request $req){
+		$check = TicketingEmailSetting::where('pid',$req->pid)->first();
+
+		if (isset($check)) {
+			return response()->json(['data' => true], 200);
+		}else{
+			return response()->json(['data' => false], 200);
+		}
 	}
 
 	public function getAssetByPid(Request $request)
@@ -384,7 +522,9 @@ class TicketingController extends Controller
             ->select('tb_asset_management.id',
             	// DB::raw('CONCAT(`id_device_customer`," - ", `alamat_lokasi`," - ", `serial_number`) AS `text`'),
             	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ', type_device, ' - ', serial_number) END) as text"))
-            ->orderBy('tb_asset_management.created_at','desc')->where('pid',$request->pid)->get();
+            ->orderBy('tb_asset_management.created_at','desc')->where('pid',$request->pid)->where('category',$request->category)
+            ->where(DB::raw("CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ' , type_device, ' - ', serial_number)"), 'like', '%' . request('q') . '%')
+            ->get();
 
         return $data;
 	}
@@ -432,16 +572,36 @@ class TicketingController extends Controller
 	public function getDetailAsset(Request $request)
     {
     	// return $request->id_asset;
-        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id','second_level_support');
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
         // return $getLastId->id_last_asset;
 
-        $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management','tb_asset_management_detail.id_asset','tb_asset_management.id')->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
-            ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','category','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),'engineer_atm')
+        $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management','tb_asset_management_detail.id_asset','tb_asset_management.id')
+        	// ->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
+            ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','category','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"))
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
             ->first();
 
-        $getData = collect($getAll);
+        $getEngineer = DB::table('tb_asset_management_assign_engineer')->select('engineer_atm','role')->where('id_asset',$request->id_asset)->get();
+
+        if (isset($request->id_asset)) {
+	        if (TicketingEmailSLM::where('second_level_support',$getId->where('tb_asset_management_detail.id_asset',$request->id_asset)->first()->second_level_support)->first() != "") {
+				if ($getAll) {
+				    $getAll->engineers = $getEngineer;
+				}
+
+				$getData = collect($getAll);
+			}else{
+				if ($request->client != "INTERNAL") {
+					$getData = response()->json(['data' => 'Please add email setting for this SLM!'], 500);
+				}else{
+					$getData = collect($getAll);
+				}
+			}
+        }else{
+			$getData = collect($getAll);
+        }
+		
 
         return $getData;
     }
@@ -479,8 +639,11 @@ class TicketingController extends Controller
 	public function getEmailData(Request $req){
 		// return $req->id_ticket;
 		if(isset($req->client)){
-			return TicketingClient::where('id',$req->client)
-				->first();
+			if (isset($req->slm)) {
+				return TicketingEmailSLM::select('dear as open_dear','to as open_to','cc as open_cc')->where('second_level_support',$req->slm)->first();
+			}else{
+				return TicketingEmailSetting::select('dear as open_dear','to as open_to','cc as open_cc')->where('pid',$req->client)->first();
+			}
 		} else {
 			$idTicket = $req->id_ticket;
 			$ticket_data = TicketingDetail::whereHas('id_detail', function($query) use ($idTicket){
@@ -494,22 +657,100 @@ class TicketingController extends Controller
 				])
 				->first();
 
-			$ticket_reciver = Ticketing::where('id',$idTicket)
-				->first()
-				->client_ticket;
+			$cek_id_client_pid = Ticketing::where('id_ticket',$idTicket)->orderby('id','desc')->first();
+
+			if (isset($req->id_atm)) {
+				if (isset($cek_id_client_pid->id_client_pid)) {
+					if (TicketingEmailSetting::where('id',$cek_id_client_pid->id_client_pid)->first()->pid == "INTERNAL") {
+						$ticket_reciver = TicketingEmailSetting::select('dear as close_dear','to as close_to','cc as close_cc')->where('id',$cek_id_client_pid->id_client_pid)
+						->first();
+					}else{
+						$slm = AssetMgmtDetail::where('id_device_customer',$req->id_atm)->first()->second_level_support;
+						$ticket_reciver = TicketingEmailSLM::select('dear as close_dear','to as close_to','cc as close_cc')->where('second_level_support',$slm)
+						->first();
+					}
+				}else{
+					$ticket_reciver = Ticketing::where('id',$idTicket)
+					->first()
+					->client_ticket;
+				}
+			}else{
+				if (isset($cek_id_client_pid->id_client_pid)) {
+					$ticket_reciver = TicketingEmailSetting::select('dear as close_dear','to as close_to','cc as close_cc')->where('id',$cek_id_client_pid->id_client_pid)
+					->first();
+				}else{
+					$ticket_reciver = Ticketing::where('id',$idTicket)
+					->first()
+					->client_ticket;
+				}
+			}
+			
 
 			if(isset($ticket_data->id_atm)){
-				if( str_contains($ticket_reciver->client_name,"UPS")){
-					$ticket_data->atm_detail = AssetMgmt::where('id',$ticket_data->id_atm)->first();
-				}
-			} else {
-				$ticket_data->atm_detail = null;
+				// return $ticket_data->atm_detail;
+				$ticket_data->atm_detail = AssetMgmt::where('id',$ticket_data->id_atm)->first();
+
+				// if(str_contains($ticket_reciver->client_name,"UPS")){
+				// 	$ticket_data->atm_detail = AssetMgmt::where('id',$ticket_data->id_atm)->first();
+				// }
+			}else{
+				$ticket_data = TicketingDetail::whereHas('id_detail', function($query) use ($idTicket){
+					$query->where('id_ticket','=',$idTicket);
+				})
+				->with([
+					'lastest_activity_ticket:id_ticket,date,activity,operator',
+					'resolve',
+					'first_activity_ticket',
+					'severity_detail:id,name'
+				])
+				->first();
 			}
+
 			return collect([
 				"ticket_data" => $ticket_data,
 				"ticket_reciver" => $ticket_reciver
 			]);
 		}
+
+		// $idTicket = $req->id_ticket;
+		// $ticket_data = TicketingDetail::whereHas('id_detail', function($query) use ($idTicket){
+		// 	$query->where('id','=',$idTicket);
+		// })
+		// ->with([
+		// 	'lastest_activity_ticket:id_ticket,date,activity,operator',
+		// 	'resolve',
+		// 	'first_activity_ticket',
+		// 	'severity_detail:id,name'
+		// ])
+		// ->first();
+
+		// if (isset($req->slm)) {
+		// 	// $ticket_reciver = Ticketing::where('id',$idTicket)
+		// 	// ->first()
+		// 	// ->client_ticket;
+		// 	// $slm = AssetMgmtDetail::where('id_device_customer',$req->id_atm)->first()->second_level_support;
+		// 	$ticket_reciver = TicketingEmailSLM::select('dear as close_dear','to as close_to','cc as close_cc')->where('second_level_support',$req->slm)
+		// 	->first();
+		// }else{
+		// 	$ticket_reciver = Ticketing::where('id',$idTicket)
+		// 	->first()
+		// 	->client_ticket;
+		// }
+		
+
+		// // if(isset($ticket_data->id_atm)){
+		// // 	$ticket_data->atm_detail = AssetMgmtDetail::where('id_device_customer',$ticket_data->id_atm)->first();
+
+		// // 	// if(str_contains($ticket_reciver->client_name,"UPS")){
+		// // 	// 	$ticket_data->atm_detail = AssetMgmt::where('id',$ticket_data->id_atm)->first();
+		// // 	// }
+		// // } else {
+		// // 	$ticket_data->atm_detail = null;
+		// // }
+		// return collect([
+		// 	"ticket_data" => $ticket_data,
+		// 	"ticket_reciver" => $ticket_reciver
+		// ]);
 	}
 
 	public function getEmailTemplate(Request $req){
@@ -536,7 +777,7 @@ class TicketingController extends Controller
 	}
 
 	public function sendEmailOpen(Request $request){
-
+		// return $request->id_ticket;
 		$detailTicketOpen = new TicketingDetail();
 		$detailTicketOpen->id_ticket = $request->id_ticket;
 		
@@ -545,8 +786,10 @@ class TicketingController extends Controller
 		} else if($request->switchLocation != "-"){
 			$detailTicketOpen->id_atm = $request->switchLocation;
 		} else {
-			if($request->id_atm != null){
-				$atm = AssetMgmtDetail::find($request->id_atm);
+			if($request->id_atm != null || $request->id_atm != ""){
+
+				$atm = AssetMgmtDetail::where('id_asset',$request->id_atm)->orderby('id','desc')->first();
+
 				$detailTicketOpen->id_atm = $atm->id_device_customer;
 			} else {
 				$detailTicketOpen->id_atm = $request->id_atm;
@@ -670,11 +913,17 @@ class TicketingController extends Controller
 			->orderBy('ticketing__detail.id','DESC')
 			->get();
 
-		$result = $occurring_ticket_result->merge($residual_ticket_result)->merge($occurring_ticket_result_pid)->merge($residual_ticket_result_pid);
+		// $result = $occurring_ticket_result->merge($residual_ticket_result)->merge($occurring_ticket_result_pid)->merge($residual_ticket_result_pid);
 
 		$result = $occurring_ticket_result->merge($residual_ticket_result)
 		    ->merge($occurring_ticket_result_pid)
 		    ->merge($residual_ticket_result_pid);
+
+
+		// $pid = TicketingUser::join('users','users.nik','ticketing__user.nik')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id');
+
+		// $result = $occurring_ticket_result_pid
+		    // ->merge($residual_ticket_result_pid);
 
 		$currentMonth = date('n');
 		$currentYear = date('Y');
@@ -683,7 +932,6 @@ class TicketingController extends Controller
 		$totalHoursInMonth = 30 * 24; 
 
 		foreach ($result as $ticket) {
-			// return $ticket->reporting_time;
 		    $firstActivity = $ticket->first_activity_ticket;
 		    $lastActivity = $ticket->lastest_activity_ticket;
 
@@ -695,8 +943,6 @@ class TicketingController extends Controller
 					if(isset($openTime)){
 						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
 				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // $slaResolutionPercentage = $resolutionTimeInHours;
 
 				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
 					} else {
@@ -718,12 +964,6 @@ class TicketingController extends Controller
 				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
 					}
 				}
-
-		        // $resolutionTimeInSeconds = $closeTime - $openTime;
-		        // $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-		        // // Calculate SLA
-		        // $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
 
 		        if ($slaResolutionPercentage <= 80) {
 		            $ticket->highlight_sla_resolution = true;
@@ -757,8 +997,6 @@ class TicketingController extends Controller
 		}
 
 		return array("data" => $result);
-
-		// return array("data" => $result);
 	}
 
 	function calculateResponseTimePercentage($responseTimeInMinutes) {
@@ -950,12 +1188,43 @@ class TicketingController extends Controller
 			->where('ticketing__activity.activity','<>','CLOSE');
 
 		if(isset($request->client)){
-			$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+			$id_client_pid = new TicketingEmailSetting();
+			if ($request->client[0] == "INTERNAL") {
+				$id_client_pid = TicketingEmailSetting::where('client','like','%INTERNAL%')->get()->pluck('id');
+				$id_client = TicketingClient::select('id')->where('client_acronym','INTR')->get()->pluck('id');
+			}elseif ($request->client[0] == "ADMF") {
+				$id_client_pid = TicketingEmailSetting::where('client','like','%Adira%')->get()->pluck('id');
+				$id_client = TicketingClient::select('id')->where('client_acronym','ADRF')->get()->pluck('id');
+			}else{
+				$cek_code = TB_Contact::select(DB::raw("(CASE 
+					WHEN `code` = 'BBJB' THEN 'BJBR'
+					WHEN `code` = 'BKES' THEN 'BPJS'  
+					WHEN `code` = 'PBLG' THEN 'BULG' 
+					WHEN `code` = 'BGDN' THEN 'PGAN' 
+					WHEN `code` = 'ADRF' THEN 'ADMF' 
+					WHEN `code` = 'BTNI' THEN 'BBTN' 
+					ELSE `code` END) as code"),'customer_legal_name')->where('id_customer',$request->client)->first();
+				$id_client = TicketingClient::select('id')->where('client_acronym',$cek_code->code)->get()->pluck('id');
+				$id_client_pid = TicketingEmailSetting::where('client','like','%'.$cek_code->customer_legal_name.'%')->get()->pluck('id');
+
+				if ($id_client_pid != "") {
+					$id_client_pid = $id_client_pid;
+				}else{
+					$id_client_pid = [''];
+				}
+			}
+
+			$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request,$id_client_pid,$id_client){
 				$query->select('ticketing__id.id_ticket')
 					->from('ticketing__id')
-					->whereIn('ticketing__id.id_client',$request->client);
+					->whereIn('ticketing__id.id_client_pid',$id_client_pid)
+					->orWhereIn('ticketing__id.id_client',$id_client);
 			});
+
+			// return $occurring_ticket->get();
+
 		}
+		
 		if(isset($request->severity)){
 			$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
 				$query->select('ticketing__detail.id_ticket')
@@ -997,12 +1266,40 @@ class TicketingController extends Controller
 				});
 
 		if(isset($request->client)){
-			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+			$id_client_pid = new TicketingEmailSetting();
+			if ($request->client[0] == "INTERNAL") {
+				$id_client_pid = TicketingEmailSetting::where('client','like','%INTERNAL%')->get()->pluck('id');
+				$id_client = TicketingClient::select('id')->where('client_acronym','INTR')->get()->pluck('id');
+			}elseif ($request->client[0] == "ADMF") {
+				$id_client_pid = TicketingEmailSetting::where('client','like','%ADMF%')->get()->pluck('id');
+				$id_client = TicketingClient::select('id')->where('client_acronym','ADRF')->get()->pluck('id');
+			}else{
+				$cek_code = TB_Contact::select(DB::raw("(CASE 
+					WHEN `code` = 'BBJB' THEN 'BJBR'
+					WHEN `code` = 'BKES' THEN 'BPJS'  
+					WHEN `code` = 'PBLG' THEN 'BULG' 
+					WHEN `code` = 'BGDN' THEN 'PGAN' 
+					WHEN `code` = 'ADRF' THEN 'ADMF' 
+					WHEN `code` = 'BTNI' THEN 'BBTN' 
+					ELSE `code` END) as code"),'customer_legal_name')->where('id_customer',$request->client)->first();
+				$id_client = TicketingClient::select('id')->where('client_acronym',$cek_code->code)->get()->pluck('id');
+				$id_client_pid = TicketingEmailSetting::where('client','like','%'.$cek_code->customer_legal_name.'%')->get()->pluck('id');
+
+				if ($id_client_pid != "") {
+					$id_client_pid = $id_client_pid;
+				}else{
+					$id_client_pid = [''];
+				}
+			}
+
+			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request,$id_client_pid,$id_client){
 				$query->select('ticketing__id.id_ticket')
 					->from('ticketing__id')
-					->whereIn('ticketing__id.id_client',$request->client);
+					->whereIn('ticketing__id.id_client_pid',$id_client_pid)
+					->orWhereIn('ticketing__id.id_client',$id_client);
 			});
 		}
+
 		if(isset($request->severity)){
 			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
 				$query->select('ticketing__detail.id_ticket')
@@ -1020,6 +1317,8 @@ class TicketingController extends Controller
 
 		if(isset($request->startDate) && isset($request->endDate)){
 			$finish_ticket->whereBetween('ticketing__activity.date', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+		}else{
+			$finish_ticket->whereYear('ticketing__activity.date',date('Y'));
 		}
 
 		$limit = $occurring_ticket_result->count() > $limitAll ? $limitAll : $limitAll - $occurring_ticket_result->count();
@@ -1151,7 +1450,6 @@ class TicketingController extends Controller
 		} else {
 			return $result;
 		}
-
 	}
 
 	public function getPerformanceBySeverity(Request $req){
@@ -1207,7 +1505,6 @@ class TicketingController extends Controller
 	}	
 
 	public function setUpdateTicket(Request $req){
-
 		if(isset($req->email)){
 			$this->sendEmail($req->to,$req->cc,$req->subject,$req->body);
 		}
@@ -1216,6 +1513,7 @@ class TicketingController extends Controller
 			->first();
 
 		$detailTicketUpdate->engineer = $req->engineer;
+		$detailTicketUpdate->severity = $req->severity;
 		$detailTicketUpdate->ticket_number_3party = $req->ticket_number_3party;
 
 		$detailTicketUpdate->save();
@@ -1232,11 +1530,49 @@ class TicketingController extends Controller
 
 		$activityTicketUpdate->save();
 
-		$clientIdFilter = Ticketing::with('client_ticket')
-			->where('id_ticket',$req->id_ticket)
-			->first()
-			->client_ticket
-			->id;
+		$cek_client_pid = Ticketing::where("id_ticket",$req->id_ticket)->first();
+		if ($cek_client_pid->id_client_pid) {
+			$clientIdFilter = Ticketing::where('id_ticket',$req->id_ticket)
+				->first()->id_client_pid;
+
+			$cek_code = TicketingEmailSetting::where('id',$clientIdFilter)->first()->client;
+
+			if ($cek_code == "INTERNAL") {
+				$clientIdFilter = 'INTERNAL';
+			}else{
+				$customer = explode("- ", $cek_code)[1];
+
+				$id_client = TB_Contact::where('customer_legal_name', 'LIKE', '%'.$customer.'%')->first()->id_customer;
+				$clientIdFilter = $id_client;
+			}			
+		}else{
+			$clientIdFilter = Ticketing::with('client_ticket')
+				->where('id_ticket',$req->id_ticket)
+				->first()
+				->client_ticket
+				->id;
+
+			$cek_code = TicketingClient::where('id',$clientIdFilter)->first()->client_acronym;
+
+			if ($cek_code == 'BPJS') {
+	    		$cek_code = 'BKES';
+	    	} elseif($cek_code == 'PBLG'){
+	    		$cek_code = 'BULG';
+	    	} elseif($cek_code == 'BGDN'){
+	    		$cek_code = 'PGAN';
+	    	} elseif($cek_code == 'BJBR'){
+	    		$cek_code = 'BBJB';
+	    	} elseif($cek_code == 'ADRF'){
+	    		$cek_code = 'ADMF';
+	    	} elseif($cek_code == 'BTNI'){
+	    		$cek_code = 'BBTN';
+	    	} else {
+	    		$cek_code = $cek_code;
+	    	}
+
+			$id_client = TB_Contact::where('code',$cek_code)->first()->id_customer;
+			$clientIdFilter = $id_client;
+		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
 		
@@ -1284,11 +1620,17 @@ class TicketingController extends Controller
 
 		$activityTicketUpdate->save();
 
-		$clientIdFilter = Ticketing::with('client_ticket')
+		$cek_client_pid = Ticketing::where("id_ticket",$request->id_ticket)->first();
+		if ($cek_client_pid->id_client_pid) {
+			$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
+				->first()->id_client_pid;
+		}else{
+			$clientIdFilter = Ticketing::with('client_ticket')
 			->where('id_ticket',$request->id_ticket)
 			->first()
 			->client_ticket
 			->id;
+		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
 		
@@ -1315,11 +1657,61 @@ class TicketingController extends Controller
 
 		$activityTicketUpdate->save();
 
-		$clientIdFilter = Ticketing::with('client_ticket')
-			->where('id_ticket',$request->id_ticket)
-			->first()
-			->client_ticket
-			->id;
+		// $cek_client_pid = Ticketing::where("id_ticket",$request->id_ticket)->first();
+		// if ($cek_client_pid->id_client_pid) {
+		// 	$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
+		// 		->first()->id_client_pid;
+		// }else{
+		// $clientIdFilter = Ticketing::with('client_ticket')
+		// 	->where('id_ticket',$request->id_ticket)
+		// 	->first()
+		// 	->client_ticket
+		// 	->id;
+		// }
+
+		$cek_client_pid = Ticketing::where("id_ticket",$req->id_ticket)->first();
+		if ($cek_client_pid->id_client_pid) {
+			$clientIdFilter = Ticketing::where('id_ticket',$req->id_ticket)
+				->first()->id_client_pid;
+
+			$cek_code = TicketingEmailSetting::where('id',$clientIdFilter)->first()->client;
+
+			if ($cek_code == "INTERNAL") {
+				$clientIdFilter = 'INTERNAL';
+			}else{
+				$customer = explode("- ", $cek_code)[1];
+
+				$id_client = TB_Contact::where('customer_legal_name', 'LIKE', '%'.$customer.'%')->first()->id_customer;
+				$clientIdFilter = $id_client;
+			}			
+		}else{
+			$clientIdFilter = Ticketing::with('client_ticket')
+				->where('id_ticket',$req->id_ticket)
+				->first()
+				->client_ticket
+				->id;
+
+			$cek_code = TicketingClient::where('id',$clientIdFilter)->first()->client_acronym;
+
+			if ($cek_code == 'BPJS') {
+	    		$cek_code = 'BKES';
+	    	} elseif($cek_code == 'PBLG'){
+	    		$cek_code = 'BULG';
+	    	} elseif($cek_code == 'BGDN'){
+	    		$cek_code = 'PGAN';
+	    	} elseif($cek_code == 'BJBR'){
+	    		$cek_code = 'BBJB';
+	    	} elseif($cek_code == 'ADRF'){
+	    		$cek_code = 'ADMF';
+	    	} elseif($cek_code == 'BTNI'){
+	    		$cek_code = 'BBTN';
+	    	} else {
+	    		$cek_code = $cek_code;
+	    	}
+
+			$id_client = TB_Contact::where('code',$cek_code)->first()->id_customer;
+			$clientIdFilter = $id_client;
+		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
 
@@ -1357,11 +1749,17 @@ class TicketingController extends Controller
 
 		$remainder->save();
 
+		$cek_client_pid = Ticketing::where("id_ticket",$request->id_ticket)->first();
+		if ($cek_client_pid->id_client_pid) {
+			$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
+				->first()->id_client_pid;
+		}else{
 		$clientIdFilter = Ticketing::with('client_ticket')
 			->where('id_ticket',$request->id_ticket)
 			->first()
 			->client_ticket
 			->id;
+		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
 		
@@ -1394,11 +1792,17 @@ class TicketingController extends Controller
 
 		$resolveTicket->save();
 
+		$cek_client_pid = Ticketing::where("id_ticket",$request->id_ticket)->first();
+		if ($cek_client_pid->id_client_pid) {
+			$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
+				->first()->id_client_pid;
+		}else{
 		$clientIdFilter = Ticketing::with('client_ticket')
 			->where('id_ticket',$request->id_ticket)
 			->first()
 			->client_ticket
 			->id;
+		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
 		
@@ -1446,6 +1850,9 @@ class TicketingController extends Controller
 		$req->idTicket = $req->id_ticket;
 		$ticket = $this->getPerformanceByTicket($req);
 
+		$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->join('users','users.nik','role_user.user_id')
+                    ->select('users.name', 'roles.group', 'roles.name as name_role','email'); 
+
 		$requestChange = new RequestChange();
 		$requestChange->type = "Re-Open Ticket";
 		$requestChange->requester = Auth::user()->name;
@@ -1454,10 +1861,20 @@ class TicketingController extends Controller
 		$requestChange->status = "On-Progress";
 		$requestChange->save();
 
+		if (Str::contains($req->idTicket, 'BJBR') || Str::contains($req->idTicket, 'BBJB') || Str::contains($req->idTicket, 'BPJS') || Str::contains($req->idTicket, 'BKES')) {
+			$cek_role = $cek_role->where('roles.name','Managed Service Manager')->first();
+			$to = $cek_role->name;
+			$kirim = $cek_role->email;
+		} else {
+			$cek_role = $cek_role->where('roles.name','Customer Relation Manager')->first();
+			$to = $cek_role->name;
+			$kirim = $cek_role->email;
+		}
+
 		// return $requestChange;
 
 		$mail = new EmailReOpenTicket(collect([
-                    "to" => "Brillyan Aditya Saputra",
+                    "to" => $to,
                     "id_ticket" => $req->id_ticket,
                     "reopen_reason" => $req->reason,
                     "requestor" => Auth::user()->name,
@@ -1468,9 +1885,25 @@ class TicketingController extends Controller
                 ])
             );
 		
-		Mail::to("brillyan@sinergy.co.id")->send($mail);
+		Mail::to($kirim)->send($mail);
 
 		return $mail;
+	}
+
+	public function getSettingEmailClientById(Request $req){
+		$result = DB::table('ticketing__email_setting')
+			->where('id','=',$req->id)
+			->get();
+
+		return $result;
+	}
+
+	public function getSettingEmailSLMById(Request $req){
+		$result = DB::table('ticketing__email_slm')
+			->where('id','=',$req->id)
+			->get();
+
+		return $result;
 	}
 
 	public function getSettingClient(Request $req){
@@ -1497,6 +1930,38 @@ class TicketingController extends Controller
 				"banking"			=> $req->banking,
 				"wincor"			=> $req->wincor,
 			]);
+	}
+
+	public function updateEmailSetting(Request $req){
+		// if (TicketingEmailSetting::where('pid',$req->pid)->exists()) {
+		// 	return response()->json(['data' => 'Data already exist!'], 500);
+		// }else{
+		DB::table('ticketing__email_setting')
+		->where('id','=',$req->id)
+		->update([
+			"pid" 		=> $req->pid,
+			"client"	=> $req->client_acronym,
+			"dear" 		=> $req->dear,
+			"to" 		=> $req->to,
+			"cc" 		=> $req->cc
+		]);
+		// }
+	}
+
+	public function updateEmailSLM(Request $req){
+		// if (TicketingEmailSLM::where('second_level_support',$req->secondLevelSupport)->exists()) {
+		// 	return response()->json(['data' => 'Data already exist!'], 500);
+		// }else{
+		DB::table('ticketing__email_slm')
+		->where('id','=',$req->id)
+		->update([
+			"second_level_support" 	=> $req->secondLevelSupport,
+			"dear" 			=> $req->dear,
+			"to" 			=> $req->to,
+			"cc" 			=> $req->cc
+		]);
+		// }
+		
 	}
 
 	public function getAllAtmSetting(){
@@ -3626,7 +4091,7 @@ class TicketingController extends Controller
     				->orderBy('project_name','asc')
     				->union($dataNonShifting);
 
-    		if ($cek_role->name == 'MSM Lead Helpdesk' || $cek_role->name == 'MSM Manager') {
+    		if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
             	$data = $data;
             } else{
             	$data = $data->where('users.nik',Auth::User()->nik);
@@ -3914,9 +4379,31 @@ class TicketingController extends Controller
 	    return $dataCollect;
     }
 
+   	public function getCategorybyClient(Request $request)
+   	{
+   		$getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
+
+        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('category as id', 'category as text')->where('category','like','%'.request('q').'%');
+
+   		if ($request->client == "INTERNAL") {
+	        $data = $data->where('tb_asset_management_detail.pid',$request->client)->distinct()->get();
+   		}elseif($request->client == 'ADMF'){
+   			$cus_legal_name = TB_Contact::where('code',$request->client)->first()->customer_legal_name;
+
+	        $data = $data->where('tb_asset_management_detail.client',$cus_legal_name)->distinct()->get();
+   		}else{
+   			$cus_legal_name = TB_Contact::where('id_customer',$request->client)->first()->customer_legal_name;
+
+	        $data = $data->where('tb_asset_management_detail.client',$cus_legal_name)->distinct()->get();
+   		}
+   		
+        return $data; 
+   	}
+
     public function getPidByPic(Request $request)
     {
-
     	if ($request->client_acronym == 'BPJS') {
     		$client_acronym = 'BKES';
     	} elseif($request->client_acronym == 'PBLG'){
@@ -3940,13 +4427,37 @@ class TicketingController extends Controller
     			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
     			->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
     	} else {
-    		$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
-    			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
-    			->where('pid', 'like', '%'.$client_acronym.'%')
-    			->where('ticketing__user.nik',Auth::User()->nik)->get();
+    		if ($cek_role->name_role == "Customer Care") {
+    			if ($request->client_acronym == "INTR") {
+    				$data = collect([
+    					['id' => 'INTERNAL',   // Replace with your desired ID
+			            'text' => 'INTERNAL']
+			        ]);
+    			}elseif ($request->client_acronym == "ADMF") {
+    				$data = collect([
+    					['id' => 'ADMF',   // Replace with your desired ID
+			            'text' => 'ADMF']
+			        ]);
+    			}else{
+    				$data = DB::table('tb_id_project')
+    					->join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
+    					->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
+    					->where('pid', 'like', '%'.$client_acronym.'%')
+    					->groupBy('id_project','name_project')
+    					->get();
+    			}				
+    		}else{
+    			$data = DB::table('tb_id_project')
+	    			->join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
+	    			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
+	    			->where('pid', 'like', '%'.$client_acronym.'%')
+	    			->where('ticketing__user.nik',Auth::User()->nik)
+    				->groupBy('id_project','name_project')
+	    			->get();
+    		}	
+    		// $data = DB::table('ticketing__user')->select(DB::raw('`pid` AS `id`,`pid` AS `text`'))->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
     	} 		
     	
-
     	return $data;
     }
 
@@ -3997,4 +4508,66 @@ class TicketingController extends Controller
     	}
     }
 
+    public function setUpdateSeverity(Request $request){
+    	$updateDetail = TicketingDetail::where('id_ticket',$request->id_ticket)->first();
+    	$updateDetail->severity = $request->severity;
+
+    	$activityTicketUpdate = new TicketingActivity();
+		$activityTicketUpdate->id_ticket = $request->id_ticket;
+		$activityTicketUpdate->date = date("Y-m-d H:i:s.000000");
+		$activityTicketUpdate->activity = Ticketing::where('id_ticket',$request->id_ticket)->first()->lastest_activity_ticket->activity;
+		$activityTicketUpdate->operator = Auth::user()->name;
+		$activityTicketUpdate->note = "Update Severity " . TicketingSeverity::where('id',$updateDetail->severity)->first()->name . " to " . TicketingSeverity::where('id',$request->severity)->first()->name;
+		$activityTicketUpdate->save();
+
+		$cek_client_pid = Ticketing::where("id_ticket",$request->id_ticket)->first();
+		if ($cek_client_pid->id_client_pid) {
+			$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
+				->first()->id_client_pid;
+
+			$cek_code = TicketingEmailSetting::where('id',$clientIdFilter)->first()->client;
+
+			if ($cek_code == "INTERNAL") {
+				$clientIdFilter = 'INTERNAL';
+			}else{
+				$customer = explode("- ", $cek_code)[1];
+
+				$id_client = TB_Contact::where('customer_legal_name', 'LIKE', '%'.$customer.'%')->first()->id_customer;
+				$clientIdFilter = $id_client;
+			}			
+		}else{
+			$clientIdFilter = Ticketing::with('client_ticket')
+				->where('id_ticket',$request->id_ticket)
+				->first()
+				->client_ticket
+				->id;
+
+			$cek_code = TicketingClient::where('id',$clientIdFilter)->first()->client_acronym;
+
+			if ($cek_code == 'BPJS') {
+	    		$cek_code = 'BKES';
+	    	} elseif($cek_code == 'PBLG'){
+	    		$cek_code = 'BULG';
+	    	} elseif($cek_code == 'BGDN'){
+	    		$cek_code = 'PGAN';
+	    	} elseif($cek_code == 'BJBR'){
+	    		$cek_code = 'BBJB';
+	    	} elseif($cek_code == 'ADRF'){
+	    		$cek_code = 'ADMF';
+	    	} elseif($cek_code == 'BTNI'){
+	    		$cek_code = 'BBTN';
+	    	} else {
+	    		$cek_code = $cek_code;
+	    	}
+
+			$id_client = TB_Contact::where('code',$cek_code)->first()->id_customer;
+			$clientIdFilter = $id_client;
+		}
+
+		$activityTicketUpdate->client_id_filter = $clientIdFilter;
+
+    	$updateDetail->save();
+
+    	return $activityTicketUpdate;
+    }
 }
