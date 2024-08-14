@@ -403,7 +403,7 @@ class AssetMgmtController extends Controller
             $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
             $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-                ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','latitude','longitude','service_point')
+                ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','latitude','longitude','service_point','pr')
                 ->where('tb_asset_management_detail.id_asset',$request->assignTo)
                 ->first();
 
@@ -433,6 +433,7 @@ class AssetMgmtController extends Controller
             $storeDetail->maintenance_start = $data->maintenance_start;
             $storeDetail->maintenance_end = $data->maintenance_end;
             $storeDetail->date_add = Carbon::now()->toDateTimeString();
+            $storeDetail->pr = $data->pr;
 
             $storeAssign = new AssetMgmtAssign();
             $storeAssign->id_asset_induk = $request->assignTo;
@@ -467,6 +468,7 @@ class AssetMgmtController extends Controller
             $storeDetail->operating_system = $request->operatingSystem;
             $storeDetail->version_os = $request->versionOs;
             $storeDetail->service_point = $request->servicePoint;
+            $storeDetail->pr = $request->pr;
             if ($request->installedDate == 'Invalid date') {
                 $storeDetail->installed_date = null;
             } else {
@@ -520,7 +522,7 @@ class AssetMgmtController extends Controller
         $storeLog->activity = 'Add New Asset ' .$id. ' with Category ' . $request->category;
         $storeLog->save();
 
-        if (isset($request->inputDoc)) {
+        if ($request->hasFile('inputDoc')) {
             $directory = "Asset Management/";
             $get_parent_drive = AssetMgmt::where('id', $store->id)->first();
             $allowedfileExtension   = ['jpg', 'JPG','png','PNG','jpeg'];
@@ -587,15 +589,18 @@ class AssetMgmtController extends Controller
 
         $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company', '1')->where('id_project','like','%'.request('q').'%')->orderBy('tb_id_project.created_at','desc');
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Customer Care') {
             $getAllPid = $getAllPid->get();
-            $getAllPid = $getAllPid->push((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
+            $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getAllPid = $getAllPid->whereIn('id_project',$getPid)->get();
+            $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
             $getAllPid = $getAllPid->whereIn('id_project',$getPidPm)->get();
+            $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } elseif ($cek_role->name_role == 'Managed Service Manager') {
             $getAllPid = $getAllPid->get();
+            $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         }
 
         return response()->json($getAllPid);
@@ -1125,7 +1130,7 @@ class AssetMgmtController extends Controller
 
         $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
             ->leftjoin('tb_asset_management_category','tb_asset_management.category','tb_asset_management_category.name')
-            ->select('tb_asset_management.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','tb_asset_management_category.id_category as category_code','category as category_text','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),'service_point','latitude','longitude','tanggal_pembelian','nilai_buku','harga_beli','tb_asset_management.id','reason_status','link_drive','document_name','document_location')
+            ->select('tb_asset_management.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','tb_asset_management_category.id_category as category_code','category as category_text','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),'service_point','latitude','longitude','tanggal_pembelian','nilai_buku','harga_beli','tb_asset_management.id','reason_status','link_drive','document_name','document_location','pr')
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
             ->first();
 
@@ -1147,7 +1152,7 @@ class AssetMgmtController extends Controller
         $getData = collect($getAll);
 
         if ($getAll->category_peripheral == '-' || $getAll->category_peripheral == null) {
-            if ($getAll->category_code == 'COM') {
+            if ($getAll->category_code == 'COM' || $getAll->category_code == 'FNT' || $getAll->category_code == 'ELC' || $getAll->category_code == 'KDR') {
                 $sla = 0;
             }else{
                 $sla = (100 - ((($timeTrouble/3600)/$getAll->slaPlanned)*100));
@@ -2020,6 +2025,34 @@ class AssetMgmtController extends Controller
     public function getCategory(Request $request)
     {
         $data = DB::table('tb_asset_management_category')->select('id_category as id','name as text')->where('name','like','%'.request('q').'%')->distinct()->get();
+
+        return $data;
+    }
+
+    public function getSpesifikasi(Request $request)
+    {
+        $data = DB::table('tb_asset_management_spesifikasi')->select('id','name','satuan')->where('id_category', $request->id)->where('name', 'like', '%'.request('q').'%')->distinct()->get();
+
+        return $data;
+    }
+
+    public function getSpesifikasiDetail(Request $request)
+    {
+        $data = DB::table('tb_asset_management_spesifikasi_detail')->select('id','name')->where('id_spesifikasi', $request->id)->where('name', 'like', '%'.request('q').'%')->distinct()->get();
+
+        return $data;
+    }
+
+    public function getEmployeeNames()
+    {
+        $data = DB::table('users')->select('name as id', 'name as text')->where('id_company', 1)->where('status_delete', '!=', 'D')->where('status_karyawan','!=','dummy')->where('name','like', '%'.request('q').'%')->distinct()->get();
+
+        return $data;
+    }
+
+    public function getLocationAddress()
+    {
+        $data = DB::table('tb_asset_management_service_point')->select('service_point as name', 'detail_lokasi as lokasi','latitude as lat','longitude as long')->distinct()->get();
 
         return $data;
     }

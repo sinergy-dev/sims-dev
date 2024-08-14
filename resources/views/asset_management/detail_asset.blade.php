@@ -115,7 +115,7 @@
             <div class="col-lg-4 col-xs-12">
               <div class="form-group">
                 <label>Spesifikasi</label>
-                <textarea class="form-control" id="inputSpesifikasi" name="inputSpesifikasi"></textarea>
+                <input class="form-control" id="inputSpesifikasi" name="inputSpesifikasi"></input>
               </div>
               <div class="form-group">
                 <label>Notes</label>
@@ -280,12 +280,15 @@
                     <input type="text" name="inputClient" id="inputClient" class="form-control">
                   </div>
                 </div>
+                
                 <div class="col-md-6 col-xs-12">
                   <div class="form-group">
                     <label>ID Device Customer</label>
                     <input id="inputIdDeviceCustomer" name="inputIdDeviceCustomer" class="form-control">
                   </div>
                 </div>
+
+                <div class="form-group col-md-6 col-xs-12" id="prContainer"></div>
               </div>
 
               <div class="form-group">
@@ -530,7 +533,7 @@
       </div>
     </div>
 
-    <div class="box box-primary" style="display:none;">
+    <div class="box box-primary" style="display:none;" id="ticketHistoryContainer">
       <div class="box-header">
         <h3 class="box-title"><strong>Ticket History</strong></h3>
       </div>
@@ -885,6 +888,42 @@
           id_asset:window.location.href.split("=")[1]
         },
         success:function(result){
+
+          if(result.pid === "INTERNAL"){
+            $("#service_point").closest(".form-group").hide()
+            $(".select-primary-engineer").closest(".form-group").hide()
+            $(".select-secondary-engineer").closest(".form-group").hide()
+            $("#inputIPAddress").closest(".form-group").hide()
+            $("#inputServer").closest(".form-group").hide()
+            $("#inputPort").closest(".form-group").hide()
+            $("#selectStatusCustomer").closest(".form-group").hide()
+            $("#selectLevelSupport").closest(".form-group").hide()
+            $("#inputOS").closest(".form-group").hide()
+            $("#inputVersion").closest(".form-group").hide()
+            $("#inputMaintenanceStart").closest(".form-group").hide()
+            $("#inputMaintenanceEnd").closest(".form-group").hide()
+            $("#inputIdDeviceCustomer").closest(".form-group").hide()
+            $("#inputSLAUptime").closest(".form-group").hide()
+            $("#inputTotalTicket").closest(".form-group").hide()
+            $("#distance").closest(".form-group").hide()
+            $("#btnAssignPeripheral").hide()
+            let prContainer = $("#prContainer");
+
+            let label = $("<label>",{
+              text: "PR"
+            });
+
+            let input = $("<input>",{
+              class: "form-control",
+              name: "inputPr",
+              id: "inputPr"
+            });
+
+            prContainer.append(label,input);
+
+            $("#inputPr").val(result.pr);
+
+          }
 
           $('input[class="files"]').change(function(){
             var f=this.files[0]
@@ -1510,7 +1549,7 @@
             }
           })
           $('#inputMaintenanceEnd').datepicker("setDate",result.maintenance_end)
-          $("#inputLicense").val(result.license)
+          $("#inputLicense").val(result.license != 'null' ? result.license : '-')
           $("#selectStatus").val()
           // $("#inputAccessoris").val()
           $("#inputSLAUptime").val()
