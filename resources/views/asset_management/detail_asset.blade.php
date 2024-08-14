@@ -43,7 +43,7 @@
     <div class="box box-primary">
       <div class="box-body">
         <fieldset class="fieldsetDivAssetDetail">
-          <div class="row divAsset" style="margin-bottom:50px;display:none;">
+          <div class="row divAsset">
             <div class="col-lg-4 col-xs-12">
               <div class="form-group">
                 <label>Asset Owner</label>
@@ -90,6 +90,7 @@
                   <input id="inputTglBeli" name="inputTglBeli" class="form-control">
                 </div>
               </div>
+
               <div class="form-group">
                 <label for="">Harga</label>
                 <div class="input-group">
@@ -99,6 +100,7 @@
                   <input id="inputHarga" type="text" name="inputHarga" class="form-control money">
                 </div>
               </div>
+
               <div class="form-group">
                 <label for="">Nilai Buku</label>
                 <div class="input-group">
@@ -113,7 +115,7 @@
             <div class="col-lg-4 col-xs-12">
               <div class="form-group">
                 <label>Spesifikasi</label>
-                <textarea class="form-control" id="inputSpesifikasi" name="inputSpesifikasi"></textarea>
+                <input class="form-control" id="inputSpesifikasi" name="inputSpesifikasi"></input>
               </div>
               <div class="form-group">
                 <label>Notes</label>
@@ -122,11 +124,23 @@
               <div class="form-group" style="display: none;">
                 <label>Reason*</label>
                 <textarea class="form-control" id="txtAreaReason" name="txtAreaReason"></textarea>
-                <span class="help-block" style="display:none">Please Fill Reason! (for temporary/unavailable status)</span>
+                <span class="help-block" style="display:none">Please Fill Reason! (for rent/unavailable status)</span>
               </div>
+            </div>
+          </div>
+
+          <hr>
+          <div class="row divAsset" style="margin-bottom:50px;display:none;">
+            <div class="col-md-4 col-xs-12">
               <div class="form-group">
-                <label>Engineer Assigned</label>
-                <select class="form-control" fdprocessedid="qzhe4c" id="selectEngAssign" name="selectEngAssign"><option></option></select>
+                <label>Primary Engineer</label>
+                <select class="form-control select-primary-engineer" fdprocessedid="qzhe4c" name="selectEngAssign"><option></option></select>
+              </div>
+            </div>
+            <div class="col-md-8 col-xs-12">
+              <div class="form-group">
+                <label style="color: grey;">Secondary Engineer</label>
+                <select class="form-control select-secondary-engineer" fdprocessedid="qzhe4c" name="selectEngAssign" multiple="multiple"></select>
               </div>
             </div>
           </div>
@@ -266,12 +280,15 @@
                     <input type="text" name="inputClient" id="inputClient" class="form-control">
                   </div>
                 </div>
+                
                 <div class="col-md-6 col-xs-12">
                   <div class="form-group">
                     <label>ID Device Customer</label>
                     <input id="inputIdDeviceCustomer" name="inputIdDeviceCustomer" class="form-control">
                   </div>
                 </div>
+
+                <div class="form-group col-md-6 col-xs-12" id="prContainer"></div>
               </div>
 
               <div class="form-group">
@@ -516,7 +533,7 @@
       </div>
     </div>
 
-    <div class="box box-primary" style="display:none;">
+    <div class="box box-primary" style="display:none;" id="ticketHistoryContainer">
       <div class="box-header">
         <h3 class="box-title"><strong>Ticket History</strong></h3>
       </div>
@@ -872,6 +889,42 @@
         },
         success:function(result){
 
+          if(result.pid === "INTERNAL"){
+            $("#service_point").closest(".form-group").hide()
+            $(".select-primary-engineer").closest(".form-group").hide()
+            $(".select-secondary-engineer").closest(".form-group").hide()
+            $("#inputIPAddress").closest(".form-group").hide()
+            $("#inputServer").closest(".form-group").hide()
+            $("#inputPort").closest(".form-group").hide()
+            $("#selectStatusCustomer").closest(".form-group").hide()
+            $("#selectLevelSupport").closest(".form-group").hide()
+            $("#inputOS").closest(".form-group").hide()
+            $("#inputVersion").closest(".form-group").hide()
+            $("#inputMaintenanceStart").closest(".form-group").hide()
+            $("#inputMaintenanceEnd").closest(".form-group").hide()
+            $("#inputIdDeviceCustomer").closest(".form-group").hide()
+            $("#inputSLAUptime").closest(".form-group").hide()
+            $("#inputTotalTicket").closest(".form-group").hide()
+            $("#distance").closest(".form-group").hide()
+            $("#btnAssignPeripheral").hide()
+            let prContainer = $("#prContainer");
+
+            let label = $("<label>",{
+              text: "PR"
+            });
+
+            let input = $("<input>",{
+              class: "form-control",
+              name: "inputPr",
+              id: "inputPr"
+            });
+
+            prContainer.append(label,input);
+
+            $("#inputPr").val(result.pr);
+
+          }
+
           $('input[class="files"]').change(function(){
             var f=this.files[0]
             var filePath = f;
@@ -916,17 +969,14 @@
             $("select").prop('disabled', true)
             $(".fieldsetDivAssetDetail").prop('disabled',true)
           }
-
-          InitiateChangeLog()
           $("#titleDetailIdAsset").text(result.id_asset)
-
           if(result.status == "Available"){
             $("#btnAssignPeripheral").show()
             $("#txtAreaReason").closest(".form-group").hide()
           }else if(result.status == "Installed"){
             $("#btnAssignPeripheral").hide()
             $("#txtAreaReason").closest(".form-group").hide()
-          }else if(result.status == "Temporary" || result.status == "Unavailable"){
+          }else if(result.status == "Rent" || result.status == "Unavailable"){
             $("#txtAreaReason").closest(".form-group").show()
             $("#txtAreaReason").val(result.reason_status)
           }else{
@@ -1003,7 +1053,7 @@
               $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
             })
 
-            $("#selectEngAssign").select2({
+            $(".select-primary-engineer").select2({
               ajax: {
                 url: '{{url("asset/getEngineer")}}',
                 processResults: function (data) {
@@ -1014,13 +1064,91 @@
                 },
               },
               placeholder:"Select Engineer",
+            }).on("change", function () {
+              var selectedValues = [];
+              $('.select-secondary-engineer').not(this).each(function() {
+                selectedValues = selectedValues.concat($(this).val() || []);
+              });
+
+              // Check if any selected value is selected in another Select
+              var currentSelect = $(this);
+              var alertShown = false; 
+              $(this).find('option:selected').each(function() {
+                var value = $(this).val();
+                var text = $(this).text();
+
+                if (selectedValues.includes(value)) {
+                  // Unselect the value in the current Select
+                  currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+                  currentSelect.trigger('change');
+                  Swal.fire({
+                    title: "<strong>Oopzz!</strong>",
+                    icon: "info",
+                    html: `
+                      Engineer has been assigned as secondary engineer!
+                    `,
+                  })
+                  alertShown = true;
+                }
+              });
+            })
+
+            $(".select-secondary-engineer").select2({
+              ajax: {
+                url: '{{url("asset/getEngineer")}}',
+                processResults: function (data) {
+                  // Transforms the top-level key of the response object from 'items' to 'results'
+                  return {
+                    results: data
+                  };
+                },
+              },
+              placeholder:"Select Engineer",
+              multiple:true,
+            }).on("change", function () {
+              var selectedValues = [];
+              $('.select-primary-engineer').not(this).each(function() {
+                selectedValues = selectedValues.concat($(this).val() || []);
+              });
+
+              // Check if any selected value is selected in another Select
+              var currentSelect = $(this);
+              var alertShown = false; 
+              $(this).find('option:selected').each(function() {
+                var value = $(this).val();
+                var text = $(this).text();
+
+                if (selectedValues.includes(value)) {
+                  // Unselect the value in the current Select
+                  currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+                  currentSelect.trigger('change');
+                  Swal.fire({
+                    title: "<strong>Oopzz!</strong>",
+                    icon: "info",
+                    html: `
+                      Engineer has been assigned as primary engineer!
+                    `,
+                  })
+                  alertShown = true;
+                }
+              });
             })
 
             // Fetch the preselected item, and add to the control
-            if (result.engineer_atm != null) {
-              var engAssignSelect = $("#selectEngAssign");
-              var option = new Option(result.engineer_atm, result.engineer_atm, true, true);
+            if (result.engineers.Primary != null) {
+              $(".select-primary-engineer").empty()
+              var engAssignSelect = $(".select-primary-engineer");
+              var option = new Option(result.engineers.Primary[0].engineer_atm, result.engineers.Primary[0].engineer_atm, true, true);
               engAssignSelect.append(option).trigger('change');
+            }
+
+            if (result.engineers.Secondary != null) {
+              $(".select-secondary-engineer").empty()
+              $.each(result.engineers.Secondary,function(idx,values){
+                var engAssignSelect = $(".select-secondary-engineer");
+                var option = new Option(values.engineer_atm, values.engineer_atm, true, true);
+                engAssignSelect.append(option).trigger('change');
+              })
             }
 
             current_date = moment().format('YYYY-MM-DD')
@@ -1177,18 +1305,18 @@
             categorySelect.append(option).trigger('change');
 
             if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Managed Service Manager')->exists()}}") {
-              console.log(result.pid)
               if (result.pid != null) {
                 $("#selectEngAssign").closest(".form-group").show() 
               }else{
                 $("#selectEngAssign").closest(".form-group").hide()
               }
             }else{
-              if (result.category_code == "CRM" || result.category_code == "ATM") {
-                $("#selectEngAssign").closest(".form-group").show() 
-              }else{
-                $("#selectEngAssign").closest(".form-group").hide() 
-              }
+              $("#selectEngAssign").closest(".form-group").show() 
+              // if (result.category_code == "CRM" || result.category_code == "ATM") {
+              //   $("#selectEngAssign").closest(".form-group").show() 
+              // }else{
+              //   $("#selectEngAssign").closest(".form-group").hide() 
+              // }
             }
           }
 
@@ -1197,14 +1325,18 @@
             data:[
               {id:"Installed",text:"Installed"},
               {id:"Available",text:"Available"},
-              {id:"RMA",text:"RMA"},
-              {id:"Temporary",text:"Temporary"},
+              {id:"Rent",text:"Rent"},
               {id:"Unavailable",text:"Unavailable"},
             ]
           }).on('select2:select', function (e) { 
             var id = e.params.data.id
-            if (id == "Unavailable" || id == "Temporary") {
+            if (id == "Unavailable" || id == "Rent") {
               $("#txtAreaReason").closest(".form-group").show()
+              if (id == 'Unavailable') {
+                $("#txtAreaReason").attr("placeholder","RMA, Rusak")
+              }else{
+                $("#txtAreaReason").attr("placeholder","POC, UAT, Stagging, Lab")
+              }
               if ($("#txtAreaReason").val() == "") {
                 $("#txtAreaReason").closest(".form-group").addClass("has-error")
               }
@@ -1220,7 +1352,6 @@
             data:[
               {id:"Installed",text:"Installed",disabled: true},
               {id:"Available",text:"Available"},
-              {id:"RMA",text:"RMA"},
             ]
           }).val(result.status).trigger("change")
 
@@ -1231,7 +1362,7 @@
               $("#selectPID").select2({
                 data:response,
                 placeholder:"Select PID"
-              }).val(result.pid).trigger("change").on('select2:select', function (e) {
+              }).on('select2:select', function (e) {
                 let pid = e.params.data.id
                 $.ajax({
                   type:"GET",
@@ -1248,7 +1379,10 @@
           })
 
           if (result.pid != "" && result.pid != null) {
-            $('#selectPID').select2('data', {id: result.pid, text: result.pid})
+            // $('#selectPID').select2('data', {id: result.pid, text: result.pid})
+            var selectPID = $("#selectPID");
+            var optionPID = new Option(result.pid, result.pid, true, true);
+            selectPID.append(optionPID).trigger('change');
           }
 
           $("#selectStatusCustomer").select2({
@@ -1415,7 +1549,7 @@
             }
           })
           $('#inputMaintenanceEnd').datepicker("setDate",result.maintenance_end)
-          $("#inputLicense").val(result.license)
+          $("#inputLicense").val(result.license != 'null' ? result.license : '-')
           $("#selectStatus").val()
           // $("#inputAccessoris").val()
           $("#inputSLAUptime").val()
@@ -1439,6 +1573,7 @@
               $("#link_bukti_asset").attr("href",result.link_drive)
             }
           }
+          InitiateChangeLog()
         }
       })
     }
@@ -1541,6 +1676,13 @@
             url = "{{url('asset/updateAsset')}}"
 
             var formData = new FormData
+            var arrEng = []
+
+            arrEng.push({"name":$(".select-primary-engineer").val(),"roles":"Primary"})
+
+            $(".select-secondary-engineer").val().map(function(elem,idx) {
+              arrEng.push({"name":elem,"roles":"Secondary"})
+            })
 
             formData.append('_token',"{{csrf_token()}}")
             formData.append('id_asset',id_asset)
@@ -1551,12 +1693,13 @@
             formData.append('spesifikasi',spesifikasi)
             formData.append('rma',rma)
             formData.append('notes',notes)
-            formData.append('engineer',$("#selectEngAssign").val())
+            formData.append('engineer',JSON.stringify(arrEng))
             formData.append('assetOwner',assetOwner)
             formData.append('tanggalBeli',tanggalBeli)
             formData.append('hargaBeli',hargaBeli)
             formData.append('nilaiBuku',nilaiBuku)
             formData.append('reason',reason)
+
             alert = {
               title: 'Are you sure?',
               text: "Update Asset",
@@ -1612,6 +1755,14 @@
           if (type == 'asset') {
             url = "{{url('asset/updateAsset')}}"
 
+            var arrEng = []
+
+            arrEng.push({"name":$(".select-primary-engineer").val(),"roles":"Primary"})
+
+            $(".select-secondary-engineer").val().map(function(elem,idx) {
+              arrEng.push({"name":elem,"roles":"Secondary"})
+            })
+
             formData.append('_token',"{{csrf_token()}}")
             formData.append('id_asset',id_asset)
             formData.append('status',status)
@@ -1621,12 +1772,14 @@
             formData.append('spesifikasi',spesifikasi)
             formData.append('rma',rma)
             formData.append('notes',notes)
-            formData.append('engineer',$("#selectEngAssign").val())
+            formData.append('engineer',JSON.stringify(arrEng))
             formData.append('assetOwner',assetOwner)
             formData.append('tanggalBeli',tanggalBeli)
             formData.append('hargaBeli',hargaBeli)
             formData.append('nilaiBuku',nilaiBuku)
             formData.append('reason',reason)
+
+            console.log(formData)
 
             alert = {
               title: 'Are you sure?',

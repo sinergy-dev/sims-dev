@@ -287,6 +287,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getChartByStatus','DASHBOARDController@getChartByStatus');
 	Route::get('/getChartAdmin', 'DASHBOARDController@getChartAdmin');
 	Route::get('/getTopWinSipTer', 'DASHBOARDController@top_win_sip_ter');
+	Route::get('/getTopWinSipTerNonDetail', 'DASHBOARDController@top_win_ter_non_detail');
 	Route::get('/getTopWinSip', 'DASHBOARDController@top_win_sip');
 	Route::get('/getTopWinMsp', 'DASHBOARDController@top_win_msp');
 	Route::get('/loopYear', 'DASHBOARDController@loop_year');
@@ -382,7 +383,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/admin/updateProductPr', 'PrDraftController@updateProductPr');
 	Route::get('/admin/sendMailDraft', 'PrDraftController@sendMailDraft');
 	Route::get('/admin/getSignStatusPR','PrDraftController@getSignStatusPR');
-	Route::get('/admin/getCount','PrDraftController@getCount');
+	Route::get('/da','PrDraftController@getCount');
 	Route::get('/admin/getFilterDraft','PrDraftController@getFilterDraft');
 	Route::get('/admin/getFilterStatus','PrDraftController@getFilterStatus');
 	Route::get('/admin/getFilterUser','PrDraftController@getFilterUser');
@@ -926,6 +927,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getAssetTransactionModerator','AssetController@getAssetTransactionModerator');
 	Route::get('/getAssetTransaction','AssetController@getAssetTransaction');
 
+	//Warehouse asset new
+	Route::get('/asset_pinjam_new', 'AssetControllerNew@index');	
+
+
 	Route::get('/asset_pinjam', 'AssetController@index');
 	Route::get('/edit_pinjam', 'AssetController@edit');
 	Route::post('/store_asset', 'AssetController@store');
@@ -1107,7 +1112,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/showProjectCharter','PMProjectController@showProjectCharter');
 	Route::get('/PMO/getUser','PMProjectController@getUser');
 	Route::post('/PMO/storeProjectCharter','PMProjectController@storeProjectCharter');
-	Route::post('/PMO/updateProjectCharter','PMProjectController@updateProjectCharter');
+	Route::post('/PMO/updateDocProjectCharter','PMProjectController@updateDocProjectCharter');
 	Route::get('/PMO/getSignProjectCharter','PMProjectController@getSignProjectCharter');
 	Route::post('/PMO/approveProjectCharter','PMProjectController@approveProjectCharter');
 	Route::post('/PMO/rejectProjectCharter','PMProjectController@rejectProjectCharter');
@@ -1160,6 +1165,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/exportRiskExcel','PMProjectController@exportRiskExcel');
 	Route::get('/PMO/exportIssueExcel','PMProjectController@exportIssueExcel');
 	Route::get('/PMO/getAllActivity','PMProjectController@getAllActivity');
+	Route::post('/PMO/updateSLAProject','PMProjectController@updateSLAProject');
 
 	Route::get('/PMO/getPhase','PMProjectController@getPhase');
 	Route::get('/PMO/getYearFilter','PMProjectController@getYearFilter');
@@ -1255,13 +1261,19 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/create/getPidByPic','TicketingController@getPidByPic');
 	Route::get('/ticketing/create/getAssetByPid','TicketingController@getAssetByPid');
 	Route::get('/ticketing/create/getDetailAsset','TicketingController@getDetailAsset');
+	Route::get('/ticketing/create/getCategorybyClient','TicketingController@getCategorybyClient');
 
 	Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
 	Route::get('/ticketing/mail/getEmailTemplate','TicketingController@getEmailTemplate');
 	Route::get('/ticketing/mail/getOpenMailTemplate','TicketingController@getOpenMailTemplate');
 	Route::get('/ticketing/mail/sendEmailOpen','TicketingController@sendEmailOpen');
 	Route::post('/ticketing/mail/storeAddMail', 'TicketingController@storeAddMail');
+	Route::post('/ticketing/mail/storeAddMailSetting', 'TicketingController@storeAddMailSetting');
+	Route::post('/ticketing/mail/storeAddMailSLM', 'TicketingController@storeAddMailSLM');
 	Route::get('/ticketing/mail/getSettingEmail', 'TicketingController@getSettingEmail');
+	Route::get('/ticketing/mail/getSettingEmailbyPID', 'TicketingController@getSettingEmailbyPID');
+	Route::get('/ticketing/mail/getSettingEmailSLM', 'TicketingController@getSettingEmailSLM');
+	Route::get('/ticketing/mail/getClientByPid', 'TicketingController@getClientByPid');
 
 	Route::get('/ticketing/getPerformanceAll','TicketingController@getPerformanceAll');
 	Route::get('/ticketing/getPerformanceByClient','TicketingController@getPerformanceByClient');
@@ -1290,7 +1302,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/reOpenTicket','TicketingController@reOpenTicket');
 
 	Route::get('/ticketing/setting/getSettingClient','TicketingController@getSettingClient');
+	Route::get('/ticketing/setting/getSettingEmailClientById','TicketingController@getSettingEmailClientById');
+	Route::get('/ticketing/setting/getSettingEmailSLMById','TicketingController@getSettingEmailSLMById');
 	Route::post('/ticketing/setting/setSettingClient' , 'TicketingController@setSettingClient');
+	Route::post('/ticketing/setting/updateEmailSetting' , 'TicketingController@updateEmailSetting');
+	Route::post('/ticketing/setting/updateEmailSLM' , 'TicketingController@updateEmailSLM');
 
 	Route::get('/ticketing/setting/getAllAtm', 'TicketingController@getAllAtmSetting');
 	Route::get('/ticketing/setting/getParameterAddAtm','TicketingController@getParameterAddAtm');
@@ -1339,6 +1355,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/setting/getIdAtm','TicketingController@getIdAtm');
 	Route::get('/ticketing/setting/getEngineer','TicketingController@getEngineer');
 	Route::post('/ticketing/setting/assignEngineer','TicketingController@assignEngineer');
+	Route::get('/ticketing/setting/checkPidReserve','TicketingController@checkPidReserve');
+	Route::get('/ticketing/setting/setUpdateSeverity','TicketingController@setUpdateSeverity');
 
 	Route::get('/requestChange','RequestChangeController@index');
 
@@ -1546,7 +1564,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/testScheduling','AssetMgmtController@testScheduling');
 	Route::post('asset/storeScheduling','AssetMgmtController@storeScheduling');
 	Route::post('asset/deleteScheduling','AssetMgmtController@deleteScheduling');
-
+	Route::get('asset/getPidAsset','AssetMgmtController@getPidAsset');
+	Route::get('asset/getEngineerById','AssetMgmtController@getEngineerById');
+	Route::get('asset/getRolesById','AssetMgmtController@getRolesById');
+	Route::get('asset/getSpesifikasi', 'AssetMgmtController@getSpesifikasi');
+	Route::get('asset/getSpesifikasiDetail', 'AssetMgmtController@getSpesifikasiDetail');
+	Route::get('asset/getEmployeeNames','AssetMgmtController@getEmployeeNames');
+	Route::get('asset/getLocationAddress','AssetMgmtController@getLocationAddress');
 });
 
 Route::get('/authentication/{id}','TestController@authentication');

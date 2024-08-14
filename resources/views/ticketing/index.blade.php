@@ -406,19 +406,6 @@ Ticketing
 										<input type="text" class="form-control" id="inputticket" value="" readonly>
 									</div>
 								</div>
-								<div class="form-group" id="clientDiv" style="display: none;">
-									<label class="col-sm-2 control-label">Client</label>
-									<div class="col-sm-4">
-										<select class="form-control" id="inputClient" style="width:100%">
-										</select>
-									</div>
-									<label class="col-sm-2 control-label">PID</label>
-									<div class="col-sm-4">
-										<select class="form-control" id="selectPID" style="width:100%!important">
-											<option></option>
-										</select>
-									</div>
-								</div>
 								<div class="form-group" id="typeDiv" style="display: none;">
 									<label class="col-sm-2 control-label">Type</label>
 									<div class="col-sm-4">
@@ -427,18 +414,40 @@ Ticketing
 											<option value="Trouble Ticket">Trouble Ticket</option>
 											<option value="Preventive Maintenance">Preventive Maintenance Ticket</option>
 											<option value="Permintaan Layanan">Permintaan Layanan Ticket</option>
+											<option value="Permintaan Penawaran">Permintaan Penawaran</option>
 										</select>
 									</div>
-									<label class="col-sm-2 control-label">Severity</label>
+									<label class="col-sm-2 control-label">Severity*</label>
 									<div class="col-sm-4">
-											<select class="form-control" id="inputSeverity">
-											</select>
+										<select class="form-control" id="inputSeverity" style="width:100%">
+										</select>
+										<span class="help-block" style="margin-bottom: 0px; display: none;">Severity must be fill!</span>
 									</div>
 								</div>
-
+								<div class="form-group" id="clientDiv" style="display: none;">
+									<label class="col-sm-2 control-label">Client</label>
+									<div class="col-sm-4">
+										<select class="form-control" id="inputClient" style="width:100%">
+										</select>
+									</div>
+									<label class="col-sm-2 control-label">Asset Category</label>
+									<div class="col-sm-4">
+										<select class="form-control" id="selectCatAsset" style="width:100%">
+										</select>
+										<span class="help-block" style="margin-bottom: 0px; display: none;">Asset category must be fill!</span>
+									</div>
+								</div>
+								<div class="form-group" id="pidDiv" style="display: none;">
+									<label class="col-sm-2 control-label">PID</label>
+									<div class="col-sm-4">
+										<select class="form-control" id="selectPID" style="width:100%!important">
+											<option></option>
+										</select>
+									</div>
+								</div>
 								<hr id="hrLine" style="display: none">
 								<div class="form-group" id="refrenceDiv" style="display: none;">
-									<label for="inputDescription" class="col-sm-2 control-label">Refrence</label>
+									<label for="inputDescription" class="col-sm-2 control-label">Reference</label>
 									<div class="col-sm-10">
 										<input type="text" class="form-control" id="inputRefrence" placeholder=""></div>
 								</div>
@@ -446,7 +455,6 @@ Ticketing
 									<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i> Input with
 										error</label>
 									<input type="text" class="form-control" id="inputError" placeholder="Enter ...">
-									
 								</div> -->
 								<div class="form-group" id="picDiv" style="display: none;">
 									<label for="inputDescription" class="col-sm-2 control-label">PIC*</label>
@@ -490,10 +498,10 @@ Ticketing
 									</div>
 								</div>
 								<div class="form-group" id="inputATMid" style="display: none;">
-									<label for="inputEmail" class="col-sm-2 control-label">ID ATM*</label>
+									<label for="inputEmail" class="col-sm-2 control-label">ID Asset*</label>
 									<div class="col-sm-10">
 										<select class="form-control select2" id="inputATM" style="width: 100%" required></select>
-										<span class="help-block" style="margin-bottom: 0px; display: none;">ATM must be select!</span>
+										<span class="help-block" style="margin-bottom: 0px; display: none;">Asset must be select!</span>
 									</div>
 									<input type="hidden" id="inputATMAddres">
 								</div>
@@ -615,7 +623,7 @@ Ticketing
 								</tr>
 								
 								<tr id="holderIDATM2" style="display: none;">
-									<th class="bg-primary">ID ATM</th>
+									<th class="bg-primary">ID Asset</th>
 									<td id="holderIDATM"></td>
 								</tr>
 								<tr>
@@ -856,9 +864,15 @@ Ticketing
 										<th style="text-align: center;vertical-align: middle;">
 											SLA Response Time
 										</th>
+									<!-- 	<th style="text-align: center;vertical-align: middle;">
+											Status Response Time
+										</th> -->
 										<th style="text-align: center;vertical-align: middle;">
 											SLA Resolution Time
 										</th>
+								<!-- 		<th style="text-align: center;vertical-align: middle;">
+											Status Resolution Time
+										</th> -->
 										<th style="text-align: center;vertical-align: middle;">
 											Operator
 										</th>
@@ -889,9 +903,12 @@ Ticketing
 					<div class="row form-group">
 						<div class="col-md-9">
 							<button class="btn btn-flat btn-default" onclick="emailSetting()">
-								Email Setting
+								Client Email Setting
 							</button>
-				<!-- 			<button class="btn btn-flat btn-default" onclick="atmSetting()">
+							<button class="btn btn-flat btn-default" onclick="SlmEmailSetting()">
+								SLM Email Setting
+							</button>
+							<!--<button class="btn btn-flat btn-default" onclick="atmSetting()">
 								ATM Setting
 							</button> -->
 							<!-- <button class="btn btn-flat btn-default" onclick="absenSetting()">
@@ -909,8 +926,6 @@ Ticketing
 							<!-- <button class="btn btn-flat btn-default" onclick="clientSetting()">
 								Client Setting
 							</button> -->
-
-							
 						</div>
 						<div class="col-sm-3 settingComponent" style="display: none" id="addEmail2">
 							<div class="input-group">	
@@ -919,13 +934,16 @@ Ticketing
 									<button id="applyFilterTableEmail" type="button" class="btn btn-default btn-flat">
 										<i class="fa fa-fw fa-search"></i>
 									</button>
-									<button class="btn btn-flat btn-primary" onclick="EmailAdd()" id="addEmail" style="margin-left: 10px;">
+									<button class="btn btn-flat btn-primary" onclick="EmailAdd()" id="addEmail" style="margin-left: 10px;display: none;">
+										Add Email
+									</button>
+									<button class="btn btn-flat btn-primary" onclick="EmailSlmAdd()" id="addEmailSlm" style="margin-left: 10px;display: none;">
 										Add Email
 									</button>
 								</span>
 							</div>
 						</div>
-						<div class="col-sm-3 settingComponent" style="display: none" id="addAtm2">
+				<!--<div class="col-sm-3 settingComponent" style="display: none" id="addAtm2">
 							<div class="input-group">	
 								<input id="searchBarATM" type="text" class="form-control" placeholder="Search ATM">
 								<span class="input-group-btn">
@@ -966,10 +984,10 @@ Ticketing
 									</button>
 								</span>
 							</div>
-						</div>
+						</div> -->
 					</div>
 					<div style="display: none" id="emailSetting" class="row form-group settingComponent">
-						<div class="col-md-12">
+						<!-- <div class="col-md-12">
 							<div class="table-responsive">
 								<table class="table table-bordered" id="tableClient">
 									<thead>
@@ -992,9 +1010,26 @@ Ticketing
 									</thead>
 								</table>
 							</div>		
+						</div> -->
+
+						<div class="col-md-12">
+							<div class="table-responsive">
+								<table class="table table-bordered" id="tableEmailSetting">
+									<thead>
+										<tr>
+											<th style="vertical-align: middle;text-align: center;">Project ID</th>
+											<th style="vertical-align: middle;text-align: center;">Dear</th>
+											<th style="vertical-align: middle;text-align: center;">To</th>
+											<th style="vertical-align: middle;text-align: center;">Cc</th>
+											<th style="vertical-align: middle;text-align: center;">Action</th>
+											
+										</tr>
+									</thead>
+								</table>
+							</div>		
 						</div>
 					</div>
-					<div style="display: none" id="atmSetting" class="row form-group settingComponent">
+				<!-- 	<div style="display: none" id="atmSetting" class="row form-group settingComponent">
 						<div class="col-md-12">
 							<table class="table table-striped" id="tableAtm">
 								<thead>
@@ -1041,6 +1076,23 @@ Ticketing
 									</tr>
 								</thead>
 							</table>
+						</div>
+					</div> -->
+					<div style="display: none" id="SlmEmailSetting" class="row form-group settingComponent">
+						<div class="col-md-12">
+							<div class="table-responsive">
+								<table class="table table-bordered" id="tableSlmEmailSetting">
+									<thead>
+										<tr>
+											<th style="vertical-align: middle;text-align: center;">2nd Level Support</th>
+											<th style="vertical-align: middle;text-align: center;">Dear</th>
+											<th style="vertical-align: middle;text-align: center;">To</th>
+											<th style="vertical-align: middle;text-align: center;">Cc</th>
+											<th style="vertical-align: middle;text-align: center;">Action</th>
+										</tr>
+									</thead>
+								</table>
+							</div>		
 						</div>
 					</div>
 					<div style="display: none" id="userSetting" class="row form-group settingComponent">
@@ -1151,6 +1203,7 @@ Ticketing
 									<option value="TT">Trouble Ticket</option>
 									<option value="PM">Preventive Maintenance Ticket</option>
 									<option value="PL">Permintaan Layanan Ticket</option>
+									<option value="PP">Permintaan Penawaran</option>
 								</select>
 							</div>
 						</div>
@@ -1310,6 +1363,14 @@ Ticketing
 								</div>
 							</div>
 						</div>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<label>Severity</label>
+									<select class="form-control" id="inputTicketSeverity" style="width:100%!important"><option></option></select>
+								</div>
+							</div>
+						</div>
 						<div class="form-group">
 							<label>Activity</label>
 							<ul id="ticketActivity" style="padding-left: 25px;">
@@ -1330,7 +1391,7 @@ Ticketing
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-flat btn-default pull-left" onclick="exitTicket()" data-dismiss="modal">Exit</button>
+					<button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Exit</button>
 					<button type="button" class="btn btn-flat btn-danger pull-left" id="escalateButton">Escalate</button>
 					<button type="button" class="btn btn-flat btn-info pull-left" id="reOpenButton" disabled>Re-Open Ticket</button>
 					<button type="button" class="btn btn-flat btn-success" id="closeButton">Close</button>
@@ -1830,7 +1891,7 @@ Ticketing
 		</div>
 	</div>
 
-	<div class="modal fade" id="modal-add-email">
+	<!-- <div class="modal fade" id="modal-add-email">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -1910,9 +1971,57 @@ Ticketing
 				</div>
 			</div>
 		</div>
+	</div> -->
+
+	<div class="modal fade" id="modal-add-email">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"> Add Client Email Setting </h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<label>Project ID</label>
+							<select type="text" class="form-control" id="selectPidforEmail" name="selectPidforEmail" style="width:100%!important"></select>
+							<span class="help-block" style="display:none;color: red;"></span>
+						</div>
+						<div class="form-group">
+							<label>Client</label>
+							<input type="text" readonly class="form-control" id="inputClientforEmail" name="inputClientforEmail" autocomplete="off" value="">
+						</div>
+						<hr>
+						<div class="form-group">
+							<label>Dear</label>
+							<input type="text" class="form-control" id="dearAdd">
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>To</label>
+									<textarea class="form-control" rows="3" id="toAdd"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Cc</label>
+									<textarea class="form-control" rows="3" id="ccAdd"></textarea>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveEmailbyPID('addEmail')">Save changes</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
-	<div class="modal fade" id="modal-setting-email">
+	<!-- <div class="modal fade" id="modal-setting-email">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -1996,6 +2105,146 @@ Ticketing
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-primary" onclick="saveClient('EditClient')">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div> -->
+
+	<div class="modal fade" id="modal-setting-email-client">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="modal-setting-title">Change Setting for </h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<input type="text" class="form-control" id="idEmailEdit" style="display:none;">
+
+							<label>Project ID</label>
+							<select class="form-control" style="width: 100%!important;" id="selectPidforEmailEdit" disabled></select>
+							<span class="help-block" style="display:none;color: red;"></span>
+						</div>
+						<div class="form-group">
+							<label>Client Acronym</label>
+							<input type="text" class="form-control" id="inputClientforEmailEdit" disabled>
+						</div>
+						<hr>
+						<div class="form-group">
+							<label>Dear</label>
+							<input type="text" class="form-control" id="dearEdit">
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>To</label>
+									<textarea class="form-control" rows="3" id="toEdit"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Cc</label>
+									<textarea class="form-control" rows="3" id="ccEdit"></textarea>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveEmailbyPID('editEmail')">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-add-slm-email">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"> Add SLM Email Setting </h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<label>2nd Level Support</label>
+							<select id="selectLevelSupport" name="selectLevelSupport" style="width:100%!important"></select>
+							<span class="help-block" style="display:none;color: red;"></span>
+						</div>
+						<hr>
+						<div class="form-group">
+							<label>Dear</label>
+							<input type="text" class="form-control" id="dearAddSlm">
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>To</label>
+									<textarea class="form-control" rows="3" id="toAddSlm"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Cc</label>
+									<textarea class="form-control" rows="3" id="ccAddSlm"></textarea>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveSlmEmail('addEmail')">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-setting-email-slm">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="modal-setting-title">Change Setting for </h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<input type="text" class="form-control" id="idSlmEdit" style="display:none;">
+
+							<label>2nd Level Support</label>
+							<select id="selectLevelSupportEdit" name="selectLevelSupportEdit" style="width:100%!important" disabled></select>
+              <span class="help-block" style="display:none;color: red;"></span>
+						</div>
+						<hr>
+						<div class="form-group">
+							<label>Dear</label>
+							<input type="text" class="form-control" id="dearSlmEdit">
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>To</label>
+									<textarea class="form-control" rows="3" id="toSlmEdit"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Cc</label>
+									<textarea class="form-control" rows="3" id="ccSlmEdit"></textarea>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveSlmEmail('editEmail')">Save changes</button>
 				</div>
 			</div>
 		</div>
@@ -2634,6 +2883,13 @@ Ticketing
 		// if (hash) {
 		// 	$('.nav-tabs a[href="#' + hash + '"]').tab('show');
 		// }
+		if (window.location.href.split("?")[1] == "client") {
+			$('a[href="#setting"]').tab('show')
+			emailSetting()
+		}else if (window.location.href.split("?")[1] == "Slm") {
+			$('a[href="#setting"]').tab('show')
+			SlmEmailSetting()
+		}
 
 		$("#startDateFilter").val("")
 		$("#endDateFilter").val("")
@@ -2694,7 +2950,11 @@ Ticketing
 
 		$('#searchBarEmail').keypress(function(e){
 			if(e.keyCode == 13){
-				$("#tableClient").DataTable().search($('#searchBarEmail').val()).draw();
+				if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmail') {
+					$("#tableEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+				}else if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmailSlm') {
+					$("#tableSlmEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+				}
 			}
 		});
 
@@ -2733,7 +2993,11 @@ Ticketing
 		})
 
 		$('#applyFilterTableEmail').click(function(){
-			$("#tableClient").DataTable().search($('#searchBarEmail').val()).draw();
+			if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmail') {
+				$("#tableEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+			}else if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmailSlm') {
+				$("#tableSlmEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+			}
 		})
 
 		$('#clearFilterTable').click(function(){
@@ -2747,7 +3011,6 @@ Ticketing
 	})
 
 	function getDashboard(){
-
 		$.ajax({
 			type:"GET",
 			url:"{{url('ticketing/getDashboard')}}",
@@ -2808,6 +3071,10 @@ Ticketing
 							{
 								id:"PL",
 								text:"PL - Permintaan Layanan"
+							},
+							{
+								id:"PP",
+								text:"PP - Permintaan Penawaran"
 							}
 						]
 					}
@@ -2827,6 +3094,10 @@ Ticketing
 					{
 						id:"PL",
 						text:"Permintaan Layanan"
+					},
+					{
+						id:"PP",
+						text:"Permintaan Penawaran"
 					}
 				]
 
@@ -2957,6 +3228,7 @@ Ticketing
 					$("#typeDiv").show();
 					$("#nomorDiv").show();
 					$("#clientDiv").show();
+					$("#pidDiv").show();
 					$("#formNewTicket").show();
 					$("#createIdTicket").hide();
 					$("#inputTypeTicket").val("")
@@ -2972,89 +3244,251 @@ Ticketing
 	var clientWincor = 0;
 
 	$("#inputClient").change(function(){
-		var acronym_client = $("#inputClient option:selected").text().split(" - ")[0];
-		if(firstTimeTicket == 0){
-			$.ajax({
-				beforeSend: function(request) {
-					request.setRequestHeader("Accept", "application/json");
-				},
-				type:"GET",
-				url:"{{url('ticketing/create/setReserveIdTicket')}}",
-				data:{
-					id_ticket:$("#inputticket").val() + "/" + acronym_client + moment().format("/MMM/YYYY"),
-					acronym_client:acronym_client,
-					id_client:$("#inputClient").val(),
-					operator:"{{(Auth::check())?Auth::user()->name:'-'}}",
-				},
-				success: function(result){
-					clientBanking = result.banking
-					clientWincor = result.wincor
-					$("#inputticket").val($("#inputticket").val() + "/" + acronym_client + moment().format("/MMM/YYYY"));
+		if ($(this).val() != "") {
+			var acronym_client = $("#inputClient option:selected").text().split(" - ")[0];
+			if(firstTimeTicket == 0){
+				// clientBanking = result.banking
+				// clientWincor = result.wincor
 
-					$.ajax({
-						type:"GET",
-						url:"{{url('ticketing/create/getPidByPic')}}",
-						data:{
-							client_acronym:acronym_client
-						},
-						success: function(result){
-							$("#selectPID").empty("")
-							$("#selectPID").select2({
-								placeholder:"Select PID",
-								data:result
-							}).change(function(){
-								getBankAtm(clientBanking)
-							})
-						}
-					})
+				if (acronym_client == "INTERNAL") {
+					acronym_client = "INTR"
+				}else{
+					acronym_client = acronym_client
 				}
-			});
-		} else {
-			var temp = $("#inputticket").val().split('/')
-			temp[1] = acronym_client
-			var changeResult = temp.join('/')
+				
+				$("#inputticket").val($("#inputticket").val() + "/" + acronym_client + moment().format("/MMM/YYYY"));
+				if ($('#selectPID').data("select2")) {
+	    		$('#selectPID').select2('destroy');
+		      $('#selectPID').empty();
+		      $('#selectPID').append('<option></option>');
+	    	}
 
-			$.ajax({
-				type:"GET",
-				url:"{{url('ticketing/create/putReserveIdTicket')}}",
-				data:{
-					id_ticket_before:$("#inputticket").val(),
-					id_ticket_after:changeResult,
-					id_client:$("#inputClient").val(),
-					acronym_client:acronym_client,
-				},
-				success: function(result){
-					clientBanking = result.banking
-					clientWincor = result.wincor
-					$("#inputticket").val(changeResult);
+				$.ajax({
+					type:"GET",
+					url:"{{url('ticketing/create/getPidByPic')}}",
+					data:{
+						client_acronym:acronym_client
+					},
+					success: function(result){
+						$("#selectPID").select2({
+							placeholder:"Select Project ID",
+							data:result
+						}).change(function(){
+							if ($(this).val() != "") {
+								$.ajax({
+									type:"GET",
+									url:"{{url('ticketing/setting/checkPidReserve')}}",
+									data:{
+										pid:$(this).val()
+									},success: function(result){
+										if (result.data) {
+											$.ajax({
+												beforeSend: function(request) {
+													request.setRequestHeader("Accept", "application/json");
+												},
+												type:"GET",
+												url:"{{url('ticketing/create/setReserveIdTicket')}}",
+												data:{
+													id_ticket:$("#inputticket").val().trim(),
+													acronym_client:acronym_client,
+													id_client:$("#inputClient").val(),
+													pid:$("#selectPID").val(),
+													operator:"{{(Auth::check())?Auth::user()->name:'-'}}",
+												}
+											});
+											$("#showInputDetailTicket").attr("disabled",false)
+											if ($("#hrLine").next().is(":visible") == true) {
+												getBankAtm(clientBanking)
+											}else{
+												showInputDetailTicket()
+											}
+										}else{
+											$("#showInputDetailTicket").attr("disabled",true)
+											Swal.fire({
+					              title: "<strong>Oopzz!</strong>",
+					              icon: "info",
+					              allowOutsideClick: false,
+  											allowEscapeKey: false,
+					              html: `
+					                Please add Client Email Setting for this PID!
+					              `,
+					            }).then((result) => {
+				                if (result.value) {
+				                	 window.open('{{url("/ticketing#setting?client")}}', '_blank');
+			                		$('#selectPID').select2('destroy');
+										      $('#selectPID').empty();
+										      $('#selectPID').append('<option></option>');
 
-					$.ajax({
-						type:"GET",
-						url:"{{url('ticketing/create/getPidByPic')}}",
-						data:{
-							client_acronym:acronym_client
-						},
-						success: function(result){
-							$("#selectPID").empty("")
-							$("#selectPID").select2({
-								placeholder:"Select PID",
-								data:result
-							}).change(function(){
-								getBankAtm(clientBanking)
-							})
-						}
-					})
+				                	$("#inputClient").val("").trigger("change")
+													$("#inputATMid").hide();
+
+				                  $('#hrLine').nextUntil('#createTicket').each(function() {
+													    $(this).hide()
+													});
+													$("#createTicket").hide()
+				                }
+				              })
+										}
+									}
+								})
+							}
+						})
+					}
+				})
+			} else {
+				var temp = $("#inputticket").val().split('/')
+				temp[1] = acronym_client
+				var changeResult = temp.join('/')
+
+				// clientBanking = result.banking
+				// clientWincor = result.wincor
+				$("#inputticket").val(changeResult);
+
+				if ($('#selectPID').data("select2")) {
+					$('#selectPID').select2('destroy');
+	      	$('#selectPID').empty();
+	      	$('#selectPID').append('<option></option>');
 				}
-			});
+
+				$.ajax({
+					type:"GET",
+					url:"{{url('ticketing/create/getPidByPic')}}",
+					data:{
+						client_acronym:acronym_client
+					},
+					success: function(result){
+						$("#selectPID").select2({
+							placeholder:"Select Project ID",
+							data:result
+						}).change(function(){
+							if ($(this).val() != "") {		      
+								$.ajax({
+									type:"GET",
+									url:"{{url('ticketing/setting/checkPidReserve')}}",
+									data:{
+										pid:$(this).val()
+									},success: function(result){
+										if (result.data) {
+											$.ajax({
+												type:"GET",
+												url:"{{url('ticketing/create/putReserveIdTicket')}}",
+												data:{
+													id_ticket_before:$("#inputticket").val().trim(),
+													id_ticket_after:changeResult,
+													id_client:$("#inputClient").val(),
+													pid:$("#selectPID").val(),
+													acronym_client:acronym_client,
+												}
+											});
+											$("#showInputDetailTicket").attr("disabled",false)
+											if ($("#hrLine").next().is(":visible")) {
+												getBankAtm(clientBanking)
+											}else{
+												showInputDetailTicket()
+											}
+										}else{
+											$("#showInputDetailTicket").attr("disabled",true)
+											Swal.fire({
+					              title: "<strong>Oopzz!</strong>",
+					              icon: "info",
+					              allowOutsideClick: false,
+  											allowEscapeKey: false,
+					              html: `
+					                Please add Client Email Setting for this PID!
+					              `,
+					            }).then((result) => {
+				                if (result.value) {
+				                	window.open('{{url("/ticketing#setting?client")}}', '_blank');
+			                		$('#selectPID').select2('destroy');
+										      $('#selectPID').empty();
+										      $('#selectPID').append('<option></option>');
+
+				                  $("#inputClient").val("").trigger("change")
+													$("#inputATMid").hide();
+
+				                  $('#hrLine').nextUntil('#createTicket').each(function() {
+													    $(this).hide()
+													});
+													$("#createTicket").hide()
+				                }
+				              })
+										}
+									}
+								})
+							}
+							
+						})
+					}
+				})
+			}
+
+			$("#selectCatAsset").empty("")
+			$("#selectCatAsset").select2({
+				ajax: {
+	        url: '{{url("/ticketing/create/getCategorybyClient")}}',
+	        data: function (params) {
+	          var query = {
+	            q: params.term,
+	            client:$("#inputClient").val()
+	          }
+
+	          // Query parameters will be ?search=[term]&type=public
+	          return query;
+	        },
+	        processResults: function (data) {
+	          // Transforms the top-level key of the response object from 'items' to 'results'
+	          var results = data.map(function(item) {
+	            return {
+	                id: item.id,
+	                text: item.text // Assuming the data has an attribute 'name'
+	            };
+	          });
+
+	          // Trigger a custom event after processing results
+	          $('#selectCatAsset').trigger('select2:data-loaded', [results]);
+
+	          return {
+	            results: data,
+	          };
+	        },
+	      },
+	      placeholder: 'Select Asset Category',
+			}).change(function(){
+				if($("#hrLine").next().is(":visible")){
+					if ($(this).val() == "ATM" || $(this).val() == "CRM") {
+						$("#categoryDiv").show();
+					}
+				}
+
+				$("#inputATM").empty()
+				getBankAtm(clientBanking)
+			})
+
+			if (acronym_client == "INTERNAL" || acronym_client == "ADMF") {
+				$("#selectCatAsset").closest("div").prev("label").text("Asset Category")
+			}else{
+				$("#categoryDiv").hide();
+			}
+
+	    $('#selectCatAsset').on('select2:data-loaded', function(e, data) {
+	      if (data.length > 0) {
+					$("#selectCatAsset").closest("div").prev("label").text("Asset Category*")
+	      } else {
+	      	$("div").removeClass('has-error')
+					$(".help-block").hide()
+					$("#selectCatAsset").closest("div").prev("label").text("Asset Category")
+	      }
+	    });
+
+			$("#selectCatAsset").select2('open');
+
+			if($("#inputSeverity").val() != "Choose the severity"){
+				showInputDetailTicket();
+				getBankAtm(clientBanking);
+			}
+
+			firstTimeTicket = 1;
 		}
-
-
-		if($("#inputSeverity").val() != "Choose the severity"){
-			showInputDetailTicket();
-			getBankAtm(clientBanking);
-		}
-
-		firstTimeTicket = 1;
 	});
 
 	$("#inputTypeTicket").change(function(){
@@ -3064,7 +3498,6 @@ Ticketing
 		$("#problemDiv label").text("Problem*")
 		$("#reportDiv label").text("Report Time*")
 		$("#engineerDiv").hide();
-
 		if($(this).val() == "Preventive Maintenance"){
 			$("#inputSeverity").attr("disabled",true)
 			prepareNewParameter()
@@ -3091,6 +3524,15 @@ Ticketing
 				$("#inputSeverity option")[1].remove()
 				$("#inputSeverity option")[1].remove()
 			}
+		} else if ($(this).val() == "Permintaan Penawaran") {
+			$("#inputSeverity").attr("disabled",true)
+			prepareNewParameter()
+			$("#engineerDiv").show();
+			$("#inputLocation").val("")
+			$("#inputSerial").val("")
+			$("#inputEngineerOpen").val("")
+
+			showInputDetailTicket()
 		} else {
 			prepareNewParameter()
 		}
@@ -3114,10 +3556,13 @@ Ticketing
 			$("#serialDiv").show();
 			$("#reportDiv").show();
 			$("#slmDiv").hide();
+			$("#inputSlm").val("");
 
+			//ngga kepake harusnyaa
 			if($("#inputClient option:selected").text().includes("Absensi")){
 				$("#serialDiv").hide();
 				$("#slmDiv").hide();
+				$("#inputSlm").val("");
 				$("#typeDiv").show();
 				$("#inputAbsenLocation").show();
 				$("#inputSwitchLocation").hide();
@@ -3126,6 +3571,7 @@ Ticketing
 				$("#ipServerDiv").show();
 			} 
 
+			//ngga kepake harusnya
 			if($("#inputClient option:selected").text().includes("Switch")){
 				// $("#serialDiv").hide();
 				// $("#inputLocation").remove();
@@ -3140,10 +3586,12 @@ Ticketing
 				$("#inputAbsenLocation").hide();
 				$("#ipMechineDiv").show();
 				$("#slmDiv").hide()
+				$("#inputSlm").val("");
 				// $("#ipServerDiv").show();
 
 			} 
 
+			//ngga kepake harusnyaa
 			if(!$("#inputClient option:selected").text().includes("Switch") && !$("#inputClient option:selected").text().includes("Absensi")) {
 				$("#inputAbsenLocation").remove();
 				$("#inputSwitchLocation").remove();
@@ -3154,12 +3602,33 @@ Ticketing
 			var onclick = "createTicket(" + clientBanking + ")"
 			$("#createTicket").attr("onclick",onclick);
 			
-			getBankAtm(clientBanking);
+			getBankAtm(clientBanking)
 		}
 	}
 
 	function createTicket(clientBanking){
+		$("div").removeClass('has-error')
 		$(".help-block").hide()
+
+		if ($("#inputATMid .col-sm-10 .help-block").next("a")) {
+    	$("#inputATMid .col-sm-10 .help-block").next("a").remove()
+    }
+
+		if ($("#inputSeverity").val() == ""){
+				$("#inputSeverity").closest("div").addClass('has-error')
+				$("#inputSeverity").next().next(".help-block").show()
+		}else if ($("#selectCatAsset").closest("div").prev("label").text().includes("*")) {
+			if ($("#selectCatAsset").val() == "" || $("#selectCatAsset").val() == null){
+				$("#selectCatAsset").closest("div").addClass('has-error')
+				$("#selectCatAsset").next().next(".help-block").show()
+		  }
+		}
+
+		var inputAtmValue = $("#inputATM").val()
+		if (inputAtmValue != null) {
+			$("#inputATM").val(inputAtmValue).trigger("change")
+		}		
+		
 		if($("#inputPIC").val() == "" ){
 			$("#picDiv").addClass('has-error')
 			$("#picDiv .col-sm-10 .help-block").show()
@@ -3169,7 +3638,7 @@ Ticketing
 		} else if($("#inputProblem").val() == "" ){
 			$("#problemDiv").addClass('has-error')
 			$("#problemDiv .col-sm-10 .help-block").show()
-		} else if($("#inputATMid").is(':visible') && $("#inputATM").select2('data')[0].text === "Select One"){
+		} else if($("#inputATMid").is(':visible') && $("#inputATM").val() == null){
 			$("#inputATMid").addClass('has-error')
 			$("#inputATMid .col-sm-10 .help-block").show()
 		} else if($("#inputLocation").val() == "" ){
@@ -3182,7 +3651,7 @@ Ticketing
 			$("#inputReportingDate").css("border-color",'#d2d6de')
 			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon").css("border-color",'#d2d6de')
 			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon i").css("color",'#555')
-		} else if($("#inputTypeTicket").val() != "Preventive Maintenance" && $("#inputSeverity").val() == "Choose the severity"){
+		} else if($("#inputTypeTicket").val() != "Preventive Maintenance" && $("#inputTypeTicket").val() != "Permintaan Penawaran" && $("#inputSeverity").val() == "Choose the severity"){
 			$("#inputSeverity").parent().parent().addClass('has-error')
 			// $("#reportDiv").addClass('has-error')
 			// $("#reportDiv .col-sm-5.secondReport .help-block").show()
@@ -3204,7 +3673,11 @@ Ticketing
 			var schedule_date = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("D MMMM YYYY");
 			var schedule_time = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm");
 
-			$("#tableTicket").show();
+			if ($("div").hasClass('has-error')) {
+				$("#tableTicket").hide();
+			}else{
+				$("#tableTicket").show();
+			}
 			$("#holderID").text($("#inputticket").val());
 			$("#holderRefrence").text($("#inputRefrence").val());
 			$("#holderCustomer").text($("#inputClient option:selected").text().split(" - ")[1]);
@@ -3237,7 +3710,19 @@ Ticketing
 				$("#holderWaktu").prev().text("Time")
 				$("#holderDate").parent().hide()
 				$("#holderSeverity").parent().hide()
-			} else {
+			} else if($("#inputTypeTicket").val() == "Permintaan Penawaran"){
+				$("#holderStatus").html("<b>" + schedule_date + "</b>");
+				$("#holderWaktu").html("<b>" + schedule_time + "</b>");
+				$("#holderEngineer").show();
+				$("#holderEngineerOpen").html($("#inputEngineerOpen").val());
+				$("#holderSeverity").text($("#inputSeverity").val());
+
+				$("#holderProblem").prev().text("Activity")
+				$("#holderStatus").prev().text("Date")
+				$("#holderWaktu").prev().text("Time")
+				$("#holderDate").parent().hide()
+				$("#holderSeverity").parent().hide()
+			}  else {
 				if($("#inputTypeTicket").val() == "Permintaan Layanan"){
 					$("#holderProblem").prev().text("Activity")
 				}
@@ -3340,6 +3825,7 @@ Ticketing
 
 		$("#nomorDiv").hide()
 		$("#clientDiv").hide()
+		$("#pidDiv").hide()
 		$("#refrenceDiv").hide()
 		$("#picDiv").hide()
 		$("#contactDiv").hide()
@@ -3419,23 +3905,24 @@ Ticketing
 			type:"GET",
 			url:"{{url('ticketing/create/getParameter')}}",
 			success: function (result){
-				var appendClient = "<option selected='selected'>Choose the client</option> ";
-				var appendSeverity = "<option selected='selected' val='None'>Choose the severity</option> ";
 				var appendEmailTemplate = "<option selected='selected' value='none'>Choose Template Email</option> ";
 
-				var arrayClient = [{id:0,text:"Choose the client"}]
-				var arraySeverity = [{id:'None',text:"Choose the severity"}]
+				var arrayClient = []
+				var arraySeverity = []
 
 				$.each(result.client,function(key,value){
-					var getPerformanceAppend = "getPerformance('" + value.client_acronym + "')";
+					var getPerformanceAppend = "getPerformance('" + value.code + "')";
 					arrayClient.push({
 						id:value.id,
-						text:value.client_acronym + " - " + value.client_name
+						text:value.code + " - " + value.brand_name
 					})
 				});
 
 				$.each(result.severity,function(key,value){
-					appendSeverity = appendSeverity + "<option value='" + value.id + " (" + value.name + ")'>" + value.name + " - (" + value.description +")</option>";
+					arraySeverity.push({
+						id:value.id + " (" + value.name + ")",
+						text:value.name + " - (" + value.description +")"
+					})
 				});
 
 				$.each(result.email_template,function(key,value){
@@ -3448,12 +3935,17 @@ Ticketing
 					$("#inputClient").select2('destroy');
 				}
 
-				$("#inputClient").select2({data:arrayClient});
-				// if(temp != ""){
-				// 	$("#inputClient").val(temp).trigger('change')
-				// }
+				$("#inputClient").append("<option></option>")
+				$("#inputClient").select2({
+					data:arrayClient,
+					placeholder:"Choose the client"
+				})
 
-				$("#inputSeverity").html(appendSeverity);
+				$("#inputSeverity").append("<option></option>")
+				$("#inputSeverity").select2({
+					data:arraySeverity,
+					placeholder:"Choose the severity"
+				});
 
 				$("#inputTemplateEmail").html(appendEmailTemplate)
 			},
@@ -3461,147 +3953,185 @@ Ticketing
 	}
 
 	function getBankAtm(clientBanking){
-		if(clientBanking){
-			// $.ajax({
-			// 	type:"GET",
-			// 	url:"{{url('ticketing/create/getAtmId')}}",
-			// 	data:{
-			// 		acronym:$("#inputClient option:selected").text().split(" - ")[0],
-			// 		client_id:$("#inputClient").val()
-			// 	},
-			// 	success: function(result){
-			// 		$("#typeDiv").show();
-			// 		$("#inputATMid").show();
-			// 		$("#categoryDiv").show();
-			// 		if ($('#inputATM').hasClass("select2-hidden-accessible")) {
-			// 			$("#inputATM").select2('destroy');
-			// 		}
-			// 		result.unshift('Select One')
-			// 		$("#inputATM").select2({
-			// 			data:result
-			// 		});
-			// 		$("#locationDiv .col-sm-2").text('Location')
-			// 	}
-			// });
-			console.log(clientBanking)
-			$.ajax({
-				type:"GET",
-				url:"{{url('/ticketing/create/getAssetByPid')}}",
-				data:{
-					pid:$("#selectPID").val(),
-				},
-				success: function(result){
-					$("#inputATM").empty()
-					$("#typeDiv").show();
-					if ($("#inputTypeTicket").val() != "") {
+		$("#inputATM").empty()
+		$("#typeDiv").show();
+		$("div").removeClass('has-error')
+		$(".help-block").hide()
+		if ($("#inputATMid .col-sm-10 .help-block").next("a")) {
+    	$("#inputATMid .col-sm-10 .help-block").next("a").remove()
+    }
+		if ($("#inputTypeTicket").val() != "") {
+			if ($("#selectCatAsset").closest("div").prev("label").text().includes("*")) {
+				if ($("#inputClient").val() == "INTERNAL" || $("#inputClient").val() == "ADMF") {
+						$("#inputATMid").hide();
+				}else{
+					if ($("#hrLine").next().is(":visible")) {
 						$("#inputATMid").show();
-						$("#categoryDiv").show();
 					}
-					if ($('#inputATM').hasClass("select2-hidden-accessible")) {
-						$("#inputATM").select2('destroy');
-					}
-					result.unshift('Select One')
-					$("#inputATM").select2({
-						data:result
-					});
-					$("#locationDiv .col-sm-2").text('Location')
 				}
-			})
-		} else {
-			if($("#inputClient option:selected").text().includes("Absensi")){
-				$.ajax({
-					type:"GET",
-					url:"{{url('/ticketing/create/getAssetByPid')}}",
-					data:{
-						pid:$("#selectPID").val(),
-					},
-					success: function(result){
-						$("#inputATMid").hide();
+			}
 
-						$('#inputSwitchLocation').hide()
-						if ($('#inputSwitchLocation').select2()) {
-							$('#inputSwitchLocation').select2('destroy')
-						}
-
-						$('#inputAbsenLocation').show()
-						if ($('#inputAbsenLocation').is(":visible")) {
-							$('#inputAbsenLocation').empty()
-							if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
-								$("#inputAbsenLocation").select2('destroy');
-							}
-							result.unshift('Select One')
-
-							$("#inputAbsenLocation").select2({
-								data:result
-							});
-						}
-					}
-				})
-				// $.ajax({
-				// 	type:"GET",
-				// 	url:"{{url('ticketing/create/getAbsenId')}}",
-				// 	success: function(result){
-				// 		if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
-				// 			$("#inputAbsenLocation").select2('destroy');
-				// 		}
-				// 		result.unshift('Select One')
-
-				// 		$("#inputAbsenLocation").select2({
-				// 			data:result
-				// 		});
-				// 	}
-				// });
-			} else if($("#inputClient option:selected").text().includes("Switch")){
-				$.ajax({
-					type:"GET",
-					url:"{{url('/ticketing/create/getAssetByPid')}}",
-					data:{
-						pid:$("#selectPID").val(),
-					},
-					success: function(result){
-						$("#inputATMid").hide();
-
-						$('#inputAbsenLocation').hide()
-						if ($('#inputAbsenLocation').select2()) {
-							$('#inputAbsenLocation').select2('destroy')
-						}
-
-						$('#inputSwitchLocation').show()
-						if ($('#inputSwitchLocation').is(":visible")) {
-							$('#inputSwitchLocation').empty()
-							if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
-								$("#inputSwitchLocation").select2('destroy');
-							}
-							result.unshift('Select One')
-
-							$("#inputSwitchLocation").select2({
-								data:result
-							});
-						}
-					}
-				})
-				// $.ajax({
-				// 	type:"GET",
-				// 	url:"{{url('ticketing/create/getSwitchId')}}",
-				// 	success: function(result){
-				// 		if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
-				// 			$("#inputSwitchLocation").select2('destroy');
-				// 		}
-				// 		result.unshift('Select One')
-
-				// 		$("#inputSwitchLocation").select2({
-				// 			data:result
-				// 		});
-				// 	}
-				// });
-			} else {
-				$("#locationDiv .col-sm-2").text('Location*')
-				$("#inputATM").val("");
-				$("#inputSerial").val("");
-				$("#inputLocation").val("");
-				$("#inputATMid").hide();
+			if($("#hrLine").next().is(":visible")){
+				if ($("#selectCatAsset").val() == "ATM" || $("#selectCatAsset").val() == "CRM") {
+					$("#categoryDiv").show();
+				}else{
+					$("#categoryDiv").hide();
+				}
 			}
 		}
+		if ($('#inputATM').hasClass("select2-hidden-accessible")) {
+			$("#inputATM").select2('destroy');
+		}			
+		$("#locationDiv .col-sm-2").text('Location')
+		$("#inputATM").select2({
+			ajax: {
+        url: '{{url("/ticketing/create/getAssetByPid")}}',
+        data: function (params) {
+          var query = {
+            q: params.term,
+            pid:$("#selectPID").val(),
+            category:$("#selectCatAsset").val()
+          }
+
+          // Query parameters will be ?search=[term]&type=public
+          return query;
+        },
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
+      placeholder: 'Select One',
+		});
+		// if(clientBanking){
+		// 	$("#inputATM").empty()
+		// 	$("#typeDiv").show();
+		// 	if ($("#inputTypeTicket").val() != "") {
+		// 		$("#inputATMid").show();
+		// 		$("#categoryDiv").show();
+		// 	}
+		// 	if ($('#inputATM').hasClass("select2-hidden-accessible")) {
+		// 		$("#inputATM").select2('destroy');
+		// 	}			
+		// 	$("#locationDiv .col-sm-2").text('Location')
+		// 	$("#inputATM").select2({
+		// 		ajax: {
+	 //        url: '{{url("/ticketing/create/getAssetByPid")}}',
+	 //        data: function (params) {
+	 //          var query = {
+	 //            q: params.term,
+	 //            pid:$("#selectPID").val()
+	 //          }
+
+	 //          // Query parameters will be ?search=[term]&type=public
+	 //          return query;
+	 //        },
+	 //        processResults: function (data) {
+	 //          // Transforms the top-level key of the response object from 'items' to 'results'
+	 //          return {
+	 //            results: data
+	 //          };
+	 //        },
+	 //      },
+	 //      placeholder: 'Select One',
+		// 	});
+		// } else {
+		// 	if($("#inputClient option:selected").text().includes("Absensi")){
+		// 		$.ajax({
+		// 			type:"GET",
+		// 			url:"{{url('/ticketing/create/getAssetByPid')}}",
+		// 			data:{
+		// 				pid:$("#selectPID").val(),
+		// 			},
+		// 			success: function(result){
+		// 				$("#inputATMid").hide();
+
+		// 				$('#inputSwitchLocation').hide()
+		// 				if ($('#inputSwitchLocation').select2()) {
+		// 					$('#inputSwitchLocation').select2('destroy')
+		// 				}
+
+		// 				$('#inputAbsenLocation').show()
+		// 				if ($('#inputAbsenLocation').is(":visible")) {
+		// 					$('#inputAbsenLocation').empty()
+		// 					if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
+		// 						$("#inputAbsenLocation").select2('destroy');
+		// 					}
+		// 					result.unshift('Select One')
+
+		// 					$("#inputAbsenLocation").select2({
+		// 						data:result
+		// 					});
+		// 				}
+		// 			}
+		// 		})
+		// 		// $.ajax({
+		// 		// 	type:"GET",
+		// 		// 	url:"{{url('ticketing/create/getAbsenId')}}",
+		// 		// 	success: function(result){
+		// 		// 		if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
+		// 		// 			$("#inputAbsenLocation").select2('destroy');
+		// 		// 		}
+		// 		// 		result.unshift('Select One')
+
+		// 		// 		$("#inputAbsenLocation").select2({
+		// 		// 			data:result
+		// 		// 		});
+		// 		// 	}
+		// 		// });
+		// 	} else if($("#inputClient option:selected").text().includes("Switch")){
+		// 		$.ajax({
+		// 			type:"GET",
+		// 			url:"{{url('/ticketing/create/getAssetByPid')}}",
+		// 			data:{
+		// 				pid:$("#selectPID").val(),
+		// 			},
+		// 			success: function(result){
+		// 				$("#inputATMid").hide();
+
+		// 				$('#inputAbsenLocation').hide()
+		// 				if ($('#inputAbsenLocation').select2()) {
+		// 					$('#inputAbsenLocation').select2('destroy')
+		// 				}
+
+		// 				$('#inputSwitchLocation').show()
+		// 				if ($('#inputSwitchLocation').is(":visible")) {
+		// 					$('#inputSwitchLocation').empty()
+		// 					if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
+		// 						$("#inputSwitchLocation").select2('destroy');
+		// 					}
+		// 					result.unshift('Select One')
+
+		// 					$("#inputSwitchLocation").select2({
+		// 						data:result
+		// 					});
+		// 				}
+		// 			}
+		// 		})
+		// 		// $.ajax({
+		// 		// 	type:"GET",
+		// 		// 	url:"{{url('ticketing/create/getSwitchId')}}",
+		// 		// 	success: function(result){
+		// 		// 		if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
+		// 		// 			$("#inputSwitchLocation").select2('destroy');
+		// 		// 		}
+		// 		// 		result.unshift('Select One')
+
+		// 		// 		$("#inputSwitchLocation").select2({
+		// 		// 			data:result
+		// 		// 		});
+		// 		// 	}
+		// 		// });
+		// 	} else {
+		// 		$("#locationDiv .col-sm-2").text('Location*')
+		// 		$("#inputATM").val("");
+		// 		$("#inputSerial").val("");
+		// 		$("#inputLocation").val("");
+		// 		$("#inputATMid").hide();
+		// 	}
+		// }
 	}
 
 	$("#inputATM").change(function(){
@@ -3610,6 +4140,7 @@ Ticketing
 			$("#inputATMAddres").val("");
 			$("#inputSerial").val("");
 			$("#inputType").val("");
+			$("#inputSlm").val("");
 			$("#slmDiv").hide();
 		} else {
 			$.ajax({
@@ -3617,7 +4148,7 @@ Ticketing
 				url:"{{url('ticketing/create/getDetailAsset')}}",
 				data:{
 					id_asset:this.value,
-					// type:type
+					client:$("#inputClient").val()
 				},
 				success: function(result){
 					$("#inputLocation").val(result.alamat_lokasi);
@@ -3627,9 +4158,29 @@ Ticketing
 					$("#inputSlm").val(result.second_level_support);
 					$("#inputEngineerOpen").val(result.engineer_atm);
 					localStorage.setItem("id_device_customer",result.id_device_customer)
+					// $("div").removeClass('has-error')
+					// $(".help-block").hide()
+					// if ($("#inputATMid .col-sm-10 .help-block").next("a")) {
+			  //   	$("#inputATMid .col-sm-10 .help-block").next("a").remove()
+			  //   }
 					// $("#inputATMAddres").val(result.address);
-				}
+				},
+				error: function(xhr, status, error) {
+          // Handle errors
+          $("#inputATMid").addClass('has-error')
+          if ($("#inputATMid .col-sm-10 .help-block").next("a")) {
+          	$("#inputATMid .col-sm-10 .help-block").next("a").remove()
+          }
+					$("#inputATMid .col-sm-10 .help-block").show().text(xhr.responseJSON.data).after("<a href='{{url('/ticketing#setting?Slm')}}' target='_blank'>here</a>")
+					$("#inputLocation").val("");
+					$("#inputType").val("");
+					$("#inputSerial").val("");
+					$("#slmDiv").hide();
+					$("#inputSlm").val("");
+					$("#inputEngineerOpen").val("");
+        }
 			});
+
 			// if($("#inputClient option:selected").text().includes("CCTV") || $("#inputClient option:selected").text().includes("UPS")){
 			// 	if($("#inputClient option:selected").text().includes("CCTV")){
 			// 		var type = "CCTV"
@@ -3767,9 +4318,11 @@ Ticketing
 						type:"GET",
 						url:"{{url('ticketing/mail/getEmailData')}}",
 						data:{
-							client:$("#inputClient").val()
+							client:$("#selectPID").val(),
+							slm:$("#inputSlm").val()
 						},
 						success: function(result){
+							console.log(result)
 							if($("#inputTemplateEmail").val() != "Wincor Template"){
 								if($("#inputClient option:selected").text().includes("Absensi")){
 									var subject = "Open Tiket " + $("#inputAbsenLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
@@ -3804,7 +4357,9 @@ Ticketing
 							} else {
 								$("#emailOpenHeader").html("Dear <b>" + result.open_dear + "</b><br>Berikut terlampir Open Tiket untuk <b>" + $("#inputLocation").val() + "</b> : ");
 							}
-							$(".holderCustomer").text(result.client_name.split(' - ')[0]);
+							if (result.client_name) {
+								$(".holderCustomer").text(result.client_name.split(' - ')[0]);
+							}
 						}
 					});
 
@@ -3947,9 +4502,8 @@ Ticketing
 			// 	){
 			// 	var id_atm = $("#inputATM").select2('data')[0].text.split(' -')[0]
 			// } else {
-				var id_atm = $("#inputATM").val()
+			var id_atm = $("#inputATM").val()
 			// }
-
 			var typeAlert = 'warning'
 			var typeActivity = 'Open'
 			var typeAjax = "GET"
@@ -3978,6 +4532,8 @@ Ticketing
 				severity = "0"
 			}else if($("#inputTypeTicket").val() == "Permintaan Layanan"){
 				type_ticket = "PL"
+			}else if($("#inputTypeTicket").val() == "Permintaan Penawaran"){
+				type_ticket = "PP"
 			}
 
 			if ($("#selectPID").select2("data")[0] == undefined) {
@@ -4099,7 +4655,7 @@ Ticketing
 	function getPerformanceAll(){
 		if($.fn.dataTable.isDataTable("#tablePerformance")){
 			$(".buttonFilter").removeClass('btn-primary').addClass('btn-default')
-			$("#tablePerformance").DataTable().ajax.url('{{url('ticketing/getPerformanceAll')}}').load();
+			$("#tablePerformance").DataTable().ajax.url("{{url('ticketing/getPerformanceAll')}}").load();
 		} else {
 			$("#tablePerformance").DataTable({
 				ajax:{
@@ -4136,6 +4692,8 @@ Ticketing
 								data.type_ticket = "Preventive Maintenance"
 							} else if (data.type_ticket == "PL"){
 								data.type_ticket = "Permintaan Layanan"
+							} else if (data.type_ticket == "PP"){
+								data.type_ticket = "Permintaan Penawaran"
 							}
 
 							if(data.severity == 1){
@@ -4214,6 +4772,16 @@ Ticketing
 						className:'text-center',
 						width:"3%"
 					},
+					// { 
+     //        data:'response_time_percentage',
+					// 	className:'text-center',
+					// 	width:"3%"
+					// },
+					// { 
+     //        data:'sla_resolution_percentage',
+					// 	className:'text-center',
+					// 	width:"3%"
+					// },
 					{ 
 						data:'lastest_operator',
 						className:'text-center',
@@ -4455,6 +5023,62 @@ Ticketing
 				$("#cancelButton").attr("onclick","cancelTicket('" + result.id_ticket + "')");
 				$("#pendingButton").attr("onclick","pendingTicket('" + result.id_ticket + "')");
 				$("#closeButton").attr("onclick","closeTicket('" + result.id_ticket + "')");
+
+				$("#inputTicketSeverity").select2({
+					placeholder:"Select Severity",
+					data:[
+						{
+							id:1,
+							text:"Critical"
+						},
+						{
+							id:2,
+							text:"Major"
+						},
+						{
+							id:3,
+							text:"Moderate"
+						},
+						{
+							id:4,
+							text:"Minor"
+						}
+					]
+				}).change(function(){
+					if (result.lastest_activity_ticket.activity == 'PENDING' && result.lastest_activity_ticket.activity == 'CLOSE') {
+						if ($(this).val() != result.severity) {
+							Swal.fire({
+								title: 'Are you sure?',
+			          icon: 'warning',
+								text: 'change the severity?',
+								showCancelButton: true,
+		        		confirmButtonColor: '#3085d6',
+		        		cancelButtonColor: '#d33',
+								confirmButtonText: 'Yes',
+		        		cancelButtonText: 'No',
+							}).then((params) => {
+								if (params.value) {
+									$.ajax({
+										type:"GET",
+										url:"{{url('/ticketing/setting/setUpdateSeverity')}}",
+										data:{
+											id_ticket:result.id_ticket,
+											severity:$(this).val(),
+										},
+										success: function(result){
+											$("#modal-ticket").modal('toggle')
+											$("#clientList").val(result.client_id_filter).trigger('change')
+										}
+									});
+								}else{
+									$("#inputTicketSeverity").val(result.severity).trigger("change")
+								}
+							})
+						}
+					}
+				})
+
+				$("#inputTicketSeverity").val(result.severity).trigger("change")
 
 				var severityType = "", severityClass = ""
 				if(result.severity == 1){
@@ -4776,6 +5400,7 @@ Ticketing
 			data:{
 				id_ticket:$('#ticketID').val(),
 				ticket_number_3party:$("#ticketNumber").val(),
+				severity:$("#inputTicketSeverity").val(),
 				engineer:$("#ticketEngineer").val(),
 				note:$("#ticketNote").val(),
 				timeOnProgress:timeOnProgress
@@ -4944,7 +5569,8 @@ Ticketing
 								url:"{{url('/ticketing/mail/getEmailData')}}",
 								type:"GET",
 								data:{
-									id_ticket:$('#ticketID').val()
+									id_ticket:$('#ticketID').val(),
+									id_atm:$("#ticketIDATM").val(),
 								},
 								success: function (result){
 									// Holder Cancel
@@ -5365,27 +5991,26 @@ Ticketing
 									$("#emailCloseHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Close Tiket untuk <b>" + $(".holderCloseLocation").text() + "</b> : ");
 									$(".holderCloseCustomer").text(result.ticket_reciver.client_name);
 
-									if(result.ticket_reciver.banking == 1){
-										$(".holderCloseIDATM2").show();
-										$(".holderNumberTicket2").show();
-									} else {
-										$(".holderCloseIDATM2").hide();
-										$(".holderNumberTicket2").hide();
-									}
+									// if(result.ticket_reciver.banking == 1){
+									// 	$(".holderCloseIDATM2").show();
+									// 	$(".holderNumberTicket2").show();
+									// } else {
+									// 	$(".holderCloseIDATM2").hide();
+									// 	$(".holderNumberTicket2").hide();
+									// }
 
-									if(result.ticket_reciver.client_name.includes("UPS")) {
-										$(".holderCloseIDATM2").show();
-										$(".holderCloseUPSSerial2").show()
-										console.log(result.ticket_data.atm_detail)
-										if (result.ticket_data.atm_detail != null) {
-											$(".holderCloseUPSSerial").text(result.ticket_data.atm_detail.serial_number)
-											$(".holderCloseUPSType").text(result.ticket_data.atm_detail.type_device)
-										}
-										$(".holderCloseUPSType2").show()
-										$(".holderCloseSerial").parent().hide()	
-									} else if (result.ticket_reciver.client_name.includes("CCTV")) {
-
-									}
+									// if(result.ticket_reciver.client_name.includes("UPS")) {
+									// 	$(".holderCloseIDATM2").show();
+									// 	$(".holderCloseUPSSerial2").show()
+									// 	console.log(result.ticket_data.atm_detail)
+									// 	if (result.ticket_data.atm_detail != null) {
+									// 		$(".holderCloseUPSSerial").text(result.ticket_data.atm_detail.serial_number)
+									// 		$(".holderCloseUPSType").text(result.ticket_data.atm_detail.type_device)
+									// 	}
+									// 	$(".holderCloseUPSType2").show()
+									// 	$(".holderCloseSerial").parent().hide()	
+									// } else if (result.ticket_reciver.client_name.includes("CCTV")) {
+									// }
 
 									$(".holderCloseCounter").text($("#saveCloseCouter").val());
 									$(".holderCloseRoot").text($("#saveCloseRoute").val());
@@ -5627,62 +6252,198 @@ Ticketing
 		$(".settingComponent").hide()
 		$("#emailSetting").show()
 		$("#addEmail2").show()
+		$("#addEmail").show()
+		$("#addEmailSlm").hide()
+		// if($.fn.dataTable.isDataTable("#tableClient")){
 
-		if($.fn.dataTable.isDataTable("#tableClient")){
+		// } else {
+		// 	$("#tableClient").DataTable({
+		// 		ajax:{
+		// 			type:"GET",
+		// 			url:"{{url('/ticketing/mail/getSettingEmail')}}",
+		// 			dataSrc: function (json){
+		// 				json.data.forEach(function(data,idex){
+		// 					data.action = '<button type="button" class="btn btn-flat btn-block btn-default" onclick="editClient('+ data.id + ')">Edit</button>'
+		// 				})
+		// 				return json.data
+		// 			}
+		// 		},
+		// 		columns:[
+		// 			{
+		// 				data:'client_name',
+		// 			},
+		// 			{ 	
+		// 				data:'client_acronym',
+		// 			},
+		// 			{
+		// 				data:'open_dear',
+		// 			},
+		// 			{ 
+		// 				data:'open_to',
+		// 			},
+		// 			{ 
+		// 				data:'open_cc',
+		// 			},
+		// 			{ 
+		// 				data:'close_dear',
+		// 			},
+		// 			{ 
+		// 				data:'close_to',
+		// 			},
+		// 			{ 
+		// 				data:'close_cc',
+		// 			},
+		// 			{
+		// 				data:'action',
+		// 				className:'text-center',
+		// 				orderable: false,
+		// 				searchable: true,
+		// 			}
+		// 		],
+		// 		// order: [[10, "DESC" ]],
+		// 		autoWidth:false,
+		// 		lengthChange: false,
+		// 		searching:true,
+		// 		"processing": true,
+		// 		"ColumnDefs":[
+		// 	        { targets: 'no-sort', orderable: false }
+		// 	    ],
+		// 	    "aaSorting": [],
+		// 	})
+		// }
+
+		if ($.fn.dataTable.isDataTable("#tableEmailSetting")) {
 
 		} else {
-			$("#tableClient").DataTable({
+			const dataSet = [
+		    {
+		    	'id':1,
+		      'pid':'106/BRKS/SIP/XI/2023',
+		      'open_dear':'Team BRKS',
+		      'open_to':'msm@sinergy.co.id',
+		      'open_cc':'	helpdesk@sinergy.co.id',
+		      'close_dear':'Team BRKS',
+		      'close_to':'msm@sinergy.co.id',
+		      'close_cc':'helpdesk@sinergy.co.id',
+		    },
+		    {
+		    	'id':2,
+		      'pid':'040/BBJB/SIP/VI/2023',
+		      'open_dear':'Team',
+		      'open_to':'saputranova@gmail.com',
+		      'open_cc':'inurhasan@gmail.com',
+		      'close_dear':'Tim Monitoring BJB',
+		      'close_to':'inurhasan@gmail.com',
+		      'close_cc':'helpdesk@sinergy.co.id',
+		    }
+		  ];
+			$("#tableEmailSetting").DataTable({
 				ajax:{
 					type:"GET",
-					url:"{{url('/ticketing/mail/getSettingEmail')}}",
-					dataSrc: function (json){
-						json.data.forEach(function(data,idex){
-							data.action = '<button type="button" class="btn btn-flat btn-block btn-default" onclick="editClient('+ data.id + ')">Edit</button>'
-						})
-						return json.data
-					}
+					url:"{{url('/ticketing/mail/getSettingEmailbyPID')}}",
 				},
 				columns:[
-					{
-						data:'client_name',
-					},
 					{ 	
-						data:'client_acronym',
+						data:'pid',
 					},
 					{
-						data:'open_dear',
+						data:'dear',
 					},
 					{ 
-						data:'open_to',
+						data:'to',
 					},
 					{ 
-						data:'open_cc',
-					},
-					{ 
-						data:'close_dear',
-					},
-					{ 
-						data:'close_to',
-					},
-					{ 
-						data:'close_cc',
+						data:'cc',
 					},
 					{
+						render: function ( data, type, row){
+							return '<button type="button" class="btn btn-flat btn-block btn-default" onclick="editClientEmail('+ row.id + ')">Edit</button>'
+						},
 						data:'action',
 						className:'text-center',
 						orderable: false,
 						searchable: true,
 					}
 				],
-				// order: [[10, "DESC" ]],
 				autoWidth:false,
 				lengthChange: false,
 				searching:true,
 				"processing": true,
 				"ColumnDefs":[
-			        { targets: 'no-sort', orderable: false }
-			    ],
-			    "aaSorting": [],
+		       { targets: 'no-sort', orderable: false }
+		    ],
+		    "aaSorting": [],
+			})
+		}
+	}
+
+	function SlmEmailSetting(){
+		$(".settingComponent").hide()
+		$("#SlmEmailSetting").show()
+		$("#addEmail2").show()
+		$("#addEmail").hide()
+		$("#addEmailSlm").show()
+
+		if ($.fn.dataTable.isDataTable("#tableSlmEmailSetting")) {
+
+		} else {
+			const dataSet = [
+		    {
+		    	'id':1,
+		      'slm':'Qualita',
+		      'open_dear':'Team Qualita',
+		      'open_to':'msm@sinergy.co.id',
+		      'open_cc':'	helpdesk@sinergy.co.id',
+		      'close_dear':'Team BRKS',
+		      'close_to':'msm@sinergy.co.id',
+		      'close_cc':'helpdesk@sinergy.co.id',
+		    },
+		    {
+		    	'id':2,
+		      'slm':'PTT',
+		      'open_dear':'Team',
+		      'open_to':'saputranova@gmail.com',
+		      'open_cc':'inurhasan@gmail.com',
+		      'close_dear':'Tim Monitoring BJB',
+		      'close_to':'inurhasan@gmail.com',
+		      'close_cc':'helpdesk@sinergy.co.id',
+		    }
+		  ];
+			$("#tableSlmEmailSetting").DataTable({
+				ajax:{
+					type:"GET",
+					url:"{{url('/ticketing/mail/getSettingEmailSLM')}}",
+				},
+				columns:[
+					{ 	
+						data:'second_level_support',
+					},
+					{
+						data:'dear',
+					},
+					{ 
+						data:'to',
+					},
+					{ 
+						data:'cc',
+					},
+					{
+						render: function ( data, type, row){
+							return '<button type="button" class="btn btn-flat btn-block btn-default" onclick="editSlmEmail('+ row.id + ')">Edit</button>'
+						},
+						className:'text-center',
+						orderable: false,
+						searchable: true,
+					}
+				],
+				autoWidth:false,
+				lengthChange: false,
+				searching:true,
+				"processing": true,
+				"ColumnDefs":[
+		       { targets: 'no-sort', orderable: false }
+		    ],
+		    "aaSorting": [],
 			})
 		}
 	}
@@ -5783,7 +6544,6 @@ Ticketing
 					})
 				}
 			});
-			
 		}else{
 			if ($('input#banking').is(':checked')) {
 				$('input#banking').val(1)
@@ -5835,7 +6595,6 @@ Ticketing
 				}
 			});
 		}
-		
 	}
 
 	function atmSetting(){
@@ -5897,30 +6656,91 @@ Ticketing
 
 	function EmailAdd(){
 		$("#modal-add-email").modal('toggle');
-		$("#openToAdd").emailinput({ onlyValidValue: true, delim: ';' })
-		$("#openCcAdd").emailinput({ onlyValidValue: true, delim: ';' })
-		$("#closeToAdd").emailinput({ onlyValidValue: true, delim: ';' })
-		$("#closeCcAdd").emailinput({ onlyValidValue: true, delim: ';' })
+		$("#selectPidforEmail").select2({
+			ajax: {
+        url: '{{url("asset/getPid")}}',
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
+      placeholder: 'Select Project ID',
+      dropdownParent: $("#modal-add-email")
+		}).on("change", function () {
+			var pid = $(this).val()
+			$.ajax({
+				type:"GET",
+				url:"{{url('/ticketing/mail/getClientByPid')}}",
+				data:{
+					pid:pid
+				},
+				success:function(result){
+					$("#inputClientforEmail").val(result[0].id)
+				}
+			})
+		})
+
+		$('.emailMultiSelector ').remove()
+		$("#selectPidforEmail").empty()
+		$("#selectPidforEmail").next("span").next("span.help-block").hide()
+		$("#inputClientforEmail").val("")
+		$("#dearAdd").val("")
+		$("#toAdd").val("")
+		$("#ccAdd").val("")
+		$("#toAdd").emailinput({ onlyValidValue: true, delim: ';' })
+		$("#ccAdd").emailinput({ onlyValidValue: true, delim: ';' })
+		// $("#closeToAdd").emailinput({ onlyValidValue: true, delim: ';' })
+		// $("#closeCcAdd").emailinput({ onlyValidValue: true, delim: ';' })
 	}
 
-	function atmAdd(){
-		$.ajax({
-			type:"GET",
-			url:"{{url('/ticketing/setting/getParameterAddAtm')}}",
-			success:function(result){
-				$("#atmAddOwner").empty()
-				$.each(result, function (key,value){
-					$("#atmAddOwner").append("<option value='" + value.id + "'>(" + value.client_acronym + ") " + value.client_name + "</option>")
-				});
-			},
-			complete: function(){
-				$("#modal-setting-atm-add input.form-control, #modal-setting-atm-add textarea.form-control").val("")
-				$("#modal-setting-atm-add").modal('toggle');
+	function EmailSlmAdd(){
+		$("#modal-add-slm-email").modal('toggle');
+		$("#selectLevelSupport").select2({
+			ajax: {
+        url: '{{url("asset/getLevelSupport")}}',
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
+      placeholder: 'Select Second Level Support',
+      dropdownParent: $("#modal-add-slm-email")
+		})
 
-				settingListEngineerAssign("add",null,"modal-setting-atm-add")
-			}
-		});
+		$('.emailMultiSelector').remove()
+		$("#selectLevelSupport").empty()
+		$("#selectLevelSupport").next("span").next("span.help-block").hide()
+		$("#dearAddSlm").val("")
+		$("#toAddSlm").val("")
+		$("#ccAddSlm").val("")
+		$("#toAddSlm").emailinput({ onlyValidValue: true, delim: ';' })
+		$("#ccAddSlm").emailinput({ onlyValidValue: true, delim: ';' })
+		// $("#closeToAddSlm").emailinput({ onlyValidValue: true, delim: ';' })
+		// $("#closeCcAddSlm").emailinput({ onlyValidValue: true, delim: ';' })
 	}
+
+	// function atmAdd(){
+	// 	$.ajax({
+	// 		type:"GET",
+	// 		url:"{{url('/ticketing/setting/getParameterAddAtm')}}",
+	// 		success:function(result){
+	// 			$("#atmAddOwner").empty()
+	// 			$.each(result, function (key,value){
+	// 				$("#atmAddOwner").append("<option value='" + value.id + "'>(" + value.client_acronym + ") " + value.client_name + "</option>")
+	// 			});
+	// 		},
+	// 		complete: function(){
+	// 			$("#modal-setting-atm-add input.form-control, #modal-setting-atm-add textarea.form-control").val("")
+	// 			$("#modal-setting-atm-add").modal('toggle');
+
+	// 			settingListEngineerAssign("add",null,"modal-setting-atm-add")
+	// 		}
+	// 	});
+	// }
 
 	$("#atmAddOwner").change(function(){
 		if(this.value == 26 || this.value == 27 || this.value == '54'){
@@ -8329,5 +9149,271 @@ Ticketing
 
   	$(".selectAssignAtmId").next().next().remove()
   }
+
+  function saveEmailbyPID(type){
+  	swalFireCustom = {
+      title: 'Are you sure?',
+      text: "Save Email Client Setting",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }
+
+    var url = '', swalSuccess = '', id = '', modalClose = '', data = '', element = ''
+    if (type == 'addEmail') {
+    	url = '{{url("/ticketing/mail/storeAddMailSetting")}}'
+    	modalClose = $('#modal-add-email')
+
+    	swalSuccess = {
+        title: 'Success!',
+				text: "Email Client Add Successfully!",
+				icon: 'success',
+				confirmButtonText: 'Reload',
+      }
+
+      data = {
+				"_token": "{{ csrf_token() }}",
+				pid:$("#selectPidforEmail").val(),
+				client_acronym:$("#inputClientforEmail").val(),
+				dear:$("#dearAdd").val(),
+				to:$("#toAdd").val(),
+				cc:$("#ccAdd").val()
+			}
+
+			element = 'selectPidforEmail'
+    }else{
+    	url = '{{url("/ticketing/setting/updateEmailSetting")}}'
+    	id = $('#idEmailEdit').val()
+    	modalClose = $('#modal-setting-email-client')
+
+    	data = {
+				"_token": "{{ csrf_token() }}",
+				id:id,
+				pid:$("#selectPidforEmailEdit").val(),
+				client_acronym:$("#inputClientforEmailEdit").val(),
+				dear:$("#dearEdit").val(),
+				to:$("#toEdit").val(),
+				cc:$("#ccEdit").val()
+			}
+
+    	swalSuccess = {
+        title: 'Success!',
+				text: "Email Client Edit Successfully!",
+				icon: 'success',
+				confirmButtonText: 'Reload',
+      }
+
+      element = 'selectPidforEmailEdit'
+    }
+
+    Swal.fire(swalFireCustom).then((result) => {
+      if (result.value) {
+		  	$.ajax({
+					type:"POST",
+					url:url,
+					data:data,
+					success : function(){
+						Swal.fire(swalSuccess).then((result) => {
+							modalClose.modal('hide')
+							$('#tableEmailSetting').DataTable().ajax.url("{{url('/ticketing/mail/getSettingEmailbyPID')}}").load();
+						})
+					},error : function(req, status, error){
+						$("#"+element).next("span").next("span.help-block").show()
+	          $("#"+element).next("span").next("span.help-block").text(req.responseJSON.data)
+					}
+				});
+		  }
+		})
+  }
+
+  function saveSlmEmail(type){
+  	swalFireCustom = {
+      title: 'Are you sure?',
+      text: "Save Email SLM Setting",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }
+
+    var url = '',id = '', swalSuccess = '', modalClose = '', data = '', element = ''
+    if (type == 'addEmail') {
+    	url = "{{url('/ticketing/mail/storeAddMailSLM')}}"
+    	modalClose = $('#modal-add-slm-email')
+
+    	swalSuccess = {
+        title: 'Success!',
+				text: "Email SLM Add Successfully!",
+				icon: 'success',
+				confirmButtonText: 'Reload',
+      }
+
+      data = {
+				"_token": "{{ csrf_token() }}",
+				secondLevelSupport:$("#selectLevelSupport").val(),
+				dear:$("#dearAddSlm").val(),
+				to:$("#toAddSlm").val(),
+				cc:$("#ccAddSlm").val(),
+				// close_dear:$("#closeDearAddSlm").val(),
+				// close_to:$("#closeToAddSlm").val(),
+				// close_cc:$("#closeCcAddSlm").val(),
+			}
+
+			element = 'selectLevelSupport'
+    }else{
+    	url = "{{url('/ticketing/setting/updateEmailSLM')}}"
+    	id 	= $("#idSlmEdit").val()
+    	modalClose = $('#modal-setting-email-slm')
+    	data = {
+				"_token": "{{ csrf_token() }}",
+				id:id,
+				secondLevelSupport:$("#selectLevelSupportEdit").val(),
+				dear:$("#dearSlmEdit").val(),
+				to:$("#toSlmEdit").val(),
+				cc:$("#ccSlmEdit").val(),
+			}
+
+    	swalSuccess = {
+        title: 'Success!',
+				text: "Email SLM Edit Successfully!",
+				icon: 'success',
+				confirmButtonText: 'Reload',
+      }
+
+      element = 'selectLevelSupportEdit'
+    }
+
+    Swal.fire(swalFireCustom).then((result) => {
+      if (result.value) {
+		  	$.ajax({
+					type:"POST",
+					url:url,
+					data:data,
+					success : function(){
+						Swal.fire(swalSuccess).then((result) => {
+							modalClose.modal('hide')
+							$('#tableSlmEmailSetting').DataTable().ajax.url("{{url('/ticketing/mail/getSettingEmailSLM')}}").load();
+						})
+					},error : function(req, status, error){
+						$("#"+element).next("span").next("span.help-block").show()
+            $("#"+element).next("span").next("span.help-block").text(req.responseJSON.data)
+					}
+				});
+		  }
+		})
+  }
+
+  function editClientEmail(id){
+		$.ajax({
+			type:"GET",
+			url:"{{url('/ticketing/setting/getSettingEmailClientById')}}",
+			data: {
+				id:id,
+			},
+			success : function(result){
+				$('#modal-setting-email-client').modal('show');
+				$("#modal-setting-title").html("Change Setting for <b>" + result[0].client + "</b>");
+
+				$("#idEmailEdit").val("");
+				$("#inputClientforEmailEdit").val("");
+				$('.emailMultiSelector ').remove()
+				$("#toEdit").val("");
+				$("#ccEdit").val("");
+				$("#dearEdit").val("");
+
+				$("#selectPidforEmailEdit").select2({
+					ajax: {
+	        url: '{{url("asset/getPid")}}',
+	        processResults: function (data) {
+	          // Transforms the top-level key of the response object from 'items' to 'results'
+	          return {
+	            results: data
+	          };
+	        },
+	      },
+	      placeholder: 'Select Project ID',
+	      dropdownParent: $("#modal-setting-email-client")
+				}).on("change", function () {
+					var pid = $(this).val()
+					$.ajax({
+						type:"GET",
+						url:"{{url('/ticketing/mail/getClientByPid')}}",
+						data:{
+							pid:pid
+						},
+						success:function(result){
+							$("#inputClientforEmailEdit").val(result[0].id)
+						}
+					})
+				})
+
+				if (result[0].pid != null) {
+          var pidSelect = $("#selectPidforEmailEdit");
+          var option = new Option(result[0].pid, result[0].pid, true, true);
+          pidSelect.append(option).trigger('change');
+        }
+				$("#idEmailEdit").val(id);
+				$("#inputClientforEmailEdit").val(result[0].client);
+				
+				$("#dearEdit").val(result[0].dear);
+				$("#toEdit").val(result[0].to);
+				$("#toEdit").emailinput({ onlyValidValue: true, delim: ';' })
+				$("#ccEdit").val(result[0].cc);
+				$("#ccEdit").emailinput({ onlyValidValue: true, delim: ';' })
+			},
+		});
+	}
+
+	function editSlmEmail(id){
+		$.ajax({
+			type:"GET",
+			url:"{{url('/ticketing/setting/getSettingEmailSLMById')}}",
+			data: {
+				id:id,
+			},
+			success : function(result){
+				$('#modal-setting-email-slm').modal('toggle');
+				$("#modal-setting-title").html("Change Setting for <b>" + result[0].second_level_support + "</b>");
+				$("#selectLevelSupportEdit").val("");
+				$("#dearSlmEdit").val("");
+				$("#toSlmEdit").val("");
+				$("#ccSlmEdit").val("");
+				$('.emailMultiSelector ').remove()
+				$("#idSlmEdit").val(id);
+				
+				$("#selectLevelSupportEdit").select2({
+					ajax: {
+		        url: '{{url("asset/getLevelSupport")}}',
+		        processResults: function (data) {
+		          // Transforms the top-level key of the response object from 'items' to 'results'
+		          return {
+		            results: data
+		          };
+		        },
+		      },
+		      placeholder: 'Select Second Level Support',
+		      dropdownParent: $("#modal-setting-email-slm")
+				})
+
+				if (result[0].second_level_support != null) {
+					console.log(result[0].second_level_support)
+          var secondLevelSelect = $("#selectLevelSupportEdit");
+          var option = new Option(result[0].second_level_support, result[0].second_level_support, true, true);
+          secondLevelSelect.append(option).trigger('change');
+        }
+
+				$("#dearSlmEdit").val(result[0].dear);
+				$("#toSlmEdit").val(result[0].to);
+				$("#toSlmEdit").emailinput({ onlyValidValue: true, delim: ';' })
+				$("#ccSlmEdit").val(result[0].cc);
+				$("#ccSlmEdit").emailinput({ onlyValidValue: true, delim: ';' })
+			},
+		});
+	}
 </script>
 @endsection

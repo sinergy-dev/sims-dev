@@ -85,39 +85,67 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h4 class="modal-title">Add Category</h4>
+          <h4 class="modal-title">Add Asset Scheduling</h4>
         </div>
         <div class="modal-body">
           <form role="form">
             <div class="row listAddAssetSchedule">
-              <div class="col-md-3">
-                <div class="form-group">
-                  <label>ID Asset*</label>
-                  <select class="form-control selectIdAsset" style="width:100%!important" name="selectIdAsset"><option></option></select>
+              <div class="divPid" style="display:none;">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Project ID Before*</label>
+                    <select class="form-control selectPidBefore" style="width:100%!important" name="selectPidBefore"><option></option></select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Project ID After*</label>
+                    <select class="form-control selectPidAfter" style="width:100%!important" name="selectPidAfter"><option></option></select>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Periode*</label>
+                    <select class="form-control selectPeriode" style="width:100%!important" name="selectPeriode"><option></option></select>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="form-group">
+                    <label>Action</label><br>
+                    <button class="btn btn-flat btn-danger deleteRowAsset" style="width:40px" disabled><i class="fa fa-trash"></i></button>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>Project ID*</label>
-                  <select class="form-control selectPid" style="width:100%!important" name="selectPid"><option></option></select>
+              <div class="divAsset" style="display:none;">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>ID Asset*</label>
+                    <select class="form-control selectIdAsset" style="width:100%!important" name="selectIdAsset"><option></option></select>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                  <label>Maintenance Start*</label>
-                  <input class="form-control inputMaintenanceStart" style="width:100%!important" name="inputMaintenanceStart" placeholder="dd/mm/yyyy">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Project ID*</label>
+                    <select class="form-control selectPid" style="width:100%!important" name="selectPid"><option></option></select>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                  <label>Maintenance End*</label>
-                  <input class="form-control inputMaintenanceEnd" style="width:100%!important" name="inputMaintenanceEnd" placeholder="dd/mm/yyyy">
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label>Maintenance Start*</label>
+                    <input class="form-control inputMaintenanceStart" style="width:100%!important" name="inputMaintenanceStart" placeholder="dd/mm/yyyy">
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-1">
-                <div class="form-group">
-                  <label>Action</label><br>
-                  <button class="btn btn-flat btn-danger deleteRowAsset" style="width:40px" disabled><i class="fa fa-trash"></i></button>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label>Maintenance End*</label>
+                    <input class="form-control inputMaintenanceEnd" style="width:100%!important" name="inputMaintenanceEnd" placeholder="dd/mm/yyyy">
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="form-group">
+                    <label>Action</label><br>
+                    <button class="btn btn-flat btn-danger deleteRowAsset" style="width:40px" disabled><i class="fa fa-trash"></i></button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -128,7 +156,32 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-flat btn-danger" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-flat btn-primary" onclick="saveSchedule()">Save</button>
+          <button type="button" class="btn btn-flat btn-primary" id="saveSchedule">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-schedulingBy">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Add Asset Scheduling</h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label>Scheduling By</label>
+              <select id="schedulingBy" class="form-control" style="width:100%important!" placeholder="Select Option"><option></option></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-flat btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-flat btn-primary" onclick="schedulingBy($('#schedulingBy').val())">Save</button>
         </div>
       </div>
     </div>
@@ -204,7 +257,7 @@
       },
       {
         render: function ( data, type, row){
-          return "<button onclick='deleteScheduling("+ row.id +")' class='btn btn-sm btn-danger' style='width:30px;height:30px'><i class='fa fa-trash'></></button>"
+          return "<button onclick='deleteScheduling("+ row.id +")' class='btn btn-sm btn-danger' style='width:35px;height:30px'><i class='fa fa-trash'></></button>"
         }
       }
     ],
@@ -258,21 +311,13 @@
     $("#table-asset-scheduling").DataTable().page.len( number ).draw();
   }
 
-  function btnAddAssetScheduling(){
-    $("#modal-add-asset-schedule").modal('show')
-    settingIdAsset("add",null,"modal-add-asset-schedule")
-    settingInputDate()
-  }
-
   function addRowAddSchedule(){
     var cloneRow = $(".listAddAssetSchedule:last").clone()
     cloneRow.find(".deleteRowAsset").removeAttr("disabled").end()
-    cloneRow.find(".inputMaintenanceStart").val("").end()
-    cloneRow.find(".inputMaintenanceEnd").val("").end()
     cloneRow.children("select")
-            .select2("destroy")
-            .val("")
-            .end()
+        .select2("destroy")
+        .val("")
+        .end()
 
     $(".listAddAssetSchedule").last().after(cloneRow)
 
@@ -280,8 +325,20 @@
       $(this).closest(".listAddAssetSchedule").remove()
     })
 
-    settingIdAsset("add",null,"modal-add-asset-schedule")
-    settingInputDate()
+    if ($(".divPid").is(":visible")) {
+      $(".listAddAssetSchedule:last").find(".selectPidBefore").next("span").find("span span").text("")
+      $(".listAddAssetSchedule:last").find(".selectPidAfter").next("span").find("span span").text("")
+      $(".listAddAssetSchedule:last").find(".selectPeriode").next("span").find("span span").text("")
+      settingPidBefore()
+      settingPidAfter()
+      settingPeriode()
+    }else{
+      settingIdAsset("add",null,"modal-add-asset-schedule")
+      settingInputDate()
+      $(".listAddAssetSchedule:last").find(".selectPid").next("span").find("span span").text("")
+      cloneRow.find(".inputMaintenanceStart").val("").end()
+      cloneRow.find(".inputMaintenanceEnd").val("").end()
+    }    
   }
 
   function settingIdAsset(status,name,id_modal){
@@ -333,14 +390,12 @@
 
   function settingPid(param){
     var id_asset = $(param).val()
-
-    console.log(id_asset)
     $(param).closest(".col-md-3").next(".col-md-4").find(".selectPid").select2({
       ajax: {
         url: '{{url("asset/getPidScheduling")}}',
         data: function (params) {
           var query = {
-            search: params.term,
+            q: params.term,
             id_asset:id_asset 
           }
 
@@ -359,6 +414,137 @@
     })
 
     $(".selectPid").next().next().remove()
+  }
+
+  function settingPidBefore(){
+    $(".selectPidBefore").select2({
+      ajax: {
+        url: '{{url("/asset/getPidAsset")}}',
+        data: function (params) {
+          var query = {
+            q: params.term,
+          }
+
+          // Query parameters will be ?search=[term]&type=public
+          return query;
+        },
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
+      placeholder: 'Select Project Id',
+      dropdownParent: $("#modal-add-asset-schedule")
+    }).on("change", function () {
+        var selectedValues = [];
+        $('.selectPidBefore').not(this).each(function() {
+          selectedValues = selectedValues.concat($(this).val() || []);
+        });
+
+        // Check if any selected value is selected in another Select
+        var currentSelect = $(this);
+        var alertShown = false; 
+        $(this).find('option:selected').each(function() {
+          var value = $(this).val();
+          var text = $(this).text();
+
+          if (selectedValues.includes(value)) {
+            // Unselect the value in the current Select
+            currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+            currentSelect.trigger('change');
+            Swal.fire({
+              title: "<strong>Oopzz!</strong>",
+              icon: "info",
+              html: `
+                'Project Id cannot duplicate assign!'
+              `,
+            })
+            alertShown = true;
+          }else{
+            settingPidAfter(this)
+          }
+        });
+    })
+
+    $(".selectPidBefore").next().next().remove()
+  }
+
+  function settingPidAfter(param){
+    var pid = $(param).val()
+
+    $(param).closest(".col-md-4").next(".col-md-4").find(".selectPidAfter").select2({
+      ajax: {
+        url: '{{url("asset/getPidScheduling")}}',
+        data: function (params) {
+          var query = {
+            q: params.term,
+            pid:pid 
+          }
+
+          // Query parameters will be ?search=[term]&type=public
+          return query;
+        },
+        processResults: function (data) {
+          // Transforms the top-level key of the response object from 'items' to 'results'
+          return {
+            results: data
+          };
+        },
+      },
+      placeholder: 'Select Project Id',
+      dropdownParent: $("#modal-add-asset-schedule")
+    }).on("change", function () {
+      var selectedValues = [];
+      $('.selectPidAfter').not(this).each(function() {
+        selectedValues = selectedValues.concat($(this).val() || []);
+      });
+
+      // Check if any selected value is selected in another Select
+      var currentSelect = $(this);
+      var alertShown = false; 
+      $(this).find('option:selected').each(function() {
+        var value = $(this).val();
+        var text = $(this).text();
+
+        if (selectedValues.includes(value)) {
+          // Unselect the value in the current Select
+          currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+          currentSelect.trigger('change');
+          Swal.fire({
+            title: "<strong>Oopzz!</strong>",
+            icon: "info",
+            html: `
+              'Project Id cannot duplicate assign!'
+            `,
+          })
+          alertShown = true;
+        }
+      });
+    })
+
+    $(".selectPidAfter").next().next().remove()
+  }
+
+  function settingPeriode(){
+    $(".selectPeriode").select2({
+      placeholder:"Select Periode",
+      data:[
+        {id:"1",text:"1 Bulan"},
+        {id:"2",text:"2 Bulan"},
+        {id:"3",text:"3 Bulan"},
+        {id:"6",text:"6 Bulan"},
+        {id:"12",text:"1 Tahun"},
+        {id:"24",text:"2 Tahun"},
+        {id:"36",text:"3 Tahun"},
+        {id:"48",text:"4 Tahun"},
+        {id:"60",text:"5 Tahun"},
+      ],
+      dropdownParent:$("#modal-add-asset-schedule")
+    })
+
+    $(".selectPeriode").next().next().remove()
   }
 
   function settingInputDate(){
@@ -407,14 +593,20 @@
     $(".inputMaintenanceEnd").next().next().remove() 
   }
 
-  function saveSchedule(){
-    var inputs = document.querySelectorAll('.listAddAssetSchedule .form-control');
-    var arrListAsset = [],id_asset = [], pid = [], start_date = [], end_date = [];
+  function saveSchedule(type){
+    if (type == 'pid') {
+      var inputs = document.querySelectorAll('.listAddAssetSchedule .divPid .form-control');
+    }else{
+      var inputs = document.querySelectorAll('.listAddAssetSchedule .divAsset .form-control');
+    }
+    var arrListAsset = [],id_asset = [], pidAsset = [], start_date = [], end_date = [];
+    var pidBefore = [], pidAfter = [], period = "";
     // Iterate over each input element
 
     var isEmptyField = true, InputLengthEmpty = 0,inputLength = inputs.length
-    
-    inputs.forEach(function(input) {
+
+    if (type == 'asset') {
+      inputs.forEach(function(input) {
         if ($(input).val() == "") {
           isEmptyField = true
           InputLengthEmpty-=1
@@ -443,9 +635,9 @@
             end_date.push($(input).val());
         }
         
-    });
+      });
 
-    for (var i = 0; i < id_asset.length; i++) {
+      for (var i = 0; i < id_asset.length; i++) {
         // Construct object with elements from both arrays
         var combinedObject = {
             id_asset: id_asset[i],
@@ -455,12 +647,52 @@
         };
         // Push the combined object into the resulting array
         arrListAsset.push(combinedObject);
+      }
+    }else{
+      inputs.forEach(function(input) {
+        if ($(input).val() == "") {
+          isEmptyField = true
+          InputLengthEmpty-=1
+        }else{
+          InputLengthEmpty+=1
+          if (InputLengthEmpty < inputLength) {
+            isEmptyField = true
+          }else{
+            isEmptyField = false
+          }
+        }
+        // Push the value of each input to the arrListIdAsset array
+        if(input.name == 'selectPidBefore'){
+            pidBefore.push(input.value);
+        }
+
+        if(input.name == 'selectPidAfter'){
+            pidAfter.push(input.value);
+        }
+
+        if(input.name == 'selectPeriode'){
+            periode = input.value;
+        }        
+      });
+
+      for (var i = 0; i < pidBefore.length; i++) {
+        // Construct object with elements from both arrays
+        var combinedObject = {
+            pid_before: pidBefore[i],
+            pid_after: pidAfter[i],
+            periode: periode[i]
+        };
+        // Push the combined object into the resulting array
+        arrListAsset.push(combinedObject);
+      }
     }
+    
 
     if (isEmptyField == false) {
       formData = new FormData
       formData.append("_token","{{ csrf_token() }}")        
       formData.append("arrListAsset",JSON.stringify(arrListAsset)) 
+      formData.append("type",type) 
 
       swalFireCustom = {
         title: 'Are you sure?',
@@ -582,6 +814,39 @@
         })
       }
     })
+  }
+
+  function btnAddAssetScheduling(){
+    $("#modal-schedulingBy").modal("show")
+    $("#schedulingBy").val("").trigger("change")
+    $("#schedulingBy").select2({
+      placeholder:"Select Option",
+      dropdownParent:$("#modal-schedulingBy"),
+      data:[
+        {id:"pid",text:"Project Id"},
+        {id:"asset",text:"Asset"},
+      ],
+    })
+  }
+
+  function schedulingBy(id){
+    $("#modal-schedulingBy").modal("hide")
+    $("#modal-add-asset-schedule").modal("show")
+    if(id == 'pid'){
+      $(".divPid").show()
+      $(".divAsset").hide()
+      settingPidBefore()
+      settingPidAfter()
+      settingPeriode()
+      $("#saveSchedule").attr("onclick","saveSchedule('pid')")
+    }else{
+      $(".divPid").hide()
+      $(".divAsset").show()
+      settingIdAsset("add",null,"modal-add-asset-schedule")
+      settingInputDate()
+      $("#saveSchedule").attr("onclick","saveSchedule('asset')")
+
+    }
   }
 
 </script>

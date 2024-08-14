@@ -32,7 +32,8 @@ class AssetMgmtDetail extends Model
         'license_end_date',
         'maintenance_start_date',
         'maintenance_end_date',
-        'date_add'
+        'date_add',
+        'pr'
     ];
 
     public $timestamps = false;
