@@ -287,24 +287,24 @@ class PMOProjectCharter extends Model
 
             if ($data->project_type == 'maintenance') {
                 foreach ($sign->get() as $key => $value) {
-                    if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
-                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
-                    } else{
-                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
-                    }
+                    // if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
+                    //     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    //     ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Account Manager","Sales Manager")');
+                    // } else{
+                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                        ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management", "Project Management Manager","Account Manager","Operations Director")')->havingRaw('signed = "true"');
+                    // }
                 }
     
             } else if ($data->project_type == 'implementation'){
                 foreach ($sign->get() as $key => $value) {
-                    if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
-                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
-                    } else {
-                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
-                    }
+                    // if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
+                    //     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    //     ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Account Manager","Operations Director")');
+                    // } else {
+                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Project Management Manager","Account Manager","Operations Director")')->havingRaw('signed = "true"');;
+                    // }
                 }
                 
             }

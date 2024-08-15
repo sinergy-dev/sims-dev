@@ -269,7 +269,7 @@ class PartnershipController extends Controller
         $getUser = collect(User::join('role_user','role_user.user_id','=','users.nik')
             ->join('roles','role_user.role_id','=','roles.id')
             ->select(DB::raw('`users`.`name` AS `id`,`users`.`name` AS `text`'))
-            ->whereRaw("(`roles`.`group` = 'msm' OR `roles`.`group` = 'pmo' OR `roles`.`group` = 'sales' OR `roles`.`group` = 'presales' OR `roles`.`group` = 'BCD' OR `roles`.`group` = 'DPG')")
+            // ->whereRaw("(`roles`.`group` = 'msm' OR `roles`.`group` = 'pmo' OR `roles`.`group` = 'sales' OR `roles`.`group` = 'presales' OR `roles`.`group` = 'BCD' OR `roles`.`group` = 'DPG')")
             ->where('status_karyawan', '!=', 'dummy')
             ->get());
 
@@ -478,7 +478,7 @@ class PartnershipController extends Controller
 
     public function getCertPartner(Request $request)
     {
-        $data = PartnershipImageCertificate::select('title', 'certificate', 'id')->where('id_partnership', $request->id_partnership)->get();
+        $data = PartnershipImageCertificate::select('title', 'certificate', 'id')->where('id_partnership', $request->id_partnership)->orderby('id','desc')->get();
         // $extension = explode('.', $data->certificate)[1];
         return array("data" => $data);
     }

@@ -29,6 +29,7 @@ use App\PRDraftComparison;
 use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
+use Google_Service_Drive_Permission;
 use PDF;
 use Mail;
 use App\Mail\DraftPR;
@@ -966,7 +967,8 @@ class PrDraftController extends Controller
         $client->setAuthConfig(env('AUTH_CONFIG'));
         $client->setAccessType('offline');
         $client->setPrompt('select_account consent');
-        $client->setScopes("https://www.googleapis.com/auth/drive");
+        // $client->setScopes("https://www.googleapis.com/auth/drive");
+        $client->setScopes(Google_Service_Drive::DRIVE_READONLY);
         
         $tokenPath = env('TOKEN_PATH');
         if (file_exists($tokenPath)) {
@@ -2154,6 +2156,7 @@ class PrDraftController extends Controller
                 $update_pr->title = $update_pr->title . ' (Revisi 1)';
             }
             $update_pr->amount = str_replace('.', '', $request['inputGrandTotalProduct']);
+            $update_pr->status = 'On Progress';
             $update_pr->save();
 
             $activity = new PRActivity();
@@ -2221,7 +2224,7 @@ class PrDraftController extends Controller
 
             $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-            if ($cek_role->group == 'sales') {
+            if ($cek_role->group == 'Sales') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                     ->whereRaw("(`nik` = '".$detail->issuance."' OR `users`.`name` = '".$listTerritory->name."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                     ->get()->pluck('email');
@@ -2247,7 +2250,7 @@ class PrDraftController extends Controller
             //     "module"=>"draft"
             // );
 
-            // if ($cek_role->group == 'sales') {
+            // if ($cek_role->group == 'Sales') {
             //     $to_cc = User::select('email')
             //         ->whereRaw("(`name` = '".$listTerritory->name."' OR `id_position` = 'MANAGER' AND `id_division` = 'MSM')")
             //         ->get()->pluck('email');
@@ -2323,7 +2326,7 @@ class PrDraftController extends Controller
 
         $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-        if ($cek_role->group == 'sales') {
+        if ($cek_role->group == 'Sales') {
             $email_cc = User::select('email','roles.name as name_role')
                 ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `name` = '".$listTerritory->name."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management')")
@@ -2508,7 +2511,7 @@ class PrDraftController extends Controller
 
             $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-            if ($cek_role->group == 'sales') {
+            if ($cek_role->group == 'Sales') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                     ->where('status_karyawan', '!=', 'dummy')
                     ->get()->pluck('email');
@@ -2659,7 +2662,7 @@ class PrDraftController extends Controller
 
             $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-            if ($cek_role->group == 'sales') {
+            if ($cek_role->group == 'Sales') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                     ->where('status_karyawan', '!=', 'dummy')
                     ->get()->pluck('email');
@@ -3511,7 +3514,7 @@ class PrDraftController extends Controller
             $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
             $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
-            if ($cek_role->group == 'sales') {
+            if ($cek_role->group == 'Sales') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                     ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `name` = '".$listTerritory->name."')")
                     ->get()->pluck('email');
@@ -3608,7 +3611,7 @@ class PrDraftController extends Controller
 
         $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-        if ($cek_role->group == 'sales') {
+        if ($cek_role->group == 'Sales') {
             $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Procurement' OR `users`.`name` = '".$listTerritory->name."')")
                 ->where('status_karyawan', '!=', 'dummy')
@@ -3667,7 +3670,7 @@ class PrDraftController extends Controller
 
         $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-        if ($cek_role->group == 'sales') {
+        if ($cek_role->group == 'Sales') {
             $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Procurement' OR `users`.`name` = '".$listTerritory->name."')")
                 ->where('status_karyawan', '!=', 'dummy')
@@ -3773,7 +3776,7 @@ class PrDraftController extends Controller
 
 
             if ($next_approver == 'Muhammad Nabil' && $detail->request_method == 'Purchase Order') {
-                if ($cek_role->group == 'sales') {
+                if ($cek_role->group == 'Sales') {
                     $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
                         ->select('email','roles.name as name_role')
                         ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `name` = '".$listTerritory->name."')")
@@ -3785,7 +3788,7 @@ class PrDraftController extends Controller
                 }
                 $email_cc = $email_cc->put('4','felicia@sinergy.co.id');
             } else {
-                if ($cek_role->group == 'sales') {
+                if ($cek_role->group == 'Sales') {
                     $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
                         ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `name` = '".$listTerritory->name."')")
                         ->get()->pluck('email');
@@ -3837,6 +3840,10 @@ class PrDraftController extends Controller
         $update->status = 'UNAPPROVED';
         $update->save();
 
+        $update_pr = PR::where('id_draft_pr',$request->no_pr)->first();
+        $update_pr->status = 'Cancel';
+        $update_pr->save();
+
         $activity = PRActivity::select('activity','operator','id_draft_pr')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->where('status', 'UNAPPROVED')->orderBy('date_time', 'desc')->take(1);
 
         $get_status = PR::select('status_draft_pr')->where('id_draft_pr', $request->no_pr)->first();
@@ -3867,7 +3874,7 @@ class PrDraftController extends Controller
 
         $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-        if ($cek_role->group == 'sales') {
+        if ($cek_role->group == 'Sales') {
             $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                 ->get()->pluck('email');
@@ -3940,7 +3947,7 @@ class PrDraftController extends Controller
 
         $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
 
-        // if ($cek_role->group == 'sales') {
+        // if ($cek_role->group == 'Sales') {
         //     $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
         //         ->where('status_karyawan', '!=', 'dummy')
         //         ->get()->pluck('email');
@@ -3995,7 +4002,7 @@ class PrDraftController extends Controller
                     ->select('email')
                     ->orWhereIn('users.name',$request->emailMention)->get();
 
-        // if ($cek_role->group == 'sales') {
+        // if ($cek_role->group == 'Sales') {
         //     $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
         //         ->where('status_karyawan', '!=', 'dummy')
         //         ->get()->pluck('email');
@@ -4984,10 +4991,9 @@ class PrDraftController extends Controller
                         $pdf->MemImage(file_get_contents($dokumen_file, false, $context),50, 50, 100, '', '', 'http://www.tcpdf.org', '', false, 300);
                     }
                 }
-
             }
 
-            $dokumen_revisi = $this->getOnlyPdfPRFromLink($dokumen->id_draft_pr);
+            $dokumen_revisi = $this->getOnlyPdfPRFromLink($dokumen->id_draft_pr,'revisi');
             // return $dokumen_revisi;
             if (strpos($data->title, 'Revisi') && $dokumen_revisi != '-') {
                 // return 'true';
@@ -5022,6 +5028,33 @@ class PrDraftController extends Controller
         // return $pdf->Output();
         $fileName =   $data->no_pr  . ' ' . $data->title  . '.pdf';
         $nameFileFix = str_replace(' ', '_', $fileName);
+        $pdfContent = $pdf->Output('S');
+
+        $driveFile = new Google_Service_Drive_DriveFile();
+        $driveFile->setName($nameFileFix);
+        $driveFile->setMimeType('application/pdf');
+
+        // Upload the file
+        $uploadedFile = $service->files->create($driveFile, [
+            'data' => $pdfContent,
+            'mimeType' => 'application/pdf',
+            'uploadType' => 'multipart'
+        ]);
+
+        try {
+            $permission = new Google_Service_Drive_Permission();
+            $permission->setType('domain');
+            $permission->setRole('reader'); 
+            $permission->setDomain('sinergy.co.id'); 
+        
+            $response = $service->permissions->create($uploadedFile->getId(), $permission);
+            
+            Log::info('Response:', ['response' => $response]);
+        
+        } catch (Exception $e) {
+            Log::error('Error response:', ['error' => $e->getMessage()]);
+        }
+                
         return $pdf->Output("D");
     }
 

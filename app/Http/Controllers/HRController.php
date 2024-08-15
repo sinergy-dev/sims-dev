@@ -1839,21 +1839,22 @@ class HRController extends Controller
                     })
                     ->joinSub($getCalculationName, 'getCalculationName',function($join){
                         $join->on("getCalculationName.nik_calculation", '=', 'users.nik');
-                    })
-                    ->select('nik', 'name', 'status_kerja', 
-                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory = 'OPERATION') THEN '' WHEN (id_position = 'ENGINEER STAFF') THEN 'SID' WHEN (id_position = 'ENGINEER SPV') THEN 'SID' WHEN (id_position = 'ENGINEER CO-SPV') THEN 'SID' WHEN (id_division = 'TECHNICAL PRESALES') THEN 'SOL' WHEN (id_position = 'ENGINEER MANAGER') THEN 'SID' WHEN (id_division = 'WAREHOUSE') THEN 'HR' ELSE id_division END) as id_division"), 
-                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory = 'OPERATION') THEN 'DIRECTOR' WHEN (id_position = 'ENGINEER STAFF') THEN 'STAFF' WHEN (id_position = 'ENGINEER MANAGER') THEN 'MANAGER' ELSE id_position END) as id_position"),  
+                    })->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
+                    ->select('nik', 'users.name as name_user', 'status_kerja', 
+                        'roles.group',
+                        'roles.name as position',
                         DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN 'OPERATION' WHEN (id_territory = 'DPG') THEN 'OPERATION' WHEN (id_territory = 'PRESALES') THEN 'OPERATION' WHEN (id_territory = 'ACC') THEN 'FINANCE' WHEN (id_division = 'HR') THEN 'OPERATION' ELSE id_territory END) as id_territory"), 
                     'date_of_entry', 
                     DB::raw("(CASE WHEN (date_of_entrys > 365) THEN masa_kerja WHEN (date_of_entrys > 31) THEN masa_kerja_bulan_karyawan ElSE masa_kerja_hari_karyawan END) as masa_kerja"),
                     'tempat_lahir', 'date_of_birth', 'jenis_kelamin', 'no_ktp', 'alamat_ktp', 'no_kk', 'no_npwp', 'bpjs_kes', 'bpjs_ket', 'pend_terakhir', 'email_pribadi', 'phone', 'email', 'name_ec', 'phone_ec', 'hubungan_ec')
                     ->where('status_karyawan', '<>','dummy')
+                    ->where('status_delete','!=','D')
                     ->where('users.id_company', '1')
                     ->where('nik', '<>', '1100463060')
                     ->where('nik', '<>', '1100881060')
                     ->where('nik', '<>', '1050165120')
                     ->where('nik', '<>', '1171294021')
-                    ->get();      
+                    ->get();            
                     // return $datas;
 
         $datas =  $datas->map(function($item,$key) use ($sheet){
@@ -1936,9 +1937,10 @@ class HRController extends Controller
         $sheet->fromArray($headerContent,NULL,'A2');  
 
         $datas = User::join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                    ->select('nik', 'name', 'status_kerja', 
-                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN '' WHEN (id_position = 'ENGINEER STAFF') THEN 'SID' WHEN (id_division = 'TECHNICAL PRESALES') THEN 'SOL' WHEN (id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE id_division END) as id_division"), 
-                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN 'DIRECTOR' WHEN (id_position = 'ENGINEER STAFF') THEN 'STAFF' WHEN (id_position = 'ENGINEER MANAGER') THEN 'MANAGER' ELSE id_position END) as id_position"),  
+        ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
+        ->select('nik', 'users.name as name_user', 'status_kerja', 
+                        'roles.group',
+                        'roles.name as position',
                         DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN 'OPERATION' WHEN (id_territory = 'DPG') THEN 'OPERATION' WHEN (id_territory = 'PRESALES') THEN 'OPERATION' WHEN (id_territory = 'ACC') THEN 'FINANCE' WHEN (id_division = 'HR') THEN 'OPERATION' ELSE id_territory END) as id_territory"), 
                     'date_of_entry', 'tempat_lahir', 'date_of_birth', 'jenis_kelamin', 'no_ktp', 'alamat_ktp', 'no_kk', 'no_npwp', 'bpjs_kes', 'bpjs_ket', 'pend_terakhir', 'email_pribadi', 'phone', 'email', 'name_ec', 'phone_ec', 'hubungan_ec')
                     ->where('status_delete','D')

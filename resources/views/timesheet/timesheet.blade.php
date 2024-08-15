@@ -1166,6 +1166,10 @@
                   })
                 }
                 // Merge the arrays
+
+                console.log(events)
+                console.log(arrayData)
+
                 const mergedEvents = [...events, ...arrayData];
 
                 function removeDuplicates(arr) {
@@ -1175,7 +1179,9 @@
 
                     for (let i = 0; i < arr.length; i++) {
                         let current = arr[i];
-                        let key = current.title + current.start;
+
+                        let title = current.title.endsWith(' ') == true ? current.title.trimEnd() : current.title
+                        let key = title + current.start;
 
                         // Check if the current item's refer is "gcal" and phase is null
                         if (current.refer === "gcal" && current.phase === null) {

@@ -4126,7 +4126,7 @@ class SalesController extends Controller{
         $tambah->save();
 
         $kirim = User::join('role_user','users.nik','=','role_user.user_id')
-                ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+                ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
                     ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status')
@@ -4608,12 +4608,13 @@ class SalesController extends Controller{
                     ->join('users','users.nik','=','sales_lead_register.nik')
                     // ->join('tb_pmo','tb_pmo.project_id','tb_id_project.id_project')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','current_phase')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
                     // ->where('sales_lead_register.nik',$nik)
                     ->where('id_territory', $ter)
                     // ->orWhere('tb_id_project.sales_name',Auth::User()->name)
                     ->where('id_company','1')
-                    ->whereYear('tb_id_project.date',date('Y'))
+                    // ->whereYear('tb_id_project.date',date('Y'))
+                    ->whereYear('tb_id_project.date',$request->year_filter)
                     ->get();
 
                 $id_project = $pid->pluck('id_project');
@@ -4640,8 +4641,12 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
-
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
+                    
                 }
                 
             }else{
@@ -4725,6 +4730,7 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','invoice')
                     ->where('id_company','1')
+                    // ->whereYear('tb_id_project.date',$request->year_filter)
                     ->whereYear('tb_id_project.date',$request->year_filter)
                     ->get(); 
 
@@ -4752,7 +4758,11 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
 
                 }
 
@@ -4787,7 +4797,8 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
                     ->where('id_company','1')
-                    ->whereYear('tb_id_project.date',date('Y'))
+                    // ->whereYear('tb_id_project.date',date('Y'))
+                    ->whereYear('tb_id_project.date',$request->year_filter)
                     ->get();
 
                 $id_project = $pid->pluck('id_project');
@@ -4814,7 +4825,11 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
 
                 }
 
@@ -4834,7 +4849,8 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','sales_lead_register.lead_id',DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '),'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','users.id_company','tb_id_project.amount_idr','tb_id_project.sales_name')
                     ->where('id_company','1')
-                    ->whereYear('tb_id_project.date',date('Y'))
+                    // ->whereYear('tb_id_project.date',date('Y'))
+                    ->whereYear('tb_id_project.date',$request->year_filter)
                     ->get();
 
                 $id_project = $pid->pluck('id_project');
@@ -4861,7 +4877,11 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
 
                 }
 
@@ -4941,7 +4961,11 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
 
                 }
                 
@@ -5001,7 +5025,11 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
 
                 }
 
@@ -5061,7 +5089,11 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
 
                 }
 
@@ -5138,7 +5170,11 @@ class SalesController extends Controller{
                     }
 
                     $pid[$key]->project_type = $projectType;
-                    $pid[$key]->current_phase = $currentPhase;
+                    if($projectType == 'Unknown'){
+                        $pid[$key]->current_phase = 'Unknown';
+                    } else {
+                        $pid[$key]->current_phase = $currentPhase;
+                    }
 
                 }
             }else{

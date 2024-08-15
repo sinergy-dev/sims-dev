@@ -162,8 +162,9 @@ Technical Asset
             <a class="nav-link" id="peminjaman_asset" data-toggle="tab" href="#peminjaman_tab" role="tab" aria-controls="profile" aria-selected="false">Peminjaman</a>
           </li>
           <a href="{{action('AssetController@exportExcelTech')}}"><button id="export-excel" style="margin-left: 5px" class="btn btn-sm btn-success pull-right display-none"><i class="fa fa-cloud-download"></i> Excel</button></a>
-        	<button class="btn btn-sm btn-warning pull-right display-none" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
-        	<button class="btn btn-sm btn-info pull-right" id="kategori-asset" style="margin-right: 5px;display:none;" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
+          <button class="btn btn-sm btn-warning pull-right display-none" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
+          <button class="btn btn-sm btn-info pull-right btn-add-kategori" id="kategori-asset" style="margin-right: 5px;display:none;" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
+
           <button class="btn btn-block btn-primary btn-sm pull-right btn-add-peminjaman" style="width: 100px;margin-right: 5px;" id="btn_add_peminjaman"><i class="fa fa-plus" > </i>&nbsp Peminjaman</button>
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -221,7 +222,7 @@ Technical Asset
                       <th>Keterangan</th>
                       <th>Lokasi Barang</th>
                       <th>Status</th>
-                      <th id="col_action" style="display: none;">Action</th>
+                      <th id="col_action">Action</th>
                     </tr>
                   </thead>
                   <tfoot>
@@ -289,7 +290,9 @@ Technical Asset
                             <!-- <th>Tgl Pengembalian</th> -->
                             <th>Tgl Pengembalian(Aktual)</th>
                             <th>Status</th>
-                            <th style="text-align: center;" id="col_action">Action</th>
+
+                            <th id="col_action">Action</th>
+                            
                           </tr>
                         </thead>
                       </table>
@@ -382,7 +385,7 @@ Technical Asset
           <div class="form-group">
             <label for="">Kategori</label><br>
             <select type="text" class="form-control" style="width: 270px;" placeholder="Select Kategori" name="kategori" id="kategori2" required>
-            	<option value="">Select Kategori</option>
+              <option value="">Select Kategori</option>
               @foreach($kategori as $data)
               <option value="{{$data->id_kat}}">{{$data->kategori}}</option>
               @endforeach
@@ -643,10 +646,10 @@ Technical Asset
           <input type="text" name="qty_akhir" id="qty_akhir" hidden>
           <input type="text" name="location_update" id="location_update" hidden>
           <div class="form-group">
-          	<!-- <h6 style="text-align: center;">Please Select Serial Number <input type="text" style="border-style: none;" id="qty" readonly></h6> -->
-          	<h4>Please Select Serial Number: <input type="" class="qtysn" name="qty" id="qty" style="border-style: none;width: 250px;" readonly></h4><br>
-          	<select class="form-control detail-product" name="detail_product[]" id="detail_product" placeholder="Select Serial Number" multiple="multiple" style="width:100%">
-          	</select>
+            <!-- <h6 style="text-align: center;">Please Select Serial Number <input type="text" style="border-style: none;" id="qty" readonly></h6> -->
+            <h4>Please Select Serial Number: <input type="" class="qtysn" name="qty" id="qty" style="border-style: none;width: 250px;" readonly></h4><br>
+            <select class="form-control detail-product" name="detail_product[]" id="detail_product" placeholder="Select Serial Number" multiple="multiple" style="width:100%">
+            </select>
             <select class="form-control hidden" name="id_barang_accept[]" id="id_barang_accept" multiple="multiple" style="width: 270px;" hidden>
             </select>
           </div>
@@ -698,7 +701,7 @@ Technical Asset
               <!-- <option>-- Select Serial Number --</option> -->
           </select>
           <div class="form-group">
-          	<h3 style="text-align: center;"><b>Are you sure to reject?</b></h3>
+            <h3 style="text-align: center;"><b>Are you sure to reject?</b></h3>
           </div>
           <div class="form-group">
             <label>Note</label>
@@ -1882,8 +1885,8 @@ Technical Asset
             kategori:this.value,
           },
           success: function(result,qty){
-          	$.each(result[0], function(key, value){
-          		$(".qtys").val(value.qty);
+            $.each(result[0], function(key, value){
+              $(".qtys").val(value.qty);
             });
           }
         });

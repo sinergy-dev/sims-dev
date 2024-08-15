@@ -179,7 +179,7 @@ class PMProjectController extends Controller
 
         if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager' || $cek_role->name == 'Operations Director' || $cek_role->name == 'VP Product Management & Development Solution') {
             $data = $data->orderBy('tb_pmo.id','desc');
-        } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
+        } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
             $data = $data->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
                         $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
                     })
@@ -1696,7 +1696,7 @@ class PMProjectController extends Controller
         $store_activity->date_time = Carbon::now()->toDateTimeString();
         $store_activity->save();
 
-        if ($cek_role->group == 'sales' || $cek_role->name == 'Operations Director') {
+        if ($cek_role->group == 'Sales' || $cek_role->name == 'Operations Director') {
             $update->status = 'Done';
             $subject_email = 'Approve Project Charter';
             $subject = 'Your project is available to run,';

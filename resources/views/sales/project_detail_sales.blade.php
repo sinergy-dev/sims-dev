@@ -1286,10 +1286,12 @@ Detail Lead Register
 		  		  		append = append + '</table>'
 	  		  		append = append + '</td>'
 	  		  	append = append + '</tr>'
+	  		  	@if(!App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists())
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Amount</th>'
 	  		  		append = append + '<td><span class="amount_lead">'+ new Intl.NumberFormat('id').format(result.data[0].amount) +'</span><button class="btn btn-warning btn-edit-amount btn-xs pull-right" style="display:none">Edit</button></td>'
 	  		  	append = append + '</tr>'
+						@endif
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Closing date</th>'
 	  		  		append = append + '<td>'+ result.data[0].closing_date+'</td>'

@@ -1632,10 +1632,10 @@ class DASHBOARDController extends Controller
                 ->whereYear('sales_lead_register.created_at',$request->year)
                 ->groupBy('month');
 
-        if ($div == 'SALES') {        	
-        	$datas = array("data" => $data->where('users.id_territory',$ter)->get());
+        if ($div == 'SALES') {          
+            $datas = array("data" => $data->where('users.id_territory',$ter)->get());
         }else{
-        	$datas = array("data" => $data->get());
+            $datas = array("data" => $data->get());
         }
 
         return $datas;
@@ -1643,11 +1643,55 @@ class DASHBOARDController extends Controller
 
     public function maintenance()
     {
-    	return view('maintenance');
+        return view('maintenance');
     }
 
     public function notif_view_all(){
         return view('notif/view_all')->with(['initView'=> $this->initMenuBase()]);
+    }
+
+    public function top_win_ter_non_detail(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = (array)$territory->id_territory;
+
+        $sum_amounts_ter = DB::table('sales_lead_register')
+            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+            ->select(
+                DB::raw('SUM(sales_lead_register.amount) as sum_amounts'),
+                DB::raw('COUNT(sales_lead_register.lead_id) as leads_total'),
+                'users.id_territory'
+            )
+            ->whereYear('closing_date', $request->year)
+            ->where('result', 'WIN')
+            ->where('users.status_karyawan', '!=', 'dummy')
+            ->where('users.id_company', '1');
+
+        $sum_amounts_ter = $sum_amounts_ter->whereNotIn('users.id_territory',$ter)->groupBy('users.id_territory')
+        ->get()
+        ->keyBy('id_territory');
+
+        $merged_results = [];
+
+        foreach ($sum_amounts_ter as $id_territory => $sum_amount) {
+            $merged_results[$id_territory] = [
+                [
+                    'sum_amounts' => $sum_amount->sum_amounts,
+                    'leads_total' => $sum_amount->leads_total,
+                    'id_territory' => $id_territory,
+                ]
+            ];
+        }
+        
+        ksort($merged_results);
+
+        $merged_results = array_slice($merged_results, 0, 3, true) +
+                          array_slice($merged_results, 3, null, true);
+
+        $merged_results;
+
+        return $top_win_sip_ter = $merged_results;
     }
 
     public function top_win_sip_ter(Request $request){
@@ -1661,68 +1705,136 @@ class DASHBOARDController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
         $com = $company->id_company;
 
-        if ($div == 'SALES') {
-            $top_win_sip_ter = DB::table('sales_lead_register')
-                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                        ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik','users.id_territory')
-                        ->where('result', 'WIN')
-                        ->whereYear('closing_date', $request->year)
-                        ->where('users.id_company', '1')
-                        ->where('users.id_territory', $ter)
-                        ->where('users.status_karyawan', '!=', 'dummy')
-                        ->groupBy('users.id_territory','sales_lead_register.nik')
-                        ->orderBy('deal_prices', 'desc')
-                        ->take(5)
-                        ->get()->toArray();
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+
+        $sum_amounts_ter = DB::table('sales_lead_register')
+            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+            ->select(
+                DB::raw('SUM(sales_lead_register.amount) as sum_amounts'),
+                DB::raw('COUNT(sales_lead_register.lead_id) as leads_total'),
+                'users.id_territory'
+            )
+            ->whereYear('closing_date', $request->year)
+            ->where('result', 'WIN')
+            ->where('users.status_karyawan', '!=', 'dummy')
+            ->where('users.id_company', '1');
+
+        $top_win_sip_ter_ter = DB::table('sales_lead_register')
+            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+            ->join('tb_territory', 'tb_territory.id_territory', '=', 'users.id_territory')
+            ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+            ->select(
+                DB::raw('COUNT(sales_lead_register.lead_id) as leads'),
+                DB::raw('SUM(sales_lead_register.amount) as amounts'),
+                DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'),
+                'users.name',
+                'tb_company.code_company',
+                'users.id_territory',
+                'users.nik'
+            )
+            ->where('result', 'WIN')
+            ->whereYear('closing_date', $request->year)
+            ->where('users.status_karyawan', '!=', 'dummy')
+            ->where('users.id_company', '1')
+            ->groupBy('users.nik', 'users.name', 'tb_company.code_company', 'users.id_territory', 'users.nik')
+            ->orderBy('deal_prices', 'desc');
+
+
+        if ($cek_role->name == 'Sales Staff') {
+            $sum_amounts_ter = $sum_amounts_ter->where('users.nik',$nik)->groupBy('users.id_territory')
+            ->get()
+            ->keyBy('id_territory');
+
+            $top_win_sip_ter_ter = $top_win_sip_ter_ter->where('users.nik',$nik)->get()
+            ->groupBy('id_territory');
+
+            $merged_results = [];
+
+            foreach ($sum_amounts_ter as $id_territory => $sum_amount) {
+                $merged_results[$id_territory] = [
+                    [
+                        'sum_amounts' => $sum_amount->sum_amounts,
+                        'leads_total' => $sum_amount->leads_total,
+                        'id_territory' => $id_territory,
+                        'details' => $top_win_sip_ter_ter->get($id_territory, collect([]))
+                    ]
+                ];
+            }
+
+            ksort($merged_results);
+
+            $merged_results = array_slice($merged_results, 0, 3, true) +
+                              array_slice($merged_results, 3, null, true);
+
+            $top_win_sip_ter = $merged_results;
+
+        } elseif ($cek_role->name == 'Sales Manager') {
+            $sum_amounts_ter = $sum_amounts_ter->where('users.id_territory',$ter)->groupBy('users.id_territory')
+            ->get()
+            ->keyBy('id_territory');
+
+            $top_win_sip_ter_ter = $top_win_sip_ter_ter->where('users.id_territory',$ter)->get()
+            ->groupBy('id_territory');
+
+            $merged_results = [];
+
+            foreach ($sum_amounts_ter as $id_territory => $sum_amount) {
+                $merged_results[$id_territory] = [
+                    [
+                        'sum_amounts' => $sum_amount->sum_amounts,
+                        'leads_total' => $sum_amount->leads_total,
+                        'id_territory' => $id_territory,
+                        'details' => $top_win_sip_ter_ter->get($id_territory, collect([]))
+                    ]
+                ];
+            }
+            
+            ksort($merged_results);
+
+            $merged_results = array_slice($merged_results, 0, 3, true) +
+                              array_slice($merged_results, 3, null, true);
+
+            $merged_results;
+
+            $top_win_sip_ter = $merged_results;
+
         }else{
-            $sum_amounts_ter = DB::table('sales_lead_register')
-                            ->join('users','users.nik','=','sales_lead_register.nik')
-                            ->select(DB::raw('SUM(sales_lead_register.amount) as sum_amounts'),DB::raw('COUNT(sales_lead_register.lead_id) as leads_total'),'id_territory')
-                            // ->where('users.id_territory','!=','OPERATION')
-                            ->whereYear('closing_date', $request->year)
-                            ->where('result', 'WIN')
-                            ->where('users.status_karyawan', '!=', 'dummy')
-                            ->where('users.id_company', '1')
-                            ->groupBy('id_territory');
+           
+           $sum_amounts_ter = $sum_amounts_ter->groupBy('users.id_territory')
+            ->get()
+            ->keyBy('id_territory');
 
-            $top_win_sip_ter_ter = DB::table('sales_lead_register')
-                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                        ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                        ->joinSub($sum_amounts_ter,'sum_amounts_ter',function($join){
-                            $join->on('sum_amounts_ter.id_territory','=','users.id_territory');
-                        })
-                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.id_territory','users.nik')
-                        ->selectRaw('`sum_amounts_ter`.`sum_amounts` AS `sum_total`')
-                        ->selectRaw('`sum_amounts_ter`.`leads_total` AS `leads_total`')
-                        ->where('result', 'WIN')
-                        // ->where('users.id_territory','!=','OPERATION')
-                        ->whereYear('closing_date', $request->year)
-                        ->where('users.status_karyawan', '!=', 'dummy')
-                        ->where('users.id_company', '1')
-                        ->groupBy('users.nik')
-                        ->orderBy('deal_prices', 'desc')
-                        ->get();
+            $top_win_sip_ter_ter = $top_win_sip_ter_ter->get()
+            ->groupBy('id_territory');
 
-           $top_win_sip_ter_ter->push([
-                "leads" => $sum_amounts_ter->get()->sum('leads_total'),
-                "amounts" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
-                "deal_prices" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
-                "name" => "Total All Teritory",
-                "code_company" => "SIP",
-                "id_territory" => "TOTAL",
-                "nik" => "-",
-                "sum_total" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
-                "leads_total" => $sum_amounts_ter->get()->sum('leads_total')
-            ]);
+            foreach ($sum_amounts_ter as $id_territory => $sum_amount) {
+                $merged_results[$id_territory] = [
+                    [
+                        'sum_amounts' => $sum_amount->sum_amounts,
+                        'leads_total' => $sum_amount->leads_total,
+                        'id_territory' => $id_territory,
+                        'details' => $top_win_sip_ter_ter->get($id_territory, collect([]))
+                    ]
+                ];
+            }
 
-            $groups = collect($top_win_sip_ter_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('id_territory');
+            $total_amounts = $sum_amounts_ter->sum('sum_amounts');
+            $total_leads = $sum_amounts_ter->sum('leads_total');
 
-            $groups2 = collect($sum_amounts_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('sum_amounts');
+            $total_object = [
+                [
+                    'sum_amounts' => $total_amounts,
+                    'leads_total' => $total_leads,
+                    'id_territory' => 'TOTAL'
+                ]
+            ];
 
-            $top_win_sip_ter = $groups->toArray();
+            ksort($merged_results);
+
+            $merged_results['TOTAL'] = $total_object;
+            $top_win_sip_ter = $merged_results;
 
         }
         return $top_win_sip_ter;

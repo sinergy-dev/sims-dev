@@ -1868,6 +1868,11 @@ Lead Register
 			var column1 = table.column(6);
       		column1.visible(!column1.visible());
 		}
+
+		if(accesable.includes('columnAmount')){
+			var column1 = table.column(8);
+      		column1.visible(!column1.visible());
+		}
   })	
 
 	$(window).on('load', function() {

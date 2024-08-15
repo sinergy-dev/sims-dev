@@ -6,7 +6,7 @@ Permission Config
 	<!-- Select2 -->
   	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  	<link rel="preload" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-barber-shop.min.css" integrity="sha512-7qRUmettmzmL6BrHrw89ro5Ki8CZZQSC/eBJTlD3YPHVthueedR4hqJyYqe1FJIA4OhU2mTes0yBtiRMCIMkzw==" crossorigin="anonymous" referrerpolicy="no-referrer"  as="style" onload="this.onload=null;this.rel='stylesheet'"/>
 	<style type="text/css">
 		.text-lowercase{
 			text-transform: lowercase;
@@ -706,8 +706,7 @@ Permission Config
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha512-2cbsQGdowNDPcKuoBd2bCcsJky87Mv0LEtD/nunJUgk6MOYTgVMGihS/xCEghNf04DPhNiJ4DZw5BxDd1uyOdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endsection
 @section('script')
 	<script>
@@ -963,7 +962,8 @@ Permission Config
 				console.log(firstGroup)
 				$("#filterByRoleGroup").select2({
 					placeholder: "Filter by Position",
-					data:result
+					data:result,
+					dropdownParent:$("#modal-config-feature-item")
 				})
 			},
 			complete:function(){
@@ -986,7 +986,8 @@ Permission Config
 			success:function(result){
 				$("#filterByFeature").select2({
 					placeholder: "Filter by Feature Item",
-					data:result
+					data:result,
+					dropdownParent:$("#modal-config-feature-item")
 				})
 			}
 		})

@@ -39,9 +39,9 @@ class AssetController extends Controller
         $this->middleware('auth');
     }
 
-	public function index(Request $request)
-	{
-		$nik = Auth::User()->nik;
+    public function index(Request $request)
+    {
+        $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
         $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
@@ -51,7 +51,7 @@ class AssetController extends Controller
 
         $notifClaim = '';
 
-		if ($ter != null) {
+        if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
             ->where('result','OPEN')
@@ -185,34 +185,34 @@ class AssetController extends Controller
 
         $asset = DB::table('tb_asset')
                 ->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
-        		->select('tb_asset.id_barang','nama_barang','tb_kategori_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam')
-        		->get();
+                ->select('tb_asset.id_barang','nama_barang','tb_kategori_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam')
+                ->get();
 
         $asset2 = DB::table('tb_asset')
-        			->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
-        			->join('tb_detail_asset_transaction', 'tb_detail_asset_transaction.id_barang', '=', 'tb_asset.id_barang')
-        			->select(DB::raw('count(tb_detail_asset_transaction.id_barang) as qty_pinjam'), 'nama_barang', 'tb_kategori_asset.description', 'serial_number', 'tb_asset.status', 'kategori', 'tb_asset.id_barang', 'tb_kategori_asset.id_kat')
-        			->groupBy('tb_detail_asset_transaction.id_barang')
-        			->get();
+                    ->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
+                    ->join('tb_detail_asset_transaction', 'tb_detail_asset_transaction.id_barang', '=', 'tb_asset.id_barang')
+                    ->select(DB::raw('count(tb_detail_asset_transaction.id_barang) as qty_pinjam'), 'nama_barang', 'tb_kategori_asset.description', 'serial_number', 'tb_asset.status', 'kategori', 'tb_asset.id_barang', 'tb_kategori_asset.id_kat')
+                    ->groupBy('tb_detail_asset_transaction.id_barang')
+                    ->get();
 
         $asset3 = DB::table('tb_asset')
                 ->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
-        		->select('tb_asset.id_barang','nama_barang','tb_kategori_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam', 'tb_kategori_asset.id_kat')
-        		->where('status_pinjam', 'TIDAK PERNAH')
-        		->get();
+                ->select('tb_asset.id_barang','nama_barang','tb_kategori_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam', 'tb_kategori_asset.id_kat')
+                ->where('status_pinjam', 'TIDAK PERNAH')
+                ->get();
 
 
         $assets = DB::table('tb_asset')
-        		->join('users','users.nik','=','tb_asset.nik')
-        		->select('tb_asset.id_barang','tb_asset.nama_barang','tb_asset.description','users.name','tb_asset.nik')
-        		->get();
+                ->join('users','users.nik','=','tb_asset.nik')
+                ->select('tb_asset.id_barang','tb_asset.nama_barang','tb_asset.description','users.name','tb_asset.nik')
+                ->get();
 
-        $assetsd	= DB::table('tb_asset_transaction')
+        $assetsd    = DB::table('tb_asset_transaction')
                     ->join('users','users.nik','=','tb_asset_transaction.nik_peminjam')
-        			->join('tb_kategori_asset','tb_kategori_asset.id_kat','=','tb_asset_transaction.id_kat')
-        			->select('tb_asset_transaction.id_transaction','tb_asset_transaction.id_kat','tb_asset_transaction.qty_akhir','users.name','tb_asset_transaction.nik_peminjam','tb_asset_transaction.status', 'tb_asset_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'tb_asset_transaction.note', 'tb_kategori_asset.kategori', 'keperluan', 'no_peminjaman', 'tb_asset_transaction.updated_at')
+                    ->join('tb_kategori_asset','tb_kategori_asset.id_kat','=','tb_asset_transaction.id_kat')
+                    ->select('tb_asset_transaction.id_transaction','tb_asset_transaction.id_kat','tb_asset_transaction.qty_akhir','users.name','tb_asset_transaction.nik_peminjam','tb_asset_transaction.status', 'tb_asset_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'tb_asset_transaction.note', 'tb_kategori_asset.kategori', 'keperluan', 'no_peminjaman', 'tb_asset_transaction.updated_at')
                     ->orderBy('tb_asset_transaction.created_at', 'desc')
-        			->get();
+                    ->get();
 
         $pinjaman = DB::table('tb_asset_transaction')
                     ->join('users','users.nik','=','tb_asset_transaction.nik_peminjam')
@@ -289,11 +289,11 @@ class AssetController extends Controller
         }
 
         $status = DB::table('tb_asset_transaction')
-        			->select('status')
-        			->first();
+                    ->select('status')
+                    ->first();
 
-		return view('TECH.asset.asset_peminjaman', compact('notifc','pinjaman','assets','assetsd','asset','notif','notifOpen','notifsd','notiftp','notifc', 'kategori', 'nik_peminjam', 'serial_number', 'asset2', 'asset3', 'status', 'notifClaim', 'kategori2'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_peminjaman')]);
-	}
+        return view('TECH.asset.asset_peminjaman', compact('notifc','pinjaman','assets','assetsd','asset','notif','notifOpen','notifsd','notiftp','notifc', 'kategori', 'nik_peminjam', 'serial_number', 'asset2', 'asset3', 'status', 'notifClaim', 'kategori2'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_peminjaman')]);
+    }
 
     public function detail_asset_peminjaman($id_barang){
         $asset = DB::table('tb_asset_transaction')
@@ -306,20 +306,20 @@ class AssetController extends Controller
                 ->get();
 
         /*$asset = DB::table('tb_detail_asset_transaction')
-        		->join('tb_asset_transaction', 'tb_asset_transaction.id_transaction', '=', 'tb_detail_asset_transaction.id_transaction')
-        		->join('users', 'users.nik', '=', 'tb_asset_transaction.nik_peminjam')
-        		->join('tb_asset', 'tb_asset.id_barang', '=', 'tb_detail_asset_transaction.id_barang')
-        		->select('tb_asset_transaction.nik_peminjam', 'users.name','tb_asset_transaction.qty_akhir','tb_asset_transaction.created_at','tb_asset_transaction.updated_at','tb_asset.nama_barang','tb_asset_transaction.status','tb_asset_transaction.qty_akhir', 'tgl_peminjaman', 'tgl_pengembalian', 'tb_asset_transaction.keterangan', 'tb_asset_transaction.note','tb_asset_transaction.status')
-        		->where('tb_detail_asset_transaction.id_barang')
-        		->orderBy('tb_detail_asset_transaction.created_at','desc')
-        		->get();*/
+                ->join('tb_asset_transaction', 'tb_asset_transaction.id_transaction', '=', 'tb_detail_asset_transaction.id_transaction')
+                ->join('users', 'users.nik', '=', 'tb_asset_transaction.nik_peminjam')
+                ->join('tb_asset', 'tb_asset.id_barang', '=', 'tb_detail_asset_transaction.id_barang')
+                ->select('tb_asset_transaction.nik_peminjam', 'users.name','tb_asset_transaction.qty_akhir','tb_asset_transaction.created_at','tb_asset_transaction.updated_at','tb_asset.nama_barang','tb_asset_transaction.status','tb_asset_transaction.qty_akhir', 'tgl_peminjaman', 'tgl_pengembalian', 'tb_asset_transaction.keterangan', 'tb_asset_transaction.note','tb_asset_transaction.status')
+                ->where('tb_detail_asset_transaction.id_barang')
+                ->orderBy('tb_detail_asset_transaction.created_at','desc')
+                ->get();*/
 
         $tampilkan = DB::table('tb_detail_asset_transaction')
-        			->join('tb_asset_transaction', 'tb_asset_transaction.id_transaction', '=', 'tb_detail_asset_transaction.id_transaction')
-        			->join('tb_asset', 'tb_asset.id_barang', '=', 'tb_detail_asset_transaction.id_barang')
-        			->select('tb_asset_transaction.status')
-        			->where('tb_detail_asset_transaction.id_barang', $id_barang)
-        			->first();
+                    ->join('tb_asset_transaction', 'tb_asset_transaction.id_transaction', '=', 'tb_detail_asset_transaction.id_transaction')
+                    ->join('tb_asset', 'tb_asset.id_barang', '=', 'tb_detail_asset_transaction.id_barang')
+                    ->select('tb_asset_transaction.status')
+                    ->where('tb_detail_asset_transaction.id_barang', $id_barang)
+                    ->first();
 
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -505,7 +505,7 @@ class AssetController extends Controller
         return view('TECH.asset.detail_asset_peminjaman',compact('asset','notif','notifOpen','notifsd','notiftp','notifc', 'tampilkan', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
     }
 
-	public function store(Request $request){
+    public function store(Request $request){
 
         $count_qty = Kategori_Asset::select('qty')->where('id_kat', $request->kategori)->first();
 
@@ -548,18 +548,18 @@ class AssetController extends Controller
 
         $code = $akhirnomor . '/' . $acronym->acronym . '/' . $bln . '/' . date('Y');
 
-		$tambah                   = new Tech_asset();
-		$tambah->nik 		      = Auth::User()->nik;
+        $tambah                   = new Tech_asset();
+        $tambah->nik              = Auth::User()->nik;
         $tambah->code_asset       = $code;
-		$tambah->nama_barang      = $request['nama_barang'];
-		$tambah->serial_number    = $request['sn'];
+        $tambah->nama_barang      = $request['nama_barang'];
+        $tambah->serial_number    = $request['sn'];
         $tambah->id_kat           = $request['kategori'];
         $tambah->status           = 'AVAILABLE';
         $tambah->description      = $request['keterangan'];
-        $tambah->total_pinjam 	  = '0';
-        $tambah->status_pinjam 	  = 'TIDAK PERNAH';
+        $tambah->total_pinjam     = '0';
+        $tambah->status_pinjam    = 'TIDAK PERNAH';
         $tambah->location         = $request['letak_barang'];
-		$tambah->save(); 
+        $tambah->save(); 
 
         $id_kat         = $request->kategori;
         $update         = Kategori_Asset::where('id_kat', $id_kat)->first();
@@ -571,8 +571,8 @@ class AssetController extends Controller
         $tambah_log->keterangan     = "Menambahkan Aset " . $request['nama_barang'];
         $tambah_log->save();
 
-		return redirect()->back()->with('success', 'Berhasil menambahkan asset!');
-	}
+        return redirect()->back()->with('success', 'Berhasil menambahkan asset!');
+    }
 
     public function edit(Request $request){
         $id_barang = $request['id_barang_edit'];
@@ -661,7 +661,7 @@ class AssetController extends Controller
         return array("data" => $getKategori);
     }
 
-	public function update(Request $request){
+    public function update(Request $request){
         // $admin = DB::table('users')->select('id_position','email')->where('id_position','ADMIN')->where('id_division','MSM')->first();
 
         // return $admin->email;
@@ -680,9 +680,9 @@ class AssetController extends Controller
         $no_peminjaman = date('ymd').$nomor;
 
         $store                   = new Tech_asset_transaction();
-        $store->no_peminjaman 	 = $no_peminjaman;
-		$store->nik_peminjam	 = Auth::User()->nik;
-		$store->qty_akhir 		 = $qty_pinjam;
+        $store->no_peminjaman    = $no_peminjaman;
+        $store->nik_peminjam     = Auth::User()->nik;
+        $store->qty_akhir        = $qty_pinjam;
         $store->qty_awal         = $count_qty->qty;
         $tgl_peminjaman          = strtotime($_POST['tgl_peminjaman']); 
         $tgl_peminjaman          = date("Y-m-d",$tgl_peminjaman);
@@ -694,7 +694,7 @@ class AssetController extends Controller
         $store->keterangan       = $request['keterangan'];
         $store->status           = 'PENDING';
         $store->id_kat           = $request->kategori3;
-		$store->save();
+        $store->save();
 
         $update_kat      = Kategori_Asset::where('id_kat', $request->kategori3)->first();
         // $update_kat->qty = $count_qty->qty - $qty_pinjam;
@@ -729,22 +729,22 @@ class AssetController extends Controller
         }
         // Notification::send($kirim, new PinjamanBaru());
 
-	    return redirect()->back()->with('update', 'Peminjaman Akan di Proses!');	
-	}
+        return redirect()->back()->with('update', 'Peminjaman Akan di Proses!');    
+    }
 
     public function accept(Request $request){
         $id_transaction = $request['id_transaction_update'];
-        $kategori 		= $request['id_kat_accept'];
+        $kategori       = $request['id_kat_accept'];
 
         $id_barang     = $_POST['detail_product'];   
         $id_transac    = $_POST['id_transaction_update'];
         $id_kat_accept = $_POST['id_kat_accept'];
-        $qty 		   = $request->qty_akhir;
+        $qty           = $request->qty_akhir;
         $qty_akhir     = (int)$qty;
         var_dump($qty_akhir);
 
         for ($i=0; $i < $qty_akhir ; $i++) { 
-        	$data = array(
+            $data = array(
                 'id_transaction'      => $id_transac,
                 'id_barang'           => $id_barang[$i],
             );
@@ -764,20 +764,20 @@ class AssetController extends Controller
         $update_kat->qty = $count_qty->qty - $qty_akhir;
         $update_kat->update(); 
 
-    	$count_total_pinjam = Tech_asset::select('id_barang', 'total_pinjam')->where('id_barang', $id_barang)->get();
+        $count_total_pinjam = Tech_asset::select('id_barang', 'total_pinjam')->where('id_barang', $id_barang)->get();
 
-    	foreach ($count_total_pinjam as $total_pinjam) {
-    		$update_qty = Tech_asset::where('id_barang', $total_pinjam->id_barang)->first();
-    		$update_qty->status = 'UNAVAILABLE';
-    		$update_qty->total_pinjam = $total_pinjam->total_pinjam +1;
-    		$update_qty->update();
-    	}
+        foreach ($count_total_pinjam as $total_pinjam) {
+            $update_qty = Tech_asset::where('id_barang', $total_pinjam->id_barang)->first();
+            $update_qty->status = 'UNAVAILABLE';
+            $update_qty->total_pinjam = $total_pinjam->total_pinjam +1;
+            $update_qty->update();
+        }
         $nik_peminjam = $request['nik_peminjam_accept'];
 
         $users = User::select('email','name')->where('nik',$nik_peminjam)->first();
 
         for ($i=0; $i < $qty_akhir ; $i++) {  
-        	$data = array(
+            $data = array(
                 'status'        => 'UNAVAILABLE',
                 'status_pinjam' => 'PERNAH',
                 'location'      => $users->name . '[ ' . $request['location_update'] . ' ]'
@@ -829,12 +829,12 @@ class AssetController extends Controller
 
         // $id_barang = $_POST['id_barang_reject'];
 
-        $qty 		   = $request->qty_total_reject;
+        $qty           = $request->qty_total_reject;
         $qty_reject   = (int)$qty;
         var_dump($qty_reject);
 
         /*for ($i=0; $i < $qty_reject ; $i++) {  
-        	$data = array(
+            $data = array(
                 'status'      => 'AVAILABLE',
             );
         Tech_asset::where('id_barang',$id_barang[$i])->update($data);
@@ -907,12 +907,12 @@ class AssetController extends Controller
 
         $id_barang = $_POST['id_barang_kembali'];
 
-        $qty 		   = $request->total_qty_kembali;
+        $qty           = $request->total_qty_kembali;
         $qty_kembali   = (int)$qty;
         var_dump($qty_kembali);
 
         for ($i=0; $i < $qty_kembali ; $i++) {  
-        	$data = array(
+            $data = array(
                 'status'       => 'AVAILABLE',
                 'location'     => $request['location_return'],
             );
@@ -1062,13 +1062,16 @@ class AssetController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $nik)->first();
+
         $assetsd = DB::table('tb_asset_transaction')
                     ->join('users','users.nik','=','tb_asset_transaction.nik_peminjam')
                     ->join('tb_kategori_asset','tb_kategori_asset.id_kat','=','tb_asset_transaction.id_kat')
                     ->select('tb_asset_transaction.id_transaction','tb_asset_transaction.id_kat','tb_asset_transaction.qty_akhir','users.name','tb_asset_transaction.nik_peminjam','tb_asset_transaction.status', 'tb_asset_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'tb_asset_transaction.note', 'tb_kategori_asset.kategori', 'keperluan', 'no_peminjaman', 'tb_asset_transaction.updated_at')
                     ->orderBy('tb_asset_transaction.created_at', 'desc');
 
-        if ($div == 'BCD' && $pos == 'MANAGER'|| $div == 'WAREHOUSE') {
+        if ($div == 'BCD' && $pos == 'MANAGER'|| $cek_role->name == 'Inventory, Logistic & Delivery') {
             $assetsd = $assetsd;
         }else{
             $assetsd = $assetsd->where('nik_peminjam',$nik);
@@ -1109,7 +1112,7 @@ class AssetController extends Controller
         // $kategori = $request['id_kat_accept'];
 
         return array(DB::table('tb_asset')
-                ->select('serial_number', 'id_barang', 'nama_barang')
+                ->select('id_barang', 'serial_number', 'nama_barang')
                 ->where('id_kat',$kategori)
                 // ->where('status', 'AVAILABLE')
                 ->get());
@@ -1120,14 +1123,14 @@ class AssetController extends Controller
         // $kategori = $request['id_kat_accept'];
 
         return array(DB::table('tb_asset')
-            ->select('serial_number', 'nama_barang', 'id_barang','description','id_kat','status','location')
+            ->select('id_barang', 'serial_number', 'nama_barang','description','id_kat','status','location')
             ->where('id_barang', $request->id_barang)
-            ->get(),$request->id_barang);  
+            ->get(),$request->id_barang);
     }
 
     public function getid_barang(Request $request)
     {
-    	$id_transaction = $request['id_transaction_kembali'];
+        $id_transaction = $request['id_transaction_kembali'];
 
         return array(DB::table('tb_detail_asset_transaction')
                 ->select('id_barang')
@@ -1137,7 +1140,7 @@ class AssetController extends Controller
 
     // public function getid_barang_reject(Request $request)
     // {
-    // 	$id_transaction = $request['id_transaction_reject'];
+    //  $id_transaction = $request['id_transaction_reject'];
 
     //     return array(DB::table('tb_detail_asset_transaction')
     //             ->select('id_barang')
@@ -1169,11 +1172,11 @@ class AssetController extends Controller
 
     public function getsn(Request $request)
     {
-    	// $id_transaction = $request['btn_detail'];
+        // $id_transaction = $request['btn_detail'];
 
         return array(DB::table('tb_detail_asset_transaction')
                 ->join('tb_asset_transaction','tb_asset_transaction.id_transaction','=','tb_detail_asset_transaction.id_transaction')
-        		->join('tb_asset', 'tb_detail_asset_transaction.id_barang', '=', 'tb_asset.id_barang')
+                ->join('tb_asset', 'tb_detail_asset_transaction.id_barang', '=', 'tb_asset.id_barang')
                 ->select('nama_barang', 'serial_number','code_asset')
                 ->where('no_peminjaman',$request->id_transaction)
                 ->get(),$request->id_transaction);
@@ -1181,7 +1184,7 @@ class AssetController extends Controller
 
     /*public function getid_barang_accept(Request $request)
     {
-    	$kategori = $request['detail_product'];
+        $kategori = $request['detail_product'];
 
         return array(DB::table('tb_asset')
                 ->select('id_barang')

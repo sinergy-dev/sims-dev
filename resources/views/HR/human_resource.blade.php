@@ -769,7 +769,7 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->group == 'sales' || $data->roles == 'President Director')
+		                    @if($data->group == 'Sales' || $data->roles == 'President Director')
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>

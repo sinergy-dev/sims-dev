@@ -707,7 +707,7 @@ class SalesLeadController extends Controller
 
         $leads = $leadsnow->where('result','!=', 'hmm');
 
-        if ($cek_role->group == 'sales') {
+        if ($cek_role->group == 'Sales') {
             $leads->where('id_territory', $ter);
         } 
 
@@ -1659,7 +1659,7 @@ class SalesLeadController extends Controller
             }
         } 
 
-        if ($cek_role->group == 'sales') {
+        if ($cek_role->group == 'Sales') {
             $leads->where('u_sales.id_territory', $ter);
         }
 
@@ -2592,7 +2592,7 @@ class SalesLeadController extends Controller
 
         $tambah = new Sales();
         $tambah->lead_id = $lead;
-        if($cek_role->group == 'sales' || Auth::User()->name == "Operations Team"){
+        if($cek_role->group == 'Sales' || Auth::User()->name == "Operations Team"){
             $tambah->nik = Auth::User()->nik;
         } else {
             $tambah->nik = $request['owner_sales'];
@@ -2706,7 +2706,7 @@ class SalesLeadController extends Controller
                         ->where('status_karyawan','!=','dummy')
                         ->orWhere('nik', $nik_sales)
                         ->get();
-        } elseif($cek_role->group == 'sales'){
+        } elseif($cek_role->group == 'Sales'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('roles.name', 'VP Product Management & Development Solution')
                         ->orWhere('roles.name', 'Operations Director')
