@@ -326,7 +326,7 @@ class PrController extends Controller
     {
         $year = date('Y');
         $pie = 0;
-        $total = PR::orderby('type_of_letter')->whereYear('date',$year)->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->get();
+        $total = PR::orderby('type_of_letter')->whereYear('date',$year)->whereRaw("( `status` = 'Done')")->get();
 
         $hasil2 = [0,0];
         if (count($total) == 0) {
@@ -359,7 +359,8 @@ class PrController extends Controller
 
         $sum_all = PR::selectRaw('SUM(`amount`) as `sum_all`')
             ->whereYear('date', date('Y'))
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->first();
 
         if (!is_null($sum_all->sum_all)) {
@@ -368,7 +369,8 @@ class PrController extends Controller
             ->selectRaw('SUM(`amount`)/' . $sum_all->sum_all . '*100 as `precentage`')
             ->orderBy('precentage','DESC')
             ->whereYear('date', date('Y'))
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->groupBy('category')->get();
 
             return array("label"=>$sum_cat->pluck('category'), "precentage"=>$sum_cat->pluck('precentage'));
@@ -400,7 +402,8 @@ class PrController extends Controller
                 DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "IPR",amount,"")) AS "amount_IPR"'),
                 DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"')
             )
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->whereYear('date', date('Y'))
             ->groupBy('month_formatting');
 
@@ -415,7 +418,8 @@ class PrController extends Controller
                 'category'
             )
             ->whereYear('date', date('Y'))
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->orderBy('nominal', 'desc')
             ->groupBy('category');
 
@@ -445,7 +449,8 @@ class PrController extends Controller
                     ->whereYear('tb_pr.date', date('Y'))
                     ->where('id_company', '1')
                     ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
-                    ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
+                    // ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
+                    ->whereRaw("( `status` = 'Done')")
                     ->groupBy('project_id');
 
         // $data = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')
@@ -484,7 +489,8 @@ class PrController extends Controller
             )
             ->whereYear('date', date('Y'))
             ->where('type_of_letter', 'IPR')
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->orderBy('nominal', 'desc')
             ->groupBy('category');
 
@@ -517,7 +523,8 @@ class PrController extends Controller
             )
             ->whereYear('date', date('Y'))
             // ->whereYear('date', '2022')
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->orderBy('nominal', 'desc')
             ->groupBy('to_replace')
             ->take(5);
@@ -528,7 +535,7 @@ class PrController extends Controller
     public function getTotalPrYear(Request $request)
     {
         $pie = 0;
-        $total = PR::orderby('type_of_letter')->whereYear('date', $request->year)->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->get();
+        $total = PR::orderby('type_of_letter')->whereYear('date', $request->year)->whereRaw("( `status` = 'Done')")->get();
 
         $first = $total[0]->type_of_letter;
         $hasil = [0,0];
@@ -550,7 +557,8 @@ class PrController extends Controller
 
         $sum_all = PR::selectRaw('SUM(`amount`) as `sum_all`')
             ->whereYear('date',  $request->year)
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->first();
 
         $sum_cat = PR::select('category')
@@ -558,14 +566,16 @@ class PrController extends Controller
             ->selectRaw('SUM(`amount`)/' . $sum_all->sum_all . '*100 as `precentage`')
             ->orderBy('precentage','DESC')
             ->whereYear('date',  $request->year)
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->groupBy('category')->get();
 
         $data = PR::select(
                 DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "IPR",1,NULL)) AS "IPR"'),
                 DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "EPR",1,NULL)) AS "EPR"'), 'month'
             )
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->whereYear('date',  $request->year)
             ->groupBy('month')
             ->get();
@@ -574,7 +584,8 @@ class PrController extends Controller
                 DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "IPR",amount,"")) AS "amount_IPR"'),
                 DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"'), 'month'
             )
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->whereYear('date', $request->year)
             ->groupBy('month')
             ->get();
@@ -593,7 +604,8 @@ class PrController extends Controller
                 DB::raw('SUM(amount) as nominal'),
                 'category'
             )
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->orderBy('nominal', 'desc')
             ->whereYear('date', $request->year)
             ->groupBy('category');
@@ -610,7 +622,8 @@ class PrController extends Controller
                 DB::raw("REPLACE(`to`,'.','') as `to_replace`") 
             )
             ->whereYear('date', $request->year)
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->orderBy('nominal', 'desc')
             ->groupBy('to_replace')
             ->take(5);
@@ -642,7 +655,8 @@ class PrController extends Controller
                     ->whereYear('tb_pr.date', $request->year)
                     ->where('id_company', '1')
                     ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
-                    ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
+                    // ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
+                    ->whereRaw("( `status` = 'Done')")
                     ->groupBy('project_id');
 
         return array("data" => $data->get());
@@ -657,7 +671,8 @@ class PrController extends Controller
             )
             ->whereYear('date', $request->year)
             ->where('type_of_letter', 'IPR')
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->orderBy('nominal', 'desc')
             ->groupBy('category');
 
@@ -673,7 +688,8 @@ class PrController extends Controller
             )
             ->whereYear('date', $request->year)
             ->where('type_of_letter', 'EPR')
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            // ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereRaw("( `status` = 'Done')")
             ->orderBy('nominal', 'desc')
             ->groupBy('category');
 
@@ -965,8 +981,8 @@ class PrController extends Controller
         $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "KATEGORI", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT",'STATUS'];
         $sheet->fromArray($headerContent,NULL,'A2');
 
-        $dataPR = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
-            ->Leftjoin('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+        $dataPR = PR::leftJoin('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+            ->leftJoin('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
             ->select('no_pr','position','type_of_letter', 'month', 'date', 'category', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount', 'status')
             ->whereYear('tb_pr.date', $request->year)
             ->where('status','!=','Cancel')

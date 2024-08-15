@@ -600,7 +600,6 @@ Partnership
                   label: function(tooltipItem, data) {
                     var percent = data['datasets'][0]['data'][tooltipItem['index']]
                     return percent + "%"
-                    // return console.log(tooltipItem)
                   },
                 },
               },
@@ -636,7 +635,6 @@ Partnership
                   label: function(tooltipItem, data) {
                     var percent = data['datasets'][0]['data'][tooltipItem['index']]
                     return percent + "%"
-                    // return console.log(tooltipItem)
                   },
                 },
               },
@@ -651,10 +649,8 @@ Partnership
         type:"GET",
         url:"{{url('/partnership/getCountDashboard')}}",
         success: function(result){
-          // console.log(colors)
           var prepend = ''
           $.each(result, function(key, value){
-            console.log(value)
             prepend = prepend + '<div class="col-lg-4 col-xs-6">'
               prepend = prepend + '<div class="small-box '+ value.color +'" style="height: 100px;border-radius: 5px;">'
                 prepend = prepend + '<div class="row">'
@@ -744,12 +740,8 @@ Partnership
                 })
                 $(".checked-"+key).prop("disabled",true)
                 $("small.status-"+key).text("Done")
-
-                window.console.log($(this), 'The element has been checked');
-
               },
               onUnCheck: function () {
-                window.console.log($(this), 'The element has been unchecked');
               }
             });
           })        
@@ -770,10 +762,8 @@ Partnership
         type:"GET",
         url:"{{url('/partnership/getNeedAttention')}}",
         success: function(result){
-          // console.log(colors)
           var prepend = ''
           $.each(result.data, function(key, value){
-            console.log(value)
             prepend = prepend + '<li class="item">'
               prepend = prepend + ' <div class="product-img">'
                   if(value.logo == null){

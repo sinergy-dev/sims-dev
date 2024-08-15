@@ -549,7 +549,7 @@ PMO
                                   <label>Due Date*</label>
                                   <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input type="text" name="due_date" class="form-control" placeholder="Select Due Date" id="due_date" data-value="0" onkeyup="validationCheck(this)"/>
+                                    <input type="text" name="due_date" class="form-control" placeholder="Select Due Date" id="due_date" data-value="0" onchange="validationCheck(this)"/>
                                   </div>
                                   <span class="help-block" style="display:none;">Please fill Due Date!</span>
                                 </div>
@@ -559,7 +559,7 @@ PMO
                                   <label>Review Date*</label>
                                   <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input type="text" name="review_date" class="form-control" id="review_date" placeholder="Select Review Date" data-value="0" onkeyup="validationCheck(this)"/>
+                                    <input type="text" name="review_date" class="form-control" id="review_date" placeholder="Select Review Date" data-value="0" onchange="validationCheck(this)"/>
                                   </div>
                                   <span class="help-block" style="display:none;">Please fill Review Date!</span>
                                 </div>
@@ -630,6 +630,101 @@ PMO
                   <div class="form-group" style="display: flex;margin-top: 20px;">
                     <button type="button" id="btnAddDoc" style="margin:0 auto" class="btn btn-sm bg-purple" onclick="addDocPendukung()"><i class="fa fa-plus"></i>&nbsp Document</button>
                   </div> 
+                </div>
+              </div> 
+              <div class="tab-add" style="display:none">
+                <div class="form-group">
+                  <label>Does this project have SLA?*</label>
+                  <div class="form-group">
+                    <div class="radio">
+                      <label>
+                        <input type="radio" name="optionRadioSla" id="optionRadioSlaYes" value="Yes">
+                        Yes
+                      </label>
+                    </div>
+                    <div class="radio">
+                      <label>
+                      <input type="radio" name="optionRadioSla" id="optionRadioSlaNo" value="No" checked>
+                        No
+                      </label>
+                    </div>
+                  </div>
+                  <span class="text-red" style="display:none">Please select option!</span>
+                </div>
+                <hr>
+                <div class="divSLA form-group" style="display:none;">
+                  <label>Input SLA</label>
+                  <div class="form-group">
+                    <span style="margin-left: 20px;">SLA Response Time</span>
+                    <div class="checkbox">
+                      <label style="width: -moz-available;">
+                        <input type="checkbox" name="cbSLA" style="margin-top:10px">
+                        <div class="input-group">
+                          <input type="text" class="form-control" name="" style="width:100%!important" id="slaResponseTime" placeholder="Input SLA Response Time" disabled onkeypress="return isNumberKey(event)">
+                          <span class="input-group-addon" style="background-color: gray;color: white;">
+                            hour
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <span style="margin-left: 20px;">SLA Resolution Time (Severity Critical)</span>
+                    <div class="checkbox">
+                      <label style="width: -moz-available;">
+                        <input type="checkbox" name="cbSLA" style="margin-top:10px">
+                        <div class="input-group">
+                          <input type="text" class="form-control" name="" style="width:100%!important" id="slaResolutionTimeCritical" placeholder="Input SLA Resolution Time (Severity Critical)" disabled onkeypress="return isNumberKey(event)">
+                          <span class="input-group-addon" style="background-color: gray;color: white;">
+                            hour
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <span style="margin-left: 20px;">SLA Resolution Time (Severity Major)</span>
+                    <div class="checkbox">
+                      <label style="width: -moz-available;">
+                        <input type="checkbox" name="cbSLA" style="margin-top:10px">
+                        <div class="input-group">
+                          <input type="text" class="form-control" name="" style="width:100%!important" id="slaResolutionTimeMajor" placeholder="Input SLA Resolution Time (Severity Major)" disabled onkeypress="return isNumberKey(event)">
+                          <span class="input-group-addon" style="background-color: gray;color: white;">
+                            hour
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <span style="margin-left: 20px;">SLA Resolution Time (Severity Moderate)</span>
+                    <div class="checkbox">
+                      <label style="width: -moz-available;">
+                        <input type="checkbox" name="cbSLA" style="margin-top:10px">
+                        <div class="input-group">
+                          <input type="text" class="form-control" name="" style="width:100%!important" id="slaResolutionTimeModerate" placeholder="Input SLA Resolution Time (Severity Moderate)" disabled onkeypress="return isNumberKey(event)">
+                          <span class="input-group-addon" style="background-color: gray;color: white;">
+                            hour
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <span style="margin-left: 20px;">SLA Resolution Time (Severity Minor)</span>
+                    <div class="checkbox">
+                      <label style="width: -moz-available;">
+                        <input type="checkbox" name="cbSLA" style="margin-top:10px">
+                        <div class="input-group">
+                          <input type="text" class="form-control" name="" style="width:100%!important" id="slaResolutionTimeMinor" placeholder="Input SLA Resolution Time (Severity Minor)" disabled onkeypress="return isNumberKey(event)">
+                          <span class="input-group-addon" style="background-color: gray;color: white;">
+                            hour
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  <span class="text-red" style="display:none;">Please fill SLA Time!</span>
                 </div>
               </div>              
             <div class="modal-footer">
@@ -1101,6 +1196,56 @@ PMO
           }
         }
 
+        if (data.id == "inputFinishDate") {
+          if(moment((data.value), "DD/MM/YYYY").format("YYYY-MM-DD") <  moment(($("#inputStartDate").val()), "DD/MM/YYYY").format("YYYY-MM-DD")){
+            Swal.fire({
+              title: "<strong>Oopzz!</strong>",
+              icon: "info",
+              html: `
+                Estimated finish date must be greater than Estimated start start!
+              `,
+            }).then(()=>{
+              $(data).val("")
+            })
+          }
+        }else if (data.id == "inputStartDate") {
+          if(moment((data.value), "DD/MM/YYYY").format("YYYY-MM-DD") >  moment(($("#inputFinishDate").val()), "DD/MM/YYYY").format("YYYY-MM-DD")){
+            Swal.fire({
+              title: "<strong>Oopzz!</strong>",
+              icon: "info",
+              html: `
+                Estimated finish date must be greater than Estimated start start!
+              `,
+            }).then(()=>{
+              $(data).val("")
+            })
+          }
+        }else if (data.id == "review_date") {
+          if(moment((data.value), "DD/MM/YYYY").format("YYYY-MM-DD") <  moment(($(this).closest(".col-md-4").prev(".col-md-4").find("#due_date").val()), "DD/MM/YYYY").format("YYYY-MM-DD")){
+            Swal.fire({
+              title: "<strong>Oopzz!</strong>",
+              icon: "info",
+              html: `
+                Review date must be greater than Due date!
+              `,
+            }).then(()=>{
+              $(data).val("")
+            })
+          }
+        }else if (data.id == "due_date") {
+          if(moment((data.value), "DD/MM/YYYY").format("YYYY-MM-DD") > moment(($(this).closest(".col-md-4").next(".col-md-4").find("#review_date").val()), "DD/MM/YYYY").format("YYYY-MM-DD")){
+            Swal.fire({
+              title: "<strong>Oopzz!</strong>",
+              icon: "info",
+              html: `
+                Review date must be greater than Due date!
+              `,
+            }).then(()=>{
+              $(data).val("")
+            })
+          }
+        }
+
         if($("#"+ $(data).attr('id')).val() != ""){
           $("#"+ $(data).attr('id')).closest(".form-group").removeClass("has-error")
           $("#"+ $(data).attr('id')).next("span.help-block").hide()
@@ -1537,12 +1682,12 @@ PMO
 
             var appendRisk = ''
             $.each(result[0].risk,function(idx,item){
-
                 if (idx == 0) {
                   $('#textAreaRisk[data-value='+ idx +']').val(item.risk_description)
                   $('#inputOwner[data-value='+ idx +']').val(item.risk_owner)
                   $('#inputImpact[data-value='+ idx +']').val(item.impact)
                   $('#inputLikelihood[data-value='+ idx +']').val(item.likelihood)
+                  $('#txtAreaImpactDesc[data-value='+ idx +']').val(item.impact_description)
                   $('#textareaResponse[data-value='+ idx +']').val(item.risk_response)
                   $('#due_date[data-value='+ idx +']').val(moment(item.due_date).format('MM/DD/YYYY'))
                   $('#review_date[data-value='+ idx +']').val(moment(item.review_date).format('MM/DD/YYYY'))
@@ -1564,6 +1709,7 @@ PMO
                     placeholder:"Select Status"
                   }).val(item.status).trigger('change')
                 }else{
+                  console.log("testttt")
                   $("#tbodyIdentifiedRisk tr:not(:first-child").remove("")
 
                   appendRisk = appendRisk + '<tr>'
@@ -1597,6 +1743,10 @@ PMO
                   appendRisk = appendRisk + '        </div>'
                   appendRisk = appendRisk + '      </div>'
                   appendRisk = appendRisk + '    </div>'
+                  appendRisk = appendRisk + '    <div class="form-group">'      
+                  appendRisk = appendRisk + '      <label>Impact Description*</label>'      
+                  appendRisk = appendRisk + '      <textarea class="form-control" placeholder="Impact Description" id="txtAreaImpactDesc" name="txtAreaImpactDesc" onkeyup="validationCheck(this)">'+ item.impact_description +'</textarea><span class="help-block" style="display:none;" data-value="'+ idx +'">Please fill Impact Description!</span>'      
+                  appendRisk = appendRisk + '    </div>'  
                   appendRisk = appendRisk + '    <div class="row">'
                   appendRisk = appendRisk + '        <div class="col-md-12 col-xs-12">'
                   appendRisk = appendRisk + '          <div class="form-group">'
@@ -1612,7 +1762,7 @@ PMO
                   appendRisk = appendRisk + '          <label>Due Date*</label>'      
                   appendRisk = appendRisk + '          <div class="input-group">'      
                   appendRisk = appendRisk + '            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>'      
-                  appendRisk = appendRisk + '            <input type="text" name="due_date" class="form-control" id="due_date" value="'+ moment(item.due_date).format('MM/DD/YYYY') +'" placeholder="Select Due Date" data-value="'+ idx +'" onkeyup="validationCheck(this)"/>'      
+                  appendRisk = appendRisk + '            <input type="text" name="due_date" class="form-control" id="due_date" value="'+ moment(item.due_date).format('MM/DD/YYYY') +'" placeholder="Select Due Date" data-value="'+ idx +'" onchange="validationCheck(this)"/>'      
                   appendRisk = appendRisk + '          </div><span class="help-block" style="display:none;">Please fill Due Date!</span>'      
                   appendRisk = appendRisk + '        </div>'      
                   appendRisk = appendRisk + '      </div>'      
@@ -1621,7 +1771,7 @@ PMO
                   appendRisk = appendRisk + '          <label>Review Date*</label>'      
                   appendRisk = appendRisk + '          <div class="input-group">'      
                   appendRisk = appendRisk + '            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>'      
-                  appendRisk = appendRisk + '            <input type="text" name="review_date" value="'+ moment(item.review_date).format('MM/DD/YYYY') +'" class="form-control" id="review_date" placeholder="Select Review Date" data-value="'+ idx +'" onkeyup="validationCheck(this)"/>'      
+                  appendRisk = appendRisk + '            <input type="text" name="review_date" value="'+ moment(item.review_date).format('MM/DD/YYYY') +'" class="form-control" id="review_date" placeholder="Select Review Date" data-value="'+ idx +'" onchange="validationCheck(this)"/>'      
                   appendRisk = appendRisk + '          </div><span class="help-block" style="display:none;">Please fill Review Date!</span>'      
                   appendRisk = appendRisk + '        </div>'      
                   appendRisk = appendRisk + '      </div>'      
@@ -1686,22 +1836,9 @@ PMO
           let x = document.getElementsByClassName("tab-add");
           x[n].style.display = "inline";
           if (n == (x.length - 1)) {
-            $(".modal-title").text('Upload Document')
+            $(".modal-title").text('SLA')
 
-            $("#inputDoc_0").change(function(){
-              if (this.value != "") {
-                  $("#title_doc_0").find("span").remove()
-                  $("#inputDoc_0").css("display","inline")
-                }
-              })
-
-              $('#inputDocTitle_0').keydown(function(){
-              if (this.value == "") {
-                $("#btnAddDoc").prop("disabled",true)
-              }else{
-                $("#btnAddDoc").prop("disabled",false)
-              }
-            })
+            
 
             $("#prevBtnAdd").before('<button type="button" class="btn btn-sm btn-primary" style="float:left" id="btnShowPC"><i class="fa fa-eye"></i> &nbspProject Charter</button>')
             $("#btnShowPC").click(function(){
@@ -1793,12 +1930,33 @@ PMO
 
               document.getElementById("prevBtnAdd").innerHTML = "Back";
               document.getElementById("nextBtnAdd").innerHTML = "Next";
-
               $("#nextBtnAdd").attr('onclick','nextPrevAdd(1,"'+ id_project +'","'+ status +'")')
               $("#prevBtnAdd").attr('onclick','nextPrevAdd(-1,'+ id_project +',"'+ status +'")')
 
               selectStatusProjectCharter(0)
 
+            }else if (n == 4) {
+              $(".modal-title").text('Upload Document')
+
+              $("#inputDoc_0").change(function(){
+                if (this.value != "") {
+                    $("#title_doc_0").find("span").remove()
+                    $("#inputDoc_0").css("display","inline")
+                  }
+                })
+
+                $('#inputDocTitle_0').keydown(function(){
+                if (this.value == "") {
+                  $("#btnAddDoc").prop("disabled",true)
+                }else{
+                  $("#btnAddDoc").prop("disabled",false)
+                }
+              })
+
+              document.getElementById("prevBtnAdd").innerHTML = "Back";
+              document.getElementById("nextBtnAdd").innerHTML = "Next";
+              $("#nextBtnAdd").attr('onclick','nextPrevAdd(1,"'+ id_project +'","'+ status +'")')
+              $("#prevBtnAdd").attr('onclick','nextPrevAdd(-1,'+ id_project +',"'+ status +'")')
             }
 
           }
@@ -1887,105 +2045,79 @@ PMO
     }
 
     function saveProject(id_pmo,status){
-      if ($("#inputPO").val() == "") {
-        $("#inputPO").closest("div").addClass("has-error")
-        $("#inputPO").next("span").show()
-      }else if ($("#inputToR").val() == "") {
-        $("#inputToR").closest("div").addClass("has-error")
-        $("#inputToR").next("span").show()
-      }else if ($("#inputSbe").val() == "") {
-        $("#inputSbe").closest("div").addClass("has-error")
-        $("#inputSbe").next("span").show()
-      }else{
-        swalFireCustom = {
-          title: 'Are you sure?',
-          text: "Submit Project Charter",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-        }
-
-        let arrCbTechUse = [], arrInternalStakeHolder = [], arrIdentifiedRisk = [], arrInputDocPendukung = []
-        $("input[name='cbTechUse']:checked").each(function(idx,item){
-          arrCbTechUse.push(item.value)
-        })
-
-        $("#tbodyInternalStakeholderRegister tr").each(function(){
-          arrInternalStakeHolder.push({
-            "nik":$(this).find("#selectNameStakeholder").val(),
-            "role":$(this).find("#selectRoleStakeholder").val(),
-            "email":$(this).find("#inputEmailStakeholder").val(),
-            "phone":$(this).find("#inputPhoneStakeholder").val()})
-        })
-
-        $("#tbodyIdentifiedRisk tr").each(function(){
-          arrIdentifiedRisk.push({
-            "risk":$(this).find("#textAreaRisk").val(),
-            "owner":$(this).find("#inputOwner").val(),
-            "impact":$(this).find("#inputImpact").val(),
-            "likelihood":$(this).find("#inputLikelihood").val(),
-            "rank":$(this).find("#inputRank").val(),
-            "impactDescription":$(this).find("#txtAreaImpactDesc").val(),
-            "response":$(this).find("#textareaResponse").val(),
-            "due_date":$(this).find("#due_date").val(),
-            "review_date":$(this).find("#review_date").val(),
-            "status":$(this).find("#selectStatusProjectCharter").val(),
+      if ($("input[name='optionRadioSla']").is(":checked")) {
+        if ($("input[name='optionRadioSla']:checked").val() == "Yes") {
+          let arrLengthAllEmpty = []
+          $.each($(".divSLA").find("input.form-control"),function(idx,result){
+            if(result.value == ""){
+              arrLengthAllEmpty.push(result.value)
+            }
           })
 
-        })
+          if (arrLengthAllEmpty.length == 5) {
+            $(".divSLA").find("label").first().addClass("text-red")
+            $(".divSLA").find('span.text-red').show() 
+          }else{
+            swalFireCustom = {
+              title: 'Are you sure?',
+              text: "Submit Project Charter",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }
 
-        formData = new FormData
+            let arrSLAInformation = []
+            formData.append("_token","{{ csrf_token() }}")
+            formData.append("id_pmo",id_pmo)
+            formData.append("isSlaValue","Yes")
+            formData.append("slaResponseTime",$("#slaResponseTime").val())
+            formData.append("slaResolutionTimeCritical",$("#slaResolutionTimeCritical").val())
+            formData.append("slaResolutionTimeMajor",$("#slaResolutionTimeMajor").val())
+            formData.append("slaResolutionTimeModerate",$("#slaResolutionTimeModerate").val())
+            formData.append("slaResolutionTimeMinor",$("#slaResolutionTimeMinor").val())
 
-        $('#tableUploadDoc .trDoc').each(function() {
-          formData.append('inputDoc[]',$(this).find('input[name="inputDoc"]').prop('files')[0])
-          arrInputDocPendukung.push({
-            nameDocPendukung:$(this).find('input[name="inputDocTitle"]').val(),
-          }) 
-        })
+            swalSuccess = {
+              icon: 'success',
+              title: 'Document Project Charter has been created!',
+              text: 'Project Charter will processed soon, please wait for further progress',
+            }
+            url = '/PMO/updateSLAProject'
+            createPost(swalFireCustom,formData,swalSuccess,url,redirect="{{url('/PMO/project')}}")
+          }
+        }else{
+          swalFireCustom = {
+            title: 'Are you sure?',
+            text: "Submit Project Charter",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          }
 
-        formData.append("_token","{{ csrf_token() }}")
-        formData.append("project_id",$("#inputPID").val())
-        formData.append("id_pmo",id_pmo)
-        formData.append("inputCustomer",$("#inputCustomer").val())
-        formData.append("textAreaAddress",$("#textAreaAddress").val())
-        formData.append("inputPhone",$("#inputPhone").val())
-        formData.append("inputContactPerson",$("#inputContactPerson").val())
-        formData.append("inputEmail",$("#inputEmail").val())
-        formData.append("inputCpPhone",$("#inputCpPhone").val())
-        formData.append("inputCpTitle",$("#inputCpTitle").val())
-        formData.append("inputCompanyLogo",$('#inputCompanyLogo').prop('files')[0])
-        formData.append("textAreaProjectDesc",$("#textAreaProjectDesc").val())
-        formData.append("textAreaProjectObj",$("#textAreaProjectObj").val())
-        formData.append("arrCbTechUse",JSON.stringify(arrCbTechUse))
-        formData.append("inputStartDate",$("#inputStartDate").val())
-        formData.append("inputFinishDate",$("#inputFinishDate").val())
-        formData.append("selectFlexibility",$("#selectFlexibility").val())
-        formData.append("selectMarketSegment",$("#selectMarketSegment").val())
-        formData.append("textAreaSOW",$("#textAreaSOW").val())
-        formData.append("textAreaOutOfScope",$("#textAreaOutOfScope").val())
-        formData.append("textAreaCustomerRequirement",$("#textAreaCustomerRequirement").val())
-        formData.append("textAreaTOP",$("#textAreaTOP").val())
-        formData.append("arrInternalStakeHolder",JSON.stringify(arrInternalStakeHolder))
-        formData.append("arrIdentifiedRisk",JSON.stringify(arrIdentifiedRisk))
-        formData.append("inputPO",$("#inputPO").prop('files')[0])
-        formData.append("inputToR",$("#inputToR").prop('files')[0])
-        formData.append("inputSbe",$("#inputSbe").prop('files')[0])
-        formData.append("arrInputDocPendukung",JSON.stringify(arrInputDocPendukung))
+          let arrSLAInformation = []
+          formData.append("_token","{{ csrf_token() }}")
+          formData.append("isSlaValue","No")
+          formData.append("id_pmo",id_pmo)
 
-        swalSuccess = {
-          icon: 'success',
-          title: 'Document Project Charter has been created!',
-          text: 'Project Charter will processed soon, please wait for further progress',
+          swalSuccess = {
+            icon: 'success',
+            title: 'Document Project Charter has been created!',
+            text: 'Project Charter will processed soon, please wait for further progress',
+          }
+          url = '/PMO/updateSLAProject'
+          createPost(swalFireCustom,formData,swalSuccess,url,redirect="{{url('/PMO/project')}}")
         }
-        url = '/PMO/updateProjectCharter'
-        createPost(swalFireCustom,formData,swalSuccess,url,redirect="{{url('/PMO/project')}}")
-
-        // if(checkDocUpload($("#inputPO")) && checkDocUpload($("#inputToR")) && checkDocUpload($("#inputSbe"))){  
-        // }
+      }else{
+        $("input[name='optionRadioSla']").closest(".form-group").prev("label").addClass("text-red")
+        $("input[name='optionRadioSla']").closest(".form-group").addClass("has-error")
+        $("input[name='optionRadioSla']").closest(".form-group").next("span").show()
       }
+      
     }
 
     function saveAssign(){
@@ -2115,6 +2247,8 @@ PMO
           url = "/PMO/updateInternalStakholder"
         }else if (currentTab == 3) {
           url = "/PMO/updateIdentifiedRisk"
+        }else if (currentTab == 4) {
+          url = "/PMO/updateDocProjectCharter"
         }
       }else{
         if (currentTab == 0) {
@@ -2129,6 +2263,8 @@ PMO
           url = "/PMO/updateInternalStakholder"
         }else if (currentTab == 3) {
           url = "/PMO/updateIdentifiedRisk"
+        }else if (currentTab == 4) {
+          url = "/PMO/updateDocProjectCharter"
         }
       }
 
@@ -2186,7 +2322,21 @@ PMO
                 processData: false,
                 contentType: false,
                 data:formData,
+                beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                  })
+                  Swal.showLoading()
+                },
                 success:function(){
+                  Swal.close()
                   localStorage.setItem("isStoreProject",true)
 
                   let x = document.getElementsByClassName("tab-add");
@@ -2266,8 +2416,20 @@ PMO
               contentType: false,
               data:formData,
               beforeSend:function(){
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                })
+                Swal.showLoading()
                 $("#nextBtnAdd").prop("disabled",true)
               },success:function(){
+                Swal.close()
                 let x = document.getElementsByClassName("tab-add");
                 x[currentTab].style.display = "none";
                 currentTab = currentTab + n;
@@ -2355,8 +2517,22 @@ PMO
               type:"POST",
               processData: false,
               contentType: false,
-              data:formData
-              ,success:function(){
+              data:formData,
+              beforeSend:function(){
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                })
+                Swal.showLoading()
+              },
+              success:function(){
+                Swal.close()
                 let x = document.getElementsByClassName("tab-add");
                 x[currentTab].style.display = "none";
                 currentTab = currentTab + n;
@@ -2442,7 +2618,92 @@ PMO
                 _token:"{{csrf_token()}}",
                 id_pmo:id_project,
                 arrIdentifiedRisk:JSON.stringify(arrIdentifiedRisk)
-              },success:function(){
+              },
+              beforeSend:function(){
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                })
+                Swal.showLoading()
+              },
+              success:function(){
+                Swal.close()
+                let x = document.getElementsByClassName("tab-add");
+                x[currentTab].style.display = "none";
+                currentTab = currentTab + n;
+                if (currentTab >= x.length) {
+                  x[n].style.display = "none";
+                  currentTab = 0;
+                }
+                btnAddProjectCharter(currentTab,id_project,status);
+              }
+            })
+          }
+        }else{
+          let x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          btnAddProjectCharter(currentTab,id_project,status);
+        }
+      }else if(currentTab == 4){
+        if (n == 1) {
+          if ($("#inputPO").val() == "") {
+            $("#inputPO").closest("div").addClass("has-error")
+            $("#inputPO").next("span").show()
+          }else if ($("#inputToR").val() == "") {
+            $("#inputToR").closest("div").addClass("has-error")
+            $("#inputToR").next("span").show()
+          }else if ($("#inputSbe").val() == "") {
+            $("#inputSbe").closest("div").addClass("has-error")
+            $("#inputSbe").next("span").show()
+          }else{
+            formData = new FormData();
+
+            $('#tableUploadDoc .trDoc').each(function() {
+              formData.append('inputDoc[]',$(this).find('input[name="inputDoc"]').prop('files')[0])
+              arrInputDocPendukung.push({
+                nameDocPendukung:$(this).find('input[name="inputDocTitle"]').val(),
+              }) 
+            })
+
+            formData.append("_token","{{csrf_token()}}")
+            formData.append("id_pmo",id_project)
+            formData.append("inputPO",$("#inputPO").prop('files')[0])
+            formData.append("inputToR",$("#inputToR").prop('files')[0])
+            formData.append("inputSbe",$("#inputSbe").prop('files')[0])
+            formData.append("arrInputDocPendukung",JSON.stringify(arrInputDocPendukung))
+
+            $.ajax({
+              url:"{{url('/')}}"+url,
+              type:"POST",
+              processData: false,
+              contentType: false,
+              data:formData,
+              beforeSend:function(){
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                })
+                Swal.showLoading()
+              },
+              success:function(){
+                Swal.close()
                 let x = document.getElementsByClassName("tab-add");
                 x[currentTab].style.display = "none";
                 currentTab = currentTab + n;
@@ -2932,7 +3193,7 @@ PMO
       append = append + '          <label>Due Date*</label>'      
       append = append + '          <div class="input-group">'      
       append = append + '            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>'      
-      append = append + '            <input type="text" name="due_date" class="form-control" id="due_date" onclick="showDatepicker(this)" placeholder="Select Due Date" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"/>'      
+      append = append + '            <input type="text" name="due_date" class="form-control" id="due_date" onclick="showDatepicker(this)" placeholder="Select Due Date" data-value="'+ incIdentifiedRisk +'" onchange="validationCheck(this)"/>'      
       append = append + '          </div><span class="help-block" style="display:none;">Please fill Due Date!</span>'      
       append = append + '        </div>'      
       append = append + '      </div>'      
@@ -2941,7 +3202,7 @@ PMO
       append = append + '          <label>Review Date*</label>'      
       append = append + '          <div class="input-group">'      
       append = append + '            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>'      
-      append = append + '            <input type="text" name="review_date" class="form-control" id="review_date" onclick="showDatepicker(this)" placeholder="Select Review Date" data-value="'+ incIdentifiedRisk +'" onkeyup="validationCheck(this)"/>'      
+      append = append + '            <input type="text" name="review_date" class="form-control" id="review_date" onclick="showDatepicker(this)" placeholder="Select Review Date" data-value="'+ incIdentifiedRisk +'" onchange="validationCheck(this)"/>'      
       append = append + '          </div><span class="help-block" style="display:none;">Please fill Review Date!</span>'      
       append = append + '        </div>'      
       append = append + '      </div>'      
@@ -2959,7 +3220,9 @@ PMO
 
       $("#tbodyIdentifiedRisk").append(append)
 
-      $("input[name='due_date'],input[name='review_date']").datepicker()
+      $("input[name='due_date'],input[name='review_date']").datepicker({
+        autoclose:true
+      })
 
       selectStatusProjectCharter(incIdentifiedRisk)
 
@@ -3122,6 +3385,36 @@ PMO
       $('#ModalProjectCharter').on('hidden.bs.modal', function () {
         window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname)
       })
+    }
+
+    //function for SLA
+    $("input[name='cbSLA']").change(function(){
+      if ($(this).is(":checked")) {
+        $(this).next("div").find("input").attr("disabled",false)
+        $(this).next("div").find("input").val("")
+      }else{
+        $(this).next("div").find("input").attr("disabled",true)
+        $(this).next("div").find("input").val("")
+      }
+    })
+
+    $("input[name='optionRadioSla']").change(function(){
+      if ($(this).val() == 'Yes') {
+        $(".divSLA").show()
+      }else if($(this).val() == 'No'){
+        $(".divSLA").hide()
+        $("input[name='cbSLA']").next("div").find("input").val("").attr("disabled",true)
+        $("input[name='cbSLA']").prop("checked", false)
+      }
+    })
+
+    function isNumberKey(evt) {
+      var charCode = (evt.which) ? evt.which : evt.keyCode
+      if (charCode > 31 && (charCode < 48 || charCode > 57))
+        return false;
+      return true;
+      $(".divSLA").find("label").first().removeClass("text-red")
+      $(".divSLA").find('span.text-red').hide()
     }
 </script>
 @endsection

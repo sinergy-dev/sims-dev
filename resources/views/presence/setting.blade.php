@@ -212,7 +212,7 @@ Presence Setting
 					<div class="modal-body">
 						<div class="form-group">
 							<label>Search Location</label>
-							<input class="form-control" placeholder="Location" type="text" id="search">
+							<input class="form-control" placeholder="Location" type="text" id="inputSearch">
 						</div>
 						<div class="form-group">
 							<div id="map" style="height: 350px;width: 100%;margin:auto;display: block;background-color: #000;"></div>
@@ -544,7 +544,7 @@ Presence Setting
 			fullscreenControl: false
 		});
 
-		var autocomplete = new google.maps.places.Autocomplete((document.getElementById('search')));
+		var autocomplete = new google.maps.places.Autocomplete((document.getElementById('inputSearch')));
 
 		 map.addListener('click', function(result) {
 			marker.setVisible(false);

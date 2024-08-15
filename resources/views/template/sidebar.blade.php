@@ -6,6 +6,16 @@
 		position: inherit;
 	}
 
+	.draft-count {
+        background-color: #ffc107;
+        color: white;
+        border-radius: 50%;
+        padding: 4px 8px;
+        font-size: 12px;
+        margin-left: 5px;
+		font-weight: bold; 
+    }
+
 	.img-circle{
 		
 	}
@@ -47,6 +57,11 @@
 								<li class="activeable_menu">
 									<a href="{{url($group[$keys]->url)}}">
 										<i class="fa fa-circle-o"></i>{{$group[$keys]->name}}
+										@if($group[$keys]->name == "Draft PR" && isset($initView['countPRByCircularBy']))
+											@if($initView['countPRByCircularBy'] > 0)
+											<span class="draft-count">{{$initView['countPRByCircularBy']}}</span>
+											@endif
+										@endif
 										@if($group[$keys]->name == "Lead Register")
 										<span class="pull-right-container">
 											<small class="label pull-right bg-red" id="Lead_Register"></small>

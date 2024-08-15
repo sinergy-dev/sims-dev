@@ -196,7 +196,6 @@ class PMO extends Model
                     ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                 }
             }
-
         } else if ($this->project_type == 'implementation'){
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
@@ -206,8 +205,7 @@ class PMO extends Model
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
                     ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                 }
-            }
-            
+            } 
         }
 
         // return $sign->get();

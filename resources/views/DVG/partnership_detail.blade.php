@@ -955,7 +955,6 @@ Partnership
 				append = append + "<div class='col-md-12'>"
 				$.each(result.data.cert_user, function (key, value) {
 					countable++
-					console.log(countable)
 					append = append + "<box>"
 					append = append + ' <div class="box-header with-border">'
 					append = append + '		<h2 class="box-title" style="font-size:20px"><b>' + key +
@@ -1044,7 +1043,6 @@ Partnership
 				})
 
 				$(".btn-edit-eng").click(function () {
-					console.log(this.value.split(",")[2])
 					var name = this.value.split(",")[1]
 					appendModal = ""
 					appendModal = appendModal +
@@ -1333,11 +1331,8 @@ Partnership
 							$(".activeTrash-" + key).hide()
 							$("small.status-" + key).text("Done")
 
-							window.console.log($(this), 'The element has been checked');
-
 						},
 						onUnCheck: function () {
-							window.console.log($(this), 'The element has been unchecked');
 						}
 					});
 				})
@@ -1469,9 +1464,7 @@ Partnership
 				$.each(result.data, function (key, value) {
 					appendCertList = appendCertList + '<div class="col-sm-6">'
 					pdf = value.certificate
-					console.log(pdf)
 					if (pdf.split(".").pop() == "pdf") {
-						console.log("yes pdf")
 						appendCertList = appendCertList +
 							'<iframe style="cursor: pointer;" width="265" height="200"  src="{{asset("image/cert_partnership")}}/' +
 							value.certificate + '" alt="Photo"><button value="' + value.certificate +
@@ -1687,7 +1680,6 @@ Partnership
 		}
 
 		$('#tbListCert .new-list').each(function () {
-			// console.log(fileupload)
 			formData.append('imageData', $(this).find('#certificate_eng').prop('files')[0])
 		});
 

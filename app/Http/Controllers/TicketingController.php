@@ -637,10 +637,16 @@ class TicketingController extends Controller
 	}
 
 	public function getEmailData(Request $req){
-		// return $req->id_ticket;
+		// return $req->client;
 		if(isset($req->client)){
 			if (isset($req->slm)) {
-				return TicketingEmailSLM::select('dear as open_dear','to as open_to','cc as open_cc')->where('second_level_support',$req->slm)->first();
+				$openCustomer = TicketingEmailSetting::select(DB::raw("CONCAT(`to`,`cc`) AS open_cc"))->where('pid',$req->client)->first()->open_cc;
+				$openSLM = TicketingEmailSLM::select('dear as open_dear','to as open_to','cc as open_cc')->where('second_level_support',$req->slm)->first();
+				if ($openSLM && $openCustomer) {
+				    $openSLM->open_cc = $openSLM->open_cc ? $openSLM->open_cc . ',' . $openCustomer : $openCustomer;
+				}
+
+				return $openSLM;
 			}else{
 				return TicketingEmailSetting::select('dear as open_dear','to as open_to','cc as open_cc')->where('pid',$req->client)->first();
 			}

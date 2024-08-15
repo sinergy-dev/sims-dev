@@ -3167,7 +3167,7 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
+                    ->leftJoin('role_user','role_user.user_id','users.nik')->leftJoin('roles','roles.id','role_user.role_id')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
                         'roles.name as id_division',
                         'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','total_cuti.days','users.cuti','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
@@ -3888,7 +3888,8 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
+                    ->leftJoin('role_user','role_user.user_id','users.nik')
+                    ->leftJoin('roles','roles.id','role_user.role_id')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
                         'roles.name as id_division',
                         'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','total_cuti.days','users.cuti','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')

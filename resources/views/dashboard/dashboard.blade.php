@@ -18,8 +18,8 @@ Dashboard
   }
 
   .table-sip-ter tbody tr:first-child td{
-  	background-color: dodgerblue;
-  	color: white;
+    background-color: dodgerblue;
+    color: white;
   }
 
   .table-sip-ter tbody tr:first-child td a i{
@@ -104,7 +104,7 @@ Dashboard
   </ol>
 </section>
 <section class="content">
-	<!--Box-->
+  <!--Box-->
   <div class="row" style="display: none;" id="divSelectYear">
     <div class="col-md-4">
       <div class="div-filter-year form-group">
@@ -127,11 +127,11 @@ Dashboard
       <option></option>
     </select>
   </div> -->
-	<div class="row" id="BoxId" style="display:none;"><!-- ./col --> </div>
+  <div class="row" id="BoxId" style="display:none;"><!-- ./col --> </div>
 
-	<!--Chart-->
+  <!--Chart-->
   <div class="row" id="BoxTopWin" style="display:none;">
-  	<div class="col-lg-6 col-xs-12" id="sipTop5" style="display:none;">
+    <div class="col-lg-6 col-xs-12" id="sipTop5" style="display:none;">
       <div class="box box-warning">
         <div class="box-header with-border">
           <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
@@ -153,9 +153,57 @@ Dashboard
           </table>
         </div>
       </div>
-  	</div>
+    </div>
 
-  	<div class="col-lg-6 col-xs-12" id="mspTop5" style="display:none;">
+    <div class="col-lg-6 col-xs-12" id="BoxTopWinAllTerritory" style="display:none;">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><i>WIN Projects Per Territory</i></h3>
+          <h3 class="box-title pull-right"><b>SIP</b></h3>
+        </div>
+        <div class="box-body">
+          <?php $no_sip = 1; $territory= ""?>
+          <table class="table table-bordered table-striped table-sip-all-ter" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th width="5%"><center>No.</center></th>
+                <th><center>Territory</center></th>
+                <th width="20%" align="right"><center>Total Amount</center></th>
+                <th width="10%"><center>Total</center></th>
+              </tr>
+            </thead>
+            <tbody id="table-win-project-territory">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-xs-12" id="BoxTopWinTerritoryNonDetail" style="display:none;">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><i>WIN Projects Per Territory</i></h3>
+          <h3 class="box-title pull-right"><b>SIP</b></h3>
+        </div>
+        <div class="box-body">
+          <?php $no_sip = 1; $territory= ""?>
+          <table class="table table-bordered table-striped table-sip-all-ter-non-detail" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th width="5%"><center>No.</center></th>
+                <th><center>Territory</center></th>
+                <th width="20%" align="right"><center>Total Amount</center></th>
+                <th width="10%"><center>Total</center></th>
+              </tr>
+            </thead>
+            <tbody id="table-win-project-territory-non-detail">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-xs-12" id="mspTop5" style="display:none;">
       <div class="box box-warning">
         <div class="box-header with-border">
           <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
@@ -206,19 +254,19 @@ Dashboard
   </div>
 
   <div class="row" id="BoxTopWinTerritory" style="display:none;">
-  	<div class="col-lg-6 col-xs-12">
-    	<div class="box box-primary">
+    <!-- <div class="col-lg-6 col-xs-12">
+      <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title"><i>WIN Projects Per Territory</i></h3>
           <h3 class="box-title pull-right"><b>SIP</b></h3>
         </div>
         <div class="box-body">
           <?php $no_sip = 1; $territory= ""?>
-          <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+          <table class="table table-bordered table-striped table-sip-all-ter" width="100%" cellspacing="0">
             <thead>
               <tr>
                 <th width="5%"><center>No.</center></th>
-                <th><center>Sales Name</center></th>
+                <th><center>Territory</center></th>
                 <th width="20%" align="right"><center>Total Amount</center></th>
                 <th width="10%"><center>Total</center></th>
               </tr>
@@ -228,18 +276,18 @@ Dashboard
           </table>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="col-lg-3 col-xs-12" id="boxCharPietWinLose">
-    	<div class="box box-danger">
-      		<div class="box-header with-border">
-        		<h3 class="box-title">Win/Lose</h3>
-      		</div>
-        	<div class="box-body">
+      <div class="box box-danger">
+          <div class="box-header with-border">
+            <h3 class="box-title">Win/Lose</h3>
+          </div>
+          <div class="box-body">
             <canvas id="myDoughnutChart" width="100%" height="100%"></canvas>
         </div>
-    	</div>
-  	</div>
+      </div>
+    </div>
 
     <div class="col-lg-3 col-xs-12">
         <div class="box box-primary">
@@ -251,10 +299,25 @@ Dashboard
           </div>
         </div>
     </div>
-  </div>      	
-  	
+
+    <div class="col-lg-6 col-xs-12" id="boxChartTotalLead">
+        <div class="box box-success">
+          <div class="box-header with-border">
+            <h3 class="box-title">Total Lead Register</h3>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-lg-12 col-xs-12">
+                <canvas id="myBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>        
+    
   <div class="row" id="BoxTotalLead" style="display:none;">
-  	<div class="col-lg-6 col-xs-12" id="boxChartTotalAmountLead">
+    <div class="col-lg-6 col-xs-12" id="boxChartTotalAmountLead">
       <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title">Total Amount Lead Register (Deal Price)</h3>
@@ -263,46 +326,57 @@ Dashboard
           <canvas id="AreaChart2019"></canvas>
         </div>
       </div>
-  	</div>
+    </div>
 
-  	<div class="col-lg-6 col-xs-12" id="boxChartTotalLead">
-	      <div class="box box-success">
-	        <div class="box-header with-border">
-	          <h3 class="box-title">Total Lead Register</h3>
-	        </div>
-	        <div class="box-body">
-	          <div class="row">
-	            <div class="col-lg-12 col-xs-12">
-	              <canvas id="myBarChart"></canvas>
-	            </div>
-	          </div>
-	        </div>
-	      </div>
-	  </div>
-	</div>
+    <!-- <div class="col-lg-6 col-xs-12" id="boxChartTotalLead">
+        <div class="box box-success">
+          <div class="box-header with-border">
+            <h3 class="box-title">Total Lead Register</h3>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-lg-12 col-xs-12">
+                <canvas id="myBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div> -->
 
-  <div class="row" id="BoxTotalLeadByStatus" style="display:none;">
-  	<div class="col-lg-12 col-xs-12" id="boxChartTotalAmountLeadByStatus">
+    <div class="col-lg-6 col-xs-12" id="boxChartTotalAmountLeadByStatus">
         <div class="box box-warning">
           <div class="box-header with-border">
             <h3 class="box-title">Total Amount Lead Register (By Status)</h3>
           </div>
           <div class="box-body">
-            	<canvas id="barChartByStatus"></canvas>
-		  		</div>
+              <canvas id="barChartByStatus"></canvas>
+          </div>
+        </div>
+    </div>  
+  </div>
+
+  <div class="row" id="BoxTotalLeadByStatus" style="display:none;">
+    <div class="col-lg-12 col-xs-12" id="boxChartTotalAmountLeadByStatus" style="display:none;">
+        <div class="box box-warning">
+          <div class="box-header with-border">
+            <h3 class="box-title">Total Amount Lead Register (By Status)</h3>
+          </div>
+          <div class="box-body">
+              <canvas id="barChartByStatus"></canvas>
+          </div>
         </div>
     </div>  
  
     <div class="col-lg-3 col-xs-12" id="boxChartDonutWinLose2" style="display:none;">
-    	<div class="box box-danger">
-      		<div class="box-header with-border">
-        		<h3 class="box-title">Win/Lose</h3>
-      		</div>
-        	<div class="box-body">
+      <div class="box box-danger">
+          <div class="box-header with-border">
+            <h3 class="box-title">Win/Lose</h3>
+          </div>
+          <div class="box-body">
             <canvas id="myDoughnutChart2" width="100%" height="100%"></canvas>
         </div>
-    	</div>
-  	</div>
+      </div>
+    </div>
 
     <div class="col-lg-3 col-xs-12" id="boxCharPietWinLose2" style="display:none">
         <div class="box box-primary">
@@ -313,101 +387,101 @@ Dashboard
             <canvas id="myPieChart2" width="100%" height="100%"></canvas>
           </div>
         </div>
-    </div>    	
+    </div>      
   </div>
 
-	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	  <div class="modal-dialog" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-	        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">×</span>
-	        </button>
-	      </div>
-	      <div class="modal-body">
-	        Select "Logout" below if you are ready to end your current session.
-	      </div>
-	      <div class="modal-footer">
-	        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-	        <a class="btn btn-primary" href="{{ url('/login')}}">Logout</a>
-	      </div>
-	    </div>
-	  </div>
-	</div>
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Select "Logout" below if you are ready to end your current session.
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="{{ url('/login')}}">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-	<div id="popUp" class="modal fade" role="dialog">
-	  <div class="modal-dialog modal-lg">
-	    <div class="modal-content modal-style">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal">
-	          &times;
-	        </button>
-	        <h4 class="modal-title">ANNOUNCEMENT</h4>
-	      </div>
-	      <div class="modal-body">
-	        <h3 class="box-title text-center">
-	          <b>SALES APP</b><br><i>(Tender Process)</i>
-	        </h3>
-	        <div class="row">
-	          <div class="col-md-12">
-	            <h4>
-	              Dear all Sales,<br><br>
-	              Terdapat beberapa penyesuaian untuk Lead Register dengan rincian sebagai berikut:<br><br>
-	              <ul>
-	                <li>Submitted Price adalah harga nego.<br></li>
-	                <li>Deal Price adalah harga sesuai PO.<br><br></li>
-	              </ul>
-	              <b>Penyesuaian untuk Request PID :</b><br>
-	              <p>Lead yang memiliki tanggal PO tahun lalu (backdate) harap email manual pada Bu Anee seperti proses manual sebelumnya, re:<i>yuliane@sinergy.co.id</i>. Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</p>
-	              <br>
-	              Untuk pengisian proses "Tender Process" terdapat beberapa perubahan:<br><br>
-	              <ul>
-	                <li>Terdapat penambahan status Project Class (Multiyears / Blanket / Normal) yang wajib diisi.<br></li>
-	                <li>Project Class Normal untuk project dalam tahun ini, Multiyears project beberapa tahun, dan Blanket adalah project dengan model kontrak payung.<br></li>
-	                <li>Jumlah Tahun & Deal Price Total wajib diisi saat memilih Project Class Multiyears / Blanket.<br></li>
-	                <li>Untuk status Normal, Deal Price adalah nominal sesuai PO.<br></li>
-	                <li>Untuk status Multiyears / Blanket, Deal Price adalah PO tahun ini dan Deal Price Total adalah total nominal PO keseluruhan<br><br></li>
-	              </ul>
-	              <b>Mohon Deal Price diisi untuk perhitungan dan report.</b><br><br>
-	              
-	              Terkait perubahan tersebut, Lead Register yang ber-status Win bisa di edit kembali untuk pengisian Deal Price.<br><br>
-	              Terimakasih.
-	            </h4>
-	          </div>
-	        </div>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
+  <div id="popUp" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content modal-style">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
+          <h4 class="modal-title">ANNOUNCEMENT</h4>
+        </div>
+        <div class="modal-body">
+          <h3 class="box-title text-center">
+            <b>SALES APP</b><br><i>(Tender Process)</i>
+          </h3>
+          <div class="row">
+            <div class="col-md-12">
+              <h4>
+                Dear all Sales,<br><br>
+                Terdapat beberapa penyesuaian untuk Lead Register dengan rincian sebagai berikut:<br><br>
+                <ul>
+                  <li>Submitted Price adalah harga nego.<br></li>
+                  <li>Deal Price adalah harga sesuai PO.<br><br></li>
+                </ul>
+                <b>Penyesuaian untuk Request PID :</b><br>
+                <p>Lead yang memiliki tanggal PO tahun lalu (backdate) harap email manual pada Bu Anee seperti proses manual sebelumnya, re:<i>yuliane@sinergy.co.id</i>. Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</p>
+                <br>
+                Untuk pengisian proses "Tender Process" terdapat beberapa perubahan:<br><br>
+                <ul>
+                  <li>Terdapat penambahan status Project Class (Multiyears / Blanket / Normal) yang wajib diisi.<br></li>
+                  <li>Project Class Normal untuk project dalam tahun ini, Multiyears project beberapa tahun, dan Blanket adalah project dengan model kontrak payung.<br></li>
+                  <li>Jumlah Tahun & Deal Price Total wajib diisi saat memilih Project Class Multiyears / Blanket.<br></li>
+                  <li>Untuk status Normal, Deal Price adalah nominal sesuai PO.<br></li>
+                  <li>Untuk status Multiyears / Blanket, Deal Price adalah PO tahun ini dan Deal Price Total adalah total nominal PO keseluruhan<br><br></li>
+                </ul>
+                <b>Mohon Deal Price diisi untuk perhitungan dan report.</b><br><br>
+                
+                Terkait perubahan tersebut, Lead Register yang ber-status Win bisa di edit kembali untuk pengisian Deal Price.<br><br>
+                Terimakasih.
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-	<div id="changePassword" class="modal fade" role="dialog">
-	  <div class="modal-dialog modal-sm">
-	    <div class="modal-content modal-style">
-	      <div class="outer-reset">
-	        <button type="button" class="close pull-right" style="width: 20px;" data-dismiss="modal">&times;</button>
-	        <div class="inner-reset">
-	          <i class="fa fa-warning fa-7x" style="color: white"></i>
-	        </div>
-	      </div>
-	      <div class="modal-body">
-	        <h4 style="text-align: center;"><b>Please change default password to protect your account !</b></h4>
-	          <a href="{{url('/profile_user')}}#changePassword">
-	            <span class="btn btn-info btn-block" style="border-radius: 24px">Change Password</span>
-	          </a>
-	        <span data-dismiss="modal" style="cursor: pointer;">
-	          <h5 class="text-center" style="color: #00acd6">Skip Now</h5>
-	        </span>
-	      </div>
-	      <div class="modal-footer">
-	        <p class="text-center">©SIMS - 2023</p>              
-	      </div>
-	    </div>
-	  </div>
-	</div>
+  <div id="changePassword" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content modal-style">
+        <div class="outer-reset">
+          <button type="button" class="close pull-right" style="width: 20px;" data-dismiss="modal">&times;</button>
+          <div class="inner-reset">
+            <i class="fa fa-warning fa-7x" style="color: white"></i>
+          </div>
+        </div>
+        <div class="modal-body">
+          <h4 style="text-align: center;"><b>Please change default password to protect your account !</b></h4>
+            <a href="{{url('/profile_user')}}#changePassword">
+              <span class="btn btn-info btn-block" style="border-radius: 24px">Change Password</span>
+            </a>
+          <span data-dismiss="modal" style="cursor: pointer;">
+            <h5 class="text-center" style="color: #00acd6">Skip Now</h5>
+          </span>
+        </div>
+        <div class="modal-footer">
+          <p class="text-center">©SIMS - 2023</p>              
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 @endsection
 @section('scriptImport')
@@ -432,7 +506,7 @@ Dashboard
     initiateSmallBox(moment().year(),"initiate")
   });
 
-   function startTime() {
+  function startTime() {
       var today = new Date();
       var time = moment(today).format('MMMM Do YYYY, h:mm:ss a');
       var h = today.getHours();
@@ -534,83 +608,140 @@ Dashboard
     // localStorage.setItem('status_lead',url.split('/')[1])
   }
 
-  function initiateTopWinTer(year,status){
+  function initiateTopWinTer(year, status) {
     $.ajax({
-      url:"{{url('/getTopWinSipTer')}}?year="+year,
-      type:"GET",
-      success:function(result){
-        $("#tbody-table-sip-ter").empty()
-        var append = ""
-        var no = 1
+      url: "{{url('/getTopWinSipTer')}}?year=" + year,
+      type: "GET",
+      success: function(result) {
+        $("#tbody-table-sip-ter").empty();
+        var append = "";
+        var no = 1;
 
-        $.each(result, function(key, value){
-          append = append + '<tr>'
-            append = append + '<td>'+ no++ +'</td>'
-            if ("{{Auth::User()->id_territory}}" == value.id_territory) {
-              append = append + '<td>'+value.name+'</td>'
-              // append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
-            }else{
-              append = append + '<td>'+value.name+'</td>'
-            }
-            append = append + '<td align="right">'
-            append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
-            append = append + '</td>'
-            append = append + '<td><center>('+value.leads+')</center></td>'
-          append = append + '</tr>'
-        })
+        $.each(result, function(territory, dataArray) {
+          $.each(dataArray, function(index, data) {
+            append += '<tr>';
+            append += '<td>' + no++ + '</td>';
+            append += '<td>' + data.id_territory + '</td>';
+            append += '<td align="right"><i>' + new Intl.NumberFormat('id').format(data.sum_amounts) + '</i></td>';
+            append += '<td><center>(' + data.leads_total + ')</center></td>';
+            append += '</tr>';
 
-        $("#tbody-table-sip-ter").html(append)
-      }
-    })
-  }
-
-  function initiateTopWinEachTer(year,status){
-    $.ajax({
-      url:"{{url('/getTopWinSipTer')}}?year="+year,
-      type:"GET",
-      success:function(result){
-        $("#table-win-project-territory").empty()
-        var append = "",
-        no = 1,
-        territory = ""
-
-        $.each(result, function(key, value){
-          $.each(value, function(key, value){
-            if(value.id_territory == territory){
-              append = append + '<tr>'
-                append = append + '<td>'+ no++ +'</td>'
-                append = append + '<td>'+value.name+'</td>'
-                // append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
-                append = append + '<td align="right">'
-                append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices)+'</i>'
-                append = append + '</td>'
-                append = append + '<td><center>('+value.leads+')</center></td>'
-              append = append + '</tr>'
-            }else{
-                territory = value.id_territory
-                append = append + '<tr style="background-color:dodgerblue;color: white;">'
-                    append = append + '<td colspan="2">'+ value.id_territory +'</td>'
-                    append = append + '<td align="right">Rp.<i>'+ new Intl.NumberFormat('id').format(value.sum_total)+'</i></td>'
-                    append = append + '<td style="text-align:center;">'+value.leads_total+'</td>'
-                append = append + '</tr>'
-              if(value.id_territory != "TOTAL"){
-                append = append + '<tr>'
-                  append = append + '<td>'+ no++ +'</td>'
-                  append = append + '<td>'+value.name+'</td>'
-                  // append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
-                  append = append + '<td align="right">'
-                  append = append + '<i>'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
-                  append = append + '</td>'
-                  append = append + '<td><center>('+value.leads+')</center></td>'
-                append = append + '</tr>'
-              }
-            }
+            $.each(data.details, function(detailKey, detailValue) {
+              append += '<tr>';
+              append += '<td colspan="2" style="padding-left: 20px;">' + detailValue.name + '</td>';
+              append += '<td align="right">' + new Intl.NumberFormat('id').format(detailValue.deal_prices) + '</td>';
+              append += '<td><center>' + detailValue.leads + '</center></td>';
+              append += '</tr>';
+            });
           });
         });
-        $("#table-win-project-territory").html(append)
+
+        $("#tbody-table-sip-ter").html(append);
       }
-    })
+    });
   }
+
+  function initiateTopWinEachTerNonDetail(year, status) {
+    $.ajax({
+      url: "{{url('/getTopWinSipTerNonDetail')}}?year=" + year,
+      type: "GET",
+      success: function(result) {
+        $("#table-win-project-territory-non-detail").empty();
+        var append = "";
+        var no = 1;
+
+        $.each(result, function(key, value) {
+          
+            append += '<tr style="background-color:dodgerblue;color: white;">';
+            append += '<td>' + no++ + '</td>';
+            append += '<td>' + key + '</td>';
+            append += '<td align="right"><i>' + new Intl.NumberFormat('id').format(value[0].sum_amounts) + '</i></td>';
+            append += '<td><center>(' + value[0].leads_total + ')</center></td>';
+            append += '</tr>';
+
+            append += '<tr>';
+            append += '<td colspan="4" class="hiddenRow">';
+            append += '<div id="details-' + key.replace(/\s+/g, '-') + '" class="collapse">';
+
+            append += '<table class="table table-condensed">';
+            append += '<thead>';
+            append += '<tr>';
+            append += '<th>Name</th>';
+            append += '<th>Total Amount</th>';
+            append += '<th>Total Leads</th>';
+            append += '</tr>';
+            append += '</thead>';
+            append += '</table>';
+            append += '</div>';
+            append += '</td>';
+            append += '</tr>';
+        });
+
+        $("#table-win-project-territory-non-detail").html(append);
+      }
+    });
+  }
+
+  function initiateTopWinEachTer(year, status) {
+    $.ajax({
+      url: "{{url('/getTopWinSipTer')}}?year=" + year,
+      type: "GET",
+      success: function(result) {
+        $("#table-win-project-territory").empty();
+        var append = "";
+        var no = 1;
+
+        $.each(result, function(key, value) {
+          if (key === "TOTAL") {
+            append += '<tr>';
+            append += '<td>' + no++ + '</td>';
+            append += '<td>' + key + '</td>';
+            append += '<td align="right"><i>' + new Intl.NumberFormat('id').format(value[0].sum_amounts) + '</i></td>';
+            append += '<td><center>(' + value[0].leads_total + ')</center></td>';
+            append += '</tr>';
+          } else {
+            append += '<tr data-toggle="collapse" style="background-color:dodgerblue;color: white;" data-target="#details-' + key.replace(/\s+/g, '-') + '" class="accordion-toggle">';
+            append += '<td>' + no++ + '</td>';
+            append += '<td>' + key + '</td>';
+            append += '<td align="right"><i>' + new Intl.NumberFormat('id').format(value[0].sum_amounts) + '</i></td>';
+            append += '<td><center>(' + value[0].leads_total + ')</center></td>';
+            append += '</tr>';
+
+            append += '<tr>';
+            append += '<td colspan="4" class="hiddenRow">';
+            append += '<div id="details-' + key.replace(/\s+/g, '-') + '" class="collapse">';
+
+            append += '<table class="table table-condensed">';
+            append += '<thead>';
+            append += '<tr>';
+            append += '<th>Name</th>';
+            append += '<th>Total Amount</th>';
+            append += '<th>Total Leads</th>';
+            append += '</tr>';
+            append += '</thead>';
+            append += '<tbody>';
+
+            $.each(value[0].details, function(detailKey, detailValue) {
+              append += '<tr>';
+              append += '<td>' + detailValue.name + '</td>';
+              append += '<td align="right">' + new Intl.NumberFormat('id').format(detailValue.deal_prices) + '</td>';
+              append += '<td><center>' + detailValue.leads + '</center></td>';
+              append += '</tr>';
+            });
+
+            append += '</tbody>';
+            append += '</table>';
+            append += '</div>';
+            append += '</td>';
+            append += '</tr>';
+          }
+        });
+
+        $("#table-win-project-territory").html(append);
+      }
+    });
+  }
+
 
   // initiateTableSipWin(moment().year())
   function initiateTableSipWin(year){
@@ -1166,6 +1297,11 @@ Dashboard
 
         if (accesable.includes('salesWinTerritory')) {
           initiateTopWinTer(year,"initiate")
+          // initiateTopWinTer(moment().year(),"initiate")
+        }
+
+        if (accesable.includes('BoxTopWinTerritoryNonDetail')) {
+          initiateTopWinEachTerNonDetail(year,"initiate")
           // initiateTopWinTer(moment().year(),"initiate")
         }
 

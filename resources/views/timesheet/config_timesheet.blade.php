@@ -256,10 +256,8 @@
 @section('script')
   <script type="text/javascript">
     var accesable = @json($feature_item);
-    console.log(accesable)
     accesable.forEach(function(item,index){
       $("#" + item).show()
-      console.log(item)
     })
 
     $("#tbConfDefTask").DataTable({
@@ -566,7 +564,6 @@
           }
 
           if (accesable.includes('btnAddConfig') == false) {
-            console.log("woyyyy")
             $('.config-container').find('.box-add-config').find('select').prop('disabled',true)
             $("#selectLock").prop("disabled",true)
           }
@@ -709,7 +706,6 @@
             placeholder:"Select PIC",
             data:result,
         }).on('change', function() {
-          console.log($(this).val())
           getAllPid($(this).val())
         })
       }
@@ -719,7 +715,6 @@
       placeholder:"Select Assign For",
     }).on('select2:select', function (e) {
       var data = e.params.data;
-      console.log(data);
       if (data.id == 'All') {
         $("#selectPICAssign").prop("disabled",true)
         $("#selectPICAssign").next().next().hide()

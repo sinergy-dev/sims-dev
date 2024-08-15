@@ -24,6 +24,7 @@ use App\PMOIssue;
 use App\PMOProgressReport;
 use App\PMOProgressDisti;
 use App\PMOFinalReport;
+use App\SLAProject;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -149,7 +150,7 @@ class PMProjectController extends Controller
   //       if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
   //        $data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array','type_project_array']);
   //           // $data = PMO::get();
-  //       } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
+  //       } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
   //        $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
         //      ->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
         //      ->get()->makeHidden(['type_project_array','phase']);
@@ -179,7 +180,7 @@ class PMProjectController extends Controller
 
         if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager' || $cek_role->name == 'Operations Director' || $cek_role->name == 'VP Product Management & Development Solution') {
             $data = $data->orderBy('tb_pmo.id','desc');
-        } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
+        } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
             $data = $data->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
                         $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
                     })
@@ -1280,33 +1281,9 @@ class PMProjectController extends Controller
         // }
     }
 
-    public function updateProjectCharter(Request $request)
+    public function updateDocProjectCharter(Request $request)
     {
         $update = PMOProjectCharter::where('id_project', $request->id_pmo)->first();
-        $update->status = 'New';
-        $update->save();
-
-        $cek_sign = PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->first();
-
-        if (PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->exists()) {
-            PMOActivity::where('id', $cek_sign->id)->delete(); 
-        }
-
-        $store_activity = new PMOActivity();
-        $store_activity->id_project = $request['id_pmo'];
-        
-        $store_activity->operator = Auth::User()->name;
-        if (PMOActivity::where('id_project', $request['id_pmo'])->exists()) {
-            $store_activity->phase = 'Update Project Charter';
-            $store_activity->activity = 'Update Project Charter';
-        } else {
-            $store_activity->phase = 'New Project Charter';
-            $store_activity->activity = 'Create New Project Charter';
-        }
-        
-        $store_activity->date_time = Carbon::now()->toDateTimeString();
-        $store_activity->save();
-
         $get_id_pmo = PMO::where('id', $request->id_pmo)->first();
         $directory = "PMO/";
 
@@ -1523,9 +1500,79 @@ class PMProjectController extends Controller
             }
         }
 
+        // $this->uploadPdfPC($request->id_pmo,$approver);
+
+    }
+
+    public function updateSLAProject(Request $request)
+    {
+        $update = PMOProjectCharter::where('id_project', $request->id_pmo)->first();
+        $update->status = 'New';
+        $update->save();
+
+        $cek_sign = PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->first();
+
+        if (PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->exists()) {
+            PMOActivity::where('id', $cek_sign->id)->delete(); 
+        }
+
+        $store_activity = new PMOActivity();
+        $store_activity->id_project = $request['id_pmo'];
+        
+        $store_activity->operator = Auth::User()->name;
+        if (PMOActivity::where('id_project', $request['id_pmo'])->exists()) {
+            $store_activity->phase = 'Update Project Charter';
+            $store_activity->activity = 'Update Project Charter';
+        } else {
+            $store_activity->phase = 'New Project Charter';
+            $store_activity->activity = 'Create New Project Charter';
+        }
+        
+        $store_activity->date_time = Carbon::now()->toDateTimeString();
+        $store_activity->save();
+
         $datas = PMO::where('id',$request->id_pmo)->first();
 
-        // return $datas->project_id;
+        $store = new SLAProject();
+        $store->pid = $datas->project_id;
+        $cekSlaStandard = SLAProject::where('pid','Standard')->first();
+        $store->date_add = Carbon::now()->toDateTimeString();
+
+        if ($request->isSlaValue == 'No') {
+            $store->sla_response = $cekSlaStandard->sla_response;
+            $store->sla_resolution_critical = $cekSlaStandard->sla_resolution_critical;
+            $store->sla_resolution_major = $cekSlaStandard->sla_resolution_major;
+            $store->sla_resolution_moderate = $cekSlaStandard->sla_resolution_moderate;
+            $store->sla_resolution_minor = $cekSlaStandard->sla_resolution_minor;
+        } else {
+            if (isset($request->slaResponseTime)) {
+                $store->sla_response = $request->slaResponseTime;
+            }else {
+                $store->sla_response = $cekSlaStandard->sla_response;
+            }
+            if (isset($request->slaResolutionTimeCritical)) {
+                $store->sla_resolution_critical = $request->slaResolutionTimeCritical;
+            }else {
+                $store->sla_resolution_critical = $cekSlaStandard->sla_resolution_critical;
+            }
+            if (isset($request->slaResolutionTimeMajor)) {
+                $store->sla_resolution_major = $request->slaResolutionTimeMajor;
+            }else {
+                $store->sla_resolution_major = $cekSlaStandard->sla_resolution_major;
+            }
+            if (isset($request->slaResolutionTimeModerate)) {
+                $store->sla_resolution_moderate = $request->slaResolutionTimeModerate;
+            }else {
+                $store->sla_resolution_moderate = $cekSlaStandard->sla_resolution_moderate;
+            }
+            if (isset($request->slaResolutionTimeMinor)) {
+                $store->sla_resolution_minor = $request->slaResolutionTimeMinor;
+            }else {
+                $store->sla_resolution_minor = $cekSlaStandard->sla_resolution_minor;
+            }
+        }
+
+        $store->save();
 
         if ($update->project_type == 'supply_only') {
             $project_type = 'Supply Only';
@@ -1535,13 +1582,8 @@ class PMProjectController extends Controller
             $project_type = 'Maintenance & Managed Service';
         }
 
-        // if ($update->project_pm != null) {
-            $user_pm = $update->project_pm;
-
-        // }else{
-            $user_pc = $update->project_pc;
-
-        // }
+        $user_pm = $update->project_pm;
+        $user_pc = $update->project_pc;
 
         $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
 
@@ -1567,9 +1609,6 @@ class PMProjectController extends Controller
         Mail::to($email_user)->send($mail);
 
         $approver = '';
-
-        // $this->uploadPdfPC($request->id_pmo,$approver);
-
     }
 
     public function getSignProjectCharter(Request $request)
@@ -1696,7 +1735,7 @@ class PMProjectController extends Controller
         $store_activity->date_time = Carbon::now()->toDateTimeString();
         $store_activity->save();
 
-        if ($cek_role->group == 'sales' || $cek_role->name == 'Operations Director') {
+        if ($cek_role->group == 'Sales' || $cek_role->name == 'Operations Director') {
             $update->status = 'Done';
             $subject_email = 'Approve Project Charter';
             $subject = 'Your project is available to run,';

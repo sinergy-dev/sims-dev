@@ -6,6 +6,8 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\PRDraft;
+
 
 use DB;
 use Auth;
@@ -95,9 +97,20 @@ class Controller extends BaseController
 				$role_user = $role_user->role_id;
 			}
 
+			$authUserName = Auth::user()->name;
+			$allPRs = PRDraft::where('status', 'CIRCULAR')->get();
+
+			$countPRByCircularBy = 0;
+			if ($allPRs->isNotEmpty()) {
+				$countPRByCircularBy = $allPRs->filter(function ($pr) use ($authUserName) {
+					return $pr->circularby === $authUserName;
+				})->count();
+			}
+
 			return collect([
 				'userRole' => DB::table('roles')->where('id','=',$role_user)->first(),
-				'listMenu' => $getChildAll
+				'listMenu' => $getChildAll, 
+				'countPRByCircularBy' => $countPRByCircularBy
 			]);
 	    		// code...
     }
