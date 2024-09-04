@@ -17,7 +17,8 @@ class Ticketing extends Model
 	protected $fillable = [
 		'id_ticket',
 		'id_client',
-		'operator'
+		'operator',
+		'id_client_pid'
 	];
 
 	public function detail_ticket(){

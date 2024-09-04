@@ -100,7 +100,7 @@
 		| Inlingua Building 2nd Floor |<br>
 		| Jl. Puri Raya, Blok A 2/3 No. 33-35 | Puri Indah |<br>
 		| Kembangan | Jakarta 11610 – Indonesia |<br>
-		| Mobile | {{Auth::user()->phone}} |<br>
+		| Mobile | 6285810557307 |<br>
 		| Phone | 021 - 58355599 |<br>
 		----------------------------------------<br>
 	</p>
