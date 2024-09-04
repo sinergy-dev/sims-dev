@@ -31,9 +31,9 @@ Route::get('testBladeNew','TestController@testBladeNew');
 Route::get('testMailTimesheet','TestController@testMailTimesheet');
 Route::get('testGetWorkDays','PresenceController@getWorkDaysRoute');
 
-Route::get('/testEmailTrap',function(){
-	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
-});
+// Route::get('/testEmailTrap',function(){
+// 	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
+// });
 
 Route::get('/create-storage-link', function () {
     Artisan::call('storage:link');
@@ -1246,6 +1246,17 @@ Route::group(['middleware' => ['auth']], function () {
 	// Ticketing
 	Route::get('/ticketing','TicketingController@index');
 	Route::get('/ticketing/getDashboard','TicketingController@getDashboard');
+	Route::get('/getDashboardByFilter','TicketingController@getDashboardByFilter');
+	Route::get('/getDashboardTicketing','TestController@getDashboardTicketing');
+	Route::get('/ticketing/getPid','TicketingController@getPid');
+	Route::get('/getPerformanceAll','TestController@getPerformanceAll');
+	Route::get('/getPerformanceByFilter','TestController@getPerformanceByFilter');
+	Route::get('/getPerformanceByNeedAttention','TicketingController@getPerformanceByNeedAttention');
+	Route::get('/getDashboardNeedAttention','TicketingController@getDashboardNeedAttention');
+	Route::get('/getDashboardByActivity','TicketingController@getDashboardByActivity');
+	Route::get('/getDashboardResponse','TicketingController@getDashboardResponse');
+	Route::get('/getDashboardResolution','TicketingController@getDashboardResolution');
+
 
 	Route::get('/ticketing/create/getParameter','TicketingController@getCreateParameter');
 	Route::get('/ticketing/create/getReserveIdTicket','TicketingController@getReserveIdTicket');
@@ -1260,9 +1271,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/create/getSwitchDetail','TicketingController@getSwitchDetail');
 	Route::get('/ticketing/create/getPidByPic','TicketingController@getPidByPic');
 	Route::get('/ticketing/create/getAssetByPid','TicketingController@getAssetByPid');
+	Route::get('/ticketing/create/getAssetByClient','TicketingController@getAssetByClient');
 	Route::get('/ticketing/create/getDetailAsset','TicketingController@getDetailAsset');
 	Route::get('/ticketing/create/getCategorybyClient','TicketingController@getCategorybyClient');
-
+	Route::get('/ticketing/create/getCategorybyAsset','TicketingController@getCategorybyAsset');
+	
 	Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
 	Route::get('/ticketing/mail/getEmailTemplate','TicketingController@getEmailTemplate');
 	Route::get('/ticketing/mail/getOpenMailTemplate','TicketingController@getOpenMailTemplate');
@@ -1280,8 +1293,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/getPerformanceByTicket','TicketingController@getPerformanceByTicket');
 	Route::get('/ticketing/getPerformanceBySeverity','TicketingController@getPerformanceBySeverity');
 	Route::get('/ticketing/getPerformanceByFilter','TicketingController@getPerformanceByFilter');
+	Route::get('/ticketing/getPerformanceByActivity','TicketingController@getPerformanceByActivity');
 
 	Route::get('/ticketing/setUpdateTicket','TicketingController@setUpdateTicket');
+	Route::post('/ticketing/updateTicketPendingBeforeClose','TicketingController@updateTicketPendingBeforeClose');
 	Route::get('/ticketing/mail/getOnProgressMailTemplate','TicketingController@getOnProgressMailTemplate');
 
 	Route::get('/ticketing/mail/getCancelMailTemplate','TicketingController@getCancelMailTemplate');
@@ -1307,6 +1322,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/ticketing/setting/setSettingClient' , 'TicketingController@setSettingClient');
 	Route::post('/ticketing/setting/updateEmailSetting' , 'TicketingController@updateEmailSetting');
 	Route::post('/ticketing/setting/updateEmailSLM' , 'TicketingController@updateEmailSLM');
+
+	Route::get('/ticketing/setting/getSLAProject','TicketingController@getSLAProject');
 
 	Route::get('/ticketing/setting/getAllAtm', 'TicketingController@getAllAtmSetting');
 	Route::get('/ticketing/setting/getParameterAddAtm','TicketingController@getParameterAddAtm');
@@ -1337,6 +1354,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/report/new','TicketingController@getReportNew');
 	Route::get('/ticketing/report/newDeny','TicketingController@getReportNewDeny');
 	Route::get('/ticketing/report/getPidAssigned','TicketingController@getPidAssigned');
+
+	//report performance by filter
+	Route::get('/ticketing/report/performance','TicketingController@makeExportTicketPerformance');
+
 	Route::get('/changeNominal/testRequestChange','TestController@testRequestChange');
 
 	Route::get('/report_ticketing','TicketingController@getReportTicket');

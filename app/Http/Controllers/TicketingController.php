@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Str;
+use DateTime;
 
 
 use App\Ticketing;
@@ -30,6 +31,7 @@ use App\TicketingEmailSLM;
 use App\AssetManagement;
 use App\AssetManagementAssignEngineer;
 use App\TB_Contact;
+use App\SLAProject;
 
 use App\Service\TelegramService;
 
@@ -51,6 +53,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use Log;
 
 use App\RequestChange;
 
@@ -73,7 +77,7 @@ class TicketingController extends Controller
 			// ->where('situation','=',1)
 			->get();
 
-		return view('ticketing.index')
+		return view('ticketing.index_copy')
 			->with([
 				'clients' => $clients,
 				'initView' => $this->initMenuBase(),
@@ -123,6 +127,8 @@ class TicketingController extends Controller
 			$store->dear = $request->dear;
 			$store->to = $request->to;
 			$store->cc = $request->cc;
+			$store->date_add = Carbon::now()->toDateTimeString();
+			$store->operator = Auth::User()->name;
 			$store->save();
 		}
 	}
@@ -137,6 +143,8 @@ class TicketingController extends Controller
 			$store->dear = $request->dear;
 			$store->to = $request->to;
 			$store->cc = $request->cc;
+			$store->date_add = Carbon::now()->toDateTimeString();
+			$store->operator = Auth::User()->name;
 			$store->save();
 		}
 	}
@@ -176,10 +184,170 @@ class TicketingController extends Controller
 		return array("data" => $clients);
 	}
 
-	public function getDashboard() {
-		// $start = microtime(true);
+	public function getDashboardNeedAttention(Request $request)
+	{
+		$startDate = $request->start . ' 00:00:01';
+		$endDate = $request->end . ' 23:59:59';
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
 
-		$result2 = DB::table('ticketing__condition')
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
+        $occurring_ticket = DB::table('ticketing__activity')
+			->select('id_ticket','activity')
+			->whereIn('id',function ($query) {
+				$query->select(DB::raw("MAX(id) AS activity"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			->where('activity','<>','CLOSE')
+            ->where('activity','<>','CANCEL')
+            ->where('activity','<>','PENDING')
+			->get()
+			->pluck('id_ticket');
+
+		$needed = TicketingDetail::select('ticketing__detail.*')
+		    ->addSelect([
+		        'first_activity_date' => function ($query) {
+		            $query->select('date')
+		                ->from('ticketing__activity')
+		                ->whereColumn('ticketing__activity.id_ticket', 'ticketing__detail.id_ticket')
+		                ->orderBy('date', 'asc')
+		                ->limit(1);
+		        },
+		        'lastest_activity_date' => function ($query) {
+		            $query->select('date')
+		                ->from('ticketing__activity')
+		                ->whereColumn('ticketing__activity.id_ticket', 'ticketing__detail.id_ticket')
+		                ->orderBy('date', 'desc')
+		                ->limit(1);
+		        },
+		        'lastest_activity_operator' => function ($query) {
+		            $query->select('operator')
+		                ->from('ticketing__activity')
+		                ->whereColumn('ticketing__activity.id_ticket', 'ticketing__detail.id_ticket')
+		                ->orderBy('date', 'desc')
+		                ->limit(1);
+		        },
+		        'lastest_activity_activity' => function ($query) {
+		            $query->select('activity')
+		                ->from('ticketing__activity')
+		                ->whereColumn('ticketing__activity.id_ticket', 'ticketing__detail.id_ticket')
+		                ->orderBy('date', 'desc')
+		                ->limit(1);
+		        },
+		        'lastest_activity_activity' => function ($query) {
+		            $query->select('activity')
+		                ->from('ticketing__activity')
+		                ->whereColumn('ticketing__activity.id_ticket', 'ticketing__detail.id_ticket')
+		                ->orderBy('date', 'desc')
+		                ->limit(1);
+		        },
+			    ])
+			    ->whereIn('id_ticket', $occurring_ticket)
+			    ->orderByRaw('FIELD(ticketing__detail.severity, "1", "2", "3", "4") ASC');
+
+		if (isset($request->pid)) {
+		    $needed = $needed->where('pid', $request->pid);
+		} else {
+		    if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+		        $needed = $needed->whereIn('pid', $getPid)->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
+		    } elseif ($cek_role->name_role == 'Managed Service Manager') {
+		        $needed = $needed->whereIn('pid', $getPidEoS)->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
+		    } elseif ($cek_role->name_role == 'Customer Relation Manager') {
+		        $needed = $needed->whereIn('pid', $getPidCC)->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
+		    }
+		}
+
+		if (isset($request->start) && isset($request->end)) {
+		    $needed = $needed->whereRaw('ticketing__detail.reporting_time BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+		} else {
+		    $needed = $needed->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
+		}
+
+		$needed = $needed->limit(10)->get();
+
+		$needed = $needed->map(function ($ticket) {
+		    $first_activity_date = new DateTime($ticket->first_activity_date);
+		    $lastest_activity_date = new DateTime($ticket->lastest_activity_date);
+		    $now = new DateTime();
+		    $open_duration_interval = $lastest_activity_date->diff($now);
+		    $open_duration = $open_duration_interval->format('%a days, %h hours, %i minutes');
+		    $total_minutes = ($open_duration_interval->days * 24 * 60) + ($open_duration_interval->h * 60) + $open_duration_interval->i;
+
+		    return [
+		        "id" => $ticket->id,
+		        "id_ticket" => $ticket->id_ticket,
+		        "id_atm" => $ticket->id_atm,
+		        "location" => $ticket->location,
+		        "operator" => $ticket->lastest_activity_operator,
+		        "date" => $ticket->lastest_activity_date,
+		        "severity" => $ticket->severity,
+		        "activity" => $ticket->lastest_activity_activity,
+		        "first_activity_ticket" => $ticket->first_activity_date,
+		        "open_duration" => $open_duration,
+		        "total_minutes" => $total_minutes,
+		    ];
+		});
+
+		$needed = $needed->sort(function ($a, $b) {
+		    if ($a['severity'] != $b['severity']) {
+		        return $a['severity'] - $b['severity'];
+		    }
+		    return $b['total_minutes'] - $a['total_minutes'];
+		});
+
+		return ["occurring_ticket" => $needed->values()->all()];
+	}
+
+	public function getDashboardByActivity(Request $request)
+	{
+		$startDate = $request->start . ' 00:00:01';
+		$endDate = $request->end . ' 23:59:59';
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
+        $detail = DB::table('ticketing__detail')->select('id_ticket');
+
+        if (isset($request->pid)) {
+	        $detail = $detail->where('pid',$request->pid);
+        }else {
+        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        	}
+        } 
+
+        if (isset($request->start) && isset($request->end)) {
+        	$detail = $detail->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+        }else{
+        	$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        }
+
+        $detail = $detail->get()->pluck('id_ticket')->toArray();
+
+        $detailNonImplode = $detail;
+
+        $detail = implode("','", array_map('addslashes', $detail));
+        $detail = "'$detail'";
+
+        $result2 = DB::table('ticketing__condition')
 			->select('name',DB::raw("IFNULL(`ticketing_activity`.`count`,0) AS `count`"))
 			->join(DB::raw("(SELECT
 				        `activity`,
@@ -192,6 +360,9 @@ class TicketingController extends Controller
 				            MAX(`id`) AS `activity`
 				        FROM
 				            `ticketing__activity`
+				        WHERE
+		                `ticketing__activity`.`id_ticket` LIKE '%" . date('Y') . "%'
+		                 AND `ticketing__activity`.`id_ticket` IN ($detail)
 				        GROUP BY
 				            `id_ticket`
 				    )
@@ -199,130 +370,341 @@ class TicketingController extends Controller
 		    `activity`) AS `ticketing_activity`"),'ticketing_activity.activity','=','ticketing__condition.name','left')
 		    ->get()->keyBy('name');
 
-		// $result2 = DB::table('ticketing__condition')
-		// 	->select('name','id_ticket')
-		// 	->join(DB::raw("(SELECT
-		// 		        `activity`,`id_ticket`
-		// 		    FROM
-		// 		        `ticketing__activity`
-		// 		    WHERE
-		// 		        `id` IN(
-		// 		        SELECT
-		// 		            MAX(`id`) AS `activity`
-		// 		        FROM
-		// 		            `ticketing__activity`
-		// 		        GROUP BY
-		// 		            `id_ticket`
-		// 		    )) AS `ticketing_activity`"),'ticketing_activity.activity','=','ticketing__condition.name','left')
-		//     ->get()->keyBy('name');
+        $all = 0;
+        foreach ($result2 as $key => $value) {
+            $all = $all + $value->count;
+        }
 
-		// return $result2;
+        $result2 = $result2->map(function($item, $key){
+            return $item->count;
+        });
 
-		$all = 0;
-		foreach ($result2 as $key => $value) {
-			$all = $all + $value->count;
-		}
+        $result2->put("ALL",$all);
+        $result2->put("PROGRESS",$result2["ON PROGRESS"]);
+        $result2->forget("ON PROGRESS");
 
-		$result2 = $result2->map(function($item, $key){
-			return $item->count;
-		});
+        return collect(['counter_condition'=>$result2]);
+	}
 
-		$result2->put("ALL",$all);
-		$result2->put("PROGRESS",$result2["ON PROGRESS"]);
-		$result2->forget("ON PROGRESS");
-		// return $result2;
+	public function getDashboardResponse(Request $request)
+	{
+		$startDate = $request->start . ' 00:00:01';
+		$endDate = $request->end . ' 23:59:59';
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
-		// $get_client = DB::table('ticketing__client')
-		// 	->select('id','client_name','client_acronym')
-		// 	->where('situation','=','1')
-		// 	->get();
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
 
-		$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
-			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
-			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-			->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
-			->orderBy('code')
-			->groupBy('tb_contact.id_customer','code','brand_name')->get();
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
 
-		$get_client = $get_client->prepend((object)(['id' => 'INTERNAL','client_acronym' => 'INTERNAL','client_name' => 'INTERNAL']))->prepend((object)(['id' => '13','client_acronym' => 'ADMF','client_name' => 'ADMF']));
+        $detail = DB::table('ticketing__detail')->select('id_ticket');
 
-		$count_ticket_by_client = DB::table('ticketing__id')
-			->selectRaw('`ticketing__client`.`client_acronym`, COUNT(*) AS ticket_count')
-			->groupBy('ticketing__id.id_client')
-			->join('ticketing__client','ticketing__client.id','=','ticketing__id.id_client')
-			->where('ticketing__client.situation','=','1')
-			->orderBy('ticket_count','DESC')
-			->limit(10)
-			->get();
-		// return $count_ticket_by_client;
+        if (isset($request->pid)) {
+	        $detail = $detail->where('pid',$request->pid);
+        }else {
+        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        	}
+        } 
 
-		$needed = DB::table('ticketing__activity')
-			->select('ticketing__detail.id', 'ticketing__detail.id_ticket', 'ticketing__detail.id_atm', 'ticketing__detail.location', 'ticketing__activity.operator', 'ticketing__activity.date','ticketing__detail.severity')
-			->join('ticketing__detail','ticketing__detail.id_ticket','=','ticketing__activity.id_ticket')
-			->whereIn('ticketing__activity.id', function ($query){
-					$query->selectRaw("MAX(`ticketing__activity`.`id`) AS `activity`")
-						->from('ticketing__activity')
-						->groupBy('id_ticket');
-				})
-			->where('activity','<>','CLOSE')
-			->where('activity','<>','CANCEL')
-			->orderBy('ticketing__detail.severity','ASC')
-			->limit(10)
-			->get();
-		// return $needed;
+        if (isset($request->start) && isset($request->end)) {
+        	$detail = $detail->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+        }else{
+        	$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        }
 
-		$severity_count = DB::table('ticketing__detail')
-			->select('ticketing__severity.name',DB::raw('COUNT(*) as count'))
-			->join('ticketing__severity','ticketing__severity.id','=','ticketing__detail.severity')
-			->where('ticketing__detail.severity','<>',0)
-			->groupBy('ticketing__detail.severity')
-			->get()
-			->keyBy('name');
+        $detail = $detail->get()->pluck('id_ticket')->toArray();
 
-		$severity_count = $severity_count->map(function($item, $key){
-			return $item->count;
-		});
+        $detailNonImplode = $detail;
 
-		$severity_label = TicketingSeverity::select('id','name')->orderBy('id','DESC')->get();
+		$occurring_ticket = DB::table('ticketing__activity as ta')
+		    ->join(DB::raw('(SELECT MAX(id) as max_id FROM ticketing__activity GROUP BY id_ticket) as max_activity'), 
+		           'ta.id', '=', 'max_activity.max_id')
+		    ->where('ta.activity', 'CLOSE')
+		    ->whereIn('ta.id_ticket', $detailNonImplode)
+		    ->where('ta.id_ticket', 'like', '%2024')
+		    ->pluck('ta.id_ticket');
 
 
-		$occurring_ticket = DB::table('ticketing__activity')
-		    ->select('id_ticket', 'activity')
-		    ->whereIn('id', function ($query) {
-		        $query->select(DB::raw("MAX(id) AS activity"))
-		            ->from('ticketing__activity')
-		            ->groupBy('id_ticket');
-		    })
-		    ->where('activity', '<>', 'CANCEL')
-		    ->where('activity', '<>', 'CLOSE')
+        $tickets = TicketingDetail::with([
+            'first_activity_ticket:id_ticket,date,operator',
+            'lastest_activity_ticket',
+            'id_detail:id_ticket,id' 
+        ])
+        ->whereIn('ticketing__detail.id_ticket', $occurring_ticket)
+        ->orderBy('ticketing__detail.id', 'DESC')->get();
+
+        // $resolution_time_summary = $this->calculateResolutionTime(date('Y'));
+
+        $statusSequence = DB::table('ticketing__activity')
+            ->select('id_ticket', 'activity', 'date')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY id_ticket ORDER BY date) as seq_num');
+
+        $pairedProgressPending = DB::table(DB::raw("({$statusSequence->toSql()}) as ppp"))
+        ->select('ppp.id_ticket', 'ppp.date as progress_time', DB::raw('MIN(n.date) as pending_time'))
+        ->leftJoin(DB::raw("({$statusSequence->toSql()}) as n"), function ($join) {
+            $join->on('ppp.id_ticket', '=', 'n.id_ticket')
+                 ->where('n.activity', 'PENDING')
+                 ->whereColumn('n.seq_num', '>', 'ppp.seq_num');
+        })
+        ->where('ppp.activity', 'ON PROGRESS')
+        ->groupBy('ppp.id_ticket', 'ppp.date');
+
+        $progressToClose = DB::table('ticketing__activity as ptc')
+            ->select('id_ticket', DB::raw('MIN(date) as close_time'))
+            ->where('activity', 'CLOSE')
+            ->groupBy('id_ticket');
+
+        $openToProgress = DB::table('ticketing__activity as opt')
+            ->select(
+                'id_ticket',
+                DB::raw('MIN(CASE WHEN activity = "ON PROGRESS" THEN date END) as first_on_progress_time'),
+                DB::raw('MIN(CASE WHEN activity = "OPEN" THEN date END) as open_time')
+            )
+            ->groupBy('id_ticket');
+
+        $resolution_time = DB::table('ticketing__activity as pppp')
+            ->select(
+                'pppp.id_ticket',
+                DB::raw('TIMESTAMPDIFF(SECOND, progress_time, pending_time) as progress_to_pending_seconds'),
+                DB::raw('CASE WHEN pending_time IS NOT NULL THEN NULL ELSE TIMESTAMPDIFF(SECOND, progress_time, close_time) END as progress_to_close_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, opt.open_time, opt.first_on_progress_time) as open_to_progress_seconds')
+            )
+            ->joinSub($pairedProgressPending, 'ppp', 'pppp.id_ticket', '=', 'ppp.id_ticket')
+            ->joinSub($progressToClose, 'ptc', 'pppp.id_ticket', '=', 'ptc.id_ticket')
+            ->joinSub($openToProgress,'opt', 'pppp.id_ticket', '=', 'opt.id_ticket')
+            ->orderBy('pppp.id_ticket')
+            ->whereIn('pppp.id_ticket',$tickets)
+            ->groupBy('pppp.id_ticket','progress_to_close_seconds','progress_to_pending_seconds','open_to_progress_seconds');
+
+        $resolution_time_summary = DB::table($resolution_time, 'resolution')
+            ->select(
+                'resolution.id_ticket',
+                DB::raw('SUM(CASE WHEN resolution.progress_to_pending_seconds IS NOT NULL THEN resolution.progress_to_pending_seconds ELSE 0 END) as total_progress_to_pending_seconds'),
+                DB::raw('SUM(CASE WHEN resolution.progress_to_close_seconds IS NOT NULL THEN resolution.progress_to_close_seconds ELSE 0 END) as total_progress_to_close_seconds'),
+                DB::raw('MAX(resolution.open_to_progress_seconds) as last_open_to_progress_seconds')
+            )
+            ->groupBy('resolution.id_ticket')
+            ->orderBy('resolution.id_ticket')
+            ->get();
+
+        $tickets->each(function ($ticket) use ($resolution_time_summary) {
+            $resolutionData = $resolution_time_summary->firstWhere('id_ticket', $ticket->id_ticket);
+
+            if ($resolutionData) {
+                $ticket->progress_to_pending_seconds = $resolutionData->total_progress_to_pending_seconds;
+                $ticket->progress_to_close_seconds = $resolutionData->total_progress_to_close_seconds;
+                $ticket->open_to_progress_seconds = $resolutionData->last_open_to_progress_seconds;
+            } else {
+                $ticket->progress_to_pending_seconds = null;
+                $ticket->progress_to_close_seconds = null;
+                $ticket->open_to_progress_seconds = null;
+            }
+        });
+
+        $SLAProjects = SLAProject::whereIn('pid', $tickets->pluck('pid')->unique()->toArray())
+		    ->orWhere('pid', 'Standard')
 		    ->get()
-		    ->pluck('id_ticket');
-
-		$tickets = TicketingDetail::with([
-		    'first_activity_ticket:id_ticket,date,operator',
-		    'lastest_activity_ticket',
-		    'id_detail:id_ticket,id' 
-		])
-		->join('ticketing__id','ticketing__id.id_ticket','ticketing__detail.id_ticket')
-		->join('ticketing__client','ticketing__client.id','=','ticketing__id.id_client')
-		->whereIn('ticketing__detail.id_ticket', $occurring_ticket)
-		->orderBy('ticketing__detail.id', 'DESC')
-		->get();
-
-
-		$currentMonth = date('n'); 
-		$currentYear = date('Y');
-		$totalDaysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
-		$totalHoursInMonth = 30 * 24; // Total hours in the current month
-
-		// Initialize arrays for tracking SLA metrics by client and month
-		$slaMetricsByClient = [];
+		    ->keyBy('pid');
 
 		foreach ($tickets as $ticket) {
-			// return $ticket;
-		    $client = $ticket->client_acronym; 
-		    $month = Carbon::parse($ticket->created_at)->format('Y-m'); 
-		   	
+			$sla = $SLAProjects->get($ticket->pid) ?: $SLAProjects->get('Standard');
+
+			if ($ticket->severity == '1') {
+		        $ticket->sla_response = $sla->sla_response;
+		    } elseif ($ticket->severity == '2') {
+		        $ticket->sla_response = $sla->sla_response;
+		    } elseif ($ticket->severity == '3') {
+		        $ticket->sla_response = $sla->sla_response;
+		    } else {
+		        $ticket->sla_response = $sla->sla_response;
+		    }
+
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = strtotime($firstActivity->date) - strtotime($ticket->reporting_time);
+		        $responseTimeInHours = $responseTimeInSeconds / 3600;
+
+		        $ticket->highlight_sla_response = $responseTimeInHours <= $ticket->sla_response ? 'Comply' : 'Not-Comply';
+		    } else {
+		        $ticket->highlight_sla_response = 'Not-Comply';
+		    }
+		}
+
+        $pids = $tickets->groupBy('pid');
+
+        $resultCountResponse = $pids->map(function ($tickets, $pid) {
+		    $complyCount = $tickets->where('highlight_sla_response', 'Comply')->count();
+		    $notComplyCount = $tickets->where('highlight_sla_response', 'Not-Comply')->count();
+
+		    return [
+		        'pid' => $pid,
+		        'comply' => $complyCount,
+		        'not_comply' => $notComplyCount,
+		        'total' => $complyCount + $notComplyCount
+		    ];
+		})->sortByDesc('not_comply')->values()->all();
+
+        return array("data"=>$resultCountResponse);
+	}
+
+	public function getDashboardResolution(Request $request)
+	{
+		$startDate = $request->start . ' 00:00:01';
+		$endDate = $request->end . ' 23:59:59';
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
+        $detail = DB::table('ticketing__detail')->select('id_ticket');
+
+        if (isset($request->pid)) {
+	        $detail = $detail->where('pid',$request->pid);
+        }else {
+        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        	}
+        } 
+
+        if (isset($request->start) && isset($request->end)) {
+        	$detail = $detail->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+        }else{
+        	$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        }
+
+        $detail = $detail->get()->pluck('id_ticket')->toArray();
+
+        // $detailNonImplode = $detail;
+
+		$occurring_ticket = DB::table('ticketing__activity as ta')
+		    ->join(DB::raw('(SELECT MAX(id) as max_id FROM ticketing__activity GROUP BY id_ticket) as max_activity'), 
+		           'ta.id', '=', 'max_activity.max_id')
+		    ->where('ta.activity', 'CLOSE')
+		    ->whereIn('ta.id_ticket', $detail)
+		    ->where('ta.id_ticket', 'like', '%2024')
+		    ->pluck('ta.id_ticket');
+
+        $tickets = TicketingDetail::with([
+            'first_activity_ticket:id_ticket,date,operator',
+            'lastest_activity_ticket',
+            'id_detail:id_ticket,id' 
+        ])
+        ->whereIn('ticketing__detail.id_ticket', $occurring_ticket)
+        ->orderBy('ticketing__detail.id', 'DESC')->get();
+
+        // $resolution_time_summary = $this->calculateResolutionTime(date('Y'));
+
+        $statusSequence = DB::table('ticketing__activity')
+            ->select('id_ticket', 'activity', 'date')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY id_ticket ORDER BY date) as seq_num');
+
+        $pairedProgressPending = DB::table(DB::raw("({$statusSequence->toSql()}) as ppp"))
+        ->select('ppp.id_ticket', 'ppp.date as progress_time', DB::raw('MIN(n.date) as pending_time'))
+        ->leftJoin(DB::raw("({$statusSequence->toSql()}) as n"), function ($join) {
+            $join->on('ppp.id_ticket', '=', 'n.id_ticket')
+                 ->where('n.activity', 'PENDING')
+                 ->whereColumn('n.seq_num', '>', 'ppp.seq_num');
+        })
+        ->where('ppp.activity', 'ON PROGRESS')
+        ->groupBy('ppp.id_ticket', 'ppp.date');
+
+        $progressToClose = DB::table('ticketing__activity as ptc')
+            ->select('id_ticket', DB::raw('MIN(date) as close_time'))
+            ->where('activity', 'CLOSE')
+            ->groupBy('id_ticket');
+
+        $openToProgress = DB::table('ticketing__activity as opt')
+            ->select(
+                'id_ticket',
+                DB::raw('MIN(CASE WHEN activity = "ON PROGRESS" THEN date END) as first_on_progress_time'),
+                DB::raw('MIN(CASE WHEN activity = "OPEN" THEN date END) as open_time')
+            )
+            ->groupBy('id_ticket');
+
+        $resolution_time = DB::table('ticketing__activity as pppp')
+            ->select(
+                'pppp.id_ticket',
+                DB::raw('TIMESTAMPDIFF(SECOND, progress_time, pending_time) as progress_to_pending_seconds'),
+                DB::raw('CASE WHEN pending_time IS NOT NULL THEN NULL ELSE TIMESTAMPDIFF(SECOND, progress_time, close_time) END as progress_to_close_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, opt.open_time, opt.first_on_progress_time) as open_to_progress_seconds')
+            )
+            ->joinSub($pairedProgressPending, 'ppp', 'pppp.id_ticket', '=', 'ppp.id_ticket')
+            ->joinSub($progressToClose, 'ptc', 'pppp.id_ticket', '=', 'ptc.id_ticket')
+            ->joinSub($openToProgress,'opt', 'pppp.id_ticket', '=', 'opt.id_ticket')
+            ->orderBy('pppp.id_ticket')
+            // ->where('pppp.id_ticket','like','%'.date('Y'))
+            ->whereIn('pppp.id_ticket',$tickets)
+            ->groupBy('pppp.id_ticket','progress_to_close_seconds','progress_to_pending_seconds','open_to_progress_seconds');
+
+        $resolution_time_summary = DB::table($resolution_time, 'resolution')
+            ->select(
+                'resolution.id_ticket',
+                DB::raw('SUM(CASE WHEN resolution.progress_to_pending_seconds IS NOT NULL THEN resolution.progress_to_pending_seconds ELSE 0 END) as total_progress_to_pending_seconds'),
+                DB::raw('SUM(CASE WHEN resolution.progress_to_close_seconds IS NOT NULL THEN resolution.progress_to_close_seconds ELSE 0 END) as total_progress_to_close_seconds'),
+                DB::raw('MAX(resolution.open_to_progress_seconds) as last_open_to_progress_seconds')
+            )
+            ->groupBy('resolution.id_ticket')
+            ->orderBy('resolution.id_ticket')
+            ->get();
+
+        $tickets->each(function ($ticket) use ($resolution_time_summary) {
+            $resolutionData = $resolution_time_summary->firstWhere('id_ticket', $ticket->id_ticket);
+
+            if ($resolutionData) {
+                $ticket->progress_to_pending_seconds = $resolutionData->total_progress_to_pending_seconds;
+                $ticket->progress_to_close_seconds = $resolutionData->total_progress_to_close_seconds;
+                $ticket->open_to_progress_seconds = $resolutionData->last_open_to_progress_seconds;
+            } else {
+                $ticket->progress_to_pending_seconds = null;
+                $ticket->progress_to_close_seconds = null;
+                $ticket->open_to_progress_seconds = null;
+            }
+        });
+
+		foreach ($tickets as $ticket) {
+			if ($ticket->pid == '') {
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} elseif(isset($ticket->pid)){
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} else {
+				$cekSla = SLAProject::where('pid',$ticket->pid)->first();
+			}
+
+			if ($ticket->severity == '1') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_critical as sla_resolution')->first();
+			} elseif ($ticket->severity == '2') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_major as sla_resolution')->first();
+			} elseif ($ticket->severity == '3') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_moderate as sla_resolution')->first();
+			} elseif ($ticket->severity == '4') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			} elseif ($ticket->severity == '0'){
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			}
+
 		    $firstActivity = $ticket->first_activity_ticket;
 		    $lastActivity = $ticket->lastest_activity_ticket;
 
@@ -330,78 +712,365 @@ class TicketingController extends Controller
 		        $openTime = strtotime($firstActivity->date);
 		        $closeTime = strtotime($lastActivity->date);
 
-				if ($closeTime > $openTime){
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+                $openTime = strtotime($firstActivity->date);
+                $closeTime = strtotime($lastActivity->date);
 
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $closeTime - $openTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+                $resolutionTimeInHours = ((float)$ticket->open_to_progress_seconds + (float)$ticket->progress_to_pending_seconds + $ticket->progress_to_close_seconds) / 3600;
+                $formattedTime         = $this->formatResolutionTime($resolutionTimeInHours);
 
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				} else {
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+                $ticket->sla_resolution_percentage = $formattedTime;
 
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $openTime - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				}
-
+                if ($resolutionTimeInHours <= $cekSla->sla_resolution) {
+                	if ($resolutionTimeInHours == 0) {
+                		$ticket->highlight_sla_resolution = 'Not-Comply';
+                	}else{
+                    	$ticket->highlight_sla_resolution = 'Comply';
+                	}
+                } else {
+                    $ticket->highlight_sla_resolution = 'Not-Comply';
+                }
 		    } else {
-		    	$slaResolutionPercentage = '-';
-		    }
-
-		    if ($firstActivity) {
-		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
-		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
-
-		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
-
-		    } else {
-		        $ticket->response_time_percentage = '-'; 
-		    }
-
-		    if (!isset($slaMetricsByClient[$client][$month])) {
-		        $slaMetricsByClient[$client][$month] = [
-		            'total_tickets' => 0,
-		            'total_sla_resolution_percentage' => 0,
-		            'total_response_time_percentage' => 0
-		        ];
-		    }
-
-		    $slaMetricsByClient[$client][$month]['total_tickets']++;
-		    $slaMetricsByClient[$client][$month]['total_sla_resolution_percentage'] += $slaResolutionPercentage;
-		    $slaMetricsByClient[$client][$month]['total_response_time_percentage'] += $responseTimePercentage;
-		}
-
-		foreach ($slaMetricsByClient as $client => $months) {
-		    foreach ($months as $month => $metrics) {
-		        $slaMetricsByClient[$client][$month]['average_sla_resolution_percentage'] = $metrics['total_sla_resolution_percentage'] / $metrics['total_tickets'];
-		        $slaMetricsByClient[$client][$month]['average_response_time_percentage'] = $metrics['total_response_time_percentage'] / $metrics['total_tickets'];
+		        $ticket->sla_resolution_percentage = '-'; 
+		        $ticket->highlight_sla_resolution = 'Not-Comply';
 		    }
 		}
 
-		return collect([
-			"counter_condition" => $result2,
-			"counter_severity" => $severity_count,
-			"occurring_ticket" => $needed,
-			"customer_list" => $get_client,
-			"chart_data" => [
-				"label" => $count_ticket_by_client->pluck('client_acronym'),
-				"data" => $count_ticket_by_client->pluck('ticket_count')
-			],
-			"severity_label" => $severity_label,
-			"sla_all_client" => $slaMetricsByClient
-		]);
+        $resultCountResolution = [];
+        $pids = $tickets->groupBy('pid');
+
+        foreach ($pids as $pid => $tickets) {
+            $severityCount = [
+                'Critical' => ['comply' => 0, 'not_comply' => 0],
+                'Major' => ['comply' => 0, 'not_comply' => 0],
+                'Moderate' => ['comply' => 0, 'not_comply' => 0],
+                'Minor' => ['comply' => 0, 'not_comply' => 0]
+            ];
+
+            foreach ($tickets as $ticket) {
+                $severity = '';
+
+                if ($ticket->severity == '1') {
+                    $severity = 'Critical';
+                } elseif ($ticket->severity == '2') {
+                    $severity = 'Major';
+                } elseif ($ticket->severity == '3') {
+                    $severity = 'Moderate';
+                } elseif ($ticket->severity == '4' || $ticket->severity == '0') {
+                    $severity = 'Minor';
+                }
+
+                if ($ticket->highlight_sla_resolution == 'Comply') {
+                    $severityCount[$severity]['comply']++;
+                } elseif ($ticket->highlight_sla_resolution == 'Not-Comply') {
+                    $severityCount[$severity]['not_comply']++;
+                }
+            }
+
+            $totalComply = $severityCount['Critical']['comply'] + 
+                   $severityCount['Major']['comply'] + 
+                   $severityCount['Moderate']['comply'] + 
+                   $severityCount['Minor']['comply'];
+
+            $totalNotComply = $severityCount['Critical']['not_comply'] + 
+                              $severityCount['Major']['not_comply'] + 
+                              $severityCount['Moderate']['not_comply'] + 
+                              $severityCount['Minor']['not_comply'];
+
+            $resultCountResolution[] = [
+                'pid' => $pid,
+                'critical' => $severityCount['Critical'],
+                'major' => $severityCount['Major'],
+                'moderate' => $severityCount['Moderate'],
+                'minor' => $severityCount['Minor'],
+                'total' => [
+                    'comply' => $totalComply,
+                    'not_comply' => $totalNotComply
+                ]
+            ];
+        }
+
+        usort($resultCountResolution, function ($a, $b) {
+			return $b['total']['not_comply'] <=> $a['total']['not_comply'];
+		});
+
+        // $limitResultCountResolution = array_slice($resultCountResolution, 0, 10);
+
+
+        return array("data"=>$resultCountResolution);
+	}
+
+	public function getDashboard() {
+
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        	$getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        } else {
+        	$getPid = [];
+        }
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
+        if($cek_role->name_role == 'Engineer on Site'){
+			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name')
+			->where('ticketing__user.nik',Auth::User()->nik)->get();
+		}else if ($cek_role->name_role == "Customer Care" || $cek_role->name_role = 'Operations Director' || $cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Customer Relation Manager') {
+			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name')->get();
+
+        	$get_client = $get_client->prepend((object)(['id' => 'INTERNAL','client_acronym' => 'INTERNAL','client_name' => 'INTERNAL']))->prepend((object)(['id' => '13','client_acronym' => 'ADMF','client_name' => 'PT. Adira Finance, Tbk']));
+		} elseif ($cek_role->name_role == 'Managed Service Manager') {
+			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name')
+			->whereIn('ticketing__user.nik',$getPidEoS)->get();
+		}else{
+			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name')
+			->where('ticketing__user.nik',Auth::User()->nik)->get();
+		}
+
+        // $count_ticket_by_client = DB::table('ticketing__id')
+        //     ->leftJoin('ticketing__client', 'ticketing__client.id', '=', 'ticketing__id.id_client')
+        //     ->leftJoin('ticketing__email_setting', 'ticketing__email_setting.id', '=', 'ticketing__id.id_client_pid')
+        //     ->leftJoin('ticketing__detail','ticketing__detail.id_ticket','ticketing__id.id_ticket')
+        //     ->select(DB::raw("
+        //         CASE 
+        //             WHEN ticketing__client.client_acronym IN ('BJBR', 'BBJB', 'BANK JABAR') THEN 'BBJB'
+        //             WHEN ticketing__client.client_acronym IN ('BKES','BPJS') THEN 'BKES'
+        //             WHEN ticketing__client.client_acronym IN ('PBLG', 'BULG') THEN 'BULG'
+        //             WHEN ticketing__client.client_acronym IN ('BGDN', 'PGAN') THEN 'PGAN'
+        //             WHEN ticketing__client.client_acronym IN ('ADRF', 'ADMF') THEN 'ADMF'
+        //             WHEN ticketing__client.client_acronym IN ('BTNI', 'BBTN') THEN 'BBTN'
+        //             ELSE COALESCE(ticketing__client.client_acronym, SUBSTRING_INDEX(SUBSTRING_INDEX(ticketing__email_setting.client, '/', -2), ' ', 1))
+        //         END AS client_acronym
+        //     "), DB::raw('COUNT(ticketing__id.id) as ticket_count'))
+        //     ->where('ticketing__id.id_ticket', 'like', '%' . date('Y') . '%')
+        //     ->groupBy(DB::raw("
+        //         CASE 
+        //             WHEN ticketing__client.client_acronym IN ('BJBR','BBJB', 'BANK JABAR') THEN 'BBJB'
+        //             WHEN ticketing__client.client_acronym IN ('BKES','BPJS') THEN 'BKES'
+        //             WHEN ticketing__client.client_acronym IN ('PBLG', 'BULG') THEN 'BULG'
+        //             WHEN ticketing__client.client_acronym IN ('BGDN', 'PGAN') THEN 'PGAN'
+        //             WHEN ticketing__client.client_acronym IN ('ADRF', 'ADMF') THEN 'ADMF'
+        //             WHEN ticketing__client.client_acronym IN ('BTNI', 'BBTN') THEN 'BBTN'
+        //             ELSE COALESCE(ticketing__client.client_acronym, SUBSTRING_INDEX(SUBSTRING_INDEX(ticketing__email_setting.client, '/', -2), ' ', 1))
+        //         END
+        //     "))
+        //     ->orderBy('ticket_count', 'DESC');
+
+        // if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        //     $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPid)->limit(10)
+        //     ->get();
+        // } elseif($cek_role->name_role == 'Managed Service Manager'){
+        //     $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPidEoS)->limit(10)
+        //     ->get();
+        // } elseif ($cek_role->name_role == 'Customer Relation Manager') {
+        //     $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPidCC)->limit(10)
+        //     ->get();
+        // } else {
+        //     $count_ticket_by_client = $count_ticket_by_client->limit(10)->get();
+        // }
+
+        $severity_count = DB::table('ticketing__detail')
+            ->select('ticketing__severity.name',DB::raw('COUNT(*) as count'))
+            ->join('ticketing__severity','ticketing__severity.id','=','ticketing__detail.severity')
+            ->where('ticketing__detail.severity','<>',0)
+            ->groupBy('ticketing__detail.severity')
+            ->where('id_ticket','like','%'.date('Y'));
+
+        if ($cek_role->name_role == 'Managed Service Manager') {
+            $severity_count = $severity_count->whereIn('pid',$getPidEoS)->get()
+            ->keyBy('name');
+        } elseif($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care'){
+            $severity_count = $severity_count->whereIn('pid',$getPid)->get()
+            ->keyBy('name');
+        } elseif ($cek_role->name_role == 'Customer Relation Manager') {
+            $severity_count = $severity_count->whereIn('pid',$getPidCC)->get()
+            ->keyBy('name');
+        } else {
+            $severity_count = $severity_count->get()
+            ->keyBy('name');
+        }
+
+        $severity_count = $severity_count->map(function($item, $key){
+            return $item->count;
+        });
+
+        $severity_label = TicketingSeverity::select('id','name')->orderBy('id','DESC')->get();
+
+        return collect([
+            "counter_severity" => $severity_count,
+            "customer_list" => $get_client,
+            "severity_label" => $severity_label
+        ]);
+	}
+
+	public function getDashboardByFilter(Request $request) {
+		$startDate = $request->start . ' 00:00:01';
+		$endDate = $request->end . ' 23:59:59';
+
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
+        $get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name');
+
+        if ($cek_role->name_role == "Customer Care" || $cek_role->name_role = 'Operations Director' || $cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Customer Relation Manager') {
+			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name')->get();
+
+        	$get_client = $get_client->prepend((object)(['id' => 'INTERNAL','client_acronym' => 'INTERNAL','client_name' => 'INTERNAL']))->prepend((object)(['id' => '13','client_acronym' => 'ADMF','client_name' => 'PT. Adira Finance, Tbk']));
+		} elseif ($cek_role->name_role == 'Managed Service Manager') {
+			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name')
+			->whereIn('ticketing__user.nik',$getPidEoS)->get();
+		} else{
+			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+            ->orderBy('code')
+            ->groupBy('tb_contact.id_customer','code','brand_name')
+			->where('ticketing__user.nik',Auth::User()->nik)->get();
+		}
+
+        // $get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+        //     ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
+        //     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+        //     ->select('tb_contact.id_customer as id','code as client_acronym','brand_name as client_name')
+        //     ->orderBy('code')
+        //     ->groupBy('tb_contact.id_customer','code','brand_name')->get();
+
+        // $get_client = $get_client->prepend((object)(['id' => 'INTERNAL','client_acronym' => 'INTERNAL','client_name' => 'INTERNAL']))->prepend((object)(['id' => '13','client_acronym' => 'ADMF','client_name' => 'PT. Adira Finance, Tbk']));
+
+        // $count_ticket_by_client = DB::table('ticketing__id')
+        //     ->leftJoin('ticketing__client', 'ticketing__client.id', '=', 'ticketing__id.id_client')
+        //     ->leftJoin('ticketing__email_setting', 'ticketing__email_setting.id', '=', 'ticketing__id.id_client_pid')
+        //     ->leftJoin('ticketing__detail','ticketing__detail.id_ticket','ticketing__id.id_ticket')
+        //     ->select(DB::raw("
+        //         CASE 
+        //             WHEN ticketing__client.client_acronym IN ('BJBR', 'BBJB', 'BANK JABAR') THEN 'BBJB'
+        //             WHEN ticketing__client.client_acronym IN ('BKES','BPJS') THEN 'BKES'
+        //             WHEN ticketing__client.client_acronym IN ('PBLG', 'BULG') THEN 'BULG'
+        //             WHEN ticketing__client.client_acronym IN ('BGDN', 'PGAN') THEN 'PGAN'
+        //             WHEN ticketing__client.client_acronym IN ('ADRF', 'ADMF') THEN 'ADMF'
+        //             WHEN ticketing__client.client_acronym IN ('BTNI', 'BBTN') THEN 'BBTN'
+        //             ELSE COALESCE(ticketing__client.client_acronym, SUBSTRING_INDEX(SUBSTRING_INDEX(ticketing__email_setting.client, '/', -2), ' ', 1))
+        //         END AS client_acronym
+        //     "), DB::raw('COUNT(ticketing__id.id) as ticket_count'))
+        //     ->groupBy(DB::raw("
+        //         CASE 
+        //             WHEN ticketing__client.client_acronym IN ('BJBR','BBJB', 'BANK JABAR') THEN 'BBJB'
+        //             WHEN ticketing__client.client_acronym IN ('BKES','BPJS') THEN 'BKES'
+        //             WHEN ticketing__client.client_acronym IN ('PBLG', 'BULG') THEN 'BULG'
+        //             WHEN ticketing__client.client_acronym IN ('BGDN', 'PGAN') THEN 'PGAN'
+        //             WHEN ticketing__client.client_acronym IN ('ADRF', 'ADMF') THEN 'ADMF'
+        //             WHEN ticketing__client.client_acronym IN ('BTNI', 'BBTN') THEN 'BBTN'
+        //             ELSE COALESCE(ticketing__client.client_acronym, SUBSTRING_INDEX(SUBSTRING_INDEX(ticketing__email_setting.client, '/', -2), ' ', 1))
+        //         END
+        //     "))
+        //     ->orderBy('ticket_count', 'DESC');
+
+        // if (isset($request->pid)) {
+        // 	$count_ticket_by_client = $count_ticket_by_client->where('ticketing__detail.pid',$request->pid);
+        // }else {
+        // 	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+	    //         $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPid)->where('ticketing__id.id_ticket','like','%'.date('Y'));
+	    //     } elseif($cek_role->name_role == 'Managed Service Manager'){
+	    //         $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPidEoS)->where('ticketing__id.id_ticket','like','%'.date('Y'));
+	    //     } elseif ($cek_role->name_role == 'Customer Relation Manager') {
+	    //         $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPidCC)->where('ticketing__id.id_ticket','like','%'.date('Y'));
+	    //     } else {
+	    //         $count_ticket_by_client = $count_ticket_by_client->where('ticketing__id.id_ticket','like','%'.date('Y'));
+	    //     }
+        // }
+
+        $severity_count = DB::table('ticketing__detail')
+            ->select('ticketing__severity.name',DB::raw('COUNT(*) as count'))
+            ->join('ticketing__severity','ticketing__severity.id','=','ticketing__detail.severity')
+            ->where('ticketing__detail.severity','<>',0)
+            ->groupBy('ticketing__detail.severity');
+
+        if (isset($request->pid)) {
+        	$severity_count = $severity_count->where('pid',$request->pid);
+        }else{
+        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+	            $severity_count = $severity_count->whereIn('pid',$getPid);
+	        } elseif($cek_role->name_role == 'Managed Service Manager'){
+	            $severity_count = $severity_count->whereIn('pid',$getPidEoS);
+	        } elseif ($cek_role->name_role == 'Customer Relation Manager') {
+	            $severity_count = $severity_count->whereIn('pid',$getPidCC);
+	        } else {
+	            $severity_count = $severity_count;
+	        }
+        }
+
+        if (isset($request->start) && isset($request->end)) {
+        	$severity_count = $severity_count->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+        }
+
+        $severity_count = $severity_count->get()->keyBy('name');
+
+        $severity_count = $severity_count->map(function($item, $key){
+            return $item->count;
+        });
+
+        $severity_label = TicketingSeverity::select('id','name')->orderBy('id','DESC')->get();
+
+
+        return collect([
+            // "counter_condition" => $result2,
+            "counter_severity" => $severity_count,
+            // "occurring_ticket" => $needed,
+            "customer_list" => $get_client,
+            // "chart_data" => [
+            //     "label" => $count_ticket_by_client->pluck('client_acronym'),
+            //     "data" => $count_ticket_by_client->pluck('ticket_count')
+            // ],
+            "severity_label" => $severity_label
+            // "response_time" => array("data" => $resultCountResponse),
+            // "resolution_time" => array("data" => $resultCountResolution)
+        ]);
 	}
 
 	public function calculateSlaResolutionPercentage($resolutionTimeInHours, $totalHoursInMonth) {
@@ -416,7 +1085,7 @@ class TicketingController extends Controller
 		$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name')->where('user_id', Auth::User()->nik)->first();
 
-   //      $client = SalesProject::rightJoin('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+   			//$client = SalesProject::rightJoin('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
 			// ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
 			// ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
 			// ->select('tb_contact.id_customer as id','code','brand_name')
@@ -426,16 +1095,16 @@ class TicketingController extends Controller
 			$client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
 			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
 			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-			->select('tb_contact.id_customer as id','code','brand_name')
+			->select('tb_contact.id_customer as id','code','customer_legal_name as brand_name')
 			->orderBy('code')
 			->groupBy('tb_contact.id_customer','code','brand_name')->get();
 
-			$client = $client->prepend((object)(['id' => 'INTERNAL','code' => 'INTERNAL','brand_name' => 'INTERNAL']))->prepend((object)(['id' => '13','code' => 'ADMF','brand_name' => 'ADMF']));
+			$client = $client->prepend((object)(['id' => 'INTERNAL','code' => 'INTERNAL','brand_name' => 'INTERNAL']))->prepend((object)(['id' => '13','code' => 'ADMF','brand_name' => 'PT. Adira Finance, Tbk']));
 		}else{
 			$client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
 			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
 			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-			->select('tb_contact.id_customer as id','code','brand_name')
+			->select('tb_contact.id_customer as id','code','customer_legal_name as brand_name')
 			->orderBy('code')
 			->groupBy('tb_contact.id_customer','code','brand_name')
 			->where('ticketing__user.nik',Auth::User()->nik)->get();
@@ -524,6 +1193,25 @@ class TicketingController extends Controller
             	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ', type_device, ' - ', serial_number) END) as text"))
             ->orderBy('tb_asset_management.created_at','desc')->where('pid',$request->pid)->where('category',$request->category)
             ->where(DB::raw("CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ' , type_device, ' - ', serial_number)"), 'like', '%' . request('q') . '%')
+            ->get();
+
+        return $data;
+	}
+
+	public function getAssetByClient(Request $request)
+	{
+		$getId = AssetMgmt::leftjoin('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
+
+        // return $getLastId->id_last_asset;
+        $client = TB_Contact::where('id_customer',$request->client)->first()->customer_legal_name;
+
+        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('tb_asset_management.id',
+            	// DB::raw('CONCAT(`id_device_customer`," - ", `alamat_lokasi`," - ", `serial_number`) AS `text`'),
+            	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ', type_device, ' - ', serial_number) END) as text"))
+            ->orderBy('tb_asset_management.created_at','desc')->where('client','like','%'.$client.'%')
+            ->where(DB::raw("CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ' , type_device, ' - ', serial_number)"),'like','%'.request('q').'%')
             ->get();
 
         return $data;
@@ -636,19 +1324,49 @@ class TicketingController extends Controller
 		}
 	}
 
+	public function getPid(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->select('pid as id', 'pid as text')->where('pid','like','%'.request('q').'%');
+
+        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+            $getPid = $getPid->where('nik',$nik)->distinct()->get();
+        } elseif($cek_role->name_role == 'Managed Service Manager'){
+            $getPid = $getPid->whereIn('nik',$nikEoS)->distinct()->get();
+        } elseif ($cek_role->name_role == 'Customer Relation Manager') {
+            $getPid = $getPid->whereIn('nik',$nikCC)->distinct()->get();
+        } else {
+            $getPid = $getPid->distinct()->get();
+        }
+
+        return $getPid;
+    }
+
 	public function getEmailData(Request $req){
 		// return $req->client;
 		if(isset($req->client)){
 			if (isset($req->slm)) {
 				$openCustomer = TicketingEmailSetting::select(DB::raw("CONCAT(`to`,`cc`) AS open_cc"))->where('pid',$req->client)->first()->open_cc;
-				$openSLM = TicketingEmailSLM::select('dear as open_dear','to as open_to','cc as open_cc')->where('second_level_support',$req->slm)->first();
+				$openSLM = TicketingEmailSLM::select(
+					'dear as open_dear',
+					'to as open_to',
+					'cc as open_cc')->where('second_level_support',$req->slm)->first();
 				if ($openSLM && $openCustomer) {
-				    $openSLM->open_cc = $openSLM->open_cc ? $openSLM->open_cc . ',' . $openCustomer : $openCustomer;
+				    $openSLM->open_cc = $openSLM->open_cc ? $openSLM->open_cc . ';' . $openCustomer : $openCustomer;
 				}
 
 				return $openSLM;
 			}else{
-				return TicketingEmailSetting::select('dear as open_dear','to as open_to','cc as open_cc')->where('pid',$req->client)->first();
+				return TicketingEmailSetting::select('dear as open_dear',
+					'to as open_to',
+					'cc as open_cc',
+					DB::raw("TRIM(SUBSTRING_INDEX(client, ' - ', -1)) as client_name"))
+				->where('pid',$req->client)->first();
 			}
 		} else {
 			$idTicket = $req->id_ticket;
@@ -668,11 +1386,21 @@ class TicketingController extends Controller
 			if (isset($req->id_atm)) {
 				if (isset($cek_id_client_pid->id_client_pid)) {
 					if (TicketingEmailSetting::where('id',$cek_id_client_pid->id_client_pid)->first()->pid == "INTERNAL") {
-						$ticket_reciver = TicketingEmailSetting::select('dear as close_dear','to as close_to','cc as close_cc')->where('id',$cek_id_client_pid->id_client_pid)
+						$ticket_reciver = TicketingEmailSetting::select(
+							'dear as close_dear',
+							'to as close_to',
+							'cc as close_cc',
+						DB::raw("TRIM(SUBSTRING_INDEX(client, ' - ', -1)) as client_name")
+						)->where('id',$cek_id_client_pid->id_client_pid)
 						->first();
 					}else{
 						$slm = AssetMgmtDetail::where('id_device_customer',$req->id_atm)->first()->second_level_support;
-						$ticket_reciver = TicketingEmailSLM::select('dear as close_dear','to as close_to','cc as close_cc')->where('second_level_support',$slm)
+						$ticket_reciver = TicketingEmailSLM::select(
+							'dear as close_dear',
+							'to as close_to',
+							'cc as close_cc',
+							DB::raw("TRIM(SUBSTRING_INDEX(client, ' - ', -1)) as client_name")
+						)->where('second_level_support',$slm)
 						->first();
 					}
 				}else{
@@ -682,7 +1410,11 @@ class TicketingController extends Controller
 				}
 			}else{
 				if (isset($cek_id_client_pid->id_client_pid)) {
-					$ticket_reciver = TicketingEmailSetting::select('dear as close_dear','to as close_to','cc as close_cc')->where('id',$cek_id_client_pid->id_client_pid)
+					$ticket_reciver = TicketingEmailSetting::select(
+						'dear as close_dear',
+						'to as close_to',
+						'cc as close_cc',
+					DB::raw("TRIM(SUBSTRING_INDEX(client, ' - ', -1)) as client_name"))->where('id',$cek_id_client_pid->id_client_pid)
 					->first();
 				}else{
 					$ticket_reciver = Ticketing::where('id',$idTicket)
@@ -841,7 +1573,7 @@ class TicketingController extends Controller
 	}
 
 	public function sendEmail($to, $cc, $subject, $body){
-		Mail::html($body, function ($message) use ($to, $cc, $subject) {
+		$response = Mail::html($body, function ($message) use ($to, $cc, $subject) {
 			$message
 				->from('helpdesk@sinergy.co.id','Helpdesk Sinergy')
 				->to(explode(";", $to))
@@ -851,15 +1583,31 @@ class TicketingController extends Controller
 				$message->cc(explode(";", $cc));
 			}
 		});
+
+		Log::info([$response]);
 	}
 
 	public function getPerformanceAll(){
 		// sleep(5);
+		$cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
 
-		$isHighlithResponse = 'false';
-		$isHighlithResolution = 'false';
+        // $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        // $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        // $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
 
-		$getPid = TicketingUser::select('pid')->where('nik',Auth::User()->nik);
+		$getPid = TicketingUser::select('pid');
+
+		if ($cek_role->name_role == 'Managed Service Manager') {
+            $getPid = $getPid->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        } elseif($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care'){
+            $getPid = $getPid->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        } elseif ($cek_role->name_role == 'Customer Relation Manager') {
+            $getPid = $getPid->whereIn('nik',$nikCC)->get()->pluck('pid');
+        } else {
+            $getPid = $getPid->get()->pluck('pid');
+        }
 
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('id_ticket','activity')
@@ -870,365 +1618,439 @@ class TicketingController extends Controller
 				})
 			->where('activity','<>','CANCEL')
 			->where('activity','<>','CLOSE')
+			// ->where('id_ticket','33546/BBJB/Aug/2024')
 			->get()
 			->pluck('id_ticket');
 
-		$occurring_ticket_result = TicketingDetail::with([
-				'first_activity_ticket:id_ticket,date,operator',
-				'lastest_activity_ticket',
-				'id_detail:id_ticket,id',
-			])
-			->where('pid','=',null)
-			->whereIn('id_ticket',$occurring_ticket)
-			->orderBy('ticketing__detail.id','DESC')
-			->get();
+		// $occurring_ticket_result = TicketingDetail::with([
+		// 		'first_activity_ticket:id_ticket,date,operator',
+		// 		'lastest_activity_ticket',
+		// 		'id_detail:id_ticket,id',
+		// 	])
+		// 	->where('pid','=',null)
+		// 	->whereIn('id_ticket',$occurring_ticket)
+		// 	// ->where('id_ticket','33546/BBJB/Aug/2024')
+		// 	->orderBy('ticketing__detail.id','DESC')
+		// 	->get();
 
 		$occurring_ticket_result_pid = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
 				'lastest_activity_ticket',
 				'id_detail:id_ticket,id',
 			])
-			->joinSub($getPid,'getPid',function($join){
-				$join->on('getPid.pid','=','ticketing__detail.pid');
-			})
+			->whereIn('pid',$getPid)
 			->whereIn('id_ticket',$occurring_ticket)
 			->orderBy('ticketing__detail.id','DESC')
 			->get();
 
 		$limit = $occurring_ticket->count() > 100 ? 100 : 100 - $occurring_ticket->count();
 
-		$residual_ticket_result = TicketingDetail::with([
-				'first_activity_ticket:id_ticket,date,operator',
-				'lastest_activity_ticket',
-				'id_detail:id_ticket,id',
-			])
-			->whereNotIn('id_ticket',$occurring_ticket)
-			->where('pid','=',null)
-			->limit($limit)
-			->orderBy('ticketing__detail.id','DESC')
-			->get();
+		// $residual_ticket_result = TicketingDetail::with([
+		// 		'first_activity_ticket:id_ticket,date,operator',
+		// 		'lastest_activity_ticket',
+		// 		'id_detail:id_ticket,id',
+		// 	])
+		// 	->whereNotIn('id_ticket',$occurring_ticket)
+		// 	->where('pid','=',null)
+		// 	->limit($limit)
+		// 	->orderBy('ticketing__detail.id','DESC')
+		// 	->get();
 
 		$residual_ticket_result_pid = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
 				'lastest_activity_ticket',
 				'id_detail:id_ticket,id',
 			])
-			->join('ticketing__user','ticketing__user.pid','ticketing__detail.pid')
+			// ->join('ticketing__user','ticketing__user.pid','ticketing__detail.pid')
+			->whereIn('pid',$getPid)
 			->whereNotIn('id_ticket',$occurring_ticket)
 			->limit($limit)
 			->orderBy('ticketing__detail.id','DESC')
 			->get();
 
-		// $result = $occurring_ticket_result->merge($residual_ticket_result)->merge($occurring_ticket_result_pid)->merge($residual_ticket_result_pid);
+        $result = $occurring_ticket_result_pid
+            ->merge($residual_ticket_result_pid);
 
-		$result = $occurring_ticket_result->merge($residual_ticket_result)
-		    ->merge($occurring_ticket_result_pid)
-		    ->merge($residual_ticket_result_pid);
+        $resolution_time_summary = $this->calculateResolutionTime(date('Y'));
 
+        $result->each(function ($ticket) use ($resolution_time_summary) {
+            $resolutionData = $resolution_time_summary->firstWhere('id_ticket', $ticket->id_ticket);
 
+            if ($resolutionData) {
+                $ticket->progress_to_pending_seconds = $resolutionData->total_progress_to_pending_seconds;
+                $ticket->progress_to_close_seconds = $resolutionData->total_progress_to_close_seconds;
+                $ticket->open_to_progress_seconds = $resolutionData->last_open_to_progress_seconds;
+            } else {
+                $ticket->progress_to_pending_seconds = null;
+                $ticket->progress_to_close_seconds = null;
+                $ticket->open_to_progress_seconds = null;
+            }
+        });
 		// $pid = TicketingUser::join('users','users.nik','ticketing__user.nik')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id');
 
 		// $result = $occurring_ticket_result_pid
-		    // ->merge($residual_ticket_result_pid);
-
-		$currentMonth = date('n');
-		$currentYear = date('Y');
-
-		$totalDaysInMonth = $this->getDaysInMonth($currentMonth, $currentYear);
-		$totalHoursInMonth = 30 * 24; 
-
+		//     ->merge($residual_ticket_result_pid);
+		    
 		foreach ($result as $ticket) {
+			if ($ticket->pid == '') {
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} elseif(isset($ticket->pid)){
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} else {
+				$cekSla = SLAProject::where('pid',$ticket->pid)->first();
+			}
+
+			switch ($ticket->severity) {
+		        case '1':
+		            $cekSla = $cekSla->select('sla_response', 'sla_resolution_critical as sla_resolution')->first();
+		            break;
+		        case '2':
+		            $cekSla = $cekSla->select('sla_response', 'sla_resolution_major as sla_resolution')->first();
+		            break;
+		        case '3':
+		            $cekSla = $cekSla->select('sla_response', 'sla_resolution_moderate as sla_resolution')->first();
+		            break;
+		        case '4':
+		        case '0':
+		            $cekSla = $cekSla->select('sla_response', 'sla_resolution_minor as sla_resolution')->first();
+		            break;
+		    }
+
 		    $firstActivity = $ticket->first_activity_ticket;
 		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    $now = time();
+
+		    $openTime = $closeTime = $durationFromLastActivity = null;
+
+		    if ($firstActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		    }
 
 		    if ($firstActivity && $lastActivity) {
 		        $openTime = strtotime($firstActivity->date);
 		        $closeTime = strtotime($lastActivity->date);
 
-				if ($closeTime > $openTime){
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+                $resolutionTimeInHours = ((float)$ticket->open_to_progress_seconds + (float)$ticket->progress_to_pending_seconds + $ticket->progress_to_close_seconds) / 3600;
+				$formattedTime         = $this->formatResolutionTime($resolutionTimeInHours);
 
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $closeTime - $openTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+		        $ticket->sla_resolution_percentage = $formattedTime;
 
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				} else {
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $openTime - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				}
-
-		        if ($slaResolutionPercentage <= 80) {
-		            $ticket->highlight_sla_resolution = true;
+		        if ($resolutionTimeInHours <= $cekSla->sla_resolution) {
+		        	if ($resolutionTimeInHours == 0) {
+                		$ticket->highlight_sla_resolution = 'Not-Comply';
+                	}else{
+                    	$ticket->highlight_sla_resolution = 'Comply';
+                	}
 		        } else {
-		            $ticket->highlight_sla_resolution = false;
+		            $ticket->highlight_sla_resolution = 'Not-Comply';
 		        }
 
-		        $ticket->sla_resolution_percentage = $slaResolutionPercentage . "%";
 		    } else {
 		        $ticket->sla_resolution_percentage = '-'; 
-		        $ticket->highlight_sla_resolution = false;
+		        $ticket->highlight_sla_resolution = 'Not-Comply';
 		    }
 
 		    if ($firstActivity) {
 		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
 		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+		        $responseTimeInMinutesFormatted = number_format($responseTimeInMinutes,2);
+		        $responseTimeInHour = $responseTimeInMinutes / 60;
+		        $responseTimeInHourFormatted = number_format($responseTimeInHour,2);
 
-		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
+		        $formattedTime = $this->formatResponseTime($responseTimeInMinutes);
 
-		        $ticket->response_time_percentage = $responseTimePercentage . "%";
+		        $ticket->response_time_percentage = $formattedTime;
 
-		        if ($responseTimePercentage <= 80) {
-		            $ticket->highlight_sla_response = true;
+		        if ($responseTimeInHour <= $cekSla->sla_response) {
+		            $ticket->highlight_sla_response = 'Comply';
 		        } else {
-		            $ticket->highlight_sla_response = false;
+		            $ticket->highlight_sla_response = 'Not-Comply';
+		        }
+
+		        if ($lastActivity->activity !== 'CLOSE') {
+		            $durationFromLastActivity = $now - strtotime($lastActivity->date);
+		            $ticket->duration_from_last_activity = $this->formatDuration($durationFromLastActivity);
+		        } else {
+		            $ticket->duration_from_last_activity = '-';
 		        }
 		    } else {
 		        $ticket->response_time_percentage = '-';
-		        $ticket->highlight_sla_response = false;
+		        $ticket->highlight_sla_response = 'Not-Comply';
+		        $ticket->duration_from_last_activity = '-';
 		    }
 		}
 
 		return array("data" => $result);
 	}
 
-	function calculateResponseTimePercentage($responseTimeInMinutes) {
-	    if ($responseTimeInMinutes <= 30) {
-	        return 100;
-	    } elseif ($responseTimeInMinutes > 30 && $responseTimeInMinutes <= 45) {
-	        return 100 - round((50 * ($responseTimeInMinutes - 30) / 15),2); // Linear decrease to 50%
-	    } elseif ($responseTimeInMinutes > 45) {
-	        return round(max(0, 50 - (50 * ($responseTimeInMinutes - 45) / 45)),2); // Linear decrease to 0%
+	function calculateResolutionTimeFilter($year){
+        $statusSequence = DB::table('ticketing__activity')
+            ->select('id_ticket', 'activity', 'date')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY id_ticket ORDER BY date) as seq_num');
+
+        $pairedProgressPending = DB::table(DB::raw("({$statusSequence->toSql()}) as ppp"))
+        ->select('ppp.id_ticket', 'ppp.date as progress_time', DB::raw('MIN(n.date) as pending_time'))
+        ->leftJoin(DB::raw("({$statusSequence->toSql()}) as n"), function ($join) {
+            $join->on('ppp.id_ticket', '=', 'n.id_ticket')
+                 ->where('n.activity', 'PENDING')
+                 ->whereColumn('n.seq_num', '>', 'ppp.seq_num');
+        })
+        ->where('ppp.activity', 'ON PROGRESS')
+        ->groupBy('ppp.id_ticket', 'ppp.date');
+
+        $progressToClose = DB::table('ticketing__activity as ptc')
+            ->select('id_ticket', DB::raw('MIN(date) as close_time'))
+            ->where('activity', 'CLOSE')
+            ->groupBy('id_ticket');
+
+        $openToProgress = DB::table('ticketing__activity as opt')
+            ->select(
+                'id_ticket',
+                DB::raw('MIN(CASE WHEN activity = "ON PROGRESS" THEN date END) as first_on_progress_time'),
+                DB::raw('MIN(CASE WHEN activity = "OPEN" THEN date END) as open_time')
+            )
+            ->groupBy('id_ticket');
+
+        $resolution_time = DB::table('ticketing__activity as pppp')
+            ->select(
+                'pppp.id_ticket',
+                DB::raw('TIMESTAMPDIFF(SECOND, progress_time, pending_time) as progress_to_pending_seconds'),
+                DB::raw('CASE WHEN pending_time IS NOT NULL THEN NULL ELSE TIMESTAMPDIFF(SECOND, progress_time, close_time) END as progress_to_close_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, opt.open_time, opt.first_on_progress_time) as open_to_progress_seconds')
+            )
+            ->joinSub($pairedProgressPending, 'ppp', 'pppp.id_ticket', '=', 'ppp.id_ticket')
+            ->joinSub($progressToClose, 'ptc', 'pppp.id_ticket', '=', 'ptc.id_ticket')
+            ->joinSub($openToProgress,'opt', 'pppp.id_ticket', '=', 'opt.id_ticket')
+            ->orderBy('pppp.id_ticket')
+            ->where(function($query) use ($year) {
+	            foreach ($year as $year) {
+	                $query->orWhere('pppp.id_ticket', 'like', "%/$year");
+	            }
+	        })
+            ->groupBy('pppp.id_ticket','progress_to_close_seconds','progress_to_pending_seconds','open_to_progress_seconds');
+
+        $resolution_time_summary = DB::table($resolution_time, 'resolution')
+            ->select(
+                'resolution.id_ticket',
+                DB::raw('SUM(CASE WHEN resolution.progress_to_pending_seconds IS NOT NULL THEN resolution.progress_to_pending_seconds ELSE 0 END) as total_progress_to_pending_seconds'),
+                DB::raw('SUM(CASE WHEN resolution.progress_to_close_seconds IS NOT NULL THEN resolution.progress_to_close_seconds ELSE 0 END) as total_progress_to_close_seconds'),
+                DB::raw('MAX(resolution.open_to_progress_seconds) as last_open_to_progress_seconds')
+            )
+            ->groupBy('resolution.id_ticket')
+            ->orderBy('resolution.id_ticket')
+            ->get();
+
+        return $resolution_time_summary;
+    }
+
+    function calculateResolutionTime($year){
+    	// return $year;
+        $statusSequence = DB::table('ticketing__activity')
+            ->select('id_ticket', 'activity', 'date')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY id_ticket ORDER BY date) as seq_num');
+
+        $pairedProgressPending = DB::table(DB::raw("({$statusSequence->toSql()}) as ppp"))
+        ->select('ppp.id_ticket', 'ppp.date as progress_time', DB::raw('MIN(n.date) as pending_time'))
+        ->leftJoin(DB::raw("({$statusSequence->toSql()}) as n"), function ($join) {
+            $join->on('ppp.id_ticket', '=', 'n.id_ticket')
+                 ->where('n.activity', 'PENDING')
+                 ->whereColumn('n.seq_num', '>', 'ppp.seq_num');
+        })
+        ->where('ppp.activity', 'ON PROGRESS')
+        ->groupBy('ppp.id_ticket', 'ppp.date');
+
+        $progressToClose = DB::table('ticketing__activity as ptc')
+            ->select('id_ticket', DB::raw('MIN(date) as close_time'))
+            ->where('activity', 'CLOSE')
+            ->groupBy('id_ticket');
+
+        $openToProgress = DB::table('ticketing__activity as opt')
+            ->select(
+                'id_ticket',
+                DB::raw('MIN(CASE WHEN activity = "ON PROGRESS" THEN date END) as first_on_progress_time'),
+                DB::raw('MIN(CASE WHEN activity = "OPEN" THEN date END) as open_time')
+            )
+            ->groupBy('id_ticket');
+
+        $resolution_time = DB::table('ticketing__activity as pppp')
+            ->select(
+                'pppp.id_ticket',
+                DB::raw('TIMESTAMPDIFF(SECOND, progress_time, pending_time) as progress_to_pending_seconds'),
+                DB::raw('CASE WHEN pending_time IS NOT NULL THEN NULL ELSE TIMESTAMPDIFF(SECOND, progress_time, close_time) END as progress_to_close_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, opt.open_time, opt.first_on_progress_time) as open_to_progress_seconds')
+            )
+            ->joinSub($pairedProgressPending, 'ppp', 'pppp.id_ticket', '=', 'ppp.id_ticket')
+            ->joinSub($progressToClose, 'ptc', 'pppp.id_ticket', '=', 'ptc.id_ticket')
+            ->joinSub($openToProgress,'opt', 'pppp.id_ticket', '=', 'opt.id_ticket')
+            ->orderBy('pppp.id_ticket')
+            ->where('pppp.id_ticket','like','%'.$year)
+            ->groupBy('pppp.id_ticket','progress_to_close_seconds','progress_to_pending_seconds','open_to_progress_seconds');
+
+        $resolution_time_summary = DB::table($resolution_time, 'resolution')
+            ->select(
+                'resolution.id_ticket',
+                DB::raw('SUM(CASE WHEN resolution.progress_to_pending_seconds IS NOT NULL THEN resolution.progress_to_pending_seconds ELSE 0 END) as total_progress_to_pending_seconds'),
+                DB::raw('SUM(CASE WHEN resolution.progress_to_close_seconds IS NOT NULL THEN resolution.progress_to_close_seconds ELSE 0 END) as total_progress_to_close_seconds'),
+                DB::raw('MAX(resolution.open_to_progress_seconds) as last_open_to_progress_seconds')
+            )
+            ->groupBy('resolution.id_ticket')
+            ->orderBy('resolution.id_ticket')
+            ->get();
+
+        return $resolution_time_summary;
+    }
+
+	// function calculateResponseTimePercentage($responseTimeInMinutes) {
+	//     if ($responseTimeInMinutes <= 60) {
+	//         return 100;
+	//     } elseif ($responseTimeInMinutes > 30 && $responseTimeInMinutes <= 45) {
+	//         return 100 - round((50 * ($responseTimeInMinutes - 30) / 15), 2); // Linear decrease to 50%
+	//     } elseif ($responseTimeInMinutes > 45) {
+	//         return round(max(0, 50 - (50 * ($responseTimeInMinutes - 45) / 45)), 2); // Linear decrease to 0%
+	//     } else {
+	//         return 0; // Default to 0% for any unexpected values
+	//     }
+	// }
+
+    function customRound($number) {
+        if ($number - floor($number) > 0.5) {
+            return ceil($number);
+        } else {
+            return floor($number);
+        }
+    }
+
+	function formatResponseTime($responseTimeInMinutes) {
+	    $formattedTime = '';
+
+	    if ($responseTimeInMinutes > 1440) {
+	    	$formattedTime = $this->customRound($responseTimeInMinutes / 1440) . ' Hari ' . $this->customRound(($responseTimeInMinutes % 1440) / 60) . ' Jam ' . $responseTimeInMinutes % 60 . ' Menit';
+	    } elseif ($responseTimeInMinutes > 61) {
+	    	$formattedTime = $this->customRound(($responseTimeInMinutes % 1440) / 60) . ' Jam ' . $responseTimeInMinutes % 60  . ' Menit';
 	    } else {
-	        return 0; // Default to 0% for any unexpected values
+	    	$formattedTime = number_format($responseTimeInMinutes,2). ' Menit';
 	    }
+
+	    return trim($formattedTime);
+	}
+
+	function formatResolutionTime($resolutionTimeInHours) {
+		// Number of hours in a day
+	    $hoursInDay = 24;
+	    // Number of minutes in an hour
+	    $minutesInHour = 60;
+
+	    // Convert total hours to total minutes
+	    $totalMinutes = $resolutionTimeInHours * $minutesInHour;
+
+	    // Calculate days
+	    $days = intdiv($totalMinutes, $hoursInDay * $minutesInHour);
+	    // Calculate remaining minutes after extracting days
+	    $remainingMinutes = $totalMinutes % ($hoursInDay * $minutesInHour);
+
+	    // Calculate hours from remaining minutes
+	    $remainingHours = intdiv($remainingMinutes, $minutesInHour);
+	    // Calculate remaining minutes after extracting hours
+	    $minutes = $remainingMinutes % $minutesInHour;
+
+	    $formattedTime = '';
+
+	    // Format days
+	    if ($days > 0) {
+	        $formattedTime .= $days . ' Hari';
+	    }
+
+	    // Format hours
+	    if ($remainingHours > 0) {
+	        if (!empty($formattedTime)) $formattedTime .= ' ';
+	        $formattedTime .= $remainingHours . ' Jam';
+	    }
+
+	    // Format minutes
+	    if ($minutes > 0 || empty($formattedTime)) {
+	        if (!empty($formattedTime)) $formattedTime .= ' ';
+	        $formattedTime .= $minutes . ' Menit';
+	    }
+
+	    return $formattedTime;
 	}
 
 	function getDaysInMonth($month, $year) {
 	    return cal_days_in_month(CAL_GREGORIAN, $month, $year);
 	}
 
-	public function getPerformanceByClient(Request $request){
-		$start = microtime(true);
-		$client_acronym = $request->client;
-		$client_id = $request->client;
-
-		$occurring_ticket = DB::table('ticketing__activity')
-			->select('ticketing__activity.id_ticket','ticketing__activity.activity','ticketing__id.id_client')
-			->whereIn('ticketing__activity.id',function ($query) {
-				$query->select(DB::raw("MAX(id) AS activity"))
-					->from('ticketing__activity')
-					->groupBy('id_ticket');
-				})
-			->join('ticketing__id','ticketing__id.id_ticket','=','ticketing__activity.id_ticket')
-			->where('ticketing__activity.activity','<>','CANCEL')
-			->where('ticketing__activity.activity','<>','CLOSE')
-			// ->where('ticketing__id.id_client','=',2)
-			->get();
-
-		$occurring_ticket_result = TicketingDetail::with([
-				'first_activity_ticket:id_ticket,date,operator',
-				'lastest_activity_ticket',
-				'id_detail:id_ticket,id',
-			])
-			->whereIn('id_ticket',
-				// $occurring_ticket->where('id_client','=',DB::table('ticketing__client')
-				// 	->where('client_acronym','=',$client_acronym)
-				// 	->value('id')
-				// )
-				$occurring_ticket->where('id_client','=',$client_id)->pluck('id_ticket')
-			)
-			->orderBy('id','DESC')
-			->get();
-
-		$limit = $occurring_ticket_result->count() > 100 ? 100 : 100 - $occurring_ticket_result->count();
-
-		$finish_ticket = DB::table('ticketing__activity')
-			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
-			->whereIn('ticketing__activity.id',function ($query) {
-				$query->select(DB::raw("MAX(`id`) AS `activity`"))
-					->from('ticketing__activity')
-					->groupBy('id_ticket');
-				})
-			// ->whereRaw('`ticketing__activity`.`id_ticket` LIKE "%/' . $client_acronym . '/%"')
-			->whereIn('ticketing__activity.id_ticket',function($query) use ($client_id){
-				$query->select('ticketing__id.id_ticket')
-					->from('ticketing__id')
-					->where('ticketing__id.id_client','=',$client_id);
-			})
-			->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
-			->orderBy('ticketing__activity.id','DESC')
-			->take($limit)
-			->get()
-			->pluck('id_ticket');
-
-		$finish_ticket_result = TicketingDetail::with([
-				'first_activity_ticket:id_ticket,date,operator',
-				'lastest_activity_ticket',
-				'id_detail:id_ticket,id',
-			])
-			->whereIn('id_ticket',$finish_ticket)
-			->orderBy('id','DESC')
-			->get();
-
-		$result = $occurring_ticket_result->merge($finish_ticket_result);
-
-		// $time_elapsed_secs = microtime(true) - $start;
-		// return $time_elapsed_secs;
-
-		$currentMonth = date('n'); // Numeric representation of a month without leading zeros
-		$currentYear = date('Y');
-
-		$totalDaysInMonth = $this->getDaysInMonth($currentMonth, $currentYear);
-		$totalHoursInMonth = 30 * 24; // Total hours in the current month
-
-		// Calculate SLA for each ticket
-		foreach ($result as $ticket) {
-			// return $ticket->reporting_time;
-		    $firstActivity = $ticket->first_activity_ticket;
-		    $lastActivity = $ticket->lastest_activity_ticket;
-
-		    if ($firstActivity && $lastActivity) {
-		        $openTime = strtotime($firstActivity->date);
-		        $closeTime = strtotime($lastActivity->date);
-
-				if ($closeTime > $openTime){
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $closeTime - $openTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				} else {
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $openTime - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				}
-
-		        // $resolutionTimeInSeconds = $closeTime - $openTime;
-		        // $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-		        // // Calculate SLA
-		        // $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-
-		        if ($slaResolutionPercentage <= 80) {
-		            $ticket->highlight_sla_resolution = true;
-		        } else {
-		            $ticket->highlight_sla_resolution = false;
-		        }
-
-		        $ticket->sla_resolution_percentage = $slaResolutionPercentage . "%";
-		    } else {
-		        $ticket->sla_resolution_percentage = '-'; 
-		        $ticket->highlight_sla_resolution = false;
-		    }
-
-		    if ($firstActivity) {
-		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
-		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
-
-		        // Calculate Response Time Percentage
-		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
-
-		        // Add Response Time Percentage to ticket
-		        $ticket->response_time_percentage = $responseTimePercentage . "%";
-
-		        if ($responseTimePercentage <= 80) {
-		            $ticket->highlight_sla_response = true;
-		        } else {
-		            $ticket->highlight_sla_response = false;
-		        }
-		    } else {
-		        $ticket->response_time_percentage = '-'; // or any default value
-		        $ticket->highlight_sla_response = false;
-		    }
-		}
-
-		return array("data" => $result);
-	}
-
 	public function getPerformanceByFilter(Request $request){
 		$start = microtime(true);
 
-		$limitAll = 200;
+		$limitAll = 500;
+
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
 
 		$occurring_ticket = DB::table('ticketing__activity')
-			->select('ticketing__activity.id_ticket','ticketing__activity.activity','ticketing__id.id_client')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
 			->whereIn('ticketing__activity.id',function ($query) {
 				$query->select(DB::raw("MAX(id) AS activity"))
 					->from('ticketing__activity')
 					->groupBy('id_ticket');
-				})
-			->join('ticketing__id','ticketing__id.id_ticket','=','ticketing__activity.id_ticket')
-			->where('ticketing__activity.activity','<>','CANCEL')
-			->where('ticketing__activity.activity','<>','CLOSE');
+				});
+
+		return $occurring_ticket->get();
+
+		if (isset($request->activity)) {
+			$occurring_ticket->where('ticketing__activity.activity','<>',$request->activity);
+		}else{
+			if ($request->attention == true) {
+				$occurring_ticket
+					->where('ticketing__activity.activity','<>','CANCEL')
+					->where('ticketing__activity.activity','<>','CLOSE')
+					->where('ticketing__activity.activity','<>','PENDING');
+			}
+		}
 
 		if(isset($request->client)){
-			$id_client_pid = new TicketingEmailSetting();
-			if ($request->client[0] == "INTERNAL") {
-				$id_client_pid = TicketingEmailSetting::where('client','like','%INTERNAL%')->get()->pluck('id');
-				$id_client = TicketingClient::select('id')->where('client_acronym','INTR')->get()->pluck('id');
-			}elseif ($request->client[0] == "ADMF") {
-				$id_client_pid = TicketingEmailSetting::where('client','like','%Adira%')->get()->pluck('id');
-				$id_client = TicketingClient::select('id')->where('client_acronym','ADRF')->get()->pluck('id');
-			}else{
-				$cek_code = TB_Contact::select(DB::raw("(CASE 
-					WHEN `code` = 'BBJB' THEN 'BJBR'
-					WHEN `code` = 'BKES' THEN 'BPJS'  
-					WHEN `code` = 'PBLG' THEN 'BULG' 
-					WHEN `code` = 'BGDN' THEN 'PGAN' 
-					WHEN `code` = 'ADRF' THEN 'ADMF' 
-					WHEN `code` = 'BTNI' THEN 'BBTN' 
-					ELSE `code` END) as code"),'customer_legal_name')->where('id_customer',$request->client)->first();
-				$id_client = TicketingClient::select('id')->where('client_acronym',$cek_code->code)->get()->pluck('id');
-				$id_client_pid = TicketingEmailSetting::where('client','like','%'.$cek_code->customer_legal_name.'%')->get()->pluck('id');
-
-				if ($id_client_pid != "") {
-					$id_client_pid = $id_client_pid;
+			if ($request->client != '') {
+				$id_client_pid = new TicketingEmailSetting();
+				if ($request->client[0] == "INTERNAL") {
+					$id_client_pid = TicketingEmailSetting::where('client','like','%INTERNAL%')->get()->pluck('id');
+					$id_client = TicketingClient::select('id')->where('client_acronym','INTR')->get()->pluck('id');
+				}elseif ($request->client[0] == "13") {
+					$id_client_pid = TicketingEmailSetting::where('client','like','%Adira%')->get()->pluck('id');
+					$id_client = TicketingClient::select('id')->where('client_acronym','ADRF')->get()->pluck('id');
 				}else{
-					$id_client_pid = [''];
+					$cek_code = TB_Contact::select(DB::raw("(CASE 
+						WHEN `code` = 'BBJB' THEN 'BJBR'
+						WHEN `code` = 'BKES' THEN 'BPJS'  
+						WHEN `code` = 'PBLG' THEN 'BULG' 
+						WHEN `code` = 'BGDN' THEN 'PGAN' 
+						WHEN `code` = 'ADRF' THEN 'ADMF' 
+						WHEN `code` = 'BTNI' THEN 'BBTN' 
+						ELSE `code` END) as code"),'customer_legal_name')->where('id_customer',$request->client)->first();
+					$id_client = TicketingClient::select('id')->where('client_acronym',$cek_code->code)->get()->pluck('id');
+					$id_client_pid = TicketingEmailSetting::where('client','like','%'.$cek_code->customer_legal_name.'%')->get()->pluck('id');
+
+					if ($id_client_pid != "") {
+						$id_client_pid = $id_client_pid;
+					}else{
+						$id_client_pid = [''];
+					}
 				}
+
+				$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request,$id_client_pid,$id_client){
+					$query->select('ticketing__id.id_ticket')
+						->from('ticketing__id')
+						->whereIn('ticketing__id.id_client_pid',$id_client_pid)
+						->orWhereIn('ticketing__id.id_client',$id_client);
+				});
 			}
-
-			$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request,$id_client_pid,$id_client){
-				$query->select('ticketing__id.id_ticket')
-					->from('ticketing__id')
-					->whereIn('ticketing__id.id_client_pid',$id_client_pid)
-					->orWhereIn('ticketing__id.id_client',$id_client);
-			});
-
-			// return $occurring_ticket->get();
-
 		}
 		
 		if(isset($request->severity)){
@@ -1250,18 +2072,27 @@ class TicketingController extends Controller
 			$occurring_ticket->whereBetween('ticketing__activity.date', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
 		}
 
-		$occurring_ticket->get();
+		$occurring_ticket = $occurring_ticket->get();
 
 		$occurring_ticket_result = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
 				'lastest_activity_ticket',
 				'id_detail:id_ticket,id,id_client',
 			])
-			->joinSub($occurring_ticket,'occurring_ticket',function($join){
-				$join->on('occurring_ticket.id_ticket','=','ticketing__detail.id_ticket');
-			})
-			->orderBy('id','DESC')
-			->get();
+			->whereIn('id_ticket',$occurring_ticket->pluck('id_ticket'))
+			->orderBy('id','DESC');
+
+		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+    	} elseif($cek_role->name_role == 'Managed Service Manager'){
+    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+    	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+    	} else {
+    		$occurring_ticket_result = $occurring_ticket_result->where('id_ticket','like','%'.date('Y'));
+    	}
+
+    	$occurring_ticket_result = $occurring_ticket_result->get();
 
 		$finish_ticket = DB::table('ticketing__activity')
 			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
@@ -1269,41 +2100,43 @@ class TicketingController extends Controller
 				$query->select(DB::raw("MAX(`id`) AS `activity`"))
 					->from('ticketing__activity')
 					->groupBy('id_ticket');
-				});
+			});
 
 		if(isset($request->client)){
-			$id_client_pid = new TicketingEmailSetting();
-			if ($request->client[0] == "INTERNAL") {
-				$id_client_pid = TicketingEmailSetting::where('client','like','%INTERNAL%')->get()->pluck('id');
-				$id_client = TicketingClient::select('id')->where('client_acronym','INTR')->get()->pluck('id');
-			}elseif ($request->client[0] == "ADMF") {
-				$id_client_pid = TicketingEmailSetting::where('client','like','%ADMF%')->get()->pluck('id');
-				$id_client = TicketingClient::select('id')->where('client_acronym','ADRF')->get()->pluck('id');
-			}else{
-				$cek_code = TB_Contact::select(DB::raw("(CASE 
-					WHEN `code` = 'BBJB' THEN 'BJBR'
-					WHEN `code` = 'BKES' THEN 'BPJS'  
-					WHEN `code` = 'PBLG' THEN 'BULG' 
-					WHEN `code` = 'BGDN' THEN 'PGAN' 
-					WHEN `code` = 'ADRF' THEN 'ADMF' 
-					WHEN `code` = 'BTNI' THEN 'BBTN' 
-					ELSE `code` END) as code"),'customer_legal_name')->where('id_customer',$request->client)->first();
-				$id_client = TicketingClient::select('id')->where('client_acronym',$cek_code->code)->get()->pluck('id');
-				$id_client_pid = TicketingEmailSetting::where('client','like','%'.$cek_code->customer_legal_name.'%')->get()->pluck('id');
-
-				if ($id_client_pid != "") {
-					$id_client_pid = $id_client_pid;
+			if ($request->client != '') {
+				$id_client_pid = new TicketingEmailSetting();
+				if ($request->client[0] == "INTERNAL") {
+					$id_client_pid = TicketingEmailSetting::where('client','like','%INTERNAL%')->get()->pluck('id');
+					$id_client = TicketingClient::select('id')->where('client_acronym','INTR')->get()->pluck('id');
+				}elseif ($request->client[0] == "13") {
+					$id_client_pid = TicketingEmailSetting::where('client','like','%Adira%')->get()->pluck('id');
+					$id_client = TicketingClient::select('id')->where('client_acronym','ADRF')->get()->pluck('id');
 				}else{
-					$id_client_pid = [''];
-				}
-			}
+					$cek_code = TB_Contact::select(DB::raw("(CASE 
+						WHEN `code` = 'BBJB' THEN 'BJBR'
+						WHEN `code` = 'BKES' THEN 'BPJS'  
+						WHEN `code` = 'PBLG' THEN 'BULG' 
+						WHEN `code` = 'BGDN' THEN 'PGAN' 
+						WHEN `code` = 'ADRF' THEN 'ADMF' 
+						WHEN `code` = 'BTNI' THEN 'BBTN' 
+						ELSE `code` END) as code"),'customer_legal_name')->where('id_customer',$request->client)->first();
+					$id_client = TicketingClient::select('id')->where('client_acronym',$cek_code->code)->get()->pluck('id');
+					$id_client_pid = TicketingEmailSetting::where('client','like','%'.$cek_code->customer_legal_name.'%')->get()->pluck('id');
 
-			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request,$id_client_pid,$id_client){
-				$query->select('ticketing__id.id_ticket')
-					->from('ticketing__id')
-					->whereIn('ticketing__id.id_client_pid',$id_client_pid)
-					->orWhereIn('ticketing__id.id_client',$id_client);
-			});
+					if ($id_client_pid != "") {
+						$id_client_pid = $id_client_pid;
+					}else{
+						$id_client_pid = [''];
+					}
+				}
+
+				$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request,$id_client_pid,$id_client){
+					$query->select('ticketing__id.id_ticket')
+						->from('ticketing__id')
+						->whereIn('ticketing__id.id_client_pid',$id_client_pid)
+						->orWhereIn('ticketing__id.id_client',$id_client);
+				});
+			}
 		}
 
 		if(isset($request->severity)){
@@ -1313,6 +2146,7 @@ class TicketingController extends Controller
 					->whereIn('ticketing__detail.severity',$request->severity);
 			});
 		}
+
 		if(isset($request->type)){
 			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
 				$query->select('ticketing__detail.id_ticket')
@@ -1329,111 +2163,158 @@ class TicketingController extends Controller
 
 		$limit = $occurring_ticket_result->count() > $limitAll ? $limitAll : $limitAll - $occurring_ticket_result->count();
 
-		$finish_ticket->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
+		if ($request->attention == true) {
+			$finish_ticket
+			->where('ticketing__activity.activity','<>','CLOSE')
+            ->where('ticketing__activity.activity','<>','CANCEL')
+            ->where('ticketing__activity.activity','<>','PENDING')
+			// ->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE" OR `ticketing__activity`.`activity` = "PENDING")')
 			->orderBy('ticketing__activity.id','DESC')
-			->take($limit);
+			->get();
+		}else{
+			$finish_ticket
+			// ->where('ticketing__activity.activity','<>','CLOSE')
+   //          ->where('ticketing__activity.activity','<>','CANCEL')
+            ->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
+			->orderBy('ticketing__activity.id','DESC')
+			->get();
+		}
 
 		$finish_ticket_result = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
 				'lastest_activity_ticket',
 				'id_detail:id_ticket,id,id_client',
 			])
-			->joinSub($finish_ticket,'finish_ticket',function($join){
-				$join->on('finish_ticket.id_ticket','=','ticketing__detail.id_ticket');
-			})
-			// ->whereIn('id_ticket',$finish_ticket)
-			->orderBy('id','DESC')
-			->get();
+			->whereIn('id_ticket',$finish_ticket->pluck('id_ticket'))
+			->take($limit)
+			->orderBy('id','DESC');
 
-		$result = $occurring_ticket_result->merge($finish_ticket_result);
+		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+    	} elseif($cek_role->name_role == 'Managed Service Manager'){
+    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+    	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+    	} else {
+    		$finish_ticket_result = $finish_ticket_result->where('id_ticket','like','%'.date('Y'));
+    	}
 
-		$currentMonth = date('n'); // Numeric representation of a month without leading zeros
-		$currentYear = date('Y');
+		$finish_ticket_result = $finish_ticket_result->get();
 
-		$totalDaysInMonth = $this->getDaysInMonth($currentMonth, $currentYear);
-		$totalHoursInMonth = 30 * 24; // Total hours in the current month
+        $result = $occurring_ticket_result->merge($finish_ticket_result);
 
-		// Calculate SLA for each ticket
+        $year = Ticketing::select(DB::raw("SUBSTRING_INDEX(id_ticket, '/', -1) as year"))->where('id_ticket','!=',null)
+    		->distinct()->get()->pluck('year');
+
+        $resolution_time_summary = $this->calculateResolutionTimeFilter($year);
+
+        $result->each(function ($ticket) use ($resolution_time_summary) {
+            $resolutionData = $resolution_time_summary->firstWhere('id_ticket', $ticket->id_ticket);
+
+            if ($resolutionData) {
+                $ticket->progress_to_pending_seconds = $resolutionData->total_progress_to_pending_seconds;
+                $ticket->progress_to_close_seconds = $resolutionData->total_progress_to_close_seconds;
+                $ticket->open_to_progress_seconds = $resolutionData->last_open_to_progress_seconds;
+            } else {
+                $ticket->progress_to_pending_seconds = null;
+                $ticket->progress_to_close_seconds = null;
+                $ticket->open_to_progress_seconds = null;
+            }
+        });
+
+		$standardSLA = SLAProject::where('pid', 'Standard')->first();
+		$customSLA = SLAProject::whereIn('pid', $result->pluck('pid')->filter())->get()->keyBy('pid');
+
 		foreach ($result as $ticket) {
-			// return $ticket->reporting_time;
+		    $sla = $ticket->pid ? ($customSLA[$ticket->pid] ?? $standardSLA) : $standardSLA;
+
+		    switch ($ticket->severity) {
+		        case '1':
+		            $slaResponse = $sla->sla_response;
+		            $slaResolution = $sla->sla_resolution_critical;
+		            break;
+		        case '2':
+		            $slaResponse = $sla->sla_response;
+		            $slaResolution = $sla->sla_resolution_major;
+		            break;
+		        case '3':
+		            $slaResponse = $sla->sla_response;
+		            $slaResolution = $sla->sla_resolution_moderate;
+		            break;
+		        case '4':
+		        case '0':
+		            $slaResponse = $sla->sla_response;
+		            $slaResolution = $sla->sla_resolution_minor;
+		            break;
+		        default:
+		            $slaResponse = $sla->sla_response;
+		            $slaResolution = $sla->sla_resolution_minor;
+		            break;
+		    }
+
 		    $firstActivity = $ticket->first_activity_ticket;
 		    $lastActivity = $ticket->lastest_activity_ticket;
 
-		    if ($firstActivity && $lastActivity) {
-		        $openTime = strtotime($firstActivity->date);
-		        $closeTime = strtotime($lastActivity->date);
+		    $now = time();
+		    $openTime = $firstActivity ? strtotime($firstActivity->date) : null;
+		    $closeTime = $lastActivity ? strtotime($lastActivity->date) : null;
 
-				if ($closeTime > $openTime){
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = $closeTime - strtotime($ticket->reporting_time);
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
+		    if ($openTime && $closeTime) {
+		        $resolutionTimeInHours = ($ticket->open_to_progress_seconds + $ticket->progress_to_pending_seconds + $ticket->progress_to_close_seconds) / 3600;
+		        $resolutionTimeInMinutes = ($ticket->open_to_progress_seconds + $ticket->progress_to_pending_seconds + $ticket->progress_to_close_seconds) / 60;
 
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $closeTime - $openTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				} else {
-					if(isset($openTime)){
-						$resolutionTimeInSeconds = strtotime($ticket->reporting_time) - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					} else {
-						$resolutionTimeInSeconds = $openTime - $closeTime;
-				        $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-				        // Calculate SLA
-				        $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-					}
-				}
-
-		        // $resolutionTimeInSeconds = $closeTime - $openTime;
-		        // $resolutionTimeInHours = $resolutionTimeInSeconds / 3600;
-
-		        // // Calculate SLA
-		        // $slaResolutionPercentage = 100 - round(($resolutionTimeInHours / $totalHoursInMonth) * 100,2);
-
-		        if ($slaResolutionPercentage <= 80) {
-		            $ticket->highlight_sla_resolution = true;
+		        if ($request->export == true) {
+		        	$ticket->sla_resolution_percentage = number_format($resolutionTimeInMinutes,2);
 		        } else {
-		            $ticket->highlight_sla_resolution = false;
+		        	$ticket->sla_resolution_percentage = $this->formatResolutionTime($resolutionTimeInHours);
 		        }
-
-		        $ticket->sla_resolution_percentage = $slaResolutionPercentage . "%";
-
+		        $ticket->highlight_sla_resolution = $resolutionTimeInHours <= $slaResolution && $resolutionTimeInHours != 0 ? 'Comply' : 'Not-Comply';
 		    } else {
-		        $ticket->sla_resolution_percentage = '-'; 
-		        $ticket->highlight_sla_resolution = false;
+		        $ticket->sla_resolution_percentage = '-';
+		        $ticket->highlight_sla_resolution = 'Not-Comply';
 		    }
 
-		    if ($firstActivity) {
+		    if ($openTime) {
 		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
-		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+		        $responseTimeInHours = $responseTimeInSeconds / 3600;
 
-		        // Calculate Response Time Percentage
-		        $responseTimePercentage = $this->calculateResponseTimePercentage($responseTimeInMinutes);
-
-		        // Add Response Time Percentage to ticket
-		        $ticket->response_time_percentage = $responseTimePercentage . "%";
-
-		        if ($responseTimePercentage <= 80) {
-		            $ticket->highlight_sla_response = true;
+		        if ($request->export == true) {
+		        	$ticket->response_time_percentage = number_format(($responseTimeInSeconds / 60),2);
 		        } else {
-		            $ticket->highlight_sla_response = false;
+		        	$ticket->response_time_percentage = $this->formatResponseTime($responseTimeInSeconds / 60);
+		        }
+
+		        
+		        $ticket->highlight_sla_response = $responseTimeInHours <= $slaResponse ? 'Comply' : 'Not-Comply';
+
+		        if ($lastActivity->activity !== 'CLOSE') {
+		            $durationFromLastActivity = $now - strtotime($lastActivity->date);
+		            $ticket->duration_from_last_activity = $this->formatDuration($durationFromLastActivity);
+		        } else {
+		            $ticket->duration_from_last_activity = '-';
 		        }
 		    } else {
 		        $ticket->response_time_percentage = '-';
-		        $ticket->highlight_sla_response = false;
+		        $ticket->highlight_sla_response = 'Not-Comply';
+		        $ticket->duration_from_last_activity = '-';
 		    }
 		}
 
 		return array("data" => $result);
+	}
+
+	private function formatDuration($durationInSeconds)
+	{
+	    $days = floor($durationInSeconds / (60 * 60 * 24));
+	    $hours = floor(($durationInSeconds % (60 * 60 * 24)) / (60 * 60));
+	    $minutes = floor(($durationInSeconds % (60 * 60)) / 60);
+
+	    $timeComponents = [];
+	    if ($days > 0) $timeComponents[] = "{$days} days";
+	    if ($hours > 0) $timeComponents[] = "{$hours} hours";
+	    $timeComponents[] = "{$minutes} minutes";
+
+	    return implode(', ', $timeComponents);
 	}
 
 	public function getPerformanceByTicket(Request $req){
@@ -1446,7 +2327,7 @@ class TicketingController extends Controller
 				'resolve',
 				'all_activity_ticket',
 				'first_activity_ticket',
-				'id_detail:id_ticket,id,id_client'
+				'id_detail:id_ticket,id,id_client,id_client_pid'
 			])
 			->first();
 
@@ -1459,6 +2340,19 @@ class TicketingController extends Controller
 	}
 
 	public function getPerformanceBySeverity(Request $req){
+		$startDate = $req->start . ' 00:00:01';
+		$endDate = $req->end . ' 23:59:59';
+
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
 			->whereIn('ticketing__activity.id',function ($query) {
@@ -1477,8 +2371,26 @@ class TicketingController extends Controller
 			])
 			->whereIn('id_ticket',$occurring_ticket->pluck('id_ticket'))
 			->where('severity',$req->severity)
-			->orderBy('id','DESC')
-			->get();
+			->orderBy('id','DESC');
+
+		if (isset($request->pid)) {
+			$occurring_ticket_result = $occurring_ticket_result->where('pid',$req->pid);
+		} elseif (isset($request->start) && isset($req->end)){
+			$occurring_ticket_result = $occurring_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+		} else {
+			$occurring_ticket_result = $occurring_ticket_result;
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$occurring_ticket_result = $occurring_ticket_result->where('id_ticket','like','%'.date('Y'));
+        	}
+		}
+
+		$occurring_ticket_result = $occurring_ticket_result->get();
 
 		$finish_ticket = DB::table('ticketing__activity')
 			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
@@ -1502,13 +2414,725 @@ class TicketingController extends Controller
 			->whereIn('id_ticket',$finish_ticket)
 			->where('severity',$req->severity)
 			->take($limit)
-			->orderBy('id','DESC')
+			->orderBy('id','DESC');
+
+
+		if (isset($req->pid)) {
+			$finish_ticket_result = $finish_ticket_result->where('pid',$req->pid);
+		} elseif (isset($req->start) && isset($req->end)){
+			$finish_ticket_result = $finish_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+		} else {
+			$occurring_ticket_result = $occurring_ticket_result;
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$finish_ticket_result = $finish_ticket_result->where('id_ticket','like','%'.date('Y'));
+        	}
+		}
+		
+		$finish_ticket_result = $finish_ticket_result->limit(10)->get();
+
+		$result = $occurring_ticket_result->merge($finish_ticket_result);
+		$id_ticket = $result->pluck('id_ticket');
+
+		$statusSequence = DB::table('ticketing__activity')
+            ->select('id_ticket', 'activity', 'date')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY id_ticket ORDER BY date) as seq_num');
+
+        $pairedProgressPending = DB::table(DB::raw("({$statusSequence->toSql()}) as ppp"))
+        ->select('ppp.id_ticket', 'ppp.date as progress_time', DB::raw('MIN(n.date) as pending_time'))
+        ->leftJoin(DB::raw("({$statusSequence->toSql()}) as n"), function ($join) {
+            $join->on('ppp.id_ticket', '=', 'n.id_ticket')
+                 ->where('n.activity', 'PENDING')
+                 ->whereColumn('n.seq_num', '>', 'ppp.seq_num');
+        })
+        ->where('ppp.activity', 'ON PROGRESS')
+        ->groupBy('ppp.id_ticket', 'ppp.date');
+
+        $progressToClose = DB::table('ticketing__activity as ptc')
+            ->select('id_ticket', DB::raw('MIN(date) as close_time'))
+            ->where('activity', 'CLOSE')
+            ->groupBy('id_ticket');
+
+        $openToProgress = DB::table('ticketing__activity as opt')
+            ->select(
+                'id_ticket',
+                DB::raw('MIN(CASE WHEN activity = "ON PROGRESS" THEN date END) as first_on_progress_time'),
+                DB::raw('MIN(CASE WHEN activity = "OPEN" THEN date END) as open_time')
+            )
+            ->groupBy('id_ticket');
+
+        $resolution_time = DB::table('ticketing__activity as pppp')
+            ->select(
+                'pppp.id_ticket',
+                DB::raw('TIMESTAMPDIFF(SECOND, progress_time, pending_time) as progress_to_pending_seconds'),
+                DB::raw('CASE WHEN pending_time IS NOT NULL THEN NULL ELSE TIMESTAMPDIFF(SECOND, progress_time, close_time) END as progress_to_close_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, opt.open_time, opt.first_on_progress_time) as open_to_progress_seconds')
+            )
+            ->joinSub($pairedProgressPending, 'ppp', 'pppp.id_ticket', '=', 'ppp.id_ticket')
+            ->joinSub($progressToClose, 'ptc', 'pppp.id_ticket', '=', 'ptc.id_ticket')
+            ->joinSub($openToProgress,'opt', 'pppp.id_ticket', '=', 'opt.id_ticket')
+            ->whereIn('pppp.id_ticket',$id_ticket)
+            ->orderBy('pppp.id_ticket')
+            ->groupBy('pppp.id_ticket','progress_to_close_seconds','progress_to_pending_seconds','open_to_progress_seconds');
+
+        $resolution_time_summary = DB::table($resolution_time, 'resolution')
+            ->select(
+                'resolution.id_ticket',
+                DB::raw('SUM(CASE WHEN resolution.progress_to_pending_seconds IS NOT NULL THEN resolution.progress_to_pending_seconds ELSE 0 END) as total_progress_to_pending_seconds'),
+                DB::raw('SUM(CASE WHEN resolution.progress_to_close_seconds IS NOT NULL THEN resolution.progress_to_close_seconds ELSE 0 END) as total_progress_to_close_seconds'),
+                DB::raw('MAX(resolution.open_to_progress_seconds) as last_open_to_progress_seconds')
+            )
+            ->groupBy('resolution.id_ticket')
+            ->orderBy('resolution.id_ticket')
+            ->get();
+
+        $result->each(function ($ticket) use ($resolution_time_summary) {
+            $resolutionData = $resolution_time_summary->firstWhere('id_ticket', $ticket->id_ticket);
+
+            if ($resolutionData) {
+                $ticket->progress_to_pending_seconds = $resolutionData->total_progress_to_pending_seconds;
+                $ticket->progress_to_close_seconds = $resolutionData->total_progress_to_close_seconds;
+                $ticket->open_to_progress_seconds = $resolutionData->last_open_to_progress_seconds;
+            } else {
+                $ticket->progress_to_pending_seconds = null;
+                $ticket->progress_to_close_seconds = null;
+                $ticket->open_to_progress_seconds = null;
+            }
+        });
+
+        foreach ($result as $ticket) {
+			if ($ticket->pid == '') {
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} elseif(isset($ticket->pid)){
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} else {
+				$cekSla = SLAProject::where('pid',$ticket->pid)->first();
+			}
+
+			if ($ticket->severity == '1') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_critical as sla_resolution')->first();
+			} elseif ($ticket->severity == '2') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_major as sla_resolution')->first();
+			} elseif ($ticket->severity == '3') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_moderate as sla_resolution')->first();
+			} elseif ($ticket->severity == '4') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			} elseif ($ticket->severity == '0'){
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			}
+
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    $now = time();
+
+		    $openTime = $closeTime = $durationFromLastActivity = null;
+
+		    if ($firstActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		    }
+
+		    if ($firstActivity && $lastActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		        $closeTime = strtotime($lastActivity->date);
+
+                $resolutionTimeInHours = ((float)$ticket->open_to_progress_seconds + (float)$ticket->progress_to_pending_seconds + $ticket->progress_to_close_seconds) / 3600;
+				$formattedTime         = $this->formatResolutionTime($resolutionTimeInHours);
+
+		        $ticket->sla_resolution_percentage = $formattedTime;
+
+		        if ($resolutionTimeInHours <= $cekSla->sla_resolution) {
+		        	if ($resolutionTimeInHours == 0) {
+                		$ticket->highlight_sla_resolution = 'Not-Comply';
+                	}else{
+                    	$ticket->highlight_sla_resolution = 'Comply';
+                	}
+		        } else {
+		            $ticket->highlight_sla_resolution = 'Not-Comply';
+		        }
+		    } else {
+		        $ticket->sla_resolution_percentage = '-'; 
+		        $ticket->highlight_sla_resolution = 'Not-Comply';
+		    }
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
+		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+		        $responseTimeInMinutesFormatted = number_format($responseTimeInMinutes,2);
+
+		        $formattedTime = $this->formatResponseTime($responseTimeInMinutes);
+
+		        $ticket->response_time_percentage = $formattedTime;
+
+		        if ($responseTimeInHour <= $cekSla->sla_response) {
+		            $ticket->highlight_sla_response = 'Comply';
+		        } else {
+		            $ticket->highlight_sla_response = 'Not-Comply';
+		        }
+
+		        if ($lastActivity->activity != 'CLOSE') {
+		            $durationFromLastActivity = $now - strtotime($lastActivity->date);
+		        }
+
+		        if ($lastActivity->activity !== 'CLOSE') {
+		            $durationFromLastActivity = $now - strtotime($lastActivity->date);
+		            $ticket->duration_from_last_activity = $this->formatDuration($durationFromLastActivity);
+		        } else {
+		            $ticket->duration_from_last_activity = '-';
+		        }
+		    } else {
+		        $ticket->response_time_percentage = '-';
+		        $ticket->highlight_sla_response = 'Not-Comply';
+		        $ticket->duration_from_last_activity = '-';
+
+		    }
+		}
+
+		return array('data' => $result);
+	}
+
+	public function getPerformanceByNeedAttention(Request $req){
+		$startDate = $req->start . ' 00:00:01';
+		$endDate = $req->end . ' 23:59:59';
+
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
+		$occurring_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(id) AS activity"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			->where('ticketing__activity.activity','<>','CLOSE')
+            ->where('ticketing__activity.activity','<>','CANCEL')
+            ->where('ticketing__activity.activity','<>','PENDING')
 			->get();
+
+		$occurring_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->whereIn('id_ticket',$occurring_ticket->pluck('id_ticket'))
+			->orderBy('id','DESC');
+
+		if (isset($req->pid)) {
+			$occurring_ticket_result = $occurring_ticket_result->where('pid',$req->pid);
+		} elseif (isset($req->start) && isset($req->end)){
+			$occurring_ticket_result = $occurring_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+		} else {
+			$occurring_ticket_result = $occurring_ticket_result;
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$occurring_ticket_result = $occurring_ticket_result->where('id_ticket','like','%'.date('Y'));
+        	}
+		}
+
+		$occurring_ticket_result = $occurring_ticket_result->get();
+
+		$finish_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(`id`) AS `activity`"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			// ->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
+			->where('ticketing__activity.activity','<>','CLOSE')
+            ->where('ticketing__activity.activity','<>','CANCEL')
+            ->where('ticketing__activity.activity','<>','PENDING')
+			->orderBy('ticketing__activity.id','DESC')
+			->get()
+			->pluck('id_ticket');
+
+		$limit = $occurring_ticket_result->count() > 100 ? 100 : 100 - $occurring_ticket_result->count();
+
+		$finish_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->whereIn('id_ticket',$finish_ticket)
+			->take($limit)
+			->orderBy('id','DESC');
+
+
+		if (isset($req->pid)) {
+			$finish_ticket_result = $finish_ticket_result->where('pid',$req->pid);
+		} elseif (isset($req->start) && isset($req->end)){
+			$finish_ticket_result = $finish_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+		} else {
+			$occurring_ticket_result = $occurring_ticket_result;
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$finish_ticket_result = $finish_ticket_result->where('id_ticket','like','%'.date('Y'));
+        	}
+		}
+		
+		$finish_ticket_result = $finish_ticket_result->get();
 
 		$result = $occurring_ticket_result->merge($finish_ticket_result);
 
+		$id_ticket = $result->pluck('id_ticket');
+
+		$statusSequence = DB::table('ticketing__activity')
+            ->select('id_ticket', 'activity', 'date')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY id_ticket ORDER BY date) as seq_num');
+
+        $pairedProgressPending = DB::table(DB::raw("({$statusSequence->toSql()}) as ppp"))
+        ->select('ppp.id_ticket', 'ppp.date as progress_time', DB::raw('MIN(n.date) as pending_time'))
+        ->leftJoin(DB::raw("({$statusSequence->toSql()}) as n"), function ($join) {
+            $join->on('ppp.id_ticket', '=', 'n.id_ticket')
+                 ->where('n.activity', 'PENDING')
+                 ->whereColumn('n.seq_num', '>', 'ppp.seq_num');
+        })
+        ->where('ppp.activity', 'ON PROGRESS')
+        ->groupBy('ppp.id_ticket', 'ppp.date');
+
+        $progressToClose = DB::table('ticketing__activity as ptc')
+            ->select('id_ticket', DB::raw('MIN(date) as close_time'))
+            ->where('activity', 'CLOSE')
+            ->groupBy('id_ticket');
+
+        $openToProgress = DB::table('ticketing__activity as opt')
+            ->select(
+                'id_ticket',
+                DB::raw('MIN(CASE WHEN activity = "ON PROGRESS" THEN date END) as first_on_progress_time'),
+                DB::raw('MIN(CASE WHEN activity = "OPEN" THEN date END) as open_time')
+            )
+            ->groupBy('id_ticket');
+
+        $resolution_time = DB::table('ticketing__activity as pppp')
+            ->select(
+                'pppp.id_ticket',
+                DB::raw('TIMESTAMPDIFF(SECOND, progress_time, pending_time) as progress_to_pending_seconds'),
+                DB::raw('CASE WHEN pending_time IS NOT NULL THEN NULL ELSE TIMESTAMPDIFF(SECOND, progress_time, close_time) END as progress_to_close_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, opt.open_time, opt.first_on_progress_time) as open_to_progress_seconds')
+            )
+            ->joinSub($pairedProgressPending, 'ppp', 'pppp.id_ticket', '=', 'ppp.id_ticket')
+            ->joinSub($progressToClose, 'ptc', 'pppp.id_ticket', '=', 'ptc.id_ticket')
+            ->joinSub($openToProgress,'opt', 'pppp.id_ticket', '=', 'opt.id_ticket')
+            ->whereIn('pppp.id_ticket',$id_ticket)
+            ->orderBy('pppp.id_ticket')
+            ->groupBy('pppp.id_ticket','progress_to_close_seconds','progress_to_pending_seconds','open_to_progress_seconds');
+
+        $resolution_time_summary = DB::table($resolution_time, 'resolution')
+            ->select(
+                'resolution.id_ticket',
+                DB::raw('SUM(CASE WHEN resolution.progress_to_pending_seconds IS NOT NULL THEN resolution.progress_to_pending_seconds ELSE 0 END) as total_progress_to_pending_seconds'),
+                DB::raw('SUM(CASE WHEN resolution.progress_to_close_seconds IS NOT NULL THEN resolution.progress_to_close_seconds ELSE 0 END) as total_progress_to_close_seconds'),
+                DB::raw('MAX(resolution.open_to_progress_seconds) as last_open_to_progress_seconds')
+            )
+            ->groupBy('resolution.id_ticket')
+            ->orderBy('resolution.id_ticket')
+            ->get();
+
+        $result->each(function ($ticket) use ($resolution_time_summary) {
+            $resolutionData = $resolution_time_summary->firstWhere('id_ticket', $ticket->id_ticket);
+
+            if ($resolutionData) {
+                $ticket->progress_to_pending_seconds = $resolutionData->total_progress_to_pending_seconds;
+                $ticket->progress_to_close_seconds = $resolutionData->total_progress_to_close_seconds;
+                $ticket->open_to_progress_seconds = $resolutionData->last_open_to_progress_seconds;
+            } else {
+                $ticket->progress_to_pending_seconds = null;
+                $ticket->progress_to_close_seconds = null;
+                $ticket->open_to_progress_seconds = null;
+            }
+        });
+
+        foreach ($result as $ticket) {
+			if ($ticket->pid == '') {
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} elseif(isset($ticket->pid)){
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} else {
+				$cekSla = SLAProject::where('pid',$ticket->pid)->first();
+			}
+
+			if ($ticket->severity == '1') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_critical as sla_resolution')->first();
+			} elseif ($ticket->severity == '2') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_major as sla_resolution')->first();
+			} elseif ($ticket->severity == '3') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_moderate as sla_resolution')->first();
+			} elseif ($ticket->severity == '4') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			} elseif ($ticket->severity == '0'){
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			}
+
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    $now = time();
+
+		    $openTime = $closeTime = $durationFromLastActivity = null;
+
+		    if ($firstActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		    }
+
+		    if ($firstActivity && $lastActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		        $closeTime = strtotime($lastActivity->date);
+
+                $resolutionTimeInHours = ((float)$ticket->open_to_progress_seconds + (float)$ticket->progress_to_pending_seconds + $ticket->progress_to_close_seconds) / 3600;
+				$formattedTime         = $this->formatResolutionTime($resolutionTimeInHours);
+
+		        $ticket->sla_resolution_percentage = $formattedTime;
+
+		        if ($resolutionTimeInHours <= $cekSla->sla_resolution) {
+		        	if ($resolutionTimeInHours == 0) {
+                		$ticket->highlight_sla_resolution = 'Not-Comply';
+                	}else{
+                    	$ticket->highlight_sla_resolution = 'Comply';
+                	}
+		        } else {
+		            $ticket->highlight_sla_resolution = 'Not-Comply';
+		        }
+		    } else {
+		        $ticket->sla_resolution_percentage = '-'; 
+		        $ticket->highlight_sla_resolution = 'Not-Comply';
+		    }
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
+		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+		        $responseTimeInMinutesFormatted = number_format($responseTimeInMinutes,2);
+		        $responseTimeInHour = $responseTimeInMinutes / 60;
+		        $responseTimeInHourFormatted = number_format($responseTimeInHour,2);
+
+		        $formattedTime = $this->formatResponseTime($responseTimeInMinutes);
+
+		        $ticket->response_time_percentage = $formattedTime;
+
+		        if ($responseTimeInHour <= $cekSla->sla_response) {
+		            $ticket->highlight_sla_response = 'Comply';
+		        } else {
+		            $ticket->highlight_sla_response = 'Not-Comply';
+		        }
+
+		        if ($lastActivity->activity !== 'CLOSE') {
+		            $durationFromLastActivity = $now - strtotime($lastActivity->date);
+		            $ticket->duration_from_last_activity = $this->formatDuration($durationFromLastActivity);
+		        } else {
+		            $ticket->duration_from_last_activity = '-';
+		        }
+		    } else {
+		        $ticket->response_time_percentage = '-';
+		        $ticket->highlight_sla_response = 'Not-Comply';
+		        $ticket->duration_from_last_activity = '-';
+
+		    }
+		}
+
+		return array('data' => $result);
+	}
+
+	public function getPerformanceByActivity(Request $req){
+		$startDate = $req->start . ' 00:00:01';
+		$endDate = $req->end . ' 23:59:59';
+
+		$nik = Auth::User()->nik;
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
+
+        $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+
+        $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
+        $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
+        $getPidCC = DB::table('ticketing__user')->whereIn('nik',$nikCC)->get()->pluck('pid');
+
+		$occurring_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(id) AS activity"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			->where('ticketing__activity.activity',$req->activity)
+			->get();
+
+		$occurring_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->whereIn('id_ticket',$occurring_ticket->pluck('id_ticket'))
+			->orderBy('id','DESC');
+
+		if (isset($request->pid)) {
+			$occurring_ticket_result = $occurring_ticket_result->where('pid',$req->pid);
+		} elseif (isset($request->start) && isset($req->end)){
+			$occurring_ticket_result = $occurring_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+		} else {
+			$occurring_ticket_result = $occurring_ticket_result;
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$occurring_ticket_result = $occurring_ticket_result->where('id_ticket','like','%'.date('Y'));
+        	}
+		}
+
+		$occurring_ticket_result = $occurring_ticket_result->get();
+
+		$finish_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(`id`) AS `activity`"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			// ->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
+			->where('ticketing__activity.activity',$req->activity)
+			->orderBy('ticketing__activity.id','DESC')
+			->get()
+			->pluck('id_ticket');
+
+		$limit = $occurring_ticket_result->count() > 100 ? 100 : 100 - $occurring_ticket_result->count();
+
+		$finish_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->whereIn('id_ticket',$finish_ticket)
+			->take($limit)
+			->orderBy('id','DESC');
+
+
+		if (isset($req->pid)) {
+			$finish_ticket_result = $finish_ticket_result->where('pid',$req->pid);
+		} elseif (isset($req->start) && isset($req->end)){
+			$finish_ticket_result = $finish_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+		} else {
+			$occurring_ticket_result = $occurring_ticket_result;
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Managed Service Manager'){
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        	} elseif($cek_role->name_role == 'Customer Relation Manager'){
+        		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        	} else {
+        		$finish_ticket_result = $finish_ticket_result->where('id_ticket','like','%'.date('Y'));
+        	}
+		}
+		
+		$finish_ticket_result = $finish_ticket_result->get();
+
+		$result = $occurring_ticket_result->merge($finish_ticket_result);
+		$id_ticket = $result->pluck('id_ticket');
+
+		$statusSequence = DB::table('ticketing__activity')
+            ->select('id_ticket', 'activity', 'date')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY id_ticket ORDER BY date) as seq_num');
+
+        $pairedProgressPending = DB::table(DB::raw("({$statusSequence->toSql()}) as ppp"))
+        ->select('ppp.id_ticket', 'ppp.date as progress_time', DB::raw('MIN(n.date) as pending_time'))
+        ->leftJoin(DB::raw("({$statusSequence->toSql()}) as n"), function ($join) {
+            $join->on('ppp.id_ticket', '=', 'n.id_ticket')
+                 ->where('n.activity', 'PENDING')
+                 ->whereColumn('n.seq_num', '>', 'ppp.seq_num');
+        })
+        ->where('ppp.activity', 'ON PROGRESS')
+        ->groupBy('ppp.id_ticket', 'ppp.date');
+
+        $progressToClose = DB::table('ticketing__activity as ptc')
+            ->select('id_ticket', DB::raw('MIN(date) as close_time'))
+            ->where('activity', 'CLOSE')
+            ->groupBy('id_ticket');
+
+        $openToProgress = DB::table('ticketing__activity as opt')
+            ->select(
+                'id_ticket',
+                DB::raw('MIN(CASE WHEN activity = "ON PROGRESS" THEN date END) as first_on_progress_time'),
+                DB::raw('MIN(CASE WHEN activity = "OPEN" THEN date END) as open_time')
+            )
+            ->groupBy('id_ticket');
+
+        $resolution_time = DB::table('ticketing__activity as pppp')
+            ->select(
+                'pppp.id_ticket',
+                DB::raw('TIMESTAMPDIFF(SECOND, progress_time, pending_time) as progress_to_pending_seconds'),
+                DB::raw('CASE WHEN pending_time IS NOT NULL THEN NULL ELSE TIMESTAMPDIFF(SECOND, progress_time, close_time) END as progress_to_close_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, opt.open_time, opt.first_on_progress_time) as open_to_progress_seconds')
+            )
+            ->joinSub($pairedProgressPending, 'ppp', 'pppp.id_ticket', '=', 'ppp.id_ticket')
+            ->joinSub($progressToClose, 'ptc', 'pppp.id_ticket', '=', 'ptc.id_ticket')
+            ->joinSub($openToProgress,'opt', 'pppp.id_ticket', '=', 'opt.id_ticket')
+            ->whereIn('pppp.id_ticket',$id_ticket)
+            ->orderBy('pppp.id_ticket')
+            ->groupBy('pppp.id_ticket','progress_to_close_seconds','progress_to_pending_seconds','open_to_progress_seconds');
+
+        $resolution_time_summary = DB::table($resolution_time, 'resolution')
+            ->select(
+                'resolution.id_ticket',
+                DB::raw('SUM(CASE WHEN resolution.progress_to_pending_seconds IS NOT NULL THEN resolution.progress_to_pending_seconds ELSE 0 END) as total_progress_to_pending_seconds'),
+                DB::raw('SUM(CASE WHEN resolution.progress_to_close_seconds IS NOT NULL THEN resolution.progress_to_close_seconds ELSE 0 END) as total_progress_to_close_seconds'),
+                DB::raw('MAX(resolution.open_to_progress_seconds) as last_open_to_progress_seconds')
+            )
+            ->groupBy('resolution.id_ticket')
+            ->orderBy('resolution.id_ticket')
+            ->get();
+
+        $result->each(function ($ticket) use ($resolution_time_summary) {
+            $resolutionData = $resolution_time_summary->firstWhere('id_ticket', $ticket->id_ticket);
+
+            if ($resolutionData) {
+                $ticket->progress_to_pending_seconds = $resolutionData->total_progress_to_pending_seconds;
+                $ticket->progress_to_close_seconds = $resolutionData->total_progress_to_close_seconds;
+                $ticket->open_to_progress_seconds = $resolutionData->last_open_to_progress_seconds;
+            } else {
+                $ticket->progress_to_pending_seconds = null;
+                $ticket->progress_to_close_seconds = null;
+                $ticket->open_to_progress_seconds = null;
+            }
+        });
+
+        foreach ($result as $ticket) {
+			if ($ticket->pid == '') {
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} elseif(isset($ticket->pid)){
+				$cekSla = SLAProject::where('pid','Standard')->first();
+			} else {
+				$cekSla = SLAProject::where('pid',$ticket->pid)->first();
+			}
+
+			if ($ticket->severity == '1') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_critical as sla_resolution')->first();
+			} elseif ($ticket->severity == '2') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_major as sla_resolution')->first();
+			} elseif ($ticket->severity == '3') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_moderate as sla_resolution')->first();
+			} elseif ($ticket->severity == '4') {
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			} elseif ($ticket->severity == '0'){
+				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			}
+
+		    $firstActivity = $ticket->first_activity_ticket;
+		    $lastActivity = $ticket->lastest_activity_ticket;
+
+		    $now = time();
+
+		    $openTime = $closeTime = $durationFromLastActivity = null;
+
+		    if ($firstActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		    }
+
+		    if ($firstActivity && $lastActivity) {
+		        $openTime = strtotime($firstActivity->date);
+		        $closeTime = strtotime($lastActivity->date);
+
+                $resolutionTimeInHours = ((float)$ticket->open_to_progress_seconds + (float)$ticket->progress_to_pending_seconds + $ticket->progress_to_close_seconds) / 3600;
+				$formattedTime         = $this->formatResolutionTime($resolutionTimeInHours);
+
+		        $ticket->sla_resolution_percentage = $formattedTime;
+
+		        if ($resolutionTimeInHours <= $cekSla->sla_resolution) {
+		            if ($resolutionTimeInHours == 0) {
+                		$ticket->highlight_sla_resolution = 'Not-Comply';
+                	}else{
+                    	$ticket->highlight_sla_resolution = 'Comply';
+                	}
+		        } else {
+		            $ticket->highlight_sla_resolution = 'Not-Comply';
+		        }
+		    } else {
+		        $ticket->sla_resolution_percentage = '-'; 
+		        $ticket->highlight_sla_resolution = 'Not-Comply';
+		    }
+
+		    if ($firstActivity) {
+		        $responseTimeInSeconds = $openTime - strtotime($ticket->reporting_time);
+		        $responseTimeInMinutes = $responseTimeInSeconds / 60;
+		        $responseTimeInMinutesFormatted = number_format($responseTimeInMinutes,2);
+		        $responseTimeInHour = $responseTimeInMinutes / 60;
+		        $responseTimeInHourFormatted = number_format($responseTimeInHour,2);
+
+		        $formattedTime = $this->formatResponseTime($responseTimeInMinutes);
+
+		        $ticket->response_time_percentage = $formattedTime;
+
+		        if ($responseTimeInHour <= $cekSla->sla_response) {
+		            $ticket->highlight_sla_response = 'Comply';
+		        } else {
+		            $ticket->highlight_sla_response = 'Not-Comply';
+		        }
+
+		        if ($lastActivity->activity != 'CLOSE') {
+		            $durationFromLastActivity = $now - strtotime($lastActivity->date);
+		        }
+
+		        if ($lastActivity->activity !== 'CLOSE') {
+		            $durationFromLastActivity = $now - strtotime($lastActivity->date);
+		            $ticket->duration_from_last_activity = $this->formatDuration($durationFromLastActivity);
+		        } else {
+		            $ticket->duration_from_last_activity = '-';
+		        }
+		    } else {
+		        $ticket->response_time_percentage = '-';
+		        $ticket->highlight_sla_response = 'Not-Comply';
+		        $ticket->duration_from_last_activity = '-';
+
+		    }
+		}
+
 		return array('data' => $result);
 	}	
+
+	public function updateTicketPendingBeforeClose(Request $request)
+	{
+		$activityTicketUpdate = new TicketingActivity();
+		$activityTicketUpdate->id_ticket = $request->id_ticket;
+		// $activityTicketUpdate->date = Carbon::parse($request->datePendingClose . ' ' . $request->startTimePendingClose)->format('Y-m-d H:i:s');
+		$activityTicketUpdate->date = $request->startDateTimePendingClose;
+		$activityTicketUpdate->activity = "ON PROGRESS";
+		$activityTicketUpdate->operator = Auth::user()->name;
+		$activityTicketUpdate->note = $request->saveNotePendingClose;
+		$activityTicketUpdate->save();
+
+		$activityTicketUpdate = new TicketingActivity();
+		$activityTicketUpdate->id_ticket = $request->id_ticket;
+		// $activityTicketUpdate->date = Carbon::parse($request->datePendingClose . ' ' . $request->endTimePendingClose)->format('Y-m-d H:i:s');
+		$activityTicketUpdate->date = $request->endDateTimePendingClose;
+		$activityTicketUpdate->activity = "ON PROGRESS";
+		$activityTicketUpdate->operator = Auth::user()->name;
+		$activityTicketUpdate->note = $request->saveNotePendingClose;
+		$activityTicketUpdate->save();
+
+		return $request->endDateTimePendingClose;
+	}
 
 	public function setUpdateTicket(Request $req){
 		if(isset($req->email)){
@@ -1626,16 +3250,48 @@ class TicketingController extends Controller
 
 		$activityTicketUpdate->save();
 
-		$cek_client_pid = Ticketing::where("id_ticket",$request->id_ticket)->first();
+		$cek_client_pid = Ticketing::where("id_ticket",$req->id_ticket)->first();
 		if ($cek_client_pid->id_client_pid) {
-			$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
+			$clientIdFilter = Ticketing::where('id_ticket',$req->id_ticket)
 				->first()->id_client_pid;
+
+			$cek_code = TicketingEmailSetting::where('id',$clientIdFilter)->first()->client;
+
+			if ($cek_code == "INTERNAL") {
+				$clientIdFilter = 'INTERNAL';
+			}else{
+				$customer = explode("- ", $cek_code)[1];
+
+				$id_client = TB_Contact::where('customer_legal_name', 'LIKE', '%'.$customer.'%')->first()->id_customer;
+				$clientIdFilter = $id_client;
+			}			
 		}else{
 			$clientIdFilter = Ticketing::with('client_ticket')
-			->where('id_ticket',$request->id_ticket)
-			->first()
-			->client_ticket
-			->id;
+				->where('id_ticket',$req->id_ticket)
+				->first()
+				->client_ticket
+				->id;
+
+			$cek_code = TicketingClient::where('id',$clientIdFilter)->first()->client_acronym;
+
+			if ($cek_code == 'BPJS') {
+	    		$cek_code = 'BKES';
+	    	} elseif($cek_code == 'PBLG'){
+	    		$cek_code = 'BULG';
+	    	} elseif($cek_code == 'BGDN'){
+	    		$cek_code = 'PGAN';
+	    	} elseif($cek_code == 'BJBR'){
+	    		$cek_code = 'BBJB';
+	    	} elseif($cek_code == 'ADRF'){
+	    		$cek_code = 'ADMF';
+	    	} elseif($cek_code == 'BTNI'){
+	    		$cek_code = 'BBTN';
+	    	} else {
+	    		$cek_code = $cek_code;
+	    	}
+
+			$id_client = TB_Contact::where('code',$cek_code)->first()->id_customer;
+			$clientIdFilter = $id_client;
 		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
@@ -1725,6 +3381,8 @@ class TicketingController extends Controller
 	}
 
 	public function sendEmailPending(Request $request){
+		Log::info([$request->to,$request->cc,$request->subject,$request->body]);
+
 		$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
 
 		$activityTicketUpdate = new TicketingActivity();
@@ -1759,12 +3417,44 @@ class TicketingController extends Controller
 		if ($cek_client_pid->id_client_pid) {
 			$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
 				->first()->id_client_pid;
+
+			$cek_code = TicketingEmailSetting::where('id',$clientIdFilter)->first()->client;
+
+			if ($cek_code == "INTERNAL") {
+				$clientIdFilter = 'INTERNAL';
+			}else{
+				$customer = explode("- ", $cek_code)[1];
+
+				$id_client = TB_Contact::where('customer_legal_name', 'LIKE', '%'.$customer.'%')->first()->id_customer;
+				$clientIdFilter = $id_client;
+			}			
 		}else{
-		$clientIdFilter = Ticketing::with('client_ticket')
-			->where('id_ticket',$request->id_ticket)
-			->first()
-			->client_ticket
-			->id;
+			$clientIdFilter = Ticketing::with('client_ticket')
+				->where('id_ticket',$request->id_ticket)
+				->first()
+				->client_ticket
+				->id;
+
+			$cek_code = TicketingClient::where('id',$clientIdFilter)->first()->client_acronym;
+
+			if ($cek_code == 'BPJS') {
+	    		$cek_code = 'BKES';
+	    	} elseif($cek_code == 'PBLG'){
+	    		$cek_code = 'BULG';
+	    	} elseif($cek_code == 'BGDN'){
+	    		$cek_code = 'PGAN';
+	    	} elseif($cek_code == 'BJBR'){
+	    		$cek_code = 'BBJB';
+	    	} elseif($cek_code == 'ADRF'){
+	    		$cek_code = 'ADMF';
+	    	} elseif($cek_code == 'BTNI'){
+	    		$cek_code = 'BBTN';
+	    	} else {
+	    		$cek_code = $cek_code;
+	    	}
+
+			$id_client = TB_Contact::where('code',$cek_code)->first()->id_customer;
+			$clientIdFilter = $id_client;
 		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
@@ -1802,12 +3492,44 @@ class TicketingController extends Controller
 		if ($cek_client_pid->id_client_pid) {
 			$clientIdFilter = Ticketing::where('id_ticket',$request->id_ticket)
 				->first()->id_client_pid;
+
+			$cek_code = TicketingEmailSetting::where('id',$clientIdFilter)->first()->client;
+
+			if ($cek_code == "INTERNAL") {
+				$clientIdFilter = 'INTERNAL';
+			}else{
+				$customer = explode("- ", $cek_code)[1];
+
+				$id_client = TB_Contact::where('customer_legal_name', 'LIKE', '%'.$customer.'%')->first()->id_customer;
+				$clientIdFilter = $id_client;
+			}			
 		}else{
-		$clientIdFilter = Ticketing::with('client_ticket')
-			->where('id_ticket',$request->id_ticket)
-			->first()
-			->client_ticket
-			->id;
+			$clientIdFilter = Ticketing::with('client_ticket')
+				->where('id_ticket',$request->id_ticket)
+				->first()
+				->client_ticket
+				->id;
+
+			$cek_code = TicketingClient::where('id',$clientIdFilter)->first()->client_acronym;
+
+			if ($cek_code == 'BPJS') {
+	    		$cek_code = 'BKES';
+	    	} elseif($cek_code == 'PBLG'){
+	    		$cek_code = 'BULG';
+	    	} elseif($cek_code == 'BGDN'){
+	    		$cek_code = 'PGAN';
+	    	} elseif($cek_code == 'BJBR'){
+	    		$cek_code = 'BBJB';
+	    	} elseif($cek_code == 'ADRF'){
+	    		$cek_code = 'ADMF';
+	    	} elseif($cek_code == 'BTNI'){
+	    		$cek_code = 'BBTN';
+	    	} else {
+	    		$cek_code = $cek_code;
+	    	}
+
+			$id_client = TB_Contact::where('code',$cek_code)->first()->id_customer;
+			$clientIdFilter = $id_client;
 		}
 
 		$activityTicketUpdate->client_id_filter = $clientIdFilter;
@@ -1884,7 +3606,7 @@ class TicketingController extends Controller
                     "id_ticket" => $req->id_ticket,
                     "reopen_reason" => $req->reason,
                     "requestor" => Auth::user()->name,
-                    "customer" => TicketingClient::find($ticket->id_detail->id_client)->client_name,
+                    "customer" => TicketingEmailSetting::find($ticket->id_detail->id_client_pid)->client,
 					"problem" => $ticket->problem,
 					"last_update" => $ticket->lastest_activity_ticket->date . " [" . $ticket->lastest_activity_ticket->operator . "] - " . $ticket->lastest_activity_ticket->activity,
 					"url" =>  url("/requestChange?id_requestChange=" . $requestChange->id)
@@ -2269,7 +3991,6 @@ class TicketingController extends Controller
 			$bulan = '';
 		}
 		
-
 		// return $client . "/" . $bulan . "/" . $req->year;
 		// return $bulan . "/" . $req->year;
 		// $value1 = $this->getPerformance5($client,$bulan . "/" . $req->year);
@@ -2279,7 +4000,7 @@ class TicketingController extends Controller
 		$title = 'Laporan Bulanan '. $client . ' '. $bulan . " " . $req->year;
 
 		$spreadsheet->getProperties()->setCreator('SIP')
-			->setLastModifiedBy('Rama Agastya')
+			->setLastModifiedBy('SIMS-APP')
 			->setTitle($title);
 
 		// Rename worksheet
@@ -2556,8 +4277,6 @@ class TicketingController extends Controller
 			$repeat = 0;
 			foreach ($value1 as $key => $value) {
 				if($value->last_status[0] == "CLOSE"){
-					
-
 					$spreadsheet->getActiveSheet()->getStyle('B' . (7 + $index))->getFill()->setFillType(Fill::FILL_SOLID);
 					$spreadsheet->getActiveSheet()->getStyle('B' . (7 + $index))->getFill()->getStartColor()->setARGB('FF2E75B6');
 					$spreadsheet->getActiveSheet()->getStyle('B' . (7 + $index) .  ':K' . (7 + $index))->applyFromArray($border);
@@ -2727,8 +4446,6 @@ class TicketingController extends Controller
 			->orderBy('id','ASC')
 			->get();
 		}
-
-		
 
 		return $residual_ticket_result;
 	}
@@ -4408,22 +6125,56 @@ class TicketingController extends Controller
         return $data; 
    	}
 
+   	public function getCategorybyAsset(Request $request)
+   	{
+   		$getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
+
+        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->select('category as id', 'category as text')->where('category','like','%'.request('q').'%');
+
+	    $data = $data->where('tb_asset_management_detail.id_asset',$request->id_asset)->distinct()->get();
+
+   		// if ($request->client == "INTERNAL") {
+	    //     $data = $data->where('tb_asset_management_detail.pid',$request->client)->distinct()->get();
+   		// }elseif($request->client == 'ADMF'){
+   		// 	$cus_legal_name = TB_Contact::where('code',$request->client)->first()->customer_legal_name;
+
+	    //     $data = $data->where('tb_asset_management_detail.client',$cus_legal_name)->distinct()->get();
+   		// }else{
+   		// 	$cus_legal_name = TB_Contact::where('id_customer',$request->client)->first()->customer_legal_name;
+
+	    //     $data = $data->where('tb_asset_management_detail.client',$cus_legal_name)->distinct()->get();
+   		// }
+   		
+        return $data; 
+   	}
+
     public function getPidByPic(Request $request)
     {
+    	$client_acronym_long = '';
     	if ($request->client_acronym == 'BPJS') {
     		$client_acronym = 'BKES';
+    		$client_acronym_long = $client_acronym;
     	} elseif($request->client_acronym == 'PBLG'){
     		$client_acronym = 'BULG';
+    		$client_acronym_long = $client_acronym;
     	} elseif($request->client_acronym == 'BGDN'){
     		$client_acronym = 'PGAN';
+    		$client_acronym_long = $client_acronym;
     	} elseif($request->client_acronym == 'BJBR'){
     		$client_acronym = 'BBJB';
+    	} elseif($request->client_acronym == 'BBJB'){
+    		$client_acronym_long = 'BANK JABAR';
+    		$client_acronym = $request->client_acronym;
     	} elseif($request->client_acronym == 'ADRF'){
     		$client_acronym = 'ADMF';
+    		$client_acronym_long = $client_acronym;
     	} elseif($request->client_acronym == 'BTNI'){
     		$client_acronym = 'BBTN';
     	} else {
     		$client_acronym = $request->client_acronym;
+    		$client_acronym_long = $client_acronym;
     	}
 
     	$cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
@@ -4441,7 +6192,7 @@ class TicketingController extends Controller
 			        ]);
     			}elseif ($request->client_acronym == "ADMF") {
     				$data = collect([
-    					['id' => 'ADMF',   // Replace with your desired ID
+    					['id' => 13,   // Replace with your desired ID
 			            'text' => 'ADMF']
 			        ]);
     			}else{
@@ -4456,8 +6207,10 @@ class TicketingController extends Controller
     			$data = DB::table('tb_id_project')
 	    			->join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
 	    			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
-	    			->where('pid', 'like', '%'.$client_acronym.'%')
-	    			->where('ticketing__user.nik',Auth::User()->nik)
+	    			->whereRaw(
+                        "(`pid` LIKE ? AND `ticketing__user`.`nik` = ? OR `pid` LIKE ? AND `ticketing__user`.`nik` = ?)", 
+                        ['%'.$client_acronym.'%', Auth::User()->nik, '%'.$client_acronym_long.'%', Auth::User()->nik]
+                    )
     				->groupBy('id_project','name_project')
 	    			->get();
     		}	
@@ -4576,4 +6329,178 @@ class TicketingController extends Controller
 
     	return $activityTicketUpdate;
     }
+
+    public function getSLAProject()
+    {
+    	$data = SLAProject::orderBy('id','asc')->get();
+
+    	return array("data"=>$data);
+    }
+
+    public function makeExportTicketPerformance(Request $req){
+		// Create new Spreadsheet object
+		$spreadsheet = new Spreadsheet();
+
+		// Set document properties
+		$title = '';
+		if (isset($req->start) && isset($req->end)) {
+			$title = 'Report Ticket ' . '(' . Carbon::parse($req->start)->format('d F Y H:i') . ' - ' . Carbon::parse($req->end)->format('d F Y H:i') . ')'; 
+		}else{
+			$currentYear = Carbon::now()->year;
+			$startOfYear = Carbon::createFromDate($currentYear)->startOfYear();
+			$endOfYear = Carbon::createFromDate($currentYear)->endOfYear();
+			$title = 'Report Ticket ' . '(' . $startOfYear->format('d F Y H:i') . ' - ' . $endOfYear->format('d F Y H:i') . ')';
+		}
+
+		$spreadsheet->getProperties()->setCreator('SIP')
+			->setLastModifiedBy('SIMS-APP')
+			->setTitle($title);
+
+		$ticketSheet = new Worksheet($spreadsheet,'Ticket - Reporting');
+        $spreadsheet->addSheet($ticketSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:M1')->applyFromArray($titleStyle);
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $head['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $sheet->getStyle('A1:M1')->applyFromArray($headerStyle);;
+
+        $headerContent = ["ID Ticket",	
+        				 "Asset", 
+        				 "Ticket Number", 
+        				 "Open",
+        				 "Location - Problem", 
+        				 "PIC",
+        				 "Severity",
+        				 "Status",
+        				 "Response Time (Minute)",
+        				 "Status Response Time", 
+        				 "Resolution Time (Minute)", 
+        				 "Status Resolution Time", 
+        				 "Operator"
+        				];
+
+        $sheet->fromArray($headerContent,NULL,'A1');  
+
+        $dataPost = [];
+        if (isset($req->client)) {
+        	$dataPost['client'] = [$req->client];
+        }
+
+        if (isset($req->pid)) {
+        	$dataPost['pid'] = $req->pid;
+        }
+
+        if (isset($req->start)) {
+        	$dataPost['startDate'] = $req->start;
+        }
+
+        if (isset($req->end)) {
+        	$dataPost['endDate'] = $req->end;
+        }
+
+        if (isset($req->severity)) {
+        	$dataPost['severity'] = $req->severity;
+        }
+
+        if (isset($req->type)) {
+        	$dataPost['type'] = [$req->type];
+        }
+
+        if (isset($req->activity)) {
+        	$dataPost['activity'] = $req->activity;
+        }
+
+        if (isset($req->attention)) {
+        	$dataPost['attention'] = true;
+        }
+
+        $dataPost['export'] = true;
+
+        $request = Request::create('/getPerformanceByFilter', 'POST', $dataPost);
+
+		$valueRequest = $this->getPerformanceByFilter($request);
+
+        $valueRequest = $valueRequest['data']->map(function($item,$key) use ($sheet){
+        	$open_time = Carbon::parse($item->first_activity_ticket->date)->format('d F Y H:i');
+			$problem = $item->location . " -  " . $item->problem;
+
+			if($item->type_ticket == "TT"){
+				$item->type_ticket = "Trouble Ticket";
+			} elseif ($item->type_ticket == "PM"){
+				$item->type_ticket = "Preventive Maintenance";
+			} elseif ($item->type_ticket == "PL"){
+				$item->type_ticket = "Permintaan Layanan";
+			} elseif ($item->type_ticket == "PP"){
+				$item->type_ticket = "Permintaan Penawaran";
+			}
+
+			if($item->severity == 1){
+				$item->severity_numerical = 1;
+				$item->severity = $item->type_ticket . ' - Critical';
+			} elseif($item->severity == 2) {
+				$item->severity_numerical = 2;
+				$item->severity = $item->type_ticket . ' - Major';
+			} elseif($item->severity == 3) {
+				$item->severity_numerical = 3;
+				$item->severity = $item->type_ticket . ' - Moderate';
+			} elseif($item->severity == 4) {
+				$item->severity_numerical = 4;
+				$item->severity = $item->type_ticket . ' - Minor';
+			} elseif($item->severity == 0){
+				$item->severity_numerical = 0;
+				$item->severity = $item->type_ticket;
+			}
+
+			$sheet->setCellValueExplicit('A'.($key + 2),$item->id_ticket,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('B'.($key + 2),$item->id_atm,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('C'.($key + 2),(string)$item->ticket_number_3party,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('D'.($key + 2),$open_time,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('E'.($key + 2),$problem,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('F'.($key + 2),$item->pic,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('G'.($key + 2),$item->severity,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('H'.($key + 2),$item->lastest_activity_ticket->activity,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('I'.($key + 2),$item->response_time_percentage,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('J'.($key + 2),$item->highlight_sla_response,DataType::TYPE_STRING);
+			$sheet->setCellValueExplicit('K'.($key + 2),$item->sla_resolution_percentage,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('L'.($key + 2),$item->highlight_sla_resolution,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('M'.($key + 2),$item->lastest_activity_ticket->operator,DataType::TYPE_STRING);
+        });
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setWidth(50);
+        $sheet->getColumnDimension('F')->setWidth(20);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setAutoSize(true);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+
+        $name = $title . '.xlsx';        
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+		$location = public_path() . '/report/' . $name;
+		ob_end_clean();
+		$writer->save($location);
+		return $name;
+	}
 }

@@ -24,6 +24,7 @@ use App\PMOIssue;
 use App\PMOProgressReport;
 use App\PMOProgressDisti;
 use App\PMOFinalReport;
+use App\SLAProject;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -149,7 +150,7 @@ class PMProjectController extends Controller
   //       if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
   //        $data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array','type_project_array']);
   //           // $data = PMO::get();
-  //       } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
+  //       } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
   //        $data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
         //      ->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
         //      ->get()->makeHidden(['type_project_array','phase']);
@@ -1280,46 +1281,25 @@ class PMProjectController extends Controller
         // }
     }
 
-    public function updateProjectCharter(Request $request)
+    public function updateDocProjectCharter(Request $request)
     {
         $update = PMOProjectCharter::where('id_project', $request->id_pmo)->first();
-        $update->status = 'New';
-        $update->save();
-
-        $cek_sign = PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->first();
-
-        if (PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->exists()) {
-            PMOActivity::where('id', $cek_sign->id)->delete(); 
-        }
-
-        $store_activity = new PMOActivity();
-        $store_activity->id_project = $request['id_pmo'];
-        
-        $store_activity->operator = Auth::User()->name;
-        if (PMOActivity::where('id_project', $request['id_pmo'])->exists()) {
-            $store_activity->phase = 'Update Project Charter';
-            $store_activity->activity = 'Update Project Charter';
-        } else {
-            $store_activity->phase = 'New Project Charter';
-            $store_activity->activity = 'Create New Project Charter';
-        }
-        
-        $store_activity->date_time = Carbon::now()->toDateTimeString();
-        $store_activity->save();
-
         $get_id_pmo = PMO::where('id', $request->id_pmo)->first();
         $directory = "PMO/";
 
         $get_dokumen = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->join('tb_pmo_doc_project_charter', 'tb_pmo_doc_project_charter.id_project_charter', 'tb_pmo_project_charter.id')->join('tb_pmo_document', 'tb_pmo_document.id', 'tb_pmo_doc_project_charter.id_document')->select('document_name', 'document_location', 'link_drive', 'tb_pmo_document.id as id_document', 'tb_pmo_doc_project_charter.id as id_doc_project_charter', 'tb_pmo_doc_project_charter.id_project_charter')->where('tb_pmo.id', $request->id_pmo)->get();
 
-        if (isset($get_dokumen)) {
-            foreach ($get_dokumen as $key => $value) {
-                PMODocumentProjectCharter::where('id_project_charter',$value->id_project_charter)->delete(); 
+        $count = PMODocument::join('tb_pmo_doc_project_charter', 'tb_pmo_doc_project_charter.id_document', 'tb_pmo_document.id')->join('tb_pmo_project_charter','tb_pmo_project_charter.id','tb_pmo_doc_project_charter.id_project_charter')->where('tb_pmo_project_charter.id_project', $request->id_pmo)->count();
 
-                PMODocument::where('id', $value->id_document)->delete();
-            }
-        }
+        // if (isset($get_dokumen)) {
+        //     foreach ($get_dokumen as $key => $value) {
+        //         PMODocumentProjectCharter::where('id_project_charter',$value->id_project_charter)->delete(); 
 
+        //         if ($values->document_location) {
+        //             PMODocument::where('id', $value->id_document)->delete();
+        //         }
+        //     }
+        // }
         if ($request->inputPO != '-') {
             $allowedfileExtension   = ['pdf', 'PDF'];
             $file                   = $request->file('inputPO');
@@ -1330,44 +1310,79 @@ class PMProjectController extends Controller
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
-            $tambah_po = new PMODocument();
-            if ($check) {
-                $this->uploadToLocal($request->file('inputPO'),$directory,$nameDoc);
-                $tambah_po->document_name             = "PO";
+            if ($count == 0) {
+                $tambah_po = new PMODocument();
+                if ($check) {
+                    $this->uploadToLocal($request->file('inputPO'),$directory,$nameDoc);
+                    $tambah_po->document_name             = "PO";
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("PMO/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                if ($get_id_pmo->parent_id_drive == null) {
+                    $parentID = $this->googleDriveMakeFolder($request->project_id);
+                } else {
+                    $parentID = [];
+                    $parent_id = explode('"', $get_id_pmo->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                }
+
+                $tambah_po->document_location = "PMO/" . $pdf_name;
+                $tambah_po->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah_po->save();
+
+                $tambah_po_pj = new PMODocumentProjectCharter();
+                $tambah_po_pj->id_project_charter = $update->id;
+                $tambah_po_pj->id_document = $tambah_po->id;
+                $tambah_po_pj->date_time = Carbon::now()->toDateTimeString();
+                $tambah_po_pj->save();
+
+                $update_parent = PMO::where('id', $request['id_pmo'])->first();
+                $update_parent->parent_id_drive = $parentID;
+                $update_parent->save();
             } else {
-                return redirect()->back()->with('alert','Oops! Only pdf');
+                if ($request->isChangePO == "true") {
+                    $getId = PMODocument::join('tb_pmo_doc_project_charter', 'tb_pmo_doc_project_charter.id_document', 'tb_pmo_document.id')->join('tb_pmo_project_charter','tb_pmo_project_charter.id','tb_pmo_doc_project_charter.id_project_charter')->where('tb_pmo_project_charter.id_project',$request->id_pmo)->where('document_name', 'PO')->first();
+
+                    $update_po = PMODocument::where('id', $getId->id_document)->first();
+
+                    if ($check) {
+                        $this->uploadToLocal($request->file('inputPO'),$directory,$nameDoc);
+                        $update_po->document_name             = "PO";
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $parentID = [];
+                    $parent_id = explode('"', $get_id_pmo->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
+
+                    $update_po->document_location = "PMO/" . $pdf_name;
+                    $update_po->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_po->save();
+
+                    $update_parent = PMO::where('id', $request['id_pmo'])->first();
+                    $update_parent->parent_id_drive = $parentID;
+                    $update_parent->save();
+                }
             }
-
-            if(isset($fileName)){
-                $pdf_url = urldecode(url("PMO/" . $nameDoc));
-                $pdf_name = $nameDoc;
-            } else {
-                $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                $pdf_name = 'pdf_lampiran';
-            }
-
-            if ($get_id_pmo->parent_id_drive == null) {
-                $parentID = $this->googleDriveMakeFolder($request->project_id);
-            } else {
-                $parentID = [];
-                $parent_id = explode('"', $get_id_pmo->parent_id_drive)[1];
-                array_push($parentID,$parent_id);
-            }
-
-            $tambah_po->document_location         = "PMO/" . $pdf_name;
-            $tambah_po->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-            $tambah_po->save();
-
-            $tambah_po_pj = new PMODocumentProjectCharter();
-            $tambah_po_pj->id_project_charter = $update->id;
-            $tambah_po_pj->id_document = $tambah_po->id;
-            $tambah_po_pj->date_time = Carbon::now()->toDateTimeString();
-            $tambah_po_pj->save();
-
-            $update_parent = PMO::where('id', $request['id_pmo'])->first();
-            $update_parent->parent_id_drive = $parentID;
-            $update_parent->save();
-
         }
 
         $get_parent_drive = PMO::where('id', $request->id_pmo)->first();
@@ -1382,44 +1397,79 @@ class PMProjectController extends Controller
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
-            $tambah_tor = new PMODocument();
-            if ($check) {
-                $this->uploadToLocal($request->file('inputToR'),$directory,$nameDoc);
-                $tambah_tor->document_name             = "ToR";
+            if ($count == 0) {
+                $tambah_tor = new PMODocument();
+                if ($check) {
+                    $this->uploadToLocal($request->file('inputToR'),$directory,$nameDoc);
+                    $tambah_tor->document_name             = "ToR";
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("PMO/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                if ($get_parent_drive->parent_id_drive == null) {
+                    $parentID = $this->googleDriveMakeFolder($request->project_id);
+                } else {
+                    $parentID = [];
+                    $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                }
+
+                $tambah_tor->document_location         = "PMO/" . $pdf_name;
+                $tambah_tor->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah_tor->save();
+
+                $tambah_tor_pj = new PMODocumentProjectCharter();
+                $tambah_tor_pj->id_project_charter = $update->id;
+                $tambah_tor_pj->id_document = $tambah_tor->id;
+                $tambah_tor_pj->date_time = Carbon::now()->toDateTimeString();
+                $tambah_tor_pj->save();
+
+                $update_parent = PMO::where('id', $request['id_pmo'])->first();
+                $update_parent->parent_id_drive = $parentID;
+                $update_parent->save();
             } else {
-                return redirect()->back()->with('alert','Oops! Only pdf');
-            }
+                if ($request->isChangeToR == "true") {
+                    $getId = PMODocument::join('tb_pmo_doc_project_charter', 'tb_pmo_doc_project_charter.id_document', 'tb_pmo_document.id')->join('tb_pmo_project_charter','tb_pmo_project_charter.id','tb_pmo_doc_project_charter.id_project_charter')->where('tb_pmo_project_charter.id_project', $request->id_pmo)->where('document_name', 'ToR')->first();
 
-            if(isset($fileName)){
-                $pdf_url = urldecode(url("PMO/" . $nameDoc));
-                $pdf_name = $nameDoc;
-            } else {
-                $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                $pdf_name = 'pdf_lampiran';
-            }
+                    $update_tor = PMODocument::where('id', $getId->id_document)->first();
 
-            if ($get_parent_drive->parent_id_drive == null) {
-                $parentID = $this->googleDriveMakeFolder($request->project_id);
-            } else {
-                $parentID = [];
-                $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
-                array_push($parentID,$parent_id);
-            }
+                    if ($check) {
+                        $this->uploadToLocal($request->file('inputToR'),$directory,$nameDoc);
+                        $update_po->document_name             = "ToR";
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
 
-            $tambah_tor->document_location         = "PMO/" . $pdf_name;
-            $tambah_tor->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-            $tambah_tor->save();
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
 
-            $tambah_tor_pj = new PMODocumentProjectCharter();
-            $tambah_tor_pj->id_project_charter = $update->id;
-            $tambah_tor_pj->id_document = $tambah_tor->id;
-            $tambah_tor_pj->date_time = Carbon::now()->toDateTimeString();
-            $tambah_tor_pj->save();
+                    $parentID = [];
+                    $parent_id = explode('"', $get_id_pmo->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
 
+                    $update_tor->document_location = "PMO/" . $pdf_name;
+                    $update_tor->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_tor->save();
 
-            $update_parent = PMO::where('id', $request['id_pmo'])->first();
-            $update_parent->parent_id_drive = $parentID;
-            $update_parent->save();
+                    $update_parent = PMO::where('id', $request['id_pmo'])->first();
+                    $update_parent->parent_id_drive = $parentID;
+                    $update_parent->save();
+                }
+            }            
         }
 
         if ($request->inputSbe != '-') {
@@ -1432,44 +1482,79 @@ class PMProjectController extends Controller
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
-            $tambah_sbe = new PMODocument();
-            if ($check) {
-                $this->uploadToLocal($request->file('inputSbe'),$directory,$nameDoc);
-                $tambah_sbe->document_name             = "SBE";
+            if ($count == 0) {
+                $tambah_sbe = new PMODocument();
+                if ($check) {
+                    $this->uploadToLocal($request->file('inputSbe'),$directory,$nameDoc);
+                    $tambah_sbe->document_name             = "SBE";
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("PMO/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                if ($get_parent_drive->parent_id_drive == null) {
+                    $parentID = $this->googleDriveMakeFolder($request->project_id);
+                } else {
+                    $parentID = [];
+                    $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                }
+
+                $tambah_sbe->document_location         = "PMO/" . $pdf_name;
+                $tambah_sbe->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah_sbe->save();
+
+                $tambah_sbe_pj = new PMODocumentProjectCharter();
+                $tambah_sbe_pj->id_project_charter = $update->id;
+                $tambah_sbe_pj->id_document = $tambah_sbe->id;
+                $tambah_sbe_pj->date_time = Carbon::now()->toDateTimeString();
+                $tambah_sbe_pj->save();
+
+                $update_parent = PMO::where('id', $request['id_pmo'])->first();
+                $update_parent->parent_id_drive = $parentID;
+                $update_parent->save();
             } else {
-                return redirect()->back()->with('alert','Oops! Only pdf');
+                if ($request->isChangeSbe == "true") {
+                    $getId = PMODocument::join('tb_pmo_doc_project_charter', 'tb_pmo_doc_project_charter.id_document', 'tb_pmo_document.id')->join('tb_pmo_project_charter','tb_pmo_project_charter.id','tb_pmo_doc_project_charter.id_project_charter')->where('tb_pmo_project_charter.id_project', $request->id_pmo)->where('document_name', 'SBE')->first();
+
+                    $update_sbe = PMODocument::where('id', $getId->id_document)->first();
+
+                    if ($check) {
+                        $this->uploadToLocal($request->file('inputSbe'),$directory,$nameDoc);
+                        $update_po->document_name             = "SBE";
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $parentID = [];
+                    $parent_id = explode('"', $get_id_pmo->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
+
+                    $update_sbe->document_location = "PMO/" . $pdf_name;
+                    $update_sbe->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_sbe->save();
+
+                    $update_parent = PMO::where('id', $request['id_pmo'])->first();
+                    $update_parent->parent_id_drive = $parentID;
+                    $update_parent->save();
+                }
             }
-
-            if(isset($fileName)){
-                $pdf_url = urldecode(url("PMO/" . $nameDoc));
-                $pdf_name = $nameDoc;
-            } else {
-                $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                $pdf_name = 'pdf_lampiran';
-            }
-
-            if ($get_parent_drive->parent_id_drive == null) {
-                $parentID = $this->googleDriveMakeFolder($request->project_id);
-            } else {
-                $parentID = [];
-                $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
-                array_push($parentID,$parent_id);
-            }
-
-            $tambah_sbe->document_location         = "PMO/" . $pdf_name;
-            $tambah_sbe->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-            $tambah_sbe->save();
-
-            $tambah_sbe_pj = new PMODocumentProjectCharter();
-            $tambah_sbe_pj->id_project_charter = $update->id;
-            $tambah_sbe_pj->id_document = $tambah_sbe->id;
-            $tambah_sbe_pj->date_time = Carbon::now()->toDateTimeString();
-            $tambah_sbe_pj->save();
-
-
-            $update_parent = PMO::where('id', $request['id_pmo'])->first();
-            $update_parent->parent_id_drive = $parentID;
-            $update_parent->save();
         }
 
         // return gettype($request->arrInputDocPendukung);
@@ -1523,9 +1608,79 @@ class PMProjectController extends Controller
             }
         }
 
+        // $this->uploadPdfPC($request->id_pmo,$approver);
+
+    }
+
+    public function updateSLAProject(Request $request)
+    {
+        $update = PMOProjectCharter::where('id_project', $request->id_pmo)->first();
+        $update->status = 'New';
+        $update->save();
+
+        $cek_sign = PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->first();
+
+        if (PMOActivity::where('id_project', $request->id_pmo)->where('operator', Auth::User()->name)->whereRaw("(`phase` =  'Update Project Charter' OR `phase` = 'New Project Charter')")->exists()) {
+            PMOActivity::where('id', $cek_sign->id)->delete(); 
+        }
+
+        $store_activity = new PMOActivity();
+        $store_activity->id_project = $request['id_pmo'];
+        
+        $store_activity->operator = Auth::User()->name;
+        if (PMOActivity::where('id_project', $request['id_pmo'])->exists()) {
+            $store_activity->phase = 'Update Project Charter';
+            $store_activity->activity = 'Update Project Charter';
+        } else {
+            $store_activity->phase = 'New Project Charter';
+            $store_activity->activity = 'Create New Project Charter';
+        }
+        
+        $store_activity->date_time = Carbon::now()->toDateTimeString();
+        $store_activity->save();
+
         $datas = PMO::where('id',$request->id_pmo)->first();
 
-        // return $datas->project_id;
+        $store = new SLAProject();
+        $store->pid = $datas->project_id;
+        $cekSlaStandard = SLAProject::where('pid','Standard')->first();
+        $store->date_add = Carbon::now()->toDateTimeString();
+
+        if ($request->isSlaValue == 'No') {
+            $store->sla_response = $cekSlaStandard->sla_response;
+            $store->sla_resolution_critical = $cekSlaStandard->sla_resolution_critical;
+            $store->sla_resolution_major = $cekSlaStandard->sla_resolution_major;
+            $store->sla_resolution_moderate = $cekSlaStandard->sla_resolution_moderate;
+            $store->sla_resolution_minor = $cekSlaStandard->sla_resolution_minor;
+        } else {
+            if (isset($request->slaResponseTime)) {
+                $store->sla_response = str_replace(',', '.', $request->slaResponseTime);
+            }else {
+                $store->sla_response = $cekSlaStandard->sla_response;
+            }
+            if (isset($request->slaResolutionTimeCritical)) {
+                $store->sla_resolution_critical = $request->slaResolutionTimeCritical;
+            }else {
+                $store->sla_resolution_critical = $cekSlaStandard->sla_resolution_critical;
+            }
+            if (isset($request->slaResolutionTimeMajor)) {
+                $store->sla_resolution_major = $request->slaResolutionTimeMajor;
+            }else {
+                $store->sla_resolution_major = $cekSlaStandard->sla_resolution_major;
+            }
+            if (isset($request->slaResolutionTimeModerate)) {
+                $store->sla_resolution_moderate = $request->slaResolutionTimeModerate;
+            }else {
+                $store->sla_resolution_moderate = $cekSlaStandard->sla_resolution_moderate;
+            }
+            if (isset($request->slaResolutionTimeMinor)) {
+                $store->sla_resolution_minor = $request->slaResolutionTimeMinor;
+            }else {
+                $store->sla_resolution_minor = $cekSlaStandard->sla_resolution_minor;
+            }
+        }
+
+        $store->save();
 
         if ($update->project_type == 'supply_only') {
             $project_type = 'Supply Only';
@@ -1535,13 +1690,8 @@ class PMProjectController extends Controller
             $project_type = 'Maintenance & Managed Service';
         }
 
-        // if ($update->project_pm != null) {
-            $user_pm = $update->project_pm;
-
-        // }else{
-            $user_pc = $update->project_pc;
-
-        // }
+        $user_pm = $update->project_pm;
+        $user_pc = $update->project_pc;
 
         $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
 
@@ -1567,9 +1717,6 @@ class PMProjectController extends Controller
         Mail::to($email_user)->send($mail);
 
         $approver = '';
-
-        // $this->uploadPdfPC($request->id_pmo,$approver);
-
     }
 
     public function getSignProjectCharter(Request $request)
