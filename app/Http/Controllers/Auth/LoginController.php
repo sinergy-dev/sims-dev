@@ -15,6 +15,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
 use Log;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 
 class LoginController extends Controller
 {
@@ -30,6 +31,8 @@ class LoginController extends Controller
     */
 
     // use AuthenticatesUsers;
+
+    use ThrottlesLogins;
 
     use AuthenticatesUsers{
         logout as performeLogout;
@@ -152,5 +155,27 @@ class LoginController extends Controller
         return redirect()->to('/');
     }
 
+    // protected function maxAttempts()
+    // {
+    //     return 1; 
+    // }
 
+    // protected function decayMinutes()
+    // {
+    //     return 1; 
+    // }
+
+    // protected function sendLockoutResponse(Request $request)
+    // {
+    //     $seconds = $this->limiter()->availableIn(
+    //         $this->throttleKey($request)
+    //     );
+
+    //     return redirect()->back()
+    //         ->withInput($request->only($this->username(), 'remember'))
+    //         ->withErrors([
+    //             $this->username() => trans('auth.throttle', ['seconds' => $seconds]),
+    //             'remaining_time' => $seconds,
+    //         ]);
+    // }
 }

@@ -20,6 +20,7 @@
   <!-- ICONS -->
   <link rel="apple-touch-icon" href="{{asset('/img/logopng.png')}}">
   <link rel="icon" type="image/png" href="{{asset('/img/logopng.png')}}">
+  <meta name="robots" content="noindex, nofollow">
   
 </head>
 
@@ -34,6 +35,8 @@
               <div class="header">
                 <div class="logo text-center"><img src="{{asset('/img/siplogin.webp')}}" width="123" height="60" alt="Klorofil Logo"></div>
                 <p class="lead">Sinergy Integrated Management System</p>
+                <p style="color:red">[Development Purpose Only]</p>
+
               </div>
               <div style="display: {{ $errors->has('email_company') ? 'none' : '' }}">
                 <p>Login With Local Account</p>
@@ -50,10 +53,15 @@
                         <div class="col-md-12">
                             <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="Email" required>
                             @if ($errors->has('email'))
-                                <span class="help-block">
+                                <span class="help-block invalid-feedback">
                                     <strong>{{ $errors->first('email') }}</strong>
                                 </span>
                             @endif
+                            <!-- @if ($errors->has('remaining_time'))
+                            <div class="alert alert-warning">
+                                <p>Too many login attempts. Please try again in <span id="countdown">{{ $errors->first('remaining_time') }}</span> seconds.</p>
+                            </div>
+                            @endif -->
                         </div>
                     </div>
                     <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
@@ -113,8 +121,8 @@
               </div>
             </div>
             <div class="content-text text" style="background-color: #17325e ;opacity: 0.8">
-              <h1 class="heading">Sinergy Integrated Management System</h1>
-              <p style="font-size: 12px;">This website that was made by the PT Sinergy Informasi Pratama (“SIP” hereinafter) is in the property right of SIP. If you are not a member of registered user or having the authority for the website, you must not connect to this web page.</p>
+              <h1 class="heading">Sinergy Integrated Management System - For Development Only</h1>
+              <!-- <p style="font-size: 12px;">This website that was made by the PT Sinergy Informasi Pratama (“SIP” hereinafter) is in the property right of SIP. If you are not a member of registered user or having the authority for the website, you must not connect to this web page.</p> -->
             </div>
           </div>
           <div class="clearfix"></div>
@@ -145,3 +153,19 @@
     background-size: cover;
   }
 </style>
+
+<!-- <script>
+    let countdownElement = document.getElementById('countdown');
+    let remainingTime = parseInt(countdownElement.innerText);
+
+    let countdownInterval = setInterval(function() {
+        remainingTime--;
+
+        if (remainingTime <= 0) {
+            clearInterval(countdownInterval);
+            location.reload(); // Reload page after countdown ends
+        } else {
+            countdownElement.innerText = remainingTime;
+        }
+    }, 1000);
+</script> -->
