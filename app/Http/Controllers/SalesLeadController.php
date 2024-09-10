@@ -3063,24 +3063,24 @@ class SalesLeadController extends Controller
         $sales_sd_filtered = DB::table('sales_solution_design');
 
   
-        $total_manager = Sales::join('users','users.nik','=','sales_lead_register.nik')
-                ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
-                    $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
-                })
-                ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
-                ->where('year',date('Y'))
-                ->where('id_company','1')
-                ->where('sales_sd_filtered.nik','=',$user_to)
-                ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');  
+        // $total_manager = Sales::join('users','users.nik','=','sales_lead_register.nik')
+        //         ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+        //             $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+        //         })
+        //         ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
+        //         ->where('year',date('Y'))
+        //         ->where('id_company','1')
+        //         ->where('sales_sd_filtered.nik','=',$user_to)
+        //         ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');  
 
-        $total_staff = Sales::join('users','users.nik','=','sales_lead_register.nik')
-                ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
-                    $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
-            })
-            ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = '',1,NULL))) AS `progress_counted`")
-            ->where('year',date('Y'))
-            ->where('id_company','1')
-            ->where('sales_sd_filtered.nik','=',$data->presales_nik);
+        // $total_staff = Sales::join('users','users.nik','=','sales_lead_register.nik')
+        //         ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+        //             $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+        //     })
+        //     ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = '',1,NULL))) AS `progress_counted`")
+        //     ->where('year',date('Y'))
+        //     ->where('id_company','1')
+        //     ->where('sales_sd_filtered.nik','=',$data->presales_nik);
 
         //Disabled push notification
 

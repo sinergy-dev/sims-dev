@@ -838,92 +838,99 @@ class PrDraftController extends Controller
             $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALSIZED' OR `status` = 'SENDED')")->where('issuance',$nik);
         }
 
-        if (!in_array(null, $request->type_of_letter)) {
-            $count_all->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
-            $count_need_attention->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
-            $count_ongoing->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
-            $count_done->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
-        }
-
-        if (!in_array(null, $request->user)) {
-            $count_all->whereIn('users.name', $request->user);
-            $count_need_attention->whereIn('users.name', $request->user);
-            $count_ongoing->whereIn('users.name', $request->user);
-            $count_done->whereIn('users.name', $request->user);
-        }
-
-        if (!in_array(null, $request->status)) {
-            if (in_array("NA", $request->status)) {
-                $count_all->where(function($query){
-                    $query->where('tb_pr_draft.status', 'REJECT')
-                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
-                });
-                $count_need_attention->where(function($query){
-                    $query->where('tb_pr_draft.status', 'REJECT')
-                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
-                });
-                $count_ongoing->where(function($query){
-                    $query->where('tb_pr_draft.status', 'REJECT')
-                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
-                });
-                $count_done->where(function($query){
-                    $query->where('tb_pr_draft.status', 'REJECT')
-                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
-                });
-            } elseif (in_array("OG", $request->status)) {
-                $count_all->where(function($query){
-                    $query->where('tb_pr_draft.status', 'VERIFIED')
-                        ->orWhere('tb_pr_draft.status', 'COMPARING')
-                        ->orWhere('tb_pr_draft.status', 'CIRCULAR')
-                        ->orWhere('tb_pr_draft.status', 'SAVED')
-                        ->orWhere('tb_pr_draft.status', 'DRAFT');
-                });
-                $count_need_attention->where(function($query){
-                    $query->where('tb_pr_draft.status', 'VERIFIED')
-                        ->orWhere('tb_pr_draft.status', 'COMPARING')
-                        ->orWhere('tb_pr_draft.status', 'CIRCULAR')
-                        ->orWhere('tb_pr_draft.status', 'SAVED')
-                        ->orWhere('tb_pr_draft.status', 'DRAFT');
-                });
-                $count_ongoing->where(function($query){
-                    $query->where('tb_pr_draft.status', 'VERIFIED')
-                        ->orWhere('tb_pr_draft.status', 'COMPARING')
-                        ->orWhere('tb_pr_draft.status', 'CIRCULAR')
-                        ->orWhere('tb_pr_draft.status', 'SAVED')
-                        ->orWhere('tb_pr_draft.status', 'DRAFT');
-                });
-                $count_done->where(function($query){
-                    $query->where('tb_pr_draft.status', 'VERIFIED')
-                        ->orWhere('tb_pr_draft.status', 'COMPARING')
-                        ->orWhere('tb_pr_draft.status', 'CIRCULAR')
-                        ->orWhere('tb_pr_draft.status', 'SAVED')
-                        ->orWhere('tb_pr_draft.status', 'DRAFT');
-                });
-            } elseif (in_array("DO", $request->status)) {
-                $count_all->where(function($query){
-                    $query->where('tb_pr_draft.status', 'FINALIZED')
-                            ->orWhere('tb_pr_draft.status', 'SENDED');
-                });
-                $count_need_attention->where(function($query){
-                    $query->where('tb_pr_draft.status', 'FINALIZED')
-                        ->orWhere('tb_pr_draft.status', 'SENDED');
-                });
-                $count_ongoing->where(function($query){
-                    $query->where('tb_pr_draft.status', 'FINALIZED')
-                        ->orWhere('tb_pr_draft.status', 'SENDED');
-                });
-                $count_done->where(function($query){
-                    $query->where('tb_pr_draft.status', 'FINALIZED')
-                        ->orWhere('tb_pr_draft.status', 'SENDED');
-                });
-            } else {
-                $count_all->whereIn('tb_pr_draft.status', $request->status);
-                $count_need_attention->whereIn('tb_pr_draft.status', $request->status);
-                $count_ongoing->whereIn('tb_pr_draft.status', $request->status);
-                $count_done->whereIn('tb_pr_draft.status', $request->status);
-                
+        if (isset($request->type_of_letter)) {
+            if (!in_array(null, $request->type_of_letter)) {
+                $count_all->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+                $count_need_attention->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+                $count_ongoing->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+                $count_done->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
             }
-        }   
+        }
+        
+        if (isset($request->user)) {
+            if (!in_array(null, $request->user)) {
+                $count_all->whereIn('users.name', $request->user);
+                $count_need_attention->whereIn('users.name', $request->user);
+                $count_ongoing->whereIn('users.name', $request->user);
+                $count_done->whereIn('users.name', $request->user);
+            }
+        }
+        
+        if (isset($request->status)) {
+            if (!in_array(null, $request->status)) {
+                if (in_array("NA", $request->status)) {
+                    $count_all->where(function($query){
+                        $query->where('tb_pr_draft.status', 'REJECT')
+                            ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                    });
+                    $count_need_attention->where(function($query){
+                        $query->where('tb_pr_draft.status', 'REJECT')
+                            ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                    });
+                    $count_ongoing->where(function($query){
+                        $query->where('tb_pr_draft.status', 'REJECT')
+                            ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                    });
+                    $count_done->where(function($query){
+                        $query->where('tb_pr_draft.status', 'REJECT')
+                            ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                    });
+                } elseif (in_array("OG", $request->status)) {
+                    $count_all->where(function($query){
+                        $query->where('tb_pr_draft.status', 'VERIFIED')
+                            ->orWhere('tb_pr_draft.status', 'COMPARING')
+                            ->orWhere('tb_pr_draft.status', 'CIRCULAR')
+                            ->orWhere('tb_pr_draft.status', 'SAVED')
+                            ->orWhere('tb_pr_draft.status', 'DRAFT');
+                    });
+                    $count_need_attention->where(function($query){
+                        $query->where('tb_pr_draft.status', 'VERIFIED')
+                            ->orWhere('tb_pr_draft.status', 'COMPARING')
+                            ->orWhere('tb_pr_draft.status', 'CIRCULAR')
+                            ->orWhere('tb_pr_draft.status', 'SAVED')
+                            ->orWhere('tb_pr_draft.status', 'DRAFT');
+                    });
+                    $count_ongoing->where(function($query){
+                        $query->where('tb_pr_draft.status', 'VERIFIED')
+                            ->orWhere('tb_pr_draft.status', 'COMPARING')
+                            ->orWhere('tb_pr_draft.status', 'CIRCULAR')
+                            ->orWhere('tb_pr_draft.status', 'SAVED')
+                            ->orWhere('tb_pr_draft.status', 'DRAFT');
+                    });
+                    $count_done->where(function($query){
+                        $query->where('tb_pr_draft.status', 'VERIFIED')
+                            ->orWhere('tb_pr_draft.status', 'COMPARING')
+                            ->orWhere('tb_pr_draft.status', 'CIRCULAR')
+                            ->orWhere('tb_pr_draft.status', 'SAVED')
+                            ->orWhere('tb_pr_draft.status', 'DRAFT');
+                    });
+                } elseif (in_array("DO", $request->status)) {
+                    $count_all->where(function($query){
+                        $query->where('tb_pr_draft.status', 'FINALIZED')
+                                ->orWhere('tb_pr_draft.status', 'SENDED');
+                    });
+                    $count_need_attention->where(function($query){
+                        $query->where('tb_pr_draft.status', 'FINALIZED')
+                            ->orWhere('tb_pr_draft.status', 'SENDED');
+                    });
+                    $count_ongoing->where(function($query){
+                        $query->where('tb_pr_draft.status', 'FINALIZED')
+                            ->orWhere('tb_pr_draft.status', 'SENDED');
+                    });
+                    $count_done->where(function($query){
+                        $query->where('tb_pr_draft.status', 'FINALIZED')
+                            ->orWhere('tb_pr_draft.status', 'SENDED');
+                    });
+                } else {
+                    $count_all->whereIn('tb_pr_draft.status', $request->status);
+                    $count_need_attention->whereIn('tb_pr_draft.status', $request->status);
+                    $count_ongoing->whereIn('tb_pr_draft.status', $request->status);
+                    $count_done->whereIn('tb_pr_draft.status', $request->status);
+                    
+                }
+            }  
+        }
+         
 
         if($request->startDate != "" && $request->endDate != ""){
             $count_all->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
@@ -2329,12 +2336,12 @@ class PrDraftController extends Controller
         if ($cek_role->group == 'Sales') {
             $email_cc = User::select('email','roles.name as name_role')
                 ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
-                ->whereRaw("(`nik` = '".$detail->issuance."' OR `name` = '".$listTerritory->name."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management')")
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `users`.`name` = '".$listTerritory->name."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                 ->get()->pluck('email');
         } else {
             $email_cc = User::select('email','roles.name as name_role')
                 ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
-                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management')")
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                 ->get()->pluck('email');
         }
         
@@ -2373,7 +2380,7 @@ class PrDraftController extends Controller
         $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'Procurement')->where('status_karyawan', '!=', 'dummy')->get()->pluck('email');
 
         $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
-                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management')")
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                 ->get()->pluck('email');
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Reject By ' . Auth::User()->name,'detail_approver', $next_approver));
@@ -2564,7 +2571,7 @@ class PrDraftController extends Controller
                     $posti = 'MSM';
                 }
                 // $posti = 'MSM';
-            } elseif ($cek_group->group == 'sales') {
+            } elseif ($cek_group->group == 'Sales') {
                 $posti = 'SAL';
             } elseif ($cek_group->group == 'Product Management & Development') {
                 $posti = 'SOL';
@@ -3516,7 +3523,7 @@ class PrDraftController extends Controller
 
             if ($cek_role->group == 'Sales') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
-                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `name` = '".$listTerritory->name."')")
+                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                     ->get()->pluck('email');
             } else {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
@@ -3575,7 +3582,7 @@ class PrDraftController extends Controller
                 $show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `roles`.`name` = 'Renumeration, Personalia & GS Manager' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM')")->get();
                 return $show;
 
-            } elseif ($cek_group->group == 'sales') {
+            } elseif ($cek_group->group == 'Sales') {
                 $show = User::select('ttd', 'name')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM')")->get();
                 return $show;
             }
@@ -3779,22 +3786,22 @@ class PrDraftController extends Controller
                 if ($cek_role->group == 'Sales') {
                     $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
                         ->select('email','roles.name as name_role')
-                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `name` = '".$listTerritory->name."')")
+                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                         ->get()->pluck('email');
                 } else {
                     $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
-                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management')")
+                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                         ->get()->pluck('email');
                 }
                 $email_cc = $email_cc->put('4','felicia@sinergy.co.id');
             } else {
                 if ($cek_role->group == 'Sales') {
                     $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
-                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `name` = '".$listTerritory->name."')")
+                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                         ->get()->pluck('email');
                 } else {
                     $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
-                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management')")
+                        ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                         ->get()->pluck('email');
                 }
             }
@@ -3876,11 +3883,11 @@ class PrDraftController extends Controller
 
         if ($cek_role->group == 'Sales') {
             $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
-                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
                 ->get()->pluck('email');
         } else {
             $email_cc = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','roles.name as name_role')
-                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'Supply Chain, CPS & Asset Management')")
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
                 ->get()->pluck('email');
         }
 
@@ -4069,7 +4076,7 @@ class PrDraftController extends Controller
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`roles`.`name` = 'VP Product Management & Development Solution' OR `roles`.`name` = 'Operations Director' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             } elseif ($cek_group->group == 'Human Capital') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`roles`.`name` = 'Operations Director' OR `roles`.`name` = 'Renumeration, Personalia & GS Manager' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
-            } elseif ($cek_group->group == 'sales') {
+            } elseif ($cek_group->group == 'Sales') {
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`roles`.`name` = 'Operations Director' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             }
         } else {
@@ -4499,7 +4506,7 @@ class PrDraftController extends Controller
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'Renumeration, Personalia & GS Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 // ->orderByRaw('FIELD(position, "VP Supply Chain, CPS & Asset Management", "Renumeration, Personalia & GS Manager", "Operations Director")');
 
-            } elseif ($cek_group->group == 'sales') {
+            } elseif ($cek_group->group == 'Sales') {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
@@ -4807,7 +4814,7 @@ class PrDraftController extends Controller
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'Renumeration, Personalia & GS Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 // ->orderByRaw('FIELD(position, "VP Supply Chain, CPS & Asset Management", "Renumeration, Personalia & GS Manager", "Operations Director")');
 
-            } elseif ($cek_group->group == 'sales') {
+            } elseif ($cek_group->group == 'Sales') {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")

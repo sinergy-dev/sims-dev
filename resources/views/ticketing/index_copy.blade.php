@@ -1099,7 +1099,7 @@ Ticketing
 						</div>
 						<div class="col-sm-3 settingComponent" style="display: none" id="addEmail2">
 							<div class="input-group">	
-								<input id="searchBarEmail" type="text" class="form-control" placeholder="Search Client">
+								<input id="searchBarEmail" type="text" class="form-control">
 								<span class="input-group-btn">
 									<button id="applyFilterTableEmail" type="button" class="btn btn-default btn-flat">
 										<i class="fa fa-fw fa-search"></i>
@@ -1481,7 +1481,7 @@ Ticketing
 							<div class="col-sm-12">
 								<div class="form-group">
 									<label>Severity <small class="text-red">(change to edit)</small></label>
-									<select class="form-control" id="inputTicketSeverity" style="width:100%!important"><option></option></select>
+									<select class="form-control" id="inputTicketSeverity" style="width:100%!important" disabled><option></option></select>
 								</div>
 							</div>
 						</div>
@@ -3147,10 +3147,14 @@ Ticketing
 
 		$('#searchBarEmail').keypress(function(e){
 			if(e.keyCode == 13){
-				if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmail') {
-					$("#tableEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
-				}else if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmailSlm') {
-					$("#tableSlmEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+				if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary").is(":visible")) {
+					if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmail') {
+						$("#tableEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+					}else if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmailSlm') {
+						$("#tableSlmEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+					}
+				}else{
+					$("#tableSlaSetting").DataTable().search($('#searchBarEmail').val()).draw();
 				}
 			}
 		});
@@ -3203,12 +3207,11 @@ Ticketing
 			$("#searchBarTicket").val('')
 			$("#dateFilter").html("")
 			$("#dateFilter").html("<i class='fa fa-calendar'></i> Date range picker <span><i class='fa fa-caret-down'></i></span>")			
-			$("#tablePerformance").ajax("{{url('ticketing/getPerformanceAll')}}").load()			
+			getPerformanceByFilter([],[],[],[])
 		});
 
 		$('#reloadTable').click(function(){
-			initTablePerformance()
-			$("#tablePerformance").ajax("{{url('ticketing/getPerformanceAll')}}").load()			
+			getPerformanceByFilter([],[],[],[])	
 		});
 
 		$('#filterDashboardByPid').select2({
@@ -3509,7 +3512,7 @@ Ticketing
 
 				$.ajax({
 					type:"GET",
-					url:"{{url('/getDashboardNeedAttention')}}",
+					url:"{{url('/getDashboardNeedAttention')}}?start="+ moment().startOf('year').format('YYYY-MM-DD') + "&end=" + moment().endOf('year').format('YYYY-MM-DD'),
 					beforeSend:function(){
 						$("#importanTable").html("<tr><td colspan=7 style='text-align:center'>Loading...</td></tr>");
           },
@@ -3567,7 +3570,7 @@ Ticketing
 					$("#tb_sla_response_time").DataTable({
 						"ajax":{
 				        "type":"GET",
-				        "url":"{{url('/getDashboardResponse')}}",
+				        "url":"{{url('/getDashboardResponse')}}?start="+moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD")
 				    },
 				    "columns": [
 				      { 
@@ -3597,7 +3600,7 @@ Ticketing
 					$("#tb_sla_resolution_time").DataTable({
 						"ajax":{
 				        "type":"GET",
-				        "url":"{{url('/getDashboardResolution')}}",
+				        "url":"{{url('/getDashboardResolution')}}?start="+moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD"),
 				    },
 				    "columns": [
 				      { 
@@ -5745,6 +5748,10 @@ Ticketing
 				$("#pendingButton").attr("onclick","pendingTicket('" + result.id_ticket + "')");
 				$("#closeButton").attr("onclick","closeTicket('" + result.id_ticket + "','" + result.lastest_activity_ticket.activity + "','" + result.lastest_activity_ticket.date + "')");
 				
+				if (accesable.includes('inputTicketSeverity')) {
+					$("#inputTicketSeverity").attr("disabled",false)
+				}
+
 				$("#inputTicketSeverity").empty()
 				$("#inputTicketSeverity").select2({
 					placeholder:"Select Severity",
@@ -5771,7 +5778,7 @@ Ticketing
 				$("#inputTicketSeverity").on('select2:select', function (e) {
 			    var data = e.params.data;
 
-					if (result.lastest_activity_ticket.activity == 'PENDING' || result.lastest_activity_ticket.activity == 'CLOSE') {
+					if (result.lastest_activity_ticket.activity == 'PENDING') {
 						if ($(this).val() != result.severity) {
 							Swal.fire({
 								title: 'Are you sure?',
@@ -6680,8 +6687,8 @@ Ticketing
 			$("#durationPicker").daterangepicker({
 		    timePicker: true,
 		    timePicker24Hour: true,
-		    minDate:moment(date, 'YYYY-MM-DD HH:mm').add(5, 'minutes'),
-		    startDate: moment(date, 'YYYY-MM-DD HH:mm').add(5, 'minutes'),
+		    minDate:moment(date, 'YYYY-MM-DD HH:mm').add(1, 'minutes'),
+		    startDate: moment(date, 'YYYY-MM-DD HH:mm').add(1, 'minutes'),
 		    endDate: moment().startOf('hour').add(32, 'hour'),
 		    locale: {
 		      format: 'YYYY-MM-DD HH:mm'
@@ -6697,7 +6704,7 @@ Ticketing
 				showMeridian: false,
 			});
 
-			$('#timeClose').timepicker('setTime',moment(date).add(5, 'minutes').format('HH:mm'))
+			$('#timeClose').timepicker('setTime',moment(date).add(1, 'minutes').format('HH:mm'))
 
 			$("#saveCloseRoute").val('')
 			$("#saveCloseCouter").val('')
@@ -7155,6 +7162,7 @@ Ticketing
 	}
 
 	function emailSetting(){
+		$("#searchBarEmail").attr("placeholder","Search Client")
 		$(".settingComponent").hide()
 		$("#emailSetting").show()
 		$("#addEmail2").show()
@@ -7285,6 +7293,7 @@ Ticketing
 	}
 
 	function SlmEmailSetting(){
+		$("#searchBarEmail").attr("placeholder","Search Client")
 		$(".settingComponent").hide()
 		$("#SlmEmailSetting").show()
 		$("#addEmail2").show()
@@ -10324,8 +10333,10 @@ Ticketing
 	}
 
 	function SlaSetting(){
+		$("#searchBarEmail").attr("placeholder","Search SLA")
 		$(".settingComponent").hide()
 		$("#SlaSetting").show()
+		$("#addEmail2").show()	
 
 		if ($.fn.dataTable.isDataTable("#tableSlaSetting")) {
 		} else {
@@ -10376,8 +10387,8 @@ Ticketing
 			start = $("#startDateFilter").val()
 			end = $("#endDateFilter").val()
 		}else{
-			start = start
-			end = end
+			start = moment().startOf('year').format('YYYY-MM-DD')
+			end = moment().endOf('year').format('YYYY-MM-DD')
 		}
 
 		if (whichPageFor == 'performance') {
