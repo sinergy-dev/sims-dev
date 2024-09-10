@@ -1033,7 +1033,7 @@
       })
 
       //box id
-      DashboardCounter()
+      DashboardCounterFilter()
       // InitiateFilterParam()
     })
 
@@ -1148,6 +1148,13 @@
     }
 
     function DashboardCounterFilter(temp){
+      var temp = ''
+      if (temp == undefined) {
+        temp = '?' + temp
+      }else{
+        temp = ''
+      }
+
       $("#BoxId").empty()
       var countPr = []
       var i = 0
@@ -1799,7 +1806,7 @@
         localStorage.removeItem("arrFilterBack")
       }
 
-      var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
+      var temp = tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
       showFilterData(temp)
       DashboardCounterFilter(temp)
 
@@ -1873,7 +1880,7 @@
       $("#inputFilterTypePr").empty();
       $("#inputFilterStatus").empty();
       $("#inputFilterUser").empty();
-      DashboardCounter()
+      DashboardCounterFilter()
       localStorage.removeItem("arrFilterBack");
       localStorage.removeItem("arrFilter");
       InitiateFilterParam()
@@ -1889,7 +1896,7 @@
       $("#inputFilterTypePr").empty();
       $("#inputFilterStatus").empty();
       $("#inputFilterUser").empty();
-      DashboardCounter()
+      DashboardCounterFilter()
       localStorage.removeItem("arrFilterBack");
       localStorage.removeItem("arrFilter");
       InitiateFilterParam()

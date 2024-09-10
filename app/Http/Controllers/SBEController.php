@@ -809,7 +809,7 @@ class SBEController extends Controller
         $user = SbeActivity::where('id_sbe',$request->id_sbe)->first()->operator;
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    ->select('name', 'roles.group')->where('user_id', $user)->first();
+                    ->select('name', 'roles.group','user_id')->where('user_id', $user)->first();
 
         $getSign = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                     ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -826,13 +826,13 @@ class SBEController extends Controller
 
         if ($cek_role->name == 'Technology Alliance') {
             $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik_ta . "' OR `roles`.`name` = 'VP Product Management & Development Solution')")
-            ->orderByRaw('FIELD(position, "Presales","System Designer","Technology Alliance","VP Product Management & Development Solution")')
+            ->orderByRaw('FIELD(position, "Technology Alliance","VP Product Management & Development Solution","Presales")')->take(2)
             ->get();
-        } else {
+        }else {
             $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik . "' OR `roles`.`name` = 'VP Product Management & Development Solution')")
-            ->orderByRaw('FIELD(position, "Presales","System Designer","Technology Alliance","VP Product Management & Development Solution")')
+            ->orderByRaw('FIELD(position, "Presales","System Designer","VP Product Management & Development Solution")')
             ->get();
-        }     
+        }  
 
         collect(["data"=>$getAll,"function"=>$getFunction,"config"=>$getConfig,"sign"=>$getSign,"grand_total" => $getNominal]);
 

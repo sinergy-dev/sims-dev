@@ -271,36 +271,36 @@
 					@foreach ($contentChunks as $keys => $chunk)
 						@if ($keys == 0)
 						<tr style="page-break-before: always;">
-							<td style="text-align:center;width: 2%">{{++$key}}</td>
-							<td>{{$eachProduct->name_product}}</td>
+							<td style="text-align:center;vertical-align:top;width: 1%">{{++$key}}</td>
+							<td style="width: 2%;vertical-align:top;">{{$eachProduct->name_product}}</td>
 							@if($data->type_of_letter == 'EPR')
-							<td style="width: 2%">{{$eachProduct->part_number}}</td>
-							<td style="width: 2%">{{$eachProduct->serial_number}}</td>
+							<td style="width: 2%;vertical-align:top;">{{$eachProduct->part_number}}</td>
+							<td style="width: 2%;vertical-align:top;">{{$eachProduct->serial_number}}</td>
 							@endif
-							<td style="width:50%">
+							<td>
 								<pre>
 	          						{!! $chunk !!}
 	          					</pre>
 	          				</td>
-							<td style="text-align:center;width: 2%">{{$eachProduct->qty}}</td>
-							<td style="text-align:center;width: 2%">{{$eachProduct->unit}}</td>
+							<td style="text-align:center;width: 1%">{{$eachProduct->qty}}</td>
+							<td style="text-align:center;width: 1%">{{$eachProduct->unit}}</td>
 							@if($data->isRupiah == 'true')
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->nominal_product,2)}}</td>
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->grand_total,2)}}</td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">Rp. {{number_format($eachProduct->nominal_product,2)}}</td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">Rp. {{number_format($eachProduct->grand_total,2)}}</td>
 							@else
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->nominal_product,2)}}</td>
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->grand_total,2)}}</td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">USD {{number_format($eachProduct->nominal_product,2)}}</td>
+							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">USD {{number_format($eachProduct->grand_total,2)}}</td>
 							@endif
 						</tr>
 						@else
 						<tr style="page-break-before: always;">
-							<td style="text-align:center;width: 2%"></td>
-							<td></td>
+							<td style="text-align:center;vertical-align:top;width: 1%"></td>
+							<td style="width: 2%;vertical-align:top;"></td>
 							@if($data->type_of_letter == 'EPR')
-							<td style="width: 2%">{{$eachProduct->part_number}}</td>
-							<td style="width: 2%">{{$eachProduct->serial_number}}</td>
+							<td style="width: 2%;vertical-align:top;">{{$eachProduct->part_number}}</td>
+							<td style="width: 2%;vertical-align:top;">{{$eachProduct->serial_number}}</td>
 							@endif
-							<td style="width:50%">
+							<td>
 								<pre>
 	          						{!! $chunk !!}
 	          					</pre>

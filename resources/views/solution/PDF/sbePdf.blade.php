@@ -220,6 +220,25 @@
         <table style="width: 100%;text-align: center;margin-top: 20px;">
           <tr>
             @foreach($getSign as $data_sign)
+            @if(count($getSign) == 3)
+            <td>
+              <div style="margin-top:15px">
+                @if($data_sign->position == "VP Product Management & Development Solution")
+                Approval By:<br><br>
+                @else
+                Issued By:<br><br>
+                @endif
+                <img src="{{$data_sign->ttd_digital}}" style="height:50px;width: 50px;background-size:cover ;">
+                <br><u>{{$data_sign->name}}</u><br>
+                {{$getSign[0]->position}}
+              </div>
+              <u></u>
+              <br>
+              <i>
+                <b></b>
+              </i>
+            </td>
+            @else
             <td>
               <div style="margin-top:15px">
                 @if($data_sign->position == "VP Product Management & Development Solution")
@@ -237,6 +256,7 @@
                 <b></b>
               </i>
             </td>
+            @endif
             @endforeach
           </tr>
         </table>  
