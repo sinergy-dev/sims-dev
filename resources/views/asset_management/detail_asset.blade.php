@@ -53,7 +53,7 @@
 
               <div class="form-group">
                 <label>Category</label>
-                <select id="selectCategory" name="selectCategory" class="form-control" readonly></select>
+                <select id="selectCategory" name="selectCategory" class="form-control" disabled></select>
               </div>
 
               <div class="form-group">
@@ -77,6 +77,9 @@
                 <label>RMA</label>
                 <input id="inputRMA" name="inputRMA" class="form-control">
               </div>
+
+              <div class="form-group" id="prContainer"></div>
+
               <div class="form-group">
                 <label>Serial Number</label>
                 <input id="inputSerialNumber" name="inputSerialNumber" class="form-control">
@@ -130,7 +133,7 @@
           </div>
 
           <hr>
-          <div class="row divAsset" style="margin-bottom:50px;display:none;">
+          <div class="row divAsset" style="display:none;">
             <div class="col-md-4 col-xs-12">
               <div class="form-group">
                 <label>Primary Engineer</label>
@@ -164,7 +167,7 @@
                 <div class="col-md-6 col-xs-12">
                   <div class="form-group">
                     <label>Category</label>
-                    <select id="selectCategoryPeripheral" name="selectCategoryPeripheral" class="form-control" readonly>
+                    <select id="selectCategoryPeripheral" name="selectCategoryPeripheral" class="form-control" disabled>
                       <option></option>
                     </select>
                   </div>
@@ -254,13 +257,15 @@
         </fieldset>
 
         <!-- <div style="position: absolute;bottom: 0;left: 0;padding-left: 15px;padding-bottom: 20px;display: none;" class="divPeripheral" id="divBtnAssign"> -->
-        <div style="position: absolute;bottom: 0;left: 0;padding-left: 15px;padding-bottom: 20px;display: none;" id="divBtnAssign">
-          <button class="btn btn-sm btn-primary" style="width:90px;" onclick="AssignPeripheral()" id="btnAssignPeripheral">Assign</button>
-        </div>
+        <div class="form-group" style="margin-top:50px">
+          <div style="position: absolute;bottom: 0;left: 0;padding-left: 15px;padding-bottom: 20px;display: none;" id="divBtnAssign">
+            <button class="btn btn-sm btn-primary" style="width:90px;" onclick="AssignPeripheral()" id="btnAssignPeripheral">Assign</button>
+          </div>
 
-        <div style="position: absolute;bottom: 0;right: 0;padding-right: 15px;padding-bottom: 20px;display: none;" id="divBtnUpdate">
-          <button class="btn btn-sm btn-danger" style="width:90px;margin-right: 10px;" onclick="resetData()">Cancel</button>
-          <button class="btn btn-sm btn-warning" style="width:90px;" id="updateAsset">Update Asset</button>
+          <div style="position: absolute;bottom: 0;right: 0;padding-right: 15px;padding-bottom: 20px;display: none;" id="divBtnUpdate">
+            <button class="btn btn-sm btn-danger" style="width:90px;margin-right: 10px;" onclick="resetData()">Cancel</button>
+            <button class="btn btn-sm btn-warning" style="width:90px;" id="updateAsset">Update Asset</button>
+          </div>
         </div>
       </div>
     </div>
@@ -288,7 +293,7 @@
                   </div>
                 </div>
 
-                <div class="form-group col-md-6 col-xs-12" id="prContainer"></div>
+                <div class="form-group col-md-6 col-xs-12" id="picContainer"></div>
               </div>
 
               <div class="form-group">
@@ -302,14 +307,14 @@
               </div>
 
               <div class="form-group">
-                <label>Address Location</label>
+                <label>Location</label>
                 <textarea class="form-control" id="txtAreaAddress" name="txtAreaAddress"></textarea>
               </div>
 
               <div class="form-group">
-                <label>Detail Location</label>
+                <label>Detail Address</label>
                 <input class="form-control" placeholder="Search Location..." type="text" id="txtAreaLocation" name="txtAreaLocation">
-                <span class="help-block" style="display:none;">Please fill Detail Location!</span>
+                <span class="help-block" style="display:none;">Please fill Detail Address!</span>
               </div>
               
               <div class="form-group">
@@ -346,16 +351,18 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label>Bukti Asset</label>
-                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
-                  <label for="inputBuktiAsset" style="margin-bottom:0px">
-                    <span class="fa fa-cloud-upload" style="display:inline"></span>
-                    <input autocomplete="off" style="display: inline;" type="file" name="inputBuktiAsset" class="files" id="inputBuktiAsset">
-                  </label>
+              <div id="DocNonInternalContainer">
+                <div class="form-group">
+                  <label>Bukti Asset</label>
+                  <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                    <label for="inputBuktiAsset" style="margin-bottom:0px">
+                      <span class="fa fa-cloud-upload" style="display:inline"></span>
+                      <input autocomplete="off" style="display: inline;" type="file" name="inputBuktiAsset" class="files" id="inputBuktiAsset">
+                    </label>
+                  </div>
+                  <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
+                  <span style="display:none;" id="span_link_drive_bukti_asset"><a id="link_bukti_asset" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
                 </div>
-                <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
-                <span style="display:none;" id="span_link_drive_bukti_asset"><a id="link_bukti_asset" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
             </div>            
 
@@ -421,6 +428,8 @@
                 <input class="form-control" id="inputLicense" name="inputLicense">
               </div>
 
+              <div class="form-group" id="licenseContainer"></div>
+
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
@@ -446,6 +455,32 @@
                     </div>
                     <span class="help-block" style="display:none;">Please fill License End!</span>
                   </div>
+                </div>
+              </div>
+
+              <div id="DocInternalContainer" style="display:none;">
+                <div class="form-group">
+                  <label>Bukti Asset</label>
+                  <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                    <label for="inputBuktiAsset" style="margin-bottom:0px">
+                      <span class="fa fa-cloud-upload" style="display:inline"></span>
+                      <input autocomplete="off" style="display: inline;" type="file" name="inputBuktiAsset" class="files" id="inputBuktiAsset">
+                    </label>
+                  </div>
+                  <span class="help-block" style="display:none;">Please fill Bukti Asset!</span>
+                  <span style="display:none;" id="span_link_drive_bukti_asset"><a id="link_bukti_asset" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
+                </div>
+
+                <div class="form-group">
+                  <label>Berita Acara</label>
+                  <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                    <label for="inputBeritaAcara" style="margin-bottom:0px">
+                      <span class="fa fa-cloud-upload" style="display:inline"></span>
+                      <input autocomplete="off" style="display: inline;" type="file" name="inputBeritaAcara" class="filesBA" id="inputBeritaAcara">
+                    </label>
+                  </div>
+                  <span class="help-block" style="display:none;">Please fill Berita Acara!</span>
+                  <span style="display:none;" id="span_link_drive_berita_acara"><a id="link_berita_acara" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
                 </div>
               </div>
 
@@ -592,6 +627,70 @@
 
     function InitiateHistoryPid(type){
       var table = ''
+      if (type == "asset") {
+        columnAsset = [
+          { 
+            title:"Location",
+            render: function (data, type, row, meta){
+              return row.lokasi
+            },
+            width:'40%'
+          },
+          {
+            title:"Customer",
+            render: function (data, type, row, meta){
+             return row.client
+            }
+          },
+          {
+            title:"PID",
+            render: function (data, type, row, meta){
+             return row.pid
+            }
+          },
+          {
+            title:"Period",
+            render: function (data, type, row, meta){
+             return row.periode
+            }
+          },
+          {
+            title:"Operator",
+            render: function (data, type, row, meta){
+             return row.operator
+            }
+          },
+          {
+            title:"Related Id Asset",
+            render: function (data, type, row, meta){
+             return row.related_id_asset
+            }
+          },
+        ]
+      }else if (type == "asset_internal") {
+        columnAsset = [
+          { 
+            title:"PIC - Department",
+            render: function (data, type, row, meta){
+              return row.pic_name
+            },
+            width:'40%'
+          },
+          {
+            title:"Periode Penggunaan Asset",
+            render: function (data, type, row, meta){
+             return row.periode_asset_internal
+            }
+          },
+          {
+            title:"Operator",
+            render: function (data, type, row, meta){
+             return row.operator
+            }
+          },
+        ]
+      }
+
       if(!$.fn.DataTable.isDataTable('#tableHistoryPid')){
         table = $("#tableHistoryPid").DataTable({
           "aaSorting": [],
@@ -602,45 +701,7 @@
               id_asset:window.location.href.split("=")[1]
             }
           },
-          "columns": [
-            { 
-              title:"Location",
-              render: function (data, type, row, meta){
-                return row.lokasi
-              },
-              width:'40%'
-            },
-            {
-              title:"Customer",
-              render: function (data, type, row, meta){
-               return row.client
-              }
-            },
-            {
-              title:"PID",
-              render: function (data, type, row, meta){
-               return row.pid
-              }
-            },
-            {
-              title:"Period",
-              render: function (data, type, row, meta){
-               return row.periode
-              }
-            },
-            {
-              title:"Operator",
-              render: function (data, type, row, meta){
-               return row.operator
-              }
-            },
-            {
-              title:"Related Id Asset",
-              render: function (data, type, row, meta){
-               return row.related_id_asset
-              }
-            },
-          ],
+          "columns": columnAsset,
         })
       }else{
         table = $('#tableHistoryPid').DataTable().ajax.url("{{url('asset/getLogById')}}?id_asset="+window.location.href.split("=")[1]).load()
@@ -888,41 +949,160 @@
           id_asset:window.location.href.split("=")[1]
         },
         success:function(result){
-
           if(result.pid === "INTERNAL"){
             $("#service_point").closest(".form-group").hide()
-            $(".select-primary-engineer").closest(".form-group").hide()
-            $(".select-secondary-engineer").closest(".form-group").hide()
-            $("#inputIPAddress").closest(".form-group").hide()
-            $("#inputServer").closest(".form-group").hide()
-            $("#inputPort").closest(".form-group").hide()
             $("#selectStatusCustomer").closest(".form-group").hide()
-            $("#selectLevelSupport").closest(".form-group").hide()
-            $("#inputOS").closest(".form-group").hide()
-            $("#inputVersion").closest(".form-group").hide()
+            // $("#selectLevelSupport").closest(".form-group").hide()
             $("#inputMaintenanceStart").closest(".form-group").hide()
             $("#inputMaintenanceEnd").closest(".form-group").hide()
             $("#inputIdDeviceCustomer").closest(".form-group").hide()
+            $("#inputRMA").closest(".form-group").hide()
+            $("#inputLicense").closest(".form-group").hide()
             $("#inputSLAUptime").closest(".form-group").hide()
             $("#inputTotalTicket").closest(".form-group").hide()
             $("#distance").closest(".form-group").hide()
+            $("#DocNonInternalContainer").hide()
+            //buat delete id yang duplicate
+            $("#DocNonInternalContainer").find("input").attr("id","") 
+            $("#picContainer").empty("")
+            $("#prContainer").empty("")
+            $("#licenseContainer").empty("")
+            $("#DocInternalContainer").show()
+            $("#tableHistoryPid").closest(".box-primary").find(".box-title").html("<strong>History (PIC - Department)</strong>")
+            $("#inputLicenseStart").closest(".form-group").find("label").text("License Start/Garansi*") 
+            $("#inputLicenseEnd").closest(".form-group").find("label").text("License Start/Garansi*") 
+            $(".divAsset:eq(1)").prev("hr").hide()
+            $(".divAsset:eq(1)").hide()
+
             $("#btnAssignPeripheral").hide()
+            let picContainer = $("#picContainer");
             let prContainer = $("#prContainer");
+            let licenseContainer = $("#licenseContainer");
+
+            InitiateHistoryPid('asset_internal')
 
             let label = $("<label>",{
+              text: "Nama PIC - Department"
+            });
+
+            let input = $("<select>",{
+              class: "form-control",
+              name: "inputPIC",
+              id: "inputPIC"
+            });
+
+            picContainer.append(label,input);
+
+            $("#inputPIC").select2({
+              ajax: {
+                  url: '{{url("asset/getEmployeeNames")}}',
+                  processResults: function (data) {
+                      return {
+                          results: data
+                      };
+                  },
+              },
+              placeholder: 'Select PIC'
+            })
+
+            var pic = $("#inputPIC");
+            var option = new Option(result.text_name, result.pic, true, true);
+            pic.append(option).trigger('change');
+
+            let labelPr = $("<label>",{
               text: "PR"
             });
 
-            let input = $("<input>",{
+            let inputPr = $("<select>",{
               class: "form-control",
               name: "inputPr",
-              id: "inputPr"
+              id: "inputPr",
             });
 
-            prContainer.append(label,input);
+            prContainer.append(labelPr,inputPr);
+            $("#inputPr").attr("disabled",true)
 
-            $("#inputPr").val(result.pr);
+            $("#inputPr").select2({
+              ajax: {
+                  url: '{{url("asset/getPrByYear")}}',
+                  processResults: function (data) {
+                      return {
+                          results: data
+                      };
+                  },
+              },
+              placeholder: 'Select PR'
+            })
 
+            var pr = $("#inputPr");
+            var option = new Option(result.pr, result.pr, true, true);
+            pr.append(option).trigger('change');
+
+            let labelLicense = $("<label>",{
+              text: "License/Garansi"
+            });
+
+            let selectLicense = $("<select>",{
+              class: "form-control",
+              name: "inputLicense",
+              id: "inputLicense"
+            });
+
+            const years = Array.from({ length: 10 }, (_, i) => i + 1);
+        
+            // Map the years to <option> elements and append them to the select element
+            const options = years.map(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.text = `${year} Year`;
+                return option;
+            });
+
+            // Append all options to the dropdown
+            options.forEach(option => selectLicense.append(option));
+
+            licenseContainer.append(labelLicense,selectLicense);
+            $('#inputLicense option[value="'+ result.license +'"]').prop('selected', true).trigger('change');
+
+            $("#selectLevelSupport").select2({
+              data:[
+                {
+                  "id": "SIP IT",
+                  "text": "SIP IT"
+                },
+                {
+                  "id": "SIP Facility",
+                  "text": "SIP Facility"
+                }
+              ],          
+              placeholder:"Select 2nd Level Support",
+            }).val(result.second_level_support).trigger("change")
+            $(".divAsset:eq(0)").show()
+            $(".divAsset:eq(1)").hide()
+            $(".divAsset:eq(2)").show()
+          }else{
+            $(".divAsset").show()
+            $("#DocInternalContainer").find("input").attr("id","") 
+
+            $("#selectLevelSupport").select2({
+              ajax: {
+                url: '{{url("asset/getLevelSupport")}}',
+                processResults: function (data) {
+                  // Transforms the top-level key of the response object from 'items' to 'results'
+                  return {
+                    results: data
+                  };
+                },
+              },
+              placeholder:"Select 2nd Level Support",
+              tags:true
+            })
+
+            if (result.second_level_support != null) {
+              var levelSupportSelect = $("#selectLevelSupport");
+              var optionLevelSupport = new Option(result.second_level_support, result.second_level_support, true, true);
+              levelSupportSelect.append(optionLevelSupport).trigger('change');
+            }
           }
 
           $('input[class="files"]').change(function(){
@@ -959,6 +1139,41 @@
               })
             }
           })
+
+          $('input[class="filesBA"]').change(function(){
+            var f=this.files[0]
+            var filePath = f;
+         
+            // Allowing file type
+            var allowedExtensions =
+            /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
+
+            var ErrorText = []
+            // 
+            if (f.size > 50000000|| f.fileSize > 50000000) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Invalid file size, just allow file with size less than 50MB!',
+              }).then((result) => {
+                this.value = ''
+              })
+            }
+
+            var ext = filePath.name.split(".");
+            ext = ext[ext.length-1].toLowerCase();      
+            var arrayExtensions = ["jpg" , "jpeg", "png", "pdf"];
+
+            if (arrayExtensions.lastIndexOf(ext) == -1) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Invalid file type, just allow png/jpg/pdf file',
+              }).then((result) => {
+                this.value = ''
+              })
+            }
+          })
           
           var accesable = @json($feature_item);
           accesable.forEach(function(item,index){
@@ -969,6 +1184,7 @@
             $("select").prop('disabled', true)
             $(".fieldsetDivAssetDetail").prop('disabled',true)
           }
+
           $("#titleDetailIdAsset").text(result.id_asset)
           if(result.status == "Available"){
             $("#btnAssignPeripheral").show()
@@ -985,284 +1201,177 @@
 
 
           $("#inputSLAUptime").val(result.slaUptime)
-            $("#inputTotalTicket").val(result.countTicket)
-            $(".divAsset").show()
-            $(".divPeripheral").hide()
-            showPeripheral(result.id)
-            $("#tableTicketHistory").closest(".box-primary").show()
-            InitiateHistoryTicket()
-            InitiateHistoryPid('asset')
-            $("#boxDetailAsset").show()
+          $("#inputTotalTicket").val(result.countTicket)
+          $(".divPeripheral").hide()
+          showPeripheral(result.id)
+          $("#tableTicketHistory").closest(".box-primary").show()
+          InitiateHistoryTicket()
+          InitiateHistoryPid('asset')
+          $("#boxDetailAsset").show()
 
-            if ($("#selectCity").find('option').length == 0) {
-              $.ajax({
-                url: '{{url("asset/getProvince")}}',
-                type: 'GET',
-                beforeSend: function() {
-                  // Show loading indicator before AJAX request starts
-                  $("#select2-selectCity-container").html("loading...")
-                },
-                success: function(response) {
-                  $("#selectCity").select2({
-                    placeholder:"Select City",
-                    data:response
-                  }).val(result.kota).trigger("change")
-                },
-                error: function(xhr, status, error) {
-                    // Handle errors
-                    console.error(status, error);
-                }
-              });
-            }
-
-            $("#service_point").select2({
-              ajax: {
-                url: '{{url("asset/getServicePoint")}}',
-                processResults: function (data) {
-                  // Transforms the top-level key of the response object from 'items' to 'results'
-                  return {
-                    results: data
-                  };
-                },
+          if ($("#selectCity").find('option').length == 0) {
+            $.ajax({
+              url: '{{url("asset/getProvince")}}',
+              type: 'GET',
+              beforeSend: function() {
+                // Show loading indicator before AJAX request starts
+                $("#select2-selectCity-container").html("loading...")
               },
-              placeholder:"Select Service Point",
-            })
-
-            // Fetch the preselected item, and add to the control
-            if (result.service_point != null) {
-              var service_point = $("#service_point");
-              var option = new Option(result.service_point, result.service_point, true, true);
-              service_point.append(option).trigger('change');
-            }
-
-            if (result.distance != null) {
-              $("#distance").val(Math.round(result.distance))
-            }else{
-              $("#distance").val(0)
-            }
-            
-            $("#updateAsset").click(function(){
-              $("#updateAsset").attr("onclick",UpdateAsset(result.id,"asset"))
-            })
-
-            $("#saveAssignPeripheral").click(function(){
-              $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id))
-            })
-
-            $("#updateAssetDetail").click(function(){
-              $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
-            })
-
-            $(".select-primary-engineer").select2({
-              ajax: {
-                url: '{{url("asset/getEngineer")}}',
-                processResults: function (data) {
-                  // Transforms the top-level key of the response object from 'items' to 'results'
-                  return {
-                    results: data
-                  };
-                },
+              success: function(response) {
+                $("#selectCity").select2({
+                  placeholder:"Select City",
+                  data:response
+                }).val(result.kota).trigger("change")
               },
-              placeholder:"Select Engineer",
-            }).on("change", function () {
-              var selectedValues = [];
-              $('.select-secondary-engineer').not(this).each(function() {
-                selectedValues = selectedValues.concat($(this).val() || []);
-              });
+              error: function(xhr, status, error) {
+                  // Handle errors
+                  console.error(status, error);
+              }
+            });
+          }
 
-              // Check if any selected value is selected in another Select
-              var currentSelect = $(this);
-              var alertShown = false; 
-              $(this).find('option:selected').each(function() {
-                var value = $(this).val();
-                var text = $(this).text();
-
-                if (selectedValues.includes(value)) {
-                  // Unselect the value in the current Select
-                  currentSelect.find('option[value="' + value + '"]').prop('selected', false);
-                  currentSelect.trigger('change');
-                  Swal.fire({
-                    title: "<strong>Oopzz!</strong>",
-                    icon: "info",
-                    html: `
-                      Engineer has been assigned as secondary engineer!
-                    `,
-                  })
-                  alertShown = true;
-                }
-              });
-            })
-
-            $(".select-secondary-engineer").select2({
-              ajax: {
-                url: '{{url("asset/getEngineer")}}',
-                processResults: function (data) {
-                  // Transforms the top-level key of the response object from 'items' to 'results'
-                  return {
-                    results: data
-                  };
-                },
+          $("#service_point").select2({
+            ajax: {
+              url: '{{url("asset/getServicePoint")}}',
+              processResults: function (data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                  results: data
+                };
               },
-              placeholder:"Select Engineer",
-              multiple:true,
-            }).on("change", function () {
-              var selectedValues = [];
-              $('.select-primary-engineer').not(this).each(function() {
-                selectedValues = selectedValues.concat($(this).val() || []);
-              });
+            },
+            placeholder:"Select Service Point",
+          })
 
-              // Check if any selected value is selected in another Select
-              var currentSelect = $(this);
-              var alertShown = false; 
-              $(this).find('option:selected').each(function() {
-                var value = $(this).val();
-                var text = $(this).text();
+          // Fetch the preselected item, and add to the control
+          if (result.service_point != null) {
+            var service_point = $("#service_point");
+            var option = new Option(result.service_point, result.service_point, true, true);
+            service_point.append(option).trigger('change');
+          }
 
-                if (selectedValues.includes(value)) {
-                  // Unselect the value in the current Select
-                  currentSelect.find('option[value="' + value + '"]').prop('selected', false);
-                  currentSelect.trigger('change');
-                  Swal.fire({
-                    title: "<strong>Oopzz!</strong>",
-                    icon: "info",
-                    html: `
-                      Engineer has been assigned as primary engineer!
-                    `,
-                  })
-                  alertShown = true;
-                }
-              });
-            })
+          if (result.distance != null) {
+            $("#distance").val(Math.round(result.distance))
+          }else{
+            $("#distance").val(0)
+          }
+          
+          $("#updateAsset").click(function(){
+            $("#updateAsset").attr("onclick",UpdateAsset(result.id,"asset"))
+          })
 
-            // Fetch the preselected item, and add to the control
-            if (result.engineers.Primary != null) {
-              $(".select-primary-engineer").empty()
-              var engAssignSelect = $(".select-primary-engineer");
-              var option = new Option(result.engineers.Primary[0].engineer_atm, result.engineers.Primary[0].engineer_atm, true, true);
+          $("#saveAssignPeripheral").click(function(){
+            $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id))
+          })
+
+          $("#updateAssetDetail").click(function(){
+            $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
+          })
+
+          $(".select-primary-engineer").select2({
+            ajax: {
+              url: '{{url("asset/getEngineer")}}',
+              processResults: function (data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                  results: data
+                };
+              },
+            },
+            placeholder:"Select Engineer",
+          }).on("change", function () {
+            var selectedValues = [];
+            $('.select-secondary-engineer').not(this).each(function() {
+              selectedValues = selectedValues.concat($(this).val() || []);
+            });
+
+            // Check if any selected value is selected in another Select
+            var currentSelect = $(this);
+            var alertShown = false; 
+            $(this).find('option:selected').each(function() {
+              var value = $(this).val();
+              var text = $(this).text();
+
+              if (selectedValues.includes(value)) {
+                // Unselect the value in the current Select
+                currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+                currentSelect.trigger('change');
+                Swal.fire({
+                  title: "<strong>Oopzz!</strong>",
+                  icon: "info",
+                  html: `
+                    Engineer has been assigned as secondary engineer!
+                  `,
+                })
+                alertShown = true;
+              }
+            });
+          })
+
+          $(".select-secondary-engineer").select2({
+            ajax: {
+              url: '{{url("asset/getEngineer")}}',
+              processResults: function (data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                  results: data
+                };
+              },
+            },
+            placeholder:"Select Engineer",
+            multiple:true,
+          }).on("change", function () {
+            var selectedValues = [];
+            $('.select-primary-engineer').not(this).each(function() {
+              selectedValues = selectedValues.concat($(this).val() || []);
+            });
+
+            // Check if any selected value is selected in another Select
+            var currentSelect = $(this);
+            var alertShown = false; 
+            $(this).find('option:selected').each(function() {
+              var value = $(this).val();
+              var text = $(this).text();
+
+              if (selectedValues.includes(value)) {
+                // Unselect the value in the current Select
+                currentSelect.find('option[value="' + value + '"]').prop('selected', false);
+                currentSelect.trigger('change');
+                Swal.fire({
+                  title: "<strong>Oopzz!</strong>",
+                  icon: "info",
+                  html: `
+                    Engineer has been assigned as primary engineer!
+                  `,
+                })
+                alertShown = true;
+              }
+            });
+          })
+
+          // Fetch the preselected item, and add to the control
+          if (result.engineers.Primary != null) {
+            $(".select-primary-engineer").empty()
+            var engAssignSelect = $(".select-primary-engineer");
+            var option = new Option(result.engineers.Primary[0].engineer_atm, result.engineers.Primary[0].engineer_atm, true, true);
+            engAssignSelect.append(option).trigger('change');
+          }
+
+          if (result.engineers.Secondary != null) {
+            $(".select-secondary-engineer").empty()
+            $.each(result.engineers.Secondary,function(idx,values){
+              var engAssignSelect = $(".select-secondary-engineer");
+              var option = new Option(values.engineer_atm, values.engineer_atm, true, true);
               engAssignSelect.append(option).trigger('change');
-            }
+            })
+          }
 
-            if (result.engineers.Secondary != null) {
-              $(".select-secondary-engineer").empty()
-              $.each(result.engineers.Secondary,function(idx,values){
-                var engAssignSelect = $(".select-secondary-engineer");
-                var option = new Option(values.engineer_atm, values.engineer_atm, true, true);
-                engAssignSelect.append(option).trigger('change');
-              })
-            }
-
-            current_date = moment().format('YYYY-MM-DD')
-            if (result.maintenance_end >= current_date) {
-              $("#selectPID").prop("disabled",true)
-            }else{
-              $("#selectPID").prop("disabled",false)
-            }   
-
-          // if (result.type == 'asset') {
-          //   $("#inputSLAUptime").val(result.slaUptime)
-          //   $("#inputTotalTicket").val(result.countTicket)
-          //   $(".divAsset").show()
-          //   $(".divPeripheral").hide()
-          //   showPeripheral(result.id)
-          //   $("#tableTicketHistory").closest(".box-primary").show()
-          //   InitiateHistoryTicket()
-          //   InitiateHistoryPid('asset')
-          //   $("#boxDetailAsset").show()
-
-          //   if ($("#selectCity").find('option').length == 0) {
-          //     $.ajax({
-          //       url: '{{url("asset/getProvince")}}',
-          //       type: 'GET',
-          //       beforeSend: function() {
-          //         // Show loading indicator before AJAX request starts
-          //         $("#select2-selectCity-container").html("loading...")
-          //       },
-          //       success: function(response) {
-          //         $("#selectCity").select2({
-          //           placeholder:"Select City",
-          //           data:response
-          //         }).val(result.kota).trigger("change")
-          //       },
-          //       error: function(xhr, status, error) {
-          //           // Handle errors
-          //           console.error(status, error);
-          //       }
-          //     });
-          //   }
-
-          //   $("#service_point").select2({
-          //     ajax: {
-          //       url: '{{url("asset/getServicePoint")}}',
-          //       processResults: function (data) {
-          //         // Transforms the top-level key of the response object from 'items' to 'results'
-          //         return {
-          //           results: data
-          //         };
-          //       },
-          //     },
-          //     placeholder:"Select Service Point",
-          //   })
-
-          //   // Fetch the preselected item, and add to the control
-          //   if (result.service_point != null) {
-          //     var service_point = $("#service_point");
-          //     var option = new Option(result.service_point, result.service_point, true, true);
-          //     service_point.append(option).trigger('change');
-          //   }
-
-          //   $("#distance").val(Math.round(result.distance))
-            
-          //   $("#updateAsset").click(function(){
-          //     $("#updateAsset").attr("onclick",UpdateAsset(result.id,"asset"))
-          //   })
-
-          //   $("#saveAssignPeripheral").click(function(){
-          //     $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id))
-          //   })
-
-          //   $("#updateAssetDetail").click(function(){
-          //     $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
-          //   })
-
-          //   $("#selectEngAssign").select2({
-          //     ajax: {
-          //       url: '{{url("asset/getEngineer")}}',
-          //       processResults: function (data) {
-          //         // Transforms the top-level key of the response object from 'items' to 'results'
-          //         return {
-          //           results: data
-          //         };
-          //       },
-          //     },
-          //     placeholder:"Select Engineer",
-          //   })
-
-          //   // Fetch the preselected item, and add to the control
-          //   if (result.engineer_atm != null) {
-          //     var engAssignSelect = $("#selectEngAssign");
-          //     var option = new Option(result.engineer_atm, result.engineer_atm, true, true);
-          //     engAssignSelect.append(option).trigger('change');
-          //   }
-
-          //   current_date = moment().format('YYYY-MM-DD')
-          //   if (result.maintenance_end >= current_date) {
-          //     $("#selectPID").prop("disabled",true)
-          //   }else{
-          //     $("#selectPID").prop("disabled",false)
-          //   }            
-          // }else if (result.type == 'peripheral') {
-          //   $(".divAsset").hide()
-          //   $(".divPeripheral").show()
-          //   InitiateHistoryPid('peripheral')
-
-          //   $("#saveAssignPeripheral").click(function(){
-          //     $("#saveAssignPeripheral").attr("onclick",SaveAssignPeripheral(result.id))
-          //   })
-
-          //   $("#updateAsset").click(function(){
-          //     $("#updateAsset").attr("onclick",UpdateAsset(result.id,"peripheral"))
-          //   })
-          // }
+          current_date = moment().format('YYYY-MM-DD')
+          if (result.maintenance_end >= current_date) {
+            $("#selectPID").prop("disabled",true)
+          }else{
+            $("#selectPID").prop("disabled",false)
+          }   
 
           $(".divBtnUpdate").show()
 
@@ -1452,26 +1561,6 @@
             var optionTypeDevice = new Option(result.type_device, result.type_device, true, true);
             typeDeviceSelect.append(optionTypeDevice).trigger('change');
           }
-
-          $("#selectLevelSupport").select2({
-            ajax: {
-              url: '{{url("asset/getLevelSupport")}}',
-              processResults: function (data) {
-                // Transforms the top-level key of the response object from 'items' to 'results'
-                return {
-                  results: data
-                };
-              },
-            },
-            placeholder:"Select 2nd Level Support",
-            tags:true
-          })
-
-          if (result.second_level_support != null) {
-            var levelSupportSelect = $("#selectLevelSupport");
-            var optionLevelSupport = new Option(result.second_level_support, result.second_level_support, true, true);
-            levelSupportSelect.append(optionLevelSupport).trigger('change');
-          }
           
           $("#inputClient").val(result.client).prop("disabled",true)
           $("input[name='inputSerialNumber']").val(result.serial_number)
@@ -1534,7 +1623,6 @@
             autoclose: true,
             format: 'yyyy-mm-dd',
           }).change(function(){
-            console.log("masuk")
             if ($('#inputMaintenanceStart').val() != "") {
                if ($('#inputMaintenanceStart').val() >= this.value) {
                 Swal.fire({
@@ -1557,8 +1645,9 @@
 
           const fileAsset = document.querySelector('input[type="file"][name="inputBuktiAsset"]');
 
-          if (result.document_name != '' && result.document_name != null) {
-            const myFileBuktiAsset = new File(['{{asset("/")}}"'+ result.document_location +'"'], '/'+ result.document_location,{
+          console.log(result.document_name_asset)
+          if (result.document_name_asset != '' && result.document_name_asset != null) {
+            const myFileBuktiAsset = new File(['{{asset("/")}}"'+ result.document_location_asset +'"'], '/'+ result.document_location_asset,{
               type: 'text/plain',
               lastModified: new Date(),
             });
@@ -1568,11 +1657,31 @@
             dataTransferBuktiAsset.items.add(myFileBuktiAsset);
             fileAsset.files = dataTransferBuktiAsset.files;
 
-            if (result.link_drive != '' && result.link_drive != null) {
+            if (result.link_drive_asset != '' && result.link_drive_asset != null) {
               $("#span_link_drive_bukti_asset").show()
-              $("#link_bukti_asset").attr("href",result.link_drive)
+              $("#link_bukti_asset").attr("href",result.link_drive_asset)
             }
           }
+
+          const fileAssetBA = document.querySelector('input[type="file"][name="inputBeritaAcara"]');
+
+          if (result.document_name_BA != '' && result.document_name_BA != null) {
+            const myFileBeritaAcara = new File(['{{asset("/")}}"'+ result.document_location_BA +'"'], '/'+ result.document_location_BA,{
+              type: 'text/plain',
+              lastModified: new Date(),
+            });
+
+            // Now let's create a DataTransfer to get a FileList
+            const dataTransferBeritaAcara = new DataTransfer();
+            dataTransferBeritaAcara.items.add(myFileBeritaAcara);
+            fileAssetBA.files = dataTransferBeritaAcara.files;
+
+            if (result.link_drive_BA != '' && result.link_drive_BA != null) {
+              $("#span_link_drive_berita_acara").show()
+              $("#link_berita_acara").attr("href",result.link_drive_BA)
+            }
+          }
+
           InitiateChangeLog()
         }
       })
@@ -1657,6 +1766,8 @@
         tanggalBeli = $("input[name='inputTglBeli']").val()
         hargaBeli = $("input[name='inputHarga']").val()
         nilaiBuku = $("input[name='inputNilaiBuku']").val()
+        inputPr = $("input[name='inputPr']").val()
+
         if ($("textarea[name='txtAreaReason']").is(":visible") == true) {
           reason = $("textarea[name='txtAreaReason']").val()
         }else{
@@ -1699,6 +1810,7 @@
             formData.append('hargaBeli',hargaBeli)
             formData.append('nilaiBuku',nilaiBuku)
             formData.append('reason',reason)
+            formData.append('inputPr',inputPr)
 
             alert = {
               title: 'Are you sure?',
@@ -1778,8 +1890,7 @@
             formData.append('hargaBeli',hargaBeli)
             formData.append('nilaiBuku',nilaiBuku)
             formData.append('reason',reason)
-
-            console.log(formData)
+            formData.append('inputPr',inputPr)
 
             alert = {
               title: 'Are you sure?',
@@ -1824,8 +1935,12 @@
             formData.append('maintenanceStart',$("#inputMaintenanceStart").val())
             formData.append('maintenanceEnd',$("#inputMaintenanceEnd").val())
             formData.append('servicePoint',$("#service_point").val())
-            formData.append('servicePoint',$("#service_point").val())
+            formData.append('inputPic',$("#inputPIC").val())
             formData.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
+
+            if ($('#inputBeritaAcara').is(":visible")) {
+              formData.append('inputDocBA',$('#inputBeritaAcara').prop('files')[0])
+            }
 
             alert = {
               title: 'Are you sure?',

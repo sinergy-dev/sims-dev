@@ -81,6 +81,10 @@
       white-space: normal !important; /* Allow text to wrap */
       word-wrap: break-word; /* Break long words */
     }
+
+    .select2-container--open .select2-dropdown {
+      top: 100% !important; /* Forces the dropdown to open below */
+    }
   </style>
 @endsection
 @section('content')
@@ -248,14 +252,6 @@
           <form method="POST">
           @csrf  
             <div class="tab-add">
-            <!--   <div class="form-group">
-                <label for="">Choose Asset*</label>
-                <select id="selectAsset" name="selectAsset" class="form-control" onchange="fillInput('selectAsset')">
-                  <option></option>
-                </select>
-                <span class="help-block" style="display:none;">Please fill Asset!</span>
-              </div>  -->
-
               <div class="form-group divPeripheral" style="display:none;">
                 <label for="">Category Peripheral*</label>
                 <select id="selectPeripheral" name="selectPeripheral" class="form-control divPeripheral" onchange="fillInput('selectPeripheral')" style="display:none;">
@@ -263,12 +259,6 @@
                 </select>
                 <span class="help-block" style="display:none;">Please fill Category Peripheral!</span>
               </div>
-             <!--  <div class="form-group divPeripheral" style="display:none;">
-                <label for="">Assign</label>
-                <select id="selectAssigntoPeripheral" name="selectAssigntoPeripheral divPeripheral" class="form-control" onchange="fillInput('selectAssigntoPeripheral')" style="display:none;">
-                  <option></option>
-                </select>
-              </div> -->
 
               <div class="form-group">
                 <label for="">Assign</label>
@@ -291,11 +281,13 @@
                 <span class="help-block" style="display:none;">Please fill PID!</span>
               </div> 
 
-              <div class="form-group" id="clientContainer">
+              <div class="form-group">
                 <label for="">Client*</label>
                 <input type="text" class="form-control" onkeyup="fillInput('inputClient')" id="inputClient" name="inputClient" disabled>
                 <span class="help-block" style="display:none;">Please fill Client!</span>
               </div>
+                
+              <div class="form-group" id="clientContainer"></div>
 
               <div class="row">
                 <div class="col-sm-6">
@@ -347,14 +339,18 @@
               </div>
 
               <div class="row">
-                <div class="form-group" id="spesifikasiContainer">
-                <div class="col-sm-12 form-group">
-                    <label for="">Spesifikasi</label>
-                    <input id="inputSpesifikasi" name="inputSpesifikasi" class="form-control" onkeyup="fillInput('inputSpesifikasi')">
-                    <span class="help-block" style="display:none;">Please fill Spesifikasi!</span>
+                <div id="spesifikasiContainer">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="">Spesifikasi</label>
+                      <input id="inputSpesifikasi" name="inputSpesifikasi" class="form-control" onkeyup="fillInput('inputSpesifikasi')">
+                      <span class="help-block" style="display:none;">Please fill Spesifikasi!</span>
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="tab-add" style="display:none">
               <div class="row" id="rmaContainer">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -414,12 +410,9 @@
                     <input autocomplete="off" style="display: inline;" type="file" class="files" name="inputBuktiAsset" id="inputBuktiAsset" onchange="fillInput('inputBuktiAsset')">
                   </span>                  
                 </div>
-                
               </div>
-
-            </div>  
+            </div>   
             <div class="tab-add" style="display:none"> 
-
               <div class="row" id="deviceCustomerContainer">
                 <div class="col-sm-12">
                   <div class="form-group">
@@ -441,15 +434,15 @@
               <div class="form-group" id="locationContainer"></div>
 
               <div class="form-group" id="addressLocationContainer">
-                <label for="">Address Location*</label>
+                <label for="">Location*</label>
                 <textarea onkeyup="fillInput('txtAddressLocation')" id="txtAddressLocation" name="txtAddressLocation" class="form-control"></textarea>
-                <span class="help-block" style="display:none;">Please fill Address Location!</span>
+                <span class="help-block" style="display:none;">Please fill Location!</span>
               </div>
 
               <div class="form-group" id="detailLocationContainer">
-                <label>Detail Location</label>
+                <label>Detail Address</label>
                 <input class="form-control" placeholder="Search Location..." type="text" onkeyup="fillInput('txtAreaLocation')" id="txtAreaLocation" name="txtAreaLocation">
-                <span class="help-block" style="display:none;">Please fill Detail Location!</span>
+                <span class="help-block" style="display:none;">Please fill Detail Address!</span>
               </div>
 
               <div class="form-group">
@@ -502,21 +495,11 @@
               </div>     
 
               <div class="row" id="customerSupportContainer">
-                <div class="col-sm-6">
+                <div class="col-sm-12">
                   <div class="form-group">
                     <label for="">Status Customer*</label>
                     <select id="selectStatusCustomer" name="selectStatusCustomer" class="form-control" onchange="fillInput('selectStatusCustomer')"><option></option></select>
                     <span class="help-block" style="display:none;">Please fill Status Customer!</span>
-                  </div>
-                </div>
-
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label for="">2nd Level Support*</label>
-                    <select autofocus class="form-control" name="type" id="selectLevelSupport" name="selectLevelSupport" onchange="fillInput('selectLevelSupport')">
-                      <option></option>
-                    </select>
-                    <span class="help-block" style="display:none;">Please fill 2nd Level Support!</span>
                   </div>
                 </div>
               </div>     
@@ -541,15 +524,29 @@
 
               <div class="form-group" id="prContainer"></div>
 
-              <div class="form-group">
-                <label for="">Installed Date*</label>
-                <div class="input-group">
-                  <input autocomplete="off" class="form-control" id="inputInstalledDate" name="inputInstalledDate" onchange="fillInput('inputInstalledDate')"/>
-                  <div class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
+              <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                  <div class="form-group">
+                    <label for="">2nd Level Support*</label>
+                    <select autofocus class="form-control" name="type" id="selectLevelSupport" name="selectLevelSupport" onchange="fillInput('selectLevelSupport')">
+                      <option></option>
+                    </select>
+                    <span class="help-block" style="display:none;">Please fill 2nd Level Support!</span>
                   </div>
                 </div>
-                <span class="help-block" style="display:none;">Please fill Installed Date!</span>
+
+                <div class="col-sm-6 col-xs-12">
+                  <div class="form-group">
+                    <label for="">Installed Date*</label>
+                    <div class="input-group">
+                      <input autocomplete="off" class="form-control" id="inputInstalledDate" name="inputInstalledDate" onchange="fillInput('inputInstalledDate')"/>
+                      <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </div>
+                    </div>
+                    <span class="help-block" style="display:none;">Please fill Installed Date!</span>
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">
@@ -1029,6 +1026,18 @@
             }
 
             return current_pid
+          }
+        },
+        {
+          title:"PIC - Department",
+          render: function (data, type, row, meta){
+            let pic_name = row.pic_name
+
+            if (row.pic_name == null) {
+              pic_name == '-'
+            }
+
+            return pic_name
           }
         },
         {
@@ -1664,8 +1673,11 @@
         },
       },
       placeholder:"Select Asset Owner",
-      dropdownParent:$("#modal-add-asset")
-    })
+      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownPosition: 'below'
+    }).on('change', function(event) {
+      event.stopPropagation(); // Prevents the event from bubbling up and potentially affecting other elements
+    });
 
     $("#selectCategory").select2({
       ajax:{
@@ -1678,8 +1690,10 @@
         },
       },
       placeholder:"Select Category",
-      dropdownParent: $("#modal-add-asset"),
+      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownPosition: 'below'
     }).on('select2:select', function (e) {
+      e.stopPropagation();
       handleSpesifikasi(e.params.data);
       if (e.params.data.text == "Computer" || e.params.data.text == "Furniture" || e.params.data.text == "Kendaraan" || e.params.data.text == "Electronic") {
         $.each($(".tab-add").find("select"),function(item,data){
@@ -1953,7 +1967,8 @@
 
     $("#selectStatus").select2({
       placeholder:"Select Status",
-      dropdownParent: $("#modal-add-asset"),
+      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownPosition: 'below',
       data:[
         {id:"Installed",text:"Installed"},
         {id:"Available",text:"Available"},
@@ -1993,7 +2008,8 @@
               text: capitalizedTag
           };
       },
-      dropdownParent:$("#modal-add-asset")
+      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownPosition: 'below'
     }).on('select2:select', function(e) {
       const selectedOption = e.params.data;
       const capitalizedOption = capitalizeFirstLetter(selectedOption.text);
@@ -2040,7 +2056,8 @@
               text: capitalizedTag
           };
       },
-      dropdownParent:$("#modal-add-asset")
+      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownPosition: 'below'
     }).on('select2:select', function(e) {
       const selectedOption = e.params.data;
       const capitalizedOption = capitalizeFirstLetter(selectedOption.text);
@@ -2089,7 +2106,8 @@
       },
       allowClear:true,
       placeholder:"Select ID Assign to Assign",
-      dropdownParent: $("#modal-add-asset"),
+      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownPosition: 'below'
     })
 
     $("#selectPID").select2({
@@ -2102,8 +2120,10 @@
         },
       },
       placeholder: 'Select PID',
-      dropdownParent: $("#modal-add-asset")
+      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownPosition: 'below'
     }).on('select2:select', function (e) {
+      e.stopPropagation();
       let pid = e.params.data.id
 
       let clientContainer = $("#clientContainer"); 
@@ -2116,8 +2136,8 @@
       if (pid === 'INTERNAL') {
         $("#rmaContainer").hide();
         $("#tanggalPembelianContainer").hide();
-        $("#hargaContainer").hide();
-        $("#notesContainer").hide();
+        $("#hargaContainer").show();
+        $("#notesContainer").show();
         $("#deviceCustomerContainer").hide();
         $("#servicePointContainer").hide();
         $("#addressLocationContainer").hide();
@@ -2125,35 +2145,66 @@
         $("#hardwareDetailContainer").hide();
         $("#customerSupportContainer").hide();
         $("#maintenanceContainer").hide();
+        $("#clientContainer").show();
+        $("#prContainer").show();
+
+        $("#inputClient").val("PT. Sinergy Informasi Pratama")
+
+        $("#hargaContainer").find("label").first().text("Harga Perolehan") 
+
+        $("#selectLevelSupport").select2({
+          data:[
+            {
+              "id": "SIP IT",
+              "text": "SIP IT"
+            },
+            {
+              "id": "SIP Facility",
+              "text": "SIP Facility"
+            }
+          ],          
+          placeholder:"Select 2nd Level Support",
+          tags:true,
+          dropdownParent: $("#modal-add-asset"),
+        })
 
         let selectLicense = $('<select>', {
             id: 'inputLicense',
             name: 'inputLicense',
             class: 'form-control',
             onchange: function() {
-                fillInput('inputLicense');
+              fillInput('inputLicense');
             }
         });
 
         let defaultOption = $('<option>', {
-              value: '',
-              text: 'Select License',
-              disabled: true,
-              selected: true
-          });
-
-        let optionYes = $('<option>', {
-            value: 'Yes',
-            text: 'Yes'
+          value: '',
+          text: 'Select License',
+          disabled: true,
+          selected: true
         });
 
-        let optionNo = $('<option>', {
-            value: 'No',
-            text: 'No'
+        // Create an array of years from 1 to 10
+        const years = Array.from({ length: 10 }, (_, i) => i + 1);
+        
+        // Map the years to <option> elements and append them to the select element
+        const options = years.map(year => {
+            const option = document.createElement('option');
+            option.value = year;
+            option.text = `${year} Year`;
+            return option;
         });
 
-        selectLicense.append(defaultOption,optionYes, optionNo);
+        // Append all options to the dropdown
+        options.forEach(option => inputLicense.append(option));
+
+        selectLicense.append(defaultOption,options);
         $('#inputLicense').replaceWith(selectLicense);
+
+        $('#inputLicense').on('change', function(event) {
+          $('#inputLicenseStart').datepicker('setDate', moment($("#inputInstalledDate").val(),'DD/MM/YYYY').format('DD/MM/YYYY')).attr('readonly',true);
+          $('#inputLicenseEnd').datepicker('setDate', moment($("#inputInstalledDate").val(),'DD/MM/YYYY').add(parseInt($("#inputLicense").val()), 'years').format("DD/MM/YYYY")).attr('readonly',true);
+        })
 
         let prLabel = $('<label>',{
           text: "PR"
@@ -2161,9 +2212,10 @@
 
         prContainer.append(prLabel);
 
-        let prInput = $('<input>',{
+        let prInput = $('<select>',{
           id: "inputPr",
           name: "inputPr",
+          style: "width: 100%!important",
           class: "form-control"
         });
 
@@ -2177,6 +2229,21 @@
 
         prContainer.append(prInput);
 
+        $("#inputPr").select2({
+          ajax: {
+            url: '{{url("asset/getPrByYear")}}',
+            processResults: function (data) {
+              // Transforms the top-level key of the response object from 'items' to 'results'
+              return {
+                results: data
+              };
+            },
+          },
+          allowClear:true,
+          placeholder:"Select PR",
+          dropdownParent: $("#modal-add-asset"),
+        })
+
         let locationLabel = $('<label>',{
           text: "Location*"
         });
@@ -2184,125 +2251,128 @@
         locationContainer.append(locationLabel);
 
         $.ajax({
-        type:"GET",
-        url:"{{url('asset/getLocationAddress')}}",
-        success:function(result){
-          let locationSelect = $('<select>', {
-            id: 'txtAddressLocation',
-            class: 'form-control'
-          });
-
-          let defaultOption = $('<option>', {
-              value: '',
-              text: 'Select Location',
-              disabled: true,
-              selected: true
-          });
-          locationSelect.append(defaultOption);
-
-          $.each(result, function(index, location) {
-            let option = $('<option>', {
-                value: location.name, 
-                text: location.name 
+          type:"GET",
+          url:"{{url('asset/getLocationAddress')}}",
+          success:function(result){
+            let locationSelect = $('<select>', {
+              id: 'txtAddressLocation',
+              class: 'form-control'
             });
-            locationSelect.append(option);
-        });
 
-        locationContainer.append(locationSelect);
+            let defaultOption = $('<option>', {
+                value: '',
+                text: 'Select Location',
+                disabled: true,
+                selected: true
+            });
+            locationSelect.append(defaultOption);
 
-        locationSelect.on('change', function() {
-          let selectedIndex = $(this).prop('selectedIndex') - 1; // Adjusting index for the default option
-          if (selectedIndex >= 0) {
-              let selectedLocation = result[selectedIndex];
-              $('#lat').val(selectedLocation.lat); 
-              $('#lng').val(selectedLocation.long);   
-              $('#txtAreaLocation').val(selectedLocation.lokasi);
-              initMap(parseFloat(selectedLocation.lat),parseFloat(selectedLocation.long))
+            $.each(result, function(index, location) {
+              let option = $('<option>', {
+                  value: location.name, 
+                  text: location.name 
+              });
+              locationSelect.append(option);
+            });
+
+            locationContainer.append(locationSelect);
+
+            locationSelect.on('change', function() {
+              let selectedIndex = $(this).prop('selectedIndex') - 1; // Adjusting index for the default option
+              if (selectedIndex >= 0) {
+                  let selectedLocation = result[selectedIndex];
+                  $('#lat').val(selectedLocation.lat); 
+                  $('#lng').val(selectedLocation.long);   
+                  $('#txtAreaLocation').val(selectedLocation.lokasi);
+                  initMap(parseFloat(selectedLocation.lat),parseFloat(selectedLocation.long))
+              }
+            });
           }
-            
         });
-  
-        }
-
-      });
 
         let label = $('<label>',{
-          text: 'Client*'
+          text: 'Nama PIC - Department*'
         });
         
         clientContainer.append(label);
         let selectClient = $('<select>', {
-            id: 'inputClient',
-            name: 'inputClient',
+            id: 'inputPIC',
+            name: 'inputPIC',
             class: 'form-control'
         });
         clientContainer.append(selectClient);
 
-        $("#inputClient").select2({
-            ajax: {
-                url: '{{url("asset/getEmployeeNames")}}',
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-            },
-            placeholder: 'Select Client',
-            dropdownParent: $("#modal-add-asset")
+        $("#inputPIC").select2({
+          ajax: {
+              url: '{{url("asset/getEmployeeNames")}}',
+              processResults: function (data) {
+                  return {
+                      results: data
+                  };
+              },
+          },
+          placeholder: 'Select PIC',
+          dropdownParent: $("#modal-add-asset")
+        }).on('select2:select', function (e) {
+          e.stopPropagation();
+        })
+      } else {
+          $("#rmaContainer").show();
+          $("#tanggalPembelianContainer").show();
+          $("#hargaContainer").show();
+          $("#notesContainer").show();
+          $("deviceCustomerContainer").show();
+          $("servicePointContainer").show();
+          $("addressLocationContainer").show();
+          $("#softwareDetailContainer").show();
+          $("#hardwareDetailContainer").show();
+          $("#customerSupportContainer").show();
+          $("#maintenanceContainer").show();
+          $('#inputLicenseStart').attr('readonly',false)
+          $('#inputLicenseEnd').attr('readonly',false)
+          $("#clientContainer").hide();
+          $("#prContainer").hide();
+
+          $("#hargaContainer").find("label").first().text("Harga") 
+
+          let inputLicense = $('<input>', {
+              autocomplete: 'off',
+              class: 'form-control',
+              id: 'inputLicense',
+              name: 'inputLicense',
+              onkeyup: function() {
+                  fillInput('inputLicense');
+              }
+          });
+
+          $('#inputLicense').replaceWith(inputLicense);
+
+        let label = $('<label>',{
+            text: 'Client*'
+          });
+          
+          clientContainer.append(label);
+
+        let inputClient = $('<input>', {
+              type: 'text',
+              class: 'form-control',
+              id: 'inputClient',
+              name: 'inputClient',
+              disabled: true
+          });
+        clientContainer.append(inputClient);
+
+        $.ajax({
+          type:"GET",
+          url:"{{url('asset/getClientByPid')}}",
+          data:{
+            pid:pid
+          },
+          success:function(result){
+            $("#inputClient").val(result).prop("disabled",true)
+          }
         });
-
-    } else {
-        $("#rmaContainer").show();
-        $("#tanggalPembelianContainer").show();
-        $("#hargaContainer").show();
-        $("#notesContainer").show();
-        $("deviceCustomerContainer").show();
-        $("servicePointContainer").show();
-        $("addressLocationContainer").show();
-        $("#softwareDetailContainer").show();
-        $("#hardwareDetailContainer").show();
-        $("#customerSupportContainer").show();
-        $("#maintenanceContainer").show();
-
-        let inputLicense = $('<input>', {
-            autocomplete: 'off',
-            class: 'form-control',
-            id: 'inputLicense',
-            name: 'inputLicense',
-            onkeyup: function() {
-                fillInput('inputLicense');
-            }
-        });
-
-        $('#inputLicense').replaceWith(inputLicense);
-
-      let label = $('<label>',{
-          text: 'Client*'
-        });
-        
-        clientContainer.append(label);
-
-      let inputClient = $('<input>', {
-            type: 'text',
-            class: 'form-control',
-            id: 'inputClient',
-            name: 'inputClient',
-            disabled: true
-        });
-      clientContainer.append(inputClient);
-
-      $.ajax({
-        type:"GET",
-        url:"{{url('asset/getClientByPid')}}",
-        data:{
-          pid:pid
-        },
-        success:function(result){
-          $("#inputClient").val(result).prop("disabled",true)
-        }
-      });
-    }
-
+      }
     })   
 
     $('#inputInstalledDate').datepicker({
@@ -2378,7 +2448,7 @@
            $.each($(".tab-add:first").find("input"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
-                if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku" && data.id != "inputBuktiAsset" && data.id != "inputSerialNumber" ) {
+                if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku" && data.id != "inputBuktiAsset" && data.id != "inputSerialNumber" && data.id != "inputClient") {
                   if ($(data).val() == "") {
                     $("input[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
                     $("input[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
@@ -2391,17 +2461,19 @@
             $.each($(".tab-add:first").find("select"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
-                if ($(data).val() == "") {
+                if (data.id != "inputSpesifikasi_Port" && data.id != "inputSpesifikasi_Speed") {
+                  if ($(data).val() == "") {
                     $("select[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
                     $("select[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
-                }
+                  }
+                }                
               }
             });
 
             $.each($(".tab-add:first").find("input"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
-                if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku" && data.id != "inputBuktiAsset") {
+                if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku" && data.id != "inputBuktiAsset" && data.id != 'inputClient') {
                   if ($(data).val() == "") {
                     $("input[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
                     $("input[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
@@ -2424,7 +2496,17 @@
 
           btnAddAsset(currentTab);
         }
-      }else if (currentTab == 1) {
+      }else if(currentTab == 1){
+        let x = document.getElementsByClassName("tab-add");
+        x[currentTab].style.display = "none";
+        currentTab = currentTab + n;
+        if (currentTab >= x.length) {
+          x[n].style.display = "none";
+          currentTab = 0;
+        }
+
+        btnAddAsset(currentTab);
+      }else if (currentTab == 2) {
         if ($("#selectCategory").val() != "COM") {
           if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "KDR" || $("#selectCategory").val() === "ELC"){
             $.each($(".tab-add:nth(1)").find("input"),function(item,data){
@@ -2495,7 +2577,7 @@
 
           btnAddAsset(currentTab);
         }
-      }else if (currentTab == 2){
+      }else if (currentTab == 3){
         if ($(".tab-add:nth(2)").find(".form-group").hasClass("has-error") == false) {
           let x = document.getElementsByClassName("tab-add");
           x[currentTab].style.display = "none";
@@ -2657,6 +2739,7 @@
             dataForm.append('reason',$("#txtAreaReason").val())
             dataForm.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
             dataForm.append('pr',$("#inputPr").val())
+            dataForm.append('pic',$("#inputPIC").val())
 
             $.ajax({
               type:"POST",

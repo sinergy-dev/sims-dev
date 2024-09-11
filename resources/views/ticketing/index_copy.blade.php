@@ -3512,7 +3512,7 @@ Ticketing
 
 				$.ajax({
 					type:"GET",
-					url:"{{url('/getDashboardNeedAttention')}}?start="+ moment().startOf('year').format('YYYY-MM-DD') + "&end=" + moment().endOf('year').format('YYYY-MM-DD'),
+					url:"{{url('/getDashboardNeedAttention')}}?pid=" + $("#filterDashboardByPid").val() + "&start="+ moment().startOf('year').format('YYYY-MM-DD') + "&end=" + moment().endOf('year').format('YYYY-MM-DD'),
 					beforeSend:function(){
 						$("#importanTable").html("<tr><td colspan=7 style='text-align:center'>Loading...</td></tr>");
           },
@@ -3570,7 +3570,7 @@ Ticketing
 					$("#tb_sla_response_time").DataTable({
 						"ajax":{
 				        "type":"GET",
-				        "url":"{{url('/getDashboardResponse')}}?start="+moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD")
+				        "url":"{{url('/getDashboardResponse')}}?pid=" + $("#filterDashboardByPid").val() + "&start="+moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD")
 				    },
 				    "columns": [
 				      { 
@@ -3600,7 +3600,7 @@ Ticketing
 					$("#tb_sla_resolution_time").DataTable({
 						"ajax":{
 				        "type":"GET",
-				        "url":"{{url('/getDashboardResolution')}}?start="+moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD"),
+				        "url":"{{url('/getDashboardResolution')}}?pid=" + $("#filterDashboardByPid").val() + "&start=" + moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD"),
 				    },
 				    "columns": [
 				      { 
@@ -3891,12 +3891,33 @@ Ticketing
 
 	$("#inputClient").change(function(){
 		if ($(this).val() != "") {
-			var acronym_client = $("#inputClient option:selected").text().split(" - ")[0];
-			if ($('#inputATM').hasClass("select2-hidden-accessible")) {
-				$("#inputATM").select2('destroy');
-			}			
+			showInputDetailTicket()
+			var acronym_client = $("#inputClient option:selected").text().split(" - ")[0];	
 
 			InitPID(acronym_client)
+			$("#selectPID").attr("disabled",false)
+			$("#selectCatAsset").attr("disabled",false)
+
+    	if ($('#selectCatAsset').data("select2")) {
+    		$('#selectCatAsset').select2('destroy');
+    	}
+
+      $('#selectCatAsset').empty();
+      $('#selectCatAsset').append('<option></option>');
+	    $('#selectCatAsset').val("");
+
+	    $("div").removeClass('has-error')
+			$(".help-block").hide()
+
+			if ($("#inputATM").next().next(".help-block").next("a")) {
+	    	$("#inputATM").next().next(".help-block").next("a").remove()
+	    }
+
+    	if ($('#inputATM').data("select2")) {
+    		$('#inputATM').select2('destroy');
+	      $('#inputATM').empty();
+	      $('#inputATM').append('<option></option>');
+    	}
 
 			$("#inputATM").select2({
 				ajax: {
@@ -4083,17 +4104,14 @@ Ticketing
 					var temp = $("#inputticket").val().split('/')
 					temp[1] = acronym_client
 					var changeResult = temp.join('/')
-
 					// clientBanking = result.banking
 					// clientWincor = result.wincor
 					$("#inputticket").val(changeResult);
-
 					if ($('#selectPID').data("select2")) {
 						$('#selectPID').select2('destroy');
 		      	$('#selectPID').empty();
 		      	$('#selectPID').append('<option></option>');
 					}
-
 					$.ajax({
 						type:"GET",
 						url:"{{url('ticketing/create/getPidByPic')}}",
@@ -4146,14 +4164,12 @@ Ticketing
 				                		$('#selectPID').select2('destroy');
 											      $('#selectPID').empty();
 											      $('#selectPID').append('<option></option>');
-
 					                  $("#inputClient").val("").trigger("change")
 														// $("#inputATMid").hide();
-
-					                  $('#hrLine').nextUntil('#createTicket').each(function() {
-														    $(this).hide()
-														});
-														$("#createTicket").hide()
+					         					// $('#hrLine').nextUntil('#createTicket').each(function() {
+														//     $(this).hide()
+														// });
+														// $("#createTicket").hide()
 					                }
 					              })
 											}
@@ -4319,36 +4335,50 @@ Ticketing
 	});
 
 	function showInputDetailTicket(){
-		if($("#inputTypeTicket").val() != "none"){
-			$("#hrLine").show();
-			$("#hrLine2").show();
-			$("#refrenceDiv").show();
-			$("#picDiv").show();
-			$("#contactDiv").show();
-			$("#problemDiv").show();
-			$("#locationDiv").show();
-			$("#dateDiv").show();
-			$("#noteDiv").show();
-			$("#serialDiv").show();
-			$("#reportDiv").show();
-			$("#slmDiv").hide();
-			$("#inputSlm").val("");
+		$("#hrLine").show();
+		$("#hrLine2").show();
+		$("#refrenceDiv").show();
+		$("#picDiv").show();
+		$("#contactDiv").show();
+		$("#problemDiv").show();
+		$("#locationDiv").show();
+		$("#dateDiv").show();
+		$("#noteDiv").show();
+		$("#serialDiv").show();
+		$("#reportDiv").show();
+		// $("#slmDiv").hide();
+		$("#inputRefrence").val("");
+		$("#inputPIC").val("");
+		$("#inputContact").val("");
+		$("#inputProblem").val("");
+		$("#inputLocation").val("");
+		$("#inputSerial").val("");
+		$("#inputSlm").val("");
+		$("#inputReportingDate").val("");		
+		$("#inputLocation").attr("disabled",false)
 
+		$("#createTicket").show();
+		var onclick = "createTicket(" + clientBanking + ")"
+		$("#createTicket").attr("onclick",onclick);
+		
+		getBankAtm(clientBanking)
+
+		if($("#inputTypeTicket").val() != "none"){
 			//ngga kepake harusnyaa
-			if($("#inputClient option:selected").text().includes("Absensi")){
-				$("#serialDiv").hide();
-				$("#slmDiv").hide();
-				$("#inputSlm").val("");
-				$("#typeDiv").show();
-				$("#inputAbsenLocation").show();
-				$("#inputSwitchLocation").hide();
-				$("#inputLocation").remove();
-				$("#ipMechineDiv").show();
-				$("#ipServerDiv").show();
-			} 
+			// if($("#inputClient option:selected").text().includes("Absensi")){
+			// 	$("#serialDiv").hide();
+			// 	$("#slmDiv").hide();
+			// 	$("#inputSlm").val("");
+			// 	$("#typeDiv").show();
+			// 	$("#inputAbsenLocation").show();
+			// 	$("#inputSwitchLocation").hide();
+			// 	$("#inputLocation").remove();
+			// 	$("#ipMechineDiv").show();
+			// 	$("#ipServerDiv").show();
+			// } 
 
 			//ngga kepake harusnya
-			if($("#inputClient option:selected").text().includes("Switch")){
+			// if($("#inputClient option:selected").text().includes("Switch")){
 				// $("#serialDiv").hide();
 				// $("#inputLocation").remove();
 				// $("#typeDiv").show();
@@ -4356,29 +4386,22 @@ Ticketing
 				// $("#ipMechineDiv").show();
 				// $("#ipServerDiv").show();
 
-				$("#inputLocation").remove();
-				$("#typeDiv").show();
-				$("#inputSwitchLocation").show();
-				$("#inputAbsenLocation").hide();
-				$("#ipMechineDiv").show();
-				$("#slmDiv").hide()
-				$("#inputSlm").val("");
+				// $("#inputLocation").remove();
+				// $("#typeDiv").show();
+				// $("#inputSwitchLocation").show();
+				// $("#inputAbsenLocation").hide();
+				// $("#ipMechineDiv").show();
+				// $("#slmDiv").hide()
+				// $("#inputSlm").val("");
 				// $("#ipServerDiv").show();
-
-			} 
+			// } 
 
 			//ngga kepake harusnyaa
-			if(!$("#inputClient option:selected").text().includes("Switch") && !$("#inputClient option:selected").text().includes("Absensi")) {
-				$("#inputAbsenLocation").remove();
-				$("#inputSwitchLocation").remove();
-				$("#inputLocation").show();
-			}
-			
-			$("#createTicket").show();
-			var onclick = "createTicket(" + clientBanking + ")"
-			$("#createTicket").attr("onclick",onclick);
-			
-			getBankAtm(clientBanking)
+			// if(!$("#inputClient option:selected").text().includes("Switch") && !$("#inputClient option:selected").text().includes("Absensi")) {
+			// 	$("#inputAbsenLocation").remove();
+			// 	$("#inputSwitchLocation").remove();
+			// 	$("#inputLocation").show();
+			// }
 		}
 	}
 
@@ -4397,7 +4420,7 @@ Ticketing
 		
 		if ($("#inputTypeTicket").val() == ""){
 			$("#inputTypeTicket").closest("div").addClass('has-error')
-			$("#inputTypeTicket").next().next(".help-block").show()
+			$("#inputTypeTicket").next(".help-block").show()
 		}else if ($("#inputClient").val() == ""){
 			$("#inputClient").closest("div").addClass('has-error')
 			$("#inputClient").next().next(".help-block").show()
