@@ -206,9 +206,10 @@ class TicketingController extends Controller
 					->whereRaw('ticketing__activity.date BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
 					->groupBy('id_ticket');
 				})
-			->where('activity','<>','CLOSE')
-            ->where('activity','<>','CANCEL')
-            ->where('activity','<>','PENDING')
+			// ->where('activity','<>','CLOSE')
+            // ->where('activity','<>','CANCEL')
+            // ->where('activity','<>','PENDING')
+            ->whereNotIn('activity', ['CLOSE', 'CANCEL', 'PENDING'])
             // ->where('id_ticket','like','%'.date('Y'))
             ->whereRaw('ticketing__activity.date BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
 			->get()
@@ -1254,19 +1255,77 @@ class TicketingController extends Controller
 
 	public function getAssetByClient(Request $request)
 	{
+
 		$getId = AssetMgmt::leftjoin('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
-
         // return $getLastId->id_last_asset;
-        $client = TB_Contact::where('id_customer',$request->client)->first()->customer_legal_name;
+        if ($request->client == "INTERNAL") {
 
-        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+      //   	$data = DB::table('tb_asset_management as t_asset')
+		    // ->join(DB::raw('(SELECT id_asset,MAX(tb_asset_management_detail.date_add) as max_date FROM tb_asset_management_detail GROUP BY id_asset) as t_asset_detail'), function ($join) {
+		    //     $join->on('t_asset.id', '=', 't_asset_detail.id_asset');
+		    // })
+		    // ->join('users','users.nik','=','t_asset_detail.pic')
+      //       ->join('role_user','role_user.user_id','=','users.nik')
+      //       ->join('roles','roles.id','=','role_user.role_id')
+		    // ->select('t_asset.id', DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(CONCAT(users.name,' - ',roles.name), ' - ',category,' - ',type_device) 
+      //           	WHEN serial_number = '' THEN CONCAT(CONCAT(users.name,' - ',roles.name), ' - ',category,' - ',type_device) 
+      //           	ELSE CONCAT(CONCAT(users.name,' - ',roles.name), ' - ',category,' - ',type_device,' - ',serial_number) END) as text"))
+      //       ->where(DB::raw("CONCAT(CONCAT(users.name,' - ',roles.name), ' - ',category,' - ',type_device,' - ',serial_number)"),'like','%'.request('q').'%')
+      //       ->orderBy('t_asset.created_at','desc')
+		    // ->get();
+
+        	// $data = AssetMgmtDetail::join('tb_asset_management','tb_asset_management.id','=','tb_asset_management_detail.id_asset')
+        	// ->join('users','users.nik','=','tb_asset_management_detail.pic')
+            // ->join('role_user','role_user.user_id','=','users.nik')
+            // ->join('roles','roles.id','=','role_user.role_id')
+            // ->select(
+            // 	"tb_asset_management.id",
+            //     DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(CONCAT(users.name,' - ',roles.name), ' - ',category,' - ',type_device) 
+            //     	WHEN serial_number = '' THEN CONCAT(CONCAT(users.name,' - ',roles.name), ' - ',category,' - ',type_device) 
+            //     	ELSE CONCAT(CONCAT(users.name,' - ',roles.name), ' - ',category,' - ',type_device,' - ',serial_number) END) as text"),
+            // 	DB::raw("MAX(date_add) AS date_add")
+            // )
+            // ->groupBy('id','text')
+            // ->orderBy('tb_asset_management.created_at','desc')
+            // ->where('tb_asset_management_detail.pid',$request->client)
+            // ->where('tb_asset_management_detail.pic','<>',null)
+            // ->distinct()
+            // ->get();
+
+            $data = DB::table($getLastId, 'temp2')
+            ->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')
+            ->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->leftjoin('users','users.nik','=','tb_asset_management_detail.pic')
+            ->leftjoin('role_user','role_user.user_id','=','users.nik')
+            ->leftjoin('roles','roles.id','=','role_user.role_id')
+            ->select(
+            	"tb_asset_management.id",
+                DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(CONCAT('(',users.name,' - ',roles.name,')'), ' - ',category,' - ',type_device) 
+                	WHEN serial_number = '' THEN CONCAT(CONCAT('(',users.name,' - ',roles.name,')'), ' - ',category,' - ',type_device) 
+                	ELSE CONCAT(CONCAT('(',users.name,' - ',roles.name,')'), ' - ',category,' - ',type_device,' - ',serial_number) END) as text")
+            )
+            ->where('tb_asset_management_detail.pid',$request->client)
+            ->where('pic','!=',null)
+            ->groupBy(
+                'tb_asset_management.id',
+                'text'
+            )
+            ->orderBy('tb_asset_management.created_at','desc')->get(); 
+        }else{
+        	$client = TB_Contact::where('id_customer',$request->client)->first()->customer_legal_name;
+
+        	$data = DB::table($getLastId, 'temp2')
+        	->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')
+        	->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
             ->select('tb_asset_management.id',
             	// DB::raw('CONCAT(`id_device_customer`," - ", `alamat_lokasi`," - ", `serial_number`) AS `text`'),
             	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ', type_device, ' - ', serial_number) END) as text"))
-            ->orderBy('tb_asset_management.created_at','desc')->where('client','like','%'.$client.'%')
+            ->orderBy('tb_asset_management.created_at','desc')
+            ->where('client','like','%'.$client.'%')
             ->where(DB::raw("CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ' , type_device, ' - ', serial_number)"),'like','%'.request('q').'%')
             ->get();
+        }
 
         return $data;
 	}
@@ -1575,74 +1634,74 @@ class TicketingController extends Controller
 
 	public function sendEmailOpen(Request $request){
 		// return $request->id_ticket;
-		$detailTicketOpen = new TicketingDetail();
-		$detailTicketOpen->id_ticket = $request->id_ticket;
-		
-		if($request->absen != "-"){
-			$detailTicketOpen->id_atm = $request->absen;
-		} else if($request->switchLocation != "-"){
-			$detailTicketOpen->id_atm = $request->switchLocation;
-		} else {
-			if($request->id_atm != null || $request->id_atm != ""){
-
-				$atm = AssetMgmtDetail::where('id_asset',$request->id_atm)->orderby('id','desc')->first();
-
-				$detailTicketOpen->id_atm = $atm->id_device_customer;
+		try {
+			DB::beginTransaction();
+			$detailTicketOpen = new TicketingDetail();
+			$detailTicketOpen->id_ticket = $request->id_ticket;
+			
+			if($request->absen != "-"){
+				$detailTicketOpen->id_atm = $request->absen;
+			} else if($request->switchLocation != "-"){
+				$detailTicketOpen->id_atm = $request->switchLocation;
 			} else {
-				$detailTicketOpen->id_atm = $request->id_atm;
+				if($request->id_atm != null || $request->id_atm != ""){
+	
+					$atm = AssetMgmtDetail::where('id_asset',$request->id_atm)->orderby('id','desc')->first();
+	
+					$detailTicketOpen->id_atm = $atm->id_device_customer;
+				} else {
+					$detailTicketOpen->id_atm = $request->id_atm;
+				}
 			}
-		}
-
-		$detailTicketOpen->refrence = $request->refrence;
-		$detailTicketOpen->pic = $request->pic;
-		$detailTicketOpen->contact_pic = $request->contact_pic;
-		$detailTicketOpen->location = $request->location;
-		$detailTicketOpen->problem = $request->problem;
-		$detailTicketOpen->serial_device = $request->serial_device;
-		$detailTicketOpen->note = $request->note;
-		$detailTicketOpen->reporting_time = $request->report;
-		$detailTicketOpen->severity = substr($request->severity,0,1);
-		$detailTicketOpen->type_ticket = $request->type_ticket;
-		$detailTicketOpen->pid = $request->pid;
-
-		if($request->engineer != ""){
-			$detailTicketOpen->engineer = $request->engineer;
-		}
-
-		$detailTicketOpen->save();
-
-		//Start Notification Job SLM
-
-		// if($detailTicketOpen->engineer != null){
-		// 	DB::table('slm_notification_job')->create([
-		// 		'id_tiket' => $detailTicketOpen->id_ticket,
-		// 		'id_telegram' => '12324342',
-		// 		'message' => 'Ticket dengan nomor '. $request->id_ticket .' belum di pick oleh engineer silahkan lakukan assign engineer ulang pada ticket tersebut.',
-		// 		'nik' => '',
-		// 		'notification_type' => 'Reminder Ticket',
-
-		// 	]);
-		// }
-		
-		//End Notification Job SLM
-		$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
-
-		$activityTicketOpen = new TicketingActivity();
-		$activityTicketOpen->id_ticket = $request->id_ticket;
-		$activityTicketOpen->date = date("Y-m-d H:i:s.000000");
-		$activityTicketOpen->activity = "OPEN";
-		$activityTicketOpen->operator = Auth::user()->name;
-		$activityTicketOpen->note = "Open Ticket";
-
-		$activityTicketOpen->save();
-		
-		if($request->type_ticket == "PM"){
-			$detailTicketOpen->reporting_time = date("Y-m-d H:i:s.000000");
+	
+			$detailTicketOpen->refrence = $request->refrence;
+			$detailTicketOpen->pic = $request->pic;
+			$detailTicketOpen->contact_pic = $request->contact_pic;
+			$detailTicketOpen->location = $request->location;
+			$detailTicketOpen->problem = $request->problem;
+			$detailTicketOpen->serial_device = $request->serial_device;
+			$detailTicketOpen->note = $request->note;
+			$detailTicketOpen->reporting_time = $request->report;
+			$detailTicketOpen->severity = substr($request->severity,0,1);
+			$detailTicketOpen->type_ticket = $request->type_ticket;
+			$detailTicketOpen->pid = $request->pid;
+	
+			if($request->engineer != ""){
+				$detailTicketOpen->engineer = $request->engineer;
+			}
+	
 			$detailTicketOpen->save();
+	
+			//Start Notification Job SLM
+	
+			if($detailTicketOpen->engineer != null){
+				// $this->setNotif($detailTicketOpen->engineer, $request->id_ticket, $request->location);
+			}
+			//End Notification Job SLM
+	
+			$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
+	
+			$activityTicketOpen = new TicketingActivity();
+			$activityTicketOpen->id_ticket = $request->id_ticket;
+			$activityTicketOpen->date = date("Y-m-d H:i:s.000000");
+			$activityTicketOpen->activity = "OPEN";
+			$activityTicketOpen->operator = Auth::user()->name;
+			$activityTicketOpen->note = "Open Ticket";
+	
+			$activityTicketOpen->save();
+			
+			if($request->type_ticket == "PM"){
+				$detailTicketOpen->reporting_time = date("Y-m-d H:i:s.000000");
+				$detailTicketOpen->save();
+			}
+	
+			$activityTicketOpen->client_id_filter = $request->clientID;
+			return $activityTicketOpen;
+			DB::commit();
+		} catch (Exception $e) {
+			DB::rollBack();
+			
 		}
-
-		$activityTicketOpen->client_id_filter = $request->clientID;
-		return $activityTicketOpen;
 	}
 
 	public function sendEmail($to, $cc, $subject, $body){
@@ -2169,7 +2228,7 @@ class TicketingController extends Controller
 			$occurring_ticket->whereBetween('ticketing__activity.date', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
 		}
 
-		$occurring_ticket = $occurring_ticket->get();
+		// $occurring_ticket = $occurring_ticket->get();
 
 		$occurring_ticket_result = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
@@ -2180,7 +2239,11 @@ class TicketingController extends Controller
 			->orderBy('id','DESC');
 
 		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
-    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+			if($cek_role->name_role == 'Customer Care'){
+				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->where('id_ticket','like','%'.date('Y'));
+			} else {
+				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+			}
     	} elseif($cek_role->name_role == 'Managed Service Manager'){
     		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
     	} elseif($cek_role->name_role == 'Customer Relation Manager'){
@@ -2287,7 +2350,12 @@ class TicketingController extends Controller
 			->orderBy('id','DESC');
 
 		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
-    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+			if($cek_role->name_role == 'Customer Care'){
+				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->where('id_ticket','like','%'.date('Y'));
+			} else {
+				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+			}
+    		// $finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
     	} elseif($cek_role->name_role == 'Managed Service Manager'){
     		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
     	} elseif($cek_role->name_role == 'Customer Relation Manager'){
@@ -2986,18 +3054,22 @@ class TicketingController extends Controller
 				$cekSla = SLAProject::where('pid',$ticket->pid);
 			}
 
-			if ($ticket->severity == '1') {
-				$cekSla = $cekSla->select('sla_response','sla_resolution_critical as sla_resolution')->first();
-			} elseif ($ticket->severity == '2') {
-				$cekSla = $cekSla->select('sla_response','sla_resolution_major as sla_resolution')->first();
-			} elseif ($ticket->severity == '3') {
-				$cekSla = $cekSla->select('sla_response','sla_resolution_moderate as sla_resolution')->first();
-			} elseif ($ticket->severity == '4') {
-				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
-			} elseif ($ticket->severity == '0'){
-				$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+			if ($cekSla->first() !== null) {
+				if ($ticket->severity == '1') {
+					$cekSla = $cekSla->select('sla_response','sla_resolution_critical as sla_resolution')->first();
+				} elseif ($ticket->severity == '2') {
+					$cekSla = $cekSla->select('sla_response','sla_resolution_major as sla_resolution')->first();
+				} elseif ($ticket->severity == '3') {
+					$cekSla = $cekSla->select('sla_response','sla_resolution_moderate as sla_resolution')->first();
+				} elseif ($ticket->severity == '4') {
+					$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+				} elseif ($ticket->severity == '0'){
+					$cekSla = $cekSla->select('sla_response','sla_resolution_minor as sla_resolution')->first();
+				}
+			}else{
+				$cekSla = collect(["sla_response"=>0,"sla_resolution"=>0]);
 			}
-
+			
 		    $firstActivity = $ticket->first_activity_ticket;
 		    $lastActivity = $ticket->lastest_activity_ticket;
 
@@ -3018,7 +3090,7 @@ class TicketingController extends Controller
 
 		        $ticket->sla_resolution_percentage = $formattedTime;
 
-		        if ($resolutionTimeInHours <= $cekSla->sla_resolution) {
+		        if ($resolutionTimeInHours <= $cekSla['sla_resolution']) {
 		        	if ($resolutionTimeInHours == 0) {
                 		$ticket->highlight_sla_resolution = 'Not-Comply';
                 	}else{
@@ -3041,7 +3113,7 @@ class TicketingController extends Controller
 
 		        $ticket->response_time_percentage = $formattedTime;
 
-		        if ($responseTimeInHour <= $cekSla->sla_response) {
+		        if ($responseTimeInHour <= $cekSla['sla_response']) {
 		            $ticket->highlight_sla_response = 'Comply';
 		        } else {
 		            $ticket->highlight_sla_response = 'Not-Comply';
@@ -3385,11 +3457,19 @@ class TicketingController extends Controller
 		$detailTicketUpdate = TicketingDetail::where('id_ticket',$req->id_ticket)
 			->first();
 
+		if($req->engineer != null){
+			if($detailTicketUpdate->engineer != $req->engineer){
+				// $this->setNotif($req->engineer, $req->id_ticket, $detailTicketUpdate->location);
+			}
+		}
+
 		$detailTicketUpdate->engineer = $req->engineer;
 		$detailTicketUpdate->severity = $req->severity;
 		$detailTicketUpdate->ticket_number_3party = $req->ticket_number_3party;
 
 		$detailTicketUpdate->save();
+
+		
 
 		$this->checkPendingReminder($req->id_ticket);
 
@@ -6745,5 +6825,42 @@ class TicketingController extends Controller
 		ob_end_clean();
 		$writer->save($location);
 		return $name;
+	}
+
+	public function setNotif($engineer, $idTicket, $location)
+	{
+		$leader = DB::table('roles as a')
+						->leftjoin('role_user as b', 'a.id', 'b.role_id')
+						->leftjoin('users as c', 'b.user_id', 'c.nik')
+						->select('c.name as name', 'c.email as email','c.nik as nik', 'c.telegram_id as id_telegram')
+						->where('a.name', 'Managed Service Manager')
+						->first();
+	
+				$engineer = DB::table('users')
+					->where('name', 'like', '%'.$engineer.'%')
+					->select('telegram_id as id_telegram', 'nik')
+					->first();
+	
+				DB::table('slm_notification_job')->insert([
+					'id_ticket' => $idTicket,
+					'id_telegram' => $leader->id_telegram,
+					'message' => 'Ticket dengan ID: '. $idTicket .' belum di pick oleh engineer silahkan lakukan assign engineer ulang pada ticket tersebut.',
+					'nik' => $leader->nik,
+					'notification_type' => 'Assign Engineer',
+					'push_at' => Carbon::now()->addMinutes(30),
+					'status' => 'Belum Dikirim',
+					'created_at' => Carbon::now()
+				]);
+	
+				DB::table('slm_notification_job')->insert([
+					'id_ticket' => $idTicket,
+					'id_telegram' => $engineer->id_telegram,
+					'message' => 'Anda memiliki ticket baru dengan ID: '. $idTicket .' Lokasi: '.$location.'. Segera accept tiket tersebut di SLM App.',
+					'nik' => $engineer->nik,
+					'notification_type' => 'Reminder Ticket',
+					'push_at' => Carbon::now(),
+					'status' => 'Belum Dikirim',
+					'created_at' => Carbon::now()
+				]);
 	}
 }

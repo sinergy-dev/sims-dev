@@ -15,6 +15,8 @@ use App\AssetMgmtServicePoint;
 use App\TB_Contact;
 use App\AssetMgmtCategory;
 use App\AssetMgmtScheduling;
+use App\AssetMgmtDocument;
+use App\User;
 use Mail;
 use Illuminate\Validation\Rule;
 use Validator;
@@ -128,12 +130,49 @@ class AssetMgmtController extends Controller
         $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
-        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer','client')
-            // ->where('category_peripheral','-')
+        $data = DB::table($getLastId, 'temp2')
+            ->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')
+            ->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->leftjoin('users','users.nik','=','tb_asset_management_detail.pic')
+            ->leftjoin('role_user','role_user.user_id','=','users.nik')
+            ->leftjoin('roles','roles.id','=','role_user.role_id')
+            ->select('tb_asset_management_detail.pid',
+                'asset_owner',
+                'category',
+                'category_peripheral',
+                'tb_asset_management.id_asset',
+                'type_device',
+                'vendor',
+                'status',
+                'rma',
+                'spesifikasi',
+                'serial_number',
+                'notes',
+                'related_id_asset',
+                'tb_asset_management.id',
+                'id_device_customer',
+                'client',
+                DB::raw('CONCAT(users.name, " - ",roles.name) AS pic_name')
+            )->groupBy(
+                'tb_asset_management_detail.pid',
+                'asset_owner',
+                'category',
+                'tb_asset_management.id_asset',
+                'type_device',
+                'vendor',
+                'status',
+                'rma',
+                'spesifikasi',
+                'serial_number',
+                'notes',
+                'tb_asset_management.id',
+                'id_device_customer',
+                'client',
+                'pic_name'
+            )
             ->orderBy('tb_asset_management.created_at','desc'); 
 
-        $searchFields = ['asset_owner', 'tb_asset_management_detail.pid', 'serial_number', 'tb_asset_management.id_asset', 'type_device', 'vendor', 'rma', 'spesifikasi','notes','id_device_customer','client','pid'];
+        $searchFields = ['asset_owner', 'tb_asset_management_detail.pid', 'serial_number', 'tb_asset_management.id_asset', 'type_device', 'vendor', 'rma', 'spesifikasi','notes','id_device_customer','client','pid','users.name','roles.name'];
 
         if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
@@ -191,11 +230,54 @@ class AssetMgmtController extends Controller
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidPm = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('role_user','role_user.user_id','tb_pmo_assign.nik')->join('roles','roles.id','role_user.role_id')->where('nik',Auth::User()->nik)->where('name','!=','Asset Management')->get()->pluck('project_id');
 
+        // $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')
+        //         ->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+
+        // $getLastId = DB::table($getId,'temp')
+        //         ->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')
+        //         ->selectRaw('id_asset');
+
         $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
-        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer','client')
+        $data = DB::table($getLastId, 'temp2')
+            ->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')
+            ->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->leftjoin('users','users.nik','=','tb_asset_management_detail.pic')
+            ->leftjoin('role_user','role_user.user_id','=','users.nik')
+            ->leftjoin('roles','roles.id','=','role_user.role_id')
+            ->select('tb_asset_management_detail.pid',
+                'asset_owner',
+                'category',
+                'tb_asset_management.id_asset',
+                'type_device',
+                'vendor',
+                'status',
+                'rma',
+                'spesifikasi',
+                'serial_number',
+                'notes',
+                'tb_asset_management.id',
+                'id_device_customer',
+                'client',
+                DB::raw('CONCAT(users.name, " - ",roles.name) AS pic_name')
+            )->groupBy(
+                'tb_asset_management_detail.pid',
+                'asset_owner',
+                'category',
+                'tb_asset_management.id_asset',
+                'type_device',
+                'vendor',
+                'status',
+                'rma',
+                'spesifikasi',
+                'serial_number',
+                'notes',
+                'tb_asset_management.id',
+                'id_device_customer',
+                'client',
+                'pic_name'
+            )
             ->orderBy('tb_asset_management.created_at','desc'); 
 
         if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
@@ -249,8 +331,48 @@ class AssetMgmtController extends Controller
         $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
-        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management_category','tb_asset_management_category.name','tb_asset_management.category')
-            ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','related_id_asset','tb_asset_management.id','id_device_customer','client')->orderBy('tb_asset_management.created_at','desc'); 
+        $data = DB::table($getLastId, 'temp2')
+            ->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')
+            ->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->join('tb_asset_management_category','tb_asset_management_category.name','tb_asset_management.category')
+            ->leftjoin('users','users.nik','=','tb_asset_management_detail.pic')
+            ->leftjoin('role_user','role_user.user_id','=','users.nik')
+            ->leftjoin('roles','roles.id','=','role_user.role_id')
+            ->select('tb_asset_management_detail.pid',
+                'asset_owner',
+                'category',
+                'category_peripheral',
+                'tb_asset_management.id_asset',
+                'type_device',
+                'vendor',
+                'status',
+                'rma',
+                'spesifikasi',
+                'serial_number',
+                'notes',
+                'related_id_asset',
+                'tb_asset_management.id',
+                'id_device_customer',
+                'client',
+                DB::raw('CONCAT(users.name, " - ",roles.name) AS pic_name')
+            )->groupBy(
+                'tb_asset_management_detail.pid',
+                'asset_owner',
+                'category',
+                'tb_asset_management.id_asset',
+                'type_device',
+                'vendor',
+                'status',
+                'rma',
+                'spesifikasi',
+                'serial_number',
+                'notes',
+                'tb_asset_management.id',
+                'id_device_customer',
+                'client',
+                'pic_name'
+            )
+            ->orderBy('tb_asset_management.created_at','desc'); 
 
         if (isset($request->pid)) {
             $data->where('pid',$request->pid);
@@ -468,7 +590,9 @@ class AssetMgmtController extends Controller
             $storeDetail->operating_system = $request->operatingSystem;
             $storeDetail->version_os = $request->versionOs;
             $storeDetail->service_point = $request->servicePoint;
+            $storeDetail->date_add = Carbon::now()->toDateTimeString();
             $storeDetail->pr = $request->pr;
+            $storeDetail->pic = $request->pic;
             if ($request->installedDate == 'Invalid date') {
                 $storeDetail->installed_date = null;
             } else {
@@ -492,13 +616,13 @@ class AssetMgmtController extends Controller
 
             // $storeDetail->license_end_date = $request->licenseEndDate;
 
-            if ($request->licenseStartDate == 'Invalid date') {
+            if ($request->maintenance_start == 'Invalid date' || $request->maintenance_start == '') {
                 $storeDetail->maintenance_start = null;
             } else {
                 $storeDetail->maintenance_start = $request->maintenanceStart;
             }
 
-            if ($request->licenseStartDate == 'Invalid date') {
+            if ($request->maintenance_end == 'Invalid date' || $request->maintenance_end == '') {
                 $storeDetail->maintenance_end = null;
             } else {
                 $storeDetail->maintenance_end = $request->maintenanceEnd;
@@ -577,6 +701,17 @@ class AssetMgmtController extends Controller
         $data = DB::table('tb_id_project')->select('customer_name')->where('id_project',$request->pid)->where('id_project','like','%'.request('q').'%')->first();
 
         return response()->json($data->customer_name);
+    }
+
+    public function getPrByYear(Request $request)
+    {
+        $data = DB::table('tb_pr')->select('no_pr as id','no_pr as text')
+            ->whereYear('date',Date('Y'))
+            ->where('status','Done')
+            ->where('no_pr','like','%'.request('q').'%')
+            ->get();
+
+        return $data;
     }
 
     public function getPid(Request $request)
@@ -798,6 +933,18 @@ class AssetMgmtController extends Controller
             }
             $update->reason_status = $request->reason;
         }
+
+        // if (isset($request->inputPr)) {
+        //     if ($update->pr != $request->inputPr) {
+        //         $storeLog = new AssetMgmtLog();
+        //         $storeLog->id_asset = $request->id_asset;
+        //         $storeLog->operator = Auth::User()->name;
+        //         $storeLog->date_add = Carbon::now()->toDateTimeString();
+        //         $storeLog->activity = 'Update Asset with PR ' .$update->pr. ' to ' . $request->inputPr;
+        //         $storeLog->save();
+        //     }
+        //     $update->pr = $request->inputPr;
+        // }
 
         $update->save();
 
@@ -1034,6 +1181,22 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->maintenance_end = $request->maintenanceEnd;
 
+        if ($update->pic != $request->inputPic) {
+            $pic_old = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$update->pic);
+
+            $pic_new = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$request->inputPic);
+                            
+            $storeLog = new AssetMgmtLog();
+            $storeLog->id_asset = $request->id_asset;
+            $storeLog->operator = Auth::User()->name;
+            $storeLog->date_add = Carbon::now()->toDateTimeString();
+            $storeLog->activity = 'Update PIC Asset from ' .$pic_old->first()->name. ' to ' . $pic_new->first()->name;
+            $storeLog->save();
+        }
+        $storeDetail->pic = $request->inputPic;
+
         if ($update->client != $request->client) {
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
@@ -1043,6 +1206,7 @@ class AssetMgmtController extends Controller
             $storeLog->save();
         }
         $storeDetail->client = $request->client;
+        $storeDetail->pr     = $update->pr;
         $storeDetail->date_add = Carbon::now()->toDateTimeString();
         $storeDetail->related_id_asset = $update->related_id_asset;
         $storeDetail->save();
@@ -1050,45 +1214,125 @@ class AssetMgmtController extends Controller
         $id = AssetMgmt::where('id',$storeDetail->id_asset)->first()->id_asset;
 
         if (isset($request->inputDoc)) {
-            $directory = "Asset Management/";
-            $get_parent_drive = AssetMgmt::where('id', $storeDetail->id_asset)->first();
-            $allowedfileExtension   = ['jpg', 'JPG','png','PNG','jpeg'];
-            $file                   = $request->file('inputDoc');
-            $fileName               = $file->getClientOriginalName();
-            $strfileName            = explode('.', $fileName);
-            $lastElement            = end($strfileName);
-            $nameDoc                = $fileName;
-            $extension              = $file->getClientOriginalExtension();
-            $check                  = in_array($extension,$allowedfileExtension);
+            if ($request->inputDoc != '' && $request->inputDoc != "undefined") {
+                $directory = "Asset Management/";
+                $get_parent_drive = AssetMgmt::where('id', $storeDetail->id_asset)->first();
+                $allowedfileExtension   = ['jpg', 'JPG','png','PNG','jpeg'];
+                $file                   = $request->file('inputDoc');
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $fileName;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
 
-            $updateDetail = AssetMgmtDetail::where('id',$storeDetail->id)->first();
-            if ($check) {
-                $this->uploadToLocal($request->file('inputDoc'),$directory,$nameDoc);
-                $updateDetail->document_name             = 'Bukti Asset '. $id;
-            } else {
-                return redirect()->back()->with('alert','Oops! Only pdf');
+                $updateDetail = AssetMgmtDetail::where('id',$storeDetail->id)->first();
+                if ($check) {
+                    $this->uploadToLocal($request->file('inputDoc'),$directory,$nameDoc);
+                    $updateDetail->document_name             = 'Bukti Asset '. $id;
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("Asset Management/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                if ($get_parent_drive->parent_id_drive == null) {
+                    $parentID = $this->googleDriveMakeFolder($storeDetail->id_asset);
+                } else {
+                    $parentID = [];
+                    $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                }
+
+                $updateDetail->document_location         = "Asset/Bukti Asset " . $id;
+                // $updateDetail->document_location         = "PMO/" . $pdf_name;
+                $updateDetail->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $updateDetail->save();
             }
+        }
 
-            if(isset($fileName)){
-                $pdf_url = urldecode(url("Asset Management/" . $nameDoc));
-                $pdf_name = $nameDoc;
-            } else {
-                $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                $pdf_name = 'pdf_lampiran';
+        if (isset($request->inputDocBA)) {
+            if ($request->inputDocBA != '' && $request->inputDocBA != "undefined") {
+                $directory = "Asset Management/";
+                $get_parent_drive       = AssetMgmt::where('id', $storeDetail->id_asset)->first();
+                $allowedfileExtension   = ['jpg','JPG','png','PNG','jpeg','pdf'];
+                $file                   = $request->file('inputDocBA');
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $fileName;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
+
+                $updateDetail           = AssetMgmtDocument::where('id',$storeDetail->id)->first();
+
+                $storeDoc = new AssetMgmtDocument();
+
+                if ($check) {
+                    $this->uploadToLocal($request->file('inputDocBA'),$directory,$nameDoc);
+                    $storeDoc->document_name             = 'Berita Acara '. $id;
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("Asset Management/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                if ($get_parent_drive->parent_id_drive == null) {
+                    $parentID = $this->googleDriveMakeFolder($storeDetail->id_asset);
+                } else {
+                    $parentID = [];
+                    $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                }
+
+                $storeDoc->id_detail_asset      = $storeDetail->id;
+                $storeDoc->document_location    = "Asset/Berita Acara " . $id;
+                $storeDoc->link_drive           = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $storeDoc->save();
+                // if (isset($updateDetail)) {
+                //    if ($check) {
+                //         $this->uploadToLocal($request->file('inputDocBA'),$directory,$nameDoc);
+                //         $updateDetail->document_name             = 'Berita Acara '. $id;
+                //     } else {
+                //         return redirect()->back()->with('alert','Oops! Only pdf');
+                //     }
+
+                //     if(isset($fileName)){
+                //         $pdf_url = urldecode(url("Asset Management/" . $nameDoc));
+                //         $pdf_name = $nameDoc;
+                //     } else {
+                //         $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                //         $pdf_name = 'pdf_lampiran';
+                //     }
+
+                //     if ($get_parent_drive->parent_id_drive == null) {
+                //         $parentID = $this->googleDriveMakeFolder($storeDetail->id_asset);
+                //     } else {
+                //         $parentID = [];
+                //         $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
+                //         array_push($parentID,$parent_id);
+                //     }
+
+                //     $updateDetail->id_detail_asset      = $storeDetail->id;
+                //     $updateDetail->document_location    = "Asset/Berita Acara " . $id;
+                //     $updateDetail->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                //     $updateDetail->save();
+                // }else{
+                    
+                // }
             }
-
-            if ($get_parent_drive->parent_id_drive == null) {
-                $parentID = $this->googleDriveMakeFolder($storeDetail->id_asset);
-            } else {
-                $parentID = [];
-                $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
-                array_push($parentID,$parent_id);
-            }
-
-            $updateDetail->document_location         = "Asset/Bukti Asset " . $id;
-            // $updateDetail->document_location         = "PMO/" . $pdf_name;
-            $updateDetail->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-            $updateDetail->save();
         }
     }
 
@@ -1126,11 +1370,75 @@ class AssetMgmtController extends Controller
     public function getDetailAsset(Request $request)
     {
         $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
-        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
 
-        $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
-            ->leftjoin('tb_asset_management_category','tb_asset_management.category','tb_asset_management_category.name')
-            ->select('tb_asset_management.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','notes','rma','spesifikasi','type_device','serial_number','vendor','tb_asset_management_category.id_category as category_code','category as category_text','category_peripheral','asset_owner','related_id_asset',DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),'status',DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),'service_point','latitude','longitude','tanggal_pembelian','nilai_buku','harga_beli','tb_asset_management.id','reason_status','link_drive','document_name','document_location','pr')
+        // return $getId->get();
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
+        // return $getLastId->get();
+
+        // return $getDokumen = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->leftJoin('tb_asset_management_dokumen','tb_asset_management_dokumen.id_detail_asset','=','tb_asset_management_detail.id')->select('tb_asset_management_dokumen.link_drive as link_drive_BA',
+        //             'tb_asset_management_dokumen.document_name as document_name_BA',
+        //             'tb_asset_management_dokumen.document_location as document_location_BA')->where('id_detail',$getLastId->id_last_asset->first())->get();
+
+        $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+            ->leftJoin('tb_asset_management_dokumen','tb_asset_management_dokumen.id_detail_asset','=','tb_asset_management_detail.id')
+            ->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')
+            ->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
+            ->leftJoin('tb_asset_management_category','tb_asset_management.category','tb_asset_management_category.name')
+            ->leftJoin('users','users.nik','=','tb_asset_management_detail.pic')
+            ->leftJoin('role_user','role_user.user_id','=','users.nik')
+            ->leftJoin('roles','roles.id','=','role_user.role_id')
+            ->select('tb_asset_management.id_asset',
+                    'id_device_customer',
+                    'client',
+                    'pid',
+                    'kota',
+                    'alamat_lokasi',
+                    'detail_lokasi',
+                    'ip_address',
+                    'server',
+                    'port',
+                    'status_cust',
+                    'second_level_support',
+                    'operating_system',
+                    'version_os',
+                    'installed_date',
+                    'license',
+                    'license_end_date',
+                    'license_start_date',
+                    'maintenance_end',
+                    'maintenance_start',
+                    'notes',
+                    'rma',
+                    'spesifikasi',
+                    'type_device',
+                    'serial_number',
+                    'vendor',
+                    'tb_asset_management_category.id_category as category_code',
+                    'category as category_text',
+                    'category_peripheral',
+                    'asset_owner',
+                    'related_id_asset',
+                    DB::raw("(CASE WHEN (category_peripheral = '-') THEN 'asset' WHEN (category_peripheral != '-') THEN 'peripheral' END) as type"),
+                    'status',
+                    DB::raw("TIMESTAMPDIFF(HOUR, concat(maintenance_start,' 00:00:00'), concat(maintenance_end,' 00:00:00')) AS slaPlanned"),
+                    'service_point',
+                    'latitude',
+                    'longitude',
+                    'tanggal_pembelian',
+                    'nilai_buku',
+                    'harga_beli',
+                    'tb_asset_management.id',
+                    'tb_asset_management_detail.id as id_detail_asset',
+                    'reason_status',
+                    'tb_asset_management_detail.link_drive as link_drive_asset',
+                    'tb_asset_management_detail.document_name as document_name_asset',
+                    'tb_asset_management_detail.document_location as document_location_asset',
+                    'tb_asset_management_dokumen.link_drive as link_drive_BA',
+                    'tb_asset_management_dokumen.document_name as document_name_BA',
+                    'tb_asset_management_dokumen.document_location as document_location_BA',
+                    'pr',
+                    'users.nik',
+                    DB::raw('CONCAT(users.name," - ",roles.mini_group) AS text_name'))
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
             ->first();
 
@@ -1198,8 +1506,33 @@ class AssetMgmtController extends Controller
 
         // $peripheral = AssetMgmt::select('category_peripheral')->where('id',$request->id_asset)->first();
 
-        $data = DB::table($getLog,'temp')->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','temp.id_asset')->join('tb_asset_management_log','tb_asset_management_log.id','temp.id_log')->leftjoin('tb_asset_management','tb_asset_management.id','tb_asset_management_detail.related_id_asset')
-            ->select('client','pid',DB::raw("CONCAT(`detail_lokasi`, ' - ', `alamat_lokasi`, ' - ', `kota`) AS `lokasi`"),DB::raw("CONCAT(`maintenance_start`, ' - ', `maintenance_end`) AS `periode`"),DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' ELSE `tb_asset_management`.`id_asset`  END) as related_id_asset"),'operator')->where('tb_asset_management_detail.id_asset',$request->id_asset)->orderby('tb_asset_management_detail.id','desc')->get();
+        $data = DB::table($getLog,'temp')
+            ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','temp.id_asset')
+            ->leftjoin('users','users.nik','=','tb_asset_management_detail.pic')
+            ->leftjoin('role_user','role_user.user_id','=','tb_asset_management_detail.pic')
+            ->leftjoin('roles','roles.id','=','role_user.role_id')
+            ->join('tb_asset_management_log','tb_asset_management_log.id','temp.id_log')
+            ->leftjoin('tb_asset_management','tb_asset_management.id','tb_asset_management_detail.related_id_asset')
+            ->select('client','pid',
+                DB::raw("CONCAT(`detail_lokasi`, ' - ', `alamat_lokasi`, ' - ', `kota`) AS `lokasi`"),
+                DB::raw("CONCAT(`maintenance_start`, ' - ', `maintenance_end`) AS `periode`"),
+                DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' ELSE `tb_asset_management`.`id_asset`  END) as related_id_asset"),
+                'operator',
+                DB::raw("CONCAT(`users`.`name`,' - ',`roles`.`name`) AS `pic_name`"), 
+                DB::raw("CASE 
+                    -- If this is the latest row, concatenate with the current date
+                    WHEN LEAD(tb_asset_management_detail.date_add) OVER (ORDER BY tb_asset_management_detail.id) IS NULL 
+                    THEN CONCAT(DATE_FORMAT(tb_asset_management_detail.date_add, '%Y-%m-%d'), ' until Now')
+                    
+                    -- Otherwise, concatenate the row's date with the next row's date
+                    ELSE CONCAT(DATE_FORMAT(tb_asset_management_detail.date_add, '%Y-%m-%d'), ' until ', 
+                                COALESCE(DATE_FORMAT(DATE_SUB(LEAD(tb_asset_management_detail.date_add) OVER (ORDER BY tb_asset_management_detail.id), INTERVAL 1 DAY), '%Y-%m-%d'), ''))
+                    END AS periode_asset_internal
+                    ")
+            )
+            ->where('tb_asset_management_detail.id_asset',$request->id_asset)
+            ->orderby('tb_asset_management_detail.id','desc')
+            ->get();
 
         // $data = AssetMgmtDetail::leftJoinSub($getLog,'getLog',function($join){
         //             $join->on("tb_asset_management_detail.id_asset","getLog.id_asset");
@@ -1327,7 +1660,10 @@ class AssetMgmtController extends Controller
     {
         $code_name = DB::table('tb_contact')->where('customer_legal_name',$request->client)->first()->code;
 
-        $getPid = DB::table('tb_asset_management_detail')->select('pid as id','pid as text')->where('pid','like','%'.$code_name.'%')->groupby('pid')->get();
+        $getPid = DB::table('tb_asset_management_detail')
+            ->select('pid as id','pid as text')
+            ->where('pid','like','%'.$code_name.'%')
+            ->groupby('pid')->get();
 
         return $getPid;
 
@@ -1344,6 +1680,12 @@ class AssetMgmtController extends Controller
         $getPid = DB::table('tb_asset_management_detail')
             ->select('pid as id', 'pid as text')
             ->where('pid', 'like', '%' . request('q') . '%')
+            ->orderByRaw("
+                CASE 
+                    WHEN pid = 'INTERNAL' THEN 1
+                    ELSE 2
+                END
+            ")->orderBy('pid', 'ASC')
             ->groupBy('pid');
 
         if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
@@ -1672,7 +2014,7 @@ class AssetMgmtController extends Controller
             $countInstalled = $dataInstalled->count();
             $countAvailable = $dataAvailable->count();
             $countRent = $dataRent->count();
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
             $countAll = $data->whereIn('pid',$getPid)->count();
             $countInstalled = $dataInstalled->whereIn('pid',$getPid)->count();
             $countAvailable = $dataInstalled->whereIn('pid',$getPid)->count();
@@ -2045,7 +2387,19 @@ class AssetMgmtController extends Controller
 
     public function getEmployeeNames()
     {
-        $data = DB::table('users')->select('name as id', 'name as text')->where('id_company', 1)->where('status_delete', '!=', 'D')->where('status_karyawan','!=','dummy')->where('name','like', '%'.request('q').'%')->distinct()->get();
+        $data = DB::table('users')
+            ->join('role_user','role_user.user_id','=','users.nik')
+            ->join('roles','roles.id','=','role_user.role_id')
+            ->select('users.name','users.nik as id', DB::raw("MIN(CONCAT(users.name, ' - ', roles.mini_group)) AS text"))
+            ->where('id_company', 1)
+            ->where('status_delete', '!=', 'D')
+            ->where('status_karyawan','!=','dummy')
+            ->where(DB::raw("CONCAT(users.name, ' - ', roles.mini_group)"),'<>','NULL')
+            ->where('users.name','like', '%'.request('q').'%')
+            ->orderBy('users.name')
+            ->groupBy('users.nik')
+            // ->where('users.name','like', '%'.DB::raw("CONCAT(users.name, ' - ', roles.mini_group)").'%')
+            ->get();
 
         return $data;
     }

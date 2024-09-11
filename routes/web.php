@@ -1591,6 +1591,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getSpesifikasi', 'AssetMgmtController@getSpesifikasi');
 	Route::get('asset/getSpesifikasiDetail', 'AssetMgmtController@getSpesifikasiDetail');
 	Route::get('asset/getEmployeeNames','AssetMgmtController@getEmployeeNames');
+	Route::get('asset/getPrByYear','AssetMgmtController@getPrByYear');
 	Route::get('asset/getLocationAddress','AssetMgmtController@getLocationAddress');
 });
 
