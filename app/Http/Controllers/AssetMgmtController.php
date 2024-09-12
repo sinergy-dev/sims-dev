@@ -1187,13 +1187,22 @@ class AssetMgmtController extends Controller
 
             $pic_new = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$request->inputPic);
-                            
-            $storeLog = new AssetMgmtLog();
-            $storeLog->id_asset = $request->id_asset;
-            $storeLog->operator = Auth::User()->name;
-            $storeLog->date_add = Carbon::now()->toDateTimeString();
-            $storeLog->activity = 'Update PIC Asset from ' .$pic_old->first()->name. ' to ' . $pic_new->first()->name;
-            $storeLog->save();
+
+            if($pic_old->first() !== null){
+                $storeLog = new AssetMgmtLog();
+                $storeLog->id_asset = $request->id_asset;
+                $storeLog->operator = Auth::User()->name;
+                $storeLog->date_add = Carbon::now()->toDateTimeString();
+                $storeLog->activity = 'Update PIC Asset from ' .$pic_old->first()->name. ' to ' . $pic_new->first()->name;
+                $storeLog->save();
+            }else{
+                $storeLog = new AssetMgmtLog();
+                $storeLog->id_asset = $request->id_asset;
+                $storeLog->operator = Auth::User()->name;
+                $storeLog->date_add = Carbon::now()->toDateTimeString();
+                $storeLog->activity = 'Update PIC Asset to ' . $pic_new->first()->name;
+                $storeLog->save();
+            }
         }
         $storeDetail->pic = $request->inputPic;
 
