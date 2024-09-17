@@ -1143,7 +1143,7 @@ class TicketingController extends Controller
 		$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name')->where('user_id', Auth::User()->nik)->first();
 
-		if ($cek_role->name == "Customer Care") {
+		if ($cek_role->name == "Customer Care" || $cek_role->name == 'IT Internal') {
 			$client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
 			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
 			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -1314,15 +1314,18 @@ class TicketingController extends Controller
             ->orderBy('tb_asset_management.created_at','desc')->get(); 
         }else{
         	$client = TB_Contact::where('id_customer',$request->client)->first()->customer_legal_name;
-
+        	// DB::table($getLastId, 'temp2')
+        	// ->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')
+        	// ->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
         	$data = DB::table($getLastId, 'temp2')
         	->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')
         	->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
             ->select('tb_asset_management.id',
             	// DB::raw('CONCAT(`id_device_customer`," - ", `alamat_lokasi`," - ", `serial_number`) AS `text`'),
             	DB::raw("(CASE WHEN serial_number IS NULL THEN CONCAT(kota, ' - ', alamat_lokasi) WHEN serial_number = '' THEN CONCAT(kota, ' - ', alamat_lokasi) ELSE CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ', type_device, ' - ', serial_number) END) as text"))
-            ->orderBy('tb_asset_management.created_at','desc')
-            ->where('client','like','%'.$client.'%')
+            // ->orderBy('tb_asset_management.created_at','desc')
+            // ->where('client','like','%'.$client.'%')
+            ->orderBy('tb_asset_management.created_at','desc')->where('client','like','%'.$client.'%')
             ->where(DB::raw("CONCAT(id_device_customer, ' - ', alamat_lokasi, ' - ', category, ' - ', vendor, ' - ' , type_device, ' - ', serial_number)"),'like','%'.request('q').'%')
             ->get();
         }
@@ -1500,6 +1503,16 @@ class TicketingController extends Controller
 
 			$cek_id_client_pid = Ticketing::where('id_ticket',$idTicket)->orderby('id','desc')->first();
 
+			$cekIdAsset = DB::table('ticketing__detail')->select('serial_device')->where('id_atm',$req->id_atm)->first();
+
+			if ($cekIdAsset != null) {
+				$serial_number = $cekIdAsset->serial_device;
+
+				$cekId = DB::table('tb_asset_management')->select('id')->where('serial_number',$serial_number)->first();
+
+				$cekSlm = DB::table('tb_asset_management_detail')->select('second_level_support')->where('id_asset',$cekId->id)->first();
+			}
+
 			if (isset($req->id_atm)) {
 				if (isset($cek_id_client_pid->id_client_pid)) {
 					if (TicketingEmailSetting::where('id',$cek_id_client_pid->id_client_pid)->first()->pid == "INTERNAL") {
@@ -1511,6 +1524,19 @@ class TicketingController extends Controller
 						)->where('id',$cek_id_client_pid->id_client_pid)
 						->first();
 					}else{
+						$closeCustomer = TicketingEmailSetting::select(DB::raw("CONCAT(`to`,';',`cc`) AS close_cc"))
+							->where('id',$cek_id_client_pid->id_client_pid)
+							->first()->close_cc;
+
+						$closeSLM = TicketingEmailSLM::select(
+							'dear as close_dear',
+							'to as close_to',
+							'cc as close_cc')->where('second_level_support',$cekSlm->second_level_support)->first();
+
+						if ($closeSLM && $closeCustomer) {
+						    $closeSLM->close_cc = $closeSLM->close_cc ? $closeSLM->open_cc . ';' . $closeCustomer : $closeCustomer;
+						}
+
 						$slm = AssetMgmtDetail::where('id_device_customer',$req->id_atm)->first()->second_level_support;
 						$ticket_reciver = TicketingEmailSLM::select(
 							'dear as close_dear',
@@ -1520,6 +1546,10 @@ class TicketingController extends Controller
 							'second_level_support'
 						)->where('second_level_support',$slm)
 						->first();
+
+						if ($ticket_reciver->close_cc == null) {
+							$ticket_reciver->close_cc = $closeSLM->close_cc;
+						}
 					}
 				}else{
 					$ticket_reciver = Ticketing::where('id',$idTicket)
@@ -1674,9 +1704,9 @@ class TicketingController extends Controller
 	
 			//Start Notification Job SLM
 	
-			if($detailTicketOpen->engineer != null){
-				// $this->setNotif($detailTicketOpen->engineer, $request->id_ticket, $request->location);
-			}
+			// if($detailTicketOpen->engineer != null){
+			// 	$this->setNotif($detailTicketOpen->engineer, $request->id_ticket, $request->location);
+			// }
 			//End Notification Job SLM
 	
 			$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
@@ -1696,11 +1726,11 @@ class TicketingController extends Controller
 			}
 	
 			$activityTicketOpen->client_id_filter = $request->clientID;
-			return $activityTicketOpen;
 			DB::commit();
+			return $activityTicketOpen;
 		} catch (Exception $e) {
 			DB::rollBack();
-			
+			return false;
 		}
 	}
 
@@ -2351,7 +2381,9 @@ class TicketingController extends Controller
 
 		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
 			if($cek_role->name_role == 'Customer Care'){
-				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->where('id_ticket','like','%'.date('Y'));
+				// $finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->where('id_ticket','like','%'.date('Y'));
+				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->orWhere('pid','INTERNAL')->where('id_ticket','like','%'.date('Y'));
+
 			} else {
 				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
 			}
@@ -3457,11 +3489,11 @@ class TicketingController extends Controller
 		$detailTicketUpdate = TicketingDetail::where('id_ticket',$req->id_ticket)
 			->first();
 
-		if($req->engineer != null){
-			if($detailTicketUpdate->engineer != $req->engineer){
-				// $this->setNotif($req->engineer, $req->id_ticket, $detailTicketUpdate->location);
-			}
-		}
+		// if($req->engineer != null){
+		// 	if($detailTicketUpdate->engineer != $req->engineer){
+		// 		$this->setNotif($req->engineer, $req->id_ticket, $detailTicketUpdate->location);
+		// 	}
+		// }
 
 		$detailTicketUpdate->engineer = $req->engineer;
 		$detailTicketUpdate->severity = $req->severity;
@@ -6507,7 +6539,7 @@ class TicketingController extends Controller
     			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
     			->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
     	} else {
-    		if ($cek_role->name_role == "Customer Care") {
+    		if ($cek_role->name_role == "Customer Care" || $cek_role->name_role == 'IT Internal') {
     			if ($request->client_acronym == "INTR") {
     				$data = collect([
     					['id' => 'INTERNAL',   // Replace with your desired ID
