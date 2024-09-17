@@ -1203,7 +1203,6 @@ class TicketingController extends Controller
 	}
 
 	public function putReserveIdTicket(Request $req){
-		return $req->id_ticket_before . $req->id_ticket_after;
 		$updateTicketId = Ticketing::where('id_ticket',$req->id_ticket_before)->first();
 		$updateTicketId->id_ticket = $req->id_ticket_after;
 		$client = TicketingEmailSetting::where('pid',$req->pid)->first();
@@ -1505,7 +1504,7 @@ class TicketingController extends Controller
 
 			$cekIdAsset = DB::table('ticketing__detail')->select('serial_device')->where('id_atm',$req->id_atm)->first();
 
-			if ($cekIdAsset != null) {
+			if ($cekIdAsset->serial_device != "-") {
 				$serial_number = $cekIdAsset->serial_device;
 
 				$cekId = DB::table('tb_asset_management')->select('id')->where('serial_number',$serial_number)->first();
@@ -6547,7 +6546,7 @@ class TicketingController extends Controller
 			        ]);
     			}elseif ($request->client_acronym == "ADMF") {
     				$data = collect([
-    					['id' => 13,   // Replace with your desired ID
+    					['id' => 'ADMF',   // Replace with your desired ID
 			            'text' => 'ADMF']
 			        ]);
     			}else{

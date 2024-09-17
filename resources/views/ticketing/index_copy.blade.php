@@ -5578,10 +5578,10 @@ Ticketing
 						})
 					},
 					"aaSorting": [],
-					language: {
-	          processing: "<img src='loader.gif' alt='Loading...'>",  // Custom loading image or text
-	          loadingRecords: "Please wait - loading..."
-	        }
+					// language: {
+	    //       processing: "<img src='loader.gif' alt='Loading...'>",  // Custom loading image or text
+	    //       loadingRecords: "Please wait - loading..."
+	    //     }
 				})
 			}
 		})
