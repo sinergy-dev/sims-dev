@@ -80,6 +80,10 @@ GA Asset
     background-color: slategrey;
   }
 
+  textarea{
+    overflow: hidden;
+    overflow-y: scroll;
+  }
 
 </style>
 @endsection
@@ -120,15 +124,15 @@ GA Asset
       <div class="box-body">
         <div class="nav-tabs-custom" id="asset" role="tabpanel">
           <ul class="nav nav-tabs" id="myTab" role="tablist"> 
-            <li class="nav-item">
+            <li class="nav-item" style="display: none;">
               <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="current" aria-selected="false">List Asset</a>
             </li>
-              <li class="nav-item">
-                <a class="nav-link" id="kategori_list" style="display: none;" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false">Kategori</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="request_list" style="display: none;" data-toggle="tab" href="#request_asset" role="tab" aria-controls="asset" aria-selected="false">Request</a>
-              </li>
+            <li class="nav-item">
+              <a class="nav-link" id="kategori_list" style="display: none;" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false">Kategori</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" id="request_list" data-toggle="tab" href="#request_asset" role="tab" aria-controls="asset" aria-selected="false">Request</a>
+            </li>
               <!--     <button class="btn btn-sm btn-primary pull-right" style="display: none;width: 120px;margin-left: 5px;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  --> 
               <!-- <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a> -->
               <!-- <div class="box-body">
@@ -139,16 +143,16 @@ GA Asset
                   <button class="btn btn-warning btn-sm pull-right">Import Data</button>
                 </form>
               </div> -->
-              <li class="nav-item">
-                <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="occurance" aria-selected="false"> Occurance</a>
+              <li class="nav-item" style="display: none;">
+                <a class="nav-link" id="occ_asset" data-toggle="tab" href="#current_asset" role="tab" aria-controls="occurance" aria-selected="false"> Occurance</a>
               </li>          
             <li class="nav-item">
               <a class="nav-link" id="history_asset" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
             </li>
             <div class="form-group btn-action-asset" style="float: right;">
               <button class="btn btn-sm btn-success" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
-              <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-              <button id="btnImport" onclick="importData()" class="btn btn-warning btn-sm" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button>
+           <!--    <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
+              <button id="btnImport" onclick="importData()" class="btn btn-warning btn-sm" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button> -->
               <button class="btn btn-sm btn-success" style="width: 100px;margin-right: 5px;display: none;" id="btnRequest">Request Asset</button>
               <button class="btn btn-sm btn-info" style="width: 100px;margin-right: 5px;display: none;" id="btnPinjam">Borrow Asset</button>
             </div>
@@ -243,7 +247,7 @@ GA Asset
                 </table>
               </div>
             </div>
-            <div class="tab-pane" id="kategori_asset" role="tabpanel" aria-labelledby="current">
+            <div class="tab-pane" id="kategori_asset">
               <div class="row">
                 <div class="col-lg-12 col-xs-12">
                   <div class="table-responsive" style="margin-top: 15px">
@@ -279,64 +283,75 @@ GA Asset
               </div>
               
             </div>
-            <div class="tab-pane" id="request_asset">
+            <div class="tab-pane active" id="request_asset">
               <div class="table-responsive">
                 <table class="table table-bordered requestTable" id="request_table" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th >No Transaction</th>
                       <th >Request By</th>
                       <th >Request Date</th>
-                      <th >Name/Category</th>
-                      <th >Specification</th>
-                      <th >Status</th>
+                      <th >Name</th>
+                      <th >Category</th>
+                      <th >Merk</th>
+                      <th >Description</th>
+                      <th >Used For</th>
+                      <th >Duration</th>
+                      <th >Reason</th>
+                      <th width="5%">Status</th>  
+                      <th >Action</th>
                       <th >Action</th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
                     <?php $no = 1?>
-                    @foreach($request_asset as $data)
-                      <tr>
-                        <td >{{$data->no_transac}}</td>
-                        <td >{{$data->name}}</td>
-                        <td >{{$data->created_at}}</td>
-                        <td >{{$data->note}}</td>
-                        <td ><span style="cursor:pointer;" data-toggle="tooltip" data-placement="right" title="{{$data->keterangan}}">{{str_limit($data->keterangan,25)}}</span></td>
-                        <td >
-                          <label class="label label-info">Request</label>
-                        </td>
-                        <td >
-                          <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
-                          <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','REJECT')">Reject</button>
-                        </td>
-                      </tr>
-                    @endforeach
                     @foreach($current_request as $datas)
                       <tr>
-                        <td >{{$datas->id_request}}</td>
-                        <td >{{$datas->name}}</td>
-                        <td >{{$datas->created_at}}</td>                        
-                        <td >{{$datas->nama}}</td>
-                        <td >
+                        <td>{{$datas->name_requestor}}</td>
+                        <td>{{$datas->created_at}}</td>                        
+                        <td>{{$datas->nama}}</td>
+                        <td>{{$datas->kategori}}</td>
+                        <td>{{$datas->merk}}</td>
+                        <td>
                           @if(str_contains($datas->link, 'https://'))
                             <span class="label label-info copy-icon" onclick="copyLinkUrl('{{$datas->link}}')">Salin</span><span class="link_data" style="cursor:pointer" data-toggle="tooltip" data-placement="right" title="{{$datas->link}}">{{str_limit($datas->link,25)}}</span>
                           @else
                             <span class="link_data" style="cursor:pointer" data-toggle="tooltip" data-placement="right" title="{{$datas->link}}">{{str_limit($datas->link,25)}}</span>
                           @endif
-                        </td>                                      
-                        <td >
-                          @if($datas->status == 'REQUEST')
-                          <label class="label label-info">Request</label>
+                        </td>  
+                        <td>{{$datas->used_for}}</td>
+                        <td>{{$datas->duration}}</td> 
+                        <td>{{$datas->reason}}</td>                                                                       
+                        <td width="5%">
+                          @if($datas->status == 'REQUEST' || $datas->status == 'ON PROGRESS')
+                          <label class="label label-info">{{$datas->status}}</label>
                           @else
-                          <label class="label label-warning">Pending</label>
+                          <label class="label label-warning">{{$datas->status}}</label>
                           @endif
                         </td>
-                        <td >
-                          @if($datas->status == 'REQUEST')
-                            <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->nama}}','{{$datas->id_request}}','ACCEPT')">Accept</button>
-                            <button class="btn btn-danger btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->nama}}','{{$datas->id_request}}','REJECT')">Reject</button>
+                        <td>
+                          @if($datas->status == 'ON PROGRESS')
+                            <button class="btn btn-primary btn-sm"  onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Accept</button>
+                            <button class="btn btn-danger btn-sm"  onclick="requestAssetAccept('{{$datas->id_request}}','REJECT')">Reject</button>
                           @else
-                            <button class="btn btn-success btn-xs" style="width: 100px" onclick="requestAssetDone('{{$datas->nik}}','{{$datas->id_request}}')">Pesanan Diterima</button>
+                            <button class="btn btn-warning btn-sm" onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Update</button>
+                          @endif  
+                        </td>
+                        <td>
+                          @if($datas->status == 'PENDING')
+                            <button class="btn btn-warning btn-sm" onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Update</button>
+                          @else
+                            @if(App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Operations Director')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Financial Director')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','President Director')->exists())
+                              N/A
+                            @elseif($datas->name_requestor != Auth::User()->name)
+                              @if($datas->status == "ON PROGRESS")
+                                N/A
+                              @else
+                                <button class="btn btn-primary btn-sm"  onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Accept</button>
+                                <button class="btn btn-danger btn-sm"  onclick="requestAssetAccept('{{$datas->id_request}}','REJECT')">Reject</button>
+                              @endif
+                            @else
+                              N/A
+                            @endif
                           @endif  
                         </td>
                       </tr>
@@ -365,21 +380,21 @@ GA Asset
                     <?php $no = 1?>                  
                     @foreach($pinjam_request as $data)
                       <tr>
-                        <td  width="5%">{{$data->no_transac}}</td>
-                        <td  width="5%"> - </td>
+                        <td width="5%">{{$data->no_transac}}</td>
+                        <td width="5%"> - </td>
                         <td width="20%">{{$data->note}} - {{$data->serial_number}}</td>
                         <td width="20%">{!! nl2br($data->keterangan) !!}</td>
                         <td width="40%"> - </td> 
-                        <td  width="5%"><label class="label label-warning">PENDING</label></td>                     
-                        <td  width="5%">
+                        <td width="5%"><label class="label label-warning">PENDING</label></td>                     
+                        <td width="5%">
                           <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="btnEditRequestAsset('{{$data->id_transaction}}','pinjam')"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
                         </td>
                       </tr>
                     @endforeach
                     @foreach($current_request as $datas)
                       <tr>
-                        <td  width="5%" >{{$datas->id_request}}</td>
-                        <td  width="5%" >{{$datas->code_kat}}</td>
+                        <td width="5%" >{{$datas->id_request}}</td>
+                        <td width="5%" >{{$datas->code_kat}}</td>
                         <td width="20%" >{{$datas->nama}}</td>
                         <td width="20%" >{{$datas->merk}}</td>
                         <td width="40%" >
@@ -387,14 +402,14 @@ GA Asset
                              {{$datas->link}}
                           </div>
                         </td> 
-                        <td  width="5%" >
+                        <td width="5%" >
                           @if($datas->status == 'REQUEST')
                           <label class="label label-info">{{$datas->status}}</label>
                           @else
                           <label class="label label-warning">{{$datas->status}}</label>                        
                           @endif
                         </td>                     
-                        <td  width="5%">
+                        <td width="5%">
                           <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="btnEditRequestAsset('{{$datas->id_request}}','request')"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
                         </td>
                       </tr>
@@ -423,32 +438,52 @@ GA Asset
                 <table class="table table-bordered DataTable" id="history_table" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th width="5%">No</th>
-                      <th width="5%">Code</th>
-                      <th width="30%">Name</th>
-                      <th width="20%">Specification</th>
-                      <th width="35%">Note</th>
-                      <th width="5%">Status</th>
+                      <th >Request By</th>
+                      <th >Request Date</th>
+                      <th >Approve Date</th>
+                      <th >Name</th>
+                      <th >Category</th>
+                      <th >Merk</th>
+                      <th >Description</th>
+                      <th >Used For</th>
+                      <th >Duration</th>
+                      <th >Reason</th>
+                      <th width="5%">Status</th>  
+                      <th >Action</th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
                     <?php $no = 1?>
-                    @foreach($historyCancel as $datas)
+                    @foreach($history_request as $datas)
                       <tr>
-                        <td width="5%">{{$datas->id_request}}</td>
-                        <td width="5%">{{$datas->code_kat}}</td>
-                        <td width="30%">{{$datas->nama}}</td>
-                        <td width="20%">{{$datas->merk}}</td>
-                        <td width="35%"><div class="truncate">{{$datas->link}}</div></td> 
+                        <td>{{$datas->name_requestor}}</td>
+                        <td>{{$datas->created_at}}</td> 
+                        <td>{{$datas->updated_at}}</td>                        
+                        <td>{{$datas->nama}}</td>
+                        <td>{{$datas->kategori}}</td>
+                        <td>{{$datas->merk}}</td>
+                        <td>
+                          @if(str_contains($datas->link, 'https://'))
+                            <span class="label label-info copy-icon" onclick="copyLinkUrl('{{$datas->link}}')">Salin</span><span class="link_data" style="cursor:pointer" data-toggle="tooltip" data-placement="right" title="{{$datas->link}}">{{str_limit($datas->link,25)}}</span>
+                          @else
+                            <span class="link_data" style="cursor:pointer" data-toggle="tooltip" data-placement="right" title="{{$datas->link}}">{{str_limit($datas->link,25)}}</span>
+                          @endif
+                        </td>  
+                        <td>{{$datas->used_for}}</td>
+                        <td>{{$datas->duration}}</td> 
+                        <td>{{$datas->reason}}</td>                                                                       
                         <td width="5%">
                           @if($datas->status == 'ACCEPT')
                           <label class="label label-success">{{$datas->status}}</label>
-                        	@elseif($datas->status == 'CANCEL')
+                          @elseif($datas->status == 'REJECT')
                           <label class="label label-danger">{{$datas->status}}</label>
                           @else
-                          <label class="label label-danger">{{$datas->status}}</label>
+                          <label class="label label-warning">{{$datas->status}}</label>
                           @endif
-                        </td> 
+                        </td>
+                        <td>
+                          <button class="btn btn-primary btn-sm"  onclick="requestAssetAccept('{{$datas->id_request}}','DETAIL')">Detail</button>
+                        </td>
                       </tr>
                     @endforeach
                   </tbody>
@@ -470,7 +505,7 @@ GA Asset
               <h4 class="modal-title">Add Asset HR/GA</h4>
             </div>
             <div class="modal-body">
-              <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">          
+              <!-- <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">           -->
                 @csrf
                 <div class="tab active-tab">
                   <div class="row">
@@ -615,7 +650,7 @@ GA Asset
                 <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>                       
                 <button type="submit" class="btn btn-sm btn-success" id="btnSubmit"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
-          </form>
+          <!-- </form> -->
         </div>
       </div>
   </div>
@@ -820,48 +855,122 @@ GA Asset
 
   <!--tambah request asset-->
   <div class="modal fade" id="requestAsset" role="dialog">
-      <div class="modal-dialog modal-lg">
+      <div class="modal-dialog modal-lg" style="width:950px">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Request Asset</h4>           
           </div>
           <div class="modal-body">
-            <form method="GET" action="{{url('/storeRequestAsset')}}">
+            <form method="POST" id="formRequestAsset" action="{{url('/storeRequestAsset')}}" enctype="multipart/form-data">
                 @csrf
-                <table class="table nowrap" id="tbRequestModal">
-                  <thead>
-                    <tr>
-                      <td width="20%">Name</td>
-                      <td width="20%">Category</td>
-                      <td width="20%">Merk</td>
-                      <!-- <td width="10%">Qty</td> -->
-                      <td width="40%">Description</td>
-                      <td><button class="btn btn-xs btn-success" type="button" id="btnAddRowReq" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" ><i class="fa fa-plus"></i></button></td>
-                    </tr>
-                  </thead>
-                  <tbody id="tbody_request">
-                    <tr>
-                      <td>
-                        <input name="nama_barang_request[]" id="nama_barang_request" class="form-control" placeholder="Input Product Name" required></input>
-                      </td>
-                      <td>
-                        <select class="form-control" id="category_asset_request" name="category_asset_request" data-rowid="1" required> <input id="cat_req_id" name="cat_req_id[]" data-rowid="1" hidden></select>
-                      </td>
-                      <td>
-                        <input name="merk_barang_request[]" id="merk_barang_request" class="form-control" placeholder="Input Merk"></input>
-                      </td>
-                      <!-- <td>
-                        <input name="qty_barang_request[]" id="qty_barang_request" class="form-control" placeholder="Qty" required></input>
-                      </td> -->
-                      <td>
-                        <textarea class="form-control" id="link_barang_request" name="link_barang_request[]" placeholder="Input Specification,*Suggest link for buy" required></textarea>
-                      </td>
-                      <td>
-                        <button class="btn btn-xs btn-danger remove" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                  <!-- <div class="table-responsive" style="overflow-x: scroll;width: 100%;"> -->
+                  <!-- <table class="table" id="tbRequestModal" style="width: 100%;">
+                    <thead>
+                      <tr>
+                        <th width="20%">Name</th>
+                        <th width="20%">Category</th>
+                        <th width="20%">Merk</th>
+                        <th width="20%">Description</th>
+                        <th width="20%">Used for</th>
+                        <th width="20%">Duration</th>
+                        <th width="20%">Reason</th>
+                        <th width="20%">File</th>
+                        <th><button class="btn btn-xs btn-success" type="button" id="btnAddRowReq" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" ><i class="fa fa-plus"></i></button></th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody_request">
+                      <tr>
+                        <td>
+                          <input name="items[0][nama_barang_request]" id="nama_barang_request" class="form-control" placeholder="Input Product Name" style="width:150px" required>
+                        </td>
+                        <td>
+                          <input id="cat_req_id" data-rowid="0" hidden><select class="form-control" id="category_asset_request" name="items[0][category_asset_request]" data-rowid="0" required style="width:150px"></select>
+                        </td>
+                        <td>
+                          <input name="items[0][merk_barang_request]" id="merk_barang_request" class="form-control" placeholder="Input Merk" style="width:150px">
+                        </td>
+                        <td>
+                          <textarea class="form-control" id="link_barang_request" name="items[0][link_barang_request]" placeholder="Input Specification,*Suggest link for buy" required style="width:200px"></textarea>
+                        </td>                  
+                        <td>
+                          <select name="items[0][keperluan_barang_request]" id="keperluan_barang_request" class="form-control" required style="width:150px" data-rowid="0"><option></option></select>
+                        </td>
+                        <td>
+                          <div class="divDuration" data-rowid="0">
+                            <select name="items[0][duration_barang_request]" id="duration_barang_request" class="form-control" required style="width:200px" data-rowid="0"></select>
+                          </div>
+                          <div class="divDurationDate" data-rowid="0" style="display:none;">
+                            <input type="text" class="form-control" name="items[0][duration_date_range]" id="duration_date_range" data-rowid="0" style="width:200px;">
+                          </div>
+                        </td>
+                        <td>
+                          <textarea name="items[0][reason_barang_request]" id="reason_barang_request" class="form-control" placeholder="Reason" required style="width:250px"></textarea>
+                        </td>  
+                        <td>
+                          <input id="file_barang_request" name="items[0][file_barang_request]" type="file" multiple="multiple" class="form-control" style="width: 150px;">
+                        </td> 
+                        <td>
+                          <button class="btn btn-xs btn-danger remove" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+ -->
+                <!-- </div> -->
+                
+                <div style="margin-bottom: 20px;" class="divItem">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label>Name</label>
+                        <input name="items[0][nama_barang_request]" id="nama_barang_request" class="form-control" placeholder="Input Product Name" style="width:100%!important" required>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label>Category</label>
+                        <input id="cat_req_id" data-rowid="0" hidden><select class="form-control" id="category_asset_request" name="items[0][category_asset_request]" data-rowid="0" required style="width:100%!important"></select>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <label>Merk</label>
+                        <input name="items[0][merk_barang_request]" id="merk_barang_request" class="form-control" placeholder="Input Merk" style="width:100%!important">
+                    </div>
+                    <div class="col-md-3">
+                      <label>Used for</label>
+                      <select name="items[0][keperluan_barang_request]" id="keperluan_barang_request" class="form-control keperluan_barang_request" required style="width:100%!important" data-rowid="0"><option></option></select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-3">
+                      <label>Duration</label>
+                      <div class="divDuration" data-rowid="0">
+                        <select name="items[0][duration_barang_request]" id="duration_barang_request" class="form-control" required style="width:100%!important" data-rowid="0"></select>
+                      </div>
+                      <div class="divDurationDate" data-rowid="0" style="display:none;">
+                        <input type="text" class="form-control" name="items[0][duration_date_range]" id="duration_date_range" data-rowid="0" style="width:100%!important">
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <label>Description</label>
+                        <textarea class="form-control" id="link_barang_request" name="items[0][link_barang_request]" placeholder="Input Specification,*Suggest link for buy" required style="width:100%!important"></textarea>
+                    </div>
+                    <div class="col-md-3">
+                      <label>Reason</label>
+                      <textarea name="items[0][reason_barang_request]" id="reason_barang_request" class="form-control" placeholder="Reason" required style="width:100%!important"></textarea>
+                    </div>
+                    <div class="col-md-3">
+                      <label>File</label>
+                      <input id="file_barang_request" name="items[0][file_barang_request]" type="file" multiple="multiple" class="form-control" style="width:100%!important">
+                    </div>
+                  </div>
+                </div>
+
+                <div style="text-align: center;margin-bottom: 10px;" id="divBtnAddItem">
+                  <button class="btn btn-sm bg-purple" type="button" id="btnAddRowReq" data-toggle="tooltip"><i class="fa fa-plus"></i> Add Item</button>
+                  <button class="btn btn-sm btn-danger remove" type="button" data-toggle="tooltip" style="width:35px;height:30px;outline: none;margin-left: 5px;" disabled><i class="fa fa-trash-o"></i></button>
+                </div>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
                     <button type="submit" class="btn btn-sm btn-info"><i class="fa fa-check" id="submitReq"></i>&nbsp Submit</button>
@@ -1131,31 +1240,63 @@ GA Asset
 
   <!-- modal accept request-->
   <div class="modal fade" tabindex="-1" role="dialog" id="acceptModalPinjam">
-    <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title"><label>Accept Request</label></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">Asset Request Detail</h4>
         </div>
         <div class="modal-body" id="">
-        	<div style="text-align: center;">
-        		<i class="fa  fa-info-circle fa-4x"></i>
-        		<h4 class="titleWarning">Accept Peminjaman Asset !</h4>
-        	</div>
-            <div>
-              <ul>
-                <li>Category : <span id="katModal" style="overflow-wrap:break-word"></span></li>
-                <li>Description : <span id="noteModal" style="overflow-wrap:break-word"></span></li>
-              </ul>
+          <div class="form-group">
+            <table class="table">
+              <input type="" name="id_request_input" id="id_request_input" style="display: none;">
+              <tr>
+                <th>Category</th>
+                <td>:</td>
+                <td><span id="katModal" style="overflow-wrap:break-word"></span></td>
+              </tr>
+              <tr>
+                <th>Used for</th>
+                <td>:</td>
+                <td><span id="usedForModal" style="overflow-wrap:break-word"></span></td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td>:</td>
+                <td><span id="noteModal" style="overflow-wrap:break-word"></span></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="form-group">
+            <label>Notes</label><small>(optional)</small>
+            <textarea class="form-control" id="notes_accept" style="overflow-y: scroll!important;resize: none !important;"></textarea>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="resolve_notes" id="resolve_notes" checked>
+                Resolve notes <small> (With checking this resolve notes, asset automate to accepted)</small>
+              </label>
             </div>
-        	
-          	<div class="form-group" id="dropdownAsset">
-          		<label>Choose Barang</label>
-          		<select id="barang_asset" name="barang_asset" style="width: 100%;"></select>
-          	</div>
-        	
+          </div>
+
+          <div class="box-container" style="max-height: 400px;display:none;">
+            <div class="box-footer box-comments" style="overflow-y: scroll;max-height: 400px;">
+            </div>
+          </div> 
+          <div class="box-footer" style="display: none;">
+              <img class="img-responsive img-circle img-sm" alt="Alt Text">
+              <div class="img-push">
+                <div class="input-group">
+                  <input type="text" class="form-control input-sm input-comment-accept-request" placeholder="Press enter to post comment">
+                  <span class="input-group-addon"><a href="#" class="btn-comment-accept-request"><i class="fa fa-paper-plane"></i></a></span>
+                </div>
+              </div>
+          </div>       	
         </div>
         <div class="modal-footer">
-        	<button type="button" id="btnAcceptRequestModal" class="btn btn-primary">Submit</button>
+        	<button type="button" id="btnAcceptRequest" class="btn btn-primary">Submit</button>
+          <button type="button" id="btnResolveRequest" class="btn btn-success">Resolve</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -1187,79 +1328,101 @@ GA Asset
     $(document).ready(function(){
         $("#btnAdd").attr('data-target','#add_asset') 
 
-        $("#submitReq").on('click',function(){
-          $('#requestAsset').modal('hide')
-        })
-        
-        initCategory() 
+        // $("#submitReq").on('click',function(){ 
+        //   $("#submitReq").prop("disabled",true)         
+        //   $('#requestAsset').modal('hide')
+        // })
 
+        document.getElementById('formRequestAsset').addEventListener('submit', function() {
+            // Disable the submit button to prevent multiple clicks
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
+              }
+          })
+          document.getElementById('submitReq').disabled = true;
+        });
+        
         var accesable = @json($feature_item);
         accesable.forEach(function(item,index){
           $("#" + item).show()          
         })  
 
-        if (accesable.includes('btnAdd')) {
-          var column1 = table.column(7);
-          column1.visible(!column1.visible());
+        initCategory(0) 
+        initKeperluan(0)
 
-          if (requestTable.rows().count()) {
-            $('#request_list').append('<span class="badge">'+ requestTable.rows().count() +'</span>')
-            $('#request_asset').addClass('active')
-            $('#asset_listset').removeClass('active')        
-            activeTab('request_asset')  
-            $('#btnAdd').hide()
-            $('#btnExport').hide() 
-            $('#btnImport').hide()
-          }else{
-            activeTab('asset_list') 
-            $('#asset_list').addClass('active')
-            $('#request_asset').removeClass('active')
-          }
+        //buat btn add asset di disable dulu
+        // if (accesable.includes('btnAdd')) {
+        //   var column1 = table.column(7);
+        //   column1.visible(!column1.visible());
 
-          $('#myTab .nav-link').click(function(e) {
-            if ($(e.target).attr("id") == "list_asset") {
-              $("#btnAdd").show();
-              $("#btnExport").show();
-              $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspAsset');
-              $("#btnAdd").attr('data-target','#add_asset');
-              $("#btnAdd").removeAttr('onclick');
-              $("#btnAdd").attr('data-toggle','modal');
-              $("#company_asset").val("")
-              $("#nama_barang").val("")
-              $("#asset_sn").val("")
-              $("#keterangan").val("")
-              $("#peminjams").hide()
-              $("#category_asset").val("")
-              $("#merk_barang").val("")
-              $("#asset_date").val("")
-              $("#keterangan").val("")
-              $("#lokasi").val("")
-            }else if ($(e.target).attr("id") == "kategori_list") {
-              $("#btnAdd").show();
-              $("#btnAdd").removeAttr('data-toggle');
-              $("#btnAdd").attr('onclick','addKategori()');
-              $("#btnExport").show();
-              $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspKategori');
-              // $("#btnAdd").attr('data-target','#add_kategori');
-              $("#btnAdd").attr('onclick','addKategori()');
-              $("#btnAdd").removeAttr('data-toggle');
-              $('#btnImport').hide();
-            }else if ($(e.target).attr("id") == "request_list") {
-              $("#btnAdd").hide();
-              $("#btnExport").hide();
-              $('#btnImport').hide();
-            }
-          })
-        }else{
-          var column1 = table.column(6);
-          column1.visible(!column1.visible());
-          activeTab('asset_list')
-          $('#asset_list').addClass('active')
-          $('#request_asset').removeClass('active')
-          $('#btnAdd').hide()
-          $('#btnExport').hide() 
-          $('#btnImport').hide();
-        }
+        //   if (requestTable.rows().count()) {
+        //     $('#request_list').append('<span class="badge">'+ requestTable.rows().count() +'</span>')
+        //     $('#request_asset').addClass('active')
+        //     // $('#asset_listset').removeClass('active')        
+        //     activeTab('request_asset')  
+        //     $('#btnAdd').hide()
+        //     $('#btnExport').hide() 
+        //     $('#btnImport').hide()
+        //   }else{
+        //     // activeTab('asset_list') 
+        //     // $('#asset_list').addClass('active')
+        //     $('#request_asset').removeClass('active')
+        //   }
+
+        //   $('#myTab .nav-link').click(function(e) {
+        //     // if ($(e.target).attr("id") == "list_asset") {
+        //     //   $("#btnAdd").show();
+        //     //   $("#btnExport").show();
+        //     //   $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspAsset');
+        //     //   $("#btnAdd").attr('data-target','#add_asset');
+        //     //   $("#btnAdd").removeAttr('onclick');
+        //     //   $("#btnAdd").attr('data-toggle','modal');
+        //     //   $("#company_asset").val("")
+        //     //   $("#nama_barang").val("")
+        //     //   $("#asset_sn").val("")
+        //     //   $("#keterangan").val("")
+        //     //   $("#peminjams").hide()
+        //     //   $("#category_asset").val("")
+        //     //   $("#merk_barang").val("")
+        //     //   $("#asset_date").val("")
+        //     //   $("#keterangan").val("")
+        //     //   $("#lokasi").val("")
+        //     // }else if ($(e.target).attr("id") == "kategori_list") {
+        //     //   $("#btnAdd").show();
+        //     //   $("#btnAdd").removeAttr('data-toggle');
+        //     //   $("#btnAdd").attr('onclick','addKategori()');
+        //     //   $("#btnExport").show();
+        //     //   $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspKategori');
+        //     //   // $("#btnAdd").attr('data-target','#add_kategori');
+        //     //   $("#btnAdd").attr('onclick','addKategori()');
+        //     //   $("#btnAdd").removeAttr('data-toggle');
+        //     //   $('#btnImport').hide();
+        //     // }
+        //     if ($(e.target).attr("id") == "request_list") {
+        //       $("#btnAdd").hide();
+        //       $("#btnExport").hide();
+        //       $('#btnImport').hide();
+        //     }
+        //   })
+        // }else{
+        //   var column1 = table.column(6);
+        //   column1.visible(!column1.visible());
+        //   // activeTab('asset_list')
+        //   // $('#asset_list').addClass('active')
+        //   $('#request_asset').removeClass('active')
+        //   $('#btnAdd').hide()
+        //   $('#btnExport').hide() 
+        //   $('#btnImport').hide();
+        // }
     })
 
     // $('#btnImport').onclick(function({
@@ -1339,70 +1502,199 @@ GA Asset
       location.assign(myUrl)
     }
 
-    function initCategory(){
-      var datas_kat = [];
-      var datas_katPinjam = [];
-      $.ajax({
-        type:"GET",
-        url: "{{url('/getAssetCategoriHR')}}",
-        success:function(result){
-          var arr = result.results;        
-            var data = {
-              id: -1,
-              text: 'Select Category...'
+    function initCategory(i){
+      // var datas_kat = [];
+      // var datas_katPinjam = [];
+      // $.ajax({
+      //   type:"GET",
+      //   url: "{{url('/getAssetCategoriHR')}}",
+      //   success:function(result){
+      //     var arr = result.results;        
+      //       var data = {
+      //         id: -1,
+      //         text: 'Select Category...'
+      //       };
+
+      //       for(var x in arr)
+      //         arr[x].id == 'OTH' ?
+      //       arr.push(arr.splice(x,1)[0]) : 0
+
+      //       datas_kat.push(data)
+      //       $.each(arr,function(key,value){
+      //         datas_kat.push(value)
+      //       })
+
+      //     $("#category_asset").select2({
+      //       placeholder: "Select a category",
+      //       // theme: 'bootstrap4',
+      //       data: datas_kat
+      //     });
+
+      //     $("#category_asset_request[data-rowid]").select2({
+      //       placeholder: "Select a category",
+      //       // theme: 'bootstrap4',
+      //       data: datas_kat
+      //     });
+      //   }
+      // })  
+
+      // $.ajax({
+      //   type:"GET",
+      //   url: "{{url('/getCategoryPinjam')}}",
+      //   success:function(result){
+      //     console.log("---ini result" + result)
+      //     var arr = result.results;        
+      //       var data = {
+      //         id: -1,
+      //         text: 'Select Category...'
+      //       };
+
+      //       for(var x in arr)
+      //         arr[x].id == 'OTH' ?
+      //       arr.push(arr.splice(x,1)[0]) : 0
+
+      //       datas_katPinjam.push(data)
+      //       $.each(arr,function(key,value){
+      //         datas_katPinjam.push(value)
+      //       })
+
+      //     	$("#category_pinjam").select2({
+      //     		placeholder: "Select a category",
+      //       	// theme: 'bootstrap4',
+      //       	data: datas_katPinjam
+      //     	})
+      //   }
+      // })  
+
+      $("#category_asset_request[data-rowid='"+ i +"']").select2({
+        ajax:{
+          url: '{{url("getAssetCategoriHR")}}',
+          processResults: function (data) {
+            // Transforms the top-level key of the response object from 'items' to 'results'
+            return {
+              results: data
             };
+          },
+        },
+        placeholder:"Select Category",
+        dropdownPosition: 'below'
+      })
+    }
 
-            for(var x in arr)
-              arr[x].id == 'OTH' ?
-            arr.push(arr.splice(x,1)[0]) : 0
+    function initKeperluan(i){
+      var data = [
+        {
+          id:"Internal",
+          text:"Internal",
+        },
+        {
+          id:"External",
+          text:"External",
+        },
+      ]
 
-            datas_kat.push(data)
-            $.each(arr,function(key,value){
-              datas_kat.push(value)
-            })
+      $(".keperluan_barang_request[data-rowid="+ i +"]").val("")
+      $(".keperluan_barang_request[data-rowid="+ i +"]").select2({
+        placeholder:"Select keperluan",
+        data:data,
+        dropdownPosition: 'below'
+      }).change(function(){
+        if ($(this).val() == "Internal") {
+          // $(".divDuration[data-rowid='"+ i +"']").show()
+          $(".divDurationDate[data-rowid='"+ i +"']").hide()
+          $("#duration_barang_request[data-rowid='"+ i +"']").select2({
+            placeholder:"Select keperluan",
+            data:[
+              {
+                id:"Lifetime",
+                text:"Lifetime",
+              },
+              {
+                id:"Select Date",
+                text:"Select Date",
+              },
+            ],
+            dropdownPosition: 'below'
+          }).change(function(){
+            if ($(this).val() == 'Select Date') {
+              // $(".divDuration[data-rowid='"+ i +"']").show()
+              $(".divDurationDate[data-rowid='"+ i +"']").show()
+              $("#duration_date_range[data-rowid='"+ i +"']").daterangepicker({
+                opens: 'center',
+                ranges: {
+                  'Today'       : [moment(), moment()],
+                  'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                  'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+                  'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                  'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+                  'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().startOf('year'),
+                endDate: moment().endOf('year')
+              })
+            }else{
+              $(".divDurationDate[data-rowid='"+ i +"']").hide()
+            }
+          })
 
-          $("#category_asset").select2({
-            placeholder: "Select a category",
-            // theme: 'bootstrap4',
-            data: datas_kat
-          });
-
-          $("#category_asset_request[data-rowid]").select2({
-            placeholder: "Select a category",
-            // theme: 'bootstrap4',
-            data: datas_kat
-          });
+          $('#duration_barang_request[data-rowid="'+ i +'"] option[value="Lifetime"]').prop('disabled', false);
+          $('#duration_barang_request[data-rowid="'+ i +'"]').select2();
+        }else{
+          $("#duration_barang_request[data-rowid='"+ i +"']").select2({
+            placeholder:"Select keperluan",
+            data:[
+              {
+                id:"Lifetime",
+                text:"Lifetime",
+              },
+              {
+                id:"Select Date",
+                text:"Select Date",
+              },
+            ],
+            dropdownPosition: 'below'
+          }).change(function(){
+            if ($(this).val() == 'Select Date') {
+              // $(".divDuration[data-rowid='"+ i +"']").show()
+              $(".divDurationDate[data-rowid='"+ i +"']").show()
+              $("#duration_date_range[data-rowid='"+ i +"']").daterangepicker({
+                opens: 'center',
+                ranges: {
+                  'Today'       : [moment(), moment()],
+                  'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                  'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+                  'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                  'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+                  'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().startOf('year'),
+                endDate: moment().endOf('year')
+              })
+            }else{
+              $(".divDurationDate[data-rowid='"+ i +"']").hide()
+            }
+          })
+          $("#duration_barang_request[data-rowid='"+ i +"']").val("Select Date").trigger("change")
+          $('#duration_barang_request[data-rowid="'+ i +'"] option[value="Lifetime"]').prop('disabled', true);
+          $('#duration_barang_request[data-rowid="'+ i +'"]').select2();
+          // $(".divDurationDate[data-rowid='"+ i +"']").show()
+          // $("#duration_date_range[data-rowid='"+ i +"']").daterangepicker({
+          //   opens: 'center',
+          //   ranges: {
+          //     'Today'       : [moment(), moment()],
+          //     'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          //     'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+          //     'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          //     'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+          //     'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          //   },
+          //   startDate: moment().startOf('year'),
+          //   endDate: moment().endOf('year')
+          // })
         }
-      })  
+      })
+    }
 
-      $.ajax({
-        type:"GET",
-        url: "{{url('/getCategoryPinjam')}}",
-        success:function(result){
-          console.log("---ini result" + result)
-          var arr = result.results;        
-            var data = {
-              id: -1,
-              text: 'Select Category...'
-            };
-
-            for(var x in arr)
-              arr[x].id == 'OTH' ?
-            arr.push(arr.splice(x,1)[0]) : 0
-
-            datas_katPinjam.push(data)
-            $.each(arr,function(key,value){
-              datas_katPinjam.push(value)
-            })
-
-          	$("#category_pinjam").select2({
-          		placeholder: "Select a category",
-            	// theme: 'bootstrap4',
-            	data: datas_katPinjam
-          	})
-        }
-      })  
-    }  
 
     $(document).on('change',"select[id^='category_asset_request']",function(e) { 
       var rowid = $(this).attr("data-rowid");
@@ -1413,28 +1705,98 @@ GA Asset
     $("#btnAddRowReq").click(function(){     
       ++i;  
       var append = ""
-      initCategory()
-      append =  append + '<tr id="row'+i+'">'
-      append =  append + '<td><input name="nama_barang_request[]" data-rowid="'+i+'" id="nama_barang_request" class="form-control"></input></td>'
-      append =  append + '<td><select class="form-control category_asset_request" id="category_asset_request" data-rowid="'+i+'" name="category_asset_request" required></select>'
-      append =  append + '<input id="cat_req_id" name="cat_req_id[]" data-rowid="'+i+'" hidden></td>'
-      append =  append + '<td><input name="merk_barang_request[]" id="merk_barang_request" data-rowid="'+i+'" class="form-control"></input></td>'
-      // append =  append + '<td><input name="qty_barang_request[]" id="qty_barang_request" data-rowid="'+i+'" class="form-control" required></input></td>'
-      append =  append + '<td><textarea id="link_barang_request" name="link_barang_request[]" data-rowid="'+i+'" class="form-control" required></textarea></td>'
-      append =  append + '<td><button class="btn btn-xs btn-danger remove" data-rowid="'+i+'" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>'
-      append =  append + '</td>'
-      append =  append + '</tr>'
+      // append =  append + '<tr id="row'+i+'">'
+      // append =  append + '<td><input name="items[${i}][nama_barang_request]" data-rowid="'+i+'" id="nama_barang_request" class="form-control" placeholder="Input Product Name" required></td>'
+      // append =  append + '<td><select class="form-control category_asset_request" id="category_asset_request" data-rowid="'+i+'" name="items[${i}][category_asset_request]" required></select>'
+      // append =  append + '<input id="cat_req_id" name="cat_req_id[]" data-rowid="'+i+'" hidden></td>'
+      // append =  append + '<td><input name="items[${i}][merk_barang_request]" id="merk_barang_request" data-rowid="'+i+'" class="form-control" placeholder="Input Merk"></td>'
+      // append =  append + '<td><textarea id="link_barang_request" name="items[${i}][link_barang_request]" data-rowid="'+i+'" class="form-control" placeholder="Input Specification,*Suggest link for buy" required></textarea></td>'
+      // append = append + '<td>'
+      //   append = append + '<select name="items[${i}][keperluan_barang_request]" data-rowid="'+i+'" id="keperluan_barang_request" class="form-control" required style="width:150px"><option></option></select>'
+      // append = append + '</td>'
+      // append = append + '<td>'
+      //   append = append + '<div class="divDuration" data-rowid="'+i+'"><select name="items[${i}][duration_barang_request]" data-rowid="'+i+'" id="duration_barang_request" class="form-control" required style="width:200px"></select></div>'
+      //   append = append + '<div class="divDurationDate" data-rowid="'+i+'" style="display:none;"><input type="text" class="form-control" name="items[${i}][duration_date_range]" id="duration_date_range" data-rowid="'+ i +'" style="width:200px;"></div>'
+      // append = append + '</td>'
+      // append = append + '<td>'
+      //   append = append + '<textarea name="items[${i}][reason_barang_request]" data-rowid="'+i+'" id="reason_barang_request" class="form-control" placeholder="Reason" required style="width:250px"></textarea>'
+      // append = append + '</td> '
+      // append = append + '<td>'
+      //   append = append + '<input name="items[${i}][file_barang_request]" type="file" data-rowid="'+i+'" id="file_barang_request" class="form-control" placeholder="input file" style="width:150px">'
+      // append = append + '</td> '
+      // append =  append + '<td><button class="btn btn-xs btn-danger remove" data-rowid="'+i+'" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>'
+      // append =  append + '</td>'
+      // append =  append + '</tr>'
 
-      $('#tbRequestModal > tbody:last-child').append(append);     
-      
+      // $('#tbRequestModal > tbody:last-child').append(append);
+
+      append = append + '<div style="margin-bottom: 20px;margin-top:20px" class="divItem">'
+        append = append + '<div class="row">'
+          append = append + '<div class="col-md-3">'
+            append = append + '<div class="form-group">'
+              append = append + '<label>Name</label>'
+               append = append + '<input name="items['+ i +'][nama_barang_request]" id="nama_barang_request" class="form-control" placeholder="Input Product Name" style="width:100%!important" required>'
+            append = append + '</div>'
+          append = append + '</div>'
+          append = append + '<div class="col-md-3">'
+            append = append + '<div class="form-group">'
+              append = append + '<label>Category</label>'
+              append = append + '<input id="cat_req_id" data-rowid="'+ i +'" hidden><select class="form-control" id="category_asset_request" name="items['+ i +'][category_asset_request]" data-rowid="'+ i +'" required style="width:100%!important"></select>'
+              append = append + '</div>'
+          append = append + '</div>'
+          append = append + '<div class="col-md-3">'
+            append = append + '<label>Merk</label>'
+              append = append + '<input name="items['+ i +'][merk_barang_request]" id="merk_barang_request" class="form-control" placeholder="Input Merk" style="width:100%!important">'
+          append = append + '</div>'
+          append = append + '<div class="col-md-3">'
+            append = append + '<label>Used for</label>'
+            append = append + '<select name="items['+ i +'][keperluan_barang_request]" id="keperluan_barang_request" class="form-control keperluan_barang_request" required style="width:100%!important" data-rowid="'+ i +'"><option></option></select>'
+          append = append + '</div>'
+        append = append + '</div>'
+        append = append + '<div class="row">'
+          append = append + '<div class="col-md-3">'
+            append = append + '<label>Duration</label>'
+            append = append + '<div class="divDuration" data-rowid="'+ i +'">'
+              append = append + '<select name="items['+ i +'][duration_barang_request]" id="duration_barang_request" class="form-control" required style="width:100%!important" data-rowid="'+ i +'"></select>'
+            append = append + '</div>'
+            append = append + '<div class="divDurationDate" data-rowid="'+ i +'" style="display:none;">'
+              append = append + '<input type="text" class="form-control" name="items['+ i +'][duration_date_range]" id="duration_date_range" data-rowid="'+ i +'" style="width:100%!important">'
+            append = append + '</div>'
+          append = append + '</div>'
+          append = append + '<div class="col-md-3">'
+            append = append + '<label>Description</label>'
+              append = append + '<textarea class="form-control" id="link_barang_request" name="items['+ i +'][link_barang_request]" placeholder="Input Specification,*Suggest link for buy" required style="width:100%!important"></textarea>'
+          append = append + '</div>'
+          append = append + '<div class="col-md-3">'
+            append = append + '<label>Reason</label>'
+            append = append + '<textarea name="items['+ i +'][reason_barang_request]" id="reason_barang_request" class="form-control" placeholder="Reason" required style="width:100%!important"></textarea>'
+          append = append + '</div>'
+          append = append + '<div class="col-md-3">'
+            append = append + '<label>File</label>'
+            append = append + '<input id="file_barang_request" name="items['+ i +'][file_barang_request]" type="file" multiple="multiple" class="form-control" style="width:100%!important">'
+          append = append + '</div>'
+        append = append + '</div>'
+      append = append + '</div>'
+
+      $(".divItem:last").append(append)
+
+      if ($(".divItem").length > 1) {
+        $(".remove").prop("disabled",false)
+      }
+      initCategory(i) 
+      initKeperluan(i)
     })
 
     $(document).on('click', '.remove', function() {
-      var trIndex = $(this).closest("tr").index();
-        if(trIndex>0) {
-          $(this).closest("tr").remove();
-        } else {
-          alert("Sorry!! Can't remove first row!");
+      // var trIndex = $(this).closest("tr").index();
+      //   if(trIndex>0) {
+      //     $(this).closest("tr").remove();
+      //   } else {
+      //     alert("Sorry!! Can't remove first row!");
+      // }
+      $(".divItem:last").remove()
+      if ($(".divItem").length = 1) {
+        $(".remove").prop("disabled",true)
       }
     });
 
@@ -1650,8 +2012,7 @@ GA Asset
             }else{
               batalkanReq(result[0].id_request,status)
             }
-          })                 
-          
+          })          
         }
       })
     }
@@ -1669,19 +2030,6 @@ GA Asset
         cancelButtonText: 'No',
       }).then((result) => {
         if (result.value) {
-          Swal.fire({
-            title: 'Please Wait..!',
-            text: "It's updating..",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            customClass: {
-              popup: 'border-radius-0',
-            },
-            onOpen: () => {
-              Swal.showLoading()
-            }
-          })
           $.ajax({
             type:"GET",
             url:"{{url('batalkanReq')}}",
@@ -1689,6 +2037,21 @@ GA Asset
               id_request:id_request,
               status:status
             },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },  
             success: function(result){
               Swal.showLoading()
               Swal.fire(
@@ -1708,19 +2071,6 @@ GA Asset
 
     //AddNoteReq  
     function submitNoteReq(id_request,status){
-      Swal.fire({
-          title: 'Please Wait..!',
-          text: "It's updating..",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          allowEnterKey: false,
-          customClass: {
-            popup: 'border-radius-0',
-          },
-          onOpen: () => {
-            Swal.showLoading()
-          }
-      })
       $.ajax({
           type:"GET",
           url:"{{url('AddNoteReq')}}",
@@ -1729,6 +2079,21 @@ GA Asset
             notes:$("#notes").val(),
             status:status
           },
+          beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                },
           success: function(result){
             Swal.showLoading()
             Swal.fire(
@@ -1743,175 +2108,115 @@ GA Asset
       });
     }    
 
-    // $("#requestAccept").on('click',function(){
-    function requestAccept(note,id_transac,status){   	
-      var swalAccept;
-      if (status == 'ACCEPT') {
-      	var myArrayOfThings = [];  	
-    	  var titleStatus = 'Accept Peminjaman Asset' 
+    //request asset baru
+    function requestAssetAccept(id_request,status){
+      var swalAccept,textTitle = '',append = '',notes = '';
+      if (status === "ACCEPT" || status === "DETAIL") {
+        if (status == "ACCEPT") {
+          var titleStatus = 'Accept Request New Asset'  
+          var status_notes = 'ACCEPT'
+        }else if (status == "REJECT") {
+          var titleStatus = 'Reject Request New Asset'
+          var status_notes = "REJECT"  
+        }
+        $("#acceptModalPinjam").modal('show')
 
-      	$("#acceptModalPinjam").modal('show')
-        $(".titleWarning").text(titleStatus)
-        $("#katModal").text(note)
-        // $("#noteModal").html('<br>'+keterangan)
-        $('#dropdownAsset').show()
-    	 
-	      $.ajax({
-		    type:"GET",
-        data:{
-          category:note
-        },
-		    url: "{{url('/getListAsset')}}",
-		    success:function(result){
-  	      	var arr = result.results;        
-  	        var data = {
-  	          id: -1,
-  	          text: 'Select Category...'
-  	        };
+        $.ajax({
+          type:"GET",
+          url:"{{url('asset/getDetailAcceptRequest')}}",
+          data:{
+            id_request:id_request
+          },
+          success:function(result){
+            var accesable = @json($feature_item);
+            $(".box-comments").empty()
+            $("#id_request_input").val(result[0].id_request)
+            $("#katModal").text(result[0].category)
+            $("#noteModal").text(result[0].reason)
+            $("#usedForModal").text(result[0].used_for)
 
-  	        myArrayOfThings.push(data)
-  	        $.each(arr,function(key,value){
-  	          myArrayOfThings.push(value)
-  	        })
-            console.log(arr)
-
-  		      $("#barang_asset").select2({
-  	          	placeholder: "Select a category",
-  	            // theme: 'bootstrap4',
-  	            data: myArrayOfThings
-  	        })	
-	       
-  		    }
-		    })   
-
-  		  $("#btnAcceptRequestModal").click(function(){
-    	    swalAccept = Swal.fire({
-            title: titleStatus,
-            text: "Are you sure?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-          })
-
-          swalAccept.then((result) => {
-    		    if (result.value) {
-    		        Swal.fire({
-                title: 'Please Wait..!',
-                text: "It's updating..",
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                allowEnterKey: false,
-                customClass: {
-                  popup: 'border-radius-0',
-                },
-                onOpen: () => {
-                  Swal.showLoading()
+            if (result[0].notes.length > 0) {
+              $("#btnAcceptRequest").hide()
+              if (status == "ACCEPT" || status == "REJECT") {
+                if (accesable.includes('request_list') || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','like','%Manager%')->exists()}}") {
+                  $("#btnResolveRequest").show();
+                }else{
+                  $("#btnResolveRequest").hide();
                 }
-              })
-              $.ajax({
-                type:"GET",
-                url:"{{url('acceptPeminjaman')}}",
-                data:{
-                  id_transaction:id_transac,
-                  status:status,
-                  id_barang:$('#barang_asset').select2('data')[0].id
-                },
-                success: function(result){
-                  Swal.showLoading()
-                  Swal.fire(
-                    'Successfully!',
-                    'success'
-                  ).then((result) => {
-                    if (result.value) {
-                      location.reload()
-                      $("#acceptModalPinjam").modal('toggle')
-                    }
-                  })
-                },
-              });
-            }        
-          })
-  		  })	
 
-      }else{
-      	var swalAccept;
-        var titleStatus = 'Reject Peminjaman Asset'
-        swalAccept = Swal.fire({
-          title: titleStatus,
-          text: "Reason for rejecting:",
-          input: 'text',
-          icon: 'warning',
-          showCancelButton: true        
+                $("#notes_accept").closest(".form-group").next(".box-container").next(".box-footer").show()
+                $("#notes_accept").closest(".form-group").next(".box-container").next(".box-footer").find('img').attr('src','{{Auth::User()->avatar_original}}')
+              }else{
+                  $("#btnResolveRequest").hide();
+                  $("#btnAcceptRequest").hide();
+              }
+
+              $("#notes_accept").closest(".form-group").hide()
+              $("#notes_accept").closest(".form-group").next(".box-container").show()
+
+              $.each(result[0].notes,function(key,value) {
+                append = append + '<div class="box-comment" data-rowid="'+ key +'">'
+                  append = append + '<img class="img-circle img-sm" src="'+ value.image +'" alt="User Image">'
+                  append = append + '<div class="comment-text">'
+                  append = append + '<span class="username">'
+                  append = append + value.name
+                  
+                  const date = moment(value.created_at);
+                  const formattedTime = date.format('h:mm A'); // Format time as "8:03 PM"
+
+                  if (date.isSame(moment(), 'day')) {
+                      // If the date is today
+                      append = append + '<span class="text-muted pull-right">'+ formattedTime +' Today</span>'
+                  } else if (date.isSame(moment().subtract(1, 'days'), 'day')) {
+                      // If the date is yesterday
+                      append = append + '<span class="text-muted pull-right">'+ formattedTime +' Yesterday</span>'
+                  } else {
+                      // For dates earlier than yesterday
+                      append = append + '<span class="text-muted pull-right">'+ formattedTime + ' '+ date.format('DD/MM/YYYY') + '</span>'
+                  }
+
+                  append = append + '</span>'
+                  append = append + value.notes
+                  append = append + '</div>'
+                append = append + '</div>'
+              })
+
+              $(".box-comments").append(append)
+            }else{
+              if (status == "ACCEPT" || status == "REJECT") {
+                $("#notes_accept").closest(".form-group").show()
+                $("#btnAcceptRequest").show()
+                $("#btnResolveRequest").hide()
+              }else{
+                $("#notes_accept").closest(".form-group").hide()
+                $("#btnAcceptRequest").hide()
+                $("#btnResolveRequest").hide()
+              }
+
+              $("#notes_accept").closest(".form-group").next(".box-container").hide()
+              $("#notes_accept").closest(".form-group").next(".box-container").next(".box-footer").hide()
+            }
+          }
         })
 
-        swalAccept.then((result) => {
-  		    if (result.value) {
-  		      Swal.fire({
-  		        title: 'Please Wait..!',
-  		        text: "It's updating..",
-  		        allowOutsideClick: false,
-  		        allowEscapeKey: false,
-  		        allowEnterKey: false,
-  		        customClass: {
-  		          popup: 'border-radius-0',
-  		        },
-  		        onOpen: () => {
-  		          Swal.showLoading()
-  		        }
-  		      })
-  		      $.ajax({
-  		        type:"GET",
-  		        url:"{{url('acceptPeminjaman')}}",
-  		        data:{
-  		          // id_barang:id_barang,
-  		          // nik_peminjam:nik_peminjam,
-  		          id_transaction:id_transac,
-  		          status:status,
-  		          reason:result.value
-  		        },
-  		        success: function(result){
-  		          Swal.showLoading()
-  		          Swal.fire(
-  		            'Successfully!',
-  		            'success'
-  		          ).then((result) => {
-  		            if (result.value) {
-  		              location.reload()
-  		              $("#editJob").modal('toggle')
-  		            }
-  		          })
-  		        },
-  		      });
-  		    }  
-		    })
-      } 
-    }
-
-    $("#btnSubmit").on('click',function(){
-      // $("#add_asset").modal('hide')
-    })
-
-    //request asset baru
-    function requestAssetAccept(nama,id_request,status){
-      var swalAccept;
-      if (status == 'ACCEPT') {
-        var titleStatus = 'Accept Request New Asset'  
-
-        $("#acceptModalPinjam").modal('show')
-        $(".titleWarning").text(titleStatus)
-        $("#katModal").text(nama)
-        // $("#noteModal").html('<br>'+link)
-        $("#noteModal").html('<br>' + $(".links"+id_request).text().replace(/(?:\r\n|\r|\n)/g, '<br>'))        
-
-        $('#dropdownAsset').hide()
-
-        $("#btnAcceptRequestModal").click(function(){
+        $("#btnAcceptRequest").click(function(){
+          if ($("#notes_accept").val() != "") {
+            if ($("#resolve_notes").is(":checked")) {
+              status = status
+              textTitle = 'Including notes, and resolve will finished all process!'
+            }else{
+              status = 'PENDING'
+              textTitle = 'Including notes, you should resolve it later to finish all process!'
+            }
+            notes = $("#notes_accept").val()
+          }else{
+            status = 'ACCEPT'
+            textTitle = 'Accepting without notes, all process will be finished!'
+            notes = notes
+          }
           swalAccept = Swal.fire({
             title: titleStatus,
-            text: "are you sure?",
+            text: textTitle,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -1922,26 +2227,88 @@ GA Asset
 
           swalAccept.then((result) => {
             if (result.value) {
-              Swal.fire({
-                title: 'Please Wait..!',
-                text: "It's updating..",
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                allowEnterKey: false,
-                customClass: {
-                  popup: 'border-radius-0',
-                },
-                onOpen: () => {
-                  Swal.showLoading()
-                }
-              })
               $.ajax({
                 type:"GET",
                 url:"{{url('acceptNewAsset')}}",
                 data:{
                   id_request:id_request,
                   status:status,
-                  reason:result.value
+                  reason:result.value,
+                  notes:notes,
+                  status_notes:status_notes
+                },
+                beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                },
+                success: function(result){
+                  Swal.showLoading()
+                  Swal.fire(
+                    'Successfully!',
+                    'success'
+                  ).then((result) => {
+                    if (result.value) {
+                      location.reload()
+                    }
+                  })
+                },
+              }) 
+            }        
+          })
+        })
+
+        $("#btnResolveRequest").click(function(){
+          status = 'ACCEPT'
+          textTitle = 'Resolve Notes Accept Request!'
+          notes = notes
+
+          swalAccept = Swal.fire({
+            title: titleStatus,
+            text: textTitle,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          })
+
+          swalAccept.then((result) => {
+            if (result.value) {
+              $.ajax({
+                type:"GET",
+                url:"{{url('acceptNewAsset')}}",
+                data:{
+                  id_request:id_request,
+                  status:status,
+                  reason:result.value,
+                  notes:notes,
+                },
+                beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
                 },
                 success: function(result){
                   Swal.showLoading()
@@ -1971,19 +2338,6 @@ GA Asset
 
         swalAccept.then((result) => {
           if (result.value) {
-            Swal.fire({
-              title: 'Please Wait..!',
-              text: "It's updating..",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              customClass: {
-                popup: 'border-radius-0',
-              },
-              onOpen: () => {
-                Swal.showLoading()
-              }
-            })
             $.ajax({
               type:"GET",
               url:"{{url('acceptNewAsset')}}",
@@ -1992,6 +2346,21 @@ GA Asset
                 status:status,
                 reason:result.value
               },
+              beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                },
               success: function(result){
                 Swal.showLoading()
                 Swal.fire(
@@ -2115,6 +2484,13 @@ GA Asset
       ],
       "aaSorting": [],
     });
+
+    var accesable = @json($feature_item);
+    if (accesable.includes('request_list')) {
+      requestTable.column(11).visible(false);
+    }else{
+      requestTable.column(10).visible(false);
+    }
 
     $('#history_table').DataTable({
       pageLength: 20,
@@ -2254,6 +2630,133 @@ GA Asset
             // Handle the case where the link or its href property is undefined
             console.error('Link or its href property is undefined.');
         }
+    }
+
+    $(".btn-comment-accept-request").click(function(){
+      $.ajax({
+        type:"POST",
+        url:"{{url('/asset/storeNotesAssetTransaction')}}",
+        data:{
+          _token:"{{ csrf_token() }}",
+          notes:$('.input-comment-accept-request').val(),
+          id_request:$("#id_request_input").val()
+        },
+        beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
+              }
+          })
+        },
+        success:function(result){
+          Swal.close()
+          var inc = $(".box-comments").find(".box-comment").length + 1
+
+          var append = ""
+
+          append = append + '<div class="box-comment" data-rowid="'+ inc +'">'
+            append = append + '<img class="img-circle img-sm" src="{{Auth::User()->avatar_original}}" alt="User Image">'
+            append = append + '<div class="comment-text">'
+            append = append + '<span class="username">'
+            append = append + '{{Auth::User()->name}}'
+            const date = moment(result.created_at);
+              const formattedTime = date.format('h:mm A'); // Format time as "8:03 PM"
+
+              if (date.isSame(moment(), 'day')) {
+                  // If the date is today
+                  append = append + '<span class="text-muted pull-right">'+ formattedTime +' Today</span>'
+              } else if (date.isSame(moment().subtract(1, 'days'), 'day')) {
+                  // If the date is yesterday
+                  append = append + '<span class="text-muted pull-right">'+ formattedTime +' Yesterday</span>'
+              } else {
+                  // For dates earlier than yesterday
+                  append = append + '<span class="text-muted pull-right">'+ formattedTime + date.fromNow() + '</span>'
+              }
+            append = append + '</span>'
+              // append = append + '<span class="pull-right" onclick="deleteComment()"><i class="fa fa-trash-o"></i></span>'
+              append = append + result.notes
+            append = append + '</div>'
+          append = append + '</div>'
+
+          $(".box-comments").find(".box-comment:first").before(append) 
+          $('.input-comment-accept-request').val("")
+        }
+      })
+    })
+
+    $('.input-comment-accept-request').on('keydown', function(event) {
+          // Check if the Enter key (key code 13) is pressed
+        if (event.key === 'Enter' || event.which === 13) {
+          $.ajax({
+            type:"POST",
+            url:"{{url('/asset/storeNotesAssetTransaction')}}",
+            data:{
+              _token:"{{ csrf_token() }}",
+              notes:$('.input-comment-accept-request').val(),
+              id_request:$("#id_request_input").val()
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success:function(result){
+              Swal.close()
+              var inc = $(".box-comments").find(".box-comment").length + 1
+                // Perform your desired action
+                var append = ""
+
+                append = append + '<div class="box-comment" data-rowid="'+ inc +'">'
+                  append = append + '<img class="img-circle img-sm" src="{{Auth::User()->avatar_original}}" alt="User Image">'
+                  append = append + '<div class="comment-text">'
+                  append = append + '<span class="username">'
+                  append = append + '{{Auth::User()->name}}'
+                  const date = moment(result.created_at);
+                  const formattedTime = date.format('h:mm A'); // Format time as "8:03 PM"
+
+                  if (date.isSame(moment(), 'day')) {
+                      // If the date is today
+                      append = append + '<span class="text-muted pull-right">'+ formattedTime +' Today</span>'
+                  } else if (date.isSame(moment().subtract(1, 'days'), 'day')) {
+                      // If the date is yesterday
+                      append = append + '<span class="text-muted pull-right">'+ formattedTime +' Yesterday</span>'
+                  } else {
+                      // For dates earlier than yesterday
+                      append = append + '<span class="text-muted pull-right">'+ formattedTime + date.fromNow() + '</span>'
+                  }
+
+                  append = append + '</span>'
+                  // append = append + '<span class="pull-right" onclick="deleteComment('+ inc +')"><i class="fa fa-trash-o"></i></span>'
+                    append = append + result.notes
+                  append = append + '</div>'
+                append = append + '</div>'
+
+                $(".box-comments").find(".box-comment:first").before(append) 
+                $('.input-comment-accept-request').val("")
+              }
+          })
+        }
+    })
+
+    function deleteComment(id){
+      $(".box-comment[data-rowid='"+ id +"']").remove()
     }
   </script>
 @endsection

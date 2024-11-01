@@ -55,6 +55,7 @@ Route::get('testRolesShow','TestController@testRole');
 Route::get('testPermission','TestController@testPermission');
 Route::get('/admin/getPdf', 'PrDraftController@getPdf');
 Route::get('/admin/mergePdf', 'PrDraftController@mergePdf');
+Route::get('/asset/getPdfBASTAsset','AssetMgmtController@getPdfBASTAsset');
 
 Route::get('/PMO/downloadProjectCharterPdf','PMProjectController@downloadProjectCharterPdf');
 Route::get('/PMO/downloadProgressMeetingPdf','PMProjectController@downloadProgressMeetingPdf');
@@ -1032,7 +1033,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/store_kategori_asset','AssetHRController@store_kategori');
 	Route::get('/getDetailBorrowed','AssetHRController@getDetailBorrowed');
 	Route::get('/acceptPeminjaman','AssetHRController@acceptPeminjaman');
-	Route::get('/storeRequestAsset','AssetHRController@storeRequestAsset');
+	Route::POST('/storeRequestAsset','AssetHRController@storeRequestAsset');
 	Route::get('/acceptNewAsset','AssetHRController@acceptNewAsset');
 	Route::post('/createNewAsset','AssetHRController@createNewAsset');
 	Route::get('/getRequestAssetBy','AssetHRController@getRequestAssetBy');
@@ -1040,7 +1041,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/batalkanReq','AssetHRController@batalkanReq');
 	Route::get('/getListAsset','AssetHRController@getListAsset');
 	Route::post('/importAssetHR','AssetHRController@import');
-
+	Route::get('/asset/getDetailAcceptRequest','AssetHRController@getDetailAcceptRequest');
+	Route::post('/asset/storeNotesAssetTransaction','AssetHRController@storeNotesAssetTransaction');
 
 	Route::get('asset_atk', 'AssetAtkController@index');
 	Route::post('asset_atk/store_asset_atk', 'AssetAtkController@store');
@@ -1294,6 +1296,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/getPerformanceBySeverity','TicketingController@getPerformanceBySeverity');
 	Route::get('/ticketing/getPerformanceByFilter','TicketingController@getPerformanceByFilter');
 	Route::get('/ticketing/getPerformanceByActivity','TicketingController@getPerformanceByActivity');
+	Route::get('/ticketing/getTripRequestAll', 'TicketingController@getTripRequestAll');
+	Route::get('/ticketing/getDetailTripRequest', 'TicketingController@getDetailTripRequest');
+
+	//SLM Request Pending
+	Route::get('/ticketing/getRequestPending', 'TicketingController@getRequestPending');
+	Route::post('/ticketing/approvePending', 'TicketingController@approvePending');
+	Route::post('/ticketing/rejectPending', 'TicketingController@rejectPending');
 
 	Route::get('/ticketing/setUpdateTicket','TicketingController@setUpdateTicket');
 	Route::post('/ticketing/updateTicketPendingBeforeClose','TicketingController@updateTicketPendingBeforeClose');
@@ -1593,11 +1602,71 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getEmployeeNames','AssetMgmtController@getEmployeeNames');
 	Route::get('asset/getPrByYear','AssetMgmtController@getPrByYear');
 	Route::get('asset/getLocationAddress','AssetMgmtController@getLocationAddress');
+
+	Route::get('pmo/monreq/index','MonReqController@monreq_index');
+	Route::get('pmo/monreq/detail_monreq','MonReqController@monreq_detail');
+	Route::get('pmo/monreq/add_monreq','MonReqController@monreq_add');
+	Route::get('pmo/settlement/index','MonReqController@settlement_index');
+	Route::get('pmo/settlement/detail_settlement','MonReqController@settlement_detail');
+	Route::get('pmo/settlement/add_settlement','MonReqController@settlement_add');
+	Route::get('pmo/claim/index','MonReqController@claim_index');
+	Route::get('pmo/claim/detail_claim','MonReqController@claim_detail');
+	Route::get('pmo/claim/add_claim','MonReqController@claim_add');
+	Route::post('pmo/monreq/storeMonReq','MonReqController@storeMonReq');
+	Route::post('pmo/monreq/updateMonReq','MonReqController@updateMonReq');
+	Route::get('pmo/monreq/getPid','MonReqController@getPid');
+	Route::get('pmo/monreq/getItemSbe','MonReqController@getItemSbe');
+	Route::get('pmo/monreq/getMonReq','MonReqController@getMonReq');
+	Route::get('pmo/monreq/getActivityMonReq','MonReqController@getActivityMonReq');
+	Route::get('pmo/monreq/getDetailMonReq','MonReqController@getDetailMonReq');
+	Route::post('pmo/monreq/rejectMonReq','MonReqController@rejectMonReq');
+	Route::get('pmo/monreq/getSignMonReq','MonReqController@getSignMonReq');
+	Route::post('pmo/monreq/holdMonReq','MonReqController@holdMonReq');
+	Route::post('pmo/monreq/approveMonReq','MonReqController@approveMonReq');
+	Route::post('pmo/monreq/uploadReceipt','MonReqController@uploadReceipt');
+	Route::get('pmo/settlement/getMonReqforSettlement','MonReqController@getMonReqforSettlement');
+	Route::get('pmo/settlement/getPIDforSettlement','MonReqController@getPIDforSettlement');
+	Route::get('pmo/settlement/getCategorySettlement','MonReqController@getCategorySettlement');
+	Route::get('pmo/settlement/getRoleByPid','MonReqController@getRoleByPid');
+	Route::get('pmo/settlement/getUser','MonReqController@getUser');
+	Route::get('pmo/settlement/getDataSettlement','MonReqController@getDataSettlement');
+	Route::get('pmo/settlement/getActivitySettlement','MonReqController@getActivitySettlement');
+	Route::get('pmo/settlement/getDetailSettlement','MonReqController@getDetailSettlement');
+	Route::post('pmo/settlement/storeNotesSettlement','MonReqController@storeNotesSettlement');
+	Route::post('pmo/settlement/resolveNotes','MonReqController@resolveNotes');
+	Route::get('pmo/settlement/getNotes','MonReqController@getNotes');
+	Route::get('pmo/settlement/getCheckCategory','MonReqController@getCheckCategory');
+	Route::get('pmo/settlement/getSignSettlement','MonReqController@getSignSettlement');
+	Route::get('pmo/monreq/getExportMonreq','MonReqController@getExportMonreq');
+	Route::get('pmo/settlement/getExportSettlement','MonReqController@getExportSettlement');
+	Route::get('pmo/settlement/getDetailbyPid','MonReqController@getDetailbyPid');
+	Route::post('pmo/settlement/rejectSettlement','MonReqController@rejectSettlement');
+	Route::post('pmo/settlement/approveSettlement','MonReqController@approveSettlement');
+	Route::post('pmo/settlement/storeSettlement','MonReqController@storeSettlement');
+	Route::post('pmo/settlement/verifySettlement','MonReqController@verifySettlement');
+	Route::get('pmo/settlement/getDetailSettlementById','MonReqController@getDetailSettlementById');
+	Route::get('pmo/settlement/calculateAllowance','MonReqController@calculateAllowance');
+	Route::post('pmo/settlement/updateSettlement','MonReqController@updateSettlement');
+	Route::get('pmo/settlement/getExportKPHL','MonReqController@getExportKPHL');
+	Route::get('pmo/settlement/getExportEntertain','MonReqController@getExportEntertain');
+	Route::get('pmo/claim/getPIDforClaim','MonReqController@getPIDforClaim');
+	Route::get('pmo/claim/getCategoryClaim','MonReqController@getCategoryClaim');
+	Route::get('pmo/claim/getSubCategoryClaim','MonReqController@getSubCategoryClaim');
+	Route::get('pmo/claim/getActivityClaim','MonReqController@getActivityClaim');
+	Route::get('pmo/claim/getDetailClaimById','MonReqController@getDetailClaimById');
+	Route::get('pmo/claim/getDetailClaim','MonReqController@getDetailClaim');
+	Route::get('pmo/claim/getDataClaim','MonReqController@getDataClaim');
+	Route::get('pmo/claim/getRoleByPidClaim','MonReqController@getRoleByPidClaim');
 });
 
 Route::get('/authentication/{id}','TestController@authentication');
 Route::get('testJoinDb','TestController@testJoinDb');
 Route::get('/getHoliday','TestController@getWorkdays');
+Route::get('/testPMOEntertainPdf','TestController@testPMOEntertainPdf');
+Route::get('/testPMOMonreqPdf','TestController@testPMOMonreqPdf');
+Route::get('/testPMOSettlementPdf','TestController@testPMOSettlementPdf');
+Route::get('/testPMOClaimPdf','TestController@testPMOClaimPdf');
+Route::get('/testPMOKPHLPdf','TestController@testPMOKPHLPdf');
 
 Route::get('/testFullCalendar',function(){
 	$controller = new App\Http\Controllers\Controller();

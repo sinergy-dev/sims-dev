@@ -7,6 +7,7 @@
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" integrity="sha512-OWGg8FcHstyYFwtjfkiCoYHW2hG3PDWwdtczPAPUcETobBJOVCouKig8rqED0NMLcT9GtE4jw6IT1CSrwY87uw==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.css" integrity="sha512-rBi1cGvEdd3NmSAQhPWId5Nd6QxE8To4ADjM2a6n0BrqQdisZ/RPUlm0YycDzvNL1HHAh1nKZqI0kSbif+5upQ==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
   <style type="text/css">
     /*@media screen and (max-width: 1805px) {
       .searchBarBox{
@@ -221,7 +222,8 @@
                         <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="9"><span class="text">RMA</span></li>
                         <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="10"><span class="text">Client</span></li>
                         <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="11"><span class="text">Current PID</span></li>
-                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="12"><span class="text">Notes</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="12"><span class="text">PIC - Department</span></li>
+                        <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="13"><span class="text">Notes</span></li>
                       </ul>
                     </span>
                   </div>
@@ -1061,7 +1063,7 @@
       ],
       "columnDefs": [
         {
-            "targets": [0,5,6,7,8,9,10,11], // Index of the column you want to hide (0-based index)
+            "targets": [0,5,6,7,8,9,10,11,12,13], // Index of the column you want to hide (0-based index)
             "visible": false,
             "searchable": false // Optional: if you don't want the column to be searchable
         }
@@ -1128,6 +1130,15 @@
           
           document.getElementById("prevBtnAdd").innerHTML = "Cancel";
           $("#prevBtnAdd").attr('onclick','closeModal()')   
+        }
+
+        if ($("select[id=txtAddressLocation]").is(":visible")) {
+          $("#inputIdDeviceCustomer").remove()
+          $("#service_point").remove()
+          $("textarea[id=txtAddressLocation]").remove()
+          $("select[id=txtAddressLocation]").select2({
+            placeholder:"Select Location"
+          })
         }
 
         $("#nextBtnAdd").attr('onclick','nextPrev(1)')
@@ -1514,7 +1525,7 @@
       }
 
       if (isEmptyField == false) {
-        formData = new FormData
+        formData = new FormData()
         formData.append("_token","{{ csrf_token() }}")
         formData.append("type",type)                
         formData.append("arrListEngineerAssign",JSON.stringify(arrListEnginner)) 
@@ -1801,40 +1812,55 @@
         type: 'GET',
         success: function(data){
           if(category === 'COM' || category === 'RTR' || category === 'SWT' ){
+
+            if (category === 'COM') {
+              var appendAccessoris = ""
+
+              appendAccessoris = appendAccessoris + '<div class="form-group">'
+                appendAccessoris = appendAccessoris + '<label for="">Accessoris</label>'
+                appendAccessoris = appendAccessoris + '<input id="inputAccessoris" name="inputAccessoris" class="form-control")>'
+              appendAccessoris = appendAccessoris + '</div>'
+
+              $("#inputSerialNumber").closest(".form-group").after(appendAccessoris)
+            }else{
+              $("#inputAccessoris").closest(".form-group").remove()
+            }
+
             $("#vendorContainer").show();
             data.forEach(function(item) {
-                  var div = $('<div class="col-md-6 form-group">');
-                  var label = $('<label>', {
-                      text: item.name
-                  });
-                  div.append(label);
-
-                  var select = $('<select>', {
-                      id: 'inputSpesifikasi_' + item.name,
-                      name: 'inputSpesifikasi_' + item.name,
-                      class: 'form-control',
-                      onchange: function() {
-                          fillInput('inputSpesifikasi_' + item.name);
-                      }
-                  });
-                  
-                  $('<option>', {
-                      value: '',
-                      text: 'Select ' + item.name
-                  }).appendTo(select);
-
-                  div.append(select);
-                  var alert = $('<span>',{
-                    class : 'help-block',
-                    style: 'display: none',
-                    text: 'Please fill ' + item.name + '!'
-                  });
-                  div.append(alert);
-                  spesifikasiContainer.append(div);
-
-                  fetchSpesifikasiDetails(item.id, select);
+              var div = $('<div class="col-md-6 form-group">');
+              var label = $('<label>', {
+                  text: item.name
               });
+              div.append(label);
+
+              var select = $('<select>', {
+                  id: 'inputSpesifikasi_' + item.name,
+                  name: 'inputSpesifikasi_' + item.name,
+                  class: 'form-control',
+                  onchange: function() {
+                      fillInput('inputSpesifikasi_' + item.name);
+                  }
+              });
+              
+              $('<option>', {
+                  value: '',
+                  text: 'Select ' + item.name
+              }).appendTo(select);
+
+              div.append(select);
+              var alert = $('<span>',{
+                class : 'help-block',
+                style: 'display: none',
+                text: 'Please fill ' + item.name + '!'
+              });
+              div.append(alert);
+              spesifikasiContainer.append(div);
+
+              fetchSpesifikasiDetails(item.id, select);
+            });
           }else if(category === 'FNT' || category === 'ELC' || category === 'KDR'){
+            $("#inputAccessoris").closest(".form-group").remove()
             $("#vendorContainer").hide();
             clearValidationOnChange();
             data.forEach(function(item) {
@@ -1879,13 +1905,14 @@
                     div.append(alert);
 
                     spesifikasiContainer.append(div);
-                });
+            });
           }else {
+            $("#inputAccessoris").closest(".form-group").remove()
             $("#vendorContainer").show();
             var div = $('<div class="col-md-12">');
             var label = $('<label>', {
-                          text: 'Spesifikasi',
-                        });
+              text: 'Spesifikasi',
+            });
             div.append(label);
 
             var select = $('<input>', {
@@ -2123,7 +2150,6 @@
       dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
       dropdownPosition: 'below'
     }).on('select2:select', function (e) {
-      e.stopPropagation();
       let pid = e.params.data.id
 
       let clientContainer = $("#clientContainer"); 
@@ -2259,12 +2285,14 @@
               class: 'form-control'
             });
 
-            let defaultOption = $('<option>', {
-                value: '',
-                text: 'Select Location',
-                disabled: true,
-                selected: true
-            });
+            // let defaultOption = $('<option>', {
+            //     value: '',
+            //     text: 'Select Location',
+            //     disabled: true,
+            //     selected: true
+            // });
+
+            let defaultOption = $('<option>');
             locationSelect.append(defaultOption);
 
             $.each(result, function(index, location) {
@@ -2285,6 +2313,12 @@
                   $('#lng').val(selectedLocation.long);   
                   $('#txtAreaLocation').val(selectedLocation.lokasi);
                   initMap(parseFloat(selectedLocation.lat),parseFloat(selectedLocation.long))
+                  $("#lat").closest(".form-group").find(".help-block").hide()
+                  $("#lat").closest(".form-group").removeClass("has-error")
+                  $("#lng").closest(".form-group").find(".help-block").hide()
+                  $("#lng").closest(".form-group").removeClass("has-error")
+                  $(this).closest(".form-group").find(".help-block").hide()
+                  $(this).closest(".form-group").removeClass("has-error")
               }
             });
           }
@@ -2431,6 +2465,8 @@
     // $("#inputIPAddress").inputmask("ip")
     currentTab = 0
     function nextPrev(n){
+      console.log(n)
+      console.log(currentTab)
       if (currentTab == 0) {
         if ($("#selectCategory").val() != "COM") {
           if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "KDR" || $("#selectCategory").val() === "ELC"){
@@ -2509,7 +2545,9 @@
       }else if (currentTab == 2) {
         if ($("#selectCategory").val() != "COM") {
           if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "KDR" || $("#selectCategory").val() === "ELC"){
-            $.each($(".tab-add:nth(1)").find("input"),function(item,data){
+            console.log("masuk siniikah")
+
+            $.each($(".tab-add:nth(2)").find("input"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
                 if (data.id != "inputIdDeviceCustomer") {
@@ -2521,7 +2559,7 @@
               }
             })
 
-            $.each($(".tab-add:nth(1)").find("select"),function(item,data){
+            $.each($(".tab-add:nth(2)").find("select"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none" && data.id != "service_point") {
                   if ($(data).val() == "") {
@@ -2531,17 +2569,17 @@
               }
             })
           } else {
-            $.each($(".tab-add:nth(1)").find("select"),function(item,data){
+            $.each($(".tab-add:nth(2)").find("select"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
                   if ($(data).val() == "") {
-                      $("#"+data.id).closest(".form-group").find(".help-block").show()
-                      $("#"+data.id).closest(".form-group").addClass("has-error")
+                      $(data).closest(".form-group").find(".help-block").show()
+                      $(data).closest(".form-group").addClass("has-error")
                   }
               }
             })
   
-            $.each($(".tab-add:nth(1)").find("input"),function(item,data){
+            $.each($(".tab-add:nth(2)").find("input"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
                 if (data.id != "inputClient") {
@@ -2553,7 +2591,7 @@
               }
             })
   
-            $.each($(".tab-add:nth(1)").find("textarea"),function(item,data){
+            $.each($(".tab-add:nth(2)").find("textarea"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
                 if ($(data).val() == "") {
@@ -2565,8 +2603,7 @@
           }
         }
         
-
-        if ($(".tab-add:nth(1)").find(".form-group").hasClass("has-error") == false) {
+        if ($(".tab-add:nth(2)").find(".form-group").hasClass("has-error") == false) {
           let x = document.getElementsByClassName("tab-add");
           x[currentTab].style.display = "none";
           currentTab = currentTab + n;
@@ -2578,7 +2615,7 @@
           btnAddAsset(currentTab);
         }
       }else if (currentTab == 3){
-        if ($(".tab-add:nth(2)").find(".form-group").hasClass("has-error") == false) {
+        if ($(".tab-add:nth(3)").find(".form-group").hasClass("has-error") == false) {
           let x = document.getElementsByClassName("tab-add");
           x[currentTab].style.display = "none";
           currentTab = currentTab + n;
@@ -2673,6 +2710,28 @@
                   }
               }
             })
+
+            $.each($(".tab-add:nth(3)").find("select"),function(item,data){
+              var $el = $(this);
+              if ($el.css("display") !== "none") {
+                  if ($(data).val() == "") {
+                      $("#"+data.id).closest(".form-group").find(".help-block").show()
+                      $("#"+data.id).closest(".form-group").addClass("has-error")
+                  }
+              }
+            })
+  
+            $.each($(".tab-add:nth(3)").find("input"),function(item,data){
+              var $el = $(this);
+              if ($el.css("display") !== "none") {
+                  if (data.id != "inputIPAddress" && data.id != "inputPort" && data.id != "inputServer" && data.id != "inputOS" && data.id != "inputVersion") {
+                    if ($(data).val() == "") {
+                      $("#"+data.id).closest(".form-group").find(".help-block").show()
+                      $("#"+data.id).closest(".form-group").addClass("has-error")
+                    }
+                  }
+              }
+            })
           }
 
           if ($(".tab-add:first").is(":visible")) {
@@ -2740,6 +2799,7 @@
             dataForm.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
             dataForm.append('pr',$("#inputPr").val())
             dataForm.append('pic',$("#inputPIC").val())
+            dataForm.append('accessoris',$("#inputAccessoris").val())
 
             $.ajax({
               type:"POST",
@@ -2873,12 +2933,10 @@
           document.getElementById("prevBtnAdd").innerHTML = "Cancel";
           $("#nextBtnAdd").attr('onclick','saveAsset("asset")')
           document.getElementById("nextBtnAdd").innerHTML = "Save";
-        }else{
-          $("#nextBtnAdd").attr('onclick','nextPrev(1)')
-          document.getElementById("prevBtnAdd").style.display = "inline";
-          document.getElementById("prevBtnAdd").innerHTML = "Cancel";
-          document.getElementById("nextBtnAdd").innerHTML = "Next";
         }
+      }else if(argument == "inputLicense") {
+        
+        $("#inputLicense").val()
       }
 
       if ($("#"+argument).val() != "") {

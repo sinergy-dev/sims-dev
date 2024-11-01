@@ -21,7 +21,6 @@ use Mail;
 use Illuminate\Validation\Rule;
 use Validator;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Google_Client;
@@ -33,6 +32,12 @@ use DB;
 use Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
+use PDF;
+
+use setasign\Fpdf\Fpdf;
+use setasign\Fpdi\Fpdi;
+use setasign\FpdiProtection\FpdiProtection;
+use setasign\Fpdi\PdfParser\StreamReader;
 
 class AssetMgmtController extends Controller
 {
@@ -174,7 +179,7 @@ class AssetMgmtController extends Controller
 
         $searchFields = ['asset_owner', 'tb_asset_management_detail.pid', 'serial_number', 'tb_asset_management.id_asset', 'type_device', 'vendor', 'rma', 'spesifikasi','notes','id_device_customer','client','pid','users.name','roles.name'];
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
@@ -280,13 +285,17 @@ class AssetMgmtController extends Controller
             )
             ->orderBy('tb_asset_management.created_at','desc'); 
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
         } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
             $data = $data->whereIn('pid',$getPidPm);
-        }
+        } elseif($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->mini_group == 'Supply Chain Management'){
+            $data = $data->where('pid','INTERNAL');
+        } else if ($cek_role->name_role == 'Managed Service Manager' ) {
+            $data = $data->where('pid','!=','INTERNAL');
+        } 
 
         return array("data"=>$data->get());
     }
@@ -395,7 +404,7 @@ class AssetMgmtController extends Controller
             $data->where('client',$request->client);
         }    
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
@@ -403,6 +412,8 @@ class AssetMgmtController extends Controller
             $data = $data->whereIn('pid',$getPidPm);
         } else if ($cek_role->name_role == 'Managed Service Manager' ) {
             $data = $data->where('pid','!=','INTERNAL');
+        } elseif($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->mini_group == 'Supply Chain Management'){
+            $data = $data->where('pid','INTERNAL');
         } 
 
         return array("data"=>$data->get());
@@ -418,7 +429,7 @@ class AssetMgmtController extends Controller
 
         $getClient = DB::table('tb_asset_management_detail')->select('client as id','client as text')->where('client','like','%'.request('q').'%')->groupby('client');
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $getClient = $getClient;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getClient = $getClient->whereIn('pid',$getPid);
@@ -593,6 +604,7 @@ class AssetMgmtController extends Controller
             $storeDetail->date_add = Carbon::now()->toDateTimeString();
             $storeDetail->pr = $request->pr;
             $storeDetail->pic = $request->pic;
+            $storeDetail->accessoris = $request->accessoris;
             if ($request->installedDate == 'Invalid date') {
                 $storeDetail->installed_date = null;
             } else {
@@ -686,6 +698,9 @@ class AssetMgmtController extends Controller
             $updateDetail->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
             $updateDetail->save();
         }
+
+        $pdfPath = $this->getPdfBASTAsset($store->id,$storeDetail->id);
+        $this->uploadPdfBAST($store->id,$pdfPath);
     }
 
     public function getAssetById(Request $request)
@@ -724,7 +739,7 @@ class AssetMgmtController extends Controller
 
         $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company', '1')->where('id_project','like','%'.request('q').'%')->orderBy('tb_id_project.created_at','desc');
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Customer Care') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Customer Care') {
             $getAllPid = $getAllPid->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
@@ -998,6 +1013,16 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->id_device_customer = $request->idDeviceCustomer;
 
+        if ($update->accessoris != $request->accessoris) {
+            $storeLog = new AssetMgmtLog();
+            $storeLog->id_asset = $request->id_asset;
+            $storeLog->operator = Auth::User()->name;
+            $storeLog->date_add = Carbon::now()->toDateTimeString();
+            $storeLog->activity = 'Update accessoris ' .$update->accessoris. ' to ' . $request->accessoris;
+            $storeLog->save();
+        }
+        $storeDetail->accessoris = $request->accessoris;
+
         if ($update->pid != $request->pid) {
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
@@ -1181,7 +1206,7 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->maintenance_end = $request->maintenanceEnd;
 
-        if ($update->pic != $request->inputPic) {
+        if ($update->pic != $request->inputPic && $update->pid == 'INTERNAL') {
             $pic_old = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$update->pic);
 
@@ -1203,8 +1228,11 @@ class AssetMgmtController extends Controller
                 $storeLog->activity = 'Update PIC Asset to ' . $pic_new->first()->name;
                 $storeLog->save();
             }
+
+            $storeDetail->pic = $request->inputPic; 
+        }else{
+            $storeDetail->pic = $request->inputPic;
         }
-        $storeDetail->pic = $request->inputPic;
 
         if ($update->client != $request->client) {
             $storeLog = new AssetMgmtLog();
@@ -1218,88 +1246,52 @@ class AssetMgmtController extends Controller
         $storeDetail->pr     = $update->pr;
         $storeDetail->date_add = Carbon::now()->toDateTimeString();
         $storeDetail->related_id_asset = $update->related_id_asset;
-        $storeDetail->save();
 
-        $id = AssetMgmt::where('id',$storeDetail->id_asset)->first()->id_asset;
+        $id = AssetMgmt::where('id',$request->id_asset)->first()->id_asset;
 
         if (isset($request->inputDoc)) {
             if ($request->inputDoc != '' && $request->inputDoc != "undefined") {
-                $directory = "Asset Management/";
-                $get_parent_drive = AssetMgmt::where('id', $storeDetail->id_asset)->first();
-                $allowedfileExtension   = ['jpg', 'JPG','png','PNG','jpeg'];
+                $get_parent_drive = AssetMgmt::where('id', $request->id_asset)->first();
+
                 $file                   = $request->file('inputDoc');
-                $fileName               = $file->getClientOriginalName();
-                $strfileName            = explode('.', $fileName);
-                $lastElement            = end($strfileName);
-                $nameDoc                = $fileName;
+                $fileName               = 'Bukti Asset '.$id.'.'.$file->getClientOriginalExtension();
+                $filePath               = $file->getRealPath();
                 $extension              = $file->getClientOriginalExtension();
-                $check                  = in_array($extension,$allowedfileExtension);
-
-                $updateDetail = AssetMgmtDetail::where('id',$storeDetail->id)->first();
-                if ($check) {
-                    $this->uploadToLocal($request->file('inputDoc'),$directory,$nameDoc);
-                    $updateDetail->document_name             = 'Bukti Asset '. $id;
-                } else {
-                    return redirect()->back()->with('alert','Oops! Only pdf');
-                }
-
-                if(isset($fileName)){
-                    $pdf_url = urldecode(url("Asset Management/" . $nameDoc));
-                    $pdf_name = $nameDoc;
-                } else {
-                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                    $pdf_name = 'pdf_lampiran';
-                }
 
                 if ($get_parent_drive->parent_id_drive == null) {
-                    $parentID = $this->googleDriveMakeFolder($storeDetail->id_asset);
+                    $parentID = $this->googleDriveMakeFolder($request->id_asset);
                 } else {
                     $parentID = [];
                     $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
                     array_push($parentID,$parent_id);
                 }
 
-                $updateDetail->document_location         = "Asset/Bukti Asset " . $id;
-                // $updateDetail->document_location         = "PMO/" . $pdf_name;
-                $updateDetail->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-                $updateDetail->save();
+                $storeDetail->document_location = "Asset/Bukti Asset " . $id;
+                $storeDetail->document_name         = 'Bukti Asset '.$id;
+                $storeDetail->link_drive = $this->googleDriveUploadCustom($fileName,$filePath,$parentID);
             }
+        }
+
+        $storeDetail->save();
+
+        if ($update->pic != $request->inputPic) {
+            $pdfPath = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
+            // $pdfPath = "";
+            $this->uploadPdfBAST($request->id_asset,$pdfPath);
         }
 
         if (isset($request->inputDocBA)) {
             if ($request->inputDocBA != '' && $request->inputDocBA != "undefined") {
-                $directory = "Asset Management/";
-                $get_parent_drive       = AssetMgmt::where('id', $storeDetail->id_asset)->first();
-                $allowedfileExtension   = ['jpg','JPG','png','PNG','jpeg','pdf'];
+                $get_parent_drive       = AssetMgmt::where('id', $request->id_asset)->first();
                 $file                   = $request->file('inputDocBA');
-                $fileName               = $file->getClientOriginalName();
-                $strfileName            = explode('.', $fileName);
-                $lastElement            = end($strfileName);
-                $nameDoc                = $fileName;
+                $fileName               = 'Berita Acara '.$id.'.'.$file->getClientOriginalExtension();
+                $filePath               = $file->getRealPath();
                 $extension              = $file->getClientOriginalExtension();
-                $check                  = in_array($extension,$allowedfileExtension);
-
-                $updateDetail           = AssetMgmtDocument::where('id',$storeDetail->id)->first();
 
                 $storeDoc = new AssetMgmtDocument();
 
-                if ($check) {
-                    $this->uploadToLocal($request->file('inputDocBA'),$directory,$nameDoc);
-                    $storeDoc->document_name             = 'Berita Acara '. $id;
-                } else {
-                    return redirect()->back()->with('alert','Oops! Only pdf');
-                }
-
-                if(isset($fileName)){
-                    $pdf_url = urldecode(url("Asset Management/" . $nameDoc));
-                    $pdf_name = $nameDoc;
-                } else {
-                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                    $pdf_name = 'pdf_lampiran';
-                }
-
                 if ($get_parent_drive->parent_id_drive == null) {
-                    $parentID = $this->googleDriveMakeFolder($storeDetail->id_asset);
+                    $parentID = $this->googleDriveMakeFolder($request->id_asset);
                 } else {
                     $parentID = [];
                     $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
@@ -1307,40 +1299,10 @@ class AssetMgmtController extends Controller
                 }
 
                 $storeDoc->id_detail_asset      = $storeDetail->id;
-                $storeDoc->document_location    = "Asset/Berita Acara " . $id;
-                $storeDoc->link_drive           = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $storeDoc->document_name        = 'Berita Acara '.$id;
+                $storeDoc->document_location    = "Asset/BAST " . $storeDetail->id_asset;
+                $storeDoc->link_drive           = $this->googleDriveUploadCustom($fileName,$filePath,$parentID);
                 $storeDoc->save();
-                // if (isset($updateDetail)) {
-                //    if ($check) {
-                //         $this->uploadToLocal($request->file('inputDocBA'),$directory,$nameDoc);
-                //         $updateDetail->document_name             = 'Berita Acara '. $id;
-                //     } else {
-                //         return redirect()->back()->with('alert','Oops! Only pdf');
-                //     }
-
-                //     if(isset($fileName)){
-                //         $pdf_url = urldecode(url("Asset Management/" . $nameDoc));
-                //         $pdf_name = $nameDoc;
-                //     } else {
-                //         $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                //         $pdf_name = 'pdf_lampiran';
-                //     }
-
-                //     if ($get_parent_drive->parent_id_drive == null) {
-                //         $parentID = $this->googleDriveMakeFolder($storeDetail->id_asset);
-                //     } else {
-                //         $parentID = [];
-                //         $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
-                //         array_push($parentID,$parent_id);
-                //     }
-
-                //     $updateDetail->id_detail_asset      = $storeDetail->id;
-                //     $updateDetail->document_location    = "Asset/Berita Acara " . $id;
-                //     $updateDetail->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-                //     $updateDetail->save();
-                // }else{
-                    
-                // }
             }
         }
     }
@@ -1398,6 +1360,7 @@ class AssetMgmtController extends Controller
             ->leftJoin('roles','roles.id','=','role_user.role_id')
             ->select('tb_asset_management.id_asset',
                     'id_device_customer',
+                    'tb_asset_management_detail.accessoris',
                     'client',
                     'pid',
                     'kota',
@@ -1446,7 +1409,7 @@ class AssetMgmtController extends Controller
                     'tb_asset_management_dokumen.document_name as document_name_BA',
                     'tb_asset_management_dokumen.document_location as document_location_BA',
                     'pr',
-                    'users.nik',
+                    'users.nik as pic',
                     DB::raw('CONCAT(users.name," - ",roles.mini_group) AS text_name'))
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
             ->first();
@@ -1507,51 +1470,64 @@ class AssetMgmtController extends Controller
     {
         // $getLog = DB::table('tb_asset_management_log')
         //     ->where('id_asset', $request->id_asset)->orderby('date_add','desc');
-
+        // return $request->id_asset;
         $getId = AssetMgmtLog::select('id','operator','id_asset')->where('id_asset', $request->id_asset);
         $getLog = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_log`')->selectRaw('id_asset');
-
         // return $getLog->get();
 
         // $peripheral = AssetMgmt::select('category_peripheral')->where('id',$request->id_asset)->first();
-
-        $data = DB::table($getLog,'temp')
-            ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','temp.id_asset')
-            ->leftjoin('users','users.nik','=','tb_asset_management_detail.pic')
-            ->leftjoin('role_user','role_user.user_id','=','tb_asset_management_detail.pic')
-            ->leftjoin('roles','roles.id','=','role_user.role_id')
+        if ($request->type == 'asset') {
+            $data = DB::table('tb_asset_management_detail')->joinSub($getLog, 'temp', function($join) {
+                $join->on('tb_asset_management_detail.id_asset', '=', 'temp.id_asset');
+            })
             ->join('tb_asset_management_log','tb_asset_management_log.id','temp.id_log')
-            ->leftjoin('tb_asset_management','tb_asset_management.id','tb_asset_management_detail.related_id_asset')
-            ->select('client','pid',
+            ->select('tb_asset_management_detail.id','client','pid',
                 DB::raw("CONCAT(`detail_lokasi`, ' - ', `alamat_lokasi`, ' - ', `kota`) AS `lokasi`"),
                 DB::raw("CONCAT(`maintenance_start`, ' - ', `maintenance_end`) AS `periode`"),
-                DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' ELSE `tb_asset_management`.`id_asset`  END) as related_id_asset"),
+                DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' ELSE related_id_asset END) as related_id_asset"),
+                'operator'
+            )
+            ->where('tb_asset_management_detail.id_asset',$request->id_asset)
+            ->orderby('tb_asset_management_detail.id','desc')
+            ->get();
+        }else{
+            $data = AssetMgmtDetail::joinSub($getLog, 'temp', function($join) {
+                $join->on('tb_asset_management_detail.id_asset', '=', 'temp.id_asset');
+            })
+            ->join('users','users.nik','=','tb_asset_management_detail.pic')
+            ->join('role_user','role_user.user_id','=','tb_asset_management_detail.pic')
+            ->join('roles','roles.id','=','role_user.role_id')
+            ->join('tb_asset_management_log','tb_asset_management_log.id','temp.id_log')
+            ->select('tb_asset_management_detail.id','client','pid',
+                DB::raw("CONCAT(`detail_lokasi`, ' - ', `alamat_lokasi`, ' - ', `kota`) AS `lokasi`"),
+                DB::raw("CONCAT(`maintenance_start`, ' - ', `maintenance_end`) AS `periode`"),
+                DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' ELSE related_id_asset END) as related_id_asset"),
                 'operator',
                 DB::raw("CONCAT(`users`.`name`,' - ',`roles`.`name`) AS `pic_name`"), 
                 DB::raw("CASE 
-                    -- If this is the latest row, concatenate with the current date
                     WHEN LEAD(tb_asset_management_detail.date_add) OVER (ORDER BY tb_asset_management_detail.id) IS NULL 
                     THEN CONCAT(DATE_FORMAT(tb_asset_management_detail.date_add, '%Y-%m-%d'), ' until Now')
                     
-                    -- Otherwise, concatenate the row's date with the next row's date
                     ELSE CONCAT(DATE_FORMAT(tb_asset_management_detail.date_add, '%Y-%m-%d'), ' until ', 
                                 COALESCE(DATE_FORMAT(DATE_SUB(LEAD(tb_asset_management_detail.date_add) OVER (ORDER BY tb_asset_management_detail.id), INTERVAL 1 DAY), '%Y-%m-%d'), ''))
                     END AS periode_asset_internal
                     ")
             )
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
+            // ->where('document_name','!=',null)
             ->orderby('tb_asset_management_detail.id','desc')
-            ->get();
+            ->get()->filter(function ($item) {
+                return $item->document_name !== null; // Filter where document_name is not null
+            })
+            ->values();
 
-        // $data = AssetMgmtDetail::leftJoinSub($getLog,'getLog',function($join){
-        //             $join->on("tb_asset_management_detail.id_asset","getLog.id_asset");
-        //         })->joinSub($getLog,'getLog',function($join){
-        //             $join->on("tb_asset_management_detail.id_asset","getLog.id_asset");
-        //         })
-        //         ->select('client','pid',DB::raw("CONCAT(`detail_lokasi`, ' - ', `alamat_lokasi`, ' - ', `kota`) AS `lokasi`"),DB::raw("CONCAT(`maintenance_start`, ' - ', `maintenance_end`) AS `periode`"),DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' ELSE related_id_asset  END) as related_id_asset"),'operator')->where('tb_asset_management_detail.id_asset',$request->id_asset)->orderby('tb_asset_management_detail.id','desc')->get();
-
-        // $data = AssetMgmtDetail::select('client','pid',DB::raw("CONCAT(`detail_lokasi`, ' - ', `alamat_lokasi`, ' - ', `kota`) AS `lokasi`"),DB::raw("CONCAT(`maintenance_start`, ' - ', `maintenance_end`) AS `periode`"),DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' ELSE related_id_asset  END) as related_id_asset"),DB::raw("(CASE WHEN (related_id_asset is null) THEN '-' END) as operator"))->where('tb_asset_management_detail.id_asset',$request->id_asset)->orderby('tb_asset_management_detail.id','desc')->get();
-
+            // $data->transform(function ($item) {
+            //     if (isset($item->document_name)) {
+            //         unset($item->document_name);
+            //     }
+            //     return $item;
+            // });
+        }
 
         return array("data"=>$data);
     }
@@ -1697,7 +1673,7 @@ class AssetMgmtController extends Controller
             ")->orderBy('pid', 'ASC')
             ->groupBy('pid');
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $getPid = $getPid;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getPid = $getPid->whereIn('pid',$getPidEoS);
@@ -2018,7 +1994,7 @@ class AssetMgmtController extends Controller
             ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
             ->orderBy('tb_asset_management.created_at','desc')->where('status','Rent'); 
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $countAll = $data->count();
             $countInstalled = $dataInstalled->count();
             $countAvailable = $dataAvailable->count();
@@ -2112,7 +2088,7 @@ class AssetMgmtController extends Controller
             $countRent->where('client',$request->client);
         } 
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC ' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
             $countAll = $countAll;
             $countInstalled = $countInstalled;
             $countAvailable = $countAvailable;
@@ -2350,9 +2326,27 @@ class AssetMgmtController extends Controller
             ->whereIn('id_ticket',$occurring_ticket)
             ->where('serial_device',$getAll->serial_number)
             ->where('serial_device','!=',null)
-            ->whereBetween('reporting_time', [$getAll->maintenance_start . " 00:00:00", $getAll->maintenance_end . " 23:59:59"])
+            // ->whereBetween('reporting_time', [$getAll->maintenance_start . " 00:00:00", $getAll->maintenance_end . " 23:59:59"])
             ->orderBy('ticketing__detail.id','DESC')
             ->get();
+
+        foreach ($occurring_ticket_result as $ticket) {
+            $concat_problem_ticket = DB::table('ticketing__detail')
+                ->select(DB::raw("CONCAT(`location`,' - ',`problem`) AS problem"))
+                ->where('id_ticket', $ticket->id_ticket)
+                ->first()->problem;
+            
+            $concat_type_ticket = DB::table('ticketing__detail')
+                ->select(DB::raw("(CASE WHEN `type_ticket` = 'PL' THEN 'Permintaan Layanan Ticket' 
+                                        WHEN `type_ticket` = 'TT' THEN 'Trouble Ticket' 
+                                        WHEN `type_ticket` = 'PM' THEN 'Preventive Maintenance Ticket' 
+                                        ELSE '-' END) as type"))
+                ->where('id_ticket', $ticket->id_ticket)
+                ->first()->type;
+            
+            $ticket->concatenate_problem_ticket = $concat_problem_ticket;
+            $ticket->concatenate_type_ticket = $concat_type_ticket;
+        }
 
         $result = $occurring_ticket_result;
 
@@ -2399,7 +2393,7 @@ class AssetMgmtController extends Controller
         $data = DB::table('users')
             ->join('role_user','role_user.user_id','=','users.nik')
             ->join('roles','roles.id','=','role_user.role_id')
-            ->select('users.name','users.nik as id', DB::raw("MIN(CONCAT(users.name, ' - ', roles.mini_group)) AS text"))
+            ->select('users.nik as id', DB::raw("MIN(CONCAT(users.name, ' - ', roles.mini_group)) AS text"))
             ->where('id_company', 1)
             ->where('status_delete', '!=', 'D')
             ->where('status_karyawan','!=','dummy')
@@ -2780,4 +2774,163 @@ class AssetMgmtController extends Controller
     //     $data = AssetMgmtAssignEngineer::join('tb_asset_management','tb_asset_management.id_asset','tb_asset_management_assign_engineer.id_asset')->select(DB::raw('`name` AS `id`,`users`.`name` AS `text`'))->get();
     //     return $data;
     // }
+
+    public function getPdfBASTAsset($id_asset,$id_detail_asset)
+    {
+        return $id_asset;
+        $pihak_pertama = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd_digital','date_of_entry as entry_date')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('nik',Auth::User()->nik)
+                        ->first(); 
+
+        $atasan_pp = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd_digital')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('roles.name','VP Supply Chain, CPS & Asset Management')
+                        ->first(); 
+
+
+        $pihak_pertama->atasan = $atasan_pp->name;
+
+        $list_asset_request = DB::table('tb_asset_management')
+                        ->select('tb_asset_management.id','category','type_device','serial_number','vendor as merk')
+                        ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
+                        ->where('tb_asset_management.id',$id_asset)
+                        ->groupBy('tb_asset_management.id')
+                        ->get();
+        // return $id_asset;
+        $cek_role_pk = DB::table('tb_asset_management_detail')
+                        ->join('users','users.nik','=','tb_asset_management_detail.pic')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        // ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
+                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.mini_group','ttd_digital','users.nik','users.date_of_entry as entry_date','users.phone')
+                        ->where('tb_asset_management_detail.id_asset',$id_asset)
+                        ->where('tb_asset_management_detail.id',$id_detail_asset);
+                        // ->where('tb_asset_management_detail.id_asset',$id_asset);
+
+        $pihak_kedua = $cek_role_pk->first();
+
+        if ($cek_role_pk->where('roles.name','like','%Manager%')->first()) {
+            $group = $cek_role_pk->first()->group;
+
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('group','like','%'.$group.'%')
+                        ->where('roles.name','like','%VP%')
+                        ->first(); 
+
+        }else if ($cek_role_pk->where('roles.name','like','%VP%')->first()) {
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('roles.name','like','%Operations Director%')
+                        ->first();
+        }else {
+            return $id_asset;
+            return $cek_role_pk = DB::table('tb_asset_management')
+                        ->join('tb_asset_management_detail', 'tb_asset_management_detail.id_asset', '=', 'tb_asset_management.id')
+                        ->select('tb_asset_management.id', 'roles.name', 'roles.group', 'users.name as name_pk', 'roles.mini_group', 'ttd_digital')
+                        ->join('users', 'users.nik', '=', 'tb_asset_management_detail.pic')
+                        ->join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->where('tb_asset_management.id', $id_asset)
+                        ->groupBy('tb_asset_management.id', 'roles.name', 'roles.group', 'name_pk', 'roles.mini_group', 'ttd_digital')
+                        ->first();
+
+            $mini_group = $cek_role_pk->mini_group;
+
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('mini_group','like','%'. $mini_group .'%')
+                        ->where('roles.name','like','%Manager%')
+                        ->first();
+        }
+
+        $pdf = PDF::loadView('asset_management.berita_acara_pdf',compact('pihak_pertama','pihak_kedua','atasan_pk','atasan_pp','list_asset_request'));
+        $fileName = 'bast.pdf';
+        $nameFileFix = str_replace(' ', '_', $fileName);
+
+        // return $pdf->stream($nameFileFix);
+        return $pdf->output();
+
+    }
+
+    public function uploadPdfBAST($id_asset,$filePath)
+    {
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $data = DB::table('tb_asset_management')
+                ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
+                ->select('users.name as name_pk','tb_asset_management.category','parent_id_drive','tb_asset_management_detail.id','tb_asset_management.id_asset')
+                ->join('users','users.nik','=','tb_asset_management_detail.pic')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('tb_asset_management.id',$id_asset)
+                ->orderBy('tb_asset_management_detail.id','desc')
+                ->groupBy('tb_asset_management_detail.id',
+                    'tb_asset_management.id_asset',
+                    'category',
+                    'name_pk',
+                    'parent_id_drive')
+                ->first(); 
+
+        $fileName  = 'BAST_'. $data->category . '_' . $data->name_pk . '.pdf';
+        $nameFileFix = str_replace(' ', '_', $fileName);
+
+        if(isset($fileName)){
+            // $pdf_url = urldecode(url("/asset/getPdfBASTAsset?id_asset=" . $id_asset));
+            $pdf_name = $nameFileFix;
+        } else {
+            // $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+            $pdf_name = 'pdf_lampiran';
+        }
+
+        if ($data->parent_id_drive == null) {
+            $parentID = $this->googleDriveMakeFolder($id_asset);
+        } else {
+            $parentID = [];
+            $parent_id = explode('"', $data->parent_id_drive)[1];
+            array_push($parentID,$parent_id);
+        }
+
+        $update_parent = AssetMgmt::where('id', $id_asset)->first();
+        $update_parent->parent_id_drive = $parentID;
+        $update_parent->save(); 
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($pdf_name);
+        $file->setParents($parentID);
+
+        $result = $service->files->create(
+            $file, 
+            array(
+                'data' => $filePath,
+                'mimeType' => 'application/pdf',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );       
+
+        $optParams = array(
+          'fields' => 'files(webViewLink)',
+          'q'      => 'name="'.$nameFileFix.'"',
+          'supportsAllDrives' => true,
+          'includeItemsFromAllDrives' => true
+        );
+
+        $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
+
+        $directory                      = "Asset Management/".$id_asset.'/';
+        $storeDoc                       = new AssetMgmtDocument();
+        $storeDoc->id_detail_asset      = $data->id;
+        $storeDoc->document_name        = "Berita Acara ".$data->id_asset;
+        $storeDoc->document_location    = "Asset Management/".$data->id_asset.'/';
+        $storeDoc->link_drive           = $link;
+        $storeDoc->save();
+    }
 }

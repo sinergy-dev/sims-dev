@@ -393,6 +393,11 @@
                 <select class="form-control" id="selectStatusCustomer" name="selectStatusCustomer"></select>
               </div>
 
+              <div class="form-group" style="display:none;">
+                <label>Accessoris</label>
+                <input class="form-control" id="inputAccessoris" name="inputAccessoris">
+              </div>
+
               <div class="form-group">
                 <label>2nd Level Support</label>
                 <select class="form-control" id="selectLevelSupport" name="selectLevelSupport"></select>
@@ -462,13 +467,13 @@
                 <div class="form-group">
                   <label>Bukti Asset</label>
                   <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
-                    <label for="inputBuktiAsset" style="margin-bottom:0px">
+                    <label for="inputBuktiAssetInternal" style="margin-bottom:0px">
                       <span class="fa fa-cloud-upload" style="display:inline"></span>
-                      <input autocomplete="off" style="display: inline;" type="file" name="inputBuktiAsset" class="files" id="inputBuktiAsset">
+                      <input autocomplete="off" style="display: inline;" type="file" name="inputBuktiAssetInternal" class="files" id="inputBuktiAssetInternal">
                     </label>
                   </div>
                   <span class="help-block" style="display:none;">Please fill Bukti Asset!</span>
-                  <span style="display:none;" id="span_link_drive_bukti_asset"><a id="link_bukti_asset" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
+                  <span style="display:none;" id="span_link_drive_bukti_asset_internal"><a id="link_bukti_asset_internal" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
                 </div>
 
                 <div class="form-group">
@@ -688,6 +693,16 @@
              return row.operator
             }
           },
+           {
+            title:"BAST file",
+            render: function (data, type, row, meta){
+              if (row.document_name == null) {
+                return " - "
+              }else{
+                return "<a href='"+ row.document_name.driveBAST +"' target='_blank'><i class='fa fa-link'></i>"+ row.document_name.docBAST +"</a>"
+              }
+            }
+          },
         ]
       }
 
@@ -698,10 +713,18 @@
             "type":"GET",
             "url":"{{url('asset/getLogById')}}",
             "data":{
-              id_asset:window.location.href.split("=")[1]
+              id_asset:window.location.href.split("=")[1],
+              type:type
             }
           },
           "columns": columnAsset,
+          "rowCallback": function(row, data) {
+            console.log(data)
+            // Replace 'yourColumnIndex' with the index of the column you want to check
+            // if (data.document_name === null) {
+            //     $(row).hide(); // Hide the row if the column is null or empty
+            // }
+          }
         })
       }else{
         table = $('#tableHistoryPid').DataTable().ajax.url("{{url('asset/getLogById')}}?id_asset="+window.location.href.split("=")[1]).load()
@@ -970,7 +993,7 @@
             $("#DocInternalContainer").show()
             $("#tableHistoryPid").closest(".box-primary").find(".box-title").html("<strong>History (PIC - Department)</strong>")
             $("#inputLicenseStart").closest(".form-group").find("label").text("License Start/Garansi*") 
-            $("#inputLicenseEnd").closest(".form-group").find("label").text("License Start/Garansi*") 
+            $("#inputLicenseEnd").closest(".form-group").find("label").text("License End/Garansi*") 
             $(".divAsset:eq(1)").prev("hr").hide()
             $(".divAsset:eq(1)").hide()
 
@@ -1046,7 +1069,11 @@
               class: "form-control",
               name: "inputLicense",
               id: "inputLicense"
-            });
+            }).change(function(argument) {
+              console.log($(this).val())
+              licenseStart = $("#inputLicenseStart").val()
+              $("#inputLicenseEnd").val(moment(licenseStart).add(parseInt($(this).val()), 'years').format('YYYY-MM-DD'))
+            })
 
             const years = Array.from({ length: 10 }, (_, i) => i + 1);
         
@@ -1199,7 +1226,13 @@
             $("#txtAreaReason").closest(".form-group").hide()
           }
 
-
+          if (result.category_code == 'COM') {
+            $("#inputAccessoris").closest('.form-group').show()
+            $("#inputAccessoris").val(result.accessoris)
+          }else{
+            $("#inputAccessoris").closest('.form-group').hide()
+            $("#inputAccessoris").val(result.accessoris)
+          }
           $("#inputSLAUptime").val(result.slaUptime)
           $("#inputTotalTicket").val(result.countTicket)
           $(".divPeripheral").hide()
@@ -1663,6 +1696,26 @@
             }
           }
 
+          const fileAssetInternal = document.querySelector('input[type="file"][name="inputBuktiAssetInternal"]');
+
+          console.log(result.document_name_asset)
+          if (result.document_name_asset != '' && result.document_name_asset != null) {
+            const myFileBuktiAssetInternal = new File(['{{asset("/")}}"'+ result.document_location_asset +'"'], '/'+ result.document_location_asset,{
+              type: 'text/plain',
+              lastModified: new Date(),
+            });
+
+            // Now let's create a DataTransfer to get a FileList
+            const dataTransferBuktiAssetInternal = new DataTransfer();
+            dataTransferBuktiAssetInternal.items.add(myFileBuktiAssetInternal);
+            fileAssetInternal.files = dataTransferBuktiAssetInternal.files;
+
+            if (result.link_drive_asset != '' && result.link_drive_asset != null) {
+              $("#span_link_drive_bukti_asset_internal").show()
+              $("#link_bukti_asset_internal").attr("href",result.link_drive_asset)
+            }
+          }
+
           const fileAssetBA = document.querySelector('input[type="file"][name="inputBeritaAcara"]');
 
           if (result.document_name_BA != '' && result.document_name_BA != null) {
@@ -1811,7 +1864,6 @@
             formData.append('nilaiBuku',nilaiBuku)
             formData.append('reason',reason)
             formData.append('inputPr',inputPr)
-
             alert = {
               title: 'Are you sure?',
               text: "Update Asset",
@@ -1936,7 +1988,13 @@
             formData.append('maintenanceEnd',$("#inputMaintenanceEnd").val())
             formData.append('servicePoint',$("#service_point").val())
             formData.append('inputPic',$("#inputPIC").val())
-            formData.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
+            formData.append('accessoris',$("#inputAccessoris").val())
+
+            if ($('#inputBuktiAsset').is(":visible")) {
+              formData.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
+            }else{
+              formData.append('inputDoc',$('#inputBuktiAssetInternal').prop('files')[0])
+            }
 
             if ($('#inputBeritaAcara').is(":visible")) {
               formData.append('inputDocBA',$('#inputBeritaAcara').prop('files')[0])

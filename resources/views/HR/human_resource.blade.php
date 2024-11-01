@@ -2016,6 +2016,40 @@ Human Resources
 		                        <input id="bpjs_ket" type="number" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" autofocus>
 		                    </div>
 		                </div>
+
+		                <hr>
+	                    <span>Contact Emergency</span>
+	                    <hr>
+
+	                    <div class="form-group row">
+	                        <label for="name_ec" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
+
+	                        <div class="col-md-8">
+	                            <input id="name_ec" type="text" class="form-control" name="name_ec" value="{{ old('pend_terakhir') }}" autofocus>
+	                        </div>
+	                    </div>
+
+	                    <div class="form-group row">
+	                        <label for="hubungan_ec" class="col-md-4 col-form-label text-md-right">{{ __('Relationship') }}</label>
+
+	                        <div class="col-md-8">
+	                            <input id="hubungan_ec" type="text" class="form-control" name="hubungan_ec" value="{{ old('pend_terakhir') }}" autofocus>
+	                        </div>
+	                    </div>
+
+	                    <div class="form-group row">
+		                    <label for="phone_ec" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="phone_ec" type="text" class="form-control{{ $errors->has('phone_ec') ? ' is-invalid' : '' }}" name="phone_ec" value="{{ old('phone_ec') }}" autofocus>
+
+		                        @if ($errors->has('phone_number'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('phone_number') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
 		            </div>
 
 	                <div class="modal-footer">
@@ -2583,6 +2617,7 @@ Human Resources
 	$("#phone_number").inputmask({"mask": "(+62) 999-9999-9999"});
 	$("#phone_number_update").inputmask({"mask": "(+62) 999-9999-9999"});
 	$("#phone_ec_update").inputmask({"mask": "(+62) 999-9999-9999"});
+	$("#phone_ec").inputmask({"mask": "(+62) 999-9999-9999"});
 
 	$("#roles_user").select2({
 		dropdownParent:$("#modalAdd")
@@ -2871,6 +2906,18 @@ Human Resources
 				   	localStorage.setItem("address_update", $("#address_update").val())
 				   }
 
+				   localStorage.setItem('address_ktp_update', $("#address_ktp_update").val());
+				   if (!localStorage.getItem("addres_ktp_update") == true) {
+				   	localStorage.setItem('address_ktp_update', $("#address_ktp_update").val());
+				   	if (value.address != "") {
+	               		$("#addres_ktp_update").val(value.address);
+				   	}else{
+	               		$("#addres_ktp_update").val(localStorage.getItem("addres_ktp_update"));
+				   	}
+				   }else{
+				   	localStorage.setItem("addres_ktp_update", $("#addres_ktp_update").val())
+				   }
+
 				   // if (!localStorage.getItem("address_update") == true) {
 				   // 	localStorage.setItem("address_update", $("#address_update").val())
 	      //          	$("#address_update").val(value.address);
@@ -2934,12 +2981,12 @@ Human Resources
 				   	localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
 				   }
 
-				   if (!localStorage.getItem("address_ktp_update") == true) {
-	               	$("#address_ktp_update").val(value.alamat_ktp);
-				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
-				   }else{
-				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
-				   }
+				   // if (!localStorage.getItem("address_ktp_update") == true) {
+	               // 	$("#address_ktp_update").val(value.alamat_ktp);
+				   // 	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
+				   // }else{
+				   // 	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
+				   // }
 
 				   if (!localStorage.getItem("pend_terakhir_update") == true) {
 				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
@@ -3194,25 +3241,27 @@ Human Resources
 	      cancelButtonText: 'No',
 	    }).then((result) => {
 	      if (result.value) {
-	        Swal.fire({
-	          title: 'Please Wait..!',
-	          text: "It's updating..",
-	          allowOutsideClick: false,
-	          allowEscapeKey: false,
-	          allowEnterKey: false,
-	          customClass: {
-	            popup: 'border-radius-0',
-	          },
-	          onOpen: () => {
-	            Swal.showLoading()
-	          }
-	        })
 	        $.ajax({
 	            url: "{{'/hu_rec/store'}}",
 	            type: 'POST',
 				// contentType: "application/json",
 				// dataType: "json",
 	            data: $("#formAdd").serialize(),
+	            beforeSend:function(){
+	            	Swal.fire({
+			          title: 'Please Wait..!',
+			          text: "It's updating..",
+			          allowOutsideClick: false,
+			          allowEscapeKey: false,
+			          allowEnterKey: false,
+			          customClass: {
+			            popup: 'border-radius-0',
+			          },
+			          onOpen: () => {
+			            Swal.showLoading()
+			          }
+			        })
+	            },
 	            // data: JSON.stringify($("#formAdd").serializeArray()),
 		        success: function(data) {
 		          	Swal.showLoading()
@@ -3226,24 +3275,61 @@ Human Resources
 						}
 		            })
 		        },
-		        error: function(jqXHR,error, errorThrown) {  
-					if(jqXHR.status && jqXHR.status == 400){
-						Swal.showLoading()
+		        error: function(jqXHR,error,errorThrown) {
+		        	console.log(jqXHR.status) 
+		        	console.log(error) 
+		        	// Handle error
+	                if (jqXHR.status === 500) {
+	                    // Display the custom error message returned from Laravel
+	                    const errorMessage = jqXHR.responseJSON.message;
+	                    Swal.showLoading()
 						Swal.fire(
-							data.message,
-							Object.values(data.errors)[0],
+							error,
+							errorMessage,
 							'error'
 						)
-					} else if (jqXHR.status && jqXHR.status == 422){
+	                }else{
+		                var errorMessage = getKeyValueString(jqXHR.responseJSON.errors)
+
+						function getKeyValueString(obj){
+							return Object.entries(obj).map(function([key, value]) {
+	        					return `${value}`;
+	    					});
+						}						
+
 						Swal.showLoading()
 						Swal.fire(
-							data.message,
-							Object.values(data.errors)[0],
+							jqXHR.responseJSON.message,
+							errorMessage.join("<br>"),
 							'error'
 						)
-					}else{
-						alert("Something went wrong");
-					}
+	                }
+	        		 
+					// if(jqXHR.status && jqXHR.status == 400){
+					// 	Swal.showLoading()
+					// 	Swal.fire(
+					// 		data.message,
+					// 		Object.values(data.errors)[0],
+					// 		'error'
+					// 	)
+					// } else if (jqXHR.status && jqXHR.status == 422){
+					// 	var errorMessage = getKeyValueString(jqXHR.responseJSON.errors)
+
+					// 	function getKeyValueString(obj){
+					// 		return Object.entries(obj).map(function([key, value]) {
+	        		// 			return `${value}`;
+	    			// 		});
+					// 	}						
+
+					// 	Swal.showLoading()
+					// 	Swal.fire(
+					// 		jqXHR.responseJSON.message,
+					// 		errorMessage.join("<br>"),
+					// 		'error'
+					// 	)
+					// }else{
+					// 	alert("Something went wrong");
+					// }
 				}
 				// statusCode: {
 				// 	422: function(data,textStatus,jqXHR) {

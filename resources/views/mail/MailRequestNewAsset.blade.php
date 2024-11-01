@@ -49,27 +49,35 @@
 		  	left: 50%;
 		  	transform: translate(-50%, -40%);
 		}*/
+
+		.table_request th{
+			border: 1px solid;
+		}
+
+		.table_request td{
+			border: 1px solid;
+		}
 	</style>
 </head>
-<body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
+<body style="display:block;width:900px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
 		<img src="{{ asset('image/sims_sangar_2.png')}}" href="https://app.sinergy.co.id/login" style="width: 30%; height: 30%" readonly>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 			<p style="font-size: 20px">
-				Hello {{$users->name}},
+				Dear {{$users->name}},
 			</p>
 			<p>
-				Request New Asset, berikut rinciannya:
+				Ada request asset baru, berikut rinciannya:
 			</p>
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
-				<table style="text-align: left;margin: 5px; font-size: 16px">
+				<table style="text-align: left;margin: 5px; font-size: 16px;width: 100%;">
 					<tr>
 						<th>Request By</th>
 						<th> : </th>
 						<!-- <td>Bima Aldi Pratama</td> -->
-						<td>{{$req_asset['nama_peminjam']}}</td>
+						<td>{{$req_asset['requestor_name']}}</td>
 					</tr>
 					<tr>
 						<th>Request Date</th>
@@ -78,17 +86,29 @@
 						<td>{{date('d-M-Y', strtotime($req_asset['request_date']))}}</td>
 					</tr>
 				</table>
-				<table style="text-align: left;margin: 5px; font-size: 16px">
-						<tr style="border: solid 1px">
-							<th width="40%">Name / Merk</th>
-							<th width="5%">Qty</th>
-							<th width="55%">Note(link)</th>			
+				<table style="text-align: left;margin: 5px; font-size: 16px;width: 100%;" class="table_request">
+						<tr>
+							<th>Name/Merk</th>
+							<th>Category</th>
+							<th>Merk</th>
+							<th>Description</th>
+							<th>Used for</th>
+							<th>Duration</th>
+							<th>Qty</th>		
 						</tr>
 					@foreach($req_asset['insertdata'] as $data)
 						<tr>
 							<td>{{$data['nama']}} {{$data['merk']}}</td>
+							<td>{{$data['kategori']}}</td>
+							<td>{{$data['merk']}}</td>
+							<td>{{$data['link']}}</td>
+							<td>{{$data['keperluan']}}</td>
+							@if($data['duration'] == "Lifetime")
+								<td>{{$data['duration']}}</td>
+							@else
+								<td>{{$data['duration_start']}} - {{$data['duration_end']}}</td>
+							@endif
 							<td>{{$data['qty']}}</td>
-							<td style="color: blue">{!!substr($data['link'],0,35)!!}...</td>
 						</tr>
 					@endforeach	
 				</table>
