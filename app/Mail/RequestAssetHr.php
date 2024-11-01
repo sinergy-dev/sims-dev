@@ -33,21 +33,10 @@ class RequestAssetHr extends Mailable
      */
     public function build()
     {
-        if ($this->status == 'reqPinjam') {
-            return $this->subject($this->subject)
-            ->view('mail.MailRequestPeminjamanAsset');
-        }else if ($this->status == 'peminjaman') {
-            if($this->req_asset['asset']['status']  == "ACCEPT"){
-                return $this->subject($this->subject)
-                ->view('mail.MailAcceptRequestAsset');
-            }else{
-                return $this->subject($this->subject)
-                ->view('mail.MailAcceptRequestAsset');
-            }
-        }else if ($this->status == 'new') {
+        if ($this->status == 'new') {
             return $this->subject($this->subject)
             ->view('mail.MailRequestNewAsset');  
-        }else if ($this->status == 'proses') {
+        }else if ($this->status == 'pending') {
             return $this->subject($this->subject)            
             ->view('mail.MailAcceptRequestAsset');
         }else{

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 use Auth;
 use DB;
 use App\AssetHR;
 use App\AssetHrRequest;
 use App\DetailAssetHR;
+use App\AssetNotesTransaction;
 use App\User;
+use App\RoleUser;
 use App\Mail\RequestAssetHr;
 use Mail;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -20,9 +23,20 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Carbon\Carbon;
+use PDF;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Google_Client;
+use Google_Service_Drive;
+use Google_Service_Drive_DriveFile;
 
 use Maatwebsite\Excel\Facades\Excel;
 
+use setasign\Fpdf\Fpdf;
+use setasign\Fpdi\Fpdi;
+use setasign\FpdiProtection\FpdiProtection;
+use setasign\Fpdi\PdfParser\StreamReader;
 
 class AssetHRController extends Controller
 {
@@ -36,159 +50,7 @@ class AssetHRController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $notifClaim = '';
-
         $user_pinjam = '';
-
-		if ($ter != null) {
-            $notif = DB::table('sales_lead_register')
-            ->select('opp_name','nik')
-            ->where('result','OPEN')
-            ->orderBy('created_at','desc')
-            ->get();
-
-            $notifc = count($notif);
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notif = DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-
-            $notifc = count($notif);
-        }else{
-            $notif = DB::table('sales_lead_register')
-            ->select('opp_name','nik')
-            ->where('result','OPEN')
-            ->orderBy('created_at','desc')
-            ->get();
-
-            $notifc = count($notif);
-        }
-
-        if (Auth::User()->id_position == 'ADMIN') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'ADMIN')
-                            ->get();
-        } elseif (Auth::User()->id_position == 'HR MANAGER') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'HRD')
-                            ->get();
-        } elseif (Auth::User()->id_division == 'FINANCE') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'FINANCE')
-                            ->get();
-        }
-
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_lead_register.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_lead_register.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notifsd= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','SD')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notifsd= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','SD')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_lead_register.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notiftp= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','TP')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notiftp= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','TP')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
 
         $listAsset = DB::table('tb_asset_hr')
                 ->Leftjoin(DB::raw("(
@@ -259,11 +121,34 @@ class AssetHRController extends Controller
                         ->orderBy('tb_asset_hr_transaction.created_at','asc')
                         ->get();
 
-        if (Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION' || Auth::User()->id_territory == 'OPERATION' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'BCD') {
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group','roles.mini_group')
+                    ->where('user_id', Auth::User()->nik)
+                    ->first(); 
+
+        if ($cek_role->mini_group == "Center Point & Asset Management SVC") {
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
-                           ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','users.name','tb_asset_hr_request.nik','tb_asset_hr_request.status','tb_asset_hr_request.created_at','qty')
+                           ->join('role_user','role_user.user_id','=','tb_asset_hr_request.accept_by')
+                           ->join('roles','roles.id','=','role_user.role_id')
+                           ->leftjoin('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
+                           ->select('nama',
+                            'tb_kategori_asset_hr.kategori',
+                            'tb_kategori_asset_hr.code_kat',
+                            'merk',
+                            'link',
+                            'id_request',
+                            'users.name as name_requestor',
+                            'roles.name as roles_name',
+                            'tb_asset_hr_request.nik',
+                            'tb_asset_hr_request.status',
+                            'tb_asset_hr_request.created_at',
+                            'qty',
+                            'keperluan as used_for',
+                            DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
+                            'reason',
+                            'link_drive'
+                            )
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
@@ -276,6 +161,30 @@ class AssetHRController extends Controller
                         ->where('tgl_pengembalian',NULL)
                         ->get();
 
+            $history_request = DB::table('tb_asset_hr_request')
+                           ->join('users','users.nik','=','tb_asset_hr_request.nik')
+                           ->leftjoin('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
+                           ->select('nama',
+                                'tb_kategori_asset_hr.kategori',
+                                'tb_kategori_asset_hr.code_kat',
+                                'merk',
+                                'link',
+                                'id_request',
+                                'tb_asset_hr_request.status',
+                                'users.name as name_requestor', 
+                                'tb_asset_hr_request.nik',
+                                'tb_asset_hr_request.created_at',
+                                'tb_asset_hr_request.updated_at',
+                                'qty',
+                                'keperluan as used_for',
+                                DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
+                                'reason',
+                                'link_drive'
+                            )
+                           ->where('tb_asset_hr_request.status','<>','REQUEST')
+                           ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                           ->get();
+
             $historyCancel  = DB::table('tb_asset_hr_request')
                ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
                ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
@@ -284,27 +193,148 @@ class AssetHRController extends Controller
                ->get();
         }else{
             $current_request = DB::table('tb_asset_hr_request')
-                           ->join('users','users.nik','=','tb_asset_hr_request.nik')
-                           ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name', 'tb_asset_hr_request.nik','tb_asset_hr_request.created_at','qty')
+                           ->select('nama',
+                                'tb_kategori_asset_hr.kategori',
+                                'tb_kategori_asset_hr.code_kat',
+                                'merk',
+                                'link',
+                                'id_request',
+                                'tb_asset_hr_request.status',
+                                'users.name as name_requestor', 
+                                'tb_asset_hr_request.nik',
+                                'tb_asset_hr_request.created_at',
+                                'qty',
+                                'keperluan as used_for',
+                                DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
+                                'reason',
+                                'link_drive'
+                            )->join('users','users.nik','=','tb_asset_hr_request.nik')
+                           ->leftjoin('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request');
+
+            $history_request = DB::table('tb_asset_hr_request')
+                           ->select('nama',
+                                'tb_kategori_asset_hr.kategori',
+                                'tb_kategori_asset_hr.code_kat',
+                                'merk',
+                                'link',
+                                'id_request',
+                                'tb_asset_hr_request.status',
+                                'users.name as name_requestor', 
+                                'tb_asset_hr_request.nik',
+                                'tb_asset_hr_request.created_at',
+                                'tb_asset_hr_request.updated_at',
+                                'qty',
+                                'keperluan as used_for',
+                                DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
+                                'reason',
+                                'link_drive'
+                            )->join('users','users.nik','=','tb_asset_hr_request.nik')
+                           ->leftjoin('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') ;
+
+            $historyCancel  = DB::table('tb_asset_hr_request')
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
+                           ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') ;
+
+            if (stripos($cek_role->name, 'Manager') !== false) {
+                //for manager
+                $current_request = $current_request
+                            ->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                           ->where('roles.mini_group',$cek_role->mini_group)
+                           ->where('tb_asset_hr_request.status','<>','ACCEPT')
+                           ->where('tb_asset_hr_request.status','<>','REJECT')
+                           ->where('tb_asset_hr_request.status','<>','CANCEL')
+                           ->get();
+                           
+                $historyCancel = $historyCancel->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                           ->where('roles.mini_group',$cek_role->mini_group)
+                           ->where('tb_asset_hr_request.status','<>','REQUEST')
+                           ->where('tb_asset_hr_request.status','<>','PENDING')
+                           ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                           ->get();
+
+                $history_request = $history_request->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                           ->where('roles.mini_group',$cek_role->mini_group)
+                           ->where('tb_asset_hr_request.status','<>','REQUEST')
+                           ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                           ->get();
+                
+            }else if(stripos($cek_role->name, 'VP') !== false){
+                //for VP
+                $current_request = $current_request
+                            ->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                           // ->where('roles.name','like','%Manager%')
+                           ->where('roles.group',$cek_role->group)
+                           ->where('tb_asset_hr_request.status','<>','ACCEPT')
+                           ->where('tb_asset_hr_request.status','<>','REJECT')
+                           ->where('tb_asset_hr_request.status','<>','CANCEL')
+                           ->get();
+                           
+                $historyCancel = $historyCancel->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            // ->where('roles.name','like','%Manager%')
+                            ->where('roles.group',$cek_role->group)
+                            ->where('tb_asset_hr_request.status','<>','REQUEST')
+                            ->where('tb_asset_hr_request.status','<>','PENDING')
+                            ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                            ->get();
+
+                $history_request = $history_request->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('roles.name','like','%Manager%')
+                            ->where('roles.group',$cek_role->group)
+                            ->where('tb_asset_hr_request.status','<>','REQUEST')
+                            ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                            ->get();
+            }else if($cek_role->name == "Operations Director" || $cek_role->name == "President Director" || $cek_role->name == "Financial Director") {
+                //for ops & direktur
+                $current_request = $current_request
+                            ->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
+                            ->where('tb_asset_hr_request.status','<>','REJECT')
+                            ->where('tb_asset_hr_request.status','<>','CANCEL')
+                            ->get();
+                           
+                $historyCancel = $historyCancel->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('tb_asset_hr_request.status','<>','REQUEST')
+                            ->where('tb_asset_hr_request.status','<>','PENDING')
+                            ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                            ->get();
+
+                $history_request = $history_request->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('tb_asset_hr_request.status','<>','REQUEST')
+                            ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                            ->get();
+            }else{
+                //for staff
+                $current_request = $current_request
                            ->where('tb_asset_hr_request.nik',Auth::User()->nik)
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
                            ->get();
 
-            $historyCancel  = DB::table('tb_asset_hr_request')
-                           ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
-                           ->where('nik',Auth::User()->nik)
+                $historyCancel = $historyCancel->where('nik',Auth::User()->nik)
                            ->where('tb_asset_hr_request.status','<>','REQUEST')
                            ->where('tb_asset_hr_request.status','<>','PENDING')
+                           ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
                            ->get();
+
+                $history_request = $history_request
+                           ->where('tb_asset_hr_request.nik',Auth::User()->nik)
+                           ->where('tb_asset_hr_request.status','<>','REQUEST')
+                           ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
+                           ->get();
+            }
         }
 
         
-        
-
         // $request_asset = DB::table('tb_asset_hr_transaction')
         //                 ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
         //                 ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
@@ -313,12 +343,12 @@ class AssetHRController extends Controller
         //                 ->orderBy('tb_asset_hr_transaction.created_at','asc')
         //                 ->get();
 
-        $request_asset = DB::table('tb_asset_hr_transaction')
-                        ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                        ->select('tb_asset_hr_transaction.keterangan','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','no_transac','note','tgl_peminjaman')
-                        ->where('tb_asset_hr_transaction.status','PENDING')
-                        ->orderBy('tb_asset_hr_transaction.created_at','asc')
-                        ->get();
+        // $request_asset = DB::table('tb_asset_hr_transaction')
+        //                 ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+        //                 ->select('tb_asset_hr_transaction.keterangan','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','no_transac','note','tgl_peminjaman')
+        //                 ->where('tb_asset_hr_transaction.status','PENDING')
+        //                 ->orderBy('tb_asset_hr_transaction.created_at','asc')
+        //                 ->get();
 
         $users = User::select('name','nik')->where('status_karyawan','!=','dummy')->get();
 
@@ -334,7 +364,7 @@ class AssetHRController extends Controller
 
         $sidebar_collapse = true;
 
-    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset','current_borrowed','request_asset','current_request','pinjam_request','historyCancel','sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_hr')]);
+    	return view('HR/asset_hr',compact('asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset','current_borrowed','current_request','pinjam_request','history_request','sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_hr')]);
     }
 
     public function import(Request $request) 
@@ -472,8 +502,10 @@ class AssetHRController extends Controller
     }
 
     public function getCategory(Request $request){
+    	// return array("results" => DB::table('tb_kategori_asset_hr')->select(DB::raw("`id` AS `no`,`code_kat` AS `id`,`kategori` AS `text`"))->get());
+        $data = DB::table('tb_asset_management_category')->select('name as id','name as text')->where('name','like','%'.request('q').'%')->distinct()->get();
 
-    	return array("results" => DB::table('tb_kategori_asset_hr')->select(DB::raw("`id` AS `no`,`code_kat` AS `id`,`kategori` AS `text`"))->get());
+        return $data;
     }
 
     public function getListAsset(Request $request){
@@ -557,57 +589,123 @@ class AssetHRController extends Controller
     }
 
     public function storeRequestAsset(Request $request){
-        $count_kategori = count($request['cat_req_id']);   
-
-        $text = $request['link_barang_request'];
-        $link_barang = $text;
+        $items = $request->input('items'); // This will be an array of the form input
 
         $inc = DB::table('tb_asset_hr_request')->get();
         $increment = count($inc);
         $no_req = date('ymd');
 
-        for ($i=0; $i < $count_kategori ; $i++) { 
-            if ($request->merk_barang_request[$i] == '') {
-                $merk_barang = ' - ';
-            }else{
-                $merk_barang = $request['merk_barang_request'][$i];
-            }  
+        $i = 1;
 
+        foreach ($items as $index => $item) {
+            $i++;
+            // Assuming you have a model `Item`
             $nomor = $increment+$i;
             if($nomor < 10){
                 $nomor = '00' . $nomor;
             }
-            $data = array(
+
+            $id_request = $no_req . $nomor;
+
+            $data = AssetHrRequest::create([
                 'id_request'        => $no_req . $nomor,
                 'nik'               => Auth::User()->nik,
-                'kategori_request'  => $request['cat_req_id'][$i],
-                'nama'              => $request['nama_barang_request'][$i],
+                'kategori'          => $item['category_asset_request'],
+                'nama'              => $item['nama_barang_request'],
                 'qty'               => '1',
                 'status'            => "REQUEST",
-                'link'              => $link_barang[$i],
-                'merk'              => $merk_barang,
-                'created_at'        => date("Y-m-d h:i:s"),
-                'updated_at'        => date("Y-m-d h:i:s"),
-            );
-            $insertData[] = $data;
-        }
-        AssetHrRequest::insert($insertData);  
+                'link'              => $item['link_barang_request'],
+                'merk'              => $item['merk_barang_request'],
+                'keperluan'         => $item['keperluan_barang_request'],
+                'duration'          => $item['duration_barang_request'],
+            ]);
 
-        $req_asset = collect(['insertdata'=>$insertData,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
+            // $data = array(
+            //     // 'id_request'        => $no_req . $nomor,
+            //     'nik'               => Auth::User()->nik,
+            //     'kategori'          => $item['category_asset_request'],
+            //     'nama'              => $item['nama_barang_request'],
+            //     'qty'               => '1',
+            //     'status'            => "REQUEST",
+            //     'link'              => $item['link_barang_request'],
+            //     'merk'              => $item['merk_barang_request'],
+            //     'keperluan'         => $item['keperluan_barang_request'],
+            //     'duration'          => $item['duration_barang_request'],
+            //     'created_at'        => date("Y-m-d h:i:s"),
+            //     'updated_at'        => date("Y-m-d h:i:s"),
+            // );
+
+            $update = AssetHrRequest::where('id_request',$id_request)->first();
+            if ($item['duration_barang_request'] == 'Select Date') {
+                $date_explode   = explode(' - ', $item['duration_date_range']);
+
+                $date_start     = Carbon::parse($date_explode[0])->format('Y-m-d h:i:s');
+                $date_end       = Carbon::parse($date_explode[1])->format('Y-m-d h:i:s');
+
+                // $data['duration_start'] = $date_start;
+                // $data['duration_end']   = $date_end;
+
+                $update->duration_start = $date_start;
+                $update->duration_end   = $date_end;
+            }
+
+            if ($request->hasFile("items.$index.file_barang_request")) {
+                $directory = "Asset Request/";
+                $allowedfileExtension   = ['jpg', 'JPG','png','PNG','jpeg','pdf'];
+                $file                   = $request->file("items.$index.file_barang_request");
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $fileName;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
+
+                if ($check) {
+                    $this->uploadToLocal($file,$directory,$nameDoc);
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url    = urldecode(url("Asset Request/" . $nameDoc));
+                    $pdf_name   = $nameDoc;
+                } else {
+                    $pdf_url    = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name   = 'pdf_lampiran';
+                }
+
+                $update->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name);
+            } 
+            $update->save();
+
+            $insertData[] = $data;
+            // insert($insertData);  
+        }
+
+        $req_asset = collect(['insertdata'=>$insertData,'requestor_name'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'new']);
+
+        $users = User::select('email')
+                ->select('users.name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('users.status_karyawan','<>','dummy')
+                ->where('roles.name','Asset Management')->first();
 
         $to = User::select('email')
                 ->join('role_user','role_user.user_id','=','users.nik')
-                ->where('id_division','HR')
-                ->where('id_position','HR MANAGER')
-                ->where('role_id',11)->get();
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('users.status_karyawan','<>','dummy')
+                ->where('roles.name','Asset Management')->get();
 
-        $users = User::select('name')
+        $cc = User::select('email')
                 ->join('role_user','role_user.user_id','=','users.nik')
-                ->where('id_division','HR')
-                ->where('id_position','HR MANAGER')
-                ->where('role_id',11)->first();
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('users.status_karyawan','<>','dummy')
+                ->where('roles.name','Center Point & Asset Management SVC Manager')->get();
 
-        Mail::to($to)->send(new RequestAssetHr('new',$users,$req_asset,'[SIMS-APP] Request New Asset'));     
+        Mail::to($to)  // Main recipient
+            ->cc($cc)    
+            ->send(new RequestAssetHr('new',$users,$req_asset,'[SIMS-APP] Request New Asset'));
 
         return redirect()->back()->with('success', 'Create New Request Asset Successfully!')->withInput(['tab'=>'request_list']);
     }
@@ -1036,25 +1134,21 @@ class AssetHRController extends Controller
     }
 
     public function acceptPeminjaman(Request $request){   
-        $update_accept =  DetailAssetHR::where('id_transaction',$request->id_transaction)
-                ->first();        
-        $update = AssetHR::where('id_barang',$request->id_barang)->first();
-        if ($request->status == 'ACCEPT') {
-            $update->status = 'UNAVAILABLE';
-            $update_accept->id_barang = $request->id_barang; 
-            $update->update(); 
-        }
+        // $update_accept =  DetailAssetHR::where('id_transaction',$request->id_transaction)
+        //         ->first();        
+        $update = AssetHrRequest::where('id_request',$request->id_request)->first();
 
         if ($request->status == 'ACCEPT') {
-            $update_accept->status = "ACCEPT";
-            $emailSubject = '[SIMS-APP] Accepting Peminjaman Asset';
+            $update->status = 'ACCEPT';
+            $update->update(); 
+
+            $emailSubject = '[SIMS-APP] Accepting Request Asset';
 
             $asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
                     ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
                     ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
                     ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
                     ->first();
-            $update_accept->save();
 
             $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
 
@@ -1062,16 +1156,17 @@ class AssetHRController extends Controller
 
             $users = User::select('name')->where('nik',$update_accept->nik_peminjam)->first();
 
-            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,$emailSubject));
-        }else{
-            $update_accept->status = "REJECT";
-            $emailSubject = '[SIMS-APP] Rejecting Peminjaman Asset';
+            Mail::to($to)->send(new RequestAssetHr('accept',$users,$req_asset,$emailSubject));
+        }else if ($request->status == 'PROCESS') {
+            $update->status = 'PROCESS';
+            $update->update();
+
+            $emailSubject = '[SIMS-APP] Request Asset Notes';
 
             $asset = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-	                ->select('name','tb_asset_hr_transaction.created_at','note','tb_asset_hr_transaction.status','keterangan')
-	                ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
-	                ->first();
-            $update_accept->save();
+                    ->select('name','tb_asset_hr_transaction.created_at','note','tb_asset_hr_transaction.status','keterangan')
+                    ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
+                    ->first();
 
             $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
 
@@ -1079,67 +1174,143 @@ class AssetHRController extends Controller
 
             $users = User::select('name')->where('nik',$update_accept->nik_peminjam)->first();
 
-            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,$emailSubject));
+            Mail::to($to)->send(new RequestAssetHr('process',$users,$req_asset,$emailSubject));
+        }else{
+            $emailSubject = '[SIMS-APP] Rejecting Request Asset';
+
+            $asset = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+                    ->select('name','tb_asset_hr_transaction.created_at','note','tb_asset_hr_transaction.status','keterangan')
+                    ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
+                    ->first();
+
+            $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
+
+            $to = User::select('email')->where('nik',$update_accept->nik_peminjam)->get();
+
+            $users = User::select('name')->where('nik',$update_accept->nik_peminjam)->first();
+
+            Mail::to($to)->send(new RequestAssetHr('reject',$users,$req_asset,$emailSubject));
         }
-
-
-        // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
-        //     ->where('nik_peminjam','<>',$request->nik_peminjam)
-        //     ->where('status','PENDING')
-        //     ->get();
-
-        // foreach ($update_rejects as $update_reject) {
-        //     $update_reject->status = "REJECT";
-        //     $update_reject->save();
-        // }
-
-        // $asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
-        //             ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-        //             ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
-        //             ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
-        //             ->first();
-
-        // $asset = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-        // 		->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
-        //         ->select('name','tb_asset_hr_transaction.created_at','note','tb_asset_hr_transaction.status','keterangan','nama_barang')
-        //         ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
-        //         ->first();
-
 
         return redirect()->back()->with('alert','Asset Request Accepted!');
         
     }
 
     public function acceptNewAsset(Request $request){
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group','roles.mini_group')
+                    ->where('user_id', Auth::User()->nik)
+                    ->first(); 
 
         $update = AssetHrRequest::where('id_request',$request->id_request)->first();
+
         if ($request->status == 'ACCEPT') {
-            $update->status     = 'PENDING';
-            $update->updated_at = date('Y-m-d h:i:s');
-            $alerts = 'New Asset Request Accepted!';
+            if ($request->notes != '') {
+                $store_notes = new AssetNotesTransaction();
+                $store_notes->id_request = $request->id_request;
+                $store_notes->nik        = Auth::User()->nik;
+                $store_notes->notes        = $request->notes;
+                $store_notes->save();
+            }
+
+            if($request->status_notes == 'ACCEPT' || $update->status_notes == 'ACCEPT'){
+                $status_email = 'accept';
+
+                if ($cek_role->mini_group == 'Center Point & Asset Management SVC') {
+                    $update->status         = 'ACCEPT';
+                }else{
+                    $update->status         = 'ON PROGRESS';
+                }
+                $update->status_notes   = 'ACCEPT';
+                $update->updated_at     = date('Y-m-d h:i:s');
+                $update->accept_by      = Auth::user()->nik;
+
+                $alerts = 'New Asset Request Accepted!';
+
+                $emailSubject = '[SIMS-APP] Request Asset ( ' . $update->nama . ' ) sudah disetujui';
+            }else if($request->status_notes == 'REJECT' || $update->status_notes == 'REJECT'){
+                $status_email = 'reject';
+
+                $update->status = 'REJECT';
+                $update->status_notes = 'REJECT';
+                $update->updated_at = date('Y-m-d h:i:s');
+                $update->accept_by      = Auth::user()->nik;
+
+                $alerts = 'New Asset Request Rejected!';
+
+                $emailSubject = '[SIMS-APP] Rejecting Request New Asset';
+            }
+        }else if($request->status == 'PENDING'){
+            $store_notes = new AssetNotesTransaction();
+            $store_notes->id_request = $request->id_request;
+            $store_notes->nik        = Auth::User()->nik;
+            $store_notes->notes        = $request->notes;
+            $store_notes->save();
+
+            $update->status         = 'PENDING';
+            $update->status_notes   = $request->status_notes;
+            $update->updated_at     = date('Y-m-d h:i:s');
+            $update->accept_by      = Auth::user()->nik;
+
+            $alerts = 'New Asset Request Accepted With Notes!';
 
             $emailSubject = '[SIMS-APP] Request Asset ( ' . $update->nama . ' ) sedang diproses';
+
+            $status_email = 'pending';
         }else{
-            $update->status = 'REJECT';
-            $update->updated_at = date('Y-m-d h:i:s');
+            if ($request->notes != '') {
+                $store_notes                = new AssetNotesTransaction();
+                $store_notes->id_request    = $request->id_request;
+                $store_notes->nik           = Auth::User()->nik;
+                $store_notes->notes         = $request->notes;
+                $store_notes->save();
+            }
+
+            $update->status         = 'REJECT';
+            $update->status_notes   = 'REJECT';
+            $update->updated_at     = date('Y-m-d h:i:s');
+            $update->accept_by      = Auth::user()->nik;
+
             $alerts = 'New Asset Request Rejected!';
 
             $emailSubject = '[SIMS-APP] Rejecting Request New Asset';
+
+            $status_email = 'reject';
         }
+
         $update->update();  
 
-        $asset = AssetHrRequest::join('users','users.nik','=','tb_asset_hr_request.nik')
-                ->select('nama','qty','link','merk','users.name','tb_asset_hr_request.updated_at','tb_asset_hr_request.status')
-                ->where('id_request',$request->id_request)
-                ->first(); 
+        $asset = DB::table('tb_asset_hr_request')
+                   ->join('users','users.nik','=','tb_asset_hr_request.nik')
+                   ->leftjoin('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
+                   ->select('nama',
+                    'tb_kategori_asset_hr.kategori',
+                    'tb_kategori_asset_hr.code_kat',
+                    'merk',
+                    'link',
+                    'id_request',
+                    'users.name as name_requestor',
+                    'tb_asset_hr_request.nik',
+                    'tb_asset_hr_request.status',
+                    'tb_asset_hr_request.created_at',
+                    'qty',
+                    'keperluan as used_for',
+                    DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(duration_start," s/d ",duration_end) END as duration'),
+                    'reason',
+                    'link_drive'
+                    )
+                   ->where('id_request',$request->id_request)
+                   ->get();
 
-        $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
+        $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason,'notes'=>$request->notes]);
 
         $to = User::select('email')->where('nik',$update->nik)->get();
-
         $users = User::select('name')->where('nik',$update->nik)->first();
 
-        Mail::to($to)->send(new RequestAssetHr('proses',$users,$req_asset,$emailSubject));  
+        // $status_email = 'pending';
+        // return view('MailAcceptRequestAsset',compact($status_email,$users,$req_asset,$emailSubject));
+
+        Mail::to($to)->send(new RequestAssetHr($status_email,$users,$req_asset,$emailSubject));  
 
         // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
         //     ->where('nik_peminjam','<>',$request->nik_peminjam)
@@ -1211,7 +1382,6 @@ class AssetHRController extends Controller
         Mail::to($to)->send(new RequestAssetHr('proses',$users,$req_asset,'[SIMS-APP] Request Asset ( ' . $request['nama_barang'] . ' ) Sudah Datang'));  
 
         return redirect()->back()->with('alert', 'Create New Asset Successfully!');
-
     }
 
     public function penghapusan(Request $request)
@@ -1384,5 +1554,167 @@ class AssetHRController extends Controller
         $writer = new Xlsx($spreadsheet);
         ob_end_clean();
         return $writer->save("php://output");
+    }
+
+    public function getDetailAcceptRequest(Request $request)
+    {
+        $asset = AssetHrRequest::select('id_request',
+            DB::raw('CONCAT(nama," - ",kategori) as category'),
+            'keperluan as used_for',
+            'reason')
+            ->where('id_request',$request->id_request)
+            ->get();
+
+        return $asset;
+    }
+
+    public function storeNotesAssetTransaction(Request $request){
+        $store_notes = new AssetNotesTransaction();
+        $store_notes->id_request = $request->id_request;
+        $store_notes->nik        = Auth::User()->nik;
+        $store_notes->notes      = $request->notes;
+        $store_notes->save();
+
+        $asset = DB::table('tb_asset_hr_request')
+                   ->join('users','users.nik','=','tb_asset_hr_request.nik')
+                   ->leftjoin('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
+                   ->select('nama',
+                    'tb_kategori_asset_hr.kategori',
+                    'tb_kategori_asset_hr.code_kat',
+                    'merk',
+                    'link',
+                    'id_request',
+                    'users.name as name_requestor',
+                    'tb_asset_hr_request.nik',
+                    'tb_asset_hr_request.status',
+                    'tb_asset_hr_request.created_at',
+                    'qty',
+                    'keperluan as used_for',
+                    DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(duration_start," s/d ",duration_end) END as duration'),
+                    'reason',
+                    'link_drive'
+                    )
+                   ->where('id_request',$request->id_request)
+                   ->get();
+
+        $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason,'notes'=>$request->notes]);
+
+        $emailSubject = '[SIMS-APP] New Notes Request Asset - ' . $request->id_request;
+
+        $cekRoles = RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->first();
+        if ($cekRoles->mini_group == "Center Point & Asset Management SVC") {
+            $getData    = AssetHrRequest::where('id_request',$request->id_request)->first();
+            $to         = User::select('email')->where('nik',$getData->nik)->get();
+            $users      = User::select('name')->where('nik',$getData->nik)->first();
+
+            Mail::to($to)->send(new RequestAssetHr('pending',$users,$req_asset,$emailSubject)); 
+        }else{
+            $users = User::select('email')
+                ->select('users.name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('users.status_karyawan','<>','dummy')
+                ->where('roles.name','Asset Management')->first();
+
+            $to = User::select('email')
+                    ->join('role_user','role_user.user_id','=','users.nik')
+                    ->join('roles','roles.id','=','role_user.role_id')
+                    ->where('users.status_karyawan','<>','dummy')
+                    ->where('roles.name','Asset Management')->get();
+
+            $cc = User::select('email')
+                    ->join('role_user','role_user.user_id','=','users.nik')
+                    ->join('roles','roles.id','=','role_user.role_id')
+                    ->where('users.status_karyawan','<>','dummy')
+                    ->where('roles.name','Center Point & Asset Management SVC Manager')->get();
+
+            Mail::to($to)->cc($cc)->send(new RequestAssetHr('pending',$users,$req_asset,$emailSubject));
+        }
+        
+        return $store_notes;
+    }
+
+    public function googleDriveUploadCustom($fileName,$locationFile){
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($fileName);
+        // $file->setParents($parentID);
+
+        // $file = new Google_Service_Drive_DriveFile();
+        // $file->setName($nameFolder);
+        // $file->setMimeType('application/vnd.google-apps.folder');
+        $file->setDriveId(env('GOOGLE_DRIVE_DRIVE_ID'));
+        $file->setParents([env('GOOGLE_DRIVE_PARENT_ID_Assset_Request')]);
+
+        $result = $service->files->create(
+            $file, 
+            array(
+                'data' => file_get_contents($locationFile, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+                'mimeType' => 'application/octet-stream',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );
+
+        $optParams = array(
+          'fields' => 'files(webViewLink)',
+          'q' => 'name="'.$fileName.'"',
+          'supportsAllDrives' => true,
+          'includeItemsFromAllDrives' => true
+        );
+
+        unlink($locationFile);
+        $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
+        return $link;
+    }
+
+    public function getClient()
+    {
+        $client = new Google_Client();
+        $client->setApplicationName('Google Drive API PHP Quickstart');
+        $client->setAuthConfig(env('AUTH_CONFIG'));
+        $client->setAccessType('offline');
+        $client->setPrompt('select_account consent');
+        $client->setScopes("https://www.googleapis.com/auth/drive");
+        
+        $tokenPath = env('TOKEN_PATH');
+        if (file_exists($tokenPath)) {
+            $accessToken = json_decode(file_get_contents($tokenPath), true);
+            if($accessToken != null){
+                $client->setAccessToken($accessToken);
+            }
+        }
+
+        if ($client->isAccessTokenExpired()) {
+            if ($client->getRefreshToken()) {
+                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            } else {
+                $authUrl = $client->createAuthUrl();
+
+                if(isset($_GET['code'])){
+                    $authCode = trim($_GET['code']);
+                    $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
+                    $client->setAccessToken($accessToken);
+
+                    echo "Access Token = " . json_encode($client->getAccessToken());
+
+                    if (array_key_exists('error', $accessToken)) {
+                        throw new Exception(join(', ', $accessToken));
+                    }
+                } else {
+                    echo "Open the following link in your browser :<br>";
+                    echo "<a href='" . $authUrl . "'>google drive create token</a>";
+                }
+
+                
+            }
+            // if (!file_exists(dirname($tokenPath))) {
+            //     mkdir(dirname($tokenPath), 0700, true);
+            // }
+            file_put_contents($tokenPath, json_encode($client->getAccessToken()));
+        }
+        return $client;
     }
 }

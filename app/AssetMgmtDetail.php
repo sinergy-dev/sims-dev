@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class AssetMgmtDetail extends Model
 {
@@ -37,4 +38,21 @@ class AssetMgmtDetail extends Model
     ];
 
     public $timestamps = false;
+
+    protected $appends = ['document_name'];
+
+    public function getDocumentNameAttribute()
+    {
+        $data = DB::table('tb_asset_management_dokumen')
+            ->join('tb_asset_management_detail','tb_asset_management_detail.id','=','tb_asset_management_dokumen.id_detail_asset')
+            ->select(
+                'tb_asset_management_dokumen.document_name as docBAST',
+                'tb_asset_management_dokumen.document_location as docLocBAST',
+                'tb_asset_management_dokumen.link_drive as driveBAST','tb_asset_management_dokumen.id'      
+            )
+            ->where('id_detail_asset', $this->id)
+            ->first();
+
+        return $data;
+    }
 }

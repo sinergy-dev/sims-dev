@@ -400,7 +400,6 @@ class HRController extends Controller
 
         $bb = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth;
 
-
         $cek = DB::table('users')
                     ->select('nik')
                     ->where('nik','like',$bb.'%')
@@ -429,6 +428,15 @@ class HRController extends Controller
             $nik = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth. $nomor;
         }
 
+        $checkIsEmailActive = User::where('email',$request->email)->first();
+        if (isset($checkIsEmailActive)) {
+            if ($checkIsEmailActive->status_delete == 'D') {
+                $checkIsEmailActive->email = str_shuffle($request->email);
+                $checkIsEmailActive->save();
+            }
+        }
+        
+        
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -440,301 +448,202 @@ class HRController extends Controller
             // 'npwp_file' => 'required|image|mimes:jpeg,jpg,png',
         ]);
 
-        $tambah = new User();
-        $tambah->nik = $nik;
-        $tambah->name = $request['name'];
-        $tambah->password = Hash::make($request['password']);
-        $tambah->email = $request['email'];
-        $tambah->id_company = $request['company'];
-        $tambah->status_karyawan = 'belum_cuti';
-        $tambah->status_delete = '-';
-        $tambah->id_presence_setting = '1';
-        $tambah->status_kerja = $request['status_kerja'];
-        $tambah->api_token = Str::random(80);
-
-        if ($request['status_kerja'] != "") {
+        try {
+            $tambah = new User();
+            $tambah->nik = $nik;
+            $tambah->name = $request['name'];
+            $tambah->password = Hash::make($request['password']);
+            $tambah->email = $request['email'];
+            $tambah->id_company = $request['company'];
+            $tambah->status_karyawan = 'belum_cuti';
+            $tambah->status_delete = '-';
+            $tambah->id_presence_setting = '1';
             $tambah->status_kerja = $request['status_kerja'];
-        }
+            $tambah->api_token = Str::random(80);
 
-        if ($request['division_sip'] == 'OPERATION') {
-            if($request['id_sub_division_operation'] == 'PMO'){
-                $tambah->id_division = 'PMO';
-                $tambah->id_territory = 'OPERATION';
-                // if ($request['pos_operation'] == 'SERVICE PROJECT') {
-                //     $tambah->id_position = 'SERVICE PROJECT';
-                // } else {
+            if ($request['status_kerja'] != "") {
+                $tambah->status_kerja = $request['status_kerja'];
+            }
+
+            if ($request['division_sip'] == 'OPERATION') {
+                if($request['id_sub_division_operation'] == 'PMO'){
+                    $tambah->id_division = 'PMO';
+                    $tambah->id_territory = 'OPERATION';
+                    // if ($request['pos_operation'] == 'SERVICE PROJECT') {
+                    //     $tambah->id_position = 'SERVICE PROJECT';
+                    // } else {
+                        $tambah->id_position = $request['pos_operation'];
+                    // }
+                } elseif($request['id_sub_division_operation'] == 'MSM'){
+                    $tambah->id_division = 'MSM';
+                    $tambah->id_territory = 'OPERATION';
+                    // if ($request['pos_operation'] == 'SUPPORT ENGINEER') {
+                    //     $tambah->id_position = 'SUPPORT ENGINEER';
+                    // } else {
+                        $tambah->id_position = $request['pos_operation'];
+                    // }
+                } elseif($request['id_sub_division_operation'] == 'SOL'){
+                    $tambah->id_division = 'TECHNICAL PRESALES';
+                    $tambah->id_territory = 'PRESALES';
                     $tambah->id_position = $request['pos_operation'];
-                // }
-            } elseif($request['id_sub_division_operation'] == 'MSM'){
-                $tambah->id_division = 'MSM';
-                $tambah->id_territory = 'OPERATION';
-                // if ($request['pos_operation'] == 'SUPPORT ENGINEER') {
-                //     $tambah->id_position = 'SUPPORT ENGINEER';
-                // } else {
+                } elseif($request['id_sub_division_operation'] == 'SID'){
+                    $tambah->id_division = 'TECHNICAL';
+                    $tambah->id_territory = 'DPG';
+                    if($request['pos_operation'] == 'MANAGER'){
+                        $tambah->id_position = 'ENGINEER MANAGER';  
+                    } elseif($request['pos_operation'] == 'ENGINEER SPV'){
+                        $tambah->id_position = 'ENGINEER SPV';
+                    }elseif($request['pos_operation'] == 'ENGINEER CO-SPV'){
+                        $tambah->id_position = 'ENGINEER CO-SPV';
+                    }elseif($request['pos_operation'] == 'ENGINEER STAFF'){
+                        $tambah->id_position = 'ENGINEER STAFF';
+                    }
+                } elseif($request['id_sub_division_operation'] == 'BCD') {
+                    $tambah->id_division = 'BCD';
+                    $tambah->id_territory = 'OPERATION';
                     $tambah->id_position = $request['pos_operation'];
-                // }
-            } elseif($request['id_sub_division_operation'] == 'SOL'){
-                $tambah->id_division = 'TECHNICAL PRESALES';
-                $tambah->id_territory = 'PRESALES';
-                $tambah->id_position = $request['pos_operation'];
-            } elseif($request['id_sub_division_operation'] == 'SID'){
-                $tambah->id_division = 'TECHNICAL';
-                $tambah->id_territory = 'DPG';
-                if($request['pos_operation'] == 'MANAGER'){
-                    $tambah->id_position = 'ENGINEER MANAGER';  
-                } elseif($request['pos_operation'] == 'ENGINEER SPV'){
-                    $tambah->id_position = 'ENGINEER SPV';
-                }elseif($request['pos_operation'] == 'ENGINEER CO-SPV'){
-                    $tambah->id_position = 'ENGINEER CO-SPV';
-                }elseif($request['pos_operation'] == 'ENGINEER STAFF'){
-                    $tambah->id_position = 'ENGINEER STAFF';
+                } else {
+                    $tambah->id_division = 'TECHNICAL';
+                    $tambah->id_territory = NULL;
+                    $tambah->id_position = 'MANAGER';
                 }
-            } elseif($request['id_sub_division_operation'] == 'BCD') {
-                $tambah->id_division = 'BCD';
-                $tambah->id_territory = 'OPERATION';
-                $tambah->id_position = $request['pos_operation'];
-            } else {
-                $tambah->id_division = 'TECHNICAL';
-                $tambah->id_territory = NULL;
-                $tambah->id_position = 'MANAGER';
-            }
-        } elseif ($request['division_sip'] == 'FINANCE') {
-            $tambah->id_division = 'FINANCE';
-            $tambah->id_territory = $request['id_sub_division_finance'];
-            if($request['pos_finance'] == 'DIRECTOR'){
-                $tambah->id_position = 'FINANCE DIRECTOR';
-            } else {
-                $tambah->id_position = $request['pos_finance'];
-            }
-        } elseif ($request['division_sip'] == 'HR') {
-            if ($request['pos_hr'] == 'WAREHOUSE') {
-                $tambah->id_division = 'WAREHOUSE';
-                $tambah->id_territory = 'OPERATION';
-                $tambah->id_position = $request['pos_hr'];
-            } else {
+            } elseif ($request['division_sip'] == 'FINANCE') {
+                $tambah->id_division = 'FINANCE';
+                $tambah->id_territory = $request['id_sub_division_finance'];
+                if($request['pos_finance'] == 'DIRECTOR'){
+                    $tambah->id_position = 'FINANCE DIRECTOR';
+                } else {
+                    $tambah->id_position = $request['pos_finance'];
+                }
+            } elseif ($request['division_sip'] == 'HR') {
+                if ($request['pos_hr'] == 'WAREHOUSE') {
+                    $tambah->id_division = 'WAREHOUSE';
+                    $tambah->id_territory = 'OPERATION';
+                    $tambah->id_position = $request['pos_hr'];
+                } else {
+                    $tambah->id_division = $request['division_sip'];
+                    $tambah->id_position = $request['pos_hr'];  
+                    $tambah->id_territory = NULL;  
+                }
+            } elseif ($request['division_sip'] == 'SALES') {
+                $tambah->id_position = $request['pos_sales'];
                 $tambah->id_division = $request['division_sip'];
-                $tambah->id_position = $request['pos_hr'];  
-                $tambah->id_territory = NULL;  
+                $tambah->id_territory = $request['territory'];
+            } elseif ($request['division_sip'] == 'NULL') {
+                $tambah->id_division = NULL;
+                $tambah->id_territory = NULL;
+                $tambah->id_position = $request['pos_dir'];
+            } elseif($request['division_msp'] == 'SALES_MSP'){
+                    $tambah->id_division = 'SALES';
+            } elseif ($request['division_msp'] == 'TECHNICAL_MSP') {
+                    $tambah->id_division = 'TECHNICAL';
+            } elseif ($request['division_msp'] == 'WAREHOUSE_MSP') {
+                    $tambah->id_division = 'WAREHOUSE';
+            } elseif ($request['division_msp'] == 'OPERATION_MSP') {
+                    $tambah->id_division = 'PMO';
+                    $tambah->id_position = 'PM';
+                    $tambah->id_territory = 'OPERATION';
+            } elseif($request['id_sub_division_tech_msp'] == 'PRESALES'){
+                    $tambah->id_division = 'TECHNICAL PRESALES';
             }
-        } elseif ($request['division_sip'] == 'SALES') {
-            $tambah->id_position = $request['pos_sales'];
-            $tambah->id_division = $request['division_sip'];
-            $tambah->id_territory = $request['territory'];
-        } elseif ($request['division_sip'] == 'NULL') {
-            $tambah->id_division = NULL;
-            $tambah->id_territory = NULL;
-            $tambah->id_position = $request['pos_dir'];
-        } elseif($request['division_msp'] == 'SALES_MSP'){
-                $tambah->id_division = 'SALES';
-        } elseif ($request['division_msp'] == 'TECHNICAL_MSP') {
-                $tambah->id_division = 'TECHNICAL';
-        } elseif ($request['division_msp'] == 'WAREHOUSE_MSP') {
-                $tambah->id_division = 'WAREHOUSE';
-        } elseif ($request['division_msp'] == 'OPERATION_MSP') {
-                $tambah->id_division = 'PMO';
-                $tambah->id_position = 'PM';
-                $tambah->id_territory = 'OPERATION';
-        } elseif($request['id_sub_division_tech_msp'] == 'PRESALES'){
-                $tambah->id_division = 'TECHNICAL PRESALES';
+
+            if ($request['pos_tech_msp'] != '') {
+               $tambah->id_position = $request['pos_tech_msp'];
+            }else if ($request['pos_sales_msp'] != '') {
+               $tambah->id_position = $request['pos_sales_msp'];
+            }
+
+            $tambah->akhir_kontrak = $request['akhir_kontrak'];
+            $tambah->date_of_entry = $request['date_of_entry'];
+            $tambah->date_of_birth = $request['date_of_birth'];
+            $tambah->address = $request['address'];
+            $tambah->phone = substr(str_replace('-', '', $request['phone_number']),6);
+            $tambah->no_ktp = $request['no_ktp'];
+            $tambah->no_kk = $request['no_kk'];
+            $tambah->no_npwp = $request['no_npwp'];
+            $tambah->bpjs_kes = $request['bpjs_kes'];
+            $tambah->bpjs_ket = $request['bpjs_ket'];
+            $tambah->name_ec = $request['name_ec'];
+            $tambah->phone_ec = substr(str_replace('-', '', $request['phone_ec']),6);
+            $tambah->hubungan_ec = $request['hubungan_ec'];
+            $tambah->jenis_kelamin = $request['jenis_kelamin'];
+            $tambah->pend_terakhir = $request['pend_terakhir'];
+            $tambah->email_pribadi = $request['email_personal'];
+            $tambah->tempat_lahir = $request['tempat_lahir'];
+            $tambah->alamat_ktp = $request['address_ktp'];
+
+            //upload file gambar npwp user
+
+            $file = $request->file('npwp_file');
+
+            if ($file !== null) {
+                $fileName = $nik."_npwp_ver1".".jpg";
+                $request->file('npwp_file')->move("image/", $fileName);
+            }else{
+                $fileName = "";
+            }
+
+            $tambah->npwp_file = $fileName;
+            
+            $tambah->save();
+
+            if ($id_company == '1') {
+                $tambah_roles = new RoleUser(); 
+                $tambah_roles->role_id = $request['roles_user'];
+                $tambah_roles->user_id = $nik;
+                $tambah_roles->save(); 
+            }
+
+            $add_location_presence = new PresenceLocationUser();
+            $add_location_presence->user_id = $nik;
+            $add_location_presence->date_add = date('Y:m:d H:i:s');
+            $add_location_presence->location_id = '3';
+            $add_location_presence->save();
+
+
+            $add_location_presence2 = new PresenceLocationUser();
+            $add_location_presence2->user_id = $nik;
+            $add_location_presence2->date_add = date('Y:m:d H:i:s');
+            $add_location_presence2->location_id = '4';
+            $add_location_presence2->save();
+
+
+            $add_location_presence3 = new PresenceLocationUser();
+            $add_location_presence3->user_id = $nik;
+            $add_location_presence3->date_add = date('Y:m:d H:i:s');
+            $add_location_presence3->location_id = '5';
+            $add_location_presence3->save();
+            
+
+            $userCompany = DB::table('tb_company')
+                        ->select('code_company')
+                        ->where('id_company', $tambah->id_company)
+                        ->first();
+
+            if($userCompany->code_company == '1') {
+                $uCom = 'PT. Sinergy Informasi Pratama';
+            } else {
+                $uCom = 'PT. Multi Solusindo Perkasa';
+            }
+
+            $arr = ['name' => $tambah->name, 'email' => $tambah->email, 'company' => $uCom];
+        } catch (QueryException $e){
+            // Check for duplicate entry error (SQLSTATE[23000])
+            if($e->errorInfo[1] == 1062) { // MySQL error code for duplicate entry
+                return response()->json([
+                    'error' => 'Duplicate entry error',
+                    'message' => $e->getMessage()
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            // Handle other query exceptions
+            return response()->json([
+                'error' => 'Database error',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        if ($request['pos_tech_msp'] != '') {
-           $tambah->id_position = $request['pos_tech_msp'];
-        }else if ($request['pos_sales_msp'] != '') {
-           $tambah->id_position = $request['pos_sales_msp'];
-        }
-
-        // if($request['division_sip'] == 'OPERATION'){
-        //     if($request['id_sub_division_operation'] == 'PMO'){
-        //         $tambah->id_division = 'PMO';
-        //     } elseif($request['id_sub_division_operation'] == 'MSM'){
-        //         $tambah->id_division = 'MSM';
-        //     } elseif($request['id_sub_division_operation'] == 'SOL'){
-        //         $tambah->id_division = 'TECHNICAL PRESALES';
-        //     } elseif($request['id_sub_division_operation'] == 'SID'){
-        //         $tambah->id_division = 'TECHNICAL';
-        //     } elseif($request['id_sub_division_operation'] == 'BCD') {
-        //         $tambah->id_division = 'BCD';
-        //     }
-        // } elseif($request['division_msp'] == 'SALES_MSP'){
-        //         $tambah->id_division = 'SALES';
-        // } elseif ($request['division_msp'] == 'TECHNICAL_MSP') {
-        //         $tambah->id_division = 'TECHNICAL';
-        // } elseif ($request['division_msp'] == 'WAREHOUSE_MSP') {
-        //         $tambah->id_division = 'WAREHOUSE';
-        // }elseif ($request['division_msp'] == 'OPERATION_MSP') {
-        //         $tambah->id_division = 'PMO';
-        //         $tambah->id_position = 'PM';
-        //         $tambah->id_territory = 'OPERATION';
-        // }
-        //  elseif($request['division_sip'] == 'NONE'){
-        //         $tambah->id_division = NULL;
-        // } elseif($request['id_sub_division_tech_msp'] == 'PRESALES'){
-        //         $tambah->id_division = 'TECHNICAL PRESALES';
-        // } else {
-        //         $tambah->id_division = $request['division_sip'];
-        // } 
-
-
-        // if ($request['id_sub_division_finance'] != '') {
-        //     $tambah->id_territory = $request['id_sub_division_finance'];
-        // }else if ($request['id_sub_division_operation'] != '') {
-        //     if ($request['id_sub_division_operation'] == 'DIR') {
-        //         $tambah->id_territory = NULL;
-        //     } else if ($request['id_sub_division_operation'] == 'PMO' || $request['id_sub_division_operation'] == 'MSM') {
-        //         $tambah->id_territory = 'OPERATION';
-        //     } else{
-        //         $tambah->id_territory = $request['id_sub_division_operation'];
-        //     }
-        // }else if ($request['territory']!= '') {
-        //     $tambah->id_territory = $request['territory'];
-        // }else if ($request['id_sub_division_tech'] == 'NONE') {
-        //     $tambah->id_territory = NULL;
-        // }else if ($request['id_sub_division_tech'] != '') {
-        //     $tambah->id_territory = $request['id_sub_division_tech'];
-        // }
-
-        // if ($request['pos_tech'] != '') {
-        //     if($request['id_sub_division_operation'] == 'SID'){
-        //         if($request['pos_tech'] == 'MANAGER'){
-        //             $tambah->id_position = 'ENGINEER MANAGER';  
-        //         } elseif($request['pos_tech'] == 'STAFF'){
-        //             $tambah->id_position = 'ENGINEER STAFF';
-        //         } elseif($request['pos_tech'] == 'HEAD'){
-        //             $tambah->id_position = 'MANAGER';
-        //         }
-        //     }elseif ($request['id_sub_division_operation'] == 'SOL') {
-        //         if($request['pos_tech'] == 'HEAD'){
-        //             $tambah->id_position = 'MANAGER';  
-        //         }
-        //     } else {
-        //         $tambah->id_position = $request['pos_tech'];
-        //     }
-        // } else if($request['pos_finance'] != ''){
-        //    if($request['pos_finance'] == 'HEAD'){
-        //         $tambah->id_position = 'MANAGER';   
-        //     } elseif($request['pos_finance'] == 'DIRECTOR'){
-        //         $tambah->id_position = 'FINANCE DIRECTOR';
-        //     } else {
-        //         $tambah->id_position = $request['pos_finance'];
-        //     }
-        // } else if($request['pos_dir'] != ''){
-        //    $tambah->id_position = $request['pos_dir'];
-        // } else if($request['pos_operation'] != ''){
-        //     if ($request['pos_operation'] == 'DIRECTOR') {
-        //         $tambah->id_position = 'OPERATION DIRECTOR';
-        //     }else{
-        //         $tambah->id_position = $request['pos_operation']; 
-        //     }
-        // } else if($request['pos_sales'] != ''){
-        //    $tambah->id_position = $request['pos_sales']; 
-        // } else if($request['pos_hr'] != ''){
-        //    $tambah->id_position = $request['pos_hr']; 
-        // } else if($request['pos_expert_sales'] == 'EXPERT SALES'){
-        //    $tambah->id_position = $request['pos_expert_sales']; 
-        //    $tambah->id_territory = $request['territory_expert'];
-        //    $tambah->id_division = 'SALES';
-        // } else if($request['pos_expert_sales'] == 'EXPERT ENGINEER'){
-        //    $tambah->id_position = $request['pos_expert_sales']; 
-        //    $tambah->id_territory = $request['territory_expert'];
-        //    $tambah->id_division = 'TECHNICAL';
-        // }else if ($request['pos_tech_msp'] != '') {
-        //    $tambah->id_position = $request['pos_tech_msp'];
-        // }else if ($request['pos_sales_msp'] != '') {
-        //    $tambah->id_position = $request['pos_sales_msp'];
-        // }
-
-        $tambah->akhir_kontrak = $request['akhir_kontrak'];
-        $tambah->date_of_entry = $request['date_of_entry'];
-        $tambah->date_of_birth = $request['date_of_birth'];
-        $tambah->address = $request['address'];
-        $tambah->phone = substr(str_replace('-', '', $request['phone_number']),6);
-        $tambah->no_ktp = $request['no_ktp'];
-        $tambah->no_kk = $request['no_kk'];
-        $tambah->no_npwp = $request['no_npwp'];
-        $tambah->bpjs_kes = $request['bpjs_kes'];
-        $tambah->bpjs_ket = $request['bpjs_ket'];
-        $tambah->jenis_kelamin = $request['jenis_kelamin'];
-        $tambah->pend_terakhir = $request['pend_terakhir'];
-        $tambah->email_pribadi = $request['email_personal'];
-        $tambah->tempat_lahir = $request['tempat_lahir'];
-        $tambah->alamat_ktp = $request['address_ktp'];
-
-        //upload file gambar npwp user
-
-        $file = $request->file('npwp_file');
-
-        if ($file !== null) {
-            $fileName = $nik."_npwp_ver1".".jpg";
-            $request->file('npwp_file')->move("image/", $fileName);
-        }else{
-            $fileName = "";
-        }
-
-        $tambah->npwp_file = $fileName;
-
-        // $file = $request->file('bpjs_kes');
-        // if ($file !== null) {
-        //     $fileName = $nik."_bpjs_kes_ver1".".jpg";
-        //     $request->file('bpjs_kes')->move("image/", $fileName);
-        // }else{
-        //     $fileName = "";
-        // }
-
-        // $tambah->bpjs_kes = $fileName;
-
-        // $file = $request->file('bpjs_ket');
-        // if ($file !== null) {
-        //     $fileName = $nik."_bpjs_ket_ver1".".jpg";
-        //     $request->file('bpjs_ket')->move("image/", $fileName);
-        // }else{
-        //     $fileName = "";
-        // }
-
-        // $tambah->bpjs_ket = $fileName;
         
-        $tambah->save();
-
-        if ($id_company == '1') {
-            $tambah_roles = new RoleUser(); 
-            $tambah_roles->role_id = $request['roles_user'];
-            $tambah_roles->user_id = $nik;
-            $tambah_roles->save(); 
-        }
-
-        $add_location_presence = new PresenceLocationUser();
-        $add_location_presence->user_id = $nik;
-        $add_location_presence->date_add = date('Y:m:d H:i:s');
-        $add_location_presence->location_id = '3';
-        $add_location_presence->save();
-
-
-        $add_location_presence2 = new PresenceLocationUser();
-        $add_location_presence2->user_id = $nik;
-        $add_location_presence2->date_add = date('Y:m:d H:i:s');
-        $add_location_presence2->location_id = '4';
-        $add_location_presence2->save();
-
-
-        $add_location_presence3 = new PresenceLocationUser();
-        $add_location_presence3->user_id = $nik;
-        $add_location_presence3->date_add = date('Y:m:d H:i:s');
-        $add_location_presence3->location_id = '5';
-        $add_location_presence3->save();
-        
-
-        $userCompany = DB::table('tb_company')
-                            ->select('code_company')
-                            ->where('id_company', $tambah->id_company)
-                            ->first();
-
-        if($userCompany->code_company == '1') {
-            $uCom = 'PT. Sinergy Informasi Pratama';
-        } else {
-            $uCom = 'PT. Multi Solusindo Perkasa';
-        }
-
-        $arr = ['name' => $tambah->name, 'email' => $tambah->email, 'company' => $uCom];
 
         /*$kirim = User::select('email')->where('email', 'brillyan@sinergy.co.id')->first();
         Notification::send($kirim, new CreateUser($arr));*/
@@ -1090,84 +999,84 @@ class HRController extends Controller
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','ktp_file','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','ktp_file','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'ADMIN'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'INTERNAL IT'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'SALES' && $ter == ''){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }
         else{
            $user_profile = DB::table('users')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','ktp_file','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
+                        ->select('users.name','users.telegram_id','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','ktp_file','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes','users.bpjs_ket','users.bpjs_kes_file','users.bpjs_ket_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'ttd', 'ttd_digital')
                         ->where('users.nik',$nik)
                         ->first();
         }
@@ -1375,6 +1284,7 @@ class HRController extends Controller
         $update->npwp_file      = $req['npwp_file'];
         $update->bpjs_kes       = $req['bpjs_kes'];
         $update->bpjs_ket       = $req['bpjs_ket'];
+        $update->telegram_id    = $req['telegram_id'];
 
         // if($req->file('npwp_file') === null) {
         //     $update->npwp_file = $update->npwp_file;
@@ -1855,7 +1765,7 @@ class HRController extends Controller
                     ->where('nik', '<>', '1100881060')
                     ->where('nik', '<>', '1050165120')
                     ->where('nik', '<>', '1171294021')
-                    ->get();            
+                    ->get()->unique('nik');            
                     // return $datas;
 
         $datas =  $datas->map(function($item,$key) use ($sheet){

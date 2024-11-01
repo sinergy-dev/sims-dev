@@ -22,270 +22,94 @@
 	table tr td{
 		padding: 5px
 	}
+
+	.span-success{
+		background-color: rgb(0, 141, 76);
+		color: white;
+		border-color: #008d4c;
+	}
+
+	.span-pending{
+		background-color: rgb(224, 142, 11);
+		color: white;
+		border-color: #d58512;
+	}
+
+	.span-reject{
+		background-color: rgb(224, 142, 11);
+		color: white;
+		border-color: #ac2925;
+	}
+
+	.button {
+		border: none;
+		color: white;
+		padding: 15px 32px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		margin: 4px 2px;
+		cursor: pointer;
+		background-color: #7868e6;
+		border-radius: 4px;
+	}
 </style>
 <div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;">
-	@if($status == 'peminjaman')
-		<p>
-			Hello {{$users->name}},
-		</p>		
-		@if($req_asset['asset']['status'] == 'ACCEPT')
-			<b><i>Peminjaman Asset</i></b>, berikut rinciannya:
-			<table style="text-align: left;margin: 5px;">
-				<tr>
-					<th>Name</th>
-					<th> : </th>
-					<td>{{$req_asset['asset']['nama_barang']}}</td>
-				</tr>
-				<tr>
-					<th>Note</th>
-					<th> : </th>
-					<td>{{$req_asset['asset']['description']}}</td>
-				</tr>
-				<tr>
-					<th>Request By</th>
-					<th> : </th>
-					<td>{{$req_asset['asset']['name']}}</td>
-				</tr>
-				<tr>
-					<th>Tanggal Peminjaman</th>
-					<th> : </th>
-					<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
-				</tr>
-				<tr>
-					<th style="vertical-align: top;">Note</th>
-					<th style="vertical-align: top;"> : </th>
-					<td>{!!$req_asset['asset']['keterangan']!!}</td>
-				</tr>
-			</table>			
-		@else
-			<b><i>Peminjaman Asset</i></b>, berikut rinciannya:
-			<table style="text-align: left;margin: 5px;">
-				<tr>
-					<th>Reason</th>
-					<th> : </th>
-					<td>{{$req_asset['reason']}}</td>
-				</tr>
-			</table>
-			<table style="text-align: left;margin: 5px;">
-				<tr>
-					<th>Kategori</th>
-					<th> : </th>
-					<td>{{$req_asset['asset']['note']}}</td>
-				</tr>
-				<tr>
-					<th>Tanggal Peminjaman</th>
-					<th> : </th>
-					<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
-				</tr>
-				<tr>
-					<th style="vertical-align: top;">Note</th>
-					<th style="vertical-align: top;"> : </th>
-					<td>{!!$req_asset['asset']['keterangan']!!}</td>
-				</tr>
-			</table>
-		@endif
-	@elseif($status == 'proses')
-		<p>
-			Hello {{$users->name}},
-		</p>
-		@if($req_asset['asset']['status'] == 'PENDING')
-			<b>Request Asset sedang Diproses</b>, berikut rinciannya:
-			<table style="text-align: left;margin: 5px;">
-				<tr>
-					<th>Tanggal Acc</th>
-					<th> : </th>
-					<td>{{date('d-M-Y', strtotime($req_asset['asset']['updated_at']))}}</td>
-				</tr>
-				<tr>
-					<th>Status</th>
-					<th> : </th>
-					<td><label style="padding: 5px;background-color: #f39c12;color: white">{{$req_asset['asset']['status']}}</label></td>
-				</tr>
-			</table>
-			<table style="text-align: left;margin: 5px;" class="tableBarang">
-				<tr style="border: solid 1px">
-					<th width="40%">Name / Merk</th>
-					<th width="5%">Qty</th>
-					<th width="55%">Note(link)</th>			
-				</tr>
-				<tr>
-					<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
-					<td>{{$req_asset['asset']['qty']}}</td>
-					<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
-				</tr>
-			</table>
-		@elseif($req_asset['asset']['status'] == 'ACCEPT')
-			<b>Barang Sudah datang</b>, berikut rinciannya:
-			<table style="text-align: left;margin: 5px;">
-				<tr>
-					<th>Tanggal sampai</th>
-					<th> : </th>
-					<!-- <td>2021-02-14</td> -->
-					<td>{{date('d-M-Y', strtotime($req_asset['asset']['updated_at']))}}</td>
-				</tr>
-				<tr>
-					<th>Status</th>
-					<th> : </th>
-					<td><label style="padding: 5px;background-color: #008d4c;color: white">{{$req_asset['asset']['status']}}</label></td>
-				</tr>
-			</table>
-			<table style="text-align: left;margin: 5px;" class="tableBarang">
-				<tr style="border: solid 1px">
-					<th width="20%">Name / Merk</th>
-					<th width="5%">Qty</th>
-					<th width="25%">Note(link)</th>			
-				</tr>
-				<tr>
-					<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
-					<td>{{$req_asset['asset']['qty']}}</td>
-					<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
-				</tr>
-			</table>
-		@elseif($req_asset['asset']['status'] == 'REJECT')
-			<b>Rejecting Request New Asset</b>, berikut rinciannya:
-			<table style="text-align: left;margin: 5px;">
-				<tr>
-					<th>Status</th>
-					<th> : </th>
-					<td><label style="padding: 5px;background-color: #d73925;color: white">{{$req_asset['asset']['status']}}</label></td>
-				</tr>
-				<tr>
-					<th>Reason</th>
-					<th> : </th>
-					<td>{{$req_asset['reason']}}</td>
-				</tr>
-			</table>
-			<table style="text-align: left;margin: 5px;" class="tableBarang">
-				<tr style="border: solid 1px">
-					<th width="20%">Name / Merk</th>
-					<th width="5%">Qty</th>
-					<th width="25%">Note(link)</th>			
-				</tr>
-				<tr>
-					<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
-					<td>{{$req_asset['asset']['qty']}}</td>
-					<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
-				</tr>
-			</table>
-		@endif
-	@elseif($status == 'addNote')
-		<p>
-			Hello {{$users->name}},
-		</p>
-		<b style="text-align: left;margin: 5px;">Tambahan </b>:
-		<div style="text-align: left;margin: 5px;padding-bottom: 5px">{{$req_asset['notes']}}</div>
-		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
-			<tr>
-				<th>Request By</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['name']}}</td>
-			</tr>
-			<tr>
-				<th>Status</th>
-				<th> : </th>
-				<td><label style="padding: 5px;background-color: #00c0ef;color: white">{{$req_asset['asset']['status']}}</label></td>
-			</tr>
-		</table>
-		<table style="text-align: left;margin: 5px;" class="tableBarang">
-			<tr style="border: solid 1px">
-				<th width="20%">Name / Merk</th>
-				<th width="5%">Qty</th>
-				<th width="25%">Note(link)</th>			
-			</tr>
-			<tr>
-				<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
-				<td>{{$req_asset['asset']['qty']}}</td>
-				<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
-			</tr>
-		</table>
-	@elseif($status == 'addNotePinjam')
-		<p>
-			Hello {{$users->name}},
-		</p>
-		<b style="text-align: left;margin: 5px;">Tambahan </b>:
-		<div style="text-align: left;margin: 5px;padding-bottom: 5px">{{$req_asset['notes']}}</div>
-		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
-			<tr>
-				<th>Request By</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['name']}}</td>
-			</tr>
-			<tr>
-				<th>Status</th>
-				<th> : </th>
-				<td><label style="padding: 5px;background-color: #00c0ef;color: white">{{$req_asset['asset']['status']}}</label></td>
-			</tr>
-		</table>
-		<table style="text-align: left;margin: 5px;" class="tableBarang">
-			<tr style="border: solid 1px">
-				<th width="10%">Kategori</th>
-				<th width="25%">Note</th>			
-			</tr>
-			<tr>
-				<td>{{$req_asset['asset']['note']}}</td>
-				<td>{!!$req_asset['asset']['keterangan']!!}</td>
-			</tr>
-		</table>
-	@elseif($status == 'batalkan')
-		<p>
-			Hello {{$users->name}},
-		</p>
-		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
-			<tr>
-				<th>Request By</th>
-				<th> : </th>
-				<td>{{$req_asset->name}}</td>
-			</tr>
-			<tr>
-				<th>Status</th>
-				<th> : </th>
-				<td><label style="padding: 5px;background-color:#d73925;color: white">{{$req_asset->status}}</label></td>
-			</tr>
-		</table>
-		<table style="text-align: left;margin: 5px;" class="tableBarang">
-			<tr style="border: solid 1px">
-				<th width="20%">Name / Merk</th>
-				<th width="5%">Qty</th>
-				<th width="25%">Note(link)</th>			
-			</tr>
-			<tr>
-				<td>{{$req_asset->nama}} {{$req_asset->merk}}</td>
-				<td>{{$req_asset->qty}}</td>
-				<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
-			</tr>
-		</table>
-	@elseif($status == 'cancelPinjam')
-		<p>
-			Hello {{$users->name}},
-		</p>
-		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
-			<tr>
-				<th>Request By</th>
-				<th> : </th>
-				<td>{{$req_asset->name}}</td>
-			</tr>
-			<tr>
-				<th>Status</th>
-				<th> : </th>
-				<td><label style="padding: 5px;background-color:#d73925;color: white">{{$req_asset->status}}</label></td>
-			</tr>
-			<tr>
-				<th>Reason</th>
-				<th> : </th>
-				<td>{{$req_asset->reason}}</td>
-			</tr>
-		</table>
-		<table style="text-align: left;margin: 5px;" class="tableBarang">
-			<tr style="border: solid 1px">
-				<th width="10%">Kategori</th>
-				<th width="25%">Note</th>			
-			</tr>
-			<tr>
-				<td>{{$req_asset->note}}</td>
-				<td>{!!$req_asset->keterangan!!}</td>
-			</tr>
-		</table>
+	<p>
+		Dear {{$users->name}},
+	</p>
+	@foreach($req_asset['asset'] as $data)		
+	@if($data->status == 'ACCEPT')
+		<b><i>Request Asset</i></b><h3><span class="span-success">ACCEPTED</span></h3>			
+	@elseif($data->status == 'PENDING')
+		<b><i>Request Asset</i></b><h3><span class="span-pending">PENDING</span></h3>
+		<p>New notes : {{$req_asset['notes']}}</p>
+		<span>Detail notes asset dapat dilihat pada aplikasi!</span>
+	@else
+		<b><i>Request Asset</i></b><h3><span class="span-reject">REJECTED</span></h3>
 	@endif	
+	<table style="text-align: left;margin: 5px;">
+		<tr>
+			<th>Nama</th>
+			<th> : </th>
+			<td>{{$data->nama}}</td>
+		</tr>
+		<tr>
+			<th>Kategori</th>
+			<th> : </th>
+			<td>{{$data->kategori}}</td>
+		</tr>
+		<tr>
+			<th>Merk</th>
+			<th> : </th>
+			<td>{{$data->merk}}</td>
+		</tr>
+		<tr>
+			<th>Keperluan</th>
+			<th> : </th>
+			<td>{{$data->used_for}}</td>
+		</tr>
+		<tr>
+			<th>Deskripsi</th>
+			<th> : </th>
+			<td>{{$data->link}}</td>
+		</tr>
+		<tr>
+			<th>Reason</th>
+			<th> : </th>
+			<td>{{$data->reason}}</td>
+		</tr>
+		<tr>
+			<th>Duration</th>
+			<th> : </th>
+			<td>{{$data->duration}}</td>
+		</tr>
+	</table>
+	@endforeach
+	<br>
+	<p>Untuk melihat pada halaman asset silahkan klik button</p>
+	<a href="{{url('/asset_hr')}}" target="_blank"><button class="button">Detail Asset</button></a>
 	<br>
 	<p>
 		Mohon di periksa kembali, jika ada kesalahan atau pertanyaan silahkan hubungi Team Developer (Ext: 384) atau email ke development@sinergy.co.id.
