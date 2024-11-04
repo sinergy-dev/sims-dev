@@ -5591,21 +5591,4 @@ class PrDraftController extends Controller
                 ->where('email','!=',NULL)
                 ->union($data)->get();
     }
-
-    // protected function setFileRestrictions(Google_Service_Drive $service, $fileId)
-    // {
-    //     // Define the domain you want to restrict access to
-    //     $domain = 'sinergy.co.id';
-
-    //     // Create a new restrictions object
-    //     $restrictions = new Google_Service_Drive_DriveRestrictions();
-    //     $restrictions->setDomain($domain);
-
-    //     // Retrieve the file metadata
-    //     $file = $service->files->get($fileId);
-    //     $file->setRestrictions($restrictions);
-
-    //     // Update the file with the new restrictions
-    //     $service->files->update($fileId, $file);
-    // }
 }
