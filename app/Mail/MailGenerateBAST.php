@@ -31,5 +31,6 @@ class MailGenerateBAST extends Mailable
     public function build()
     {
         return $this->subject('[SIMS-APP] Generate Berita Acara ' . $this->data[0]['id_asset'])->view('mail.MailGenerateBAST');
+        //notes
     }
 }

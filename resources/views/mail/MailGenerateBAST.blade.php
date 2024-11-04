@@ -28,6 +28,7 @@
 		}
 	</style>
 </head>
+<!--ini blade email-->
 <body style="display:block;width:800px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
 		<center><img src="{{ asset('/image/sims_sangar_2.png')}}" style="width: 10%; height: 10%"></center>
