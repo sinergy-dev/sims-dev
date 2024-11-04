@@ -122,10 +122,12 @@
               <th>Issued By</th>
               <th>Project ID</th>
               <th>Amount</th>
+              <th>Amount</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
             <tr id="status">
+              <th></th>
               <th></th>
               <th></th>
               <th></th>
@@ -616,9 +618,14 @@
             }
         },
         { 
+          "data":"amount",
+          "targets":[15],
+        },
+        { 
           render: function ( data, type, row ) {
             return new Intl.NumberFormat('id').format(row.amount)
-          }
+          },
+          "orderData":[14]
         },
         
         { "data": "status" },
@@ -630,7 +637,7 @@
         },
       ],
       'columnDefs' : [
-          { 'visible': false, 'targets': [1,2,3,11] }
+          { 'visible': false, 'targets': [1,2,3,11,14] }
       ],
       "order": [[ 0, "desc" ]],
       "responsive":true,

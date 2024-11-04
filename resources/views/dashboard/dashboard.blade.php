@@ -734,6 +734,42 @@ Dashboard
             append += '</div>';
             append += '</td>';
             append += '</tr>';
+
+            // Remove the collapse toggle behavior
+            // append += '<tr style="background-color:dodgerblue;color: white;">';
+            // append += '<td>' + no++ + '</td>';
+            // append += '<td>' + key + '</td>';
+            // append += '<td align="right"><i>' + new Intl.NumberFormat('id').format(value[0].sum_amounts) + '</i></td>';
+            // append += '<td><center>(' + value[0].leads_total + ')</center></td>';
+            // append += '</tr>';
+
+            // append += '<tr>';
+            // append += '<td colspan="4">';
+            
+            // // Display the details without collapsing
+            // append += '<table class="table table-condensed">';
+            // append += '<thead>';
+            // append += '<tr>';
+            // append += '<th>Name</th>';
+            // append += '<th>Total Amount</th>';
+            // append += '<th>Total Leads</th>';
+            // append += '</tr>';
+            // append += '</thead>';
+            // append += '<tbody>';
+
+            // $.each(value[0].details, function(detailKey, detailValue) {
+            //   append += '<tr>';
+            //   append += '<td>' + detailValue.name + '</td>';
+            //   append += '<td align="right">' + new Intl.NumberFormat('id').format(detailValue.deal_prices) + '</td>';
+            //   append += '<td><center>' + detailValue.leads + '</center></td>';
+            //   append += '</tr>';
+            // });
+
+            // append += '</tbody>';
+            // append += '</table>';
+            
+            // append += '</td>';
+            // append += '</tr>';
           }
         });
 

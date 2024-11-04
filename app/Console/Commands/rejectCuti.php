@@ -81,41 +81,81 @@ class rejectCuti extends Command
             $company = DB::table('users')->select('id_company')->where('nik',$nik)->where('id_company','1')->first();
             $com = $company->id_company;
 
-            $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->where('id_company','1')->first();
+            $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
-            if ($ter != NULL) {
-                if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
-                    if ($div == 'PMO' || $div == 'MSM') {
-                        $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                    } else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
-                        $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-                    }else{
-                        $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                    }
-                }else if ($ter == 'DPG') {
-                    $kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
-                }else if ($div == 'WAREHOUSE'){
-                    $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
-                }else if ($div == 'BCD'){
-                    $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_territory', 'BCD')->where('id_company','1')->first();
-                }else if($cek_role->name_role == 'Operations Director'){
-                    $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-                }else{
-                    $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->where('status_karyawan', '!=', 'dummy')->first();
-                }     
+            // if ($ter != NULL) {
+            //     if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
+            //         if ($div == 'PMO' || $div == 'MSM') {
+            //             $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+            //         } else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
+            //             $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+            //         }else{
+            //             $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+            //         }
+            //     }else if ($ter == 'DPG') {
+            //         $kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
+            //     }else if ($div == 'WAREHOUSE'){
+            //         $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+            //     }else if ($div == 'BCD'){
+            //         $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_territory', 'BCD')->where('id_company','1')->first();
+            //     }else if($cek_role->name_role == 'Operations Director'){
+            //         $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+            //     }else{
+            //         $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->where('status_karyawan', '!=', 'dummy')->first();
+            //     }     
                 
-            }else{
-                if ($div == 'HR') {
-                    if($pos == 'HR MANAGER'){
-                        $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-                    }else{
-                        $kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_division',$div)->where('id_company','1')->first();
-                    }
-                }else if($pos == 'MANAGER'){
-                    $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
-                }else{
-                    $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->first();
+            // }else{
+            //     if ($div == 'HR') {
+            //         if($pos == 'HR MANAGER'){
+            //             $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+            //         }else{
+            //             $kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_division',$div)->where('id_company','1')->first();
+            //         }
+            //     }else if($pos == 'MANAGER'){
+            //         $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+            //     }else{
+            //         $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->first();
+            //     }
+            // }
+
+            if(Str::contains($cek_role->name_role, 'VP')){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Operations Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            } elseif(Str::contains($cek_role->name_role, 'Manager')){
+                if($cek_role->name_role == 'Renumeration, Personalia & GS Manager' &&  $cek_role->name_role == 'Human Capital Manager'){
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                } elseif ($cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                } else {
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 }
+            } elseif(!Str::contains($cek_role->name_role, 'Manager') && !Str::contains($cek_role->name_role, 'Director')) {
+                if ($cek_role->name_role == 'Sales Staff') {
+                    $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                } elseif ($cek_role->name_role == 'Finance Staff') {
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('id_company','1')->where('roles.name','Finance & Accounting Manager')->first();
+                } else {
+                    if ($cek_role->mini_group == 'Product Management & Solution' || $cek_role->mini_group == 'Supply Chain Management' || $cek_role->mini_group == 'Risk Management, Sys Dev & Compliance') {
+                        $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                    } else {
+                        if ($cek_role->mini_group == 'Human Capital') {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                            ->whereRaw(
+                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
+                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                            )
+                            ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        } else {
+                            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
+                                ->whereRaw(
+                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?  AND `roles`.`name` != ?)", 
+                                    [$cek_role->mini_group, '%Manager', 'Project Manager']
+                                )
+                                ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
+                        }
+                    }
+                }
+            } elseif($cek_role->name_role == 'Operations Director'){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             }
 
             $hari_rejected = DB::table('tb_cuti')

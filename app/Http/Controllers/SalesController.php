@@ -4125,15 +4125,18 @@ class SalesController extends Controller{
         $tambah->nik_request = Auth::User()->nik;
         $tambah->save();
 
-        $kirim = User::join('role_user','users.nik','=','role_user.user_id')
+        $kirim_cc = User::join('role_user','users.nik','=','role_user.user_id')
                 ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'Procurement')->where('status_karyawan', '!=', 'dummy')->first();
+
+        $kirim = User::join('role_user','users.nik','=','role_user.user_id')
+            ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'Legal Compliance & Contract Doc Management')->where('status_karyawan', '!=', 'dummy')->first();
 
         $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
                     ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status')
                     ->where('id_customer',$tambah->id_customer)
                     ->first();
 
-        Mail::to($kirim)->send(new RequestCustomer('[SIMS-App] Request Customer Data',$data));
+        Mail::to($kirim)->cc($kirim_cc)->send(new RequestCustomer('[SIMS-App] Request Customer Data',$data));
 
         return redirect('customer')->with('success', 'Please Waiting for Accept this Request!');
     }
@@ -5443,7 +5446,7 @@ class SalesController extends Controller{
                 ->where('tb_id_project.id_pro',$tambah->id_pro)
                 ->first();
 
-            $getPmManager = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','users.name')->where('roles.name','PMO Manager')->first();
+            $getPmManager = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','users.name')->where('roles.name','Project Management Manager')->first();
 
             Mail::to($users->email)->send(new mailPID($pid_info,$users,'getPmManager','sales'));
             Mail::to($getPmManager->email)->send(new mailPID($pid_info,$users,$getPmManager,'pm'));

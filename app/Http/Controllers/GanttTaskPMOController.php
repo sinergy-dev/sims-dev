@@ -14,7 +14,7 @@ class GanttTaskPMOController extends Controller
 
     public function store(Request $request){
 
-        $id_pmo = PMO::select('id_pmo')->where('id_pmo',$request->id_pmo)->first();
+        $id_pmo = GanttTaskPmo::select('id_pmo')->where('id',$request->parent)->first();
  
         $task = new GanttTaskPmo();
  

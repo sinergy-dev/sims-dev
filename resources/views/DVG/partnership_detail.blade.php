@@ -278,7 +278,7 @@ Partnership
 @endsection
 @section('content')
 <section class="content-header">
-	<button class="btn btn-sm btn-primary"><i class="fa fa-arrow-left"></i> &nbspBack</button>
+	<a href="{{url('/partnership')}}"><button class="btn btn-sm btn-primary"><i class="fa fa-arrow-left"></i> &nbspBack</button></a>
 	<h1>
 		Partnership Detail
 	</h1>

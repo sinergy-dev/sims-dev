@@ -191,6 +191,7 @@ Letter Number
                 <option value="DIR">DIR</option>
                 <option value="TAM">TAM</option>
                 <option value="HRD">HRD</option>
+                <option value="PMS">PMS</option>
             </select>
           </div>
           <div class="form-group">
@@ -252,10 +253,12 @@ Letter Number
             <label for="">Division</label>
             <select type="text" class="form-control" placeholder="Select Division" name="division" id="division" required>
                 <option>PMO</option>
-                <option>MSM</option>
-                <option>Marketing</option>
-                <option>HRD</option>
-                <option>TEC</option>
+                <option>PMDS</option>
+                <option>SAL</option>
+                <option>HC</option>
+                <option>FIN</option>
+                <option>SOLMS</option>
+                <option>SCCAM</option>
             </select>
           </div>
           <!-- <div class="form-group">

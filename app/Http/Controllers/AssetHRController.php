@@ -684,26 +684,62 @@ class AssetHRController extends Controller
 
         $req_asset = collect(['insertdata'=>$insertData,'requestor_name'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'new']);
 
-        $users = User::select('email')
-                ->select('users.name')
-                ->join('role_user','role_user.user_id','=','users.nik')
-                ->join('roles','roles.id','=','role_user.role_id')
-                ->where('users.status_karyawan','<>','dummy')
-                ->where('roles.name','Asset Management')->first();
-
-        $to = User::select('email')
-                ->join('role_user','role_user.user_id','=','users.nik')
-                ->join('roles','roles.id','=','role_user.role_id')
-                ->where('users.status_karyawan','<>','dummy')
-                ->where('roles.name','Asset Management')->get();
-
         $cc = User::select('email')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
                 ->where('users.status_karyawan','<>','dummy')
                 ->where('roles.name','Center Point & Asset Management SVC Manager')->get();
 
-        Mail::to($to)  // Main recipient
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
+
+        if (stripos($cek_role->name_role, 'Manager') !== false) {
+            $to = User::select('email')
+            ->join('role_user','role_user.user_id','=','users.nik')
+            ->join('roles','roles.id','=','role_user.role_id')
+            ->where('users.status_karyawan','<>','dummy')
+            ->where('roles.name','like','VP%')
+            ->where('roles.group','like','%'. $cek_role->group .'%')->first();
+
+            $users = User::select('email')
+                ->select('users.name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like','VP%')
+            ->where('roles.group','like','%'. $cek_role->group .'%')->first();
+
+        }else if(stripos($cek_role->name_role, 'VP') !== false) {
+            $to = User::select('email')
+            ->join('role_user','role_user.user_id','=','users.nik')
+            ->join('roles','roles.id','=','role_user.role_id')
+            ->where('users.status_karyawan','<>','dummy')
+            ->where('roles.name','Operations Director')->first();
+
+            $users = User::select('email')
+                ->select('users.name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('users.status_karyawan','<>','dummy')
+                ->where('roles.name','Operations Director')->first();
+        }else{
+            $to = User::select('email')
+            ->join('role_user','role_user.user_id','=','users.nik')
+            ->join('roles','roles.id','=','role_user.role_id')
+            ->where('users.status_karyawan','<>','dummy')
+            ->where('roles.name','<>','Project Manager')
+            ->where('roles.name','like','%Manager%')
+            ->where('roles.mini_group','like','%'. $cek_role->mini_group .'%')->first();
+
+            $users = User::select('email')
+                ->select('users.name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('users.status_karyawan','<>','dummy')
+                ->where('roles.name','like','%Manager%')
+                ->orwhere('roles.name','<>','Project Manager')
+                ->where('roles.mini_group','like','%'. $cek_role->mini_group .'%')->first();
+        }
+
+        Mail::to($to->email)  // Main recipient
             ->cc($cc)    
             ->send(new RequestAssetHr('new',$users,$req_asset,'[SIMS-APP] Request New Asset'));
 
@@ -1206,10 +1242,10 @@ class AssetHRController extends Controller
 
         if ($request->status == 'ACCEPT') {
             if ($request->notes != '') {
-                $store_notes = new AssetNotesTransaction();
-                $store_notes->id_request = $request->id_request;
-                $store_notes->nik        = Auth::User()->nik;
-                $store_notes->notes        = $request->notes;
+                $store_notes                = new AssetNotesTransaction();
+                $store_notes->id_request    = $request->id_request;
+                $store_notes->nik           = Auth::User()->nik;
+                $store_notes->notes         = $request->notes;
                 $store_notes->save();
             }
 
@@ -1304,13 +1340,75 @@ class AssetHRController extends Controller
 
         $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason,'notes'=>$request->notes]);
 
-        $to = User::select('email')->where('nik',$update->nik)->get();
-        $users = User::select('name')->where('nik',$update->nik)->first();
 
-        // $status_email = 'pending';
-        // return view('MailAcceptRequestAsset',compact($status_email,$users,$req_asset,$emailSubject));
+        if ($update->status == "ON PROGRESS") {
+            $to = User::join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('users.name','email', 'roles.group')
+                        ->where('roles.name', 'Asset Management')
+                        ->where('users.status_karyawan','<>','dummy')
+                        ->first(); 
 
-        Mail::to($to)->send(new RequestAssetHr($status_email,$users,$req_asset,$emailSubject));  
+            $cc = User::join('role_user','role_user.user_id','=','users.nik')
+                    ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('email')
+                    ->where('nik',$update->nik)
+                    ->orwhere('roles.name','Center Point & Asset Management SVC Manager')->get();
+
+            $users = User::join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->where('users.status_karyawan','<>','dummy')
+                        ->select('users.name', 'roles.group')->where('roles.name', 'Asset Management')->first(); 
+
+            Mail::to($to->email)->cc($cc)->send(new RequestAssetHr($status_email,$users,$req_asset,$emailSubject));  
+        }else{
+            $to = User::select('email')->where('nik',$update->nik)
+                ->first();
+
+            $cek_role = DB::table('users')
+                    ->join('role_user','role_user.user_id','users.nik')
+                    ->join('roles','roles.id','role_user.role_id')
+                    ->select('users.name','roles.name as name_role','group','mini_group')
+                    ->where('user_id',$update->nik)->first();
+
+            if (stripos($cek_role->name_role, 'Manager') !== false) {
+                $cc = User::join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('email')
+                        ->where('users.status_karyawan','<>','dummy')
+                        ->where('roles.name','like','VP%')
+                        ->where('roles.group', 'like','%'. $cek_role->group .'%')
+                        ->orwhere('roles.name','Center Point & Asset Management SVC Manager')
+                        ->get(); 
+
+            }else if (stripos($cek_role->name_role, 'VP') !== false) {
+                $cc = User::join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('email')
+                        ->where('users.status_karyawan','<>','dummy')
+                        ->where('roles.name','Operations Director')
+                        ->orwhere('roles.name','Center Point & Asset Management SVC Manager')
+                        ->get();
+
+            }else{
+                $cc = User::join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('email')
+                        ->where('users.status_karyawan','<>','dummy')
+                        ->where('roles.name','like',"VP%")
+                        ->where('roles.group', 'like','%'. $cek_role->group .'%')
+                        ->orwhere('roles.name','<>','Project Manager')
+                        ->where('roles.name','like','%Manager%')
+                        ->where('roles.mini_group', 'like','%'. $cek_role->mini_group .'%')
+                        ->orwhere('roles.name','Center Point & Asset Management SVC Manager')
+                        ->get(); 
+            }
+            
+            $users = User::select('name')->where('nik',$update->nik)->first();
+
+            Mail::to($to)->cc($cc)->send(new RequestAssetHr($status_email,$users,$req_asset,$emailSubject));  
+        }
+        
 
         // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
         //     ->where('nik_peminjam','<>',$request->nik_peminjam)

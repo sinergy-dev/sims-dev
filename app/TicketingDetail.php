@@ -27,7 +27,8 @@ class TicketingDetail extends Model
 		'engineer',
 		'ticket_number_3party',
 		'reporting_time',
-		'severity'
+		'severity',
+		'request_pending'
 	];
 
     // protected $appends = ['concatenate_problem_ticket','concatenate_type_ticket'];
@@ -48,7 +49,8 @@ class TicketingDetail extends Model
 
 	public function all_activity_ticket(){
 		return $this->hasMany('App\TicketingActivity','id_ticket','id_ticket')
-			->orderBy('id','DESC');
+			->orderBy('id','DESC')
+			->with(['pending_remind:id,id_pending,remind_time']);
 	}
 
 	public function resolve(){

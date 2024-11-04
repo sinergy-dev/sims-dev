@@ -1063,6 +1063,7 @@ SBE Detail
         Pace.track(function() {
             $.ajax({
                 type:"GET",
+                cache: false, 
                 url:"{{url('/sbe/getDetailConfig')}}",
                 data:{
                     id_config_sbe:value
@@ -1673,6 +1674,7 @@ SBE Detail
         var append = ""
         $.ajax({
             type:"GET",
+            cache:false,
             url:"{{url('/sbe/getDetailConfig')}}",
             data:{
                 id_config_sbe:value
@@ -1708,7 +1710,7 @@ SBE Detail
                 append = append + '<div class="row">'
                 append = append + ' <div class="col-md-12 col-xs-12">'
                 append = append + ' <label>Config*</label>'                  
-                    var i = 0, j = 0, z = 0, tempInc = 0, tempInc2 = 0
+                    var i = 0, j = 0, z = 0, tempInc = 0, tempInc2 = 0, resultAlias = "", arrDetailItems = []
                     // var priceGrandTotalUpdate = 0
                     append = append + '<div class="table-responsive">'
                     $.each(result.detail_config, function(key, results){
@@ -1716,7 +1718,7 @@ SBE Detail
                         append = append + ' <table class="table" name="tableUpdateConfig" id="tableItemsUpdateConfig_'+ i +'">'
                         append = append + '    <thead>'
                         append = append + '        <tr>'
-                        append = append + '            <th width=20%'
+                        append = append + '            <th width=20%>'
                         append = append + '                Items'
                         append = append + '            </th>'
                         append = append + '            <th width=25%>'
@@ -1742,8 +1744,8 @@ SBE Detail
                         append = append + '<tbody id="tbodyItems">'
 
                         Object.keys(results).forEach(function(keys) {
+                            arrDetailItems.push(result.detail_config[key][keys])
                             var resultsDetail = results[keys];
-
                             j++
                             append = append + ' <tr>'
                             append = append + '     <td>'
@@ -1770,17 +1772,30 @@ SBE Detail
                             append = append + ' </tr>'
                         })
 
+                        append = append + '        </tbody>'
+                        append = append + '        <tfoot>'
+                        append = append + '          <tr>'
+                        append = append + '           <td colspan="4"></td>'
+                        append = append + '           <th>Total Cost</th>'
+                        append = append + '           <td><input type="text" class="form-control" name="inputGrandTotal" id="inputGrandTotal" readonly style="width:300px"></td>'
+                        append = append + '          </tr>'
+                        append = append + '        </tfoot>'
+                        append = append + ' </table>'
+                    })
+                    append = append + '</div>'
+                    
+                    $.each(result.detail_config,function(key,results) {
                         $.ajax({
                             url:"{{url('/sbe/getDropdownDetailItem')}}",
                             type:"GET",
-                            success:function(result){     
-                                Object.keys(results).forEach(function(keys) {
-                                    var resultsDetail = results[keys];
-                                    z++ 
-                                    $("#tableItemsUpdateConfig_"+i).each(function(item,results){
+                            success:function(resultDetailItem){  
+                                $.each(arrDetailItems,function(key,itemDetails) {
+                                    z++
+                                    
+                                    $("#tableItemsUpdateConfig_"+i).each(function(item,data){
                                         $(".detailItemsUpdate_"+z).select2({
                                             placeholder:"Select Detail Items",
-                                            data:result.data
+                                            data:resultDetailItem.data
                                         }).on('select2:select', function (e) {
                                         var data = e.params.data;
                                         
@@ -1805,24 +1820,12 @@ SBE Detail
                                                 
                                         })
 
-                                        $(".detailItemsUpdate_"+z).val(resultsDetail.detail_item).trigger("change")
+                                        $(".detailItemsUpdate_"+z).val(itemDetails.detail_item).trigger("change")
                                     })
                                 })                                                          
                             }
                         })
-
-                        append = append + '        </tbody>'
-                        append = append + '        <tfoot>'
-                        append = append + '          <tr>'
-                        append = append + '           <td colspan="4"></td>'
-                        append = append + '           <th>Total Cost</th>'
-                        append = append + '           <td><input type="text" class="form-control" name="inputGrandTotal" id="inputGrandTotal" readonly style="width:300px"></td>'
-                        append = append + '          </tr>'
-                        append = append + '        </tfoot>'
-                        append = append + ' </table>'
                     })
-                    append = append + '</div>'
-
                     // append = append + '                    <hr>'
 
                 append = append + '  <div style="text-align:center">'

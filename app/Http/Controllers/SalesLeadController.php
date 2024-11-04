@@ -2393,7 +2393,7 @@ class SalesLeadController extends Controller
                 $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
        
                 Mail::to('hellosinergy@gmail.com')->send(new MailResult($users,$pid_info));
-                Mail::to($users->email)->send(new MailResult($users,$pid_info));
+                Mail::to($users->email)->cc('ganjar@sinergy.co.id')->send(new MailResult($users,$pid_info));
 
                 //Disabled push notification
                 /*$jsonInsert = array(

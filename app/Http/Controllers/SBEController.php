@@ -783,30 +783,30 @@ class SBEController extends Controller
         //     ->groupby('function')->get();
     }
 
-    public function getGenerateConfig(Request $request)
+    public function getGenerateConfig($id_sbe)
     {
-        $getFunction = SbeConfig::where('status','Choosed')->where('id_sbe',$request->id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config','detail_all_config_choosed'])->groupby('project_type');
+        $getFunction = SbeConfig::where('status','Choosed')->where('id_sbe',$id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config','detail_all_config_choosed'])->groupby('project_type');
 
-        $getPresales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->where('id',$request->id_sbe)->first();
+        $getPresales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->where('id',$id_sbe)->first();
 
-        $getAll = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_lead_register.nik')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select('tb_sbe.lead_id','users.name as owner','project_location','estimated_running','duration','opp_name','tb_sbe.nominal as grand_total','customer_legal_name')->where('id_sbe',$request->id_sbe)->first();
+        $getAll = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_lead_register.nik')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select('tb_sbe.lead_id','users.name as owner','project_location','estimated_running','duration','opp_name','tb_sbe.nominal as grand_total','customer_legal_name')->where('id_sbe',$id_sbe)->first();
 
         // $getNominal = SBE::where('id',$request->id_sbe)->first()->detail_config_nominal;
 
-        $getNominalConfig = DB::table('tb_sbe')->join('tb_sbe_config','tb_sbe_config.id_sbe','tb_sbe.id')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe.id',$request->id_sbe)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+        $getNominalConfig = DB::table('tb_sbe')->join('tb_sbe_config','tb_sbe_config.id_sbe','tb_sbe.id')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe.id',$id_sbe)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
 
         $getNominal = 0;
             foreach($getNominalConfig as $key_point => $valueSumPoint){
             $getNominal += $valueSumPoint->total_nominal;
         }
 
-        $getIdConfigSbe = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('id_sbe','id_config_sbe')->where('tb_sbe_config.status','Choosed')->where('id_sbe',$request->id_sbe)->get();
+        $getIdConfigSbe = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('id_sbe','id_config_sbe')->where('tb_sbe_config.status','Choosed')->where('id_sbe',$id_sbe)->get();
 
-        $getConfig = SbeConfig::where('status','Choosed')->where('id_sbe',$request->id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config'])->groupby('project_type');
+        $getConfig = SbeConfig::where('status','Choosed')->where('id_sbe',$id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config'])->groupby('project_type');
 
 
 
-        $user = SbeActivity::where('id_sbe',$request->id_sbe)->first()->operator;
+        $user = SbeActivity::where('id_sbe',$id_sbe)->first()->operator;
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group','user_id')->where('user_id', $user)->first();
@@ -839,7 +839,8 @@ class SBEController extends Controller
         $pdf = PDF::loadView('solution.PDF.sbePdf', compact('getAll','getFunction','getConfig','getSign','getNominal'));
         $fileName = 'SBE ' . $getAll->lead_id . '.pdf';
 
-        return $pdf->stream($fileName);
+        // return $pdf->stream($fileName);
+        return $pdf->output();
     }
 
     public function uploadPdfConfigManual(Request $request)
@@ -871,7 +872,8 @@ class SBEController extends Controller
         $fileName =  'SBE_' . $data->lead_id . '.pdf';
 
         if(isset($fileName)){
-            $pdf_url = urldecode(url("/sbe/getGenerateConfig?id_sbe=" . $request->id_sbe));
+            // $pdf_url = urldecode(url("/sbe/getGenerateConfig?id_sbe=" . $request->id_sbe));
+            $pdf_url = $this->getGenerateConfig($request->id_sbe);
             $pdf_name = $fileName;
         } else {
             $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
@@ -885,7 +887,8 @@ class SBEController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+                // 'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+                'data' => $pdf_url,
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
@@ -901,9 +904,16 @@ class SBEController extends Controller
 
         $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
 
-        $updateLink = SbeDocument::where('id_sbe',$request->id_sbe)->first();
-        $updateLink->link_drive = $link;
-        $updateLink->save();
+        $tambah = new SbeDocument();
+        $tambah->document_location         = "SOL/" . $pdf_name;
+        $tambah->document_name = 'SBE ' . $data->lead_id;
+        $tambah->link_drive = $link;
+        $tambah->id_sbe = $request->id_sbe;
+        $tambah->save();
+
+        $updateStatus = Sbe::where('id',$request->id_sbe)->first();
+        $updateStatus->status = 'Fixed';
+        $updateStatus->save();
     }
 
     public function uploadPdfConfig(Request $request)
@@ -935,7 +945,8 @@ class SBEController extends Controller
         $fileName =  'SBE_' . $data->lead_id . '.pdf';
 
         if(isset($fileName)){
-            $pdf_url = urldecode(url("/sbe/getGenerateConfig?id_sbe=" . $request->id_sbe));
+            // $pdf_url = urldecode(url("/sbe/getGenerateConfig?id_sbe=" . $request->id_sbe));
+            $pdf_url = $this->getGenerateConfig($request->id_sbe);
             $pdf_name = $fileName;
         } else {
             $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
@@ -949,7 +960,8 @@ class SBEController extends Controller
         $result = $service->files->create(
             $file, 
             array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+                // 'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+                'data' => $pdf_url,
                 'mimeType' => 'application/octet-stream',
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true

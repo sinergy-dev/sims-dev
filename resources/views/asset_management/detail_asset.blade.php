@@ -421,11 +421,12 @@
               <div class="form-group">
                 <label>Installed Date</label>
                 <div class="input-group">
-                  <input class="form-control" id="inputInstalledDate" name="inputInstalledDate">
+                  <input class="form-control" id="inputInstalledDate" name="inputInstalledDate" onchange="clearValidationOnChange(this)">
                   <div class="input-group-addon">
                     <i class="fa fa-calendar"></i>
                   </div>
                 </div>
+                <span class="text-red" style="display:none;">Please fill New Installed Date!</span>
               </div>
 
               <div class="form-group">
@@ -1026,6 +1027,9 @@
                   },
               },
               placeholder: 'Select PIC'
+            }).on('select2:select', function(e) {
+              $("#inputInstalledDate").val("")
+              $("#inputInstalledDate").closest(".input-group").next("span").show()
             })
 
             var pic = $("#inputPIC");
@@ -1173,7 +1177,7 @@
          
             // Allowing file type
             var allowedExtensions =
-            /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
+            /(\.pdf)$/i;
 
             var ErrorText = []
             // 
@@ -1189,13 +1193,13 @@
 
             var ext = filePath.name.split(".");
             ext = ext[ext.length-1].toLowerCase();      
-            var arrayExtensions = ["jpg" , "jpeg", "png", "pdf"];
+            var arrayExtensions = ["pdf"];
 
             if (arrayExtensions.lastIndexOf(ext) == -1) {
               Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'Invalid file type, just allow png/jpg/pdf file',
+                text: 'Invalid file type, just allow pdf file',
               }).then((result) => {
                 this.value = ''
               })
@@ -1298,7 +1302,14 @@
           })
 
           $("#updateAssetDetail").click(function(){
-            $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
+            if ($("#inputInstalledDate").closest(".input-group").next("span").is(":visible") == false) {
+              $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
+            }else{
+              Swal.fire({
+                icon:'warning',
+                text:'Please fill New Installed Date!'
+              })
+            }
           })
 
           $(".select-primary-engineer").select2({
@@ -1807,78 +1818,215 @@
         nilaiBuku = $("input[name='inputNilaiBukuPeripheral']").val()
 
         url = "{{url('asset/updateAsset')}}"
-      }else{
-        rma = $("input[name='inputRMA']").val()
-        notes = $("textarea[name='txtAreaNotes']").val()
-        assetOwner = $("select[name='selectAssetOwner']").val()
-        vendor = $("select[name='selectVendor']").val()
-        typeDevice = $("select[name='selectTypeDevice']").val()
-        serialNumber = $("input[name='inputSerialNumber']").val()
-        spesifikasi = $("input[name='inputSpesifikasi']").val()
-        status = $("select[name='selectStatus']").val()
-        tanggalBeli = $("input[name='inputTglBeli']").val()
-        hargaBeli = $("input[name='inputHarga']").val()
-        nilaiBuku = $("input[name='inputNilaiBuku']").val()
-        inputPr = $("input[name='inputPr']").val()
-
-        if ($("textarea[name='txtAreaReason']").is(":visible") == true) {
-          reason = $("textarea[name='txtAreaReason']").val()
         }else{
-          reason = ''
-        }
+          rma = $("input[name='inputRMA']").val()
+          notes = $("textarea[name='txtAreaNotes']").val()
+          assetOwner = $("select[name='selectAssetOwner']").val()
+          vendor = $("select[name='selectVendor']").val()
+          typeDevice = $("select[name='selectTypeDevice']").val()
+          serialNumber = $("input[name='inputSerialNumber']").val()
+          spesifikasi = $("input[name='inputSpesifikasi']").val()
+          status = $("select[name='selectStatus']").val()
+          tanggalBeli = $("input[name='inputTglBeli']").val()
+          hargaBeli = $("input[name='inputHarga']").val()
+          nilaiBuku = $("input[name='inputNilaiBuku']").val()
+          inputPr = $("input[name='inputPr']").val()
 
-        var data = '', url = '', alert = '', alertSuccess = ''
-
-        if ($("#txtAreaReason").is(":visible") == true) {
-          if ($("#txtAreaReason").val() == "") {
-            $("#txtAreaReason").closest(".form-group").addClass("has-error")
-            $("#txtAreaReason").next(".help-block").show()
+          if ($("textarea[name='txtAreaReason']").is(":visible") == true) {
+            reason = $("textarea[name='txtAreaReason']").val()
           }else{
-            $("#txtAreaReason").closest(".form-group").removeClass("has-error")
-            $("#txtAreaReason").next(".help-block").hide()
+            reason = ''
+          }
 
-            url = "{{url('asset/updateAsset')}}"
+          var data = '', url = '', alert = '', alertSuccess = ''
 
-            var formData = new FormData
-            var arrEng = []
+          if ($("#txtAreaReason").is(":visible") == true) {
+            if ($("#txtAreaReason").val() == "") {
+              $("#txtAreaReason").closest(".form-group").addClass("has-error")
+              $("#txtAreaReason").next(".help-block").show()
+            }else{
+              $("#txtAreaReason").closest(".form-group").removeClass("has-error")
+              $("#txtAreaReason").next(".help-block").hide()
 
-            arrEng.push({"name":$(".select-primary-engineer").val(),"roles":"Primary"})
+              url = "{{url('asset/updateAsset')}}"
 
-            $(".select-secondary-engineer").val().map(function(elem,idx) {
-              arrEng.push({"name":elem,"roles":"Secondary"})
-            })
+              var formData = new FormData
+              var arrEng = []
 
-            formData.append('_token',"{{csrf_token()}}")
-            formData.append('id_asset',id_asset)
-            formData.append('status',status)
-            formData.append('vendor',vendor)
-            formData.append('typeDevice',typeDevice)
-            formData.append('serialNumber',serialNumber)
-            formData.append('spesifikasi',spesifikasi)
-            formData.append('rma',rma)
-            formData.append('notes',notes)
-            formData.append('engineer',JSON.stringify(arrEng))
-            formData.append('assetOwner',assetOwner)
-            formData.append('tanggalBeli',tanggalBeli)
-            formData.append('hargaBeli',hargaBeli)
-            formData.append('nilaiBuku',nilaiBuku)
-            formData.append('reason',reason)
-            formData.append('inputPr',inputPr)
-            alert = {
-              title: 'Are you sure?',
-              text: "Update Asset",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes',
-              cancelButtonText: 'No',
+              arrEng.push({"name":$(".select-primary-engineer").val(),"roles":"Primary"})
+
+              $(".select-secondary-engineer").val().map(function(elem,idx) {
+                arrEng.push({"name":elem,"roles":"Secondary"})
+              })
+
+              formData.append('_token',"{{csrf_token()}}")
+              formData.append('id_asset',id_asset)
+              formData.append('status',status)
+              formData.append('vendor',vendor)
+              formData.append('typeDevice',typeDevice)
+              formData.append('serialNumber',serialNumber)
+              formData.append('spesifikasi',spesifikasi)
+              formData.append('rma',rma)
+              formData.append('notes',notes)
+              formData.append('engineer',JSON.stringify(arrEng))
+              formData.append('assetOwner',assetOwner)
+              formData.append('tanggalBeli',tanggalBeli)
+              formData.append('hargaBeli',hargaBeli)
+              formData.append('nilaiBuku',nilaiBuku)
+              formData.append('reason',reason)
+              formData.append('inputPr',inputPr)
+              alert = {
+                title: 'Are you sure?',
+                text: "Update Asset",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+              }
+
+              alertSuccess = {
+                title: 'Update Asset Successsfully!',
+                icon: 'success',  
+                confirmButtonText: 'Reload',
+              }
+
+              Swal.fire(alert).then((result) => {
+                if (result.value) {
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                  $.ajax({
+                    type:"POST",
+                    url:url,
+                    data:formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result){
+                      Swal.fire(alertSuccess).then((result) => {
+                        InitiateDetailPage()
+                        InitiateHistoryPid()
+                        InitiateChangeLog()
+                      })
+                    }
+                  })
+                }
+              })
             }
+          }else{
+            var formData = new FormData
 
-            alertSuccess = {
-              title: 'Update Asset Successsfully!',
-              icon: 'success',  
-              confirmButtonText: 'Reload',
+            if (type == 'asset') {
+              url = "{{url('asset/updateAsset')}}"
+
+              var arrEng = []
+
+              arrEng.push({"name":$(".select-primary-engineer").val(),"roles":"Primary"})
+
+              $(".select-secondary-engineer").val().map(function(elem,idx) {
+                arrEng.push({"name":elem,"roles":"Secondary"})
+              })
+
+              formData.append('_token',"{{csrf_token()}}")
+              formData.append('id_asset',id_asset)
+              formData.append('status',status)
+              formData.append('vendor',vendor)
+              formData.append('typeDevice',typeDevice)
+              formData.append('serialNumber',serialNumber)
+              formData.append('spesifikasi',spesifikasi)
+              formData.append('rma',rma)
+              formData.append('notes',notes)
+              formData.append('engineer',JSON.stringify(arrEng))
+              formData.append('assetOwner',assetOwner)
+              formData.append('tanggalBeli',tanggalBeli)
+              formData.append('hargaBeli',hargaBeli)
+              formData.append('nilaiBuku',nilaiBuku)
+              formData.append('reason',reason)
+              formData.append('inputPr',inputPr)
+
+              alert = {
+                title: 'Are you sure?',
+                text: "Update Asset",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+              }
+
+              alertSuccess = {
+                title: 'Update Asset Successsfully!',
+                icon: 'success',  
+                confirmButtonText: 'Reload',
+              }
+            }else if (type == 'detail') {
+              url = "{{url('asset/updateDetailAsset')}}"
+
+              formData.append('_token',"{{csrf_token()}}")
+              formData.append('id_asset',id_asset)
+              formData.append('idDeviceCustomer',$("#inputIdDeviceCustomer").val())
+              formData.append('client',$("#inputClient").val())
+              formData.append('pid',$("#selectPID").val() == null?'':$("#selectPID").val())
+              formData.append('kota',$("#selectCity").val() == null?'':$("#selectCity").val())
+              formData.append('alamatLokasi',$("#txtAreaAddress").val())
+              formData.append('detailLokasi',$("#txtAreaLocation").val())
+              formData.append('latitude',$("#lat").val())
+              formData.append('longitude',$("#lng").val())
+              formData.append('ipAddress',$("#inputIPAddress").val())
+              formData.append('ipServer',$("#inputServer").val())
+              formData.append('port',$("#inputPort").val())
+              formData.append('statusCust',$("#selectStatusCustomer").val() == null?'':$("#selectStatusCustomer").val())
+              formData.append('secondLevelSupport',$("#selectLevelSupport").val())
+              formData.append('operatingSystem',$("#inputOS").val())
+              formData.append('versionOs',$("#inputVersion").val())
+              formData.append('installedDate',$("#inputInstalledDate").val())
+              formData.append('license',$("#inputLicense").val())
+              formData.append('licenseStartDate',$("#inputLicenseStart").val())
+              formData.append('licenseEndDate',$("#inputLicenseEnd").val())
+              formData.append('maintenanceStart',$("#inputMaintenanceStart").val())
+              formData.append('maintenanceEnd',$("#inputMaintenanceEnd").val())
+              formData.append('servicePoint',$("#service_point").val())
+              formData.append('inputPic',$("#inputPIC").val())
+              formData.append('accessoris',$("#inputAccessoris").val())
+
+              if ($('#inputBuktiAsset').is(":visible")) {
+                formData.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
+              }else{
+                formData.append('inputDoc',$('#inputBuktiAssetInternal').prop('files')[0])
+              }
+
+              if ($('#inputBeritaAcara').is(":visible")) {
+                formData.append('inputDocBA',$('#inputBeritaAcara').prop('files')[0])
+              }
+
+              alert = {
+                title: 'Are you sure?',
+                text: "Update Detail Asset",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+              }
+
+              alertSuccess = {
+                title: 'Update Detail Asset Successsfully!',
+                icon: 'success',  
+                confirmButtonText: 'Reload',
+              }
             }
 
             Swal.fire(alert).then((result) => {
@@ -1912,282 +2060,152 @@
                 })
               }
             })
-          }
+          }        
+        }
+      }
+
+      var map, marker, autocomplete;
+      var lat = '',lang = ''
+      function initMap(lat='',lang='',inputLat=false,inputLang=false){
+        if (lat == '') {
+          lat = -6.2297419
+          inputLat = false
         }else{
-          var formData = new FormData
+          lat = lat
+          inputLat = true
+        }
 
-          if (type == 'asset') {
-            url = "{{url('asset/updateAsset')}}"
+        if (lang == '') {
+          lang = 106.759478
+          inputLang = false
+        }else{
+          lang = lang
+          inputLang = true
+        }
 
-            var arrEng = []
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: lat, lng: lang},
+          zoom: 10,
+          // zoomControl: false,
+          mapTypeControl: false,
+          scaleControl: false,
+          streetViewControl: false,
+          rotateControl: false,
+          fullscreenControl: false
+        });
 
-            arrEng.push({"name":$(".select-primary-engineer").val(),"roles":"Primary"})
+        map.addListener('click', function(result) {
+          marker.setVisible(false);
+          marker.setPosition(result.latLng);
+          marker.setVisible(true);
+          $("#lat").val(result.latLng.lat());
+          $("#lng").val(result.latLng.lng());
+        });
 
-            $(".select-secondary-engineer").val().map(function(elem,idx) {
-              arrEng.push({"name":elem,"roles":"Secondary"})
-            })
+        marker = new google.maps.Marker({
+          map: map,
+          anchorPoint: new google.maps.Point(0, -29),
+          draggable: true,
+          animation: google.maps.Animation.BOUNCE
+        });
 
-            formData.append('_token',"{{csrf_token()}}")
-            formData.append('id_asset',id_asset)
-            formData.append('status',status)
-            formData.append('vendor',vendor)
-            formData.append('typeDevice',typeDevice)
-            formData.append('serialNumber',serialNumber)
-            formData.append('spesifikasi',spesifikasi)
-            formData.append('rma',rma)
-            formData.append('notes',notes)
-            formData.append('engineer',JSON.stringify(arrEng))
-            formData.append('assetOwner',assetOwner)
-            formData.append('tanggalBeli',tanggalBeli)
-            formData.append('hargaBeli',hargaBeli)
-            formData.append('nilaiBuku',nilaiBuku)
-            formData.append('reason',reason)
-            formData.append('inputPr',inputPr)
+        if (inputLat == true && inputLang == true) {
+          $.ajax({
+            type:"GET",
+            url:"https://maps.googleapis.com/maps/api/geocode/json?latlng="+ lat +","+ lang +"&key={{env('GOOGLE_API_KEY_GLOBAL')}}",
+            success: function(resultGoogle){
 
-            alert = {
-              title: 'Are you sure?',
-              text: "Update Asset",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes',
-              cancelButtonText: 'No',
-            }
-
-            alertSuccess = {
-              title: 'Update Asset Successsfully!',
-              icon: 'success',  
-              confirmButtonText: 'Reload',
-            }
-          }else if (type == 'detail') {
-            url = "{{url('asset/updateDetailAsset')}}"
-
-            formData.append('_token',"{{csrf_token()}}")
-            formData.append('id_asset',id_asset)
-            formData.append('idDeviceCustomer',$("#inputIdDeviceCustomer").val())
-            formData.append('client',$("#inputClient").val())
-            formData.append('pid',$("#selectPID").val() == null?'':$("#selectPID").val())
-            formData.append('kota',$("#selectCity").val() == null?'':$("#selectCity").val())
-            formData.append('alamatLokasi',$("#txtAreaAddress").val())
-            formData.append('detailLokasi',$("#txtAreaLocation").val())
-            formData.append('latitude',$("#lat").val())
-            formData.append('longitude',$("#lng").val())
-            formData.append('ipAddress',$("#inputIPAddress").val())
-            formData.append('ipServer',$("#inputServer").val())
-            formData.append('port',$("#inputPort").val())
-            formData.append('statusCust',$("#selectStatusCustomer").val() == null?'':$("#selectStatusCustomer").val())
-            formData.append('secondLevelSupport',$("#selectLevelSupport").val())
-            formData.append('operatingSystem',$("#inputOS").val())
-            formData.append('versionOs',$("#inputVersion").val())
-            formData.append('installedDate',$("#inputInstalledDate").val())
-            formData.append('license',$("#inputLicense").val())
-            formData.append('licenseStartDate',$("#inputLicenseStart").val())
-            formData.append('licenseEndDate',$("#inputLicenseEnd").val())
-            formData.append('maintenanceStart',$("#inputMaintenanceStart").val())
-            formData.append('maintenanceEnd',$("#inputMaintenanceEnd").val())
-            formData.append('servicePoint',$("#service_point").val())
-            formData.append('inputPic',$("#inputPIC").val())
-            formData.append('accessoris',$("#inputAccessoris").val())
-
-            if ($('#inputBuktiAsset').is(":visible")) {
-              formData.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
-            }else{
-              formData.append('inputDoc',$('#inputBuktiAssetInternal').prop('files')[0])
-            }
-
-            if ($('#inputBeritaAcara').is(":visible")) {
-              formData.append('inputDocBA',$('#inputBeritaAcara').prop('files')[0])
-            }
-
-            alert = {
-              title: 'Are you sure?',
-              text: "Update Detail Asset",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes',
-              cancelButtonText: 'No',
-            }
-
-            alertSuccess = {
-              title: 'Update Detail Asset Successsfully!',
-              icon: 'success',  
-              confirmButtonText: 'Reload',
-            }
-          }
-
-          Swal.fire(alert).then((result) => {
-            if (result.value) {
-              Swal.fire({
-                  title: 'Please Wait..!',
-                  text: "It's sending..",
-                  allowOutsideClick: false,
-                  allowEscapeKey: false,
-                  allowEnterKey: false,
-                  customClass: {
-                      popup: 'border-radius-0',
-                  },
-                  didOpen: () => {
-                      Swal.showLoading()
-                  }
-              })
-              $.ajax({
-                type:"POST",
-                url:url,
-                data:formData,
-                processData: false,
-                contentType: false,
-                success: function(result){
-                  Swal.fire(alertSuccess).then((result) => {
-                    InitiateDetailPage()
-                    InitiateHistoryPid()
-                    InitiateChangeLog()
-                  })
-                }
-              })
+              $("#txtAreaLocation").val(resultGoogle.results[0].formatted_address)
+              map.setCenter({lat: lat, lng: lang});
+              marker.setPosition({lat:lat , lng: lang});
+              marker.setVisible(true);
+              map.setZoom(17);
             }
           })
-        }        
-      }
-    }
+        }
 
-    var map, marker, autocomplete;
-    var lat = '',lang = ''
-    function initMap(lat='',lang='',inputLat=false,inputLang=false){
-      if (lat == '') {
-        lat = -6.2297419
-        inputLat = false
-      }else{
-        lat = lat
-        inputLat = true
-      }
+        autocomplete = new google.maps.places.Autocomplete((document.getElementById('txtAreaLocation')));
 
-      if (lang == '') {
-        lang = 106.759478
-        inputLang = false
-      }else{
-        lang = lang
-        inputLang = true
-      }
+        autocomplete.addListener('place_changed', function() {
+          google.maps.event.trigger(map, 'resize');
+          marker.setVisible(false);
+          var place = autocomplete.getPlace();
 
-      map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: lat, lng: lang},
-        zoom: 10,
-        // zoomControl: false,
-        mapTypeControl: false,
-        scaleControl: false,
-        streetViewControl: false,
-        rotateControl: false,
-        fullscreenControl: false
-      });
+          if (!place.geometry) {
+            window.alert("No details available for input: " + place.name);
+            return;
+          }
 
-      map.addListener('click', function(result) {
-        marker.setVisible(false);
-        marker.setPosition(result.latLng);
-        marker.setVisible(true);
-        $("#lat").val(result.latLng.lat());
-        $("#lng").val(result.latLng.lng());
-      });
-
-      marker = new google.maps.Marker({
-        map: map,
-        anchorPoint: new google.maps.Point(0, -29),
-        draggable: true,
-        animation: google.maps.Animation.BOUNCE
-      });
-
-      if (inputLat == true && inputLang == true) {
-        $.ajax({
-          type:"GET",
-          url:"https://maps.googleapis.com/maps/api/geocode/json?latlng="+ lat +","+ lang +"&key={{env('GOOGLE_API_KEY_GLOBAL')}}",
-          success: function(resultGoogle){
-
-            $("#txtAreaLocation").val(resultGoogle.results[0].formatted_address)
-            map.setCenter({lat: lat, lng: lang});
-            marker.setPosition({lat:lat , lng: lang});
-            marker.setVisible(true);
+          if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+          } else {
+            map.setCenter(place.geometry.location);
             map.setZoom(17);
           }
-        })
-      }
-
-      autocomplete = new google.maps.places.Autocomplete((document.getElementById('txtAreaLocation')));
-
-      autocomplete.addListener('place_changed', function() {
-        google.maps.event.trigger(map, 'resize');
-        marker.setVisible(false);
-        var place = autocomplete.getPlace();
-
-        if (!place.geometry) {
-          window.alert("No details available for input: " + place.name);
-          return;
-        }
-
-        if (place.geometry.viewport) {
-          map.fitBounds(place.geometry.viewport);
-        } else {
-          map.setCenter(place.geometry.location);
-          map.setZoom(17);
-        }
-        marker.setPosition(place.geometry.location);
-        marker.setVisible(true);
-        $("#lat").val(place.geometry.location.lat());
-        $("#lng").val(place.geometry.location.lng());
-      });
-
-      google.maps.event.addListener(marker, 'dragend', function (evt) {
-        $("#lat").val(evt.latLng.lat());
-        $("#lng").val(evt.latLng.lng());
-      });      
-    }
-
-    $("#lat").keyup(function(){
-      if ($("#lng").val() == '') {
-        initMap(parseFloat($("#lat").val()),'')
-      }else{
-        initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
-      }
-    })
-
-    $("#lng").keyup(function(){
-      if ($("#lat").val() == '') {
-        initMap('',parseFloat($("#lng").val()))
-      }else{
-        initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
-      }
-    })
-
-    function setLatLngLoc(location){
-      if (location != '' && location != null) {
-        const geocoder = new google.maps.Geocoder();
-        // Make Geocoding request
-        geocoder.geocode({ address: location }, function(results, status) {
-          if (status === 'OK') {
-            const location = results[0].geometry.location;
-            const latitude = location.lat();
-            const longitude = location.lng();
-
-            $("#lat").val(latitude)
-            $("#lng").val(longitude)
-
-            $.ajax({
-              type:"GET",
-              url:"https://maps.googleapis.com/maps/api/geocode/json?latlng="+ parseFloat($("#lat").val()) +","+ parseFloat($("#lng").val()) +"&key={{env('GOOGLE_API_KEY_GLOBAL')}}",
-              success: function(resultGoogle){
-                map.setCenter({lat: parseFloat($("#lat").val()), lng: parseFloat($("#lng").val())});
-                marker.setPosition({lat:parseFloat($("#lat").val()) , lng: parseFloat($("#lng").val())});
-                marker.setVisible(true);
-                map.setZoom(17);
-              }
-            })
-            // initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
-          } else {
-            console.error("Geocode was not successful for the following reason:", status);
-          }
+          marker.setPosition(place.geometry.location);
+          marker.setVisible(true);
+          $("#lat").val(place.geometry.location.lat());
+          $("#lng").val(place.geometry.location.lng());
         });
+
+        google.maps.event.addListener(marker, 'dragend', function (evt) {
+          $("#lat").val(evt.latLng.lat());
+          $("#lng").val(evt.latLng.lng());
+        });      
       }
-    }
+
+      $("#lat").keyup(function(){
+        if ($("#lng").val() == '') {
+          initMap(parseFloat($("#lat").val()),'')
+        }else{
+          initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+        }
+      })
+
+      $("#lng").keyup(function(){
+        if ($("#lat").val() == '') {
+          initMap('',parseFloat($("#lng").val()))
+        }else{
+          initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+        }
+      })
+
+      function setLatLngLoc(location){
+        if (location != '' && location != null) {
+          const geocoder = new google.maps.Geocoder();
+          // Make Geocoding request
+          geocoder.geocode({ address: location }, function(results, status) {
+            if (status === 'OK') {
+              const location = results[0].geometry.location;
+              const latitude = location.lat();
+              const longitude = location.lng();
+
+              $("#lat").val(latitude)
+              $("#lng").val(longitude)
+
+              $.ajax({
+                type:"GET",
+                url:"https://maps.googleapis.com/maps/api/geocode/json?latlng="+ parseFloat($("#lat").val()) +","+ parseFloat($("#lng").val()) +"&key={{env('GOOGLE_API_KEY_GLOBAL')}}",
+                success: function(resultGoogle){
+                  map.setCenter({lat: parseFloat($("#lat").val()), lng: parseFloat($("#lng").val())});
+                  marker.setPosition({lat:parseFloat($("#lat").val()) , lng: parseFloat($("#lng").val())});
+                  marker.setVisible(true);
+                  map.setZoom(17);
+                }
+              })
+              // initMap(parseFloat($("#lat").val()),parseFloat($("#lng").val()))
+            } else {
+              console.error("Geocode was not successful for the following reason:", status);
+            }
+          });
+        }
+      }
+
+      function clearValidationOnChange(data) {
+        console.log($(data).val())
+        if ($(data).val() !== "") {
+          $(data).closest(".input-group").next("span").hide();
+        }
+      }
   </script>
 @endsection
