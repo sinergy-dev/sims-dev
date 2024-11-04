@@ -2446,20 +2446,20 @@
     })
 
     function clearValidationOnChange() {
-    $("input").on("input", function() {
-        if ($(this).val() !== "") {
-            $(this).closest(".form-group").find(".help-block").hide();
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-    });
+      $("input").on("input", function() {
+          if ($(this).val() !== "") {
+              $(this).closest(".form-group").find(".help-block").hide();
+              $(this).closest(".form-group").removeClass("has-error");
+          }
+      });
 
-    $("select").on("change", function() {
-        if ($(this).val() !== "") {
-            $(this).closest(".form-group").find(".help-block").hide();
-            $(this).closest(".form-group").removeClass("has-error");
-        }
-    });
-}
+      $("select").on("change", function() {
+          if ($(this).val() !== "") {
+              $(this).closest(".form-group").find(".help-block").hide();
+              $(this).closest(".form-group").removeClass("has-error");
+          }
+      });
+    }
 
     // $("#inputServer").inputmask("ip")
     // $("#inputIPAddress").inputmask("ip")

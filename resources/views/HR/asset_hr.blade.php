@@ -127,9 +127,9 @@ GA Asset
             <li class="nav-item" style="display: none;">
               <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="current" aria-selected="false">List Asset</a>
             </li>
-            <li class="nav-item">
+     <!--        <li class="nav-item">
               <a class="nav-link" id="kategori_list" style="display: none;" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false">Kategori</a>
-            </li>
+            </li> -->
             <li class="nav-item active">
               <a class="nav-link" id="request_list" data-toggle="tab" href="#request_asset" role="tab" aria-controls="asset" aria-selected="false">Request</a>
             </li>
@@ -150,7 +150,7 @@ GA Asset
               <a class="nav-link" id="history_asset" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
             </li>
             <div class="form-group btn-action-asset" style="float: right;">
-              <button class="btn btn-sm btn-success" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
+              <!-- <button class="btn btn-sm btn-success" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button> -->
            <!--    <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
               <button id="btnImport" onclick="importData()" class="btn btn-warning btn-sm" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button> -->
               <button class="btn btn-sm btn-success" style="width: 100px;margin-right: 5px;display: none;" id="btnRequest">Request Asset</button>
@@ -340,7 +340,7 @@ GA Asset
                           @if($datas->status == 'PENDING')
                             <button class="btn btn-warning btn-sm" onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Update</button>
                           @else
-                            @if(App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Operations Director')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Financial Director')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','President Director')->exists())
+                            @if(App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Financial Director')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','President Director')->exists())
                               N/A
                             @elseif($datas->name_requestor != Auth::User()->name)
                               @if($datas->status == "ON PROGRESS")
@@ -1289,7 +1289,7 @@ GA Asset
               <div class="img-push">
                 <div class="input-group">
                   <input type="text" class="form-control input-sm input-comment-accept-request" placeholder="Press enter to post comment">
-                  <span class="input-group-addon"><a href="#" class="btn-comment-accept-request"><i class="fa fa-paper-plane"></i></a></span>
+                  <span class="input-group-addon"><a href="#" class="btn-comment-accept-request" title="Send Notes"><i class="fa fa-paper-plane"></i></a></span>
                 </div>
               </div>
           </div>       	
@@ -2199,6 +2199,9 @@ GA Asset
           }
         })
 
+        console.log(status)
+        console.log(status_notes)
+
         $("#btnAcceptRequest").click(function(){
           if ($("#notes_accept").val() != "") {
             if ($("#resolve_notes").is(":checked")) {
@@ -2224,6 +2227,7 @@ GA Asset
             confirmButtonText: 'Yes',
             cancelButtonText: 'No',
           })
+
 
           swalAccept.then((result) => {
             if (result.value) {

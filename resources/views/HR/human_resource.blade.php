@@ -2909,13 +2909,14 @@ Human Resources
 				   localStorage.setItem('address_ktp_update', $("#address_ktp_update").val());
 				   if (!localStorage.getItem("addres_ktp_update") == true) {
 				   	localStorage.setItem('address_ktp_update', $("#address_ktp_update").val());
-				   	if (value.address != "") {
-	               		$("#addres_ktp_update").val(value.address);
+				   	if (value.alamat_ktp != "") {
+				   		console.log(value.alamat_ktp)
+	               		$("#address_ktp_update").val(value.alamat_ktp);
 				   	}else{
-	               		$("#addres_ktp_update").val(localStorage.getItem("addres_ktp_update"));
+	               		$("#address_ktp_update").val(localStorage.getItem("address_ktp_update"));
 				   	}
 				   }else{
-				   	localStorage.setItem("addres_ktp_update", $("#addres_ktp_update").val())
+				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
 				   }
 
 				   // if (!localStorage.getItem("address_update") == true) {

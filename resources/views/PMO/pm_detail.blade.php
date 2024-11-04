@@ -1430,8 +1430,11 @@ PMO
                 "data": null,
                 render:function(data, type, row)
                 {	
-                	return '<button class="btn btn-sm btn-danger" onclick="deleteDoc('+ row.id_document +')"><i class="fa fa-trash-o"></i>&nbspDelete</button>'
-                    
+                	if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Officer')->exists()}}") {
+						return '<button class="btn btn-sm btn-danger disabled" ><i class="fa fa-trash-o"></i>&nbspDelete</button>'
+					} else {
+						return '<button class="btn btn-sm btn-danger" onclick="deleteDoc('+ row.id_document +')"><i class="fa fa-trash-o"></i>&nbspDelete</button>'
+					}
                 },
             },
         ],
@@ -1443,7 +1446,7 @@ PMO
 
     let firstPage = true
     function btnBack(){
-    	if (firstPage == true) {
+    	if (firstPage) {
     		$(".content-header").hide()
     		$(".content").hide()
     		window.location.href = "{{url('PMO/project')}}"
@@ -1754,6 +1757,22 @@ PMO
 				            				$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"create")')
 						            	}
 					                }
+
+					                // else {
+									// 	if (window.location.href.split("?")[1].split("&")[0].split("=")[1] == 'supply_only' ) {
+					                // 		$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",false)
+					                // 	}else{
+					                // 		$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
+					                // 	}
+
+					                // 	if (result.data.isIssueRiskClear == "false") {
+						            // 		$(".alertFinalProject").show()
+					            	// 		$("#btnFinalProject").attr("disabled")
+						            // 	}else{
+					            	// 		$("#btnFinalProject").removeAttr("disabled")
+				            		// 		$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"create")')
+						            // 	}
+									// }
 					            });
 
 
@@ -6765,8 +6784,8 @@ PMO
 	                  	}
 	              	})
 	            },
-              	success: function(result)
-          		{
+              	success: function(result){
+              		console.log(result)
             		Swal.fire(swalSuccess).then((result) => {
                   		if (result.value) {
                   			// window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
@@ -6775,6 +6794,15 @@ PMO
                     		Swal.close()                   
                   		}
             		})
+          		},
+          		error: function(xhr,status,error){
+          			// Log the error for debugging purposes
+			        console.log('Error Status:', status);
+			        console.log('XHR:', xhr);
+			        console.log('Error:', error);
+
+			        // Show an alert or error message to the user
+			        alert('An error occurred: ' + xhr.responseJSON.message);
           		}
             })
           }else{

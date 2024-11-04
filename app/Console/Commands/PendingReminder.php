@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\TicketingPendingReminder;
 use App\TicketingActivity;
+use Carbon\Carbon;
 
 class PendingReminder extends Command
 {
@@ -39,7 +40,8 @@ class PendingReminder extends Command
      */
     public function handle()
     {
-        $data = TicketingPendingReminder::whereRaw("DATE_FORMAT(`ticketing__pending_reminder`.`remind_time`, '%Y-%m-%d %H:%i') = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i')")
+        $currentDateTime = Carbon::now()->format('Y-m-d H:i');
+        $data = TicketingPendingReminder::whereRaw("DATE_FORMAT(remind_time, '%Y-%m-%d %H:%i') = ?", [$currentDateTime])
             ->where('remind_success','=','FALSE');
         syslog(LOG_INFO, "Test count pending remainder success " . $data->count());
         if($data->count() > 0){
@@ -58,7 +60,7 @@ class PendingReminder extends Command
     public function updateProgressTicket($id_ticket){
         $activityTicketUpdate = new TicketingActivity();
         $activityTicketUpdate->id_ticket = $id_ticket;
-        $activityTicketUpdate->date = date("Y-m-d H:i:s.000000");
+        $activityTicketUpdate->date = Carbon::now()->format('Y-m-d H:i:s.u');
         $activityTicketUpdate->activity = "ON PROGRESS";
         $activityTicketUpdate->operator = 'System';
         $activityTicketUpdate->note = 'This ticket is continued automatically by the system';

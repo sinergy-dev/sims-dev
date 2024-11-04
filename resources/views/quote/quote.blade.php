@@ -160,7 +160,7 @@ Quote Number
                           <option value="TAM">TAM</option>
                           <option value="DIR">DIR</option>
                           <option value="MSM">MSM</option>
-                          <option value="BCD">BCD</option>
+                          <option value="PMS">PMS</option>
                       </select>
                   </div>
 
@@ -203,7 +203,7 @@ Quote Number
                         <option>PMO</option>
                         <option>MSM</option>
                         <option>SAL</option>
-                        <option>BCD</option>
+                        <option>PMS</option>
                     </select>
                   </div>
                   <!-- <div class="form-group">
@@ -272,7 +272,7 @@ Quote Number
                     <option value="TAM">TAM</option>
                     <option value="DIR">DIR</option>
                     <option value="MSM">MSM</option>
-                    <option value="BCD">BCD</option>
+                    <option value="PMS">PMS</option>
                 </select>
               </div>
               <div class="form-group">
@@ -306,7 +306,7 @@ Quote Number
                     <option>PMO</option>
                     <option>MSM</option>
                     <option>SAL</option>
-                    <option>BCD</option>
+                    <option>PMS</option>
                 </select>
               </div>
               <!-- <div class="form-group">
@@ -362,7 +362,7 @@ Quote Number
                       <option value="TAM">TAM</option>
                       <option value="DIR">DIR</option>
                       <option value="MSM">MSM</option>
-                      <option value="BCD">BCD</option>
+                      <option value="PMS">PMS</option>
                   </select>
               </div>
 

@@ -61,7 +61,7 @@
 </head>
 <body style="display:block;width:900px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
-		<img src="{{ asset('image/sims_sangar_2.png')}}" href="https://app.sinergy.co.id/login" style="width: 30%; height: 30%" readonly>
+		<center><img src="{{asset('image/sims_sangar_2.png')}}" style="width: 30%; height: 30%" readonly></center>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -69,7 +69,8 @@
 				Dear {{$users->name}},
 			</p>
 			<p>
-				Ada request asset baru, berikut rinciannya:
+				Ada request asset baru, bantu cek dan approve ya! untuk melanjutkan proses request asset<br>
+				berikut rinciannya:
 			</p>
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<table style="text-align: left;margin: 5px; font-size: 16px;width: 100%;">

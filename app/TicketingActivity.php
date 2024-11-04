@@ -28,4 +28,9 @@ class TicketingActivity extends Model
 	public function id_activity()	{
 		return $this->belongsTo('App\Ticketing','id_ticket','id_ticket');
 	}
+
+	public function pending_remind()
+	{
+	    return $this->belongsTo('App\TicketingPendingReminder', 'id', 'id_pending');
+	}
 }

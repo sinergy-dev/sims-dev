@@ -29,6 +29,12 @@
 		border-color: #008d4c;
 	}
 
+	.span-progress{
+		background-color: #00c0ef;
+		color: white;
+		border-color: #00c0ef;
+	}
+
 	.span-pending{
 		background-color: rgb(224, 142, 11);
 		color: white;
@@ -55,19 +61,25 @@
 		border-radius: 4px;
 	}
 </style>
-<div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;">
+<body style="display:block;width:900px;margin-left:auto;margin-right:auto;color: #000000">
+	<div style="line-height: 1.5em">
+		<center><img src="{{asset('image/sims_sangar_2.png')}}" style="width: 30%; height: 30%" readonly></center>
+	</div>
+	<div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;line-height: 1.5em;padding-left: 13px">
 	<p>
 		Dear {{$users->name}},
 	</p>
 	@foreach($req_asset['asset'] as $data)		
-	@if($data->status == 'ACCEPT')
-		<b><i>Request Asset</i></b><h3><span class="span-success">ACCEPTED</span></h3>			
-	@elseif($data->status == 'PENDING')
-		<b><i>Request Asset</i></b><h3><span class="span-pending">PENDING</span></h3>
-		<p>New notes : {{$req_asset['notes']}}</p>
-		<span>Detail notes asset dapat dilihat pada aplikasi!</span>
-	@else
-		<b><i>Request Asset</i></b><h3><span class="span-reject">REJECTED</span></h3>
+		@if($data->status == 'ACCEPT')
+			<b><i>Request Asset</i></b><h3><span class="span-success">ACCEPTED</span></h3>			
+		@elseif($data->status == 'ON PROGRESS')
+			<b><i>Request Asset</i></b><h3><span class="span-progress">ON PROGRESS</span></h3>	
+			<p>New notes : {{$req_asset['notes']}}</p>
+			<span>Detail notes asset dapat dilihat pada aplikasi!</span>		
+		@elseif($data->status == 'PENDING')
+			<b><i>Request Asset</i></b><h3><span class="span-pending">PENDING</span></h3>
+		@else
+			<b><i>Request Asset</i></b><h3><span class="span-reject">REJECTED</span></h3>
 	@endif	
 	<table style="text-align: left;margin: 5px;">
 		<tr>
@@ -128,4 +140,5 @@
 		| Phone | 021 - 58355599 |<br>
 		----------------------------------------<br>
 	</p>
-</div>
+	</div>
+</body>

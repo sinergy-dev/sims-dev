@@ -3231,7 +3231,7 @@ class HRGAController extends Controller
                         ->where('group','Supply Chain, CPS & Asset Management');
                     } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
                         $data = $data
-                        ->where('mini_group','Center Point & Asset Management SVC ');
+                        ->where('mini_group','Center Point & Asset Management SVC');
                     } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
                         $data = $data
                         ->where('mini_group','Risk Management, Sys Dev & Compliance');
@@ -3317,7 +3317,7 @@ class HRGAController extends Controller
                             ->where('group','Supply Chain, CPS & Asset Management');
                         } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
                             $data = $data
-                            ->where('mini_group','Center Point & Asset Management SVC ');
+                            ->where('mini_group','Center Point & Asset Management SVC');
                         } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
                             $data = $data
                             ->where('mini_group','Risk Management, Sys Dev & Compliance');
@@ -3577,7 +3577,7 @@ class HRGAController extends Controller
                         ->where('group','Supply Chain, CPS & Asset Management');
                     } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Center Point & Asset Management SVC ');
+                        ->where('mini_group','Center Point & Asset Management SVC');
                     } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
                         $cuti = $cuti
                         ->where('mini_group','Risk Management, Sys Dev & Compliance');
@@ -3940,7 +3940,7 @@ class HRGAController extends Controller
             if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
                 $data = $data->where('group','Supply Chain, CPS & Asset Management');
             } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
-                $data = $data->where('mini_group','Center Point & Asset Management SVC ');
+                $data = $data->where('mini_group','Center Point & Asset Management SVC');
             } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
                 $data = $data->where('mini_group','Risk Management, Sys Dev & Compliance');
             } elseif($cek_role->name_role == 'Supply Chain Manager'){

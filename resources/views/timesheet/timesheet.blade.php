@@ -3330,29 +3330,36 @@
           },
           success: function(results)
           {
-              if (results.status == "Error") {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error! '+ results.text,
-                  text: 'Please check again!',
-                })
-              }else{
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Create Timesheet Succesfully!',
-                  text: 'Click Ok to reload page',
-                }).then((result,data) => {
-                  if (result.value) {
-                    $("#ModalImport").modal("hide")
-                    const dateString = calendar.fullCalendar('getView').title
-                    const date = moment(dateString, "MMMM YYYY");
-                    date.endOf('month');
-                    // Convert to ISO format
-                    const isoDateString = date.toISOString(); 
-                    loadData(isoDateString)              
-                  }
-                })
-              } 
+            if (results.status == "Error") {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error! '+ results.text,
+                text: 'Please check again!',
+              })
+            }else{
+              Swal.fire({
+                icon: 'success',
+                title: 'Create Timesheet Succesfully!',
+                text: 'Click Ok to reload page',
+              }).then((result,data) => {
+                if (result.value) {
+                  $("#ModalImport").modal("hide")
+                  const dateString = calendar.fullCalendar('getView').title
+                  const date = moment(dateString, "MMMM YYYY");
+                  date.endOf('month');
+                  // Convert to ISO format
+                  const isoDateString = date.toISOString(); 
+                  loadData(isoDateString)              
+                }
+              })
+            } 
+          },
+          error: function(xhr, status, error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error! ',
+              text: 'Please check again!',
+            })
           }
         })
       }

@@ -41,7 +41,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('AssetManagementScheduling:daily')->daily()->at('00:40');
 
 
-
         // $schedule->command('UpdateStatusTimesheet:daily')->daily()->at('23:59:59');
 
         $schedule->command('ReminderUpdateStatusTimesheet:daily')->daily()->at('07:00');

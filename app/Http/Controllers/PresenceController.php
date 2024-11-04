@@ -22,6 +22,8 @@ use App\PresenceShiftingUser;
 use App\PresenceLocation;
 use App\PresenceSetting;
 
+use Jenssegers\Agent\Agent;
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -616,7 +618,7 @@ class PresenceController extends Controller
     public function checkIn(Request $req) {
 
         $history = new PresenceHistory();
-
+        $agent = new Agent();
         if (isset(Auth::User()->nik)) {
             $req->nik = Auth::User()->nik;
         }
@@ -637,6 +639,13 @@ class PresenceController extends Controller
         $history->presence_location = $req->id_location;
         $history->presence_condition = $this->checkPresenceCondition($req->presence_actual,$setting_schedule);
         $history->presence_type = "Check-In";
+        $history->ip_address = $req->getClientIp();
+        $deviceType = $agent->device();
+        $platform = $agent->platform();
+        $platformVersion = $agent->version($platform); 
+        $browser = $agent->browser();
+        $browserVersion = $agent->version($browser);
+        $history->device = "Device: " . $deviceType . " Platform: " . $platform . ' ' . $platformVersion . ' Browser : ' . $browser . ' ' . $browserVersion;
 
         // return $history;
         // return $setting_schedule;
@@ -645,6 +654,7 @@ class PresenceController extends Controller
     }
 
     public function checkOut(Request $req) {
+        $agent = new Agent();
         $history = new PresenceHistory();
         if (isset(Auth::User()->nik)) {
             $req->nik = Auth::User()->nik;
@@ -667,7 +677,14 @@ class PresenceController extends Controller
         $history->presence_actual = $req->presence_actual;
         $history->presence_location = $getCheckout->presence_location;
         $history->presence_condition = "-";
+        $history->ip_address = $req->getClientIp();
         $history->presence_type = "Check-Out";
+        $deviceType = $agent->device();
+        $platform = $agent->platform();
+        $platformVersion = $agent->version($platform); 
+        $browser = $agent->browser();
+        $browserVersion = $agent->version($browser);
+        $history->device = "Device: " . $deviceType . " Platform: " . $platform . ' ' . $platformVersion . ' Browser : ' . $browser . ' ' . $browserVersion;
 
         $history->save();
     }
