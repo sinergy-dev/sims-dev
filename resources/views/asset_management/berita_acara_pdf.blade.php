@@ -134,32 +134,29 @@
 	<div class="bodyBAST">
 		@php
 		    use Carbon\Carbon;
+		    Carbon::setLocale('id');
+		    // Parse the date
+		    $date = Carbon::parse($installed_date);
 
-		    \Carbon\Carbon::setLocale('id');
+		    // Get day of the week, day number, month, and year
+		    $dayOfWeek = $date->translatedFormat('l'); // e.g., "Selasa"
+		    $day = $date->day; // 5
+		    $month = $date->translatedFormat('F'); // e.g., "November"
+		    $year = $date->year; // 2024
 
-		    $currentDate = Carbon::now();
-		    function convertNumberToWords($number) {
-		        $words = [
-		            '', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'
-		        ];
+		    // Map numbers to words (up to 31 for days of the month)
+		    $numberWords = [
+		        1 => 'satu', 2 => 'dua', 3 => 'tiga', 4 => 'empat', 5 => 'lima',
+		        6 => 'enam', 7 => 'tujuh', 8 => 'delapan', 9 => 'sembilan', 10 => 'sepuluh',
+		        11 => 'sebelas', 12 => 'dua belas', 13 => 'tiga belas', 14 => 'empat belas', 15 => 'lima belas',
+		        16 => 'enam belas', 17 => 'tujuh belas', 18 => 'delapan belas', 19 => 'sembilan belas', 20 => 'dua puluh',
+		        21 => 'dua puluh satu', 22 => 'dua puluh dua', 23 => 'dua puluh tiga', 24 => 'dua puluh empat', 
+		        25 => 'dua puluh lima', 26 => 'dua puluh enam', 27 => 'dua puluh tujuh', 28 => 'dua puluh delapan',
+		        29 => 'dua puluh sembilan', 30 => 'tiga puluh', 31 => 'tiga puluh satu'
+		    ];
 
-		        if ($number < 12) {
-		            return $words[$number];
-		        } elseif ($number < 20) {
-		            return $words[$number - 10] . ' belas';
-		        } elseif ($number < 100) {
-		            return $words[intval($number / 10)] . ' puluh ' . $words[$number % 10];
-		        }
-
-		        return $number; // Fallback for numbers above 99
-		    }
-
-		    // Formatting the date
-		    $dayOfWeek = $currentDate->isoFormat('dddd');  // e.g. "Rabu"
-		    $day = $currentDate->day;                      // e.g. "23"
-		    $month = $currentDate->isoFormat('MMMM');      // e.g. "Maret"
-		    $year = $currentDate->year;                    // e.g. "2024"
-		    $dayInWords = convertNumberToWords($day);  
+		    // Convert day number to words
+		    $dayInWords = $numberWords[$day] ?? $day; // Fallback to numeric if out of bounds
 		@endphp
 
 		<h3 style="text-align: center;"><b>BERITA SERAH TERIMA ASSET PERUSAHAAN <br> PT SINERGY INFORMASI PRATAMA</b></h3>
