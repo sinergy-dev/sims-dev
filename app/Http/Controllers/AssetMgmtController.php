@@ -1459,7 +1459,7 @@ class AssetMgmtController extends Controller
                     'tb_asset_management_dokumen.document_location as document_location_BA',
                     'pr',
                     'users.nik as pic',
-                    DB::raw('CONCAT(users.name," - ",roles.mini_group) AS text_name'))
+                    DB::raw('CONCAT(users.name," - ",(CASE WHEN roles.mini_group IS NULL THEN roles.group ELSE roles.mini_group END)) AS text_name'))
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
             ->first();
 
@@ -2827,7 +2827,7 @@ class AssetMgmtController extends Controller
     public function getPdfBASTAsset($id_asset,$id_detail_asset)
     {
         // return $id_asset;
-        $pihak_pertama = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd_digital','date_of_entry as entry_date')
+        $pihak_pertama = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd','date_of_entry as entry_date')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('nik',Auth::User()->nik)
@@ -2839,14 +2839,14 @@ class AssetMgmtController extends Controller
                     ->first(); 
 
         if (stripos($cek_role->name, 'Manager') !== false) {
-            $atasan_pp = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd_digital')
+            $atasan_pp = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('roles.group','Supply Chain, CPS & Asset Management')
-                        ->where('roles.name','like','%VP')
+                        ->where('roles.name','like','VP%')
                         ->first();
         }else{
-            $atasan_pp = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd_digital')
+            $atasan_pp = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('roles.mini_group','Center Point & Asset Management SVC')
@@ -2868,7 +2868,7 @@ class AssetMgmtController extends Controller
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         // ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
-                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.mini_group','ttd_digital','users.nik','users.date_of_entry as entry_date','users.phone')
+                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.mini_group','ttd','users.nik','users.date_of_entry as entry_date','users.phone')
                         ->where('tb_asset_management_detail.id_asset',$id_asset)
                         ->where('tb_asset_management_detail.id',$id_detail_asset);
                         // ->where('tb_asset_management_detail.id_asset',$id_asset);
@@ -2882,10 +2882,10 @@ class AssetMgmtController extends Controller
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('group','like','%'.$group.'%')
-                        ->where('roles.name','like','%VP')
+                        ->where('roles.name','like','VP%')
                         ->first(); 
 
-        }else if ($cek_role_pk->where('roles.name','like','%VP%')->first()) {
+        }else if ($cek_role_pk->where('roles.name','like','VP%')->first()) {
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
@@ -2895,7 +2895,7 @@ class AssetMgmtController extends Controller
             // return $id_asset;
             $cek_role_pk = DB::table('tb_asset_management')
                         ->join('tb_asset_management_detail', 'tb_asset_management_detail.id_asset', '=', 'tb_asset_management.id')
-                        ->select('tb_asset_management.id', 'roles.name', 'roles.group', 'users.name as name_pk', 'roles.mini_group', 'ttd_digital')
+                        ->select('tb_asset_management.id', 'roles.name', 'roles.group', 'users.name as name_pk', 'roles.mini_group', 'ttd')
                         ->join('users', 'users.nik', '=', 'tb_asset_management_detail.pic')
                         ->join('role_user', 'role_user.user_id', '=', 'users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -2903,14 +2903,31 @@ class AssetMgmtController extends Controller
                         ->where('tb_asset_management_detail.id',$id_detail_asset)
                         ->first();
 
-            $mini_group = $cek_role_pk->mini_group;
+            $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                                    ->join('role_user','role_user.user_id','=','users.nik')
+                                    ->join('roles','roles.id','=','role_user.role_id')
+                                    ->where('roles.name','like','%Manager%')
+                                    ->where('roles.name','<>','Project Manager')
+                                    ->where('roles.mini_group','like','%'.$cek_role_pk->mini_group.'%')
+                                    ->first();
 
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                         ->join('role_user','role_user.user_id','=','users.nik')
-                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->join('roles','roles.id','=','role_user.role_id');
+
+            if ($isManagerOnMiniGroup) {
+                $mini_group = $cek_role_pk->mini_group;
+                $atasan_pk = $atasan_pk
                         ->where('roles.name','like','%Manager%')
                         ->where('mini_group','like','%'. $mini_group .'%')
                         ->first();
+            }else{
+                $group = $cek_role_pk->group;
+                $atasan_pk =  $atasan_pk
+                        ->where('roles.name','like','VP%')
+                        ->where('group','like','%'. $group .'%')
+                        ->first();
+            }
         }
 
         $pdf = PDF::loadView('asset_management.berita_acara_pdf',compact('pihak_pertama','pihak_kedua','atasan_pk','atasan_pp','list_asset_request'));
@@ -2924,7 +2941,6 @@ class AssetMgmtController extends Controller
 
     public function uploadPdfBAST($id_asset,$filePath)
     {
-        // return $filePath;
         $client = $this->getClient();
         $service = new Google_Service_Drive($client);
 
@@ -2943,7 +2959,6 @@ class AssetMgmtController extends Controller
                     'parent_id_drive')->first(); 
 
         $fileName  = 'BAST_'. $data->category . '_' . $data->name_pk . '.pdf';
-        $nameFileFix = str_replace(' ', '_', $fileName);
 
         if ($data->parent_id_drive == null) {
             $parentID = $this->googleDriveMakeFolder($id_asset);
@@ -2969,23 +2984,14 @@ class AssetMgmtController extends Controller
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
             )
-        );       
-
-        $optParams = array(
-          'fields' => 'files(webViewLink)',
-          'q'      => 'name="'.$nameFileFix.'"',
-          'supportsAllDrives' => true,
-          'includeItemsFromAllDrives' => true
         );
+        $fileId = $result->id;
 
-        $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
-
-        $directory                      = "Asset Management/".$id_asset.'/';
         $storeDoc                       = new AssetMgmtDocument();
         $storeDoc->id_detail_asset      = $data->id;
         $storeDoc->document_name        = "Berita Acara ".$data->id_asset;
         $storeDoc->document_location    = "Asset Management/".$data->id_asset.'/';
-        $storeDoc->link_drive           = $link;
+        $storeDoc->link_drive           = "https://drive.google.com/file/d/{$fileId}/view?usp=drivesdk";
         // $storeDoc->link_drive           = $this->googleDriveUploadCustom($fileName,$filePath,$parentID);
         $storeDoc->save();
     }
