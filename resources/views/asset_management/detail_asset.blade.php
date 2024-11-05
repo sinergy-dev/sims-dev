@@ -718,14 +718,7 @@
               type:type
             }
           },
-          "columns": columnAsset,
-          "rowCallback": function(row, data) {
-            console.log(data)
-            // Replace 'yourColumnIndex' with the index of the column you want to check
-            // if (data.document_name === null) {
-            //     $(row).hide(); // Hide the row if the column is null or empty
-            // }
-          }
+          "columns": columnAsset
         })
       }else{
         table = $('#tableHistoryPid').DataTable().ajax.url("{{url('asset/getLogById')}}?id_asset="+window.location.href.split("=")[1]).load()
@@ -1074,7 +1067,6 @@
               name: "inputLicense",
               id: "inputLicense"
             }).change(function(argument) {
-              console.log($(this).val())
               licenseStart = $("#inputLicenseStart").val()
               $("#inputLicenseEnd").val(moment(licenseStart).add(parseInt($(this).val()), 'years').format('YYYY-MM-DD'))
             })
@@ -1689,7 +1681,6 @@
 
           const fileAsset = document.querySelector('input[type="file"][name="inputBuktiAsset"]');
 
-          console.log(result.document_name_asset)
           if (result.document_name_asset != '' && result.document_name_asset != null) {
             const myFileBuktiAsset = new File(['{{asset("/")}}"'+ result.document_location_asset +'"'], '/'+ result.document_location_asset,{
               type: 'text/plain',
@@ -1709,7 +1700,6 @@
 
           const fileAssetInternal = document.querySelector('input[type="file"][name="inputBuktiAssetInternal"]');
 
-          console.log(result.document_name_asset)
           if (result.document_name_asset != '' && result.document_name_asset != null) {
             const myFileBuktiAssetInternal = new File(['{{asset("/")}}"'+ result.document_location_asset +'"'], '/'+ result.document_location_asset,{
               type: 'text/plain',
@@ -2202,7 +2192,6 @@
       }
 
       function clearValidationOnChange(data) {
-        console.log($(data).val())
         if ($(data).val() !== "") {
           $(data).closest(".input-group").next("span").hide();
         }
