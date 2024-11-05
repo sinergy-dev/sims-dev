@@ -2868,7 +2868,7 @@ class AssetMgmtController extends Controller
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         // ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
-                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.mini_group','ttd','users.nik','users.date_of_entry as entry_date','users.phone')
+                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.mini_group','ttd','users.nik','users.date_of_entry as entry_date','users.phone','installed_date')
                         ->where('tb_asset_management_detail.id_asset',$id_asset)
                         ->where('tb_asset_management_detail.id',$id_detail_asset);
                         // ->where('tb_asset_management_detail.id_asset',$id_asset);
@@ -2930,7 +2930,12 @@ class AssetMgmtController extends Controller
             }
         }
 
-        $pdf = PDF::loadView('asset_management.berita_acara_pdf',compact('pihak_pertama','pihak_kedua','atasan_pk','atasan_pp','list_asset_request'));
+        $installed_date = DB::table('tb_asset_management_detail')
+                        ->select('installed_date')
+                        ->where('tb_asset_management_detail.id_asset',$id_asset)
+                        ->where('tb_asset_management_detail.id',$id_detail_asset)->first()->installed_date;
+
+        $pdf = PDF::loadView('asset_management.berita_acara_pdf',compact('pihak_pertama','pihak_kedua','atasan_pk','atasan_pp','list_asset_request','installed_date'));
         $fileName = 'bast.pdf';
         $nameFileFix = str_replace(' ', '_', $fileName);
 
