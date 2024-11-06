@@ -1444,22 +1444,41 @@ PMO
       checkboxClass: 'icheckbox_minimal-blue',
     })
 
-    let firstPage = true
+    let firstPage = ''
     function btnBack(){
+    	console.log(firstPage)
     	if (firstPage) {
     		$(".content-header").hide()
     		$(".content").hide()
     		window.location.href = "{{url('PMO/project')}}"
     		// $(".content-title").text("Detail Project")
-    		showMilestoneData()
+    		// showMilestoneData()
     	}else{
-    		location.reload()
-    		firstPage = true
-    		$(".milestone").hide()
-    		$(".show_project_charter").hide()
-    		$(".detail_project").show()
-    		// $(".content-title").text("Detail Project")
-    		showMilestoneData()
+    		Swal.fire({
+		        title: 'Are you sure?',
+		        text: "You have unsaved changes. Do you want to leave the page?",
+		        icon: 'warning',
+		        showCancelButton: true,
+		        confirmButtonText: 'Yes, leave',
+		        cancelButtonText: 'Cancel',
+		        reverseButtons: true // Optional: to reverse the positions of buttons
+		    }).then((result) => {
+		        // If user clicks 'Yes'
+		        if (result.isConfirmed) {
+		            // Allow the user to leave
+		            firstPage = true
+		            // location.reload()
+		    		$(".content-title").text("Detail Project")
+		    		showMilestoneData()
+		    		$(".milestone").hide()
+		    		$(".show_project_charter").hide()
+		    		$(".detail_project").show()
+		        } else {
+		            // Cancel the navigation (stay on the current page)
+		            event.returnValue = false; // Cancel the default action
+		        }
+		    });
+    		// location.reload()
     	}
     }
 
@@ -1630,6 +1649,7 @@ PMO
 
     /////////
     function showMilestoneData(){
+    	firstPage = true
     	if (window.location.search.split("?")[1] != 'showProject') {
     		window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
     	}
@@ -1991,9 +2011,41 @@ PMO
     		type:"GET",
     		data:data,
     		success:function(result){
-    			window.onbeforeunload = function() { 
-					return "Your work will be lost."; 
-				};
+    			// function updateQueryParam(param, value) {
+				//   var url = new URL(window.location.href);
+				//   var params = new URLSearchParams(url.search);
+
+				//   // Update the parameter value in the URL
+				//   params.set(param, value);
+
+				//   // Construct the new URL with the updated parameter
+				//   var newURL = url.origin + url.pathname + '?' + params.toString();
+
+				//   // Change the URL without refreshing the page using replaceState
+				//   window.history.replaceState(null, '', newURL);
+				// }
+
+				// // Usage example
+				// updateQueryParam('type_milestone', window.location.href.split("&")[1].split("=")[1]);
+    			window.onbeforeunload = null  
+    			// Listen for back navigation attempts
+				window.addEventListener('popstate', function(event) {
+				    // When the user tries to go back, push the same URL again
+				    history.pushState(null, null, window.location.href);
+				});
+  			
+    			// window.onbeforeunload = function(event) {
+    			// 	 // Recommended
+				// 	  // Included for legacy support, e.g. Chrome/Edge < 119
+				// 	event.returnValue = true;
+
+				// 	console.log(event.returnValue)
+
+				//     if (event.returnValue) {
+				//     	console.log(firstPage)
+				    	
+				//     }
+				// };
 
 				arrWeightSupplyOnly = ["10","20","60","10"]
     			arrWeightImplementation = ["5","15","75","5"]
@@ -2984,9 +3036,9 @@ PMO
 				// let isReadyPost = false
 
 				$(document).on("click","#saveMilestone",function() {
-					window.onbeforeunload = function () {
-					  // blank function do nothing
-					}
+					// window.onbeforeunload = function () {
+					//   // blank function do nothing
+					// }
 
 					let arrInitiatingCountNull = []
 					let arrPlanningCountNull = []
@@ -3861,7 +3913,7 @@ PMO
             }
         })
     }
-   
+   	
     function btnShowProjectCharter(id_pmo){
     	firstPage = true
     	$(".content-header").show()
@@ -4702,12 +4754,8 @@ PMO
             	title:"Action",
               	render: function (data, type, row, meta){
                 	if (row.deliverable_document == "true") {
-      				console.log("okeeee delivery")
-
                 		return '<input type="checkbox" disabled class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
               		}else{
-      				console.log("okeeee not delivery")
-
                 		return '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
               		}
               	}
@@ -4716,8 +4764,6 @@ PMO
         "rowCallback": function( row, data ) {
       		if (accesable.includes("cbTaskDone")) {
           		if (data.deliverable_document != "true") {
-      				console.log("okeeee")
-
           			$('td:eq(4)', row).html( '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ data.id_gantt +'"> Task Done');
           			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").prop("disabled",false)
           			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").closest("div").removeClass("disabled").prop("disabled",false)
@@ -4801,8 +4847,6 @@ PMO
 			});
       	},
     })
-
-    
 
     function btnUploadNewDocument(){
     	$("#ModalUploadNewDocument").modal("show")
@@ -5700,7 +5744,6 @@ PMO
     }
 
     $(document).on('click', '.btnRemove', function() {
-      
       $(this).closest("tr").remove();
     })
 
@@ -6809,7 +6852,9 @@ PMO
                   		if (result.value) {
                   			// window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
                   			// window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?" + window.location.href.split("?")[1])
-                    		location.reload() 
+                  			if (window.location.href.split("&")[1] === undefined) {
+                    			location.reload() 
+                  			}
                     		Swal.close()                   
                   		}
             		})
@@ -6826,9 +6871,9 @@ PMO
             })
           }else{
           	if (url == "/PMO/storeMilestone") {
-          		window.onbeforeunload = function() { 
-					return "Your work will be lost."; 
-				};
+          		// window.onbeforeunload = function() { 
+				// 	return "Your work will be lost."; 
+				// };
           	}          	
           }
       })
@@ -7043,25 +7088,31 @@ PMO
 	}
 
 
-  	if (window.location.href.indexOf("id_risk") != -1){
-		//from email
-		btnUpdateStatusRisk(window.location.href.split("?")[1].split("=")[1])
-      	$('#ModalRisk').on('hidden.bs.modal', function () {
-        	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
-      	})
-	}else if (window.location.href.indexOf("status") != -1) {
-		btnFinalProject(0,window.location.href.split("?")[1].split("&")[1].split("=")[1])
-		$('#ModalFinalProject').on('hidden.bs.modal', function () {
-        	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
-      	})
-	}else if (window.location.href.split("?")[1].split("&")[1] != undefined) {
-		console.log("woyyyy")
-		if (window.location.href.split("?")[1].split("&")[1].split("=")[1] == 'defined') {
-			btnshowMilestone('show','defined')
-		}else{
-			btnshowMilestone('show','custom')
-		}
-	}
+	setTimeout(function() {
+		console.log(firstPage + "oiiiii")
+		if (firstPage) {
+			if (window.location.href.indexOf("id_risk") != -1){
+			//from email
+				btnUpdateStatusRisk(window.location.href.split("?")[1].split("=")[1])
+		      	$('#ModalRisk').on('hidden.bs.modal', function () {
+		        	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+		      	})
+			}else if (window.location.href.indexOf("status") != -1) {
+				btnFinalProject(0,window.location.href.split("?")[1].split("&")[1].split("=")[1])
+				$('#ModalFinalProject').on('hidden.bs.modal', function () {
+		        	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
+		      	})
+			}else if (window.location.href.split("?")[1].split("&")[1] != undefined) {
+				console.log("woyyyy")
+				if (window.location.href.split("?")[1].split("&")[1].split("=")[1] == 'defined') {
+					btnshowMilestone('show','defined')
+				}else{
+					btnshowMilestone('show','custom')
+				}
+			}
+		} 
+	}, 1000);
+  	
 	
 </script>
 @endsection
