@@ -225,24 +225,30 @@
               <label for="">Category</label>
               <select autofocus type="text" class="form-control select2" onchange="fillInput('selectCategory')" name="selectCategory" id="selectCategory" style="width: 100%">
                   <option value="">Select Category</option>
-                  <option value="Barang dan Jasa">Barang dan Jasa</option>
-                  <option value="Barang">Barang</option>
-                  <option value="Jasa">Jasa</option>
-                  <option value="Bank Garansi">Bank Garansi</option>
-                  <option value="Service">Service</option>
-                  <option value="Pajak Kendaraan">Pajak Kendaraan</option>
-                  <option value="ATK">ATK</option>
-                  <option value="Aset">Aset</option>
-                  <option value="Tinta">Tinta</option>
-                  <option value="Training">Training</option>
-                  <option value="Ujian">Ujian</option>
-                  <option value="Tiket">Tiket</option>
-                  <option value="Akomodasi">Akomodasi</option>
-                  <option value="Swab Test">Swab Test</option>
-                  <option value="Iklan">Iklan</option>
-                  <option value="Ekspedisi">Ekspedisi</option>
-                  <option value="Legal">Legal</option>
-                  <option value="Other">Other</option>
+                      <option value="Barang dan Jasa">Barang dan Jasa</option>
+                      <option value="Barang">Barang</option>
+                      <option value="Jasa">Jasa</option>
+                      <option value="Bank Garansi">Bank Garansi</option>
+                      <option value="Service">Service</option>
+                      <option value="Pajak Kendaraan">Pajak Kendaraan</option>
+                      <option value="ATK">ATK</option>
+                      <option value="Aset">Aset</option>
+                      <option value="Tinta">Tinta</option>
+                      <option value="Konsultasi dan Pelatihan">Konsultasi dan Pelatihan</option>
+                      <option value="Ujian">Ujian</option>
+                      <!-- <option value="Tiket">Tiket</option>
+                      <option value="Akomodasi">Akomodasi</option> -->
+                      <option value="Perjalanan Dinas">Perjalanan Dinas</option>
+                      <option value="Sponsor">Sponsor</option>
+                      <option value="Logistic">Logistic</option>
+                      <option value="Legal">Legal</option>
+                      <option value="License">License</option>
+                      <option value="Reference Fee Member">Reference Fee Member</option>
+                      <option value="Parkir">Parkir</option>
+                      <option value="Kesehatan">Kesehatan</option>
+                      <option value="Olahraga">Olahraga</option>
+                      <option value="Karangan Bunga">Karangan Bunga</option>
+                      <option value="Other">Other</option>
               </select>
               <span class="help-block" style="display:none;">Please fill Category!</span>
             </div>
@@ -660,14 +666,20 @@
                       <option value="ATK">ATK</option>
                       <option value="Aset">Aset</option>
                       <option value="Tinta">Tinta</option>
-                      <option value="Training">Training</option>
+                      <option value="Konsultasi dan Pelatihan">Konsultasi dan Pelatihan</option>
                       <option value="Ujian">Ujian</option>
-                      <option value="Tiket">Tiket</option>
-                      <option value="Akomodasi">Akomodasi</option>
-                      <option value="Swab Test">Swab Test</option>
-                      <option value="Iklan">Iklan</option>
-                      <option value="Ekspedisi">Ekspedisi</option>
+                      <!-- <option value="Tiket">Tiket</option> -->
+                      <!-- <option value="Akomodasi">Akomodasi</option> -->
+                      <option value="Perjalanan Dinas">Perjalanan Dinas</option>
+                      <option value="Sponsor">Sponsor</option>
+                      <option value="Logistic">Logistic</option>
                       <option value="Legal">Legal</option>
+                      <option value="License">License</option>
+                      <option value="Reference Fee Member">Reference Fee Member</option>
+                      <option value="Parkir">Parkir</option>
+                      <option value="Kesehatan">Kesehatan</option>
+                      <option value="Olahraga">Olahraga</option>
+                      <option value="Karangan Bunga">Karangan Bunga</option>
                       <option value="Other">Other</option>
                   </select>
                   <div class="input-group-addon">
@@ -1806,7 +1818,7 @@
         localStorage.removeItem("arrFilterBack")
       }
 
-      var temp = tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
+      var temp = "?" + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
       showFilterData(temp)
       DashboardCounterFilter(temp)
 
@@ -2108,6 +2120,17 @@
             appendBottom = appendBottom + '      </div>'
             appendBottom = appendBottom + '    </div>'
             appendBottom = appendBottom + '  </div>'
+
+            appendBottom = appendBottom + ' <div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + '    <div class="col-md-12 col-xs-12">'
+              appendBottom = appendBottom + '      <div class="pull-right">'
+              appendBottom = appendBottom + '        <span style="display: inline;margin-right: 15px;">Discount <span class="title_discount"></span></span>'
+              appendBottom = appendBottom + '        <input readonly type="text" style="width:250px;display: inline;text-align:right" class="form-control inputDiscount_unfinishPreview" id="inputDiscount_unfinishPreview" name="inputDiscount_unfinishPreview">'
+              appendBottom = appendBottom + '      </div>'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
+            appendBottom = appendBottom + '</div>'
+
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
               appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + ' <div class="pull-right">'
@@ -2224,6 +2247,7 @@
             var tempVat = 0
             var tempPb1 = 0
             var tempService = 0
+            var tempDiscount = 0
             var finalVat = 0
             var tempGrand = 0
             var finalGrand = 0
@@ -2241,37 +2265,53 @@
             }else{
               valueVat = result.pr.status_tax
             }
+
+            tempDiscount = $("#inputDiscountNominal").val() == 0?false:parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','') / parseFloat(sum) * 100)
+
             if (!isNaN(valueVat)) {
-              tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
+              setTimeout(function(){
+                tempVat = Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
 
+                finalVat = tempVat
+
+                finalGrand = tempGrand
+
+                tempTotal = parseFloat(sum)
+
+                $('.title_tax').text(valueVat == '' || valueVat == null ?"":valueVat + '%')
+
+                $("#vat_tax").val(formatter.format(isNaN(tempVat)?0:tempVat))
+              },500)
+            }else{
+              tempVat = Math.round((parseFloat(sum) * ($("#vat_tax").val() == ""?0:parseFloat($("#vat_tax").val())) / 100))
+              
               finalVat = tempVat
-
-              tempGrand = Math.round((parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)))
 
               finalGrand = tempGrand
 
-              tempTotal = sum
-
-              $('.title_tax').text(valueVat + '%')
-            }else{
-              tempVat = 0
-
-              tempGrand = Math.round(sum)
-
-              $('.title_tax').text("")
+              tempTotal = parseFloat(sum)
+              
+              $('.title_tax').text($("#vat_tax").val() == "" ||$("#vat_tax").val() == 0?"":$('.title_tax').text().replace("%","") + '%')
             }
 
-            $('.title_pb1').text(result.pr.tax_pb == 'false' || result.pr.tax_pb == 0?"":result.pr.tax_pb+"%")
-            $('.title_service').text(result.pr.service_charge == 'false' || result.pr.service_charge == 0?"":result.pr.service_charge+"%")
+            setTimeout(function(){
+              $('.title_pb1').text(result.pr.tax_pb == 'false' || result.pr.tax_pb == 0?"":result.pr.tax_pb+"%")
+              $('.title_service').text(result.pr.service_charge == 'false' || result.pr.service_charge == 0?"":result.pr.service_charge+"%")
+              $('.title_discount').text(result.pr.discount == 'false' || result.pr.discount == 0?"":parseFloat(result.pr.discount).toFixed(2)+"%")
 
-            tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
-            tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempPb1:parseInt(result.pr.service_charge)) / 100))
+              tempPb1 = Math.round((parseFloat(sum) - (parseFloat(sum) * tempDiscount/100)) * (result.pr.tax_pb == null || result.pr.tax_pb == "false"?0:parseFloat(result.pr.tax_pb) / 100))
 
-            $("#vat_tax_unfinishPreview").val(formatter.format(tempVat))
-            $("#inputPb1_unfinishPreview").val(formatter.format(tempPb1))
-            $("#inputServiceCharge_unfinishPreview").val(formatter.format(tempService))
-            $("#inputGrandTotalProduct_unfinishPreview").val(formatter.format(sum))
-            $("#inputFinalPageGrandPrice").val(formatter.format(result.grand_total))
+              tempService = Math.round((parseFloat(sum) - (parseFloat(sum) * tempDiscount/100)) * (result.pr.service_charge == null || result.pr.service_charge == "false"?0:parseFloat(result.pr.service_charge) / 100))
+
+              tempDiscount = Math.round(parseFloat(sum) * (result.pr.discount == null || result.pr.discount == 'false'?0:parseFloat(result.pr.discount) / 100))
+              
+              $("#vat_tax_unfinishPreview").val(formatter.format(tempVat))
+              $("#inputPb1_unfinishPreview").val(formatter.format(tempPb1))
+              $("#inputServiceCharge_unfinishPreview").val(formatter.format(tempService))
+              $("#inputDiscount_unfinishPreview").val(formatter.format(tempDiscount))
+              $("#inputGrandTotalProduct_unfinishPreview").val(formatter.format(sum))
+              $("#inputFinalPageGrandPrice").val(formatter.format(result.grand_total))
+            },500)
 
             if (status == 'reject' || status == 'revision') {
               reasonReject(result.activity.reason,"block","tabGroup")
@@ -3135,6 +3175,16 @@
               appendBottom = appendBottom + '    </div>'
               appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
+
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+                appendBottom = appendBottom + '      <span> Discount <span class="title_service"></span></span>'
+                appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;margin-left:15px;text-align:right" class="form-control inputDiscountFinal" id="inputDiscountFinal" name="inputDiscountFinal">'
+                appendBottom = appendBottom + '    </div>'
+                appendBottom = appendBottom + '  </div>'
+              appendBottom = appendBottom  + '</div>'
+
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
               appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '   <div class="pull-right">'
@@ -3161,6 +3211,7 @@
                 appendBottom = appendBottom + '    </div>'
                 appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom  + '</div>'
+
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
               appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
@@ -3987,6 +4038,16 @@
                 appendBottom = appendBottom + '    </div>'
                 appendBottom = appendBottom + '  </div>'
                 appendBottom = appendBottom + '</div>'
+
+                appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
+                appendBottom = appendBottom + '   <div class="pull-right">'
+                  appendBottom = appendBottom + '   <span style="margin-right: 10px;display:inline">Discount <span class="title_discount"></span></span>'
+                  appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control discount_cek" id="discount_cek" name="discount_cek" style="width:250px;text-align:right;display:inline">'
+                appendBottom = appendBottom + '    </div>'
+                appendBottom = appendBottom + ' </div>'
+                appendBottom = appendBottom + '</div>'
+
                 appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
                 appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
                 appendBottom = appendBottom + '   <div class="pull-right">'
@@ -4013,7 +4074,6 @@
                 appendBottom = appendBottom + '    </div>'
                 appendBottom = appendBottom + ' </div>'
                 appendBottom = appendBottom + '</div>'
-
 
                 appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
                   appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
@@ -4352,6 +4412,16 @@
               appendBottom = appendBottom + '    </div>'
               appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
+
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+                appendBottom = appendBottom + '      <span>Discount <span class="title_discount"></span></span>'
+                appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;margin-left:15px;text-align:right" class="form-control inputDiscountFinalProductCek" id="inputDiscountFinalProductCek" name="inputDiscountFinalProductCek">'
+                appendBottom = appendBottom + '    </div>'
+                appendBottom = appendBottom + '  </div>'
+              appendBottom = appendBottom  + '</div>'
+
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
               appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '   <div class="pull-right">'
@@ -4378,6 +4448,7 @@
                 appendBottom = appendBottom + '    </div>'
                 appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom  + '</div>'
+
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
               appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
@@ -4460,6 +4531,7 @@
               var tempVat = 0
               var tempPb1 = 0
               var tempService = 0
+              var tempDiscount = 0
               var finalVat = 0
               var tempGrand = 0
               var finalGrand = 0
@@ -4484,9 +4556,13 @@
               }else{
                 valueVat = result.pr.status_tax
               }
+
+              tempDiscount = Math.round(parseFloat(sum) * (result.pr.discount == null || result.pr.discount == 'false'?0:parseFloat(result.pr.discount) / 100))
+
               if (!isNaN(valueVat)) {
 
-                tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
+                tempVat = Math.round((parseFloat(sum) - tempDiscount) * (valueVat == false?0:parseFloat(valueVat) / 100))
+                // Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
                 finalVat = tempVat
 
@@ -4507,14 +4583,18 @@
 
               $('.title_pb1').text(result.pr.tax_pb == 'false'|| result.pr.tax_pb == 0?"":result.pr.tax_pb+"%")
               $('.title_service').text(result.pr.service_charge == 'false' || result.pr.service_charge == 0?"":result.pr.service_charge+"%")
+              $('.title_discount').text(result.pr.discount == 'false' || result.pr.discount == 0?"":parseFloat(result.pr.discount).toFixed(2)+"%")
 
-              tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
-              tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+              tempPb1 = Math.round((parseFloat(sum) - tempDiscount) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?0:parseFloat(result.pr.tax_pb)) / 100)
+              tempService = Math.round((parseFloat(sum) - tempDiscount) * (result.pr.service_charge == "false"?0:parseFloat(result.pr.service_charge)) / 100)
+
+              tempDiscount = Math.round(parseFloat(sum) * (result.pr.discount == null || result.pr.discount == 'false'?0:parseFloat(result.pr.discount) / 100))
 
               $("#vat_tax_PreviewCek").val(formatter.format(tempVat))
               $("#inputGrandTotalProductPreviewCek").val(formatter.format(sum))
               $("#inputPb1ProductFinalCek").val(formatter.format(tempPb1))
               $("#inputServiceChargeFinalProductCek").val(formatter.format(tempService))
+              $("#inputDiscountFinalProductCek").val(formatter.format(tempDiscount))
               $("#inputFinalPageGrandPricePreviewCek").val(formatter.format(result.grand_total))
             }
             document.getElementById("nextBtnAddAdmin").innerHTML = "Next"
@@ -4618,17 +4698,21 @@
             sum += temp;
           });
 
+          tempDiscount = Math.round(parseFloat(sum) * (result.pr.discount == null || result.pr.discount == 'false'?0:parseFloat(result.pr.discount) / 100))
+
           if (!isNaN(valueVat)) {
+            setTimeout(function() {
+              tempVat = Math.round((parseFloat(sum) - tempDiscount)) * (valueVat == false?0:parseFloat(valueVat) / 100)
+              // tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
-            tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
+              finalVat = tempVat
 
-            finalVat = tempVat
+              tempGrand = sum + finalVat
 
-            tempGrand = sum + finalVat
+              tempTotal = sum
 
-            tempTotal = sum
-
-            $('.title_tax').text(valueVat + '%')
+              $('.title_tax').text(valueVat + '%')
+            },500)
           }else{
             tempVat = 0
 
@@ -4637,18 +4721,27 @@
             $('.title_tax').text("")
           }
 
-          $('.title_pb1').text(result.pr.tax_pb == 'false' || result.pr.tax_pb == 0?"":result.pr.tax_pb+"%")
-          $('.title_service').text(result.pr.service_charge == 'false' || result.pr.service_charge == 0?"":result.pr.service_charge+"%")
+          setTimeout(function() {
+            $('.title_pb1').text(result.pr.tax_pb == 'false' || result.pr.tax_pb == 0?"":result.pr.tax_pb+"%")
+            $('.title_service').text(result.pr.service_charge == 'false' || result.pr.service_charge == 0?"":result.pr.service_charge+"%")
+            $('.title_discount').text(result.pr.discount == 'false' || result.pr.discount == 0?"":parseFloat(result.pr.discount).toFixed(2)+"%")
 
-          tempPb1 = Math.round((parseFloat(sum) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?tempPb1:parseInt(result.pr.tax_pb)) / 100))
-          tempService = Math.round((parseFloat(sum) * (result.pr.service_charge == null || result.pr.service_charge == 'false'?tempService:parseInt(result.pr.service_charge)) / 100))
+            console.log(tempTotal)
 
-          $("#vat_tax_cek").val(formatter.format(tempVat))
-          $("#inputGrandTotalProductCek").val(formatter.format(sum))
-          $("#pb1_cek").val(formatter.format(tempPb1))
-          $("#service_charge_cek").val(formatter.format(tempService))
-          $("#inputGrandTotalProductFinalCek").val(formatter.format(result.grand_total))
+            tempPb1 = Math.round((parseFloat(sum) - tempDiscount) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?0:parseFloat(result.pr.tax_pb)) / 100)
 
+            tempService = Math.round((parseFloat(sum) - tempDiscount) * (result.pr.service_charge == null || result.pr.service_charge == "false"?0:parseFloat(result.pr.service_charge)) / 100)
+
+            tempDiscount = Math.round(parseFloat(sum) * (result.pr.discount == null || result.pr.discount == 'false'?0:parseFloat(result.pr.discount) / 100))
+            
+
+            $("#vat_tax_cek").val(formatter.format(tempVat))
+            $("#inputGrandTotalProductCek").val(formatter.format(sum))
+            $("#pb1_cek").val(formatter.format(tempPb1))
+            $("#service_charge_cek").val(formatter.format(tempService))
+            $("#discount_cek").val(formatter.format(tempDiscount))
+            $("#inputGrandTotalProductFinalCek").val(formatter.format(result.grand_total))
+          },500)
         }
       })
       
@@ -4920,20 +5013,11 @@
       var tempGrand = 0
       var tempPb1 = 0
       var tempService = 0
+      var tempDiscount = 0
       var finalGrand = 0
       var tempTotal = 0
       var sum = 0
 
-      if (value == false) {
-        valueVat = ''
-      }else{
-        if (value == 'service' || value == 'pb1') {
-          valueVat = $("#vat_tax").val() == 0?false:parseFloat($('.title_tax').text().replace("%",""))
-        }else{
-          valueVat = value
-        }
-      }
-      
       $('.inputTotalPriceEdit').each(function() {
         var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
         sum += temp;
@@ -4941,18 +5025,47 @@
 
       $("#inputGrandTotalProduct").val(formatter.format(sum))
 
-      if (!isNaN(valueVat)) {
-        tempVat = Math.round((parseFloat(sum) * (valueVat == false?0:parseFloat(valueVat)) / 100))
+      if (value == false) {
+        valueVat = ''
+        if ($("#inputDiscountNominal").val() != "") {
+          tempDiscount = $("#inputDiscountNominal").val() == 0?false:parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','') / parseFloat(sum) * 100)
+        }
+      }else{
+        if (value == 'service' || value == 'pb1') {
+          valueVat = $("#vat_tax").val() == 0?false:parseFloat($('.title_tax').text().replace("%",""))
+          if ($("#inputDiscountNominal").val() != "") {
+            tempDiscount = $("#inputDiscountNominal").val() == 0?false:parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','') / parseFloat(sum) * 100)
+          }
+        }else if (value == 'discount') {
+          if ($("#inputDiscountNominal").val() == "") {
+            tempDiscount = tempDiscount
+          } else {
+            tempDiscount = $("#inputDiscountNominal").val() == 0?false:parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','') / parseFloat(sum) * 100)
+          }
+        }else{
+          valueVat = value
+          if ($("#inputDiscountNominal").val() != "") {
+            tempDiscount = $("#inputDiscountNominal").val() == 0?false:parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','') / parseFloat(sum) * 100)
+          }
+        }
+      }
 
-        finalVat = tempVat
+      $('.money').mask('#.##0,00', {reverse: true})
 
-        finalGrand = tempGrand
+      if (!isNaN(valueVat)) {   
+        setTimeout(function(){
+          tempVat = Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
 
-        tempTotal = sum
+          finalVat = tempVat
 
-        $('.title_tax').text(valueVat == '' || valueVat == null ?"":valueVat + '%')
+          finalGrand = tempGrand
 
-        $("#vat_tax").val(formatter.format(tempVat))
+          tempTotal = parseFloat(sum)
+
+          $('.title_tax').text(valueVat == '' || valueVat == null ?"":valueVat + '%')
+
+          $("#vat_tax").val(formatter.format(isNaN(tempVat)?0:tempVat))
+        },500)
       }else{
         if (value == 'pb1' || value == 'service') {
           tempVat = Math.round((parseFloat(sum) * ($("#vat_tax").val() == ""?0:parseFloat($("#vat_tax").val())) / 100))
@@ -4965,22 +5078,31 @@
 
         finalGrand = tempGrand
 
-        tempTotal = sum
+        tempTotal = parseFloat(sum)
         
         $('.title_tax').text($("#vat_tax").val() == "" ||$("#vat_tax").val() == 0?"":$('.title_tax').text().replace("%","") + '%')
       }
-      tempPb1 = Math.round((parseFloat(sum) * ($("#inputPb1Product").val() == ""?0:parseFloat($("#inputPb1Product").val())) / 100))
-      tempService = Math.round((parseFloat(sum) * ($("#inputServiceChargeProduct").val() == ""?0:parseFloat($("#inputServiceChargeProduct").val())) / 100))
-      $("#inputServiceChargeNominal").val(formatter.format(tempService))
-      $("#inputPb1Nominal").val(formatter.format(tempPb1))
 
-      tempGrand = sum + tempVat + tempPb1 + tempService
+      setTimeout(function(){
+        tempDiscNominal = isNaN(parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','')))?0:parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))
 
-      changeValueGrandTotal(tempGrand)
+        tempPb1 = Math.round((parseFloat(sum) - tempDiscNominal) * ($("#inputPb1Product").val() == ""?0:parseFloat($("#inputPb1Product").val())) / 100)
+
+        tempService = Math.round((parseFloat(sum) - tempDiscNominal) * ($("#inputServiceChargeProduct").val() == ""?0:parseFloat($("#inputServiceChargeProduct").val())) / 100)
+        
+        $("#inputServiceChargeNominal").val(formatter.format(tempService))
+        $("#inputPb1Nominal").val(formatter.format(tempPb1))
+        $("#inputDiscountProduct").val(tempDiscount)
+
+        tempGrand = tempTotal + tempPb1 + tempService + tempVat - tempDiscNominal
+
+        changeValueGrandTotal(isNaN(tempGrand)?0:tempGrand)
+      },500)
 
       localStorage.setItem('status_tax',valueVat)
       localStorage.setItem('tax_pb',$("#inputPb1Product").val() == ''?0:$("#inputPb1Product").val().split(".")[0])
       localStorage.setItem('service_charge',$("#inputServiceChargeProduct").val() == ''?0:$("#inputServiceChargeProduct").val().split(".")[0])
+      localStorage.setItem('discount',tempDiscount == ''?0:tempDiscount)
     }
 
     function changeValueGrandTotal(grandTotal){
@@ -5909,6 +6031,7 @@
               no_pr:localStorage.getItem('no_pr'),
               isRupiah:localStorage.getItem('isRupiah'),
               status_tax:localStorage.getItem('status_tax'),
+              discount:localStorage.getItem('discount')=='NaN'?0:localStorage.getItem('discount'),
               tax_pb:localStorage.getItem('tax_pb')=='NaN'?0:localStorage.getItem('tax_pb'),
               service_charge:localStorage.getItem('service_charge')=='NaN'?0:localStorage.getItem('service_charge'),
             },
@@ -5991,7 +6114,7 @@
               append = append + '</select>' 
               append = append + '</td>'
               append = append + '<td width="15%">'
-                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control money" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
+                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
               append = append + '</td>'
               append = append + '<td width="15%">'
                 append = append + '<input id="inputTotalPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control inputTotalPriceEdit" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
@@ -6024,6 +6147,17 @@
               appendBottom = appendBottom + '    </div>'
               appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
+
+            appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+              appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+              appendBottom = appendBottom + '      <div class="checkbox"><label><input type="checkbox" class="minimal" id="cbInputDiscountProduct">&nbsp&nbspDiscount</label></div>'
+              appendBottom = appendBottom + ' <input type="text" style="width: 170px;display: inline;margin-left: 15px;text-align: left;" class="form-control money" id="inputDiscountNominal" name="inputdiscountNominal" disabled onkeyup="changeVatValue('+ "'discount'"+')">'
+              appendBottom = appendBottom + '      <input type="text" style="width:80px;display: inline" class="form-control inputDiscountProduct" id="inputDiscountProduct" name="inputDiscountProduct" disabled>'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
+            appendBottom = appendBottom  + '</div>'
+
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
               appendBottom = appendBottom + '<div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + ' <div class="pull-right">'
@@ -6069,6 +6203,7 @@
               appendBottom = appendBottom + '    </div>'
               appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom  + '</div>'
+
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
               appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
@@ -6081,16 +6216,22 @@
           $("#bottomProducts").append(appendBottom)
 
           if (status != "") {
+            console.log(status+"hmm")
             changeVatValue(status)
           }
 
           if (results != "") {
-            changeValueGrandTotal(results.grand_total)
+            setTimeout(function(argument) {
+              changeValueGrandTotal(results.grand_total)
+            },500)
+            
             if (results.pr.tax_pb == "false") {
               toggleIcheckPajak(false)
             }else{
+              toggleIcheckPajak(true)
               $("#inputPb1Nominal").val(formatter.format(Math.round(($("#inputGrandTotalProduct").val() == ""?0:parseFloat($("#inputGrandTotalProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * results.pr.tax_pb / 100)))
               $("#inputPb1Product").val(results.pr.tax_pb)
+              $("#cbInputPb1Product").iCheck('check');
             }
 
             if (results.pr.service_charge == "false") {
@@ -6099,10 +6240,23 @@
               $("#inputServiceChargeNominal").val(formatter.format(Math.round(($("#inputGrandTotalProduct").val() == ""?0:parseFloat($("#inputGrandTotalProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * results.pr.service_charge / 100)))
               $("#inputServiceChargeProduct").val(results.pr.service_charge)
               toggleIcheckPajak(true)
+              $("#cbInputServiceChargeProduct").iCheck('check');
+            }
+
+            if (results.pr.discount == "false") {
+              toggleIcheckPajak(false)
+            }else{
+              $("#inputDiscountNominal").val(formatter.format(Math.round(($("#inputGrandTotalProduct").val() == ""?0:parseFloat($("#inputGrandTotalProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * results.pr.discount / 100)))
+              setTimeout(function(){
+                $("#inputDiscountProduct").val(parseFloat(results.pr.discount).toFixed(2))
+              },500)
+              toggleIcheckPajak(true)
+              $("#cbInputDiscountProduct").iCheck('check');
             }
 
             localStorage.setItem('tax_pb',parseInt(results.pr.tax_pb))
             localStorage.setItem('service_charge',parseInt(results.pr.service_charge))
+            localStorage.setItem('discount',parseFloat(results.pr.discount))
           }else{
             toggleIcheckPajak(false)
           }
@@ -6174,6 +6328,15 @@
             digitsOptional: false,
             placeholder: "0"
           });
+
+          $("#inputDiscountProduct").inputmask({
+            alias:"percentage",
+            integerDigits:2,
+            digits:2,
+            allowMinus:false,
+            digitsOptional: false,
+            placeholder: "0"
+          });
         }
       })
     }
@@ -6202,6 +6365,18 @@
           $("#inputServiceChargeProduct").val("")
           $("#inputServiceChargeNominal").val("")
           changeVatValue("service")
+        }
+      });
+
+      $('#cbInputDiscountProduct').on('ifChecked', function(event){
+        $("#inputDiscountNominal").prop("disabled",false)
+      });
+
+      $('#cbInputDiscountProduct').on('ifUnchecked', function(event){
+        $("#inputDiscountNominal").prop("disabled",true)
+        if (value == false) {
+          $("#inputDiscountNominal").val("")
+           changeVatValue("discount")
         }
       });
     }
@@ -6924,6 +7099,7 @@
               no_pr:localStorage.getItem('no_pr'),
               isRupiah:localStorage.getItem('isRupiah'),
               status_tax:localStorage.getItem('status_tax'),
+              discount:localStorage.getItem('discount')=='NaN'?0:localStorage.getItem('discount'),
               tax_pb:localStorage.getItem('tax_pb')=='NaN'?0:localStorage.getItem('tax_pb'),
               service_charge:localStorage.getItem('service_charge')=='NaN'?0:localStorage.getItem('service_charge'),
             },
