@@ -182,6 +182,21 @@
 			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal,2)}}</th>
 			@endif
 		</tr>
+		@if($data->discount != 'false' && $data->discount != 0)
+		<tr>
+			<th></th>
+			<th></th>
+			@if($data->type_of_letter == 'EPR')
+			<th></th>
+			<th></th>
+			@endif
+			<th style="text-align:right">Discount {{$data->discount}}%</th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_discount,2)}}</th>
+		</tr>
+		@endif
 		@if($data->status_tax != 'False')
 			<tr>
 				<th></th>
@@ -220,7 +235,7 @@
 				<th></th>
 				<th></th>
 				<th></th>
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax_pb,2)}}</th>
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_pb,2)}}</th>
 			</tr>
 			@endif
 			@if($data->service_charge != 'false' && $data->service_charge != 0)
@@ -246,9 +261,9 @@
 				<th></th>
 				<th></th>
 				@if($data->isRupiah == 'true')
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal + $amount_tax,2)}}</th>
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($grand_total,2)}}</th>
 				@else
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+ $amount_tax,2)}}</th>
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($grand_total,2)}}</th>
 				@endif
 			</tr>
 		@else
@@ -264,9 +279,9 @@
 				<th></th>
 				<th></th>
 				@if($data->isRupiah == 'true')
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal,2)}}</th>
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($grand_total,2)}}</th>
 				@else
-				<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal,2)}}</th>
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($grand_total,2)}}</th>
 				@endif
 			</tr>
 		@endif

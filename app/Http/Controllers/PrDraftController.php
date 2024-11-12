@@ -1433,9 +1433,9 @@ class PrDraftController extends Controller
         $update = PRCompare::where('id', $request->no_pr)->first();
         $update->status_tax = $request->status_tax;
         $update->isRupiah = $request->isRupiah;
+        $update->discount = $request->discount;
         $update->tax_pb = $request->tax_pb;
         $update->service_charge = $request->service_charge;
-        $update->discount = $request->discount;
         $update->save();
     }
 
@@ -2788,30 +2788,32 @@ class PrDraftController extends Controller
                 ->select('grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->sum('grand_total');
         }
 
+        if ($data->discount != 'false') {
+            $amount_discount = ($sum_nominal * ($data->discount))/100;
+
+            $sum_nominal = $sum_nominal - $amount_discount;
+        } else {
+            $amount_discount = 0;
+        }
+
         if ($data->status_tax == '1.1') {
-            $amount_tax = round(($sum_nominal * 11)/1000);
+            $amount_tax = ($sum_nominal * 11)/1000;
         } elseif ($data->status_tax == '11') {
-            $amount_tax = round(($sum_nominal * 11)/100);
+            $amount_tax = ($sum_nominal * 11)/100;
         } else {
             $amount_tax = 0;
         }
 
         if ($data->tax_pb != 'false') {
-            $amount_pb = round(($sum_nominal * ($data->tax_pb))/100);
+            $amount_pb = ($sum_nominal * ($data->tax_pb))/100;
         } else {
             $amount_pb = 0;
         }
 
         if ($data->service_charge != 'false') {
-            $amount_service_charge = round(($sum_nominal * ($data->service_charge))/100);
+            $amount_service_charge = ($sum_nominal * ($data->service_charge))/100;
         } else {
             $amount_service_charge = 0;
-        }
-
-        if ($data->discount != 'false') {
-            $amount_discount = round(($sum_nominal * ($data->discount))/100);
-        } else {
-            $amount_discount = 0;
         }
 
         $verify = PRDraftVerify::select('verify_type_of_letter', 'verify_category', 'verify_to', 'verify_email', 'verify_phone', 'verify_attention', 'verify_title', 'verify_address', 'verify_request_method', 'verify_pid', 'verify_lead_id', 'verify_quote_number', 'verify_term_payment')->where('id_draft_pr', $request->no_pr)->orderBy('id', 'desc')->first();
@@ -2851,7 +2853,7 @@ class PrDraftController extends Controller
             'dokumen' => $getAll,
             'activity' => $activity,
             'verify' => $verify,
-            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge-$amount_discount
+            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge
         ]);
     }
 
@@ -2877,32 +2879,33 @@ class PrDraftController extends Controller
                 ->select('grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->sum('grand_total');
         }
 
+        if ($data->discount != 'false') {
+            $amount_discount = ($sum_nominal * ($data->discount))/100;
+
+            $sum_nominal = $sum_nominal - $amount_discount;
+        } else {
+            $amount_discount = 0;
+        }
+
         if ($data->status_tax == '1.1') {
-            $amount_tax = round(($sum_nominal * 11)/1000);
+            $amount_tax = ($sum_nominal * 11)/1000;
         } elseif ($data->status_tax == '11') {
-            $amount_tax = round(($sum_nominal * 11)/100);
+            $amount_tax = ($sum_nominal * 11)/100;
         } else {
             $amount_tax = 0;
         }
 
         if ($data->tax_pb != 'false') {
-            $amount_pb = round(($sum_nominal * ($data->tax_pb))/100);
+            $amount_pb = ($sum_nominal * ($data->tax_pb))/100;
         } else {
             $amount_pb = 0;
         }
 
         if ($data->service_charge != 'false') {
-            $amount_service_charge = round(($sum_nominal * ($data->service_charge))/100);
+            $amount_service_charge = ($sum_nominal * ($data->service_charge))/100;
         } else {
             $amount_service_charge = 0;
         }
-
-        if ($data->discount != 'false') {
-            $amount_discount = round(($sum_nominal * ($data->discount))/100);
-        } else {
-            $amount_discount = 0;
-        }
-
 
         $activity = DB::table('tb_pr_activity')
             ->select('activity as reason')
@@ -3054,7 +3057,7 @@ class PrDraftController extends Controller
             'getSign' => $get_ttd,
             'activity' => $activity,
             'isNotes' => $notes,
-            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge-$amount_discount
+            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge
         ]);
     }
 
@@ -3351,30 +3354,32 @@ class PrDraftController extends Controller
                 ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
                 ->select('grand_total')->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->sum('grand_total');
 
+        if ($data->discount != 'false') {
+            $amount_discount = ($sum_nominal * ($data->discount))/100;
+
+            $sum_nominal = $sum_nominal - $amount_discount;
+        } else {
+            $amount_discount = 0;
+        }
+
         if ($data->status_tax == '1.1') {
-            $amount_tax = round(($sum_nominal * 11)/1000);
+            $amount_tax = ($sum_nominal * 11)/1000;
         } elseif ($data->status_tax == '11') {
-            $amount_tax = round(($sum_nominal * 11)/100);
+            $amount_tax = ($sum_nominal * 11)/100;
         } else {
             $amount_tax = 0;
         }
 
         if ($data->tax_pb != 'false') {
-            $amount_pb = round(($sum_nominal * ($data->tax_pb))/100);
+            $amount_pb = ($sum_nominal * ($data->tax_pb))/100;
         } else {
             $amount_pb = 0;
         }
 
         if ($data->service_charge != 'false') {
-            $amount_service_charge = round(($sum_nominal * ($data->service_charge))/100);
+            $amount_service_charge = ($sum_nominal * ($data->service_charge))/100;
         } else {
             $amount_service_charge = 0;
-        }
-
-        if ($data->discount != 'false') {
-            $amount_discount = round(($sum_nominal * ($data->discount))/100);
-        } else {
-            $amount_discount = 0;
         }
 
         $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
@@ -3397,7 +3402,7 @@ class PrDraftController extends Controller
             'pr' => $data,
             'product' => $product,
             'dokumen' => $getAll,
-            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge-$amount_discount
+            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge
         ]);
     }
 
@@ -4227,7 +4232,11 @@ class PrDraftController extends Controller
                 ->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')
                 ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', DB::raw("(CASE WHEN (`tb_pr`.`lead_id` = 'null') THEN '-' ELSE `tb_pr`.`lead_id` END) as lead_id"), DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.isRupiah',
                 DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', 'tb_pr.issuance', 'parent_id_drive', 'status_draft_pr',
-                DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', DB::raw("(CASE WHEN (`tb_pr`.`tax_pb` is null) THEN 'false' WHEN (`tb_pr`.`tax_pb` = '0') THEN 'false' ELSE `tb_pr`.`tax_pb` END) as tax_pb"), DB::raw("(CASE WHEN (`tb_pr`.`service_charge` is null) THEN 'false' WHEN (`tb_pr`.`service_charge` = '0') THEN 'false' ELSE `tb_pr`.`service_charge` END) as service_charge"), DB::raw("(CASE WHEN (`tb_pr`.`discount` is null) THEN 'false' WHEN (`tb_pr`.`discount` = '0') THEN 'false' ELSE `tb_pr`.`discount` END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+                DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', DB::raw("(CASE WHEN (`tb_pr`.`tax_pb` is null) THEN 'false' WHEN (`tb_pr`.`tax_pb` = '0') THEN 'false' ELSE `tb_pr`.`tax_pb` END) as tax_pb"), DB::raw("(CASE WHEN (`tb_pr`.`service_charge` is null) THEN 'false' WHEN (`tb_pr`.`service_charge` = '0') THEN 'false' ELSE `tb_pr`.`service_charge` END) as service_charge"), DB::raw("(CASE 
+                        WHEN (`tb_pr`.`discount` IS NULL OR `tb_pr`.`discount` = '0') 
+                        THEN 'false' 
+                        ELSE ROUND(`tb_pr`.`discount`, 2) 
+                    END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'group')->where('user_id', $data->issuance)->first();
@@ -4257,38 +4266,39 @@ class PrDraftController extends Controller
                 ->select('grand_total')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->sum('grand_total');
         }
 
-        if ($data->status_tax == '1.1') {
-            $amount_tax = round(($sum_nominal * 11)/1000);
-        } elseif ($data->status_tax == '11') {
-            $amount_tax = round(($sum_nominal * 11)/100);
-        } else {
-            $amount_tax = 0;
-        }
-        
-
-        if ($data->tax_pb != 'false') {
-            $amount_tax_pb = round(($sum_nominal * ($data->tax_pb))/100);
-        } else {
-            $amount_tax_pb = 0;
-        }
-
-        if ($data->service_charge != 'false') {
-            $amount_service_charge = round(($sum_nominal * ($data->service_charge))/100);
-        } else {
-            $amount_service_charge = 0;
-        }
 
         if ($data->discount != 'false') {
-            $amount_discount = round(($sum_nominal * ($data->discount))/100);
+            $amount_discount = round($sum_nominal * ($data->discount))/100;
+
+            $sum_nominal_subtracted = $sum_nominal - $amount_discount;
         } else {
             $amount_discount = 0;
         }
 
-        // return $sum_nominal;
+        if ($data->status_tax == '1.1') {
+            $amount_tax = round($sum_nominal_subtracted * 11)/1000;
+        } elseif ($data->status_tax == '11') {
+            $amount_tax = round($sum_nominal_subtracted * 11)/100;
+        } else {
+            $amount_tax = 0;
+        }
 
-        $grand_total = $sum_nominal+$amount_tax+$amount_tax_pb+$amount_service_charge-$amount_discount;
+        if ($data->tax_pb != 'false') {
+            $amount_pb = round($sum_nominal_subtracted * ($data->tax_pb))/100;
+        } else {
+            $amount_pb = 0;
+        }
+
+        if ($data->service_charge != 'false') {
+            $amount_service_charge = round($sum_nominal_subtracted * ($data->service_charge))/100;
+        } else {
+            $amount_service_charge = 0;
+        }
+
+        // return $sum_nominal_subtracted;
+
+        $grand_total = $sum_nominal_subtracted+$amount_tax+$amount_pb+$amount_service_charge;
         
-
         $territory = DB::table('users')
             ->select('id_territory')
             ->where('nik', $data->issuance)
@@ -4456,7 +4466,7 @@ class PrDraftController extends Controller
 
         // $data->term_payment = "<b>Terms & Condition :</b> <br>" . $data->term_payment;
 
-        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_tax_pb','amount_service_charge','amount_discount'));
+        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_pb','amount_service_charge','amount_discount'));
         $fileName =   $data->no_pr  . ' ' . $data->title  . '.pdf';
         $nameFileFix = str_replace(' ', '_', $fileName);
 
@@ -4466,7 +4476,11 @@ class PrDraftController extends Controller
     }
 
     public function getEmailTemplate(Request $request){
-        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', DB::raw("(CASE WHEN (`tb_pr`.`lead_id` = 'null') THEN '-' ELSE `tb_pr`.`lead_id` END) as lead_id"), DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax', 'tb_pr.isRupiah', 'parent_id_drive', DB::raw("(CASE WHEN (`tb_pr`.`tax_pb` is null) THEN 'false' WHEN (`tb_pr`.`tax_pb` = '0') THEN 'false' ELSE `tb_pr`.`tax_pb` END) as tax_pb"), DB::raw("(CASE WHEN (`tb_pr`.`service_charge` is null) THEN 'false' WHEN (`tb_pr`.`service_charge` = '0') THEN 'false' ELSE `tb_pr`.`service_charge` END) as service_charge"), DB::raw("(CASE WHEN (`tb_pr`.`discount` is null) THEN 'false' WHEN (`tb_pr`.`discount` = '0') THEN 'false' ELSE `tb_pr`.`discount` END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', DB::raw("(CASE WHEN (`tb_pr`.`lead_id` = 'null') THEN '-' ELSE `tb_pr`.`lead_id` END) as lead_id"), DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax', 'tb_pr.isRupiah', 'parent_id_drive', DB::raw("(CASE WHEN (`tb_pr`.`tax_pb` is null) THEN 'false' WHEN (`tb_pr`.`tax_pb` = '0') THEN 'false' ELSE `tb_pr`.`tax_pb` END) as tax_pb"), DB::raw("(CASE WHEN (`tb_pr`.`service_charge` is null) THEN 'false' WHEN (`tb_pr`.`service_charge` = '0') THEN 'false' ELSE `tb_pr`.`service_charge` END) as service_charge"),DB::raw("(CASE 
+                WHEN (`tb_pr`.`discount` IS NULL OR `tb_pr`.`discount` = '0') 
+                THEN 'false' 
+                ELSE ROUND(`tb_pr`.`discount`, 2) 
+            END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
         if ($data->status_draft_pr == 'draft') {
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
@@ -4500,34 +4514,44 @@ class PrDraftController extends Controller
                 ->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
         }
 
-        // $amount_tax = $sum_nominal * 11/100;
-        if ($data->status_tax == '1.1') {
-            $amount_tax = round(($sum_nominal * 11)/1000);
-        } elseif ($data->status_tax == '11') {
-            $amount_tax = round(($sum_nominal * 11)/100);
-        } else {
-            $amount_tax = 0;
-        }
-
-        if ($data->tax_pb != 'false') {
-            $amount_tax_pb = round(($sum_nominal * ($data->tax_pb))/100);
-        } else {
-            $amount_tax_pb = 0;
-        }
-
-        if ($data->service_charge != 'false') {
-            $amount_service_charge = round(($sum_nominal * ($data->service_charge))/100);
-        } else {
-            $amount_service_charge = 0;
-        }
-
         if ($data->discount != 'false') {
-            $amount_discount = round(($sum_nominal * ($data->discount))/100);
+            $amount_discount_hitung = round(($sum_nominal * $data->discount)/100);
+            $amount_discount = round($amount_discount_hitung / 10000) * 10000;
+
+            $sum_nominal_subtracted = $sum_nominal - $amount_discount;
         } else {
             $amount_discount = 0;
         }
 
-        $grand_total = $sum_nominal+$amount_tax+$amount_tax_pb+$amount_service_charge-$amount_discount;
+        if ($data->status_tax == '1.1') {
+            $amount_tax = round($sum_nominal_subtracted * 11)/1000;
+        } elseif ($data->status_tax == '11') {
+            $amount_tax = round($sum_nominal_subtracted * 11)/100;
+        } else {
+            $amount_tax = 0;
+        }
+
+        // if ($data->status_tax == '1.1') {
+        //         $amount_tax = (($sum_nominal - $amount_discount) * 11)/1000;
+        // } elseif ($data->status_tax == '11') {
+        //     $amount_tax = (($sum_nominal - $amount_discount) * 11)/100;
+        // } else {
+        //     $amount_tax = 0;
+        // }
+
+        if ($data->tax_pb != 'false') {
+            $amount_pb = round($sum_nominal_subtracted * ($data->tax_pb))/100;
+        } else {
+            $amount_pb = 0;
+        }
+
+        if ($data->service_charge != 'false') {
+            $amount_service_charge = round($sum_nominal_subtracted * ($data->service_charge))/100;
+        } else {
+            $amount_service_charge = 0;
+        }
+
+        $grand_total = $sum_nominal_subtracted+$amount_tax+$amount_pb+$amount_service_charge;
 
         $amount_tax_project = $data->amount_idr_before_tax * 11/100;
 
@@ -4565,7 +4589,7 @@ class PrDraftController extends Controller
 
         // return "</pre>endd---";
 
-        return view('pr_pdf', compact('data','product','dokumen', 'sum_nominal', 'amount_tax','amount_tax_project','linkDrive','grand_total', 'amount_tax_pb', 'amount_service_charge','amount_discount'));
+        return view('pr_pdf', compact('data','product','dokumen', 'sum_nominal', 'amount_tax','amount_tax_project','linkDrive','grand_total', 'amount_pb', 'amount_service_charge','amount_discount'));
     }
 
     public function sendMailtoFinance(Request $request)
@@ -4650,7 +4674,11 @@ class PrDraftController extends Controller
                 ->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')
                 ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', DB::raw("(CASE WHEN (`tb_pr`.`lead_id` = 'null') THEN '-' ELSE `tb_pr`.`lead_id` END) as lead_id"), DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.isRupiah',
                 DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', 'tb_pr.issuance', 'parent_id_drive', 'status_draft_pr',
-                DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', DB::raw("(CASE WHEN (`tb_pr`.`tax_pb` is null) THEN 'false' WHEN (`tb_pr`.`tax_pb` = '0') THEN 'false' ELSE `tb_pr`.`tax_pb` END) as tax_pb"), DB::raw("(CASE WHEN (`tb_pr`.`service_charge` is null) THEN 'false' WHEN (`tb_pr`.`service_charge` = '0') THEN 'false' ELSE `tb_pr`.`service_charge` END) as service_charge"), DB::raw("(CASE WHEN (`tb_pr`.`discount` is null) THEN 'false' WHEN (`tb_pr`.`discount` = '0') THEN 'false' ELSE `tb_pr`.`discount` END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $no_pr)->first();
+                DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', DB::raw("(CASE WHEN (`tb_pr`.`tax_pb` is null) THEN 'false' WHEN (`tb_pr`.`tax_pb` = '0') THEN 'false' ELSE `tb_pr`.`tax_pb` END) as tax_pb"), DB::raw("(CASE WHEN (`tb_pr`.`service_charge` is null) THEN 'false' WHEN (`tb_pr`.`service_charge` = '0') THEN 'false' ELSE `tb_pr`.`service_charge` END) as service_charge"), DB::raw("(CASE 
+                        WHEN (`tb_pr`.`discount` IS NULL OR `tb_pr`.`discount` = '0') 
+                        THEN 'false' 
+                        ELSE ROUND(`tb_pr`.`discount`, 2) 
+                    END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $no_pr)->first();
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'group')->where('user_id', $data->issuance)->first();
@@ -4678,34 +4706,44 @@ class PrDraftController extends Controller
                 ->select('grand_total')->where('tb_pr_product_draft.id_draft_pr', $no_pr)->sum('grand_total');
         }
 
-        if ($data->status_tax == '1.1') {
-            $amount_tax = round(($sum_nominal * 11)/1000);
-        } elseif ($data->status_tax == '11') {
-            $amount_tax = round(($sum_nominal * 11)/100);
-        } else {
-            $amount_tax = 0;
-        }
-
-        if ($data->tax_pb != 'false') {
-            $amount_tax_pb = round(($sum_nominal * ($data->tax_pb))/100);
-        } else {
-            $amount_tax_pb = 0;
-        }
-
-        if ($data->service_charge != 'false') {
-            $amount_service_charge = round(($sum_nominal * ($data->service_charge))/100);
-        } else {
-            $amount_service_charge = 0;
-        }
-
         if ($data->discount != 'false') {
-            $amount_discount = round(($sum_nominal * ($data->discount))/100);
+            $amount_discount_hitung = round(($sum_nominal * $data->discount)/100);
+            $amount_discount = round($amount_discount_hitung / 10000) * 10000;
+            $sum_nominal_subtracted = $sum_nominal - $amount_discount;
         } else {
             $amount_discount = 0;
         }
 
-        $grand_total = $sum_nominal+$amount_tax+$amount_tax_pb+$amount_service_charge-$amount_discount;
-        
+        if ($data->status_tax == '1.1') {
+            $amount_tax = round(($sum_nominal_subtracted * 11)/1000);
+            // $amount_tax = round($amount_tax_hitung / 10000) * 10000;
+        } elseif ($data->status_tax == '11') {
+            $amount_tax = round(($sum_nominal_subtracted * 11)/100);
+        } else {
+            $amount_tax = 0;
+        }
+
+        // if ($data->status_tax == '1.1') {
+        //         $amount_tax = (($sum_nominal - $amount_discount) * 11)/1000;
+        // } elseif ($data->status_tax == '11') {
+        //     $amount_tax = (($sum_nominal - $amount_discount) * 11)/100;
+        // } else {
+        //     $amount_tax = 0;
+        // }
+
+        if ($data->tax_pb != 'false') {
+            $amount_pb = round(($sum_nominal_subtracted * ($data->tax_pb))/100);
+        } else {
+            $amount_pb = 0;
+        }
+
+        if ($data->service_charge != 'false') {
+            $amount_service_charge = round(($sum_nominal_subtracted * ($data->service_charge))/100);
+        } else {
+            $amount_service_charge = 0;
+        }
+
+        $grand_total = $sum_nominal_subtracted+$amount_tax+$amount_pb+$amount_service_charge;
 
         $territory = DB::table('users')
             ->select('id_territory')
@@ -4874,12 +4912,12 @@ class PrDraftController extends Controller
 
         // $data->term_payment = "<b>Terms & Condition :</b> <br>" . $data->term_payment;
 
-        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_tax_pb','amount_service_charge','amount_discount'));
+        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_pb','amount_service_charge','amount_discount'));
         $fileName =   $data->no_pr  . ' ' . $data->title  . '.pdf';
         $nameFileFix = str_replace(' ', '_', $fileName);
 
-        // return $pdf->stream($nameFileFix);
-        return $pdf->output();
+        return $pdf->stream($nameFileFix);
+        // return $pdf->output();
         // return view('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role'));
     }
 
