@@ -1055,6 +1055,9 @@ Ticketing
 										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnIdAtm">
 											Asset
 										</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;">
+											Serial Number
+										</th>
 										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnTicketNum">
 											Ticket Number
 										</th>
@@ -5894,6 +5897,13 @@ Ticketing
 									data.type_ticket = "Permintaan Penawaran"
 								}
 
+								//serial_device
+								if (data.serial_device == null || data.serial_device == '') {
+									data.serial_device = ' - '
+								}else{
+									data.serial_device = data.serial_device
+								}
+
 								if(data.severity == 1){
 									data.severity_numerical = 1
 									data.severity = '<span class="label bg-red">' + data.type_ticket + ' - Critical</span>'
@@ -5922,6 +5932,11 @@ Ticketing
 						},
 						{ 	
 							data:'id_atm',
+							className:'text-center',
+							width:"5%"
+						},
+						{ 	
+							data:'serial_device',
 							className:'text-center',
 							width:"5%"
 						},
