@@ -145,6 +145,7 @@ class AssetHRController extends Controller
                             'tb_asset_hr_request.created_at',
                             'qty',
                             'keperluan as used_for',
+                            'link_drive',
                             DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
                             'reason',
                             'link_drive'
@@ -177,6 +178,7 @@ class AssetHRController extends Controller
                                 'tb_asset_hr_request.updated_at',
                                 'qty',
                                 'keperluan as used_for',
+                                'link_drive',
                                 DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
                                 'reason',
                                 'link_drive'
@@ -205,6 +207,7 @@ class AssetHRController extends Controller
                                 'tb_asset_hr_request.created_at',
                                 'qty',
                                 'keperluan as used_for',
+                                'link_drive',
                                 DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
                                 'reason',
                                 'link_drive'
@@ -225,6 +228,7 @@ class AssetHRController extends Controller
                                 'tb_asset_hr_request.updated_at',
                                 'qty',
                                 'keperluan as used_for',
+                                'link_drive',
                                 DB::raw('CASE WHEN (duration) = "Lifetime" THEN duration ELSE CONCAT(DATE_FORMAT(duration_start, "%d/%m/%Y")," - ",DATE_FORMAT(duration_end, "%d/%m/%Y")) END as duration'),
                                 'reason',
                                 'link_drive'

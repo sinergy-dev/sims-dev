@@ -5054,7 +5054,7 @@
 
       if (!isNaN(valueVat)) {   
         setTimeout(function(){
-          tempVat = Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
+          tempVat = $("#inputDiscountNominal").val() == '' ? Math.round((parseFloat(sum)) * (valueVat == false?0:parseFloat(valueVat) / 100)) : Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
 
           finalVat = tempVat
 
@@ -5066,6 +5066,8 @@
 
           $("#vat_tax").val(formatter.format(isNaN(tempVat)?0:tempVat))
         },500)
+
+        console.log(tempVat)
       }else{
         if (value == 'pb1' || value == 'service') {
           tempVat = Math.round((parseFloat(sum) * ($("#vat_tax").val() == ""?0:parseFloat($("#vat_tax").val())) / 100))

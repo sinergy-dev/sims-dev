@@ -997,7 +997,7 @@ class AssetMgmtController extends Controller
             $delete = AssetMgmtAssign::where('id_asset_peripheral',$request->id_asset)->delete();
         }
 
-        if (isset($request->engineer)) {
+        if (isset($request->engineer['name'])) {
             $data = json_decode($request->engineer,true);
 
             $delete_engineer_assign = AssetMgmtAssignEngineer::where('id_asset',$request->id_asset)->delete();
@@ -1555,10 +1555,10 @@ class AssetMgmtController extends Controller
                 DB::raw("CONCAT(`users`.`name`,' - ',`roles`.`name`) AS `pic_name`"), 
                 DB::raw("CASE 
                     WHEN LEAD(tb_asset_management_detail.date_add) OVER (ORDER BY tb_asset_management_detail.id) IS NULL 
-                    THEN CONCAT(DATE_FORMAT(tb_asset_management_detail.date_add, '%Y-%m-%d'), ' until Now')
+                    THEN CONCAT(DATE_FORMAT(tb_asset_management_detail.installed_date, '%Y-%m-%d'), ' until Now')
                     
-                    ELSE CONCAT(DATE_FORMAT(tb_asset_management_detail.date_add, '%Y-%m-%d'), ' until ', 
-                                COALESCE(DATE_FORMAT(DATE_SUB(LEAD(tb_asset_management_detail.date_add) OVER (ORDER BY tb_asset_management_detail.id), INTERVAL 1 DAY), '%Y-%m-%d'), ''))
+                    ELSE CONCAT(DATE_FORMAT(tb_asset_management_detail.installed_date, '%Y-%m-%d'), ' until ', 
+                                COALESCE(DATE_FORMAT(DATE_SUB(LEAD(tb_asset_management_detail.installed_date) OVER (ORDER BY tb_asset_management_detail.id), INTERVAL 1 DAY), '%Y-%m-%d'), ''))
                     END AS periode_asset_internal
                     ")
             )
@@ -2856,12 +2856,22 @@ class AssetMgmtController extends Controller
 
         $pihak_pertama->atasan = $atasan_pp->name;
 
-        $list_asset_request = DB::table('tb_asset_management')
-                        ->select('tb_asset_management.id','category','type_device','serial_number','vendor as merk')
-                        ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
-                        ->where('tb_asset_management.id',$id_asset)
-                        ->groupBy('tb_asset_management.id')
-                        ->get();
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
+
+        $list_asset_request = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+                    ->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')
+                    ->select('tb_asset_management.id','category','serial_number',DB::raw('CONCAT(vendor, " - ",type_device) AS merk'),'notes', DB::raw("(CASE WHEN (accessoris is null) THEN '-' ELSE accessoris END) as accessoris"))
+                    ->where('tb_asset_management.id',$id_asset)
+                    ->get();
+
+        // $list_asset_request = DB::table('tb_asset_management')
+        //                 ->select('tb_asset_management.id','category','type_device','serial_number','vendor as merk','notes',DB::raw("(CASE WHEN (accessoris is null) THEN '-' ELSE accessoris END) as accessoris"))
+        //                 ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
+        //                 ->where('tb_asset_management.id',$id_asset)
+        //                 ->groupBy('tb_asset_management.id','accessoris')
+        //                 ->get();
+                    
         // return $id_asset;
         $cek_role_pk = DB::table('tb_asset_management_detail')
                         ->join('users','users.nik','=','tb_asset_management_detail.pic')

@@ -3529,7 +3529,11 @@ class PMProjectController extends Controller
         // }
 
         $update_phase = PMO::where('id', $request->id_pmo)->first();
-        $update_phase->current_phase = $get_parent;
+        if(GanttTaskPmo::where('id_pmo', $request->id_pmo)->where('status','On-Going')->exists()){
+            $update_phase->current_phase = $get_parent;
+        } else {
+            $update_phase->current_phase = 'Done';
+        }
         $update_phase->save();
 
         if ($update->text == 'Submit Final Project Closing Report' && $update_phase->project_type == 'implementation') {

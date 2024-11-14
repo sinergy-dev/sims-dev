@@ -297,6 +297,7 @@ GA Asset
                       <th >Used For</th>
                       <th >Duration</th>
                       <th >Reason</th>
+                      <th >File</th>
                       <th width="5%">Status</th>  
                       <th >Action</th>
                       <th >Action</th>
@@ -320,7 +321,12 @@ GA Asset
                         </td>  
                         <td>{{$datas->used_for}}</td>
                         <td>{{$datas->duration}}</td> 
-                        <td>{{$datas->reason}}</td>                                                                       
+                        <td>{{$datas->reason}}</td> 
+                        @if($datas->link_drive != null || $datas->link_drive != "")
+                          <td><a href="{{$datas->link_drive}}" target="_blank"><i class="fa fa-file-image-o"></i> files</a></td>                 
+                        @else
+                          <td> - </td>                   
+                        @endif 
                         <td width="5%">
                           @if($datas->status == 'REQUEST' || $datas->status == 'ON PROGRESS')
                           <label class="label label-info">{{$datas->status}}</label>
@@ -448,6 +454,7 @@ GA Asset
                       <th >Used For</th>
                       <th >Duration</th>
                       <th >Reason</th>
+                      <th> File</th>
                       <th width="5%">Status</th>  
                       <th >Action</th>
                     </tr>
@@ -471,12 +478,17 @@ GA Asset
                         </td>  
                         <td>{{$datas->used_for}}</td>
                         <td>{{$datas->duration}}</td> 
-                        <td>{{$datas->reason}}</td>                                                                       
+                        <td>{{$datas->reason}}</td>   
+                        @if($datas->link_drive != null || $datas->link_drive != "")
+                          <td><a href="{{$datas->link_drive}}" target="_blank"><i class="fa fa-file-image-o"></i> files</a></td>                 
+                        @else
+                          <td> - </td>                   
+                        @endif                                                                     
                         <td width="5%">
                           @if($datas->status == 'ACCEPT')
-                          <label class="label label-success">{{$datas->status}}</label>
+                          <label class="label label-success">ACCEPTED</label>
                           @elseif($datas->status == 'REJECT')
-                          <label class="label label-danger">{{$datas->status}}</label>
+                          <label class="label label-danger">REJECTED</label>
                           @else
                           <label class="label label-warning">{{$datas->status}}</label>
                           @endif
@@ -1272,12 +1284,12 @@ GA Asset
           <div class="form-group">
             <label>Notes</label><small>(optional)</small>
             <textarea class="form-control" id="notes_accept" style="overflow-y: scroll!important;resize: none !important;"></textarea>
-            <div class="checkbox">
+            <!-- <div class="checkbox">
               <label>
                 <input type="checkbox" name="resolve_notes" id="resolve_notes" checked>
                 Resolve notes <small> (With checking this resolve notes, asset automate to accepted)</small>
               </label>
-            </div>
+            </div> -->
           </div>
 
           <div class="box-container" style="max-height: 400px;display:none;">
@@ -1295,8 +1307,9 @@ GA Asset
           </div>       	
         </div>
         <div class="modal-footer">
-        	<button type="button" id="btnAcceptRequest" class="btn btn-primary">Submit</button>
-          <button type="button" id="btnResolveRequest" class="btn btn-success">Resolve</button>
+        	<button type="button" id="btnAcceptRequest" class="btn btn-primary" style="display:none;">Submit</button>
+          <button type="button" id="btnRejectRequest" class="btn btn-danger" style="display:none;">Reject</button>
+          <button type="button" id="btnResolveRequest" class="btn btn-success" style="display:none;">Approve</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -2138,7 +2151,7 @@ GA Asset
             if (result[0].notes.length > 0) {
               $("#btnAcceptRequest").hide()
               if (status == "ACCEPT" || status == "REJECT") {
-                if (accesable.includes('request_list') || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','like','%Manager%')->exists()}}") {
+                if (accesable.includes('request_list')) {
                   $("#btnResolveRequest").show();
                 }else{
                   $("#btnResolveRequest").hide();
@@ -2196,6 +2209,15 @@ GA Asset
               $("#notes_accept").closest(".form-group").next(".box-container").hide()
               $("#notes_accept").closest(".form-group").next(".box-container").next(".box-footer").hide()
             }
+
+            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Asset Management')->exists()}}") {
+              if (status == 'ACCEPT') {
+                $("#btnRejectRequest").show()
+                $("#btnRejectRequest").attr("onclick","requestAssetAccept('"+ id_request +"','REJECT')")
+              }else{
+                $("#btnRejectRequest").hide()
+              }
+            }
           }
         })
 
@@ -2203,20 +2225,24 @@ GA Asset
         console.log(status_notes)
 
         $("#btnAcceptRequest").click(function(){
-          if ($("#notes_accept").val() != "") {
-            if ($("#resolve_notes").is(":checked")) {
-              status = status
-              textTitle = 'Including notes, and resolve will finished all process!'
-            }else{
-              status = 'PENDING'
-              textTitle = 'Including notes, you should resolve it later to finish all process!'
-            }
-            notes = $("#notes_accept").val()
-          }else{
-            status = 'ACCEPT'
-            textTitle = 'Accepting without notes, all process will be finished!'
-            notes = notes
-          }
+          // if ($("#notes_accept").val() != "") {
+          //   if ($("#resolve_notes").is(":checked")) {
+          //     status = status
+          //     textTitle = 'Including notes, and resolve will finished all process!'
+          //   }else{
+          //     status = 'PENDING'
+          //     textTitle = 'Including notes, you should resolve it later to finish all process!'
+          //   }
+          //   notes = $("#notes_accept").val()
+          // }else{
+          //   status = 'ACCEPT'
+          //   textTitle = 'Accepting without notes, all process will be finished!'
+          //   notes = notes
+          // }
+          status = 'PENDING'
+          textTitle = 'Accepting Asset Request, it will process to asset management!'
+          notes = notes
+
           swalAccept = Swal.fire({
             title: titleStatus,
             text: textTitle,
@@ -2227,7 +2253,6 @@ GA Asset
             confirmButtonText: 'Yes',
             cancelButtonText: 'No',
           })
-
 
           swalAccept.then((result) => {
             if (result.value) {
@@ -2274,7 +2299,7 @@ GA Asset
 
         $("#btnResolveRequest").click(function(){
           status = 'ACCEPT'
-          textTitle = 'Resolve Notes Accept Request!'
+          textTitle = 'Approve Asset Request!'
           notes = notes
 
           swalAccept = Swal.fire({
@@ -2331,6 +2356,9 @@ GA Asset
         })
              
       }else{
+        console.log("sini")
+        $('#acceptModalPinjam').modal('hide');
+
         var titleStatus = 'Reject Request Asset Baru'
         swalAccept = Swal.fire({
             title: titleStatus,
@@ -2348,7 +2376,7 @@ GA Asset
               data:{
                 id_request:id_request,
                 status:status,
-                reason:result.value
+                notes:result.value
               },
               beforeSend:function(){
                   Swal.fire({
@@ -2491,9 +2519,9 @@ GA Asset
 
     var accesable = @json($feature_item);
     if (accesable.includes('request_list')) {
-      requestTable.column(11).visible(false);
+      requestTable.column(12).visible(false);
     }else{
-      requestTable.column(10).visible(false);
+      requestTable.column(11).visible(false);
     }
 
     $('#history_table').DataTable({

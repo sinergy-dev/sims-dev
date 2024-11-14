@@ -1828,7 +1828,7 @@
 
             $("#vendorContainer").show();
             data.forEach(function(item) {
-              var div = $('<div class="col-md-6 form-group">');
+              var div = $('<div class="col-md-4 form-group">');
               var label = $('<label>', {
                   text: item.name
               });
@@ -2737,7 +2737,7 @@
           if ($(".tab-add:first").is(":visible")) {
             checkInput = $(".tab-add:first").find(".form-group").hasClass("has-error")
           }else{
-            checkInput = $(".tab-add:nth(2)").find(".form-group").hasClass("has-error")
+            checkInput = $(".tab-add:nth(3)").find(".form-group").hasClass("has-error")
           }
         }
       }

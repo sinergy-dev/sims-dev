@@ -236,7 +236,7 @@
 					<th>No</th>
 					<th>Kategori Asset</th>
 					<th>Merk</th>
-					<th>Type</th>
+					<th>Accessories</th>
 					<th>Serial Number</th>
 					<th>Jumlah</th>
 					<th>Kondisi Asset</th>
@@ -248,10 +248,10 @@
 					<td>{{++$key}}</td>
 					<td>{{$data->category}}</td>
 					<td>{{$data->merk}}</td>
-					<td>{{$data->type_device}}</td>
+					<td>{{$data->accessoris}}</td>
 					<td>{{$data->serial_number}}</td>
 					<td>1</td>
-					<td>Available</td>
+					<td>{{$data->notes}}</td>
 				</tr>
 				@endforeach
 			</tbody>
@@ -268,7 +268,7 @@
 		<div style="display: flex;">
 			<p style="margin-left: 20px;">Yang menyerahkan,</p>
 			<span style="float:left;margin-left: 20px;"><h4>PIHAK PERTAMA</h4></span>
-			<span style="float:right;margin-right: 20px;"><h4>PIHAK KEDUA</h4></span>
+			<span style="float:right;margin-right: 30px;"><h4>PIHAK KEDUA</h4></span>
 		</div>
 		<br><br><br>
 		<div style="display:flex;">
@@ -278,7 +278,7 @@
 			</div>
 			<div style="float:right;margin-right: 20px;">
 				<img src="{{$pihak_kedua->ttd}}" style="margin-left: 20px;width: 100px;height: 100px;">
-				<span style="margin-left:25px"><h4>{{$pihak_kedua->name_pk}}</h4></span>
+				<span style="margin-left:30px"><h4>{{$pihak_kedua->name_pk}}</h4></span>
 			</div>
 		</div>
 	</div>

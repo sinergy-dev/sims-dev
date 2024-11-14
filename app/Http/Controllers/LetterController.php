@@ -32,7 +32,7 @@ class LetterController extends Controller
 
         $pops = letter::select('no_letter')->where('status','A')->orderBy('no','desc')->first();
 
-        $pops2 = Letter::select('no_letter')->where('status', 'F')->orderBy('no', 'desc')->first();
+        $pops2 = Letter::select('no_letter')->where('status', 'F')->orderBy('updated_at', 'desc')->first();
 
         $tahun = date("Y");
 
@@ -274,9 +274,15 @@ class LetterController extends Controller
         $posti = $request['position'];        
 
         if ($cek > 0) {
-            $letters = Letter::where('status','A')->orderBy('no','desc')->whereYear('created_at',$tahun)->first()->no_letter;
+            $letters = Letter::where('status','A')->orderBy('no','desc')->whereYear('created_at',$tahun)->first();
 
-            $getnumber =  explode("/",$letters)[0];
+            if (isset($letters)) {
+                $letters = $letters->no_letter;
+
+                $getnumber =  explode("/",$letters)[0];
+            }else{
+                $getnumber =  0;
+            }
 
             $nom = Letter::select('no')->orderBy('created_at','desc')->whereYear('created_at', $tahun)->first()->no;
 
@@ -632,12 +638,16 @@ class LetterController extends Controller
 
     public function addBackdateNum(Request $request)
     {
-        $lastnumber = Letter::whereYear('created_at',substr($request->date_backdate, 6,4))->where('status', 'F')->orderBy('no', 'desc')->first()->no_letter;
+        $lastnumber = Letter::whereYear('created_at',substr($request->date_backdate, 6,4))->where('status', 'F')->orderBy('no', 'desc')->first();
 
-        $getletter =  explode("/",$lastnumber)[0];
+        if (isset($lastnumber)) {
+            $lastnumber = $lastnumber->no_letter;
+            $getletter =  explode("/",$lastnumber)[0];
 
-        $getnumber = $getletter + 10;
-
+            $getnumber = $getletter + 10;
+        }else{
+            $getnumber = 10; 
+        }
         // return $lastnumber;
 
         if($getnumber < 10){

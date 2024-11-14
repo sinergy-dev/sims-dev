@@ -2789,29 +2789,30 @@ class PrDraftController extends Controller
         }
 
         if ($data->discount != 'false') {
-            $amount_discount = ($sum_nominal * ($data->discount))/100;
+            $amount_discount = round($sum_nominal * ($data->discount))/100;
 
-            $sum_nominal = $sum_nominal - $amount_discount;
+            $sum_nominal_subtracted = $sum_nominal - $amount_discount;
         } else {
+            $sum_nominal_subtracted = $sum_nominal;
             $amount_discount = 0;
         }
 
         if ($data->status_tax == '1.1') {
-            $amount_tax = ($sum_nominal * 11)/1000;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/1000);
         } elseif ($data->status_tax == '11') {
-            $amount_tax = ($sum_nominal * 11)/100;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/100);
         } else {
             $amount_tax = 0;
         }
 
         if ($data->tax_pb != 'false') {
-            $amount_pb = ($sum_nominal * ($data->tax_pb))/100;
+            $amount_pb = round($sum_nominal_subtracted * ($data->tax_pb))/100;
         } else {
             $amount_pb = 0;
         }
 
         if ($data->service_charge != 'false') {
-            $amount_service_charge = ($sum_nominal * ($data->service_charge))/100;
+            $amount_service_charge = round($sum_nominal_subtracted * ($data->service_charge))/100;
         } else {
             $amount_service_charge = 0;
         }
@@ -2853,7 +2854,7 @@ class PrDraftController extends Controller
             'dokumen' => $getAll,
             'activity' => $activity,
             'verify' => $verify,
-            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge
+            'grand_total' => $sum_nominal_subtracted+$amount_tax+$amount_pb+$amount_service_charge
         ]);
     }
 
@@ -4272,13 +4273,14 @@ class PrDraftController extends Controller
 
             $sum_nominal_subtracted = $sum_nominal - $amount_discount;
         } else {
+            $sum_nominal_subtracted = $sum_nominal;
             $amount_discount = 0;
         }
 
         if ($data->status_tax == '1.1') {
-            $amount_tax = round($sum_nominal_subtracted * 11)/1000;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/1000);
         } elseif ($data->status_tax == '11') {
-            $amount_tax = round($sum_nominal_subtracted * 11)/100;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/100);
         } else {
             $amount_tax = 0;
         }
@@ -4521,12 +4523,13 @@ class PrDraftController extends Controller
             $sum_nominal_subtracted = $sum_nominal - $amount_discount;
         } else {
             $amount_discount = 0;
+            $sum_nominal_subtracted = $sum_nominal;
         }
 
         if ($data->status_tax == '1.1') {
-            $amount_tax = round($sum_nominal_subtracted * 11)/1000;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/1000);
         } elseif ($data->status_tax == '11') {
-            $amount_tax = round($sum_nominal_subtracted * 11)/100;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/100);
         } else {
             $amount_tax = 0;
         }
@@ -4711,6 +4714,7 @@ class PrDraftController extends Controller
             $amount_discount = round($amount_discount_hitung / 10000) * 10000;
             $sum_nominal_subtracted = $sum_nominal - $amount_discount;
         } else {
+            $sum_nominal_subtracted = $sum_nominal;
             $amount_discount = 0;
         }
 

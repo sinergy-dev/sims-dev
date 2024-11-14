@@ -118,7 +118,10 @@
             <div class="col-lg-4 col-xs-12">
               <div class="form-group">
                 <label>Spesifikasi</label>
-                <input class="form-control" id="inputSpesifikasi" name="inputSpesifikasi"></input>
+                <textarea class="form-control" id="inputSpesifikasi" name="inputSpesifikasi" style="min-height: 100px; /* Set minimum height */
+                    max-height: 200px; /* Set maximum height */
+                    overflow: scroll; /* Prevent scrollbar */
+                    resize: none; /* Prevent manual resizing */"></textarea>
               </div>
               <div class="form-group">
                 <label>Notes</label>
@@ -1082,6 +1085,12 @@
             });
 
             // Append all options to the dropdown
+            optionSelect = document.createElement('option');
+            optionSelect.value = "";
+            optionSelect.text = "Select License/Garansi";
+
+            options.unshift(optionSelect)
+
             options.forEach(option => selectLicense.append(option));
 
             licenseContainer.append(labelLicense,selectLicense);
@@ -1600,7 +1609,7 @@
           
           $("#inputClient").val(result.client).prop("disabled",true)
           $("input[name='inputSerialNumber']").val(result.serial_number)
-          $("input[name='inputSpesifikasi']").val(result.spesifikasi)
+          $("textarea[name='inputSpesifikasi']").text(result.spesifikasi.replaceAll("<br>","\n"))
           $("input[name='inputRMA']").val(result.rma)
           $("input[name='inputVendorPeripheral']").val(result.vendor)
           $("input[name='inputTypeDevicePeripheral']").val(result.type_device)
@@ -1815,7 +1824,7 @@
           vendor = $("select[name='selectVendor']").val()
           typeDevice = $("select[name='selectTypeDevice']").val()
           serialNumber = $("input[name='inputSerialNumber']").val()
-          spesifikasi = $("input[name='inputSpesifikasi']").val()
+          spesifikasi = $("textarea[name='inputSpesifikasi']").val()
           status = $("select[name='selectStatus']").val()
           tanggalBeli = $("input[name='inputTglBeli']").val()
           hargaBeli = $("input[name='inputHarga']").val()
@@ -2195,6 +2204,11 @@
         if ($(data).val() !== "") {
           $(data).closest(".input-group").next("span").hide();
         }
+      }
+
+      function autoResize(textarea) {
+        textarea.style.height = 'auto'; // Reset height to auto
+        textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
       }
   </script>
 @endsection

@@ -195,12 +195,52 @@ Ticketing
 	}
 
 	.dataTables_processing {
-	  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-	  color: white;                   /* Text color */
-	  font-size: 18px;                /* Text size */
-	  padding: 10px;                  /* Padding around text */
-	  border-radius: 5px;             /* Rounded corners */
-	  z-index: 10000;                 /* Ensure it appears on top */
+	  background: rgba(0, 0, 0, 0.5); 
+	  color: white;                   
+	  font-size: 18px;                
+	  padding: 10px;                  
+	  border-radius: 5px;             
+	  z-index: 10000;                 
+	}
+
+	.card {
+		width: 100%; 
+		border: 1px solid #e0e0e0; 
+		border-radius: 0.375rem; 
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+		margin-bottom: 1.5rem; 
+		background-color: #fff;
+		overflow: hidden; 
+	}
+
+	.card-header {
+		padding: 0.75rem 1.25rem; 
+		background-color: #f7f7f9; 
+		border-bottom: 1px solid #e0e0e0; 
+		border-top-left-radius: 0.375rem; 
+		border-top-right-radius: 0.375rem;
+		font-size: 1.25rem; 
+		font-weight: 500; 
+		white-space: nowrap; 
+		text-overflow: ellipsis; 
+		overflow: hidden; 
+	}
+
+	.card-body {
+		padding: 1.25rem; 
+		font-size: 1rem; 
+		color: #212529; 
+		overflow: hidden; 
+	}
+
+	.card-footer {
+		padding: 0.75rem 1.25rem; 
+		background-color: #f7f7f9; 
+		border-top: 1px solid #e0e0e0;
+		border-bottom-left-radius: 0.375rem; 
+		border-bottom-right-radius: 0.375rem;
+		text-align: right; 
+		overflow: hidden; 
 	}
 </style>
 @endsection
@@ -243,6 +283,9 @@ Ticketing
 				<li>
 					<a href="#reporting" data-toggle="tab">Reporting</a>
 				</li>
+				<!-- <li>
+					<a href="#tripRequest" data-toggle="tab" id="tripRequestTab" onclick="getTripRequestAll()">Trip Request</a>
+				</li> -->
 			</ul>
 
 			<div class="tab-content">
@@ -250,13 +293,23 @@ Ticketing
 					<div class="row">
 						<section class="col-md-7">
 							<div class="row">
-									<div class="col-md-6 col-xs-12">
+									<div class="col-md-4 col-xs-12">
 										<div class="form-group">
-											<label>Filter By PID</label>
-											<select type="text" class="form-control" style="width: 100%important!" id="filterDashboardByPid" name=""><option></option></select>
+											<label>Filter By Client</label>
+											<select type="text" class="form-control" style="width: 100%important!" id="filterDashboardByClient" name="filterDashboardByClient">
+												<option></option>
+											</select>
 										</div>
 									</div>
-									<div class="col-md-6 col-xs-12">
+									<div class="col-md-4 col-xs-12">
+										<div class="form-group">
+											<label>Filter By PID</label>
+											<select type="text" class="form-control" style="width: 100%important!" id="filterDashboardByPid" name="filterDashboardByPid">
+												<option></option>
+											</select>
+										</div>
+									</div>
+									<div class="col-md-4 col-xs-12">
 										<div class="form-group">
 											<label>Date Range</label>
 											<div>
@@ -275,7 +328,6 @@ Ticketing
 					      						</a>
 					      					</span>
 					      				</div>
-												
 											</div>
 										</div>
 									</div>
@@ -673,9 +725,9 @@ Ticketing
 									</div>
 								</div>
 								<div class="form-group" id="engineerDiv" style="display: none;">
-									<label for="inputEmail" class="col-sm-2 control-label">Engineer*</label>
+									<label for="inputEngineerOpen" class="col-sm-2 control-label">Engineer</label>
 									<div class="col-sm-10">
-										<input type="text" class="form-control" id="inputEngineerOpen" placeholder="" required value="">
+											<input type="text" class="form-control" id="inputEngineerOpen" placeholder="" required value="">
 										<span class="help-block" style="margin-bottom: 0px; display: none;">Engineer must be fill!</span>
 									</div>
 								</div>
@@ -1380,6 +1432,112 @@ Ticketing
 						</div>
 					</div>
 				</div>
+
+				<!-- <div class="tab-pane" id="tripRequest">
+					<div class="row">
+							<div class="col-md-3">
+								
+							</div>
+							<div class="col-md-2" style="display:none">
+								
+							</div>
+							<div class="col-md-2">
+								
+							</div>
+							<div class="col-md-2">
+								
+							</div>
+							<div class="col-md-5">
+								<div class="input-group">
+									<input id="searchBarTrip" type="text" class="form-control" >
+									
+									<div class="input-group-btn">
+										<button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat " >
+											<span class="fa fa-search"></span>
+										</button>
+										
+									</div>
+									<span class="input-group-btn">
+										
+									</span>
+									<span class="input-group-btn">
+										<button style="margin-left: 10px;" type="button" id="btnShowColumnTripRequest" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+											Displayed Column
+											<span class="fa fa-caret-down"></span>
+										</button>
+										<ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
+											
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="0"><span class="text">Trip ID</span></li>
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="1"><span class="text">Request By</span></li>
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="2"><span class="text">From</span></li>
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="3"><span class="text">To</span></li>
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="4"><span class="text">Start Date</span></li>
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="5"><span class="text">End Date</span></li>
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="6"><span class="text">Nominal</span></li>
+											<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTableTripRequest(this)" data-column="7"><span class="text">Settlement</span></li>
+										</ul>
+										<button style="margin-left: 10px;" title="Refresh Table" id="reloadTableTripRequest" type="button" class="btn btn-default btn-flat btn-sm">
+											<i class="fa fa-fw fa-refresh"></i>
+										</button>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>					
+					<div class="row">
+						<div class="col-md-12">
+							<div class="table-responsive no-padding">
+								<table class="table table-bordered table-striped " id="tableTripRequest">
+									<thead>
+										<th style="width: 120px;text-align:center;vertical-align: middle;">
+											Trip ID
+										</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;">
+											Request By
+										</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;">
+											From
+										</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;">
+											To
+										</th>
+										<th style="vertical-align: middle;">
+											Start Date
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
+											End Date
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
+											Type
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
+											Nominal
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
+											Settlement
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
+											Action
+										</th>
+									</thead>
+									
+									<tfoot>
+										<th style="width: 120px;text-align:center;vertical-align: middle;">Trip ID</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;" >Request By</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;">From</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;">To</th>
+										<th style="vertical-align: middle;">Start Date</th>
+										<th style="text-align: center;vertical-align: middle;">End Date</th>
+										<th style="text-align: center;vertical-align: middle;">Type</th>
+										<th style="text-align: center;vertical-align: middle;">Nominal</th>
+										<th style="text-align: center;vertical-align: middle;">Settlement</th>
+										<th style="text-align: center;vertical-align: middle;">Action</th>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div> -->
 			</div>
 		</div>
 	</section>
@@ -1767,7 +1925,7 @@ Ticketing
 									<div class="bootstrap-timepicker">
 										<div class="form-group">
 											<div class="input-group">
-												<input type="text" class="form-control timepicker" id="timePending">
+												<input type="text" class="form-control" id="timePending">
 
 												<div class="input-group-addon">
 													<i class="fa fa-clock-o"></i>
@@ -1989,7 +2147,8 @@ Ticketing
 					<div class="modal-body">
 						<form role="form">
 							<div class="form-group" >
-								<label>Root Cause Analysis (RCA)</label>
+								<!-- <label>Root Cause Analysis (RCA)</label> -->
+								<label>Summary Case</label>
 								<textarea type="text" class="form-control" id="escalateRCA" style="resize: vertical;"></textarea>
 							</div>
 							<div class="row">
@@ -3039,6 +3198,186 @@ Ticketing
 		</div>
 	</div>
 
+	<!-- Start SLM Changes Modal Approval Pending and Modal Detail Trip Request  -->
+	<div class="modal fade" id="modal-approval-pending">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true" style="margin-left: 5px;">×</span>
+					</button>
+					<div class="modal-tools pull-right" style="text-align: right";>
+						<div>
+							<span class="label label-default" id="pendingTicketType" style="font-size: 15px;"></span>
+							<span class="label label-default" id="pendingTicketSeverity" style="font-size: 15px;"></span>
+						</div>
+						<div style="margin-top: 5px;">
+							<span id="pendingTicketLatestStatus"></span> 
+							<span class="label label-default" id="pendingTicketStatus"></span>
+						</div>
+					</div>
+					<div>
+						<h4 class="modal-title" id="modal-ticket-title-pending">Ticket ID </h4>
+					</div>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<input type="hidden" class="form-control" id="pendingTicketID">
+						<input type="hidden" class="form-control" id="pendingTicketOpen">
+						<div class="row" id="rowGeneral">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Type</label>
+									<input type="text" class="form-control" id="pendingType" readonly>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Estimated Pending</label>
+									<input type="text" class="form-control" id="pendingEstimated" readonly> 
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label>Reason</label>
+							<input type="text" class="form-control" id="pendingReason" readonly>
+						</div>
+						<div class="form-group">
+							<label>Foto</label>
+							<img src="" id="pendingPhoto" alt="">
+							<p>Jika foto tidak tampil: <a href="" id="pendingPhotoURL" target="_blank">Lihat disini</a></p>
+						</div>
+						<div class="row" id="requestPart" style="display:none;">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Part Name</label>
+									<input type="text" class="form-control" id="pendingPartName" readonly>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Image</label>
+									<img src="" alt="Part Image" id="pendingPartImage">
+									<p>Jika foto tidak tampil: <a href="" id="pendingPartImageURL" target="_blank">Lihat disini</a></p>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Exit</button>
+					<button type="button" class="btn btn-flat btn-danger" id="rejectButton">Reject</button>
+					<button type="button" class="btn btn-flat btn-success" id="approveButton">Approve</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- <div class="modal fade" id="modal-detail-trip-request">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true" style="margin-left: 5px;">×</span>
+					</button>
+					<div>
+						<h4 class="modal-title" id="modal-title-trip-request">Trip Request </h4>
+					</div>
+				</div>
+				<div class="modal-body">
+				<div id="headerTripRequestContainer">
+						<div class="form-group">
+							<label for="">Type</label>
+							<input type="text" class="form-control" name="typeTripRequest" id="typeTripRequest" readonly>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="">Start Date</label>
+									<input type="text" class="form-control" name="startDateTripRequest" id="startDateTripRequest" readonly>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="">End Date</label>
+									<input type="text" class="form-control" name="endDateTripRequest" id="endDateTripRequest" readonly>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="">From</label>
+									<textarea name="" class="form-control" id="fromTripRequest" readonly></textarea>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="">To</label>
+									<textarea name="" class="form-control" id="toTripRequest" readonly></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card card-statistic-1 bg-secondary detailTripRequest">
+						<div class="card-header">
+							<span style="color: black; font-size: 16px; float: left;" >Transport Bus</span>
+							<span style="color: black; font-size: 16px; float: right;">Rp. 900.000</span>
+						</div>
+						
+					</div>
+
+					
+
+					<div id="detailTripRequestContainer" style="display: none;">
+						<div class="form-group">
+							<label for="request">Request</label>
+							<input type="text" name="request" id="request" class="form-control" readonly>
+						</div>
+						<div class="form-group">
+							<label for="nominal">Nominal</label>
+							<input type="text" name="nominal" id="nominal" class="form-control" readonly>
+						</div>
+						<div class="form-group">
+							<label for="">File </label>
+
+							<label for="file" class="custom-file-upload">
+							<div class="upload-icon">
+								<i class="fas fa-cloud-upload-alt" id="uploadTextIcon"></i>
+								<p id="uploadText" >File</p>
+								<div id="previewContainer1" class="preview-container" style="display: none;">
+									<img id="previewImage1" src="" alt="Preview Image 1" >
+								</div>
+								<div id="previewContainer2" class="preview-container" style="display: none;">
+									<img id="previewImage2" src="" alt="Preview Image 2">
+								</div>
+								<button id="removeImageBtn" style="display: none;" class="btn btn-danger btn-sm">Remove</button>
+							</div>
+							</label>
+						</div>
+						<div class="form-group">
+						<input type="checkbox" name="rejectTripRequest" class="rejectTripRequest form-control" id="rejectTripRequest">Reject</input>
+						</div>
+					</div>
+
+					<div class="row">
+						<p>Log History</p>
+						<div class="timeline">
+
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Exit</button>
+					<button type="button" class="btn btn-flat btn-danger" id="tripRequestRejectButton">Reject</button>
+					<button type="button" class="btn btn-flat btn-success" id="tripRequestApproveButton">Approve</button>
+				</div>
+			</div>
+		</div>
+	</div> -->
+	<!-- End SLM Changes  -->
+
 
 @endsection
 @section('scriptImport')
@@ -3070,10 +3409,12 @@ Ticketing
 
 	$(document).ready(function(){
 		initTablePerformance()
+		// getTripRequestAll()
 		// var hash = location.hash.replace(/^#/, '');
 		// if (hash) {
 		// 	$('.nav-tabs a[href="#' + hash + '"]').tab('show');
 		// }
+
 		if (window.location.href.split("?")[1] == "client") {
 			$('a[href="#setting"]').tab('show')
 			emailSetting()
@@ -3082,11 +3423,35 @@ Ticketing
 			SlmEmailSetting()
 		}
 
+		//$('#tableTripRequest').hide();
+
+		// $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+		// 	var target = $(e.target).attr("href"); // Dapatkan target tab yang diklik
+
+		// 	// Jika tab yang diklik adalah `#tripRequest`, tampilkan tabel
+		// 	if (target === "#tripRequest") {
+		// 		$('#tableTripRequest').fadeIn();  // Tampilkan tabel dengan efek fade
+		// 	} else {
+		// 		$('#tableTripRequest').hide();    // Sembunyikan tabel jika tab lain aktif
+		// 	}
+		// });
+
 		$("#startDateFilter").val("")
 		$("#endDateFilter").val("")
 		getDashboard()
 
-		$("#inputReportingTime").val(moment().format('HH:mm:ss'))
+		// $("#inputReportingTime").val(moment().format('HH:mm:ss'))
+		$("#inputReportingTime").timepicker({
+			defaultTime: '00:00',
+			startTime: '00:00',
+			snapToStep: true,
+			showInputs: false,
+			minuteStep: 1,
+			minTime: '00:00',
+			maxHours: 24,
+			showMeridian: false,
+		});
+
 		$('#inputReportingDate').datepicker({
 			autoclose: true,
 			format: 'dd/mm/yyyy'
@@ -3110,6 +3475,7 @@ Ticketing
 		})
 
 		$("#timePending").timepicker({
+			defaultTime: '00:00',
 			snapToStep: true,
 			showInputs: false,
 			minuteStep: 15,
@@ -3152,6 +3518,8 @@ Ticketing
 						$("#tableEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
 					}else if ($("#searchBarEmail").next(".input-group-btn").find("button.btn-primary:visible")[0].id == 'addEmailSlm') {
 						$("#tableSlmEmailSetting").DataTable().search($('#searchBarEmail').val()).draw();
+					}else {
+						$("#tableSlaSetting").DataTable().search($('#searchBarEmail').val()).draw();
 					}
 				}else{
 					$("#tableSlaSetting").DataTable().search($('#searchBarEmail').val()).draw();
@@ -3214,11 +3582,11 @@ Ticketing
 			getPerformanceByFilter([],[],[],[])	
 		});
 
-		$('#filterDashboardByPid').select2({
+		$('#filterDashboardByClient').select2({
 			allowClear: true,
-      placeholder: 'Select Project ID',
+      placeholder: 'Select Client',
       ajax: {
-          url: '{{url("/ticketing/getPid")}}',
+          url: '{{url("/ticketing/getClient")}}',
           dataType: 'json',
           delay: 250,
           processResults: function(data, params) {
@@ -3232,12 +3600,61 @@ Ticketing
           },
       }
     }).on('change', function(e) {
-    		var pid = $(this).val()
-    		console.log($(this).val())
+    		initiateFilterPid($(this).val())
+    		var client = $(this).val()
+    		var pid = ''
+
+    		if ($("#filterDashboardByPid").val() == null) {
+    			pid = pid
+    		}else{
+    			pid = $("#filterDashboardByPid").val()
+    		}
+
 		    var startDay 	= moment($("#filterDashboardByDate").data('daterangepicker').startDate).format("YYYY-MM-DD") 
 				var endDay 		= moment($("#filterDashboardByDate").data('daterangepicker').endDate).format("YYYY-MM-DD") 
-				getDashboardByFilter(pid,startDay,endDay)
+				getDashboardByFilter(client,pid,startDay,endDay)
 		});
+
+		if ($("#filterDashboardByClient").val() == "") {
+			initiateFilterPid(code="")
+		}
+
+    function initiateFilterPid(code){
+    	$('#filterDashboardByPid').empty('')
+
+    	$('#filterDashboardByPid').select2({
+				allowClear: true,
+	      placeholder: 'Select Project ID',
+	      ajax: {
+	          url: '{{url("/ticketing/getPid")}}',
+	          dataType: 'json',
+	          delay: 250,
+	          data: function (params) {
+	            return {
+	              code:code,
+	              q:params.term
+	            };
+	          },
+	          processResults: function(data, params) {
+	              params.page = params.page || 1;
+	              return {
+	                  results: data,
+	                  pagination: {
+	                      more: (params.page * 10) < data.count_filtered
+	                  }
+	              };
+	          },
+	      }
+	    }).on('change', function(e) {
+	    		var pid = $(this).val()
+	    		var client = $("#filterDashboardByClient").val()
+
+	    		console.log($(this).val())
+			    var startDay 	= moment($("#filterDashboardByDate").data('daterangepicker').startDate).format("YYYY-MM-DD") 
+					var endDay 		= moment($("#filterDashboardByDate").data('daterangepicker').endDate).format("YYYY-MM-DD") 
+					getDashboardByFilter(client,pid,startDay,endDay)
+			});
+    }		
 
     $('#filterDashboardByDate').daterangepicker({
       opens: 'center',
@@ -3256,9 +3673,15 @@ Ticketing
 			$('#filterDashboardByDate').html("")
 			$('#filterDashboardByDate').html('<i class="fa fa-calendar"></i> <span>' + start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY') + '</span>');
 
+			var pid = ''
 			var startDay = start.format('YYYY-MM-DD');
 			var endDay = end.format('YYYY-MM-DD');
-			var pid = $("#filterDashboardByPid").val() 
+			if ($("#filterDashboardByPid").val() != null) {
+				pid = $("#filterDashboardByPid").val()
+			}else{
+				pid = pid
+			}
+			var client = $("#filterDashboardByClient").val()
 
 			$("#startDateFilterDashboard").val(startDay)
 			$("#endDateFilterDashboard").val(endDay)
@@ -3266,7 +3689,7 @@ Ticketing
 			startDate = start.format('D MMMM YYYY');
 			endDate = end.format('D MMMM YYYY');
 
-			getDashboardByFilter(pid,startDay,endDay)
+			getDashboardByFilter(client,pid,startDay,endDay)
 		});
 	})
 	
@@ -3278,7 +3701,7 @@ Ticketing
 			$("#filterDashboardByDate").html("<i class='fa fa-calendar'></i> Date range picker <span><i class='fa fa-caret-down'></i></span>")	
 
       // Reinitialize Date Range Picker with new settings
-      var startDay = '', endDay = '', pid = ''
+      var startDay = '', endDay = '', pid = '', client = ''
       $('#filterDashboardByDate').daterangepicker({
           opens: 'center',
 					ranges: {
@@ -3292,12 +3715,17 @@ Ticketing
 					startDate: moment().subtract(29, 'days'),
 					endDate: moment()
       },function(start,end){
-      	var startDay = start.format('YYYY-MM-DD');
-				var endDay = end.format('YYYY-MM-DD');
-				var pid = $("#filterDashboardByPid").val() 
+      	startDay = start.format('YYYY-MM-DD');
+				endDay = end.format('YYYY-MM-DD');
+				if ($("#filterDashboardByPid").val() != null) {
+					pid = $("#filterDashboardByPid").val()
+				}else{
+					pid = pid
+				}
+				client = $("#filterDashboardByClient").val()
       });
 
-      getDashboardByFilter(pid,startDay,endDay)
+      getDashboardByFilter(client,pid,startDay,endDay)
   }
 
 	function getDashboard(){
@@ -3510,9 +3938,15 @@ Ticketing
 					}
 				})
 
+				if ($("#filterDashboardByPid").val() == null) {
+					pid = ''
+				}else{
+					pid = $("#filterDashboardByPid").val()
+				}
+
 				$.ajax({
 					type:"GET",
-					url:"{{url('/getDashboardNeedAttention')}}?pid=" + $("#filterDashboardByPid").val() + "&start="+ moment().startOf('year').format('YYYY-MM-DD') + "&end=" + moment().endOf('year').format('YYYY-MM-DD'),
+					url:"{{url('/getDashboardNeedAttention')}}?pid=" + pid + "&start="+ moment().startOf('year').format('YYYY-MM-DD') + "&end=" + moment().endOf('year').format('YYYY-MM-DD'),
 					beforeSend:function(){
 						$("#importanTable").html("<tr><td colspan=7 style='text-align:center'>Loading...</td></tr>");
           },
@@ -3570,7 +4004,7 @@ Ticketing
 					$("#tb_sla_response_time").DataTable({
 						"ajax":{
 				        "type":"GET",
-				        "url":"{{url('/getDashboardResponse')}}?pid=" + $("#filterDashboardByPid").val() + "&start="+moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD")
+				        "url":"{{url('/getDashboardResponse')}}?start="+moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD")
 				    },
 				    "columns": [
 				      { 
@@ -3600,7 +4034,7 @@ Ticketing
 					$("#tb_sla_resolution_time").DataTable({
 						"ajax":{
 				        "type":"GET",
-				        "url":"{{url('/getDashboardResolution')}}?pid=" + $("#filterDashboardByPid").val() + "&start=" + moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD"),
+				        "url":"{{url('/getDashboardResolution')}}?start=" + moment().startOf('year').format("YYYY-MM-DD")+"&end="+moment().endOf('year').format("YYYY-MM-DD"),
 				    },
 				    "columns": [
 				      { 
@@ -3657,14 +4091,14 @@ Ticketing
 		})
 	}
 
-	function getDashboardByFilter(pid,start,end){
+	function getDashboardByFilter(client,pid,start,end){
 		Pace.restart();
 		Pace.track(function() {
-			console.log(pid)
 			$.ajax({
 				type:"GET",
 				url:"{{url('/getDashboardByFilter')}}",
 				data:{
+					client:client,
 					pid:pid,
 					start:start,
 					end:end
@@ -3760,6 +4194,7 @@ Ticketing
 				type:"GET",
 				url:"{{url('/getDashboardByActivity')}}",
 				data:{
+					client:client,
 					pid:pid,
 					start:start,
 					end:end
@@ -3784,6 +4219,7 @@ Ticketing
 				type:"GET",
 				url:"{{url('/getDashboardNeedAttention')}}",
 				data:{
+					client:client,
 					pid:pid,
 					start:start,
 					end:end
@@ -3833,9 +4269,9 @@ Ticketing
 				}
 			})
 
-      $('#tb_sla_response_time').DataTable().ajax.url("{{url('getDashboardResponse?pid=')}}"+pid+"&start="+start+"&end="+end).load();
+      $('#tb_sla_response_time').DataTable().ajax.url("{{url('/getDashboardResponse?pid=')}}"+pid+"&start="+start+"&end="+end+'&client='+client).load();
 
-      $('#tb_sla_resolution_time').DataTable().ajax.url("{{url('getDashboardResolution?pid=')}}"+pid+"&start="+start+"&end="+end).load();
+      $('#tb_sla_resolution_time').DataTable().ajax.url("{{url('/getDashboardResolution?pid=')}}"+pid+"&start="+start+"&end="+end+'&client='+client).load();
 		})
 	}
 
@@ -3987,9 +4423,33 @@ Ticketing
 							$("#inputSerial").val(result.serial_number);
 							$("#slmDiv").show();
 							$("#inputSlm").val(result.second_level_support);
-							$("#inputEngineerOpen").val(result.engineer_atm);
+							// if($('#inputEngineerOpen').val() === null){
+							// 	$("#inputEngineerOpen").val(result.engineer_atm);
+							// }
+
+							if (Array.isArray(result.engineers) && result.engineers.length > 0) {
+								if (!$('#inputEngineerOpen').is('select')) {
+									$('#inputEngineerOpen').replaceWith('<select class="form-control" id="inputEngineerOpen"></select>');
+								}
+
+								var selectEngineer = $('#inputEngineerOpen');
+								selectEngineer.empty();
+								selectEngineer.append(new Option('Choose Engineer', '',true))
+
+								result.engineers.forEach(function(engineer) {
+									selectEngineer.append(new Option(engineer.engineer_atm, engineer.engineer_atm));
+								});
+
+								// selectEngineer.val(result.engineer_atm);
+							} else {
+								if (!$('#inputEngineerOpen').is('input')) {
+									$('#inputEngineerOpen').replaceWith('<input type="text" class="form-control" id="inputEngineerOpen" placeholder="" required value="">');
+								}
+							}
 							$("#inputLocation").attr("disabled",true)
 							localStorage.setItem("id_device_customer",result.id_device_customer)
+
+							console.log("siniii")
 						},
 						error: function(xhr, status, error) {
 		          // Handle errors
@@ -4291,7 +4751,7 @@ Ticketing
 		$("#reportDiv label").text("Report Time*")
 		$("#engineerDiv").hide();
 		if($(this).val() == "Preventive Maintenance"){
-			$("#inputSeverity").attr("disabled",true)
+			$("#inputSeverity").attr("enabled",true)
 			prepareNewParameter()
 			$("#problemDiv label").text("Activity*")
 			$("#reportDiv label").text("Schedule PM*")
@@ -4299,6 +4759,7 @@ Ticketing
 			$("#inputLocation").val("")
 			$("#inputSerial").val("")
 			$("#inputEngineerOpen").val("")
+			$("#inputSeverity").closest("div").prev("label").text("Severity")
 
 			showInputDetailTicket()
 		} else if ($(this).val() == "Trouble Ticket") {
@@ -4307,6 +4768,7 @@ Ticketing
 			$("#inputLocation").val("")
 			$("#inputSerial").val("")
 			$("#inputEngineerOpen").val("")
+			$("#inputSeverity").closest("div").prev("label").text("Severity*")
 
 			showInputDetailTicket()
 		} else if ($(this).val() == "Permintaan Layanan") {
@@ -4316,13 +4778,16 @@ Ticketing
 				$("#inputSeverity option")[1].remove()
 				$("#inputSeverity option")[1].remove()
 			}
+			$("#inputSeverity").closest("div").prev("label").text("Severity*")
+
 		} else if ($(this).val() == "Permintaan Penawaran") {
-			$("#inputSeverity").attr("disabled",true)
+			$("#inputSeverity").attr("enabled",true)
 			prepareNewParameter()
 			$("#engineerDiv").show();
 			$("#inputLocation").val("")
 			$("#inputSerial").val("")
 			$("#inputEngineerOpen").val("")
+			$("#inputSeverity").closest("div").prev("label").text("Severity")
 
 			showInputDetailTicket()
 		} else {
@@ -4412,30 +4877,39 @@ Ticketing
 		if ($("#inputATM").next().next(".help-block").next("a")) {
     	$("#inputATM").next().next(".help-block").next("a").remove()
     }
-
-		var inputAtmValue = $("#inputATM").val()
-		if (inputAtmValue != null) {
-			$("#inputATM").val(inputAtmValue).trigger("change")
-		}		
+		// var inputAtmValue = $("#inputATM").val()
+		// if (inputAtmValue != null && inputAtmValue != "") {
+		// 	$("#inputATM").val(inputAtmValue).trigger("change")
+		// }		
 		
-		if ($("#inputTypeTicket").val() == ""){
-			$("#inputTypeTicket").closest("div").addClass('has-error')
-			$("#inputTypeTicket").next(".help-block").show()
-		}else if ($("#inputClient").val() == ""){
-			$("#inputClient").closest("div").addClass('has-error')
-			$("#inputClient").next().next(".help-block").show()
-		}else if ($("#inputSeverity").val() == ""){
-			$("#inputSeverity").closest("div").addClass('has-error')
-			$("#inputSeverity").next().next(".help-block").show()
-		}else if ($("#selectPID").val() == ""){
-			$("#selectPID").closest("div").addClass('has-error')
-			$("#selectPID").next().next(".help-block").show()
-		}else if ($("#selectCatAsset").closest("div").prev("label").text().includes("*")) {
+		if ($("#inputTypeTicket").val() == "") {
+		    console.log($("#inputPIC"));
+		    $("#inputTypeTicket").closest("div").addClass('has-error');
+		    $("#inputTypeTicket").next(".help-block").show();
+
+		} else if ($("#inputClient").val() == "") {
+		    console.log($("#inputPIC"));
+		    $("#inputClient").closest("div").addClass('has-error');
+		    $("#inputClient").next().next(".help-block").show();
+
+		} else if ($("#inputSeverity").closest("div").prev("label").text().includes("*")) {
+		    // Nested condition is now within the same `else if`
+		    if ($("#inputSeverity").val() == "") {
+		        $("#inputSeverity").closest("div").addClass('has-error');
+		        $("#inputSeverity").next().next(".help-block").show();
+		    }
+		} 
+
+		if ($("#selectPID").val() == "") {
+		    $("#selectPID").closest("div").addClass('has-error');
+		    $("#selectPID").next().next(".help-block").show();
+		} else if ($("#selectCatAsset").closest("div").prev("label").text().includes("*")) {
 			if ($("#selectCatAsset").val() == "" || $("#selectCatAsset").val() == null){
 				$("#selectCatAsset").closest("div").addClass('has-error')
 				$("#selectCatAsset").next().next(".help-block").show()
 		  }
-		}else if($("#inputPIC").val() == "" ){
+		} else if($("#inputPIC").val() == "" ){
+			console.log($("#inputPIC"))
 			$("#picDiv").addClass('has-error')
 			$("#picDiv .col-sm-10 .help-block").show()
 		} else if($("#inputContact").val() == "" ){
@@ -4475,6 +4949,9 @@ Ticketing
 			$("#reportDiv .col-sm-5.firstReport .input-group .input-group-addon").css("border-color",'#d2d6de')
 			$("#reportDiv .col-sm-5.firstReport .input-group .input-group-addon i").css("color",'#555')
 		} else {
+			$("div").removeClass('has-error')
+		  $(".help-block").hide()
+
 			$(".has-error").removeClass('has-error')
 			var waktu = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("D MMMM YYYY");
 			var waktu2 = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("HH:mm");
@@ -4530,7 +5007,7 @@ Ticketing
 				$("#holderWaktu").prev().text("Time")
 				$("#holderDate").parent().hide()
 				$("#holderSeverity").parent().hide()
-			}  else {
+			} else {
 				if($("#inputTypeTicket").val() == "Permintaan Layanan"){
 					$("#holderProblem").prev().text("Activity")
 				}
@@ -4538,7 +5015,6 @@ Ticketing
 				$("#holderStatus").html("<b>OPEN</b>");
 				$("#holderWaktu").html("<b>" + waktu2 + "</b>");
 			}
-
 
 			if(clientBanking){
 				if($("#inputClient option:selected").text().includes("CCTV")){
@@ -4572,7 +5048,6 @@ Ticketing
 					$("#holderIDATM3").show();
 					$("#holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
 					$("#holderType").html($("#inputType").val());
-					
 				}
 			} else {
 
@@ -4762,12 +5237,16 @@ Ticketing
 	function getBankAtm(clientBanking){
 		// $("#inputATM").empty()
 		$("#typeDiv").show();
-		$("div").removeClass('has-error')
-		$(".help-block").hide()
+
 		if ($("#inputATM").next().next(".help-block").next("a")) {
     	$("#inputATM").next().next(".help-block").next("a").remove()
+    	// $("div").removeClass('has-error')
+			// $(".help-block").hide()
     }
+
 		if ($("#inputTypeTicket").val() != "") {
+			// $("div").removeClass('has-error')
+			// $(".help-block").hide()
 			if ($("#selectCatAsset").closest("div").prev("label").text().includes("*")) {
 				if ($("#inputClient").val() == "INTERNAL" || $("#inputClient").val() == "ADMF") {
 						$("#inputATMid").hide();
@@ -4917,73 +5396,73 @@ Ticketing
 		// }
 	}
 
-	$("#inputAbsenLocation").change(function(){
-		if(this.value === "Select One"){
-			$("#inputType").val("");
-			$("#inputIpMechine").val("");
-			$("#inputIpServer").val("");
-		} else {
-			// $.ajax({
-			// 	type:"GET",
-			// 	url:"{{url('/ticketing/create/getAbsenDetail')}}",
-			// 	data:{
-			// 		id_absen:this.value
-			// 	},
-			// 	success: function(result){
-			// 		$("#inputType").val(result.type_machine);
-			// 		$("#inputIpMechine").val(result.ip_machine);
-			// 		$("#inputIpServer").val(result.ip_server);
-			// 	}
-			// });
-			$.ajax({
-				type:"GET",
-				url:"{{url('/ticketing/create/getDetailAsset')}}",
-				data:{
-					id_absen:this.value
-				},
-				success: function(result){
-					$("#inputType").val(result.type_device);
-					$("#inputIpMechine").val(result.ip_address);
-					$("#inputIpServer").val(result.server);
-				}
-			});
-		}
-	})
+	// $("#inputAbsenLocation").change(function(){
+	// 	if(this.value === "Select One"){
+	// 		$("#inputType").val("");
+	// 		$("#inputIpMechine").val("");
+	// 		$("#inputIpServer").val("");
+	// 	} else {
+	// 		// $.ajax({
+	// 		// 	type:"GET",
+	// 		// 	url:"{{url('/ticketing/create/getAbsenDetail')}}",
+	// 		// 	data:{
+	// 		// 		id_absen:this.value
+	// 		// 	},
+	// 		// 	success: function(result){
+	// 		// 		$("#inputType").val(result.type_machine);
+	// 		// 		$("#inputIpMechine").val(result.ip_machine);
+	// 		// 		$("#inputIpServer").val(result.ip_server);
+	// 		// 	}
+	// 		// });
+	// 		$.ajax({
+	// 			type:"GET",
+	// 			url:"{{url('/ticketing/create/getDetailAsset')}}",
+	// 			data:{
+	// 				id_absen:this.value
+	// 			},
+	// 			success: function(result){
+	// 				$("#inputType").val(result.type_device);
+	// 				$("#inputIpMechine").val(result.ip_address);
+	// 				$("#inputIpServer").val(result.server);
+	// 			}
+	// 		});
+	// 	}
+	// })
 
-	$("#inputSwitchLocation").change(function(){
-		if(this.value === "Select One"){
-			$("#inputSerial").val("");
-			$("#inputType").val("");
-			$("#inputIpMechine").val("");
-		} else {
-			// $.ajax({
-			// 	type:"GET",
-			// 	url:"{{url('/ticketing/create/getSwitchDetail')}}",
-			// 	data:{
-			// 		id_switch:this.value
-			// 	},
-			// 	success: function(result){
-			// 		$("#inputSerial").val(result.serial_number);
-			// 		$("#inputType").val(result.type + " - " + result.port);
-			// 		$("#inputIpMechine").val(result.ip_management);
-			// 		// $("#inputIpServer").val(result.ip_server);
-			// 	}
-			// });
-			$.ajax({
-				type:"GET",
-				url:"{{url('/ticketing/create/getDetailAsset')}}",
-				data:{
-					id_switch:this.value
-				},
-				success: function(result){
-					$("#inputSerial").val(result.serial_number);
-					$("#inputType").val(result.type_device + " - " + result.port);
-					$("#inputIpMechine").val(result.ip_address);
-					$("#inputIpServer").val(result.server);
-				}
-			});
-		}
-	})
+	// $("#inputSwitchLocation").change(function(){
+	// 	if(this.value === "Select One"){
+	// 		$("#inputSerial").val("");
+	// 		$("#inputType").val("");
+	// 		$("#inputIpMechine").val("");
+	// 	} else {
+	// 		// $.ajax({
+	// 		// 	type:"GET",
+	// 		// 	url:"{{url('/ticketing/create/getSwitchDetail')}}",
+	// 		// 	data:{
+	// 		// 		id_switch:this.value
+	// 		// 	},
+	// 		// 	success: function(result){
+	// 		// 		$("#inputSerial").val(result.serial_number);
+	// 		// 		$("#inputType").val(result.type + " - " + result.port);
+	// 		// 		$("#inputIpMechine").val(result.ip_management);
+	// 		// 		// $("#inputIpServer").val(result.ip_server);
+	// 		// 	}
+	// 		// });
+	// 		$.ajax({
+	// 			type:"GET",
+	// 			url:"{{url('/ticketing/create/getDetailAsset')}}",
+	// 			data:{
+	// 				id_switch:this.value
+	// 			},
+	// 			success: function(result){
+	// 				$("#inputSerial").val(result.serial_number);
+	// 				$("#inputType").val(result.type_device + " - " + result.port);
+	// 				$("#inputIpMechine").val(result.ip_address);
+	// 				$("#inputIpServer").val(result.server);
+	// 			}
+	// 		});
+	// 	}
+	// })
 
 	$("#inputTemplateEmail").change(function(){
 		if($("#inputTemplateEmail").val() != "none"){
@@ -5231,7 +5710,6 @@ Ticketing
 
 			var type_ticket = ""
 			var problem = $("#inputProblem").val()
-			var engineer = ""
 			var severity = $("#inputSeverity").val()
 			if($("#inputTypeTicket").val() == "Trouble Ticket"){
 				type_ticket = "TT"
@@ -5396,8 +5874,14 @@ Ticketing
 									data.lastest_status = '<span class="label label-success">' + data.lastest_activity_ticket.activity + '</span>'
 								} 
 								data.lastest_operator = data.lastest_activity_ticket.operator
-								data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="showTicket(' + data.id_detail.id + ')">Detail</button>'	
 
+								//SLM Changes
+								if(("{{Auth::user()->id_position}}" == "ENGINEER SPV" && data.request_pending == "Y")){
+									data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="approvalPending(' + data.id_detail.id + ')">Approval Pending</button>'	
+								}else{
+									data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="showTicket(' + data.id_detail.id + ')">Detail</button>'	
+								}
+								
 								data.problem = "<b>" + data.location + "</b> - " + data.problem
 
 								if(data.type_ticket == "TT"){
@@ -5524,12 +6008,12 @@ Ticketing
 					// order: [[10, "DESC" ]],
 		      "createdRow": function(row, data, dataIndex) {
 		        if (data.highlight_sla_response == "Not-Comply") {
-		          $('td', row).eq(8).css('color', '#ff0a23')
+		          $('td', row).eq(9).css('color', '#ff0a23')
 		          // $('td', row).eq(9).css('color', '#ff0a23')
 		        } 
 
 		        if (data.highlight_sla_resolution == "Not-Comply") {
-		          $('td', row).eq(10).css('color', '#ff0a23')
+		          $('td', row).eq(11).css('color', '#ff0a23')
 		          // $('td', row).eq(11).css('color', '#ff0a23')
 		        }
 		      },
@@ -5596,7 +6080,7 @@ Ticketing
 
 	$("#clientList").change(function(){
 		getPerformanceByFilter($(this).val(),[],[],[])
-		var start = "", end = ""
+		var start = "", end = "", pid = ''
 		if ($("#filterDashboardByDate").val() != '') {
 			start = moment($("#filterDashboardByDate").data('daterangepicker').startDate).format("YYYY-MM-DD")
 			end = moment($("#filterDashboardByDate").data('daterangepicker').endDate).format("YYYY-MM-DD") 
@@ -5607,7 +6091,12 @@ Ticketing
 			start = start
 			end = end
 		}
-		var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $(this).val() + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end
+
+		if($("#filterDashboardByPid").val() != null){
+			pid = $("#filterDashboardByPid").val()
+		}
+
+		var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $(this).val() + '&pid=' + pid + '&start=' + start + '&end=' + end
 		$("#exportTablePerformance").attr('onclick',"getReport('" + urlAjax + "')")
 	})
 
@@ -5616,7 +6105,7 @@ Ticketing
 	})
 
 	$("#typeFilter").change(function(){
-		var start = "", end = ""
+		var start = "", end = "", pid = ""
 		getPerformanceByFilter([],[],[],$(this).val())
 		if ($("#filterDashboardByDate").val() != '') {
 			start = moment($("#filterDashboardByDate").data('daterangepicker').startDate).format("YYYY-MM-DD")
@@ -5628,7 +6117,12 @@ Ticketing
 			start = start
 			end = end
 		}
-		var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end + '&type=' + $(this).val()
+
+		if($("#filterDashboardByPid").val() != null){
+			pid = $("#filterDashboardByPid").val()
+		}
+
+		var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + pid + '&start=' + start + '&end=' + end + '&type=' + $(this).val()
 		$("#exportTablePerformance").attr('onclick',"getReport('" + urlAjax + "')")
 	})
 
@@ -5740,6 +6234,265 @@ Ticketing
 		// $(data).prop('checked', column.visible())
 		// column.visible() ? $(data).addClass('active') : $(data).removeClass('active')
 	}
+
+	//Start SLM Changes
+	function detailTripRequest(id){
+		$.ajax({
+			type: 'GET',
+			url: '{{url("ticketing/getDetailTripRequest")}}',
+			data:{
+				idMoneyRequest: id
+			},
+			success: function(result){
+				$('#typeTripRequest').val(result.data.type)
+				$('#startDateTripRequest').val(result.data.start_date)
+				$('#endDateTripRequest').val(result.data.end_date)
+				$('#fromTripRequest').text(result.data.from)
+				$('#toTripRequest').text(result.data.to)
+
+
+				$('#tripRequestRejectButton').attr('onclick', 'tripRequestReject()');
+				$('#tripRequestApproveButton').attr('onclick', 'tripRequestApprove()');
+			}
+		})
+		$('#modal-detail-trip-request').modal('toggle');
+	}
+
+	function approvalPending(id){
+		$.ajax({
+			type: "GET",
+			url:"{{url('ticketing/getRequestPending')}}",
+			data:{
+				idTicket:id,
+			},
+			beforeSend:function(){
+				Swal.fire({
+					title: 'Please Wait..!',
+					text: "Process data..",
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					customClass: {
+						popup: 'border-radius-0',
+					},
+					didOpen: () => {
+						Swal.showLoading()
+					}
+				})
+			},
+			success: function(result){
+				Swal.close()
+				$("#approveButton").attr("onclick","approvePending('" + result.id_ticket + "','" + result.pending.reason +"')")
+				$("#rejectButton").attr("onclick","rejectPending('" + result.id_ticket + "')")
+
+				var severityType = "", severityClass = ""
+				if(result.severity == 1){
+					severityType = "Critical"
+					severityClass = "label label-danger"
+				} else if(result.severity == 2){
+					severityType = "Major"
+					severityClass = "label label-warning"
+				} else if(result.severity == 3){
+					severityType = "Moderate"
+					severityClass = "label label-info"
+				} else if(result.severity == 4){
+					severityType = "Minor"
+					severityClass = "label label-success"
+				} else {
+					severityType = "N/A"
+					severityClass = "label label-default"
+				}
+
+				if(result.type_ticket == "TT"){
+					ticketType = "Trouble Ticket"
+					ticketClass = "label label-danger"
+				} else if(result.type_ticket == "PM"){
+					ticketType = "Preventive Maintenance"
+					ticketClass = "label label-warning"
+				} else if(result.type_ticket == "PL"){
+					ticketType = "Permintaan Layanan"
+					ticketClass = "label label-success"
+				} else {
+					ticketType = "N/A"
+					ticketClass = "label label-default"
+				}
+
+				$('#pendingTicketID').val(result.id_ticket);
+				// $('#pendingTicketOpen').val(moment(result.first_activity_ticket.date).format("D MMMM YYYY (HH:mm)"))
+				$("#pendingTicketOperator").html(" latest by: <b>" + result.lastest_activity_ticket.operator + "</b>");
+				$("#pendingTicketSeverity").text(severityType);
+				$("#pendingTicketType").text(ticketType);
+				$("#pendingTicketSeverity").attr('class',severityClass);
+				$("#pendingTicketType").attr('class',ticketClass);
+
+				$("#pendingTicketLatestStatus").text(moment(result.lastest_activity_ticket.date).format('D MMMM YYYY (HH:mm)'));
+				$("#pendinTicketStatus").text(result.lastest_activity_ticket.activity);
+				$("#pendingTicketStatus").attr('style','');
+				$("#modal-ticket-title-pending").html("Ticket ID <b>" + result.id_ticket + "</b>");
+				$('#pendingType').val(result.pending.type);
+				$('#pendingReason').val(result.pending.reason);
+				$('#pendingEstimated').val(result.pending.estimated_pending);
+				$('#pendingPartName').val(result.pending.part_name);
+				if(result.pending.part_image){
+					$('#pendingPartImage').attr('src', 'https://drive.google.com/file/d/'+result.pending.part_image+'/view?usp=sharing');
+					$('#pendingPartImageURL').attr('href', 'https://drive.google.com/file/d/'+result.pending.part_image+'/view?usp=sharing');
+				}
+				if(result.pending.pending_image){
+
+					$('#pendingPhoto').attr('src', 'https://drive.google.com/uc?export=view&id='+result.pending.pending_image);
+					$('#pendingPhotoURL').attr('href', 'https://drive.google.com/file/d/'+result.pending.pending_image+'/view?usp=sharing');
+				}
+				if(result.pending.type === "Request Part"){
+					$('#requestPart').show()
+				}else{
+					$('#requestPart').hide()
+				}
+				$('#modal-approval-pending').modal('toggle');
+			}
+		})
+	}
+
+	function approvePending(id,reason){
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "The status of this ticket will remain pending for some time.",
+			icon: "warning",
+			showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes',
+		cancelButtonText: 'No',
+			}).then((params) => {
+				if (params.value) {
+					$.ajax({
+						type:"POST",
+						url:"{{url('/ticketing/approvePending')}}",
+						data:{
+							id_ticket:id,
+							reason:reason,
+							_token: '{{ csrf_token() }}' 
+						},
+						beforeSend:function(){
+							Swal.fire({
+								title: 'Please Wait..!',
+								text: "Process data..",
+								allowOutsideClick: false,
+								allowEscapeKey: false,
+								allowEnterKey: false,
+								customClass: {
+									popup: 'border-radius-0',
+								},
+								didOpen: () => {
+									Swal.showLoading()
+								}
+							})
+						},
+						success: function(response){
+							if(response.status === 'success'){
+								Swal.close();
+								Swal.fire({
+									title: 'Success',
+									icon: 'success',
+									text: response.message 
+								}).then(() => {
+									$('#modal-approval-pending').modal('toggle');
+									$("#clientList").val(response.id_client).trigger('change')
+								})
+							}
+						},
+						error: function(response){
+							Swal.close();
+							Swal.fire({
+								title: 'Error',
+								icon: 'error',
+								text: 'Something went wrong!'
+							})
+						}
+					});
+				}
+			})
+
+	}
+
+	function rejectPending(id, reason = null){
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "This ticket will continue job if you rejected the request.",
+			icon: "warning",
+			showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes',
+		cancelButtonText: 'No',
+			}).then((params) => {
+				if (params.value) {
+					Swal.fire({
+                            title: 'Reason for Reject',
+                            input: 'text',
+                            inputLabel: 'Please provide a reason for reject the request:',
+                            inputPlaceholder: 'Enter your reason here',
+                            showCancelButton: true,
+                            confirmButtonText: 'Continue',
+                            cancelButtonText: 'Cancel'
+                        }).then((inputResult) => {
+                            if (inputResult.isConfirmed && inputResult.value) {
+								$.ajax({
+								type:"POST",
+								url:"{{url('/ticketing/rejectPending')}}",
+								data:{
+									id_ticket:id,
+									reason:inputResult.value,
+									_token: '{{ csrf_token() }}' 
+								},
+								beforeSend:function(){
+									Swal.fire({
+										title: 'Please Wait..!',
+										text: "Process data..",
+										allowOutsideClick: false,
+										allowEscapeKey: false,
+										allowEnterKey: false,
+										customClass: {
+											popup: 'border-radius-0',
+										},
+										didOpen: () => {
+											Swal.showLoading()
+										}
+									})
+								},
+								success: function(response){
+									if(response.status === 'success'){
+										Swal.close();
+										Swal.fire({
+											title: 'Success',
+											icon: 'success',
+											text: response.message 
+										}).then(() => {
+											$('#modal-approval-pending').modal('toggle');
+											$("#clientList").val(response.id_client).trigger('change')
+										})
+									}
+								},
+								error: function(response){
+									Swal.close();
+									Swal.fire({
+										title: 'Error',
+										icon: 'error',
+										text: 'Something went wrong!'
+									})
+								}
+							});
+                            } else if (inputResult.dismiss === Swal.DismissReason.cancel) {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Cancelled',
+                                    text: 'Action has been cancelled.',
+                                });
+                            }
+                        });
+				}
+			})
+	}
+	//end SLM Changes
 
 	function showTicket(id){
 		$.ajax({
@@ -5923,26 +6676,77 @@ Ticketing
 
 				$("#ticketNote").val("");
 
-				$("#ticketEngineer").val(result.engineer);
+				var engineers = result.engineer;
+
+				$.ajax({
+					type:"GET",
+					url:"{{url('/ticketing/getDataAssignEngineer')}}",
+					data:{
+						id_atm:result.id_atm,
+						serial_number:result.serial_device
+					},
+					success: function(data){
+						if (Array.isArray(data) && data.length > 0) {
+							if (!$('#ticketEngineer').is('select')) {
+								$('#ticketEngineer').replaceWith('<select class="form-control" id="ticketEngineer"></select>');
+							}
+
+							var selectEngineer = $('#ticketEngineer');
+							selectEngineer.empty();
+							selectEngineer.append(new Option('Choose Engineer', '',true))
+							let engineerFound = false;
+
+							data.forEach(function(engineer) {
+								if (engineer.engineer_atm === engineers) {
+									engineerFound = true;
+								}
+								selectEngineer.append(new Option(engineer.engineer_atm, engineer.engineer_atm, engineer.engineer_atm === engineers));
+							});
+
+							if (!engineerFound && engineers) {
+								selectEngineer.append(new Option(engineers, engineers, true));
+							}
+						} else {
+							if (!$('#ticketEngineer').is('input')) {
+								$('#ticketEngineer').replaceWith('<input type="text" class="form-control" id="ticketEngineer" placeholder="" required value="">');
+								$("#ticketEngineer").val(engineers);
+							}
+						}
+					}
+				});
+
 				$("#ticketNumber").val(result.ticket_number_3party);
 
 				$("#ticketActivity").empty();
-				var textColor = "";
+				var textColor = "", valueDate = "";
 				$.each(result.all_activity_ticket,function(key,value){
+					valueDate = moment(value.date).format("DD MMMM - HH:mm")
+
 					if(value.activity == "PENDING"){
+						console.log(value.pending_remind)
 						textColor = 'text-yellow'
+						if (value.pending_remind != null) {
+							valueDate = moment(value.date).format("DD MMMM - HH:mm") + " (estimasi progress di " + moment(value.pending_remind.remind_time).format("DD MMMM - HH:mm") + " )"
+						}else{
+							valueDate = moment(value.date).format("DD MMMM - HH:mm")
+						}
 					} else if(value.activity == "CLOSE"){
 						textColor = 'text-green'
+						valueDate = moment(value.date).format("DD MMMM - HH:mm")
 					} else if(value.activity == "OPEN"){
 						textColor = 'text-red'
+						valueDate = moment(value.date).format("DD MMMM - HH:mm")
 					} else if(value.activity == "CANCEL"){
 						textColor = 'text-purple'
+						valueDate = moment(value.date).format("DD MMMM - HH:mm")
 					} else if(value.activity == "ON PROGRESS"){
 						textColor = 'text-primary'
+						valueDate = moment(value.date).format("DD MMMM - HH:mm")
 					} else {
 						textColor = ''
+						valueDate = moment(value.date).format("DD MMMM - HH:mm")
 					}
-					$("#ticketActivity").append('<li><b class="' + textColor + '">' + moment(value.date).format("DD MMMM - HH:mm") + ' [' + value.operator + ']</b><br>' + value.note + '</li>');
+					$("#ticketActivity").append('<li><b class="' + textColor + '">' + valueDate + ' [' + value.operator + ']</b><br>' + value.note + '</li>');
 				});
 
 				if(result.reporting_time != "Invalid date"){
@@ -6223,57 +7027,59 @@ Ticketing
 				// Holder Cancel
 				Swal.close()
 				$("#modal-next-on-progress").modal('toggle');
-				$(".holderOnProgressID").text($('#ticketID').val());
-				$(".holderOnProgressRefrence").text(result.ticket_data.refrence);
-				$(".holderOnProgressPIC").text(result.ticket_data.pic);
-				$(".holderOnProgressContact").text(result.ticket_data.contact_pic);
-				$(".holderOnProgressLocation").text(result.ticket_data.location);
-				$(".holderOnProgressProblem").text(result.ticket_data.problem);
-				$(".holderOnProgressSerial").text(result.ticket_data.serial_device);
-				$(".holderOnProgressSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+				setTimeout(function() {
+					$(".holderOnProgressID").text($('#ticketID').val());
+					$(".holderOnProgressRefrence").text(result.ticket_data.refrence);
+					$(".holderOnProgressPIC").text(result.ticket_data.pic);
+					$(".holderOnProgressContact").text(result.ticket_data.contact_pic);
+					$(".holderOnProgressLocation").text(result.ticket_data.location);
+					$(".holderOnProgressProblem").text(result.ticket_data.problem);
+					$(".holderOnProgressSerial").text(result.ticket_data.serial_device);
+					$(".holderOnProgressSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
 
-				$(".holderOnProgressIDATM").text(result.ticket_data.id_atm);
+					$(".holderOnProgressIDATM").text(result.ticket_data.id_atm);
 
-				$(".holderOnProgressNote").text("");
-				$(".holderOnProgressEngineer").text(result.ticket_data.engineer);
+					$(".holderOnProgressNote").text("");
+					$(".holderOnProgressEngineer").text(result.ticket_data.engineer);
 
-				var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
+					var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
 
-				$(".holderOnProgressDate").text(waktu);
+					$(".holderOnProgressDate").text(waktu);
 
-				$(".holderOnProgressStatus").html("<b>ON PROGRESS</b>");
-				$(".holderOnProgressStatus").html("<b>ON PROGRESS</b>");
+					$(".holderOnProgressStatus").html("<b>ON PROGRESS</b>");
+					$(".holderOnProgressStatus").html("<b>ON PROGRESS</b>");
 
-				$(".holderNumberTicket").text($("#ticketNumber").val());
+					$(".holderNumberTicket").text($("#ticketNumber").val());
 
-				// Email Reciver
-				$('.emailMultiSelector ').remove()
-				$("#emailOnProgressTo").val(result.ticket_reciver.close_to)
-				$("#emailOnProgressTo").emailinput({ onlyValidValue: true, delim: ';' });
-				$("#emailOnProgressCc").val(result.ticket_reciver.close_cc)
-				$("#emailOnProgressCc").emailinput({ onlyValidValue: true, delim: ';' });
+					// Email Reciver
+					$('.emailMultiSelector ').remove()
+					$("#emailOnProgressTo").val(result.ticket_reciver.close_to)
+					$("#emailOnProgressTo").emailinput({ onlyValidValue: true, delim: ';' });
+					$("#emailOnProgressCc").val(result.ticket_reciver.close_cc)
+					$("#emailOnProgressCc").emailinput({ onlyValidValue: true, delim: ';' });
 
-				$("#emailOnProgressSubject").val("On Progress Tiket " + $(".holderOnProgressLocation").text() + " [" + $(".holderOnProgressProblem").text() +"]");
-				$("#emailOnProgressHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir On Progress Tiket untuk <b>" + $(".holderOnProgressLocation").text() + "</b> : ");
-				$(".holderOnProgressCustomer").text(result.ticket_reciver.client_name);
-				var timeOnProgress = moment()
-				$(".holderOnProgressWaktu").html("<b>" + timeOnProgress.format("DD MMMM YYYY (HH:mm)") + "</b>");
-				
-				if(
-					result.ticket_reciver.client_acronym  == "BJBR" || 
-					result.ticket_reciver.client_acronym  == "BSBB" || 
-					result.ticket_reciver.client_acronym  == "BRKR" || 
-					result.ticket_reciver.client_acronym  == "BPRKS" || 
-					result.ticket_reciver.client_acronym  == "BDIY"
-					){
-					$(".holderOnProgressIDATM2").show();
-					$(".holderNumberTicket2").show();
-				} else {
-					$(".holderOnProgressIDATM2").hide();
-					$(".holderNumberTicket2").hide();
-				}
-				$(".holderOnProgressNote").text($("#ticketNote").val());
-				$("#sendOnProgressEmail").attr('onclick','sendOnProgressEmail("' + timeOnProgress.format("YYYY-MM-DD HH:mm:ss") + '")')
+					$("#emailOnProgressSubject").val("On Progress Tiket " + $(".holderOnProgressLocation").text() + " [" + $(".holderOnProgressProblem").text() +"]");
+					$("#emailOnProgressHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir On Progress Tiket untuk <b>" + $(".holderOnProgressLocation").text() + "</b> : ");
+					$(".holderOnProgressCustomer").text(result.ticket_reciver.client_name);
+					var timeOnProgress = moment()
+					$(".holderOnProgressWaktu").html("<b>" + timeOnProgress.format("DD MMMM YYYY (HH:mm)") + "</b>");
+					
+					if(
+						result.ticket_reciver.client_acronym  == "BJBR" || 
+						result.ticket_reciver.client_acronym  == "BSBB" || 
+						result.ticket_reciver.client_acronym  == "BRKR" || 
+						result.ticket_reciver.client_acronym  == "BPRKS" || 
+						result.ticket_reciver.client_acronym  == "BDIY"
+						){
+						$(".holderOnProgressIDATM2").show();
+						$(".holderNumberTicket2").show();
+					} else {
+						$(".holderOnProgressIDATM2").hide();
+						$(".holderNumberTicket2").hide();
+					}
+					$(".holderOnProgressNote").text($("#ticketNote").val());
+					$("#sendOnProgressEmail").attr('onclick','sendOnProgressEmail("' + timeOnProgress.format("YYYY-MM-DD HH:mm:ss") + '")')
+				},1000)
 			}
 		})
 	}
@@ -6375,8 +7181,9 @@ Ticketing
 									$(".holderCancelLocation").text(result.ticket_data.location);
 									$(".holderCancelProblem").text(result.ticket_data.problem);
 									$(".holderCancelSerial").text(result.ticket_data.serial_device);
-									$(".holderCancelSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
-
+									if (result.ticket_data.type_ticket != 'PM') {
+										$(".holderCancelSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+									}
 									$(".holderCancelIDATM").text(result.ticket_data.id_atm);
 
 									$(".holderCancelNote").text("");
@@ -6474,7 +7281,7 @@ Ticketing
 				},
 				success:function(result){
 					$("#estimationPendingHolder").show()
-					$("#timePending").val(moment(result.remind_time).format("hh:mm"))	
+					// $("#timePending").val(moment(result.remind_time).format("hh:mm"))
 					$("#datePending").val(moment(result.remind_time).format("DD/MM/YYYY"))
 					$("#estimationPendingText").text(moment(result.remind_time).format("D MMMM YYYY") + " at " + moment(result.remind_time).format("HH:mm"))
 					$('#modal-pending').modal('toggle');
@@ -6640,7 +7447,8 @@ Ticketing
 					url:"{{url('/ticketing/setUpdateTicketPending')}}",
 					data:{
 						updatePending:$("#saveReasonPending").val(),
-						id_ticket:$('#ticketID').val()
+						id_ticket:$('#ticketID').val(),
+						estimationPending:moment($("#datePending").val(),"DD/MM/YYYY").format("DD-MM-YYYY") + " " + $("#timePending").val() + ":00"
 					},
 					success:function(resultAjax){
 						// swalWithCustomClass.fire(
@@ -6712,7 +7520,8 @@ Ticketing
 		    timePicker24Hour: true,
 		    minDate:moment(date, 'YYYY-MM-DD HH:mm').add(1, 'minutes'),
 		    startDate: moment(date, 'YYYY-MM-DD HH:mm').add(1, 'minutes'),
-		    endDate: moment().startOf('hour').add(32, 'hour'),
+		    endDate: moment(date, 'YYYY-MM-DD HH:mm').add(1, 'hour'),
+		    // endDate: moment().startOf('hour').add(32, 'hour'),
 		    locale: {
 		      format: 'YYYY-MM-DD HH:mm'
 		    }
@@ -6728,6 +7537,16 @@ Ticketing
 			});
 
 			$('#timeClose').timepicker('setTime',moment(date).add(1, 'minutes').format('HH:mm'))
+
+			$('#dateClose').datepicker({
+				autoclose: true,
+				// startDate: moment(result.first_activity_ticket.date).format("MM/DD/YYYY"),
+				minDate: moment().format("YYYY-MM-DD"),
+				startDate: moment().format("YYYY-MM-DD"),
+				locale: {
+		      format: 'YYYY-MM-DD'
+		    }
+			})
 
 			$("#saveCloseRoute").val('')
 			$("#saveCloseCouter").val('')
@@ -10359,7 +11178,9 @@ Ticketing
 		$("#searchBarEmail").attr("placeholder","Search SLA")
 		$(".settingComponent").hide()
 		$("#SlaSetting").show()
-		$("#addEmail2").show()	
+		$("#addEmail2").show()
+		$("#addEmail").hide()	
+		$("#addEmailSlm").hide()
 
 		if ($.fn.dataTable.isDataTable("#tableSlaSetting")) {
 		} else {
@@ -10402,8 +11223,8 @@ Ticketing
 
 	function changePerformance(whichPageFor,id){
 		console.log(whichPageFor)
-		var start = '',end = ''
-		if ($("#filterDashboardByDate").val() != '') {
+		var start = '',end = '', pid = ''
+		if ($("#filterDashboardByDate").data('daterangepicker').startDate != '') {
 			start = moment($("#filterDashboardByDate").data('daterangepicker').startDate).format("YYYY-MM-DD")
 			end = moment($("#filterDashboardByDate").data('daterangepicker').endDate).format("YYYY-MM-DD") 
 		}else if ($("#startDateFilter").val() != '' && $("#endDateFilter").val() != '') {
@@ -10412,6 +11233,11 @@ Ticketing
 		}else{
 			start = moment().startOf('year').format('YYYY-MM-DD')
 			end = moment().endOf('year').format('YYYY-MM-DD')
+			pid = pid
+		}
+
+		if($("#filterDashboardByPid").val() != null){
+			pid = $("#filterDashboardByPid").val()
 		}
 
 		if (whichPageFor == 'performance') {
@@ -10421,22 +11247,82 @@ Ticketing
 					$("#tablePerformance").DataTable().ajax.url("{{url('ticketing/getPerformanceAll')}}").load();
 				}
 
-				var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end
+				var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + pid + '&start=' + start + '&end=' + end
 			}
 		}else if (whichPageFor == 'activity') {
-			$("#tablePerformance").DataTable().ajax.url("{{url('ticketing/getPerformanceByActivity?activity=')}}" + id + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end).load()
+			$("#tablePerformance").DataTable().ajax.url("{{url('ticketing/getPerformanceByActivity?activity=')}}" + id + '&pid=' + pid + '&start=' + start + '&end=' + end).load()
 			
-			var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end + '&activity=' + id
+			var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + pid + '&start=' + start + '&end=' + end + '&activity=' + id
 		}else if (whichPageFor == 'severity') {
-			$("#tablePerformance").DataTable().ajax.url("{{url('ticketing/getPerformanceBySeverity?severity=')}}" + id + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end).load()
+			$("#tablePerformance").DataTable().ajax.url("{{url('ticketing/getPerformanceBySeverity?severity=')}}" + id + '&pid=' + pid + '&start=' + start + '&end=' + end).load()
 			
-			var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end + '&severity=' + id
+			var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + pid + '&start=' + start + '&end=' + end + '&severity=' + id
 		}else if (whichPageFor == 'attention') {
-			$("#tablePerformance").DataTable().ajax.url("{{url('getPerformanceByNeedAttention?')}}" + 'pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end).load()
+			$("#tablePerformance").DataTable().ajax.url("{{url('getPerformanceByNeedAttention?')}}" + 'pid=' + pid + '&start=' + start + '&end=' + end + '&client=' + $("#filterDashboardByClient").val()).load()
 			
-			var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + $("#filterDashboardByPid").val() + '&start=' + start + '&end=' + end + '&attention=attention'
+			var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + pid + '&start=' + start + '&end=' + end + '&attention=attention'
 		}
 		$("#exportTablePerformance").attr('onclick',"getReport('" + urlAjax + "')")
 	}	
+
+	function getTripRequestAll()
+	{
+		if ($.fn.dataTable.isDataTable("#tableTripRequest")) {
+		} else {
+			$("#tableTripRequest").DataTable({
+				ajax:{
+					type:"GET",
+					url:"{{url('/ticketing/getTripRequestAll')}}",
+					dataSrc: function(json){
+						json.data.forEach(function(data,index){
+							data.action = '<button class="btn btn-default" type="button" onclick="detailTripRequest('+ data.id +')">Detail</button>'
+						})
+						return json.data;
+					}
+				},
+				
+				columns:[
+					{ 	
+						data:'id_ticket',
+					},
+					{
+						data:'request_by',
+					},
+					{ 
+						data:'from',
+					},
+					{ 
+						data:'to',
+					},
+					{ 
+						data:'start_date',
+					},
+					{ 
+						data:'end_date',
+					},
+					{
+						data:'type'
+					},
+					{
+						data:'nominal'
+					},
+					{
+						data:'nominal_settlement'
+					},
+					{
+						data: 'action'
+					}
+				],
+				autoWidth:false,
+				lengthChange: false,
+				searching:true,
+				"processing": true,
+				"ColumnDefs":[
+		       { targets: 'no-sort', orderable: false }
+		    ],
+		    "aaSorting": [],
+			})
+		}
+	}
 </script>
 @endsection
