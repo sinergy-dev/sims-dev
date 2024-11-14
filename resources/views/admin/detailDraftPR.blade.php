@@ -1764,7 +1764,7 @@
           valueVat = result.pr.status_tax
         }
         if (!isNaN(valueVat)) {
-          tempVat = Math.round(((parseFloat(sum) - (parseFloat(sum) * parseFloat(result.pr.discount)/100)) * (valueVat == false?0:parseFloat(valueVat) / 100)))
+          tempVat = result.pr.discount == null || result.pr.discount == "false" ? Math.round((parseFloat(sum) * (parseFloat(result.pr.status_tax)/100))) : Math.round(((parseFloat(sum) - (parseFloat(sum) * parseFloat(result.pr.discount)/100)) * (valueVat == false?0:parseFloat(valueVat) / 100)))
 
           finalVat = tempVat
 
@@ -2153,8 +2153,10 @@
         }else{
           valueVat = result.pr.status_tax
         }
+
+        console.log(tempVat)
         if (!isNaN(valueVat)) {
-          tempVat = Math.round(((parseFloat(sum) - (parseFloat(sum) * parseFloat(result.pr.discount)/100)) * (valueVat == false?0:parseFloat(valueVat) / 100)))
+          tempVat = result.pr.discount == null || result.pr.discount == "false" ? Math.round((parseFloat(sum) * (parseFloat(result.pr.status_tax)/100))) : Math.round(((parseFloat(sum) - (parseFloat(sum) * result.pr.discount /100))) * (parseFloat(result.pr.status_tax)/100))
 
           finalVat = tempVat
 
@@ -2581,7 +2583,7 @@
     });
 
     if (!isNaN(valueVat)) {
-      tempVat = Math.round(((parseFloat(sum) - (parseFloat(sum) * parseFloat(item.discount)/100)) * (valueVat == false?0:parseFloat(valueVat) / 100)))
+      tempVat = item.discount == 'false' ? Math.round(((parseFloat(sum)) * (valueVat == false?0:parseFloat(valueVat) / 100))) : Math.round(((parseFloat(sum) - (parseFloat(sum) * parseFloat(item.discount)/100)) * (valueVat == false?0:parseFloat(valueVat) / 100)))
 
       finalVat = tempVat
 

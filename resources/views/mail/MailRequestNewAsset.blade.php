@@ -130,7 +130,7 @@
 		</div>
 	</div>
 </body>
-<footer style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
+<footer style="display:block;width:900px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="background-color: #7868e6; padding: 20px; color: #ffffff; font-size: 12px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 		<p>
 			<center>PT. Sinergy Informasi Pratama</center>

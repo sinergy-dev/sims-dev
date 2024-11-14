@@ -733,13 +733,13 @@ Permission Config
 			$("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
 		}
 
-		$('#permissionRoleToUser').DataTable( {
+		$('#permissionRoleToUser').DataTable({
 			ajax: {
 				url:"{{url('permission/getUserList')}}",
 				dataSrc:function (json){
 					if(json.permitted){
 						json.data.forEach(function(value,idex){
-							value.user_id = "<a href='" + '{{url("authentication")}}'+ "/" + value.user_id + "'>" + value.user_id + "</a>"
+							value.user_id = "<a href='" + '{{url("authLogin")}}'+ "/" + value.user_id + "'>" + value.user_id + "</a>"
 						})
 					} else {
 						json.data.forEach(function(value,idex){
