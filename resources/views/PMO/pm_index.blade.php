@@ -1235,24 +1235,24 @@ PMO
             })
           }
         }else if (data.id == "review_date") {
-          if(moment((data.value), "MM/DD/YYYY").format("YYYY-MM-DD") < moment(($(data).closest(".col-md-4").prev(".col-md-4").find("#due_date").val()), "MM/DD/YYYY").format("YYYY-MM-DD")){
+          if(moment((data.value), "MM/DD/YYYY").format("YYYY-MM-DD") > moment(($(data).closest(".col-md-4").prev(".col-md-4").find("#due_date").val()), "MM/DD/YYYY").format("YYYY-MM-DD")){
             Swal.fire({
               title: "<strong>Oopzz!</strong>",
               icon: "info",
               html: `
-                Review date must be greater than Due date!
+                Due date must be greater than Review date!
               `,
             }).then(()=>{
               $(data).val("")
             })
           }
         }else if (data.id == "due_date") {
-          if(moment((data.value), "MM/DD/YYYY").format("YYYY-MM-DD") > moment(($(data).closest(".col-md-4").next(".col-md-4").find("#review_date").val()), "MM/DD/YYYY").format("YYYY-MM-DD")){
+          if(moment((data.value), "MM/DD/YYYY").format("YYYY-MM-DD") < moment(($(data).closest(".col-md-4").next(".col-md-4").find("#review_date").val()), "MM/DD/YYYY").format("YYYY-MM-DD")){
             Swal.fire({
               title: "<strong>Oopzz!</strong>",
               icon: "info",
               html: `
-                Review date must be greater than Due date!
+                Due date must be greater than Review date!
               `,
             }).then(()=>{
               $(data).val("")

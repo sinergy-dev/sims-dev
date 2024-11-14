@@ -1016,9 +1016,9 @@ class TimesheetController extends Controller
     public function getPhaseByDivision(Request $request)
     {
         $nik = Auth::User()->nik;
-        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','mini_group')->where('user_id', $nik)->first(); 
 
-        if ($cek_role->group == 'bcd') {
+        if ($cek_role->mini_group == 'Application Development') {
             if ($cek_role->name == 'BCD Manager') {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
