@@ -513,7 +513,15 @@ class AssetMgmtController extends Controller
         // } else {
         //     $store->category_peripheral = '-';
         // }
-        $store->status = $request->status;
+        if ($request->pid == 'INTERNAL') {
+            if ($request->pic != null || $request->pic != '') {
+                $store->status = 'Installed';
+            }else{
+                $store->status = $request->status;
+            }
+        }else{
+            $store->status = $request->status;
+        }
         $store->vendor = $request->vendor;
         $store->type_device = $request->typeDevice;
         $store->serial_number = $request->serialNumber;
@@ -859,12 +867,39 @@ class AssetMgmtController extends Controller
         $update->asset_owner = $request->assetOwner;
 
         if ($update->status != $request->status) {
-            if ($request->status == 'AVAILABLE') {
+            if ($request->status == 'Available') {
                 $getIdDetailAsset = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
-                $storeDetail = $getIdDetailAsset->replicate(['id_asset', 'id_device_customer', 'pid','client','kota','alamat_lokasi','detail_lokasi','latitude','longitude','service_point','ip_address','port','server','status_cust','second_level_support','operating_system','version_os','license_start_date','license_end_date','maintenance_start','maintenance_end','accessoris']);
+
+                if (!$getIdDetailAsset) {
+                    return response()->json(['error' => 'No matching asset found.'], 404);
+                }
+
+                // Replicate without excluding any attributes
+                $storeDetail = $getIdDetailAsset->replicate();
                 $storeDetail->installed_date = null;
-                $storeDetail->pic = null;
+                $storeDetail->pic = '';
                 $storeDetail->save();
+                // $storeDetail = $getIdDetailAsset->replicate(['id_asset', 'id_device_customer', 'pid','client','kota','alamat_lokasi','detail_lokasi','latitude','longitude','service_point','ip_address','port','server','status_cust','second_level_support','operating_system','version_os','license_start_date','license_end_date','maintenance_start','maintenance_end','accessoris']);
+                // $storeDetail->installed_date = null;
+                // $storeDetail->pic = null;
+                // $storeDetail->save();
+
+                // if (!$getIdDetailAsset) {
+                //     return response()->json(['error' => 'No matching asset found.'], 404);
+                // }
+
+                // $storeDetail = $getIdDetailAsset->replicate([
+                //     'id_asset', 'id_device_customer', 'pid', 'client', 'kota', 
+                //     'alamat_lokasi', 'detail_lokasi', 'latitude', 'longitude', 
+                //     'service_point', 'ip_address', 'port', 'server', 'status_cust', 
+                //     'second_level_support', 'operating_system', 'version_os', 
+                //     'license_start_date', 'license_end_date', 'maintenance_start', 
+                //     'maintenance_end', 'accessoris'
+                // ]);
+
+                // $storeDetail->installed_date = null;
+                // $storeDetail->pic = null;
+                // $storeDetail->save();
             }
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
@@ -1236,32 +1271,34 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->maintenance_end = $request->maintenanceEnd;
 
-        if ($update->pic != $request->inputPic && $update->pid == 'INTERNAL') {
-            $pic_old = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
-                            ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$update->pic);
+        if (isset($request->inputPic)) {
+            if ($update->pic != $request->inputPic && $update->pid == 'INTERNAL') {
+                $pic_old = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
+                                ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$update->pic);
 
-            $pic_new = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
-                            ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$request->inputPic);
+                $pic_new = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
+                                ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$request->inputPic);
 
-            if($pic_old->first() !== null){
-                $storeLog = new AssetMgmtLog();
-                $storeLog->id_asset = $request->id_asset;
-                $storeLog->operator = Auth::User()->name;
-                $storeLog->date_add = Carbon::now()->toDateTimeString();
-                $storeLog->activity = 'Update PIC Asset from ' .$pic_old->first()->name. ' to ' . $pic_new->first()->name;
-                $storeLog->save();
+                if($pic_old->first() !== null){
+                    $storeLog = new AssetMgmtLog();
+                    $storeLog->id_asset = $request->id_asset;
+                    $storeLog->operator = Auth::User()->name;
+                    $storeLog->date_add = Carbon::now()->toDateTimeString();
+                    $storeLog->activity = 'Update PIC Asset from ' .$pic_old->first()->name. ' to ' . $pic_new->first()->name;
+                    $storeLog->save();
+                }else{
+                    $storeLog = new AssetMgmtLog();
+                    $storeLog->id_asset = $request->id_asset;
+                    $storeLog->operator = Auth::User()->name;
+                    $storeLog->date_add = Carbon::now()->toDateTimeString();
+                    $storeLog->activity = 'Update PIC Asset to ' . $pic_new->first()->name;
+                    $storeLog->save();
+                }
+
+                $storeDetail->pic = $request->inputPic; 
             }else{
-                $storeLog = new AssetMgmtLog();
-                $storeLog->id_asset = $request->id_asset;
-                $storeLog->operator = Auth::User()->name;
-                $storeLog->date_add = Carbon::now()->toDateTimeString();
-                $storeLog->activity = 'Update PIC Asset to ' . $pic_new->first()->name;
-                $storeLog->save();
+                $storeDetail->pic = $request->inputPic;
             }
-
-            $storeDetail->pic = $request->inputPic; 
-        }else{
-            $storeDetail->pic = $request->inputPic;
         }
 
         if ($update->client != $request->client) {
@@ -1272,6 +1309,19 @@ class AssetMgmtController extends Controller
             $storeLog->activity = 'Update Detail Asset with Client ' .$update->client. ' to ' . $request->client;
             $storeLog->save();
         }
+
+        $updateAssetMgmt = AssetMgmt::where('id',$request->id_asset)->first();
+
+        if (isset($request->inputPic)) {
+            $updateAssetMgmt->status = 'Installed';
+            $updateAssetMgmt->update();
+        }else{
+            if ($updateAssetMgmt->status != 'Rent' || $updateAssetMgmt != 'Unavailable') {
+                $updateAssetMgmt->status = 'Available';
+                $updateAssetMgmt->update();
+            }
+        }
+
         $storeDetail->client = $request->client;
         $storeDetail->pr     = $update->pr;
         $storeDetail->date_add = Carbon::now()->toDateTimeString();
@@ -1306,27 +1356,29 @@ class AssetMgmtController extends Controller
 
         $assetMgmt = AssetMgmt::where('id',$request->id_asset)->first();
 
-        if ($update->pic != $request->inputPic) {
-            $pdfPath = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
+        if (isset($request->inputPic)) {
+            if ($update->pic != $request->inputPic) {
+                $pdfPath = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
 
-            $this->uploadPdfBAST($request->id_asset,$pdfPath);
+                $this->uploadPdfBAST($request->id_asset,$pdfPath);
 
-            $to = User::select('email','name')
-                    ->join('role_user','role_user.user_id','=','users.nik')
-                    ->where('nik',$request->inputPic)->first();
+                $to = User::select('email','name')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->where('nik',$request->inputPic)->first();
 
-            $data = [
-                [   
-                    'name'              => $to->name,
-                    'id_asset'          => $assetMgmt->id_asset, 
-                    'category'          => $assetMgmt->category,
-                    'type_device'       => $assetMgmt->vendor . " - " . $assetMgmt->type_device . " - " . $assetMgmt->serial_number,
-                    'spesifikasi'       => $assetMgmt->spesifikasi,
-                    'link_drive'        => AssetMgmtDocument::where('id_detail_asset',$storeDetail->id)->first()->link_drive,
-                ]
-            ];
+                $data = [
+                    [   
+                        'name'              => $to->name,
+                        'id_asset'          => $assetMgmt->id_asset, 
+                        'category'          => $assetMgmt->category,
+                        'type_device'       => $assetMgmt->vendor . " - " . $assetMgmt->type_device . " - " . $assetMgmt->serial_number,
+                        'spesifikasi'       => $assetMgmt->spesifikasi,
+                        'link_drive'        => AssetMgmtDocument::where('id_detail_asset',$storeDetail->id)->first()->link_drive,
+                    ]
+                ];
 
-            Mail::to($to->email)->send(new MailGenerateBAST($data,'[SIMS-APP] Generate BAST')); 
+                Mail::to($to->email)->send(new MailGenerateBAST($data,'[SIMS-APP] Generate BAST')); 
+            }
         }
 
         if (isset($request->inputDocBA)) {
@@ -2885,7 +2937,7 @@ class AssetMgmtController extends Controller
 
         $pihak_kedua = $cek_role_pk->first();
 
-        if ($cek_role_pk->where('roles.name','like','%Manager%')->first()) {
+        if (stripos($pihak_kedua->name, 'Manager') !== false) {
             $group = $cek_role_pk->first()->group;
 
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
@@ -2893,16 +2945,19 @@ class AssetMgmtController extends Controller
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('group','like','%'.$group.'%')
                         ->where('roles.name','like','VP%')
+                        ->where('status_karyawan','<>','dummy')
+                        ->where('status_delete','<>','D')
                         ->first(); 
 
-        }else if ($cek_role_pk->where('roles.name','like','VP%')->first()) {
+        }else if (stripos($pihak_kedua->name, 'VP') !== false) {
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('roles.name','like','%Operations Director%')
+                        ->where('status_karyawan','<>','dummy')
+                        ->where('status_delete','<>','D')
                         ->first();
         }else {
-            // return $id_asset;
             $cek_role_pk = DB::table('tb_asset_management')
                         ->join('tb_asset_management_detail', 'tb_asset_management_detail.id_asset', '=', 'tb_asset_management.id')
                         ->select('tb_asset_management.id', 'roles.name', 'roles.group', 'users.name as name_pk', 'roles.mini_group', 'ttd')
@@ -2923,7 +2978,9 @@ class AssetMgmtController extends Controller
 
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                         ->join('role_user','role_user.user_id','=','users.nik')
-                        ->join('roles','roles.id','=','role_user.role_id');
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('status_karyawan','<>','dummy')
+                        ->where('status_delete','<>','D');
 
             if ($isManagerOnMiniGroup) {
                 $mini_group = $cek_role_pk->mini_group;
