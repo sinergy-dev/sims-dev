@@ -354,7 +354,7 @@
 					<th></th>
 					<th></th>
 					@endif
-					<th style="text-align:right">Discount {{$data->discount}}%</th>
+					<th style="text-align:right">Discount {{number_format($data->discount,2)}}%</th>
 					<th></th>
 					<th></th>
 					<th></th>

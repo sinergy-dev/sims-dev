@@ -2270,7 +2270,10 @@
 
             if (!isNaN(valueVat)) {
               setTimeout(function(){
-                tempVat = Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
+                tempVat = $("#inputDiscount_unfinishPreview").val() == 0 ? Math.round((parseFloat(sum)) * (valueVat == false?0:parseFloat(valueVat) / 100)) : Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
+
+                console.log(tempVat + "sini")
+                console.log(isNaN(tempVat) + "sini")
 
                 finalVat = tempVat
 
@@ -2282,17 +2285,19 @@
 
                 $("#vat_tax").val(formatter.format(isNaN(tempVat)?0:tempVat))
               },500)
-            }else{
-              tempVat = Math.round((parseFloat(sum) * ($("#vat_tax").val() == ""?0:parseFloat($("#vat_tax").val())) / 100))
-              
-              finalVat = tempVat
-
-              finalGrand = tempGrand
-
-              tempTotal = parseFloat(sum)
-              
-              $('.title_tax').text($("#vat_tax").val() == "" ||$("#vat_tax").val() == 0?"":$('.title_tax').text().replace("%","") + '%')
             }
+
+            // else{
+            //   tempVat = Math.round((parseFloat(sum) * ($("#vat_tax").val() == ""?0:parseFloat($("#vat_tax").val())) / 100))
+              
+            //   finalVat = tempVat
+
+            //   finalGrand = tempGrand
+
+            //   tempTotal = parseFloat(sum)
+              
+            //   $('.title_tax').text($("#vat_tax").val() == "" ||$("#vat_tax").val() == 0?"":$('.title_tax').text().replace("%","") + '%')
+            // }
 
             setTimeout(function(){
               $('.title_pb1').text(result.pr.tax_pb == 'false' || result.pr.tax_pb == 0?"":result.pr.tax_pb+"%")
@@ -3323,7 +3328,7 @@
             $("#inputFinalPageGrandPrice").val(formatter.format(tempGrand))
           }
         })
-                      
+
       } else {
         if (n == 0) {
           const firstLaunch = localStorage.getItem('firstLaunch')
@@ -3986,7 +3991,10 @@
             $(".modal-title").text('Confirm Draft PR')
             $(".modal-dialog").removeClass('modal-lg')
             document.getElementById("nextBtnAddAdmin").innerHTML = "Verify"
+            $("#nextBtnAddAdmin").attr('onclick','ConfirmDraftPr(' +no_pr+',"approve")')
           } else {
+            document.getElementById("nextBtnAddAdmin").innerHTML = "Next"
+
             if (n == 0) {
               $("#inputToCek").val(result.pr.to)
               $("#selectTypeCek").val(result.pr.type_of_letter)
@@ -4341,21 +4349,18 @@
               appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
 
               appendHeader = appendHeader + '    </div>'
-              if (window.matchMedia("(max-width: 768px)").matches)
-              {
+              if (window.matchMedia("(max-width: 768px)").matches){
                   appendHeader = appendHeader + '    <div class="col-md-6">'
                   // The viewport is less than 768 pixels wide
                   
-              } else {
+              }else {
                   appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
-                  // The viewport is at least 768 pixels wide
-                  
               }
               appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
               appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
               appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
               appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
-              if ($("#selectTypeCek").val() == 'EPR')
+              if ($("#selectTypeCek").val() == 'EPR'){
                 appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
                 appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
                 appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
@@ -4597,10 +4602,8 @@
               $("#inputDiscountFinalProductCek").val(formatter.format(tempDiscount))
               $("#inputFinalPageGrandPricePreviewCek").val(formatter.format(result.grand_total))
             }
-            document.getElementById("nextBtnAddAdmin").innerHTML = "Next"
-            $("#nextBtnAddAdmin").prop("disabled",false)
-            $("#addProduct").attr('onclick','nextPrevAddAdmin(-1,'+ result.pr.id +')')
-          }
+          }    
+        }    
       }) 
       $("#ModalDraftPrAdmin").modal({backdrop: 'static', keyboard: false})  
     }
@@ -4726,8 +4729,6 @@
             $('.title_service').text(result.pr.service_charge == 'false' || result.pr.service_charge == 0?"":result.pr.service_charge+"%")
             $('.title_discount').text(result.pr.discount == 'false' || result.pr.discount == 0?"":parseFloat(result.pr.discount).toFixed(2)+"%")
 
-            console.log(tempTotal)
-
             tempPb1 = Math.round((parseFloat(sum) - tempDiscount) * (result.pr.tax_pb == null || result.pr.tax_pb == 'false'?0:parseFloat(result.pr.tax_pb)) / 100)
 
             tempService = Math.round((parseFloat(sum) - tempDiscount) * (result.pr.service_charge == null || result.pr.service_charge == "false"?0:parseFloat(result.pr.service_charge)) / 100)
@@ -4826,14 +4827,20 @@
                 })
             },
             error: function(resultAjax,errorStatus,errorMessage){
+              console.log(resultAjax)
+              if (resultAjax.responseText) {
+                var error = JSON.parse(resultAjax.responseText).message
+              }else{
+                var error = 'Something Went Wrong, Please Try Again!'
+              }
               Swal.hideLoading()
               Swal.fire({
                 title: 'Error!',
-                text: "Something went wrong, please try again!",
+                text: error,
                 icon: 'error',
-                confirmButtonText: 'Try Again',
+                confirmButtonText: 'OK',
               }).then((result) => {
-                $.ajax(this)
+                swal.close()
               })
             }
           })          
@@ -5066,8 +5073,6 @@
 
           $("#vat_tax").val(formatter.format(isNaN(tempVat)?0:tempVat))
         },500)
-
-        console.log(tempVat)
       }else{
         if (value == 'pb1' || value == 'service') {
           tempVat = Math.round((parseFloat(sum) * ($("#vat_tax").val() == ""?0:parseFloat($("#vat_tax").val())) / 100))
@@ -6218,7 +6223,6 @@
           $("#bottomProducts").append(appendBottom)
 
           if (status != "") {
-            console.log(status+"hmm")
             changeVatValue(status)
           }
 

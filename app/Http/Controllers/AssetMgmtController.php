@@ -304,8 +304,13 @@ class AssetMgmtController extends Controller
     }
 
     public function getVendor(Request $request)
-    {
-        $data = DB::table('tb_asset_management')->select('vendor as id','vendor as text')->where('vendor','!=',null)->where('vendor','like','%'.request('q').'%')->distinct()->get();
+    {   
+        $searchTerm = request('q');
+
+        $data = DB::table('tb_asset_management')->select('vendor as id','vendor as text')->where('vendor','!=',null)
+            ->whereRaw('LOWER(vendor) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+            // ->where('vendor','ilike','%'.request('q').'%')
+            ->distinct()->get();
 
         return $data;
     }
@@ -326,7 +331,12 @@ class AssetMgmtController extends Controller
 
     public function getLevelSupport(Request $request)
     {
-        $data = DB::table('tb_asset_management_detail')->select('second_level_support as id','second_level_support as text')->where('second_level_support','!=',null)->where('second_level_support','!=','null')->where('second_level_support','like','%'.request('q').'%')->distinct()->get();
+        $searchTerm = request('q');
+        
+        $data = DB::table('tb_asset_management_detail')->select('second_level_support as id','second_level_support as text')->where('second_level_support','!=',null)->where('second_level_support','!=','null')
+            // ->where('second_level_support','like','%'.request('q').'%')
+            ->whereRaw('LOWER(second_level_support) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+            ->distinct()->get();
 
         return $data;
     }
@@ -547,7 +557,7 @@ class AssetMgmtController extends Controller
             $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
             $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
-                ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','latitude','longitude','service_point','pr')
+                ->select('tb_asset_management_detail.id_asset','id_device_customer','client','pid','kota','alamat_lokasi','detail_lokasi','ip_address','server','port','status_cust','second_level_support','operating_system','version_os','installed_date','license','license_end_date','license_start_date','maintenance_end','maintenance_start','latitude','longitude','service_point','tb_asset_management.pr')
                 ->where('tb_asset_management_detail.id_asset',$request->assignTo)
                 ->first();
 
@@ -752,12 +762,40 @@ class AssetMgmtController extends Controller
     public function getPrByYear(Request $request)
     {
         $data = DB::table('tb_pr')->select('no_pr as id','no_pr as text')
-            ->whereYear('date',Date('Y'))
+            ->where(function ($query) {
+                $query->whereYear('date', date('Y'))
+                      ->orWhereYear('date', '2023')
+                      ->orWhereYear('date', '2022');
+            })
             ->where('status','Done')
-            ->where('no_pr','like','%'.request('q').'%')
+            ->where('no_pr','like','%'.request('q').'%')->orderby('created_at','desc')
             ->get();
 
         return $data;
+    }
+
+    public function getDateByPr(Request $request)
+    {
+        $getId = DB::table('tb_pr')->join('tb_pr_activity','tb_pr_activity.id_draft_pr','tb_pr.id_draft_pr')->select('tb_pr_activity.id_draft_pr','tb_pr_activity.status','tb_pr_activity.id');
+        $getLastId = DB::table($getId,'temp')->groupBy('id_draft_pr')->selectRaw('MAX(`temp`.`id`) as `id_activity`')->selectRaw('id_draft_pr');
+
+        $dataPr = DB::table($getLastId, 'temp2')->join('tb_pr','tb_pr.id_draft_pr','temp2.id_draft_pr')->join('tb_pr_activity','tb_pr_activity.id','temp2.id_activity')->select('tb_pr_activity.status','activity','tb_pr_activity.date_time')->where('no_pr',$request->no_pr)->get();
+
+        $dataPr->transform(function ($item) {
+            $date = \Carbon\Carbon::parse($item->date_time)->addDay();
+            
+            if ($date->isSaturday()) {
+                $date->addDays(2);
+            } elseif ($date->isSunday()) {
+                $date->addDay();
+            }
+
+            $item->date_time = $date->format('Y-m-d');
+
+            return $item;
+        });
+
+        return $dataPr->first()->date_time;
     }
 
     public function getPid(Request $request)
@@ -981,6 +1019,16 @@ class AssetMgmtController extends Controller
             $storeLog->save();
         }
         $update->tanggal_pembelian = $request->tanggalBeli;
+
+        if ($update->pr != $request->inputPr) {
+            $storeLog = new AssetMgmtLog();
+            $storeLog->id_asset = $request->id_asset;
+            $storeLog->operator = Auth::User()->name;
+            $storeLog->date_add = Carbon::now()->toDateTimeString();
+            $storeLog->activity = 'Update Asset with Number Purchase Request ' .$update->pr. ' to ' . $request->inputPr;
+            $storeLog->save();
+        }
+        $update->pr = $request->inputPr;
 
         if ($update->nilai_buku != str_replace('.', '', $request['nilaiBuku'])) {
             $storeLog = new AssetMgmtLog();
@@ -1509,7 +1557,7 @@ class AssetMgmtController extends Controller
                     'tb_asset_management_dokumen.link_drive as link_drive_BA',
                     'tb_asset_management_dokumen.document_name as document_name_BA',
                     'tb_asset_management_dokumen.document_location as document_location_BA',
-                    'pr',
+                    'tb_asset_management.pr',
                     'users.nik as pic',
                     DB::raw('CONCAT(users.name," - ",(CASE WHEN roles.mini_group IS NULL THEN roles.group ELSE roles.mini_group END)) AS text_name'))
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)

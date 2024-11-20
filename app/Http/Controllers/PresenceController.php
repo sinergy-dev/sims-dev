@@ -703,7 +703,11 @@ class PresenceController extends Controller
     public function makeShiftingSchedule($nik,$span)
     {
         $getData = 'true';
-        $getDate = PresenceHistory::select(DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),'presence_type')->where('nik',$nik)->orderBy('presence_actual','desc')->first()->presence_type;
+        if (PresenceHistory::where('nik',$nik)->orderBy('presence_actual','desc')->exists()) {
+            $getDate = PresenceHistory::select(DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),'presence_type')->where('nik',$nik)->orderBy('presence_actual','desc')->first()->presence_type;
+        } else {
+            $getDate = 'false';
+        }
 
         if ($getDate == 'Check-In') {
             $getDate = 'true';
