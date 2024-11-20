@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Response;
 
 use Auth;
 use DB;
@@ -36,12 +36,15 @@ use PDF;
 use Mail;
 use App\Mail\DraftPR;
 use Log;
-
+use Exception;
 
 use setasign\Fpdf\Fpdf;
+use mPDF;
 use setasign\Fpdi\Fpdi;
+// use setasign\Fpdi\Tcpdf\Fpdi; // Correct namespace for FPDI for TCPDF
 use setasign\FpdiProtection\FpdiProtection;
 use setasign\Fpdi\PdfParser\StreamReader;
+use setasign\Fpdi\PdfReader\Exception\PdfReaderException;
 use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
 
 use GuzzleHttp\Client;
@@ -2610,145 +2613,173 @@ class PrDraftController extends Controller
 
         } else {
             // return 'verify';
-            $update = PRDraft::where('id', $request['no_pr'])->first();
-            $update->status = 'VERIFIED';
-            $update->save();
-
-            //Store Nomor PR
-            $get_draft_pr = PRDraft::where('id', $request['no_pr'])->first();
-            $tahun = date("Y");
-            $cek = DB::table('tb_pr')
-                    ->where('date','like',$tahun."%")
-                    ->count('no');
-
-            $type = $get_draft_pr->type_of_letter;
-
-            $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name as name', 'roles.group','roles.slug')->where('tb_pr_draft.id', $request['no_pr'])->first();
-
-            if ($cek_group->group == 'Project Management') {
-                $posti = 'PMO';
-            } elseif ($cek_group->group == 'Supply Chain, CPS & Asset Management') {
-                if ($cek_group->slug == 'inventory') {
-                    $posti = 'WHO';
-                } else {
-                    $posti = 'MSM';
+            try {
+                //store no_pr
+                if (PR::where('id_draft_pr',$request['no_pr'])->exists()) {
+                    PR::where('id_draft_pr',$request['no_pr'])->delete();
                 }
-                // $posti = 'MSM';
-            } elseif ($cek_group->group == 'Sales') {
-                $posti = 'SAL';
-            } elseif ($cek_group->group == 'Product Management & Development') {
-                $posti = 'SOL';
-            } elseif ($cek_group->group == 'Solution Implementation & Managed Service') {
 
-                $posti = 'SID';
-            } else {
-                $posti = 'HRD';
+                $get_draft_pr = PRDraft::where('id', $request['no_pr'])->first();
+                $tahun = date("Y");
+                $type = $get_draft_pr->type_of_letter;
+
+                $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name as name', 'roles.group','roles.slug')->where('tb_pr_draft.id', $request['no_pr'])->first();
+
+                if ($cek_group->group == 'Project Management') {
+                    $posti = 'PMO';
+                } elseif ($cek_group->group == 'Supply Chain, CPS & Asset Management') {
+                    if ($cek_group->slug == 'inventory') {
+                        $posti = 'WHO';
+                    } else {
+                        $posti = 'MSM';
+                    }
+                    // $posti = 'MSM';
+                } elseif ($cek_group->group == 'Sales') {
+                    $posti = 'SAL';
+                } elseif ($cek_group->group == 'Product Management & Development') {
+                    $posti = 'SOL';
+                } elseif ($cek_group->group == 'Solution Implementation & Managed Service') {
+
+                    $posti = 'SID';
+                } else {
+                    $posti = 'HRD';
+                }
+                
+                $edate = date("Y-m-d");
+
+                $month_pr = substr($edate,5,2);
+                $year_pr = substr($edate,0,4);
+
+                $array_bln = array('01' => "I",
+                            '02' => "II",
+                            '03' => "III",
+                            '04' => "IV",
+                            '05' => "V",
+                            '06' => "VI",
+                            '07' => "VII",
+                            '08' => "VIII",
+                            '09' => "IX",
+                            '10' => "X",
+                            '11' => "XI",
+                            '12' => "XII");
+                $bln = $array_bln[$month_pr];
+
+                $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+                $getLastNumPR = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->first();
+
+                if($getnumber == NULL){
+                    $getlastnumber = 1;
+                    $lastnumber = $getlastnumber;
+                } else{
+                    $lastnumber = $getnumber+1;
+
+                    if (isset($getLastNumPR)) {
+                        $getLastNumPR = explode('/', $getLastNumPR->no_pr)[0];
+
+                        if ($lastnumber ==  (int)$getLastNumPR) {
+                            $lastnumber = $getLastNumPR+1;
+                        }else{
+                            $lastnumber = $lastnumber;
+                        }
+                    }else{
+                        $lastnumber = $lastnumber;
+                    }
+                }
+
+                if($lastnumber < 10){
+                   $akhirnomor = '000' . $lastnumber;
+                }elseif($lastnumber > 9 && $lastnumber < 100){
+                   $akhirnomor = '00' . $lastnumber;
+                }elseif($lastnumber >= 100 && $lastnumber < 1000){
+                   $akhirnomor = '0' . $lastnumber;
+                } elseif ($lastnumber >= 1000) {
+                    $akhirnomor = $lastnumber;
+                }
+
+                $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+                $nom = PR::select('no')->orderBy('no','desc')->first();
+
+                $tambah = new PR();
+                $tambah->no = $nom->no+1;
+                $tambah->no_pr = $no;
+                $tambah->position = $posti;
+                $tambah->type_of_letter = $type;
+                $tambah->month = $bln;
+                $tambah->date = $edate;
+                $tambah->to = $get_draft_pr->to;
+                $tambah->attention = $get_draft_pr->attention;
+                $tambah->title = $get_draft_pr->title;
+                $tambah->division = 'PMO';
+                $tambah->issuance = $get_draft_pr->issuance;
+                $tambah->from = $get_draft_pr->issuance;
+                $tambah->amount = $get_draft_pr->nominal;
+                $tambah->project_id = $get_draft_pr->pid;
+                $tambah->category = $get_draft_pr->category;
+                $tambah->result = 'T';
+                $tambah->status = 'On Progress';
+                $tambah->quote_number = $get_draft_pr->quote_number;
+                $tambah->lead_id = $get_draft_pr->lead_id;
+                $tambah->request_method = $get_draft_pr->request_method;
+                $tambah->term_payment = $get_draft_pr->term_payment;
+                $tambah->email = $get_draft_pr->email;
+                $tambah->phone = $get_draft_pr->phone;
+                $tambah->address = $get_draft_pr->address;
+                $tambah->fax = $get_draft_pr->fax;
+                $tambah->id_draft_pr = $request['no_pr'];
+                $tambah->status_tax = $get_draft_pr->status_tax;
+                $tambah->tax_pb = $get_draft_pr->tax_pb;
+                $tambah->service_charge = $get_draft_pr->service_charge;
+                $tambah->discount = $get_draft_pr->discount;
+                $tambah->status_draft_pr = 'draft';
+                $tambah->isRupiah = $get_draft_pr->isRupiah;
+                $month_formatting = date('n');
+                $tambah->month_formatting = (int)$month_formatting;
+                $tambah->save();
+
+                $approver = '';
+
+                $this->uploadPdf($request->no_pr);
+
+                $response = json_decode($this->uploadPdfMerge($request->no_pr,$approver),true);
+
+                if (isset($response['status']) && $response['status'] === 'success') {
+                    $update = PRDraft::where('id', $request['no_pr'])->first();
+                    $update->status = 'VERIFIED';
+                    $update->save();
+
+                    $detail = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('users.name as name_issuance', 'tb_pr_draft.to', 'tb_pr_draft.attention', 'tb_pr_draft.title', 'tb_pr_draft.nominal', 'tb_pr_draft.id', 'status', 'issuance')->where('tb_pr_draft.id', $request->no_pr)->first();
+
+                    $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
+
+                    $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+                    $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                                ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+                    $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+                    if ($cek_role->group == 'Sales') {
+                        $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
+                            ->where('status_karyawan', '!=', 'dummy')
+                            ->get()->pluck('email');
+                    } else {
+                        $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
+                            ->where('status_karyawan', '!=', 'dummy')
+                            ->get()->pluck('email');
+                    }
+
+                    Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR ' .$detail->id. ' Verified and Ready to Get Compare and Circulate', 'detail_approver', 'next_approver'));
+                }else{
+                    throw new Exception($this->uploadPdfMerge($request->no_pr,$approver));
+                    PR::where('id',$tambah->id)->delete();
+                }
+                
+            } catch (Exception $e) {
+                DB::rollBack();
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ]);
             }
-            
-            $edate = date("Y-m-d");
-
-            $month_pr = substr($edate,5,2);
-            $year_pr = substr($edate,0,4);
-
-            $array_bln = array('01' => "I",
-                        '02' => "II",
-                        '03' => "III",
-                        '04' => "IV",
-                        '05' => "V",
-                        '06' => "VI",
-                        '07' => "VII",
-                        '08' => "VIII",
-                        '09' => "IX",
-                        '10' => "X",
-                        '11' => "XI",
-                        '12' => "XII");
-            $bln = $array_bln[$month_pr];
-
-            $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100 && $lastnumber < 1000){
-               $akhirnomor = '0' . $lastnumber;
-            } elseif ($lastnumber >= 1000) {
-                $akhirnomor = $lastnumber;
-            }
-
-            $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-            $nom = PR::select('no')->orderBy('no','desc')->first();
-
-            $tambah = new PR();
-            $tambah->no = $nom->no+1;
-            $tambah->no_pr = $no;
-            $tambah->position = $posti;
-            $tambah->type_of_letter = $type;
-            $tambah->month = $bln;
-            $tambah->date = $edate;
-            $tambah->to = $get_draft_pr->to;
-            $tambah->attention = $get_draft_pr->attention;
-            $tambah->title = $get_draft_pr->title;
-            $tambah->division = 'PMO';
-            $tambah->issuance = $get_draft_pr->issuance;
-            $tambah->from = $get_draft_pr->issuance;
-            $tambah->amount = $get_draft_pr->nominal;
-            $tambah->project_id = $get_draft_pr->pid;
-            $tambah->category = $get_draft_pr->category;
-            $tambah->result = 'T';
-            $tambah->status = 'On Progress';
-            $tambah->quote_number = $get_draft_pr->quote_number;
-            $tambah->lead_id = $get_draft_pr->lead_id;
-            $tambah->request_method = $get_draft_pr->request_method;
-            $tambah->term_payment = $get_draft_pr->term_payment;
-            $tambah->email = $get_draft_pr->email;
-            $tambah->phone = $get_draft_pr->phone;
-            $tambah->address = $get_draft_pr->address;
-            $tambah->fax = $get_draft_pr->fax;
-            $tambah->id_draft_pr = $request['no_pr'];
-            $tambah->status_tax = $get_draft_pr->status_tax;
-            $tambah->tax_pb = $get_draft_pr->tax_pb;
-            $tambah->service_charge = $get_draft_pr->service_charge;
-            $tambah->discount = $get_draft_pr->discount;
-            $tambah->status_draft_pr = 'draft';
-            $tambah->isRupiah = $get_draft_pr->isRupiah;
-            $month_formatting = date('n');
-            $tambah->month_formatting = (int)$month_formatting;
-            $tambah->save(); 
-
-            $detail = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('users.name as name_issuance', 'tb_pr_draft.to', 'tb_pr_draft.attention', 'tb_pr_draft.title', 'tb_pr_draft.nominal', 'tb_pr_draft.id', 'status', 'issuance')->where('tb_pr_draft.id', $request->no_pr)->first();
-
-            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
-
-            $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
-            $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
-
-            $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
-
-            if ($cek_role->group == 'Sales') {
-                $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management' OR `users`.`name` = '".$listTerritory->name."')")
-                    ->where('status_karyawan', '!=', 'dummy')
-                    ->get()->pluck('email');
-            } else {
-                $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'Procurement' OR `roles`.`name` = 'VP Supply Chain, CPS & Asset Management')")
-                    ->where('status_karyawan', '!=', 'dummy')
-                    ->get()->pluck('email');
-            }
-
-            Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR ' .$detail->id. ' Verified and Ready to Get Compare and Circulate', 'detail_approver', 'next_approver'));
-
-            $approver = '';
-
-            $this->uploadPdf($request->no_pr);
-            $this->uploadPdfMerge($request->no_pr,$approver);
             // $this->mergePdf($request->no_pr);
 
             //Disabled push notification
@@ -2881,29 +2912,30 @@ class PrDraftController extends Controller
         }
 
         if ($data->discount != 'false') {
-            $amount_discount = ($sum_nominal * ($data->discount))/100;
+            $amount_discount = round(($sum_nominal * ($data->discount))/100);
 
-            $sum_nominal = $sum_nominal - $amount_discount;
+            $sum_nominal_subtracted = round($sum_nominal - $amount_discount);
         } else {
+            $sum_nominal_subtracted = $sum_nominal;
             $amount_discount = 0;
         }
 
         if ($data->status_tax == '1.1') {
-            $amount_tax = ($sum_nominal * 11)/1000;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/1000);
         } elseif ($data->status_tax == '11') {
-            $amount_tax = ($sum_nominal * 11)/100;
+            $amount_tax = round(($sum_nominal_subtracted * 11)/100);
         } else {
             $amount_tax = 0;
         }
 
         if ($data->tax_pb != 'false') {
-            $amount_pb = ($sum_nominal * ($data->tax_pb))/100;
+            $amount_pb = round($sum_nominal_subtracted * ($data->tax_pb))/100;
         } else {
             $amount_pb = 0;
         }
 
         if ($data->service_charge != 'false') {
-            $amount_service_charge = ($sum_nominal * ($data->service_charge))/100;
+            $amount_service_charge = round($sum_nominal_subtracted * ($data->service_charge))/100;
         } else {
             $amount_service_charge = 0;
         }
@@ -3058,7 +3090,7 @@ class PrDraftController extends Controller
             'getSign' => $get_ttd,
             'activity' => $activity,
             'isNotes' => $notes,
-            'grand_total' => $sum_nominal+$amount_tax+$amount_pb+$amount_service_charge
+            'grand_total' => $sum_nominal_subtracted+$amount_tax+$amount_pb+$amount_service_charge
         ]);
     }
 
@@ -4965,40 +4997,145 @@ class PrDraftController extends Controller
     }
 
     public function uploadPdfMerge($no_pr,$approver)
-    {
-        $client = $this->getClient();
-        $service = new Google_Service_Drive($client);
+    {   
+        // $client = $this->getClient();
+        // $service = new Google_Service_Drive($client);
 
-        $data = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->select('parent_id_drive', 'no_pr', 'tb_pr.title as title')->where('tb_pr.id_draft_pr', $no_pr)->first();
+        // $data = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->select('parent_id_drive', 'no_pr', 'tb_pr.title as title')->where('tb_pr.id_draft_pr', $no_pr)->first();
 
-        $parent_id = explode('"', $data->parent_id_drive)[1];
-        $fileName =   $data->no_pr . ' ' . $data->title . ' ' . $approver . '.pdf';
-        $nameFileFix = str_replace(' ', '_', $fileName);
+        // $parent_id = explode('"', $data->parent_id_drive)[1];
+        // $fileName =   $data->no_pr . ' ' . $data->title . ' ' . $approver . '.pdf';
+        // $nameFileFix = str_replace(' ', '_', $fileName);
 
-        if(isset($fileName)){
-            $pdf_url = urldecode(url("/admin/mergePdf?no_pr=" . $no_pr));
-            $pdf_name = $nameFileFix;
-        } else {
-            $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-            $pdf_name = 'pdf_lampiran';
+        // if(isset($fileName)){
+        //     $pdf_url = urldecode(url("/admin/mergePdf?no_pr=" . $no_pr));
+        //     $pdf_name = $nameFileFix;
+        // } else {
+        //     $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+        //     $pdf_name = 'pdf_lampiran';
+        // }
+
+        // $parent = [];
+        // array_push($parent,$parent_id);
+
+        // $file = new Google_Service_Drive_DriveFile();
+        // $file->setName($pdf_name);
+        // $file->setParents($parent);
+
+        // $result = $service->files->create(
+        //     $file, 
+        //     array(
+        //         'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+        //         'mimeType' => 'application/octet-stream',
+        //         'uploadType' => 'multipart',
+        //         'supportsAllDrives' => true
+        //     )
+        // );  
+        try{
+            $client = $this->getClient();
+            $service = new Google_Service_Drive($client);
+
+            $data = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->select('parent_id_drive', 'no_pr', 'tb_pr.title as title')->where('tb_pr.id_draft_pr', $no_pr)->first();
+
+            $parent_id = explode('"', $data->parent_id_drive)[1];
+            $fileName =   $data->no_pr . ' ' . $data->title . ' ' . $approver . '.pdf';
+            $nameFileFix = str_replace(' ', '_', $fileName);
+
+            if(isset($fileName)){
+                $pdf_url = urldecode(url("/admin/mergePdf?no_pr=" . $no_pr));
+                $pdf_name = $nameFileFix;
+            } else {
+                $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                $pdf_name = 'pdf_lampiran';
+            }
+
+            $parent = [];
+            array_push($parent,$parent_id);
+
+            $file = new Google_Service_Drive_DriveFile();
+            $file->setName($pdf_name);
+            $file->setParents($parent);
+
+            $responseContent = @file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']]));   
+
+            // $result = $service->files->create(
+            //     $file, 
+            //     array(
+            //         'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+            //         'mimeType' => 'application/octet-stream',
+            //         'uploadType' => 'multipart',
+            //         'supportsAllDrives' => true
+            //     )
+            // );   
+
+            if ($responseContent === false) {
+                $data = ['no_pr' => $no_pr];
+                $request = Request::create('/mergePdf', 'GET', $data);
+                $responsePdf = $this->mergePdf($request);
+
+                throw new Exception($responsePdf);
+            }else{
+                $result = $service->files->create(
+                    $file, 
+                    array(
+                        'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+                        'mimeType' => 'application/octet-stream',
+                        'uploadType' => 'multipart',
+                        'supportsAllDrives' => true
+                    )
+                );
+
+                http_response_code(200); // Set HTTP status code
+                return json_encode([
+                    'status' => 'success',
+                    'message' => 'PDF successfully merged!'
+                ]);
+                exit;
+            }  
+            // throw new Exception($responsePdf);       
+
+            // if (!is_object($responsePdf)) {
+            //     $result = $service->files->create(
+            //         $file, 
+            //         array(
+            //             'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+            //             'mimeType' => 'application/octet-stream',
+            //             'uploadType' => 'multipart',
+            //             'supportsAllDrives' => true
+            //         )
+            //     );
+            // }
+
+            //  $result = $service->files->create(
+            //     $file, 
+            //     array(
+            //         'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
+            //         'mimeType' => 'application/octet-stream',
+            //         'uploadType' => 'multipart',
+            //         'supportsAllDrives' => true
+            //     )
+            // );
+        }catch (Exception $e) {
+            $parts = explode("\r\n\r\n", $e->getMessage(), 2); // Split at the first blank line
+            $body = isset($parts[1]) ? $parts[1] : '';
+
+            // Decode the JSON body to extract the message
+            $data = json_decode($body, true);
+
+            // Check if decoding was successful and retrieve the message
+            if (isset($data['message'])) {
+                $error = $data['message']; // Output the message
+            } else {
+                $error = "Message not found!";
+            }
+            // Catch the exception and return a 500 response
+            http_response_code(500); // Set HTTP status code
+            echo json_encode([
+                'status' => 'error',
+                'message' => $error
+            ]);
+            exit;
         }
-
-        $parent = [];
-        array_push($parent,$parent_id);
-
-        $file = new Google_Service_Drive_DriveFile();
-        $file->setName($pdf_name);
-        $file->setParents($parent);
-
-        $result = $service->files->create(
-            $file, 
-            array(
-                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false],"http" => ['protocol_version'=>'1.1']])),
-                'mimeType' => 'application/octet-stream',
-                'uploadType' => 'multipart',
-                'supportsAllDrives' => true
-            )
-        );
     }
 
     public function getOnlyPdfPRFromLink($no_pr){
@@ -5275,8 +5412,6 @@ class PrDraftController extends Controller
                 ->select('dokumen_name', 'dokumen_location', 'link_drive', 'tb_pr_document.id as id_dokumen', 'id_draft_pr')
                 ->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected');
 
-            
-
             if ($data->type_of_letter == 'IPR') {
 
                 $getDokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
@@ -5313,16 +5448,13 @@ class PrDraftController extends Controller
         }
 
         // return $getAll;
-
         $pdf = new Fpdi();
-
         // $pageCount =  $pdf->setSourceFile(StreamReader::createByString(file_get_contents($pdf_file,'rb')));
         $pageCount =  $pdf->setSourceFile(StreamReader::createByString($pdf_file));
 
         for ($i=0; $i < $pageCount; $i++) { 
             //create a page
             $pdf->AddPage();
-
             // //import a page then get the id and will be used in the template
             $tplId = $pdf->importPage($i+1, '/MediaBox');
             // //use the template of the imporated page
@@ -5330,7 +5462,6 @@ class PrDraftController extends Controller
         }
 
         if ($getAll != null) {
-
             foreach ($getAll as $dokumen) {
                 $directory = "draft_pr/";
                 // return explode("/", $dokumen->dokumen_location)[1];
@@ -5357,7 +5488,48 @@ class PrDraftController extends Controller
                         )
                     );
 
-                    $page = $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_file, false, $context)));
+                    // $page = $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_file, false, $context)));
+                    set_error_handler([$this, 'handleError'], E_WARNING);
+
+                    // $responseDokumenFile = file_get_contents($dokumen_file, false, $context);
+                    // $streamReader = StreamReader::createByString($responseDokumenFile);
+                    // $page = $pdf->setSourceFile($streamReader);
+                    try {
+                        $page = $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_file, false, $context)));
+                        // $this->addPdfPages($pdf, $streamReader);
+                    } catch (Exception $e) {
+                        if (stripos($e->getMessage(),'This PDF document probably uses a compression technique which is not supported by') !== false) {
+                            $error = 'Document '. $dokumen->dokumen_name .' probably uses a compression technique which is not supported, please reject PR and notify user to update document!';
+                        }else{
+                            $error = $e->getMessage();
+                        }
+                        // Catch the exception thrown by our custom error handler
+                        return response()->json([
+                            'error' => 'error',
+                            'message' => $error
+                        ], 500);
+                    }
+
+                    restore_error_handler();
+
+                    // try {
+                    //     // Ensure the string is not empty
+                    //     if (empty($responseDokumenFile)) {
+                    //         throw new Exception("The responseDokumenFile is empty.");
+                    //     }
+
+                    //     // Create a StreamReader from the string
+                    //     // Set the source file using the StreamReader
+                    //     $page = $pdf->setSourceFile($streamReader);
+                    //     // $page = $pdf->setSourceFile(StreamReader::createByString($responseDokumenFile));
+                    // } catch (PdfReaderException $e) {
+                    //     // Handle PDF reader-specific errors
+                    //     echo "PDF Reader Error: " . $e->getMessage();
+                    // } catch (Exception $e) {
+                    //     // Handle general errors
+                    //     echo "Error: " . $e->getMessage();
+                    // }
+
 
                     for ($i=0; $i < $page; $i++) { 
                         // import a page then get the id and will be used in the template
@@ -5456,8 +5628,53 @@ class PrDraftController extends Controller
         } catch (Exception $e) {
             Log::error('Error response:', ['error' => $e->getMessage()]);
         }
-                
+        
+        // // $pdf->Output("D");
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'PDF successfully merged!',
+        // ]);   
         return $pdf->Output("D");
+        // Output merged PDF as a download
+        // return Response::make($pdf->Output('D'), 200, [
+        //     'Content-Type' => 'application/pdf',
+        //     'Content-Disposition' => "attachment;"
+        // ]);
+    }
+
+    // private function addPdfPages(Fpdi $pdf, $file)
+    // {
+    //     try {
+    //         @ $pageCount = $pdf->setSourceFile($file);
+
+    //         // Check if the warning was raised (by checking the result of $pageCount)
+    //         if ($pageCount === false) {
+    //             throw new Exception('The PDF contains an unsupported compression technique.');
+    //         }
+
+    //         for ($i = 1; $i <= $pageCount; $i++) {
+    //             $pdf->AddPage();
+    //             $pdf->importPage($i);
+    //         }
+    //     } catch (Exception $e) {
+    //         throw new Exception("Error importing pages from the PDF file: " . $file);
+    //     }
+    // }
+
+    // Custom error handler to convert warnings into exceptions
+    public function handleError($errno, $errstr)
+    {
+        // Check if the error message is related to unsupported PDF compression
+        if (strpos($errstr, 'This PDF document probably uses a compression technique') !== false) {
+            // Log the error for debugging
+            Log::error('FPDI Compression Error: ' . $errstr);
+
+            // Throw an exception with a custom error message
+            throw new Exception('The PDF contains an unsupported compression technique: ' . $errstr);
+        }
+
+        // Let PHP handle other warnings as usual
+        return false;
     }
 
     public function uploadCSV(Request $request){
