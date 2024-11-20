@@ -6562,6 +6562,10 @@ Ticketing
 						{
 							id:4,
 							text:"Minor"
+						},
+						{
+							id:0,
+							text:"-"
 						}
 					]
 				}).val(result.severity).trigger("change")

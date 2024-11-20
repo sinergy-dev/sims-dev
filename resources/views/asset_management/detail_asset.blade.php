@@ -1043,7 +1043,7 @@
             });
 
             prContainer.append(labelPr,inputPr);
-            $("#inputPr").attr("disabled",true)
+            $("#inputPr").attr("disabled",false)
 
             $("#inputPr").select2({
               ajax: {
@@ -1060,6 +1060,26 @@
             var pr = $("#inputPr");
             var option = new Option(result.pr, result.pr, true, true);
             pr.append(option).trigger('change');
+
+            $("#inputPr").on("change", function () {
+                var selectedPr = $(this).val();
+
+                if (selectedPr) {
+                    $.ajax({
+                        url: '{{url("asset/getDateByPr")}}',
+                        type: 'GET',
+                        data: { no_pr: selectedPr },
+                        success: function (response) {
+                            $("#inputTglBeli").val(response);
+                        },
+                        error: function () {
+                            console.error('Failed to fetch the date for the selected PR.');
+                        }
+                    });
+                } else {
+                    $("#inputTglBeli").val('');
+                }
+            });
 
             let labelLicense = $("<label>",{
               text: "License/Garansi"
@@ -1829,7 +1849,7 @@
           tanggalBeli = $("input[name='inputTglBeli']").val()
           hargaBeli = $("input[name='inputHarga']").val()
           nilaiBuku = $("input[name='inputNilaiBuku']").val()
-          inputPr = $("input[name='inputPr']").val()
+          inputPr = $("select[name='inputPr']").val()
 
           if ($("textarea[name='txtAreaReason']").is(":visible") == true) {
             reason = $("textarea[name='txtAreaReason']").val()
