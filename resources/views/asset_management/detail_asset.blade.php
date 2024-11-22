@@ -1139,6 +1139,11 @@
             $("#selectLevelSupport").select2({
               ajax: {
                 url: '{{url("asset/getLevelSupport")}}',
+                data: function (params) {
+                  return {
+                    q:params.term
+                  };
+                },
                 processResults: function (data) {
                   // Transforms the top-level key of the response object from 'items' to 'results'
                   return {
@@ -1571,6 +1576,11 @@
           $("#selectVendor,#selectVendorPeripheral").select2({
             ajax:{
               url: '{{url("asset/getVendor")}}',
+              data: function (params) {
+                return {
+                  q:params.term
+                };
+              },
               processResults: function (data) {
                 // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
