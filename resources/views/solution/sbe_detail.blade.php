@@ -114,29 +114,27 @@ SBE Detail
 
     var accesable = @json($feature_item);
 
-    $(document).ready(function(){
-        if (window.location.href.split("/")[3].split("?")[1] == 'create') {
-            showCreateSBE()
-            $("#btnBack").attr('href','{{url("/sbe_index")}}/')
-        }else{
-            showFunctionConfig()
-            localStorage.setItem('isConfigPage',false)
-            $("#btnBack").click(function(){
-                if (localStorage.getItem('isConfigPage') == 'true') {
-                    $("#btnBack").removeAttr('href')
-                    // $("#btnBack").attr('onclick','showFunctionConfig()')
-                    // localStorage.setItem('isConfigPage',false)
-                }else{
-                    $("#btnBack").removeAttr('onclick')
-                    $("#btnBack").attr('href','{{url("/sbe_index")}}/')
-                }
-            })
-            $("#spanLeadId").html("Lead ID - "+ window.location.href.split("?")[1])            
-        }
-
-        accesable.forEach(function(item,index){
-          $("#" + item).show()
+    if (window.location.href.split("/")[3].split("?")[1] == 'create') {
+        showCreateSBE()
+        $("#btnBack").attr('href','{{url("/sbe_index")}}/')
+    }else{
+        showFunctionConfig()
+        localStorage.setItem('isConfigPage',false)
+        $("#btnBack").click(function(){
+            if (localStorage.getItem('isConfigPage') == 'true') {
+                $("#btnBack").removeAttr('href')
+                // $("#btnBack").attr('onclick','showFunctionConfig()')
+                // localStorage.setItem('isConfigPage',false)
+            }else{
+                $("#btnBack").removeAttr('onclick')
+                $("#btnBack").attr('href','{{url("/sbe_index")}}/')
+            }
         })
+        $("#spanLeadId").html("Lead ID - "+ window.location.href.split("?")[1])            
+    }
+
+    accesable.forEach(function(item,index){
+      $("#" + item).show()
     })
 
     function preventBack(){
@@ -163,6 +161,8 @@ SBE Detail
 
     
     function showFunctionConfig(){
+        localStorage.setItem('isConfigPage',false)
+
         $(".content").empty("")
         var append = ""
         var appendVersion = ""
@@ -605,7 +605,7 @@ SBE Detail
         append = append + '                              </div>'
         append = append + '                         </div>'
         append = append + '                     </div>'
-        append = append + '                     <div class="table-responsive">'
+        append = append + '                     <div class="table-responsive" name="divTableSO">'
         append = append + '                         <table class="table" name="tableSO" id="tableItemsSO_0">'
         append = append + '                             <thead>'
         append = append + '                                 <tr>'
@@ -654,7 +654,9 @@ SBE Detail
         append = append + '                                <td>'
         append = append + '                                    <input type="" class="form-control" name="totalItems" id="totalItems" readonly style="width:300px">'
         append = append + '                                </td>'
-        append = append + '                                <td></td>'
+        append = append + '                                <td>'
+        append = append + '                                <button onclick="removeItemsDetailSO(this,0)" class="btn btn-sm btn-danger" style="width:30px"><i class="fa fa-trash-o"></i></button>'
+        append = append + '                                </td>'
         append = append + '                            </tr>'
         append = append + '                        </tbody>'
         append = append + '                        <tfoot>'
@@ -696,7 +698,7 @@ SBE Detail
         append = append + '                              </div>'
         append = append + '                         </div>'
         append = append + '                     </div>'
-        append = append + '                  <div class="table-responsive">'
+        append = append + '                  <div class="table-responsive" name="divTableImp">'
         append = append + '                    <table class="table" name="tableImp" id="tableItemsImp_0">'
         append = append + '                        <thead>'
         append = append + '                            <tr>'
@@ -745,7 +747,9 @@ SBE Detail
         append = append + '                                <td>'
         append = append + '                                    <input type="" class="form-control" name="totalItems" id="totalItems" readonly style="width:300px">'
         append = append + '                                </td>'
-        append = append + '                                <td></td>'
+        append = append + '                                <td>'
+        append = append + '                                <button class="btn btn-sm btn-danger" id="removeItemsDetailImp" onclick="removeItemsDetailImp(this,0)" style="width:30px;"><i class="fa fa-trash-o"></i></button>'
+        append = append + '                                </td>'
         append = append + '                            </tr>'
         append = append + '                        </tbody>'
         append = append + '                        <tfoot>'
@@ -786,7 +790,7 @@ SBE Detail
         append = append + '                              </div>'
         append = append + '                         </div>'
         append = append + '                     </div>'
-        append = append + '                     <div class="table-responsive">'
+        append = append + '                     <div class="table-responsive" name="divTableMnS">'
         append = append + '                         <table class="table" name="tableMnS" id="tableItemsMnS_0" >'
             append = append + '                        <thead>'
             append = append + '                            <tr>'
@@ -835,7 +839,9 @@ SBE Detail
         append = append + '                                <td>'
         append = append + '                                    <input type="" class="form-control" name="totalItems" id="totalItems" readonly style="width:300px">'
         append = append + '                                </td>'
-        append = append + '                                <td></td>'
+        append = append + '                                <td>'
+        append = append + '                                 <button class="btn btn-sm btn-danger" id="removeItemsDetailMnS" onclick="removeItemsDetailMnS(this,0)" style="width:30px;"><i class="fa fa-trash-o"></i></button>'
+        append = append + '                                </td>'
         append = append + '                            </tr>'
         append = append + '                        </tbody>'
         append = append + '                        <tfoot>'
@@ -1259,7 +1265,7 @@ SBE Detail
         cloneTr.find(":input[name='qtyItems']").val('').end().find(":input[name='priceItems']").val('').end().find(":input[name='manpowerItems']").val('').end().find(":input[name='totalItems']").val('').end()
         cloneTr.find(":input[name='InputItems']").hide()
         // cloneTr[0].children[0].firstElementChild.hide()
-        cloneTr.find("td:last").html("<button onclick='removeItemsDetailSO(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+        cloneTr.find("td:last").html("<button onclick='removeItemsDetailSO(this,"+ val +")' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
 
         cloneTr.children("select")
             .select2("destroy")
@@ -1269,37 +1275,41 @@ SBE Detail
         getDropdownDetailItems(val,"SO")
     }
 
-    function removeItemsDetailSO(val){
-        var whichtr = val.closest("tr");
+    function removeItemsDetailSO(element,val){
+        if ($("#tableItemsSO_"+val).find('tbody').find('tr').length == 1) {
+            var whichtr = $(element).closest('td').closest('tr').closest('tbody').closest('table')
+        }else{
+            var whichtr = element.closest("tr");
+        }
+        
         var priceGrandTotal = 0
-        $(val).closest("table").find("tbody tr:not(:eq("+$(val).closest('tr').index()+"))").each(function(item,result){
-            
+        $(element).closest("table").find("tbody tr:not(:eq("+$(element).closest('tr').index()+"))").each(function(item,result){
             $(result).find(".form-control").each(function(itemInput,resultItem){
                 if(resultItem.name == "totalItems"){
                     priceGrandTotal += parseInt($(this).closest("tr").find("td").eq(5).find("input").val().replaceAll(".",""))
                 }
-
-                
             })
         })    
 
-        $(val).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
-
-        whichtr.remove();  
+        $(element).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
+        whichtr.remove(); 
+        if ($("#tableItemsSO_"+val).find('tbody').find('tr').length > 1) {
+            $("#tableItemsSO_"+val).find('tbody').find('tr:first').find("td:first").find(":input[name='InputItems']").show()
+        }
     }
 
     var arrTableSO = [], arrTableImp = [], arrTableMnS = []
     function addItemsSO(val){
-        var countable = $("table[name='tableSO']").length
+        var countable = $("table[name='tableSO']").length + 1
 
         if (countable >= 1) {
             arrTableSO.push(countable)
             $(".nav-tabs-custom").find(".alert").remove()
         }
 
-        if ($("table[name='tableSO']").is(":visible") == false) {
-            $("table[name='tableSO']").show()
-        }else{            
+        // if ($("table[name='tableSO']").is(":visible") == false) {
+        //     $("table[name='tableSO']").show()
+        // }else{            
             var append = ""
             append = append + ' <table class="table" name="tableSO" id="tableItemsSO_'+ countable +'">'
             append = append + '     <thead>'
@@ -1349,7 +1359,9 @@ SBE Detail
             append = append + '             <td>'
             append = append + '                 <input type="" class="form-control" name="totalItems" id="totalItems" readonly style="width:300px">'
             append = append + '             </td>'
-            append = append + '             <td></td>'
+            append = append + '             <td>'
+            append = append + ' <button class="btn btn-sm btn-danger" id="removeItemsDetailSO" onclick="removeItemsDetailSO(this,'+ countable +')" style="width:30px;"><i class="fa fa-trash-o"></i></button>'
+            append = append + '             </td>'
             append = append + '         </tr>'
             append = append + '     </tbody>'
             append = append + '     <tfoot>'
@@ -1361,9 +1373,13 @@ SBE Detail
             append = append + '     </tfoot>'
             append = append + '</table>'
 
-            $("table[name='tableSO']:last").after(append)
+            if ($("table[name='tableSO']").is(":visible")) {
+                $("table[name='tableSO']:last").after(append)
+            }else{
+                $('div[name="divTableSO"]').append(append)
+            }
             getDropdownDetailItems(countable,"SO")
-        }   
+        // }   
 
         if (countable > 0) {
             if ($("#removeItemsSO").length < 1) {
@@ -1393,7 +1409,7 @@ SBE Detail
         cloneTr.find(":input[name='qtyItemsImp']").val('').end().find(":input[name='priceItemsImp']").val('').end().find(":input[name='manpowerItemsImp']").val('').end().find(":input[name='totalItems']").val('').end()
         cloneTr.find(":input[name='InputItemsImp']").hide()
         // cloneTr[0].children[0].firstElementChild.remove()
-        cloneTr.find("td:last").html("<button onclick='removeItemsDetailImp(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+        cloneTr.find("td:last").html("<button onclick='removeItemsDetailImp(this,"+ val +")' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
 
         cloneTr.children("select")
             .select2("destroy")
@@ -1405,37 +1421,42 @@ SBE Detail
         $(".detailItemsImp_"+val).last().next().next().remove()  
     }
 
-    function removeItemsDetailImp(val){
-        var whichtr = val.closest("tr");
+    function removeItemsDetailImp(element,val){
+        if ($("#tableItemsImp_"+val).find('tbody').find('tr').length == 1) {
+            var whichtr = $(element).closest('td').closest('tr').closest('tbody').closest('table')
+        }else{
+            var whichtr = element.closest("tr");
+        }
+
         var priceGrandTotal = 0
-        $(val).closest("table").find("tbody tr:not(:eq("+$(val).closest('tr').index()+"))").each(function(item,result){
-            
+        $(element).closest("table").find("tbody tr:not(:eq("+$(element).closest('tr').index()+"))").each(function(item,result){
             $(result).find(".form-control").each(function(itemInput,resultItem){
                 if(resultItem.name == "totalItems"){
                     priceGrandTotal += parseInt($(this).closest("tr").find("td").eq(5).find("input").val().replaceAll(".",""))
-                }
-
-                
+                }                
             })
         })    
 
-        $(val).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
+        $(element).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
 
         whichtr.remove();   
+        if ($("#tableItemsImp_"+val).find('tbody').closest('tr').length > 1) {
+            $("#tableItemsImp_"+val).find('tbody').find('tr:first').find("td:first").find(":input[name='InputItems']").show()
+        }
     }
 
     function addItemsImp(val){
         // 
-        var countable = $("table[name='tableImp']").length
+        var countable = $("table[name='tableImp']").length + 1
 
         if (countable > 0) {
             arrTableImp.push(countable)
             $(".nav-tabs-custom").find(".alert").remove()
         }
 
-        if ($("table[name='tableImp']").is(":visible") == false) {
-            $("table[name='tableImp']").show()
-        }else{
+        // if ($("table[name='tableImp']").is(":visible") == false) {
+        //     $("table[name='tableImp']").show()
+        // }else{
             var append = ""
             append = append + '<table class="table" name="tableImp" id="tableItemsImp_'+ countable +'">'
             append = append + '<thead>'
@@ -1485,7 +1506,9 @@ SBE Detail
             append = append + '             <td>'
             append = append + '                 <input type="" class="form-control" name="totalItems" id="totalItems" readonly style="width:300px">'
             append = append + '             </td>'
-            append = append + '             <td></td>'
+            append = append + '             <td>'
+            append = append + '             <button class="btn btn-sm btn-danger" id="removeItemsDetailImp" onclick="removeItemsDetailImp(this,'+ countable +')" style="width:30px"><i class="fa fa-trash-o"></i></button>'
+            append = append + '             </td>'
             append = append + '         </tr>'
             append = append + '     </tbody>'
             append = append + '     <tfoot>'
@@ -1497,10 +1520,15 @@ SBE Detail
             append = append + '     </tfoot>'
             append = append + '</table>'
             // $("select").select2()
+            if ($("table[name='tableImp']").is(":visible")) {
 
-            $("table[name='tableImp']:last").after(append)
+                $("table[name='tableImp']:last").after(append)
+            }else{
+                console.log(val)
+                $('div[name="divTableImp"]').append(append)
+            }
             getDropdownDetailItems(countable,"Imp")
-        }
+        // }
 
         if (countable > 0) {
             if ($("#removeItemsImp").length < 1) {
@@ -1531,7 +1559,7 @@ SBE Detail
         cloneTr.find(":input[name='qtyItemsMnS']").val('').end().find(":input[name='priceItemsMnS']").val('').end().find(":input[name='manpowerItemsMnS']").val('').end().find(":input[name='totalItems']").val('').end()
         cloneTr.find(":input[name='InputItemsMnS']").hide()
         // cloneTr[0].children[0].firstElementChild.remove()
-        cloneTr.find("td:last").html("<button onclick='removeItemsDetailMnS(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+        cloneTr.find("td:last").html("<button onclick='removeItemsDetailMnS(this,"+ val +")' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
 
         cloneTr.children("select")
             .select2("destroy")
@@ -1543,37 +1571,42 @@ SBE Detail
         $(".detailItemsMnS_"+val).last().next().next().remove()   
     }
 
-    function removeItemsDetailMnS(val){
-        var whichtr = val.closest("tr");
+    function removeItemsDetailMnS(element,val){
+        if ($("#tableItemsMnS_"+val).find('tbody').find('tr').length == 1) {
+            var whichtr = $(element).closest('td').closest('tr').closest('tbody').closest('table')
+        }else{
+            var whichtr = element.closest("tr");
+        }
+
         var priceGrandTotal = 0
-        $(val).closest("table").find("tbody tr:not(:eq("+$(val).closest('tr').index()+"))").each(function(item,result){
-            
+        $(element).closest("table").find("tbody tr:not(:eq("+$(element).closest('tr').index()+"))").each(function(item,result){
             $(result).find(".form-control").each(function(itemInput,resultItem){
                 if(resultItem.name == "totalItems"){
                     priceGrandTotal += parseInt($(this).closest("tr").find("td").eq(5).find("input").val().replaceAll(".",""))
                 }
-
-                
             })
         })    
 
-        $(val).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
+        $(element).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
 
-        whichtr.remove();     
+        whichtr.remove();
+        if ($("#tableItemsMnS_"+val).find('tbody').find('tr').length > 1) {
+            $("#tableItemsMnS_"+val).find('tbody').find('tr:first').find("td:first").find(":input[name='InputItems']").show()
+        }
     }
 
     function addItemsMnS(val){
         // conMnSle.log(val)
-        var countable = $("table[name='tableMnS']").length
+        var countable = $("table[name='tableMnS']").length + 1
 
         if (countable > 0) {
             arrTableMnS.push(countable)
             $(".nav-tabs-custom").find(".alert").remove()
         }
 
-        if ($("table[name='tableMnS']").is(":visible") == false) {
-            $("table[name='tableMnS']").show()
-        }else{
+        // if ($("table[name='tableMnS']").is(":visible") == false) {
+        //     $("table[name='tableMnS']").show()
+        // }else{
             var append = ""
             append = append + '<table class="table" name="tableMnS" id="tableItemsMnS_'+ countable +'">'
             append = append + '<thead>'
@@ -1623,7 +1656,9 @@ SBE Detail
             append = append + '             <td>'
             append = append + '                 <input type="" class="form-control" name="totalItems" id="totalItems" readonly style="width:300px">'
             append = append + '             </td>'
-            append = append + '             <td></td>'
+            append = append + '             <td>'
+            append = append + '<button class="btn btn-sm btn-danger" id="removeItemsDetailMnS" onclick="removeItemsDetailMnS(this,'+ countable +')" style="width:30px"><i class="fa fa-trash-o"></i></button>'
+            append = append + '             </td>'
             append = append + '         </tr>'
             append = append + '     </tbody>'
             append = append + '     <tfoot>'
@@ -1635,11 +1670,16 @@ SBE Detail
             append = append + '     </tfoot>'
             append = append + '</table>'
 
-            $("table[name='tableMnS']:last").after(append)
+            if ($("table[name='tableMnS']").is(":visible")) {
+                $("table[name='tableMnS']:last").after(append)
+            }else{
+                console.log(val)
+                $('div[name="divTableMnS"]').append(append)
+            }
             getDropdownDetailItems(countable,"MnS")
-        }
+        // }
 
-        // $("#addItemsMns").after("<button class='btn btn-sm btn-danger' id='removeItemsMnS' onclick='removeItemsMnS()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
+        $("#addItemsMns").after("<button class='btn btn-sm btn-danger' id='removeItemsMnS' onclick='removeItemsMnS()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
         if (countable > 0) {
             if ($("#removeItemsMnS").length < 1) {
                 $("#addItemsMns").after("<button class='btn btn-sm btn-danger' id='removeItemsMnS' onclick='removeItemsMnS()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
@@ -1768,7 +1808,9 @@ SBE Detail
                             append = append + '     <td>'
                             append = append + '         <input type="" class="form-control totalItems_'+ j +'" name="totalItems" id="totalItemsUpdate" data-value="'+ i +'" readonly value="'+ formatter.format(resultsDetail.total_nominal) +'" style="width:300px">'
                             append = append + '     </td>'
-                            append = append + '     <td></td>'
+                            append = append + '     <td>'
+                            append = append + '<button onclick="removeUpdateItemsDetail(this,'+ i +')" class="btn btn-sm btn-danger" style="width:30px"><i class="fa fa-trash-o"></i></button>'
+                            append = append + '     </td>'
                             append = append + ' </tr>'
                         })
 
@@ -1853,7 +1895,7 @@ SBE Detail
 
                     if ($("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").length > 1) {
                         $("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").each(function(item,result){
-                            $(result).find("td").eq(6).html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+                            $(result).find("td").eq(6).html("<button onclick='removeUpdateItemsDetail(this,"+ tempInc +")' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
                         })
                     }
                     
@@ -1908,7 +1950,7 @@ SBE Detail
         cloneTr.find(":input[name='inputItemsUpdate']").attr('data-attr',val)
         cloneTr.find(":input[name='inputItemsUpdate']").hide()
         cloneTr.find("#detailItemsUpdate").removeClass("detailItemsUpdate_0").addClass("detailItemsUpdate_"+val)
-        cloneTr.find("td:last").html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+        cloneTr.find("td:last").html("<button onclick='removeUpdateItemsDetail(this,"+ val +")' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
 
         cloneTr.children("select")
             .select2("destroy")
@@ -1917,27 +1959,32 @@ SBE Detail
         $("#tableItemsUpdateConfig_"+val).append(cloneTr)
         getDropdownDetailItems(val,"Update",val)
 
-        if ($("#tableItemsUpdateConfig_"+val).find("tbody tr").length > 1) {
-            $("#tableItemsUpdateConfig_"+val).find("tbody").find("tr:first").find("td:last").html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
-        }
+        // if ($("#tableItemsUpdateConfig_"+val).find("tbody tr").length > 1) {
+        //     $("#tableItemsUpdateConfig_"+val).find("tbody").find("tr:first").find("td:last").html("<button onclick='removeUpdateItemsDetail(this)' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+        // }
     }
 
-    function removeUpdateItemsDetail(val){
-        var whichtr = val.closest("tr");
-        var table   = val.closest("table").id
+    function removeUpdateItemsDetail(element,val){
+        if ($("#tableItemsUpdateConfig_"+val).find('tbody').find('tr').length == 1) {
+            var whichtr = $(element).closest('td').closest('tr').closest('tbody').closest('table')
+        }else{
+            var whichtr = element.closest("tr");
+        }
+        // var whichtr = val.closest("tr");
+        var table   = element.closest("table").id
 
-        var priceGrandTotal = 0
+        var priceGrandTotal = 0, sumPriceGrandTotal = 0
         var latesItems = $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").val()
 
-        $(val).closest("table").find("tbody tr:not(:eq("+$(val).closest('tr').index()+"))").each(function(item,result){
+        $(element).closest("table").find("tbody tr:not(:eq("+$(element).closest('tr').index()+"))").each(function(item,result){
             $(result).find(".form-control").each(function(itemInput,resultItem){
                 if(resultItem.name == "totalItems"){
                     priceGrandTotal += parseInt($(this).closest("tr").find("td").eq(5).find("input").val().replaceAll(".",""))
                 } 
             })
-        })  
+        }) 
 
-        $(val).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
+        $(element).closest("table").find("input[name='inputGrandTotal']").val(formatter.format(priceGrandTotal))
         whichtr.remove(); 
         $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").val(latesItems)
 
@@ -1946,6 +1993,12 @@ SBE Detail
         }
 
         $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").show()
+
+        $("input[name='inputGrandTotal']").each(function(item,result){
+            sumPriceGrandTotal += parseInt(result.value.replaceAll(".",""))
+        })  
+
+        $("input[name='inputSumPriceGrandTotal']").val(formatter.format(sumPriceGrandTotal))
     }
 
     function updateItems(val){
@@ -2003,7 +2056,9 @@ SBE Detail
         append = append + '             <td>'
         append = append + '                 <input type="" style="width:300px" class="form-control" name="totalItems" id="totalItemsUpdate" readonly>'
         append = append + '             </td>'
-        append = append + '             <td></td>'
+        append = append + '             <td>'
+        append = append + '             <button class="btn btn-sm btn-danger" id="removeItemsDetailforUpdate" onclick="removeItemsDetailforUpdate()" style="width:30px"><i class="fa fa-trash-o"></i></button>'
+        append = append + '             </td>'
         append = append + '         </tr>'
         append = append + '     </tbody>'
         append = append + '     <tfoot>'
@@ -2016,17 +2071,22 @@ SBE Detail
         append = append + '</table>'
         append = append + '</div>'
 
-        $("table[name='tableUpdateConfig']:last").after(append)
+        if ($("table[name='tableUpdateConfig']:visible")) {
+            $("table[name='tableUpdateConfig']:last").after(append)
+        }else{
+            $(".table-responsive").append(append)
+        }
+        // $("table[name='tableUpdateConfig']:last").after(append)
         getDropdownDetailItems(countable,"Update")
 
 
         $("#tableItemsUpdateConfig_"+countable).find("tr").eq(0).find("td").find("#updateItemsDetail").attr("onclick","updateItemsDetail("+ countable +")")
 
-        if (countable > 1) {
-            if ($("#removeItemsDetailforUpdate").length < 1) {
-                $("#updateItems").after("<button class='btn btn-sm btn-danger' id='removeItemsDetailforUpdate' onclick='removeItemsDetailforUpdate()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
-            }
-        }
+        // if (countable > 1) {
+        //     if ($("#removeItemsDetailforUpdate").length < 1) {
+        //         $("#updateItems").after("<button class='btn btn-sm btn-danger' id='removeItemsDetailforUpdate' onclick='removeItemsDetailforUpdate()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
+        //     }
+        // }
 
         $("table[name='tableUpdateConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right;width: 300px;' id='inputSumPriceGrandTotal' name='inputSumPriceGrandTotal' readonly/></td></tr>")
 

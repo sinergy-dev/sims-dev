@@ -175,7 +175,7 @@
 				<td>{{$pihak_pertama->nik}}</td>
 			</tr>
 			<tr>
-				<td style="width:15%">Department</td>
+				<td style="width:15%">Position</td>
 				<td style="padding-left: 40px;">:</td>
 				<td>{{$pihak_pertama->departement}}</td>
 			</tr>
@@ -205,7 +205,7 @@
 				<td>{{$pihak_kedua->nik}}</td>
 			</tr>
 			<tr>
-				<td style="width:15%">Department</td>
+				<td style="width:15%">Position</td>
 				<td style="padding-left: 20px;">:</td>
 				<td>{{$pihak_kedua->mini_group}}</td>
 			</tr>

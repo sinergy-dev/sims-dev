@@ -1161,6 +1161,11 @@
             $("#selectLevelSupport").select2({
               ajax: {
                 url: '{{url("asset/getLevelSupport")}}',
+                data: function (params) {
+                  return {
+                    q:params.term
+                  };
+                },
                 processResults: function (data) {
                   // Transforms the top-level key of the response object from 'items' to 'results'
                   return {
@@ -1617,49 +1622,14 @@
             ]
           }).val(result.status_cust).trigger("change") 
 
-          // $("#selectVendor,#selectVendorPeripheral").select2({
-          //   ajax:{
-          //     url: '{{url("asset/getVendor")}}',
-          //     processResults: function (data) {
-          //       // Transforms the top-level key of the response object from 'items' to 'results'
-          //       return {
-          //         results: data
-          //       };
-          //     },
-          //   },
-          //   placeholder:"Select Vendor",
-          //   tags:true,
-          //   createTag: function(params) {
-          //       const term = $.trim(params.term).toLowerCase(); // Convert the input term to lowercase
-          //       let exists = false;
-
-          //       // Loop through the existing options (including the tags) for both select elements
-          //       $('#selectVendor, #selectVendorPeripheral').each(function() {
-          //           $(this).find('option').each(function() {
-          //               const existingText = $(this).text().toLowerCase();
-          //               if (existingText === term) {
-          //                   exists = true;
-          //                   return false;  // Exit the loop early if a match is found
-          //               }
-          //           });
-          //       });
-
-          //       // If it exists, prevent the tag from being created by returning null
-          //       if (exists) {
-          //           return null; // Returning null will prevent the tag from being created
-          //       }
-
-          //       // Otherwise, create a new tag
-          //       return {
-          //           id: term,
-          //           text: params.term
-          //       };
-          //   }
-          // })
-
           $("#selectVendor, #selectVendorPeripheral").select2({
               ajax: {
                   url: '{{url("asset/getVendor")}}',
+                  data: function (params) {
+                    return {
+                      q:params.term
+                    };
+                  },
                   processResults: function(data) {
                       // Transforms the top-level key of the response object from 'items' to 'results'
                       return {

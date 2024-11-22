@@ -2676,11 +2676,12 @@ class PrDraftController extends Controller
                     if (isset($getLastNumPR)) {
                         $getLastNumPR = explode('/', $getLastNumPR->no_pr)[0];
 
-                        if ($lastnumber ==  (int)$getLastNumPR) {
-                            $lastnumber = $getLastNumPR+1;
-                        }else{
-                            $lastnumber = $lastnumber;
-                        }
+                        $lastnumber = $getLastNumPR+1;
+
+                        // if ($lastnumber ==  (int)$getLastNumPR) {
+                        // }else{
+                        //     $lastnumber = $lastnumber;
+                        // }
                     }else{
                         $lastnumber = $lastnumber;
                     }
@@ -3895,6 +3896,7 @@ class PrDraftController extends Controller
             );
 
             $this->getNotifBadgeInsert($jsonInsertCreate);*/
+            $this->uploadPdfMerge($request->no_pr, $approver);
 
         } else {
             $update = PRDraft::where('id', $request->no_pr)->first();
@@ -3902,7 +3904,7 @@ class PrDraftController extends Controller
             $update->isCircular = 'True';
             $update->save();
 
-            $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id','tb_pr.request_method')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+            $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id','tb_pr.request_method','tb_pr.type_of_letter')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
             $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr, 'detail'))->first();
             $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
@@ -3939,8 +3941,6 @@ class PrDraftController extends Controller
                 }
             }
 
-            
-
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name, $detail_approver, $next_approver));
 
             //Disabled push notification
@@ -3957,10 +3957,12 @@ class PrDraftController extends Controller
             );
 
             $this->getNotifBadgeInsert($jsonInsertCreate);*/
+            if($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $detail->type_of_letter == 'IPR'){
+                $this->uploadPdfMerge($request->no_pr, $approver);
+            }
         }
         $approver = 'Signed by '.Auth::User()->name;
 
-        $this->uploadPdfMerge($request->no_pr, $approver);
         // $this->mergePdf($request->no_pr);
 
     }

@@ -2927,7 +2927,7 @@ class AssetMgmtController extends Controller
     public function getPdfBASTAsset($id_asset,$id_detail_asset)
     {
         // return $id_asset;
-        $pihak_pertama = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd','date_of_entry as entry_date')
+        $pihak_pertama = User::select('users.name','users.nik','roles.name as departement','phone','ttd','date_of_entry as entry_date')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('nik',Auth::User()->nik)
@@ -2939,14 +2939,14 @@ class AssetMgmtController extends Controller
                     ->first(); 
 
         if (stripos($cek_role->name, 'Manager') !== false) {
-            $atasan_pp = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd')
+            $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('roles.group','Supply Chain, CPS & Asset Management')
                         ->where('roles.name','like','VP%')
                         ->first();
         }else{
-            $atasan_pp = User::select('users.name','users.nik','roles.mini_group as departement','phone','ttd')
+            $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('roles.mini_group','Center Point & Asset Management SVC')
