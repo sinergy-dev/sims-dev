@@ -1893,11 +1893,11 @@ SBE Detail
 
                     var grandPriceTotalUpdatetempInc = 0
 
-                    if ($("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").length > 1) {
-                        $("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").each(function(item,result){
-                            $(result).find("td").eq(6).html("<button onclick='removeUpdateItemsDetail(this,"+ tempInc +")' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
-                        })
-                    }
+                    // if ($("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").length > 1) {
+                    $("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").each(function(item,result){
+                        $(result).find("td").eq(6).html("<button onclick='removeUpdateItemsDetail(this,"+ tempInc +")' class='btn btn-sm btn-danger' style='width:30px'><i class='fa fa-trash-o'></i></button>")
+                    })
+                    // }
                     
 
                     $("#tableItemsUpdateConfig_"+tempInc).find("tbody tr").each(function(item,result){
@@ -1988,9 +1988,9 @@ SBE Detail
         whichtr.remove(); 
         $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").val(latesItems)
 
-        if ($("#"+table).find("tbody tr").length == 1) {
-            $("#"+table).find("tbody").find("tr:first").find("td:last").find(".btn-danger").hide()
-        }
+        // if ($("#"+table).find("tbody tr").length == 1) {
+        //     $("#"+table).find("tbody").find("tr:first").find("td:last").find(".btn-danger").hide()
+        // }
 
         $("#"+table).find("tbody").find("tr:first").find("td:first").find(".form-control").show()
 

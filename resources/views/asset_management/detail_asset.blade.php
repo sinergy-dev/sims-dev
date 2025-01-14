@@ -79,11 +79,10 @@
               </div>
 
               <div class="form-group" id="prContainer"></div>
-
-              <div class="form-group">
-                <label>Serial Number</label>
-                <input id="inputSerialNumber" name="inputSerialNumber" class="form-control">
-              </div>
+                <div class="form-group">
+                  <label for="inputSerialNumber">Serial Number</label>
+                  <input id="inputSerialNumber" name="inputSerialNumber" class="form-control">
+                </div>
               <div class="form-group">
                 <label for="">Tanggal Pembelian</label>
                 <div class="input-group">
@@ -199,7 +198,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="form-group">
                 <label>Vendor</label>
                 <select class="form-control" id="selectVendorPeripheral" name="selectVendorPeripheral"><option></option></select>
@@ -325,18 +323,18 @@
               </div>
                 
               <div class="row">
-                <dir class="col-md-6">
+                <div class="col-md-6">
                   <div class="form-group">
                     <label>Latitude</label>
                     <input class="form-control" placeholder="" type="text" id="lat" name="lat">
                   </div>
-                </dir>
-                <dir class="col-md-6">
+                </div>
+                <div class="col-md-6">
                   <div class="form-group">
                     <label>Longitude</label>
                     <input class="form-control" placeholder="" type="text" id="lng" name="lng">
                   </div>
-                </dir>
+                </div>
               </div>
 
               <div class="form-group">
@@ -485,7 +483,7 @@
                   <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                     <label for="inputBeritaAcara" style="margin-bottom:0px">
                       <span class="fa fa-cloud-upload" style="display:inline"></span>
-                      <input autocomplete="off" style="display: inline;" type="file" name="inputBeritaAcara" class="filesBA" id="inputBeritaAcara">
+                      <input autocomplete="off" style="display: inline;" type="file" name="inputBeritaAcara" class="filesBA" id="inputBeritaAcara" disabled>
                     </label>
                   </div>
                   <span class="help-block" style="display:none;">Please fill Berita Acara!</span>
@@ -628,6 +626,14 @@
   <script async defer src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY_GLOBAL')}}&libraries=places&callback=initMap"></script>
   <script type="text/javascript">
     $("select").select2()
+    preventBack()
+
+    function preventBack() {
+      window.onbeforeunload = function(e) {
+        e.preventDefault();
+        e.returnValue = true;
+      };
+    }
 
     function initMoney(){
       $('.money').mask('000.000.000.000', {reverse: true});
@@ -697,16 +703,42 @@
              return row.operator
             }
           },
-           {
-            title:"BAST file",
+          {
+            title:"BAST File",
             render: function (data, type, row, meta){
-              if (row.document_name == null) {
-                return " - "
-              }else{
-                return "<a href='"+ row.document_name.driveBAST +"' target='_blank'><i class='fa fa-link'></i>"+ row.document_name.docBAST +"</a>"
+              if (Array.isArray(row.document_name)) {
+                for (let i = 0; i < row.document_name.length; i++) {
+                  const doc = row.document_name[i];
+                  const docBAST = doc.docBAST;
+                  const driveBAST = doc.driveBAST;
+                  
+                  if (docBAST && driveBAST) {
+                    return `<a href="${driveBAST}" target="_blank">
+                              <i class="fa fa-link"></i> ${docBAST}
+                            </a>`;
+                  }
+                }
               }
+              return '-';
             }
           },
+          {
+            title:"BAST Pengembalian Asset",
+            render: function (data, type, row, meta){
+              if (Array.isArray(row.document_name)) {
+                for (let i = 0; i < row.document_name.length; i++) {
+                  const doc = row.document_name[i];
+                  const docBAST = (doc.docBAST);
+                  const driveBAST = doc.driveBAST;
+                  
+                  if (docBAST.includes("Pengembalian")) {
+                    return `<a href="${driveBAST}" target="_blank"><i class="fa fa-link"></i> ${docBAST}</a>`;
+                  }
+                }
+              }
+              return '-';
+            }
+          }
         ]
       }
 
@@ -969,6 +1001,13 @@
           id_asset:window.location.href.split("=")[1]
         },
         success:function(result){
+          // Change label for inputSerialNumber if its 
+          if (result.category_code === 'VHC'){
+            $('label[for="inputSerialNumber"]').text('Nomor Polisi');
+          } else {
+            $('label[for="inputSerialNumber"]').text('Serial Number');
+          }
+          
           if(result.pid === "INTERNAL"){
             $("#service_point").closest(".form-group").hide()
             $("#selectStatusCustomer").closest(".form-group").hide()
@@ -993,7 +1032,6 @@
             $("#inputLicenseEnd").closest(".form-group").find("label").text("License End/Garansi*") 
             $(".divAsset:eq(1)").prev("hr").hide()
             $(".divAsset:eq(1)").hide()
-
             $("#btnAssignPeripheral").hide()
             let picContainer = $("#picContainer");
             let prContainer = $("#prContainer");
@@ -1537,6 +1575,8 @@
               // }
             }
           }
+          
+          let oldStatus = result.status;
 
           $("select[name='selectStatus']").select2({
             placeholder:"Select Status",
@@ -1547,7 +1587,7 @@
               {id:"Unavailable",text:"Unavailable"},
             ]
           }).on('select2:select', function (e) { 
-            var id = e.params.data.id
+            var id = e.params.data.id;
             if (id == "Unavailable" || id == "Rent") {
               $("#txtAreaReason").closest(".form-group").show()
               if (id == 'Unavailable') {
@@ -1571,7 +1611,41 @@
               $("#inputPIC").next("span").next(".help-block").hide()
               $("#txtAreaReason").closest(".form-group").hide()
             }
-          })
+          
+            if (oldStatus !== 'Available' && id === 'Available') {
+              Swal.fire({
+                title: 'Update Asset to Available?',
+                text: "Provide notes here",
+                input: 'textarea',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                inputValidator: (value) => {
+                  if (!value) {
+                    return 'Notes are required!';
+                  }
+                }
+              }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                  const processedNotes = result.value.replace("<br>", "\n");
+                  $('#txtAreaNotes').val(processedNotes);
+                  
+                  Swal.fire({
+                    title: 'Status Updated Successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'Reload'
+                  }).then(() => {
+                  });
+                } 
+                else if (result.isDismissed) {
+                  $("select[name='selectStatus']").val(oldStatus).trigger('change');
+                }
+              });
+            }
+          });
 
           $("select[name='selectStatus']").val(result.status).trigger("change")
 
@@ -1693,7 +1767,6 @@
             var optionTypeDevice = new Option(result.type_device, result.type_device, true, true);
             typeDeviceSelect.append(optionTypeDevice).trigger('change');
           }
-          
           $("#inputClient").val(result.client).prop("disabled",true)
           $("input[name='inputSerialNumber']").val(result.serial_number)
           if(result.spesifikasi){
@@ -1707,16 +1780,16 @@
           $("input[name='inputSerialNumberPeripheral']").val(result.serial_number)
           $("input[name='inputSpesifikasiPeripheral']").val(result.spesifikasi)
           $("input[name='inputRMAPeripheral']").val(result.rma)
-          $("textarea[name='txtAreaNotes']").val(result.notes)
+          $("textarea[name='txtAreaNotes']").val(result.notes || "")
           $("textarea[name='txtAreaNotesPeripheral']").val(result.notes)
-          $("input[name='inputIdDeviceCustomer']").val(result.id_device_customer)
+          $("#inputIdDeviceCustomer").val(result.id_device_customer)
           $("#txtAreaAddress").val(result.alamat_lokasi)
           $("#txtAreaLocation").val(result.detail_lokasi)
           setLatLngLoc(result.detail_lokasi)
           $("#inputIPAddress").val(result.ip_address)
           $("#inputServer").val(result.server)
           $("#inputPort").val(result.port)
-          $("#inputOS").val(result.operating_system)
+          $("#inputOS").val(result.operating_system);
           $("#inputVersion").val(result.version_os)
           initMoney()
           $("input[name='inputHarga'],input[name='inputHargaPeripheral']").val(result.harga_beli)
@@ -1835,7 +1908,6 @@
               $("#link_berita_acara").attr("href",result.link_drive_BA)
             }
           }
-
           InitiateChangeLog()
         }
       })
@@ -1891,7 +1963,7 @@
         }
       })
     }
-
+    
     function UpdateAsset(id_asset,type){
       let rma = "", notes = "", assetOwner = "", vendor = "", typeDevice = "", serialNumber = "", spesifikasi = "", tanggalBeli = "", hargaBeli = "", nilaiBuku = ""
         if (type == "peripheral") {
@@ -1921,7 +1993,6 @@
           hargaBeli = $("input[name='inputHarga']").val()
           nilaiBuku = $("input[name='inputNilaiBuku']").val()
           inputPr = $("select[name='inputPr']").val()
-
           if ($("textarea[name='txtAreaReason']").is(":visible") == true) {
             reason = $("textarea[name='txtAreaReason']").val()
           }else{
@@ -2005,9 +2076,11 @@
                     contentType: false,
                     success: function(result){
                       Swal.fire(alertSuccess).then((result) => {
-                        InitiateDetailPage()
-                        InitiateHistoryPid()
-                        InitiateChangeLog()
+                        window.onbeforeunload = null;
+                        window.location.reload();
+                        // InitiateDetailPage()
+                        // InitiateHistoryPid()
+                        // InitiateChangeLog()
                       })
                     }
                   })
@@ -2055,12 +2128,13 @@
                 confirmButtonText: 'Yes',
                 cancelButtonText: 'No',
               }
-
+            
               alertSuccess = {
                 title: 'Update Asset Successsfully!',
                 icon: 'success',  
                 confirmButtonText: 'Reload',
               }
+              
             }else if (type == 'detail') {
               url = "{{url('asset/updateDetailAsset')}}"
 
@@ -2088,7 +2162,9 @@
               formData.append('maintenanceStart',$("#inputMaintenanceStart").val())
               formData.append('maintenanceEnd',$("#inputMaintenanceEnd").val())
               formData.append('servicePoint',$("#service_point").val())
-              formData.append('inputPic',$("#inputPIC").val() == null?'':$("#inputPIC").val())
+
+              formData.append('inputPic',$("#inputPIC").val()) //samain buat status yg updateAsset
+
               formData.append('accessoris',$("#inputAccessoris").val())
 
               if ($('#inputBuktiAsset').is(":visible")) {
@@ -2121,6 +2197,11 @@
 
             Swal.fire(alert).then((result) => {
               if (result.value) {
+                if (result.isConfirmed && typeof result.value === 'string' && status === "Available"){
+                  const processedNotes = result.value.replace("<br>", "\n");
+                  $('#txtAreaNotes').val(processedNotes);
+                  formData.set('notes', processedNotes);
+                }
                 Swal.fire({
                     title: 'Please Wait..!',
                     text: "It's sending..",
@@ -2142,9 +2223,12 @@
                   contentType: false,
                   success: function(result){
                     Swal.fire(alertSuccess).then((result) => {
-                      InitiateDetailPage()
-                      InitiateHistoryPid()
-                      InitiateChangeLog()
+                      window.onbeforeunload = null;
+                      window.location.reload();
+                        
+                        // InitiateDetailPage()
+                        // InitiateHistoryPid()
+                        // InitiateChangeLog()
                     })
                   }
                 })
