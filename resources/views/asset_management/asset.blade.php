@@ -301,7 +301,7 @@
                     <span class="help-block" style="display:none;">Please fill Category!</span>
                   </div>
                 </div>
-
+                <!-- ini buat milih status -->
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="">Status*</label>
@@ -332,9 +332,9 @@
                     <span class="help-block" style="display:none;">Please fill Type Device!</span>
                   </div>
                 </div>
-              </div>             
+              </div>
 
-              <div class="form-group">
+              <div class="form-group" id='serialNumberGroup'>
                 <label for="">Serial Number*</label>
                 <input id="inputSerialNumber" name="inputSerialNumber" class="form-control" onkeyup="fillInput('inputSerialNumber')">
                 <span class="help-block" style="display:none;">Please fill Serial Number!</span>
@@ -363,7 +363,7 @@
                 </div>
               </div>
 
-              <div class="form-group" id="tanggalPembelianContainer">
+              <!-- <div class="form-group" id="tanggalPembelianContainer">
                 <label for="">Tanggal Pembelian</label>
                 <div class="input-group">
                   <div class="input-group-addon">
@@ -371,7 +371,7 @@
                   </div>
                   <input id="inputTglBeli" name="inputTglBeli" class="form-control" onchange="fillInput('inputTglBeli')">
                 </div>
-              </div>
+              </div> -->
 
               <div class="row" id="hargaContainer">
                 <div class="col-md-6">
@@ -525,6 +525,16 @@
               </div>
 
               <div class="form-group" id="prContainer"></div>
+
+              <div class="form-group" id="tanggalPembelianContainer">
+                  <label for="">Tanggal Pembelian</label>
+                  <div class="input-group">
+                    <div class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+                    <input id="inputTglBeli" name="inputTglbeli" class="form-control" onchange="fillInput('inputTglBeli')">
+                  </div>
+              </div>
 
               <div class="row">
                 <div class="col-sm-6 col-xs-12">
@@ -1663,7 +1673,7 @@
         placeholder: 'Select PID',
       })
     }
-    
+
     //select2 modal add
     // $("#selectAsset").select2({
     //   placeholder:"Select Asset",
@@ -1706,7 +1716,7 @@
     }).on('select2:select', function (e) {
       e.stopPropagation();
       handleSpesifikasi(e.params.data);
-      if (e.params.data.text == "Computer" || e.params.data.text == "Furniture" || e.params.data.text == "Kendaraan" || e.params.data.text == "Electronic") {
+      if (e.params.data.text == "Computer" || e.params.data.text == "Furniture" || e.params.data.text == "Vehicle" || e.params.data.text == "Electronic") {
         $.each($(".tab-add").find("select"),function(item,data){
           var $el = $(this);
           if ($el.css("display") !== "none") {
@@ -1792,6 +1802,8 @@
               label_changed = $("#"+data.id).closest(".form-group").find("label").text().split("*")[0]
               $("#"+data.id).closest(".form-group").find("label").text(label_changed+"*")
             }
+            else {
+            }
           }
         })
       }
@@ -1804,6 +1816,8 @@
       spesifikasiContainer.empty();
       spesifikasiDetailContainer.empty();
 
+      const fieldsHideCOM = ['Memory Slot', 'Additional Disk Type', 'Additional Disk Capacity'];
+
       $.ajax({
         url: '{{url("asset/getSpesifikasi")}}',
         data: {
@@ -1815,17 +1829,15 @@
 
             if (category === 'COM') {
               var appendAccessoris = ""
-
               appendAccessoris = appendAccessoris + '<div class="form-group">'
                 appendAccessoris = appendAccessoris + '<label for="">Accessoris</label>'
                 appendAccessoris = appendAccessoris + '<input id="inputAccessoris" name="inputAccessoris" class="form-control")>'
               appendAccessoris = appendAccessoris + '</div>'
-
               $("#inputSerialNumber").closest(".form-group").after(appendAccessoris)
             }else{
               $("#inputAccessoris").closest(".form-group").remove()
             }
-
+            
             $("#vendorContainer").show();
             data.forEach(function(item) {
               var div = $('<div class="col-md-4 form-group">');
@@ -1858,10 +1870,20 @@
               spesifikasiContainer.append(div);
 
               fetchSpesifikasiDetails(item.id, select);
+              
+              if (category === 'COM' && fieldsHideCOM.includes(item.name)) {
+                div.hide();
+              }
+
+              select.select2({
+                placeholder: 'Select ' + item.name,
+                allowClear: true
+              });
+
             });
-          }else if(category === 'FNT' || category === 'ELC' || category === 'KDR'){
+          }else if(category === 'FNT' || category === 'ELC'){
             $("#inputAccessoris").closest(".form-group").remove()
-            $("#vendorContainer").hide();
+            $("#vendorContainer").show();
             clearValidationOnChange();
             data.forEach(function(item) {
                     var div = $('<div class="col-md-6 form-group">');
@@ -1883,7 +1905,7 @@
                       });
                     
                     div.append(label).append(input);
-
+            
                     input.on('keyup', function() {
                         fillInput('inputSpesifikasi_' + item.name);
                     });
@@ -1906,15 +1928,96 @@
 
                     spesifikasiContainer.append(div);
             });
-          }else {
+          }
+          else if (category === 'VHC'){ 
+            $("#serialNumberGroup").hide();
+            var row = $(`
+              <div class="col-md-6">
+                <div class="form-group" id="serialNumberGroupVehicle">
+                  <label>Nomor Polisi</label>
+                  <input id="inputSerialNumber" name="inputSerialNumber" class="form-control" ...>
+                  <span class="help-block" style="display:none;">Please fill Nomor Polisi!</span>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group" id="warnaGroup">
+                  <label>Warna</label>
+                  <input
+                    id="inputSpesifikasi_Warna"
+                    name="inputSpesifikasi_Warna"
+                    class="form-control"
+                    onkeyup="fillInput('inputSpesifikasi_Warna')">
+                  <span class="help-block" style="display:none;">Please fill Warna!</span>
+                </div>
+              </div>
+            `);
+            
+            $("#spesifikasiContainer").append(row);
+            clearValidationOnChange();
+            $("#inputAccessoris").closest(".form-group").remove();
+            $("#vendorContainer").show();
+            data.forEach(function(item) {
+                    if (item.name === 'Warna') {
+                      return;
+                    }
+
+                    var div = $('<div class="col-md-6 form-group">');
+                    
+                    var input = $('<input>', {
+                        id: 'inputSpesifikasi_' + item.name,
+                        name: 'inputSpesifikasi_' + item.name,
+                        class: 'form-control',
+                        
+                    });
+                    
+                    var label = $('<label>', {
+                        text: item.name
+                    });
+
+                    var unitSpan = $('<span>', {
+                        class: 'input-group-addon',
+                        text: item.satuan
+                      });
+                    
+                    div.append(label).append(input);
+            
+                    input.on('keyup', function() {
+                        fillInput('inputSpesifikasi_' + item.name);
+                    });
+
+                    input.on('input', function() {
+                      $(this).closest('.form-group').find('.help-block').hide();
+                      $(this).closest('.form-group').removeClass('has-error');
+                    });
+
+                    if (item.satuan) {
+                        var inputGroup = $('<div>', { class: 'input-group' });
+                        inputGroup.append(input).append(unitSpan);
+                        div.append(inputGroup);
+                    } else {
+                        div.append(input);
+                    }
+
+                    var alert = $('<span>',{
+                    class : 'help-block',
+                    style: 'display: none',
+                    text: 'Please fill ' + item.name + '!'
+
+                    });
+                    div.append(alert);
+
+                    spesifikasiContainer.append(div);
+            });
+          }
+          else {
             $("#inputAccessoris").closest(".form-group").remove()
             $("#vendorContainer").show();
-            var div = $('<div class="col-md-12">');
+            var div = $('<div class="col-md-12 form-group">');
             var label = $('<label>', {
               text: 'Spesifikasi',
             });
             div.append(label);
-
             var select = $('<input>', {
                 id: 'inputSpesifikasi',
                 name: 'inputSpesifikasi',
@@ -1981,17 +2084,15 @@
               spanText = ' ' + span.text().trim();
           }
         }
-        // console.log(spanText);
 
         if (value) {
-            spesifikasiValues.push(label + ' ' + value + spanText);
+            spesifikasiValues.push(label + ' : ' + value + spanText);
         }
     });
-
-    var concatenatedValues = spesifikasiValues.join(' - ');
+    var tenatedValues = spesifikasiValues.join('<br>');
     return concatenatedValues;
-}
-
+    }
+  
     $("#selectStatus").select2({
       placeholder:"Select Status",
       dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
@@ -2009,6 +2110,9 @@
       }else{
         $("#txtAreaReason").closest(".form-group").hide()
       } 
+      if (id == "Available") {
+        $("#inputInstalledDate").closest(".form-group").hide();
+      }
     })
 
     function capitalizeFirstLetter(string) {
@@ -2161,7 +2265,6 @@
       dropdownPosition: 'below'
     }).on('select2:select', function (e) {
       let pid = e.params.data.id
-
       let clientContainer = $("#clientContainer"); 
       let locationContainer = $("#locationContainer");
       let prContainer = $("#prContainer");
@@ -2171,7 +2274,7 @@
 
       if (pid === 'INTERNAL') {
         $("#rmaContainer").hide();
-        $("#tanggalPembelianContainer").hide();
+        $("#tanggalPembelianContainer").show();
         $("#hargaContainer").show();
         $("#notesContainer").show();
         $("#deviceCustomerContainer").hide();
@@ -2280,6 +2383,23 @@
           dropdownParent: $("#modal-add-asset"),
         })
 
+        $("#inputPr").on("change", function () {
+            var selectedPr = $(this).val();
+
+            if (selectedPr) {
+                $.ajax({
+                    url: '{{url("asset/getDateByPr")}}',
+                    type: 'GET',
+                    data: { no_pr: selectedPr },
+                    success: function (response) {
+                        $("#inputTglBeli").val(response);
+                    }
+                });
+            } else {
+                $("#inputTglBeli").val('');
+            }
+        });
+
         let locationLabel = $('<label>',{
           text: "Location*"
         });
@@ -2334,32 +2454,54 @@
           }
         });
 
-        let label = $('<label>',{
+        let picContainer = $('<div>', { id: 'picContainer' });
+        let picLabel = $('<label>',{
           text: 'Nama PIC - Department*'
         });
-        
-        clientContainer.append(label);
-        let selectClient = $('<select>', {
-            id: 'inputPIC',
-            name: 'inputPIC',
-            class: 'form-control'
+        picContainer.append(picLabel);
+
+        let selectPIC = $('<select>', {
+          id: 'inputPIC',
+          name: 'inputPIC',
+          class: 'form-control'
         });
-        clientContainer.append(selectClient);
+        picContainer.append(selectPIC);
+
+        clientContainer.append(picContainer);
 
         $("#inputPIC").select2({
           ajax: {
               url: '{{url("asset/getEmployeeNames")}}',
               processResults: function (data) {
                   return {
-                      results: data
-                  };
-              },
+                    results: data
+              };
           },
           placeholder: 'Select PIC',
           dropdownParent: $("#modal-add-asset")
-        }).on('select2:select', function (e) {
+        }}).on('select2:select', function (e) {
           e.stopPropagation();
-        })
+        });
+        
+        $("#selectStatus").on('select2:select', function(e) {
+          let selectedStatus = e.params.data.id;
+          let selectedPID = $("#selectPID").val();
+          togglePicContainer(selectedStatus, selectedPID);
+        });
+
+        function togglePicContainer(status, pid) {
+          if (pid === 'INTERNAL') {
+            if (status === 'Available') {
+              $("#picContainer").hide();
+              // $("#picContainer").find(".form-group").removeClass("has-error");
+              // $("#picContainer").find(".help-block").hide();
+              // $("#inputPIC").val(null).trigger('change');
+            } else {
+              $("#picContainer").show();
+            }
+            }
+        }
+
       } else {
           $("#rmaContainer").show();
           $("#tanggalPembelianContainer").show();
@@ -2375,7 +2517,7 @@
           $('#inputLicenseStart').attr('readonly',false)
           $('#inputLicenseEnd').attr('readonly',false)
           $("#clientContainer").hide();
-          $("#prContainer").hide();
+          $("#prContainer").show();
 
           $("#hargaContainer").find("label").first().text("Harga") 
 
@@ -2450,9 +2592,9 @@
     })
 
     $('#inputTglBeli').datepicker({
-      placeholder:"dd/mm/yyyy",
+      placeholder:"yyyy-mm-dd",
       autoclose: true,
-      format: 'dd/mm/yyyy'
+      format: 'yyyy-mm-dd'
     })
 
     function clearValidationOnChange() {
@@ -2475,11 +2617,11 @@
     // $("#inputIPAddress").inputmask("ip")
     currentTab = 0
     function nextPrev(n){
-      console.log(n)
-      console.log(currentTab)
+      //console.log(n)
+      //console.log(currentTab)
       if (currentTab == 0) {
         if ($("#selectCategory").val() != "COM") {
-          if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "KDR" || $("#selectCategory").val() === "ELC"){
+          if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "VHC" || $("#selectCategory").val() === "ELC"){
             $.each($(".tab-add:first").find("select"), function(item, data) {
               var $el = $(this);
               var id = data.id;
@@ -2554,9 +2696,7 @@
         btnAddAsset(currentTab);
       }else if (currentTab == 2) {
         if ($("#selectCategory").val() != "COM") {
-          if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "KDR" || $("#selectCategory").val() === "ELC"){
-            console.log("masuk siniikah")
-
+          if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "VHC" || $("#selectCategory").val() === "ELC"){
             $.each($(".tab-add:nth(2)").find("input"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
@@ -2667,7 +2807,7 @@
         }
       }else{
         if ($("#selectCategory").val() != "COM") {
-          if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "KDR" || $("#selectCategory").val() === "ELC" ){
+          if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "VHC" || $("#selectCategory").val() === "ELC" ){
             $.each($(".tab-add:nth(2)").find("select"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none" && data.id != "selectStatusCustomer" && data.id != "selectLevelSupport") {
@@ -2743,7 +2883,6 @@
               }
             })
           }
-
           if ($(".tab-add:first").is(":visible")) {
             checkInput = $(".tab-add:first").find(".form-group").hasClass("has-error")
           }else{
@@ -2751,7 +2890,6 @@
           }
         }
       }
-      
       if (checkInput == false) {
         Swal.fire({
           title: 'Are you sure?',
@@ -2765,7 +2903,27 @@
         }).then((result) => {
           if (result.value) {
             var dataForm = new FormData();
-            console.log(collectSpesifikasiValues());
+            if ($("#selectCategory").val() === "COM") {
+              var osValue = $("#inputSpesifikasi_OS\\ Version").val(); 
+            }
+            else {
+              var osValue = ""
+            }
+
+            // if its vehicle remove Nomor Polisi in spesifikasi
+            if ($("#selectCategory").val() === "VHC") {
+              let spesifikasi = collectSpesifikasiValues().replaceAll("<br>", "\n");
+              const match = spesifikasi.match(/^Nomor Polisi\s*:\s*(.*)$/m);
+              dataForm.append("serialNumber", match[1].trim());
+              spesifikasi = spesifikasi.replace(/^Nomor Polisi\s*:\s*.*$/m, "").trim();
+              dataForm.append("spesifikasi", spesifikasi);
+            }
+            else {
+              dataForm.append('serialNumber',$("#inputSerialNumber").val());
+              dataForm.append('spesifikasi',collectSpesifikasiValues().replaceAll("<br>", "\n"));
+
+            }
+
             dataForm.append('_token','{{ csrf_token() }}');
             dataForm.append('idDeviceCustomer',$("#inputIdDeviceCustomer").val())
             dataForm.append('client',$("#inputClient").val())
@@ -2778,7 +2936,8 @@
             dataForm.append('port',$("#inputPort").val())
             dataForm.append('statusCust',$("#selectStatusCustomer").val())
             dataForm.append('secondLevelSupport',$("#selectLevelSupport").val())
-            dataForm.append('operatingSystem',$("#inputOS").val())
+
+            dataForm.append('operatingSystem', osValue);
             dataForm.append('versionOs',$("#inputVersion").val())
             dataForm.append('installedDate',moment(($("#inputInstalledDate").val()),"DD/MM/YYYY").format("YYYY-MM-DD"))
             dataForm.append('license',$("#inputLicense").val())
@@ -2789,10 +2948,12 @@
             dataForm.append('status',$("#selectStatus").val())
             dataForm.append('vendor',$("#selectVendor").val())
             dataForm.append('typeDevice',$("#selectTypeDevice").val())
-            dataForm.append('serialNumber',$("#inputSerialNumber").val())
-            dataForm.append('spesifikasi',collectSpesifikasiValues())
+
+            // dataForm.append('serialNumber',$("#inputSerialNumber").val())
+            // dataForm.append('spesifikasi',collectSpesifikasiValues().replaceAll("<br>", "\n"));
+
             dataForm.append('rma',$("#inputRMA").val())
-            dataForm.append('notes',$("#txtAreaNotes").val())
+            dataForm.append('notes', ($("#txtAreaNotes").val() || "").replace("<br>", "\n"));
             dataForm.append('categoryPeripheral',$("#selectPeripheral").val())
             dataForm.append('typeAsset',$("#selectAsset").val())
             dataForm.append('assetOwner',$("#selectAssetOwner").val())
@@ -2802,7 +2963,8 @@
             dataForm.append('latitude',$("#lat").val())
             dataForm.append('longitude',$("#lng").val())
             dataForm.append('servicePoint',$("#service_point").val())
-            dataForm.append('tanggalBeli',moment(($("#inputTglBeli").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
+            //dataForm.append('tanggalBeli',moment(($("#inputTglBeli").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
+            dataForm.append('tanggalBeli', $("#inputTglBeli").val())
             dataForm.append('hargaBeli',$("#inputHarga").val())
             dataForm.append('nilaiBuku',$("#inputNilaiBuku").val())
             dataForm.append('reason',$("#txtAreaReason").val())
@@ -2840,8 +3002,9 @@
                   confirmButtonText: 'Reload',
                 }).then((result) => {
                   $("#modal-add-asset").modal("hide")
-                  $('#tableAsset').DataTable().ajax.url("{{url('asset/getDataAsset')}}").load();
-                  InitiateCountDashboard("{{url('asset/getCountDashboard')}}")
+                  window.location.reload()
+                  // $('#tableAsset').DataTable().ajax.url("{{url('asset/getDataAsset')}}").load();
+                  // InitiateCountDashboard("{{url('asset/getCountDashboard')}}")
                 })
               }
             })
