@@ -66,12 +66,12 @@ class Kernel extends ConsoleKernel
         // })
         // ->everyMinute();
 
-        // $schedule->call(function() {
-        //     if (date("n") == 4 && date("j") == 1) {
-        //         Artisan::call('CutiRestart:cutirestart');
-        //     }
-        // })->monthly()
-        // ->at('01:00');
+        $schedule->call(function() {
+            if (date("n") == 4 && date("j") == 1) {
+                Artisan::call('CutiRestart:cutirestart');
+            }
+        })->monthly()
+        ->at('01:00');
         
 
         // $schedule->call(function() {
@@ -85,7 +85,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('UpdateYearByClosingDate:UpdateYearByClosingDate')->yearly()->at('00:45');
 
-        $schedule->command('CutiRestart:cutirestart')->monthlyOn(4, '01:00');
+        // $schedule->command('CutiRestart:cutirestart')->monthlyOn(4, '01:00');
 
 
         // $schedule->call(function() {
@@ -95,12 +95,12 @@ class Kernel extends ConsoleKernel
         // })->monthly()
         // ->at('01:00');
 
-        $schedule->call(function() {
-            if (date("n") == 12 && date("j") == 30) {
-                Artisan::call('HandoverCuti:handovercuti');
-            }
-        })->monthly()
-        ->at('01:00');
+        // $schedule->call(function() {
+        //     if (date("n") == 12 && date("j") == 30) {
+        //         Artisan::call('HandoverCuti:handovercuti');
+        //     }
+        // })->monthly()
+        // ->at('01:00');
 
         // $schedule->call(function() {
         //     Artisan::call('UpdateStatusKaryawan:updatestatuskaryawan');

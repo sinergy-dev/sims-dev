@@ -2064,24 +2064,18 @@
     }
 
     function collectSpesifikasiValues() {
-    var spesifikasiContainer = $("#spesifikasiContainer");
-    var spesifikasiValues = [];
+      var spesifikasiContainer = $("#spesifikasiContainer");
+      var spesifikasiValues = [];
 
-    spesifikasiContainer.find('.form-group').each(function() {
-        var label = $(this).find('label').text().trim();
-        var value;
-        var spanText = '';
+      spesifikasiContainer.find('.form-group').each(function() {
+          var label = $(this).find('label').text().trim();
+          var value;
+          var spanText = '';
 
-        if ($(this).find('input').length > 0) {
-            value = $(this).find('input').val().trim();
-        } else if ($(this).find('select').length > 0) {
-            value = $(this).find('select').val().trim();
-        }
-
-        if ($(this).find('.input-group-addon').length > 0) {
-          var span = $(this).find('span').not('.help-block');
-          if (span.length > 0) {
-              spanText = ' ' + span.text().trim();
+          if ($(this).find('input').length > 0) {
+              value = $(this).find('input').val().trim();
+          } else if ($(this).find('select').length > 0) {
+              value = $(this).find('select').val().trim();
           }
         }
 
@@ -2222,6 +2216,14 @@
       },
       placeholder:"Select 2nd Level Support",
       tags:true,
+      createTag: function(params) {
+          // Capitalize the first letter of the new tag
+          const capitalizedTag = capitalizeFirstLetter(params.term);
+          return {
+              id: capitalizedTag,
+              text: capitalizedTag
+          };
+      },
       dropdownParent: $("#modal-add-asset"),
     })
 
@@ -2937,6 +2939,7 @@
             dataForm.append('statusCust',$("#selectStatusCustomer").val())
             dataForm.append('secondLevelSupport',$("#selectLevelSupport").val())
 
+
             dataForm.append('operatingSystem', osValue);
             dataForm.append('versionOs',$("#inputVersion").val())
             dataForm.append('installedDate',moment(($("#inputInstalledDate").val()),"DD/MM/YYYY").format("YYYY-MM-DD"))
@@ -2972,6 +2975,11 @@
             dataForm.append('pr',$("#inputPr").val())
             dataForm.append('pic',$("#inputPIC").val())
             dataForm.append('accessoris',$("#inputAccessoris").val())
+            if ($("#category").val() == 'COM') {
+              dataForm.append('operatingSystem',$("#nputSpesifikasi_OS Version").val())
+            }else{
+              dataForm.append('operatingSystem',$("#inputOS").val())
+            }
 
             $.ajax({
               type:"POST",
