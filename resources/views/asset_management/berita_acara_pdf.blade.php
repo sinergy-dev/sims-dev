@@ -160,33 +160,34 @@
 		@endphp
 
 		<h3 style="text-align: center;"><b>BERITA SERAH TERIMA ASSET PERUSAHAAN <br> PT SINERGY INFORMASI PRATAMA</b></h3>
+		
 
 		<p>Kami yang bertanda tangan di bawah ini, pada hari {{ $dayOfWeek }} tanggal {{ $day }} ({{ $dayInWords }}) bulan {{ $month }} Tahun {{ $year }}</p>
-
+		
 		<table style="padding-left: 30px;">
 			<tr>
 				<td style="width:15%">Nama</td>
-				<td style="padding-left: 40px;">:</td>
+				<td style="padding-left: 60px;">:</td>
 				<td>{{$pihak_pertama->name}}</td>
 			</tr>
 			<tr>
 				<td style="width:15%">NIK</td>
-				<td style="padding-left: 40px;">:</td>
+				<td style="padding-left: 60px;">:</td>
 				<td>{{$pihak_pertama->nik}}</td>
 			</tr>
 			<tr>
 				<td style="width:15%">Position</td>
-				<td style="padding-left: 40px;">:</td>
+				<td style="padding-left: 60px;">:</td>
 				<td>{{$pihak_pertama->departement}}</td>
 			</tr>
 			<tr>
 				<td style="width:15%">No HP</td>
-				<td style="padding-left: 40px;">:</td>
-				<td>{{$pihak_pertama->phone}}</td>
+				<td style="padding-left: 60px;">:</td>
+				<td>{{rtrim($pihak_pertama->phone, '_')}}</td>
 			</tr>
 			<tr>
 				<td style="width:15%">Atasan</td>
-				<td style="padding-left: 40px;">:</td>
+				<td style="padding-left: 60px;">:</td>
 				<td>{{$atasan_pp->name}}</td>
 			</tr>
 		</table>
@@ -207,12 +208,12 @@
 			<tr>
 				<td style="width:15%">Position</td>
 				<td style="padding-left: 20px;">:</td>
-				<td>{{$pihak_kedua->mini_group}}</td>
+				<td>{{$pihak_kedua->name}}</td>
 			</tr>
 			<tr>
 				<td style="width:15%">No HP</td>
 				<td style="padding-left: 20px;">:</td>
-				<td>{{$pihak_kedua->phone}}</td>
+				<td>{{rtrim($pihak_kedua->phone, '_')}}</td>
 			</tr>
 			<tr>
 				<td style="width:15%">Tanggal Masuk</td>
@@ -229,55 +230,102 @@
 		<p>Selanjutnya disebut sebagai <b>PIHAK KEDUA</b></p>
 
 		<p style="text-align:justify;"><b>PIHAK PERTAMA</b> menyerahkan asset kepada <b>PIHAK KEDUA</b>, dan <b>PIHAK KEDUA</b> menyatakan telah menerima barang dari <b>PIHAK PERTAMA</b> berupa :</p>
+		
+		@php
+        	$data = $list_asset_request->first();
+    	@endphp
+	
+		@if($data->category === 'Vehicle')
+			<table style="width: 100%;border-collapse: collapse;border: 1px solid;" class="table_asset">
+				<thead>
+					<tr>
+						<th>No</th>
+						<th>Kategori Asset</th>
+						<th>Merk - Type <br> (Tahun)</th>
+						<th>No. Polisi</th>
+						<th>No. Rangka</th>
+						<th>No. Mesin</th>
+						<th>Kondisi Asset</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach($list_asset_request as $key => $data)
+						@php
+							$nomor_rangka = '';
+							$nomor_mesin = '';
+							if(preg_match('/Nomor Rangka\s*:\s*([^\s]+)/', $data->spesifikasi, $matches)){$nomor_rangka = $matches[1];}
+							if(preg_match('/Nomor Mesin\s*:\s*([^\s]+)/', $data->spesifikasi, $matches)){$nomor_mesin = $matches[1];}
+						@endphp
+					<tr>
+						<td>{{++$key}}</td>
+						<td>{{$data->category}}</td>
+						<td>{{$data->merk}}</td>
+						<td>{{$data->serial_number}}</td>
+						<td>{{$nomor_rangka}}</td>
+						<td>{{$nomor_mesin}}</td>
+						<td>{!! nl2br(e($data->notes)) !!}</td>
+					</tr>
+					@endforeach
+				</tbody>
+			</table>
 
-		<table style="width: 100%;border-collapse: collapse;border: 1px solid;" class="table_asset">
-			<thead>
-				<tr>
-					<th>No</th>
-					<th>Kategori Asset</th>
-					<th>Merk</th>
-					<th>Accessories</th>
-					<th>Serial Number</th>
-					<th>Jumlah</th>
-					<th>Kondisi Asset</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach($list_asset_request as $key => $data)
-				<tr>
-					<td>{{++$key}}</td>
-					<td>{{$data->category}}</td>
-					<td>{{$data->merk}}</td>
-					<td>{{$data->accessoris}}</td>
-					<td>{{$data->serial_number}}</td>
-					<td>1</td>
-					<td>{{$data->notes}}</td>
-				</tr>
-				@endforeach
-			</tbody>
-		</table>
+			<p style="text-align:justify;">Demikian berita acara serah terima asset ini dibuat oleh kedua belah pihak. Sejak
+			penandatanganan Berita Acara ini maka asset tersebut menjadi tanggung jawab <b>PIHAK KEDUA</b>
+			untuk memelihara dan merawatnya dengan baik, serta di pergunakan untuk keperluan (tempat di mana asset tersebut itu dibutuhkan).
+			Jika <b>PIHAK KEDUA</b> sudah tidak bekerja di <b>PT. Sinergy Informasi Pratama</b>, maka wajib mengembalikan Asset Perusahaan tersebut dalam
+			keadaan baik.</p>
 
-		<p style="text-align:justify;">Demikian berita acara serah terima asset ini dibuat oleh kedua belah pihak. Sejak
-		penandatanganan Berita Acara ini maka asset tersebut menjadi tanggung jawab <b>PIHAK KEDUA</b>
-		untuk memelihara dan merawatnya dengan baik, serta di pergunakan untuk keperluan
-		pengecekkan kondisi kelayakan pakai asset tersebut. Jika <b>PIHAK KEDUA</b> sudah tidak bekerja di
-		<b>PT. Sinergy Informasi Pratama</b>, maka wajib mengembalikan Asset Perusahaan tersebut dalam
-		keadaan baik.</p>
+		@else
+			<table style="width: 100%;border-collapse: collapse;border: 1px solid;" class="table_asset">
+				<thead>
+					<tr>
+						<th>No</th>
+						<th>Kategori Asset</th>
+						<th>Merk - Type</th>
+						<th>Accessories</th>
+						<th>Serial Number</th>
+						<th>Jumlah</th>
+						<th>Kondisi Asset</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach($list_asset_request as $key => $data)
+					<tr>
+						<td>{{++$key}}</td>
+						<td>{{$data->category}}</td>
+						<td>{{$data->merk}}</td>
+						<td>{{$data->accessoris}}</td>
+						<td>{{$data->serial_number}}</td>
+						<td>1</td>
+						<td>{!! nl2br(e($data->notes)) !!}</td>
+					</tr>
+					@endforeach
+				</tbody>
+			</table>
+			<p style="text-align:justify;">Demikian berita acara serah terima asset ini dibuat oleh kedua belah pihak. Sejak
+			penandatanganan Berita Acara ini maka asset tersebut menjadi tanggung jawab <b>PIHAK KEDUA</b>
+			untuk memelihara dan merawatnya dengan baik, serta di pergunakan untuk keperluan (tempat di mana asset tersebut itu dibutuhkan).
+			Jika <b>PIHAK KEDUA</b> sudah tidak bekerja di <b>PT. Sinergy Informasi Pratama</b>, maka wajib mengembalikan Asset Perusahaan tersebut dalam
+			keadaan baik.</p>
+
+			<p style="text-align:justify;">Jika asset dalam keadaan rusak akibat kelalaian <b>PIHAK KEDUA</b> dalam jangka waktu 3 tahun
+			setelah tanggal pembelian, maka <b>PIHAK KEDUA</b> wajib melakukan perbaikan atau penggantian komponen dengan biaya di tanggung <b>PIHAK KEDUA</b>.</p>
+		@endif
 
 		<br><br>
 		<div style="display: flex;">
 			<p style="margin-left: 20px;">Yang menyerahkan,</p>
 			<span style="float:left;margin-left: 20px;"><h4>PIHAK PERTAMA</h4></span>
-			<span style="float:right;margin-right: 30px;"><h4>PIHAK KEDUA</h4></span>
+			<span style="float:right;margin-right: 70px;"><h4>PIHAK KEDUA</h4></span>
 		</div>
 		<br><br><br>
 		<div style="display:flex;">
 			<div style="float:left;margin-left: 20px;">
 				<img src="{{$pihak_pertama->ttd}}" style="width: 100px;height: 100px;">
-				<span><h4>{{$pihak_pertama->name}}</h4></span>
+				<span style="margin-left:30px"><h4>{{$pihak_pertama->name}}</h4></span>
 			</div>
-			<div style="float:right;margin-right: 20px;">
-				<img src="{{$pihak_kedua->ttd}}" style="margin-left: 20px;width: 100px;height: 100px;">
+			<div style="float:right;margin-right: 30px;">
+				<img src="{{$pihak_kedua->ttd}}" style="margin-right: 20px;width: 100px;height: 100px;">
 				<span style="margin-left:30px"><h4>{{$pihak_kedua->name_pk}}</h4></span>
 			</div>
 		</div>

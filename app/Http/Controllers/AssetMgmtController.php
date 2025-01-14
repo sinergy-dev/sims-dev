@@ -456,7 +456,7 @@ class AssetMgmtController extends Controller
     }
 
     public function storeAsset(Request $request)
-    {
+    {   
         if ($request->typeAsset == 'peripheral') {
             $category = $request->category;
             $inc = AssetMgmt::select('category')
@@ -523,7 +523,18 @@ class AssetMgmtController extends Controller
         // } else {
         //     $store->category_peripheral = '-';
         // }
-        $store->status = $request->status;
+        //$store->status = $request->status; 
+
+        if ($request->pid == 'INTERNAL') {
+            if ($request->pic != null || $request->pic != '') {
+                $store->status = 'Installed';
+            }else{
+                $store->status = $request->status;
+            }
+        }else{
+            $store->status = $request->status;
+        }
+
         $store->vendor = $request->vendor;
         $store->type_device = $request->typeDevice;
         $store->serial_number = $request->serialNumber;
@@ -538,6 +549,7 @@ class AssetMgmtController extends Controller
             $store->tanggal_pembelian = $request->tanggalBeli;
         }
         $store->reason_status = $request->reason;
+        $store->pr = $request->pr;
         $store->save();
 
         // if ($request->typeAsset == 'asset') {
@@ -640,14 +652,14 @@ class AssetMgmtController extends Controller
             }
 
             // $storeDetail->license_end_date = $request->licenseEndDate;
-
-            if ($request->maintenance_start == 'Invalid date' || $request->maintenance_start == '') {
+            // return $request->maintenanceStart;
+            if ($request->maintenanceStart == 'Invalid date' || $request->maintenanceStart == '') {
                 $storeDetail->maintenance_start = null;
             } else {
                 $storeDetail->maintenance_start = $request->maintenanceStart;
             }
 
-            if ($request->maintenance_end == 'Invalid date' || $request->maintenance_end == '') {
+            if ($request->maintenanceEnd == 'Invalid date' || $request->maintenanceEnd == '') {
                 $storeDetail->maintenance_end = null;
             } else {
                 $storeDetail->maintenance_end = $request->maintenanceEnd;
@@ -711,8 +723,8 @@ class AssetMgmtController extends Controller
             $updateDetail->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
             $updateDetail->save();
         }
-
-        if ($request->pic != null) {
+        
+        if ($request->pic != 'undefined' && $request->pic != 'null') {
             $pdfPath = $this->getPdfBASTAsset($store->id,$storeDetail->id);
             $this->uploadPdfBAST($store->id,$pdfPath);
 
@@ -733,7 +745,7 @@ class AssetMgmtController extends Controller
             ];
 
             Mail::to($to->email)->send(new MailGenerateBAST($data,'[SIMS-APP] Generate BAST')); 
-        }
+        } 
     }
 
     public function getAssetById(Request $request)
@@ -820,6 +832,7 @@ class AssetMgmtController extends Controller
     public function updateAsset(Request $request)
     {
         $update = AssetMgmt::where('id',$request->id_asset)->first();
+        $getPid = DB::table('tb_asset_management_detail')->where('id_asset',$request->id_asset)->orderBy('id','desc')->first()->pid;
         if ($update->asset_owner != $request->assetOwner) {
 
             $dateAsset = DB::table('tb_asset_management')
@@ -896,22 +909,63 @@ class AssetMgmtController extends Controller
         }
         $update->asset_owner = $request->assetOwner;
 
-        if ($update->status != $request->status) {
-            if ($request->status == 'AVAILABLE') {
-                $getIdDetailAsset = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
-                $storeDetail = $getIdDetailAsset->replicate(['id_asset', 'id_device_customer', 'pid','client','kota','alamat_lokasi','detail_lokasi','latitude','longitude','service_point','ip_address','port','server','status_cust','second_level_support','operating_system','version_os','license_start_date','license_end_date','maintenance_start','maintenance_end','accessoris']);
-                $storeDetail->installed_date = null;
-                $storeDetail->pic = null;
-                $storeDetail->save();
-            }
+        $oldStatus = $update->status;
+        $update->status = $request->status;
+        $update->notes = $request->notes;
+        $update->save();
+
+        if ($oldStatus !== $request->status) {
             $storeLog = new AssetMgmtLog();
-            $storeLog->id_asset = $request->id_asset;
-            $storeLog->operator = Auth::User()->name;
-            $storeLog->date_add = Carbon::now()->toDateTimeString();
-            $storeLog->activity = 'Update Asset with status ' .$update->status. ' to ' . $request->status;
+            $storeLog->id_asset  = $request->id_asset;
+            $storeLog->operator  = Auth::user()->name;
+            $storeLog->date_add  = Carbon::now()->toDateTimeString();
+            $storeLog->activity  = "Update Asset with status {$oldStatus} to {$request->status}";
             $storeLog->save();
         }
-        $update->status = $request->status;
+
+        if ($oldStatus !== $request->status && $request->status === 'Available') {
+            $getIdDetailAsset = AssetMgmtDetail::where('id_asset', $request->id_asset)
+                ->orderBy('id', 'desc')
+                ->first();
+        
+            $storeDetail = $getIdDetailAsset->replicate();
+            $storeDetail->installed_date = null;
+            $storeDetail->pic = null;
+            $storeDetail->save();            
+
+            if ($getPid === 'INTERNAL') {
+                $pdfPath = $this->getPdfBASTPengembalian($request->id_asset,$getIdDetailAsset->id);
+                $this->uploadPdfBASTPengembalian($request->id_asset,$pdfPath);
+            }
+        }
+
+        // if ($update->status != $request->status) {  
+        //     if ($request->status === 'Available') {
+        //         $getIdDetailAsset = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
+        //         $storeDetail = $getIdDetailAsset->replicate();
+        //         $storeDetail->installed_date = null;
+        //         $storeDetail->pic = null;
+        //         $storeDetail->save();
+        //     }
+        //     $storeLog = new AssetMgmtLog();
+        //     $storeLog->id_asset = $request->id_asset;
+        //     $storeLog->operator = Auth::User()->name;
+        //     $storeLog->date_add = Carbon::now()->toDateTimeString();
+        //     $storeLog->activity = 'Update Asset with status ' .$update->status. ' to ' . $request->status;
+        //     $storeLog->save();
+        // }
+        // $update->status = $request->status;
+        // $update->save;
+
+        // if ($request->status === 'Available') {
+        //     if ($getPid === 'INTERNAL') {
+        //         $getIdDetailAsset = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
+
+        //         $pdfPath = $this->getPdfBASTPengembalian($request->id_asset,$getIdDetailAsset->id);
+
+        //         $this->uploadPdfBASTPengembalian($request->id_asset,$pdfPath);
+        //     }        
+        // }
 
 
         if ($update->vendor != $request->vendor) {
@@ -946,6 +1000,23 @@ class AssetMgmtController extends Controller
         $update->serial_number = $request->serialNumber;
 
         if ($update->spesifikasi != $request->spesifikasi) {
+            $lines = explode("\n", $request->spesifikasi);
+            $osVersionValue = '';
+
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (stripos($line, 'OS Version') === 0) {
+                    $osVersionValue = trim(substr($line, strpos($line, ':') + 1));
+                    break;
+                }
+            }
+
+            if ($osVersionValue !== '') {
+                $latestDetail = AssetMgmtDetail::where('id_asset', $request->id_asset)->orderby('id','desc')->first();
+                $latestDetail->operating_system = $osVersionValue;
+                $latestDetail->save();
+            }
+
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
             $storeLog->operator = Auth::User()->name;
@@ -986,6 +1057,11 @@ class AssetMgmtController extends Controller
         $update->tanggal_pembelian = $request->tanggalBeli;
 
         if ($update->pr != $request->inputPr) {
+            $getIdDetailAsset = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
+                $storeDetail = $getIdDetailAsset->replicate();
+                $storeDetail->pr = $request->inputPr;
+                $storeDetail->save();
+
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
             $storeLog->operator = Auth::User()->name;
@@ -1039,7 +1115,7 @@ class AssetMgmtController extends Controller
         //     $update->pr = $request->inputPr;
         // }
 
-        $update->save();
+        $update->save(); 
 
         if ($request->status != 'Installed') {
             $delete = AssetMgmtAssign::where('id_asset_peripheral',$request->id_asset)->delete();
@@ -1077,9 +1153,22 @@ class AssetMgmtController extends Controller
 
     public function updateDetailAsset(Request $request)
     {
-        $update = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
+        $update = AssetMgmtDetail::where('id_asset',$request->id_asset)
+                ->orderby('id','desc')
+                ->first();
         $storeDetail = new AssetMgmtDetail();
         $storeDetail->id_asset = $request->id_asset;
+        $updateAssetMgmt = AssetMgmt::where('id',$request->id_asset)->orderby('id','desc')->first();
+
+        if (isset($request->inputPic)) { // && !empty($request->inputPic)
+            $updateAssetMgmt->status = 'Installed';
+            $updateAssetMgmt->update();
+        }else{
+            if ($updateAssetMgmt->status != 'Rent' || $updateAssetMgmt != 'Unavailable') {
+                $updateAssetMgmt->status = 'Available';
+                $updateAssetMgmt->update();
+            }
+        }
 
         if ($update->id_device_customer != $request->idDeviceCustomer) {
             $storeLog = new AssetMgmtLog();
@@ -1204,7 +1293,23 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->second_level_support = $request->secondLevelSupport;
 
+        //update Operating System disini ngubah di database 
         if ($update->operating_system != $request->operatingSystem) {
+            $updateAssetMgmt = AssetMgmt::where('id',$request->id_asset)->first();
+            //$storeDetail->operating_system = $request->operatingSystem;
+
+            $lines = explode("\n", $updateAssetMgmt->spesifikasi);
+            
+            foreach($lines as $index=>$line){
+                $line = trim($line);
+                if (stripos($line, 'OS Version') === 0) {
+                    $lines[$index] = 'OS Version : ' . $request->operatingSystem;
+                    break;
+                }
+            }
+            $updateAssetMgmt->spesifikasi = implode("\n", $lines);
+            $updateAssetMgmt->save();
+
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
             $storeLog->operator = Auth::User()->name;
@@ -1212,7 +1317,9 @@ class AssetMgmtController extends Controller
             $storeLog->activity = 'Update Detail Asset with Operating System ' .$update->operating_system. ' to ' . $request->operatingSystem;
             $storeLog->save();
         }
-        $storeDetail->operating_system = $request->operatingSystem;
+        $storeDetail->operating_system = $request->operatingSystem;    
+        $storeDetail->save();
+        
 
         if ($update->version_os != $request->versionOs) {
             $storeLog = new AssetMgmtLog();
@@ -1284,31 +1391,65 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->maintenance_end = $request->maintenanceEnd;
 
-        if ($update->pic != $request->inputPic && $update->pid == 'INTERNAL') {
+        $updatePic = ($update->pic === null) ? "null" : $update->pic;
+        $requestPic = ($request->inputPic === null) ? "null" : $request->inputPic;
+        
+        if ($updatePic != $requestPic && $update->pid == 'INTERNAL') {
+            $checkBASTPengembalian = DB::table('tb_asset_management_dokumen')
+                                    ->where('id_detail_asset',$update->id_asset)
+                                    ->where('document_name', 'Berita Acara Pengembalian')
+                                    ->orderBy('id','desc')->first();
+
+            if ($checkBASTPengembalian == null && $update->pic !== "null") {
+                $storeDetailAvailable = $update->replicate();
+                $storeDetailAvailable->installed_date = null;
+                $storeDetailAvailable->pic = null;
+                $storeDetailAvailable->save();   
+
+                $pdfPathPengembalian = $this->getPdfBASTPengembalian($update->id_asset, $update->id);
+                $this->uploadPdfBASTPengembalian($update->id_asset, $pdfPathPengembalian);
+            }
+
+
             $pic_old = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$update->pic);
 
             $pic_new = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$request->inputPic);
 
-            if($pic_old->first() !== null){
-                $storeLog = new AssetMgmtLog();
-                $storeLog->id_asset = $request->id_asset;
-                $storeLog->operator = Auth::User()->name;
-                $storeLog->date_add = Carbon::now()->toDateTimeString();
-                $storeLog->activity = 'Update PIC Asset from ' .$pic_old->first()->name. ' to ' . $pic_new->first()->name;
-                $storeLog->save();
-            }else{
-                $storeLog = new AssetMgmtLog();
-                $storeLog->id_asset = $request->id_asset;
-                $storeLog->operator = Auth::User()->name;
-                $storeLog->date_add = Carbon::now()->toDateTimeString();
-                $storeLog->activity = 'Update PIC Asset to ' . $pic_new->first()->name;
-                $storeLog->save();
-            }
+            $pic_old_data = $pic_old->first(); 
+            $pic_new_data = $pic_new->first();
+
+            $storeLog = new AssetMgmtLog();
+            $storeLog->id_asset = $request->id_asset;
+            $storeLog->operator = Auth::user()->name;
+            $storeLog->date_add = Carbon::now()->toDateTimeString();
+
+            if ($pic_old_data && $pic_new_data) {
+                $storeLog->activity = 'Update PIC Asset from ' . $pic_old_data->name . ' to ' . $pic_new_data->name;
+            } else if ($pic_new_data) {
+                $storeLog->activity = 'Update PIC Asset to ' . $pic_new_data->name;
+            } 
+            $storeLog->save();
+
+            // if($pic_old->first() !== null){
+            //     $storeLog = new AssetMgmtLog();
+            //     $storeLog->id_asset = $request->id_asset;
+            //     $storeLog->operator = Auth::User()->name;
+            //     $storeLog->date_add = Carbon::now()->toDateTimeString();
+            //     $storeLog->activity = 'Update PIC Asset from ' .$pic_old->first()->name. ' to ' . $pic_new->first()->name;
+            //     $storeLog->save();
+            // }else{
+            //     $storeLog = new AssetMgmtLog();
+            //     $storeLog->id_asset = $request->id_asset;
+            //     $storeLog->operator = Auth::User()->name;
+            //     $storeLog->date_add = Carbon::now()->toDateTimeString();
+            //     $storeLog->activity = 'Update PIC Asset to ' . $pic_new->first()->name;
+            //     $storeLog->save();
+            // }
 
             $storeDetail->pic = $request->inputPic; 
-        }else{
+        }else{   
             $storeDetail->pic = $request->inputPic;
         }
 
@@ -1354,10 +1495,9 @@ class AssetMgmtController extends Controller
 
         $assetMgmt = AssetMgmt::where('id',$request->id_asset)->first();
 
-        if ($update->pic != $request->inputPic) {
-            $pdfPath = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
-
-            $this->uploadPdfBAST($request->id_asset,$pdfPath);
+        if ($updatePic != $requestPic) {
+            $pdfPathBaru = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
+            $this->uploadPdfBAST($request->id_asset,$pdfPathBaru);
 
             $to = User::select('email','name')
                     ->join('role_user','role_user.user_id','=','users.nik')
@@ -1375,33 +1515,41 @@ class AssetMgmtController extends Controller
             ];
 
             Mail::to($to->email)->send(new MailGenerateBAST($data,'[SIMS-APP] Generate BAST')); 
+        } else {
+            $getIdDetailAsset = AssetMgmtDocument::where('id_detail_asset',$update->id)->first(); 
+            if ($getIdDetailAsset) {
+                $storeDokumen = $getIdDetailAsset->replicate();
+                $storeDokumen->id_detail_asset = $storeDetail->id;
+                $storeDokumen->save();
+            } 
         }
 
-        if (isset($request->inputDocBA)) {
-            if ($request->inputDocBA != '' && $request->inputDocBA != "undefined") {
-                $get_parent_drive       = AssetMgmt::where('id', $request->id_asset)->first();
-                $file                   = $request->file('inputDocBA');
-                $fileName               = 'Berita Acara '.$id.'.pdf';
-                $filePath               = $file->getRealPath();
-                $extension              = $file->getClientOriginalExtension();
+        // BAST that is undefined
+        // if (isset($request->inputDocBA)) {
+        //     if ($request->inputDocBA != '' && $request->inputDocBA != "undefined") {
+        //         $get_parent_drive       = AssetMgmt::where('id', $request->id_asset)->first();
+        //         $file                   = $request->file('inputDocBA');
+        //         $fileName               = 'Berita Acara '.$id.'.pdf';
+        //         $filePath               = $file->getRealPath();
+        //         $extension              = $file->getClientOriginalExtension();
 
-                $storeDoc = new AssetMgmtDocument();
+        //         $storeDoc = new AssetMgmtDocument();
 
-                if ($get_parent_drive->parent_id_drive == null) {
-                    $parentID = $this->googleDriveMakeFolder($request->id_asset);
-                } else {
-                    $parentID = [];
-                    $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
-                    array_push($parentID,$parent_id);
-                }
+        //         if ($get_parent_drive->parent_id_drive == null) {
+        //             $parentID = $this->googleDriveMakeFolder($request->id_asset);
+        //         } else {
+        //             $parentID = [];
+        //             $parent_id = explode('"', $get_parent_drive->parent_id_drive)[1];
+        //             array_push($parentID,$parent_id);
+        //         }
 
-                $storeDoc->id_detail_asset      = $storeDetail->id;
-                $storeDoc->document_name        = 'Berita Acara '.$id;
-                $storeDoc->document_location    = "Asset/BAST " . $assetMgmt->id_asset;
-                $storeDoc->link_drive           = $this->googleDriveUploadCustom($fileName,$filePath,$parentID);
-                $storeDoc->save();
-            }
-        }
+        //         $storeDoc->id_detail_asset      = $storeDetail->id;
+        //         $storeDoc->document_name        = 'Berita Acara '.$id;
+        //         $storeDoc->document_location    = "Asset/BAST " . $assetMgmt->id_asset;
+        //         $storeDoc->link_drive           = $this->googleDriveUploadCustom($fileName,$filePath,$parentID);
+        //         $storeDoc->save();
+        //     }
+        // }
     }
 
     public function getProvince(Request $request)
@@ -1438,7 +1586,6 @@ class AssetMgmtController extends Controller
     public function getDetailAsset(Request $request)
     {
         $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
-
         // return $getId->get();
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
         // return $getLastId->get();
@@ -1446,8 +1593,8 @@ class AssetMgmtController extends Controller
         // return $getDokumen = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->leftJoin('tb_asset_management_dokumen','tb_asset_management_dokumen.id_detail_asset','=','tb_asset_management_detail.id')->select('tb_asset_management_dokumen.link_drive as link_drive_BA',
         //             'tb_asset_management_dokumen.document_name as document_name_BA',
         //             'tb_asset_management_dokumen.document_location as document_location_BA')->where('id_detail',$getLastId->id_last_asset->first())->get();
-
-        $getAll = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+        $getAll = DB::table($getLastId, 'temp2')
+            ->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
             ->leftJoin('tb_asset_management_dokumen','tb_asset_management_dokumen.id_detail_asset','=','tb_asset_management_detail.id')
             ->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')
             ->leftJoin('tb_asset_management_assign_engineer','tb_asset_management.id','tb_asset_management_assign_engineer.id_asset')
@@ -1505,12 +1652,11 @@ class AssetMgmtController extends Controller
                     'tb_asset_management_dokumen.link_drive as link_drive_BA',
                     'tb_asset_management_dokumen.document_name as document_name_BA',
                     'tb_asset_management_dokumen.document_location as document_location_BA',
-                    'tb_asset_management.pr',
-                    'users.nik as pic',
+                    'tb_asset_management_detail.pr as pr',
+                    'users.nik as pic', 'id_device_customer',
                     DB::raw('CONCAT(users.name," - ",(CASE WHEN roles.mini_group IS NULL THEN roles.group ELSE roles.mini_group END)) AS text_name'))
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
             ->first();
-
         $getIdTicket = DB::table('ticketing__detail')->where('serial_device',$getAll->serial_number)->select('id_ticket')->whereBetween('reporting_time', [$getAll->maintenance_start . " 00:00:00", $getAll->maintenance_end . " 23:59:59"])->get()->pluck('id_ticket');
 
         $timeTrouble = DB::table('ticketing__activity')->join('ticketing__activity as t2','t2.id_ticket','ticketing__activity.id_ticket')->join('ticketing__detail','ticketing__detail.id_ticket','ticketing__activity.id_ticket')
@@ -1529,7 +1675,7 @@ class AssetMgmtController extends Controller
         $getData = collect($getAll);
 
         if ($getAll->category_peripheral == '-' || $getAll->category_peripheral == null) {
-            if ($getAll->category_code == 'COM' || $getAll->category_code == 'FNT' || $getAll->category_code == 'ELC' || $getAll->category_code == 'KDR') {
+            if ($getAll->category_code == 'COM' || $getAll->category_code == 'FNT' || $getAll->category_code == 'ELC' || $getAll->category_code == 'VHC') {
                 $sla = 0;
             }else{
                 $sla = (100 - ((($timeTrouble/3600)/$getAll->slaPlanned)*100));
@@ -1553,7 +1699,6 @@ class AssetMgmtController extends Controller
             $sla = 0;
             $getData = $getData->put('countTicket',$countTicket)->put('slaUptime',number_format($sla, 2, '.', ''));
         }
-
         return $getData;
     }
 
@@ -2872,9 +3017,8 @@ class AssetMgmtController extends Controller
     //     return $data;
     // }
 
-    public function getPdfBASTAsset($id_asset,$id_detail_asset)
-    {
-        // return $id_asset;
+    public function getPdfBASTAsset($id_asset, $id_detail_asset) // Request $request
+    {   
         $pihak_pertama = User::select('users.name','users.nik','roles.name as departement','phone','ttd','date_of_entry as entry_date')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
@@ -2904,15 +3048,19 @@ class AssetMgmtController extends Controller
 
         $pihak_pertama->atasan = $atasan_pp->name;
 
-        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
-        $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')
+                ->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        
+        $getLastId = DB::table($getId,'temp')
+                    ->groupBy('id_asset')
+                    ->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
 
         $list_asset_request = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
                     ->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')
-                    ->select('tb_asset_management.id','category','serial_number',DB::raw('CONCAT(vendor, " - ",type_device) AS merk'),'notes', DB::raw("(CASE WHEN (accessoris is null) THEN '-' ELSE accessoris END) as accessoris"))
-                    ->where('tb_asset_management.id',$id_asset)
+                    ->select('tb_asset_management.id','category','serial_number',DB::raw('CONCAT(vendor, " - ",type_device) AS merk'),'notes', DB::raw("(CASE WHEN (accessoris is null or accessoris = 'undefined') THEN '-' ELSE accessoris END) as accessoris"), 'spesifikasi')
+                    ->where('tb_asset_management.id',$id_asset) //request->
                     ->get();
-
+            
         // $list_asset_request = DB::table('tb_asset_management')
         //                 ->select('tb_asset_management.id','category','type_device','serial_number','vendor as merk','notes',DB::raw("(CASE WHEN (accessoris is null) THEN '-' ELSE accessoris END) as accessoris"))
         //                 ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
@@ -2926,79 +3074,233 @@ class AssetMgmtController extends Controller
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         // ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
-                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.mini_group','ttd','users.nik','users.date_of_entry as entry_date','users.phone','installed_date')
-                        ->where('tb_asset_management_detail.id_asset',$id_asset)
-                        ->where('tb_asset_management_detail.id',$id_detail_asset);
+                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.mini_group','ttd','users.nik','users.date_of_entry as entry_date','users.phone','installed_date', 'users.id_territory')
+                        ->where('tb_asset_management_detail.id_asset',$id_asset) //request->
+                        ->where('tb_asset_management_detail.id',$id_detail_asset); //request->
                         // ->where('tb_asset_management_detail.id_asset',$id_asset);
 
         $pihak_kedua = $cek_role_pk->first();
+        $roleName = $pihak_kedua->name;
+        $ppGroup = $pihak_kedua->group;
+        $territory_sales = $pihak_kedua->id_territory;
 
-        if ($cek_role_pk->where('roles.name','like','%Manager%')->first()) {
-            $group = $cek_role_pk->first()->group;
-
+        if (strpos($roleName, 'Sales Manager') !== false ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%President Director%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+        }
+        else if (strpos($roleName, 'Sales Staff') !== false ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%Sales Manager%')
+                ->where('id_territory','like','%'.$territory_sales.'%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+        }
+        else if (strpos($roleName, 'Finance & Accounting Manager') !== false ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%President Director%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+        }
+        else if (strpos($roleName, 'VP') === 0 ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%Operations Director%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+        } 
+        else if (strpos($roleName, 'Project Manager') !== false) {
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
-                        ->join('role_user','role_user.user_id','=','users.nik')
-                        ->join('roles','roles.id','=','role_user.role_id')
-                        ->where('group','like','%'.$group.'%')
-                        ->where('roles.name','like','VP%')
-                        ->first(); 
-
-        }else if ($cek_role_pk->where('roles.name','like','VP%')->first()) {
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('group','like','%'.$ppGroup.'%')
+                            ->where('roles.name','like','%Project Management Manager%')
+                            ->first(); 
+        }
+        else if (strpos($roleName, 'Renumeration, Personalia & GS Manager') === 0) {
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
-                        ->join('role_user','role_user.user_id','=','users.nik')
-                        ->join('roles','roles.id','=','role_user.role_id')
-                        ->where('roles.name','like','%Operations Director%')
-                        ->first();
-        }else {
-            // return $id_asset;
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('roles.name','like','VP Project Management')
+                            ->first(); 
+        } 
+        else if (substr($roleName, -7) === 'Manager') {
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('group','like','%'.$ppGroup.'%')
+                            ->where('roles.name','like','VP%')
+                            ->first(); 
+        } 
+        else if ($roleName === "President Director") {
+            $atasan_pk = (object) [
+                'name'       => '-',
+                'nik'        => '',
+                'departement'=> '',
+                'phone'      => '',
+            ];
+
+        } else if (substr($roleName, -8) === 'Director') {
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('roles.name','like','President Director')
+                            ->first(); 
+        } 
+
+        // if (($salesUser && $salesUser->id === $pihak_kedua->id) || ($financeUser && $financeUser->id === $pihak_kedua->id)) {
+        //     $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+        //         ->join('role_user','role_user.user_id','=','users.nik')
+        //         ->join('roles','roles.id','=','role_user.role_id')
+        //         ->where('roles.name','like', '%President Director%')
+        //         ->whereNotNull('user_id')
+        //         ->where('status_karyawan','!=','dummy')
+        //         ->first();
+        // }        
+        // else if ($cek_role_pk->where('roles.name','like','%Manager%')->first()) {
+        //     $group = $cek_role_pk->first()->group;
+
+        //     $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+        //                 ->join('role_user','role_user.user_id','=','users.nik')
+        //                 ->join('roles','roles.id','=','role_user.role_id')
+        //                 ->where('group','like','%'.$group.'%')
+        //                 ->where('roles.name','like','VP%')
+        //                 ->first(); 
+        // } 
+        // else if ($vpUser && $vpUser->id === $pihak_kedua->id) {
+        //     $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+        //         ->join('role_user','role_user.user_id','=','users.nik')
+        //         ->join('roles','roles.id','=','role_user.role_id')
+        //         ->where('roles.name','like', '%Operations Director%')
+        //         ->whereNotNull('user_id')
+        //         ->where('status_karyawan','!=','dummy')
+        //         ->first();
+        // }
+        //else if (($cek_role_pk->where('roles.name','like','VP%')->first()) == $pihak_kedua) {
+        //     $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+        //                 ->join('role_user','role_user.user_id','=','users.nik')
+        //                 ->join('roles','roles.id','=','role_user.role_id')
+        //                 ->where('roles.name','like', '%Operations Director%')
+        //                 ->first();
+        //     dd($atasan_pk);
+        // }
+        else {
             $cek_role_pk = DB::table('tb_asset_management')
                         ->join('tb_asset_management_detail', 'tb_asset_management_detail.id_asset', '=', 'tb_asset_management.id')
                         ->select('tb_asset_management.id', 'roles.name', 'roles.group', 'users.name as name_pk', 'roles.mini_group', 'ttd')
                         ->join('users', 'users.nik', '=', 'tb_asset_management_detail.pic')
                         ->join('role_user', 'role_user.user_id', '=', 'users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
-                        ->where('tb_asset_management_detail.id_asset',$id_asset)
-                        ->where('tb_asset_management_detail.id',$id_detail_asset)
+                        ->where('tb_asset_management_detail.id_asset',$id_asset) //request->
+                        ->where('tb_asset_management_detail.id',$id_detail_asset) //request->
                         ->first();
-
-            $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
-                                    ->join('role_user','role_user.user_id','=','users.nik')
-                                    ->join('roles','roles.id','=','role_user.role_id')
-                                    ->where('roles.name','like','%Manager%')
-                                    ->where('roles.name','<>','Project Manager')
-                                    ->where('roles.mini_group','like','%'.$cek_role_pk->mini_group.'%')
-                                    ->first();
-
+            
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id');
 
-            if ($isManagerOnMiniGroup) {
-                $mini_group = $cek_role_pk->mini_group;
+            $mini_group = $cek_role_pk->mini_group;
+            if ($mini_group === 'Human Capital') {
                 $atasan_pk = $atasan_pk
-                        ->where('roles.name','like','%Manager%')
-                        ->where('mini_group','like','%'. $mini_group .'%')
-                        ->first();
-            }else{
-                $group = $cek_role_pk->group;
-                $atasan_pk =  $atasan_pk
-                        ->where('roles.name','like','VP%')
-                        ->where('group','like','%'. $group .'%')
+                        ->where('roles.name','like','VP Project Management')
                         ->first();
             }
-        }
+            else if ($mini_group == "" or $mini_group == null) {
+                $group = $cek_role_pk->group;
+                $atasan_pk =  $atasan_pk
+                        ->where('roles.name','like','%Manager%')
+                        ->where('roles.name','<>','Project Manager')
+                        ->where('group','like','%'. $group .'%')
+                        ->first();
+            } 
+            else {
+                $mini_group = $cek_role_pk->mini_group;
+                $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                                ->join('role_user','role_user.user_id','=','users.nik')
+                                ->join('roles','roles.id','=','role_user.role_id')
+                                ->where('roles.name','like','%Manager%')
+                                ->where('roles.name','<>','Project Manager')
+                                ->where('roles.mini_group','like','%'.$mini_group.'%')
+                                ->first();
+        
+                if ($isManagerOnMiniGroup) {
+                    $atasan_pk = $atasan_pk
+                            ->where('roles.name','like','%Manager%')
+                            ->where('roles.name','<>','Project Manager')
+                            ->where('roles.mini_group','like','%'.$mini_group.'%')
+                            ->first();
+                } else{
+                    $group = $cek_role_pk->group;
+                    $atasan_pk =  $atasan_pk
+                            ->where('roles.name','like','VP%')
+                            ->where('group','like','%'. $group .'%')
+                            ->first();
+                } 
+            }
+            
+            // $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+            //                     ->join('role_user','role_user.user_id','=','users.nik')
+            //                     ->join('roles','roles.id','=','role_user.role_id')
+            //                     ->where('roles.name','like','%Manager%')
+            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where(function($query) use ($mini_group) {
+            //                         $query->where('roles.mini_group','like','%'.$mini_group.'%')
+            //                               ->orWhere('roles.group','like','%'.$mini_group.'%');
+            //                     })
+            //                     ->first();
+            
+            // $atasan_pk = $atasan_pk
+            //                     ->where('roles.name','like','%Manager%')
+            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where(function($query) use ($mini_group) {
+            //                         $query->where('roles.mini_group','like','%'.$mini_group.'%')
+            //                             ->orWhere('roles.group','like','%'.$mini_group.'%');
+            //                     })
+            //                     ->first();
 
+            // if ($isManagerOnMiniGroup) {
+                // $atasan_pk = $atasan_pk
+                //         ->where('roles.name','like','%Manager%')
+                //         ->where('roles.name','<>','Project Manager')
+                //         ->where(function($query) use ($mini_group) {
+                //             $query->where('roles.group','like','%'.$mini_group.'%')
+                //                 ->orWhere('roles.mini_group','like','%'.$mini_group.'%');
+                //         })
+                //         ->first();
+                        // ->where('roles.name','like','%Manager%')
+                        // ->where('mini_group','like','%'. $mini_group .'%')
+                        // ->first();
+            // } else{
+            //     $group = $cek_role_pk->group;
+            //     $atasan_pk =  $atasan_pk
+            //             ->where('roles.name','like','VP%')
+            //             ->where('group','like','%'. $group .'%')
+            //             ->first();
+            // } 
+        }
         $installed_date = DB::table('tb_asset_management_detail')
                         ->select('installed_date')
-                        ->where('tb_asset_management_detail.id_asset',$id_asset)
-                        ->where('tb_asset_management_detail.id',$id_detail_asset)->first()->installed_date;
-
+                        ->where('tb_asset_management_detail.id_asset',$id_asset) //request->
+                        ->where('tb_asset_management_detail.id',$id_detail_asset)->first()->installed_date; //request->
+        
         $pdf = PDF::loadView('asset_management.berita_acara_pdf',compact('pihak_pertama','pihak_kedua','atasan_pk','atasan_pp','list_asset_request','installed_date'));
         $fileName = 'bast.pdf';
         $nameFileFix = str_replace(' ', '_', $fileName);
 
-        // return $pdf->stream($nameFileFix);
-        return $pdf->output();
+        // return $pdf->stream($nameFileFix); 
+        return $pdf->output(); 
 
     }
 
@@ -3056,6 +3358,389 @@ class AssetMgmtController extends Controller
         $storeDoc->document_location    = "Asset Management/".$data->id_asset.'/';
         $storeDoc->link_drive           = "https://drive.google.com/file/d/{$fileId}/view?usp=drivesdk";
         // $storeDoc->link_drive           = $this->googleDriveUploadCustom($fileName,$filePath,$parentID);
+        $storeDoc->save();
+    }
+    
+    public function getPdfBASTPengembalian($id_asset, $id_detail_asset)
+    {
+        $getIdAsset = DB::table('tb_asset_management_detail')
+                    ->where('id_asset',$id_asset) // request->
+                    ->where('pic','!=',null)
+                    ->orderBy('id','desc')
+                    ->first();
+        
+        $pihak_pertama = User::select('users.name','users.nik','roles.name as departement','phone','ttd','date_of_entry as entry_date')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('nik',Auth::User()->nik)
+                        ->first(); 
+
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group','roles.mini_group')
+                    ->where('user_id', Auth::User()->nik)
+                    ->first(); 
+
+        if (stripos($cek_role->name, 'Manager') !== false) {
+            $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('roles.group','Supply Chain, CPS & Asset Management')
+                        ->where('roles.name','like','VP%')
+                        ->first();
+        }else{
+            $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->where('roles.mini_group','Center Point & Asset Management SVC')
+                        ->where('roles.name','like','%Manager%')
+                        ->first(); 
+        }
+
+        $pihak_pertama->atasan = $atasan_pp->name;
+
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')
+                ->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        
+        $getLastId = DB::query()
+                    ->fromSub($getId, 'temp')
+                    ->groupBy('id_asset')
+                    ->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
+
+        $list_asset_request = DB::table($getLastId, 'temp2')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
+                    ->join('tb_asset_management', 'tb_asset_management.id', '=', 'tb_asset_management_detail.id_asset')
+                    ->select('tb_asset_management.id','category','serial_number',DB::raw('CONCAT(vendor, " - ",type_device) AS merk'), 'notes', DB::raw("(CASE WHEN (accessoris is null or accessoris = 'undefined') THEN '-' ELSE accessoris END) as accessoris"), 'spesifikasi')
+                    ->where('tb_asset_management.id',$id_asset) //request->
+                    ->get();
+
+        $cek_role_pk = DB::table('tb_asset_management_detail')
+                        ->join('users','users.nik','=','tb_asset_management_detail.pic')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id')
+                        ->select('tb_asset_management_detail.id','tb_asset_management_detail.id_asset','roles.name','roles.group','users.name as name_pk','roles.group','ttd','users.nik','users.date_of_entry as entry_date','users.phone','installed_date', 'users.id_territory')
+                        ->where('tb_asset_management_detail.id_asset',$id_asset) //request->
+                        ->where('tb_asset_management_detail.id',$getIdAsset->id); 
+        
+        $pihak_kedua = $cek_role_pk->first();
+        $roleName = $pihak_kedua->name;
+        $ppGroup = $pihak_kedua->group;
+        $territory_sales = $pihak_kedua->id_territory;
+
+        // if ($cek_role_pk->where('roles.name','like','%Manager%')->first()) {
+        //     $group = $cek_role_pk->first()->group;
+
+        //     $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+        //                 ->join('role_user','role_user.user_id','=','users.nik')
+        //                 ->join('roles','roles.id','=','role_user.role_id')
+        //                 ->where('group','like','%'.$group.'%')
+        //                 ->where('roles.name','like','VP%')
+        //                 ->first(); 
+
+        // }else if ($cek_role_pk->where('roles.name','like','VP%')->first()) {
+        //     $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+        //                 ->join('role_user','role_user.user_id','=','users.nik')
+        //                 ->join('roles','roles.id','=','role_user.role_id')
+        //                 ->where('roles.name','like','%Operations Director%')
+        //                 ->first();
+        // }
+        if (strpos($roleName, 'Sales Manager') !== false ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%President Director%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+        }
+        else if (strpos($roleName, 'Sales Staff') !== false ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%Sales Manager%')
+                ->where('id_territory','like','%'.$territory_sales.'%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+        }
+        else if (strpos($roleName, 'Finance & Accounting Manager') !== false ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%President Director%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+        }
+        else if (strpos($roleName, 'VP') === 0 ) {
+            $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.name','like', '%Operations Director%')
+                ->whereNotNull('user_id')
+                ->where('status_karyawan','!=','dummy')
+                ->first();
+
+        }
+        else if (strpos($roleName, 'Project Manager') !== false) {
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('group','like','%'.$ppGroup.'%')
+                            ->where('roles.name','like','%Project Management Manager%')
+                            ->first(); 
+        }
+        else if (strpos($roleName, 'Renumeration, Personalia & GS Manager') === 0) {
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('roles.name','like','VP Project Management')
+                            ->first(); 
+        }  
+        else if (substr($roleName, -7) === 'Manager') {
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('group','like','%'.$ppGroup.'%')
+                            ->where('roles.name','like','VP%')
+                            ->first(); 
+        } 
+        else if ($roleName === "President Director") {
+            $atasan_pk = (object) [
+                'name'       => '-',
+                'nik'        => '',
+                'departement'=> '',
+                'phone'      => '',
+            ];
+
+        } 
+        else if (substr($roleName, -8) === 'Director') {
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                            ->join('role_user','role_user.user_id','=','users.nik')
+                            ->join('roles','roles.id','=','role_user.role_id')
+                            ->where('roles.name','like','President Director')
+                            ->first(); 
+        } 
+        else {
+            $cek_role_pk = DB::table('tb_asset_management')
+                        ->join('tb_asset_management_detail', 'tb_asset_management_detail.id_asset', '=', 'tb_asset_management.id')
+                        ->select('tb_asset_management.id', 'roles.name', 'roles.group', 'users.name as name_pk', 'roles.mini_group', 'ttd')
+                        ->join('users', 'users.nik', '=', 'tb_asset_management_detail.pic')
+                        ->join('role_user', 'role_user.user_id', '=', 'users.nik')
+                        ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->where('tb_asset_management_detail.id_asset',$id_asset) //request->
+                        ->where('tb_asset_management_detail.id',$getIdAsset->id) 
+                        ->first();
+
+            $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                        ->join('role_user','role_user.user_id','=','users.nik')
+                        ->join('roles','roles.id','=','role_user.role_id');
+            
+            $mini_group = $cek_role_pk->mini_group;
+            if ($mini_group === 'Human Capital') {
+                $atasan_pk = $atasan_pk
+                        ->where('roles.name','like','VP Project Management')
+                        ->first();
+            }
+            else if ($mini_group == "" or $mini_group = null) {
+                $group = $cek_role_pk->group;
+                $atasan_pk =  $atasan_pk
+                        ->where('roles.name','like','%Manager%')
+                        ->where('roles.name','<>','Project Manager')
+                        ->where('group','like','%'. $group .'%')
+                        ->first();
+
+                // $mini_group = $cek_role_pk->group;
+                // $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                //                 ->join('role_user','role_user.user_id','=','users.nik')
+                //                 ->join('roles','roles.id','=','role_user.role_id')
+                //                 ->where('roles.name','like','%Manager%')
+                //                 ->where('roles.name','<>','Project Manager')
+                //                 ->where('roles.group','like','%'.$mini_group.'%')
+                //                 ->first();
+
+                // if ($isManagerOnMiniGroup) {
+                //     $atasan_pk = $atasan_pk
+                //             ->where('roles.name','like','%Manager%')
+                //             ->where('roles.name','<>','Project Manager')
+                //             ->where('roles.mini_group','like','%'.$mini_group.'%')
+                //             ->first();
+                // } else{
+                //     $group = $cek_role_pk->group;
+                //     $atasan_pk =  $atasan_pk
+                //             ->where('roles.name','like','VP%')
+                //             ->where('group','like','%'. $group .'%')
+                //             ->first();
+                // } 
+            } 
+            else {
+                $mini_group = $cek_role_pk->mini_group;
+                $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+                                ->join('role_user','role_user.user_id','=','users.nik')
+                                ->join('roles','roles.id','=','role_user.role_id')
+                                ->where('roles.name','like','%Manager%')
+                                ->where('roles.name','<>','Project Manager')
+                                ->where('roles.mini_group','like','%'.$mini_group.'%')
+                                ->first();
+        
+                if ($isManagerOnMiniGroup) {
+                    $atasan_pk = $atasan_pk
+                            ->where('roles.name','like','%Manager%')
+                            ->where('roles.name','<>','Project Manager')
+                            ->where('roles.mini_group','like','%'.$mini_group.'%')
+                            ->first();
+                } else{
+                    $group = $cek_role_pk->group;
+                    $atasan_pk =  $atasan_pk
+                            ->where('roles.name','like','VP%')
+                            ->where('group','like','%'. $group .'%')
+                            ->first();
+                } 
+            }
+            // else if (empty($mini_group)) {
+            //     $mini_group = $cek_role_pk->group;
+            // } 
+            
+            // $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+            //                     ->join('role_user','role_user.user_id','=','users.nik')
+            //                     ->join('roles','roles.id','=','role_user.role_id')
+            //                     ->where('roles.name','like','%Manager%')
+            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where(function($query) use ($mini_group) {
+            //                         $query->where('roles.group','like','%'.$mini_group.'%')
+            //                               ->orWhere('roles.mini_group','like','%'.$mini_group.'%');
+            //                     })
+            //                     ->first();
+            
+            // $atasan_pk = $atasan_pk
+            //                     ->where('roles.name','like','%Manager%')
+            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where(function($query) use ($mini_group) {
+            //                         $query->where('roles.group','like','%'.$mini_group.'%')
+            //                             ->orWhere('roles.mini_group','like','%'.$mini_group.'%');
+            //                     })
+            //                     ->first();
+
+
+            // $mini_group = $cek_role_pk->mini_group;
+            // if ($mini_group === 'Human Capital') {
+            //     $mini_group = 'Renumeration, Personalia & GS';
+            // }
+
+            // $isManagerOnMiniGroup = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+            //                         ->join('role_user','role_user.user_id','=','users.nik')
+            //                         ->join('roles','roles.id','=','role_user.role_id')
+            //                         ->where('roles.name','like','%Manager%')
+            //                         ->where('roles.name','<>','Project Manager')
+            //                         ->where('roles.mini_group','like','%'.$mini_group.'%')
+            //                         ->first();
+
+            // $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
+            //             ->join('role_user','role_user.user_id','=','users.nik')
+            //             ->join('roles','roles.id','=','role_user.role_id');
+
+            // if ($isManagerOnMiniGroup) {
+            //     $mini_group = $cek_role_pk->mini_group;
+            //     $atasan_pk = $atasan_pk
+            //             ->where('roles.name','like','%Manager%')
+            //             ->where('mini_group','like','%'. $mini_group .'%')
+            //             ->first();
+            // }else{
+            //     $group = $cek_role_pk->group;
+            //     $atasan_pk =  $atasan_pk
+            //             ->where('roles.name','like','VP%')
+            //             ->where('group','like','%'. $group .'%')
+            //             ->first();
+            // }
+        }
+
+        $installed_date = DB::table('tb_asset_management_detail')
+                        ->select('installed_date')
+                        ->where('tb_asset_management_detail.id_asset',$id_asset) //request->
+                        ->where('tb_asset_management_detail.id',$getIdAsset->id)->first()->installed_date; 
+
+        //Original data
+        $original_pp = clone $pihak_pertama; 
+        $original_pp_atasan = clone $atasan_pp; 
+        $original_pk = clone $pihak_kedua;
+        $original_pk_atasan = clone $atasan_pk;
+
+        //Swap pihak_kedua as pihak_pertama
+        $pihak_pertama->name = $original_pk->name_pk;
+        $pihak_pertama->nik = $original_pk->nik;
+        $pihak_pertama->departement = $original_pk->name;
+        $pihak_pertama->phone = $original_pk->phone;
+        $pihak_pertama->entry_date = $original_pk->entry_date;
+        $pihak_pertama->ttd = $original_pk->ttd;
+        $atasan_pp->name = $original_pk_atasan->name;
+
+        //pihak_pertama as pihak_kedua
+        $pihak_kedua->name_pk = $original_pp->name; 
+        $pihak_kedua->nik = $original_pp->nik;
+        $pihak_kedua->name = $original_pp->departement;
+        $pihak_kedua->phone = $original_pp->phone;
+        $pihak_kedua->ttd = $original_pp->ttd;             
+        $atasan_pk->name = $original_pp_atasan->name;
+
+        $pdf = PDF::loadView('asset_management.berita_pengembalian_pdf',compact('pihak_pertama','pihak_kedua','atasan_pk','atasan_pp','list_asset_request','installed_date'));
+        $fileName = 'bastpengembalian.pdf';
+        $nameFileFix = str_replace(' ', '_', $fileName);
+
+        return $pdf->output();
+        //return $pdf->stream($nameFileFix);
+    }
+
+    public function uploadPdfBASTPengembalian($id_asset,$filePath)
+    {
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $data = DB::table('tb_asset_management')
+                ->join('tb_asset_management_detail','tb_asset_management_detail.id_asset','=','tb_asset_management.id')
+                ->select('users.name as name_pk','tb_asset_management.category','parent_id_drive','tb_asset_management_detail.id','tb_asset_management.id_asset')
+                ->join('users','users.nik','=','tb_asset_management_detail.pic')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('tb_asset_management.id',$id_asset)
+                ->orderBy('tb_asset_management_detail.id','desc')
+                ->groupBy('tb_asset_management_detail.id',
+                    'tb_asset_management.id_asset',
+                    'category',
+                    'name_pk',
+                    'parent_id_drive')->first(); 
+
+        $fileName  = 'BAST_Pengembalian_'. $data->category . '_' . $data->name_pk . '.pdf';
+
+        if ($data->parent_id_drive == null) {
+            $parentID = $this->googleDriveMakeFolder($id_asset);
+        } else {
+            $parentID = [];
+            $parent_id = explode('"', $data->parent_id_drive)[1];
+            array_push($parentID,$parent_id);
+        }
+
+        $update_parent = AssetMgmt::where('id', $id_asset)->first();
+        $update_parent->parent_id_drive = $parentID;
+        $update_parent->save(); 
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($fileName);
+        $file->setParents($parentID);
+
+        $result = $service->files->create(
+            $file, 
+            array(
+                'data' => $filePath,
+                'mimeType' => 'application/pdf',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );
+        $fileId = $result->id;
+
+        $storeDoc                       = new AssetMgmtDocument();
+        $storeDoc->id_detail_asset      = $data->id;
+        $storeDoc->document_name        = "Berita Acara Pengembalian ".$data->id_asset;
+        $storeDoc->document_location    = "Asset Management/".$data->id_asset.'/';
+        $storeDoc->link_drive           = "https://drive.google.com/file/d/{$fileId}/view?usp=drivesdk";
         $storeDoc->save();
     }
 }

@@ -48,10 +48,11 @@ class AssetMgmtDetail extends Model
             ->select(
                 'tb_asset_management_dokumen.document_name as docBAST',
                 'tb_asset_management_dokumen.document_location as docLocBAST',
-                'tb_asset_management_dokumen.link_drive as driveBAST','tb_asset_management_dokumen.id'      
+                'tb_asset_management_dokumen.link_drive as driveBAST',
+                'tb_asset_management_dokumen.id',
             )
             ->where('id_detail_asset', $this->id)
-            ->first();
+            ->get();
 
         return $data;
     }
