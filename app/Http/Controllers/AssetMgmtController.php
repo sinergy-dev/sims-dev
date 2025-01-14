@@ -523,7 +523,6 @@ class AssetMgmtController extends Controller
         // } else {
         //     $store->category_peripheral = '-';
         // }
-        //$store->status = $request->status; 
 
         if ($request->pid == 'INTERNAL') {
             if ($request->pic != null || $request->pic != '') {
@@ -1391,6 +1390,7 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->maintenance_end = $request->maintenanceEnd;
 
+
         $updatePic = ($update->pic === null) ? "null" : $update->pic;
         $requestPic = ($request->inputPic === null) ? "null" : $request->inputPic;
         
@@ -1415,7 +1415,8 @@ class AssetMgmtController extends Controller
                             ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$update->pic);
 
             $pic_new = User::select('users.name')->join('role_user','role_user.user_id','=','users.nik')
-                            ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$request->inputPic);
+                                ->join('roles','roles.id','=','role_user.role_id')->where('users.nik',$request->inputPic);
+
 
             $pic_old_data = $pic_old->first(); 
             $pic_new_data = $pic_new->first();
@@ -1461,6 +1462,19 @@ class AssetMgmtController extends Controller
             $storeLog->activity = 'Update Detail Asset with Client ' .$update->client. ' to ' . $request->client;
             $storeLog->save();
         }
+
+        $updateAssetMgmt = AssetMgmt::where('id',$request->id_asset)->first();
+
+        if (isset($request->inputPic)) {
+            $updateAssetMgmt->status = 'Installed';
+            $updateAssetMgmt->update();
+        }else{
+            if ($updateAssetMgmt->status != 'Rent' || $updateAssetMgmt != 'Unavailable') {
+                $updateAssetMgmt->status = 'Available';
+                $updateAssetMgmt->update();
+            }
+        }
+
         $storeDetail->client = $request->client;
         $storeDetail->pr     = $update->pr;
         $storeDetail->date_add = Carbon::now()->toDateTimeString();
@@ -1503,16 +1517,8 @@ class AssetMgmtController extends Controller
                     ->join('role_user','role_user.user_id','=','users.nik')
                     ->where('nik',$request->inputPic)->first();
 
-            $data = [
-                [   
-                    'name'              => $to->name,
-                    'id_asset'          => $assetMgmt->id_asset, 
-                    'category'          => $assetMgmt->category,
-                    'type_device'       => $assetMgmt->vendor . " - " . $assetMgmt->type_device . " - " . $assetMgmt->serial_number,
-                    'spesifikasi'       => $assetMgmt->spesifikasi,
-                    'link_drive'        => AssetMgmtDocument::where('id_detail_asset',$storeDetail->id)->first()->link_drive,
-                ]
-            ];
+
+                $this->uploadPdfBAST($request->id_asset,$pdfPath);
 
             Mail::to($to->email)->send(new MailGenerateBAST($data,'[SIMS-APP] Generate BAST')); 
         } else {
@@ -1522,6 +1528,7 @@ class AssetMgmtController extends Controller
                 $storeDokumen->id_detail_asset = $storeDetail->id;
                 $storeDokumen->save();
             } 
+
         }
 
         // BAST that is undefined
@@ -3084,6 +3091,7 @@ class AssetMgmtController extends Controller
         $ppGroup = $pihak_kedua->group;
         $territory_sales = $pihak_kedua->id_territory;
 
+
         if (strpos($roleName, 'Sales Manager') !== false ) {
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
@@ -3159,6 +3167,7 @@ class AssetMgmtController extends Controller
                             ->where('roles.name','like','President Director')
                             ->first(); 
         } 
+
 
         // if (($salesUser && $salesUser->id === $pihak_kedua->id) || ($financeUser && $financeUser->id === $pihak_kedua->id)) {
         //     $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
@@ -3372,6 +3381,7 @@ class AssetMgmtController extends Controller
         $pihak_pertama = User::select('users.name','users.nik','roles.name as departement','phone','ttd','date_of_entry as entry_date')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
+
                         ->where('nik',Auth::User()->nik)
                         ->first(); 
 
@@ -3520,6 +3530,7 @@ class AssetMgmtController extends Controller
                             ->first(); 
         } 
         else {
+
             $cek_role_pk = DB::table('tb_asset_management')
                         ->join('tb_asset_management_detail', 'tb_asset_management_detail.id_asset', '=', 'tb_asset_management.id')
                         ->select('tb_asset_management.id', 'roles.name', 'roles.group', 'users.name as name_pk', 'roles.mini_group', 'ttd')
@@ -3532,10 +3543,12 @@ class AssetMgmtController extends Controller
 
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                         ->join('role_user','role_user.user_id','=','users.nik')
+
                         ->join('roles','roles.id','=','role_user.role_id');
             
             $mini_group = $cek_role_pk->mini_group;
             if ($mini_group === 'Human Capital') {
+
                 $atasan_pk = $atasan_pk
                         ->where('roles.name','like','VP Project Management')
                         ->first();
