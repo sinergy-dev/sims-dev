@@ -2917,8 +2917,6 @@
               osNull = "";
               dataForm.append('operatingSystem', osNull);
             }
-            
-            console.log(dataForm);
 
             // if its vehicle remove Nomor Polisi in spesifikasi
             if ($("#selectCategory").val() === "VHC") {
