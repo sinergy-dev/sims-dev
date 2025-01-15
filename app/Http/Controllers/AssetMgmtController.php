@@ -317,7 +317,7 @@ class AssetMgmtController extends Controller
 
     public function getTypeDevice(Request $request)
     {
-        $data = DB::table('tb_asset_management')->select('type_device as id','type_device as text')->where('type_device','!=',null)->where('type_device','like','%'.request('q').'%')->distinct()->get();
+        $data = DB::table('tb_asset_management')->select('type_device as id','type_device as text')->where('type_device','!=',null)->whereRaw('LOWER(type_device) LIKE ?', ['%' . strtolower(request('q')) . '%'])->distinct()->get();
 
         return $data;
     }
@@ -523,9 +523,8 @@ class AssetMgmtController extends Controller
         // } else {
         //     $store->category_peripheral = '-';
         // }
-
         if ($request->pid == 'INTERNAL') {
-            if ($request->pic != null || $request->pic != '') {
+            if ($request->pic != null && $request->pic != '' && $request->pic != "null") {
                 $store->status = 'Installed';
             }else{
                 $store->status = $request->status;
@@ -2618,7 +2617,7 @@ class AssetMgmtController extends Controller
 
     public function getCategory(Request $request)
     {
-        $data = DB::table('tb_asset_management_category')->select('id_category as id','name as text')->where('name','like','%'.request('q').'%')->distinct()->get();
+        $data = DB::table('tb_asset_management_category')->select('id_category as id','name as text')->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower(request('q')) . '%'])->distinct()->get();
 
         return $data;
     }
