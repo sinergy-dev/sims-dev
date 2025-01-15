@@ -2918,13 +2918,13 @@
               const match = pattern.exec(spesifikasi);
 
               if (match) {
-                const osVersion = match[1].trim();
-                dataForm.append("operatingSystem", osVersion);
+                const osValue = match[1].trim();
               } 
             } else {
-              osNull = "";
-              dataForm.append('operatingSystem', osNull);
+              osValue = "";
             }
+
+            dataForm.append('operatingSystem', osValue);
 
             // if its vehicle remove Nomor Polisi in spesifikasi
             if ($("#selectCategory").val() === "VHC") {
