@@ -2905,6 +2905,7 @@
         }).then((result) => {
           if (result.value) {
             var dataForm = new FormData();
+            
             if ($("#selectCategory").val() === "COM") {
               let spesifikasi = collectSpesifikasiValues().replaceAll("<br>", "\n");
               const pattern = /^\s*OS\s*Version\s*:\s*(.*)$/gim;
@@ -2912,18 +2913,11 @@
 
               if (match) {
                 const osVersion = match[1].trim();
-
                 dataForm.append("operatingSystem", osVersion);
-
-                console.log("Extracted OS Version:", osVersion);
-                console.log(spesifikasi);
-              } else {
-                dataForm.append("operatingSystem", "");
-              }
-            }
-            else {
-              var osValue = "";
-              dataForm.append('operatingSystem', osValue);
+              } 
+            } else {
+              osNull = "";
+              dataForm.append('operatingSystem', osNull);
             }
 
             // if its vehicle remove Nomor Polisi in spesifikasi
