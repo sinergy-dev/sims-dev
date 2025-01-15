@@ -2077,14 +2077,20 @@
           } else if ($(this).find('select').length > 0) {
               value = $(this).find('select').val().trim();
           }
-        }
 
-        if (value) {
-            spesifikasiValues.push(label + ' : ' + value + spanText);
-        }
-    });
-    var concatenatedValues = spesifikasiValues.join('<br>');
-    return concatenatedValues;
+          if ($(this).find('.input-group-addon').length > 0) {
+            var span = $(this).find('span').not('.help-block');
+            if (span.length > 0) {
+                spanText = ' ' + span.text().trim();
+            }
+          }
+
+          if (value) {
+              spesifikasiValues.push(label + ' : ' + value + spanText);
+          }
+      });
+      var concatenatedValues = spesifikasiValues.join('<br>');
+      return concatenatedValues;
     }
   
     $("#selectStatus").select2({
