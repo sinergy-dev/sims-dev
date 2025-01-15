@@ -2083,7 +2083,7 @@
             spesifikasiValues.push(label + ' : ' + value + spanText);
         }
     });
-    var tenatedValues = spesifikasiValues.join('<br>');
+    var concatenatedValues = spesifikasiValues.join('<br>');
     return concatenatedValues;
     }
   
@@ -2906,10 +2906,24 @@
           if (result.value) {
             var dataForm = new FormData();
             if ($("#selectCategory").val() === "COM") {
-              var osValue = $("#inputSpesifikasi_OS\\ Version").val(); 
+              let spesifikasi = collectSpesifikasiValues().replaceAll("<br>", "\n");
+              const pattern = /^\s*OS\s*Version\s*:\s*(.*)$/gim;
+              const match = pattern.exec(spesifikasi);
+
+              if (match) {
+                const osVersion = match[1].trim();
+
+                dataForm.append("operatingSystem", osVersion);
+
+                console.log("Extracted OS Version:", osVersion);
+                console.log(spesifikasi);
+              } else {
+                dataForm.append("operatingSystem", "");
+              }
             }
             else {
-              var osValue = ""
+              var osValue = "";
+              dataForm.append('operatingSystem', osValue);
             }
 
             // if its vehicle remove Nomor Polisi in spesifikasi
@@ -2940,7 +2954,6 @@
             dataForm.append('secondLevelSupport',$("#selectLevelSupport").val())
 
 
-            dataForm.append('operatingSystem', osValue);
             dataForm.append('versionOs',$("#inputVersion").val())
             dataForm.append('installedDate',moment(($("#inputInstalledDate").val()),"DD/MM/YYYY").format("YYYY-MM-DD"))
             dataForm.append('license',$("#inputLicense").val())
