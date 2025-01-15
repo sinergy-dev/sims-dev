@@ -2919,12 +2919,9 @@
 
               if (match) {
                 const osValue = match[1].trim();
+                dataForm.append('operatingSystem', osValue);
               } 
-            } else {
-              osValue = "";
-            }
-
-            dataForm.append('operatingSystem', osValue);
+            } 
 
             // if its vehicle remove Nomor Polisi in spesifikasi
             if ($("#selectCategory").val() === "VHC") {
