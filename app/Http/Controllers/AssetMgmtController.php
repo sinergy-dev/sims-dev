@@ -1400,10 +1400,10 @@ class AssetMgmtController extends Controller
                                     ->orderBy('id','desc')->first();
 
             if ($checkBASTPengembalian == null && $update->pic !== "null") {
-                $storeDetailAvailable = $update->replicate();
-                $storeDetailAvailable->installed_date = null;
-                $storeDetailAvailable->pic = null;
-                $storeDetailAvailable->save();   
+                // $storeDetailAvailable = $update->replicate();
+                // $storeDetailAvailable->installed_date = null;
+                // $storeDetailAvailable->pic = null;
+                // $storeDetailAvailable->save();   
 
                 $pdfPathPengembalian = $this->getPdfBASTPengembalian($update->id_asset, $update->id);
                 $this->uploadPdfBASTPengembalian($update->id_asset, $pdfPathPengembalian);
