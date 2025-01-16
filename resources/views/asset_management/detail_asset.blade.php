@@ -712,7 +712,7 @@
                   const docBAST = doc.docBAST;
                   const driveBAST = doc.driveBAST;
                   
-                  if (docBAST && driveBAST) {
+                  if (docBAST && driveBAST && !(docBAST.includes("Pengembalian"))) {
                     return `<a href="${driveBAST}" target="_blank">
                               <i class="fa fa-link"></i> ${docBAST}
                             </a>`;
