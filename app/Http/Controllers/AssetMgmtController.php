@@ -767,10 +767,10 @@ class AssetMgmtController extends Controller
         $currentYear = date('Y');       
         $lastYear    = $currentYear - 1;
 
-        $data = DB::table('tb_pr')->select('no_pr as id','no_pr as text')
+        $data = DB::table('tb_pr')
+            ->select('no_pr as id','no_pr as text')
             ->where(function ($query) use ($currentYear, $lastYear) {
-                $query->whereYear('date', date('Y'))
-                      ->orWhereYear('date', $currentYear)
+                $query->whereYear('date', $currentYear)
                       ->orWhereYear('date', $lastYear);
             })
             ->where('status','Done')
