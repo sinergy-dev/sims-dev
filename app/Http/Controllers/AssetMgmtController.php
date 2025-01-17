@@ -766,8 +766,8 @@ class AssetMgmtController extends Controller
         $data = DB::table('tb_pr')->select('no_pr as id','no_pr as text')
             ->where(function ($query) {
                 $query->whereYear('date', date('Y'))
-                      ->orWhereYear('date', '2023')
-                      ->orWhereYear('date', '2022');
+                      ->orWhereYear('date', '2025')
+                      ->orWhereYear('date', '2024');
             })
             ->where('status','Done')
             ->where('no_pr','like','%'.request('q').'%')->orderby('created_at','desc')
