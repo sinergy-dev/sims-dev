@@ -764,14 +764,18 @@ class AssetMgmtController extends Controller
 
     public function getPrByYear(Request $request)
     {
+        $currentYear = date('Y');       
+        $lastYear    = $currentYear - 1;
+
         $data = DB::table('tb_pr')->select('no_pr as id','no_pr as text')
-            ->where(function ($query) {
+            ->where(function ($query) use ($currentYear, $lastYear) {
                 $query->whereYear('date', date('Y'))
-                      ->orWhereYear('date', '2025')
-                      ->orWhereYear('date', '2024');
+                      ->orWhereYear('date', $currentYear)
+                      ->orWhereYear('date', $lastYear);
             })
             ->where('status','Done')
-            ->where('no_pr','like','%'.request('q').'%')->orderby('created_at','desc')
+            ->where('no_pr','like','%'.request('q').'%')
+            ->orderby('created_at','desc')
             ->get();
 
         return $data;
