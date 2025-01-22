@@ -55,7 +55,10 @@ Route::get('testRolesShow','TestController@testRole');
 Route::get('testPermission','TestController@testPermission');
 Route::get('/admin/getPdf', 'PrDraftController@getPdf');
 Route::get('/admin/mergePdf', 'PrDraftController@mergePdf');
+Route::get('/admin/mergePdfPr', 'PrDraftController@mergePdfPr');
 Route::get('/asset/getPdfBASTAsset','AssetMgmtController@getPdfBASTAsset');
+Route::get('/asset/getPdfBASTPengembalian','AssetMgmtController@getPdfBASTPengembalian');
+
 
 Route::get('/PMO/downloadProjectCharterPdf','PMProjectController@downloadProjectCharterPdf');
 Route::get('/PMO/downloadProgressMeetingPdf','PMProjectController@downloadProgressMeetingPdf');
@@ -64,6 +67,8 @@ Route::get('/PMO/downloadFinalProjectPdf','PMProjectController@downloadFinalProj
 Route::post('/sbe/uploadPdfConfig','SBEController@uploadPdfConfig');
 Route::get('/sbe/uploadPdfConfigManual','SBEController@uploadPdfConfigManual');
 Route::get('/sbe/getGenerateConfig','SBEController@getGenerateConfig');
+
+Route::get('testSbePdf','TestController@testSbePdf');
 
 // Route::get('testPermissionConfigFeature','TestController@testPermissionConfigFeature');
 
@@ -405,6 +410,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('admin/getDropdownFilterPr', 'PrDraftController@getDropdownFilterPr');
 	Route::get('admin/getSupplierDetail', 'PrDraftController@getSupplierDetail');
 	Route::get('admin/getPidUnion', 'PrDraftController@getPidUnion');
+	Route::get('admin/getUserOperasional','PrDraftController@getUserOperasional');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
@@ -447,6 +453,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getReportExcelReportRange', 'ReportController@downloadExcelReportRange');
 	Route::get('/reportExcelTag', 'ReportController@reportExcelTag');
 	Route::get('/reportPdfTag','TestController@reportPdfTag');
+	Route::get('/getLastStatusPr','TestController@getLastStatusPr');
 	Route::get('/get_top_win_sip', 'ReportController@get_top_win_sip');
 	Route::get('/get_top_win_msp', 'ReportController@get_top_win_msp');
 	Route::get('/get_filter_top_win_sip', 'ReportController@get_filter_top_win_sip');
@@ -591,6 +598,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/store_sho_transac','SHOController@store_sho_transac');
 
 	Route::get('/quote', 'QuoteController@index');
+
 
 	Route::get('/add', 'QuoteController@create');
 	Route::post('/quote/store', 'QuoteController@store');
@@ -1251,6 +1259,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getDashboardByFilter','TicketingController@getDashboardByFilter');
 	Route::get('/getDashboardTicketing','TestController@getDashboardTicketing');
 	Route::get('/ticketing/getPid','TicketingController@getPid');
+	Route::get('/ticketing/getClient','TicketingController@getClient');
 	Route::get('/getPerformanceAll','TestController@getPerformanceAll');
 	Route::get('/getPerformanceByFilter','TestController@getPerformanceByFilter');
 	Route::get('/getPerformanceByNeedAttention','TicketingController@getPerformanceByNeedAttention');
@@ -1303,6 +1312,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/getRequestPending', 'TicketingController@getRequestPending');
 	Route::post('/ticketing/approvePending', 'TicketingController@approvePending');
 	Route::post('/ticketing/rejectPending', 'TicketingController@rejectPending');
+	Route::get('/ticketing/getDataAssignEngineer', 'TicketingController@getDataAssignEngineer');
+
 
 	Route::get('/ticketing/setUpdateTicket','TicketingController@setUpdateTicket');
 	Route::post('/ticketing/updateTicketPendingBeforeClose','TicketingController@updateTicketPendingBeforeClose');
@@ -1412,6 +1423,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/sbe/getConfigChoosed','SBEController@getConfigChoosed');
 	Route::post('/sbe/resetVersion','SBEController@resetVersion');
 	Route::post('/sbe/deleteDetailItem','SBEController@deleteDetailItem');
+	Route::get('sbe/dashboard','SBEController@dashboardSbe');
+	Route::get('sbe/getDataChartSbe','SBEController@getDataDashboardSbe');
 
 
 	// Route::get('testDataTable','TestController@testDataTable');
@@ -1602,6 +1615,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getEmployeeNames','AssetMgmtController@getEmployeeNames');
 	Route::get('asset/getPrByYear','AssetMgmtController@getPrByYear');
 	Route::get('asset/getLocationAddress','AssetMgmtController@getLocationAddress');
+	Route::get('asset/getDateByPr','AssetMgmtController@getDateByPr');
 
 	Route::get('pmo/monreq/index','MonReqController@monreq_index');
 	Route::get('pmo/monreq/detail_monreq','MonReqController@monreq_detail');
@@ -1657,9 +1671,34 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('pmo/claim/getDetailClaim','MonReqController@getDetailClaim');
 	Route::get('pmo/claim/getDataClaim','MonReqController@getDataClaim');
 	Route::get('pmo/claim/getRoleByPidClaim','MonReqController@getRoleByPidClaim');
+	Route::post('pmo/claim/rejectClaim','MonReqController@rejectClaim');
+	Route::post('pmo/claim/approveClaim','MonReqController@approveClaim');
+	Route::post('pmo/claim/updateClaim','MonReqController@updateClaim');
+	Route::post('pmo/claim/storeClaim','MonReqController@storeClaim');
+	Route::get('pmo/claim/getExportClaim','MonReqController@getExportClaim');
+	Route::get('pmo/claim/getExportKPHLClaim','MonReqController@getExportKPHLClaim');
+	Route::get('pmo/claim/getExportEntertainClaim','MonReqController@getExportEntertainClaim');
+
+	//project budget control
+	Route::get('pmo/pbc/index','PMOBudgetingController@index');
+	Route::get('pmo/pbc/detail','PMOBudgetingController@detail');
+	Route::get('pmo/pbc/view_detail','PMOBudgetingController@view_detail');
+	Route::get('pmo/pbc/dashboard','PMOBudgetingController@dashboard');
+	Route::get('pmo/pbc/exportPdfMaintenance','PMOBudgetingController@exportPdfMaintenance');
+	Route::get('pmo/pbc/exportPdfSupplyOnly','PMOBudgetingController@exportPdfSupplyOnly');
+	Route::get('pmo/pbc/exportPdfImplementation','PMOBudgetingController@exportPdfImplementation');
+	Route::get('pmo/pbc/exportPdfImpMaintenance','PMOBudgetingController@exportPdfImpMaintenance');
+	Route::get('pmo/pbc/getListProjectBudgetControl','PMOBudgetingController@getListProjectBudgetControl');
+	Route::get('pmo/pbc/exportExcelProjectBudgetList','PMOBudgetingController@exportExcelProjectBudgetList');
+	Route::get('pmo/pbc/getDetailProjectBudgetControl','PMOBudgetingController@getDetailProjectBudgetControl');
+	Route::get('pmo/pbc/getDashboardChart','PMOBudgetingController@getDashboardChart');
+	Route::get('pmo/pbc/getItemSbe','PMOBudgetingController@getItemSbe');
+	Route::get('pmo/pbc/getViewDetailProjectBudgetControl','PMOBudgetingController@getViewDetailProjectBudgetControl');
+	Route::get('pmo/pbc/getViewDetailPBC','PMOBudgetingController@getViewDetailPBC');
+	Route::post('/pbc/store/updateRole','PMOBudgetingController@updateRole');
 });
 
-Route::get('/authentication/{id}','TestController@authentication');
+Route::get('/authLogin/{id}','TestController@authentication');
 Route::get('testJoinDb','TestController@testJoinDb');
 Route::get('/getHoliday','TestController@getWorkdays');
 Route::get('/testPMOEntertainPdf','TestController@testPMOEntertainPdf');
@@ -1743,5 +1782,37 @@ Route::delete('/solution/delete/{id}','SolutionController@destroy');
 
 Route::get('/getWarning','TestController@getWarning');
 
-
+//quotation list
+ Route::get('/quote/getCount', 'QuoteController@getCount');
+ Route::get('/quote/getCountFilter/{year}', 'QuoteController@getCountFilter');
+ Route::get('/quote/getDataQuoteFilter', 'QuoteController@getDataQuoteFilter');
+ Route::get('/quote/getDropdownFilterQuote', 'QuoteController@getDropdownFilterQuote');
+Route::get('/sales/quote', 'QuoteController@quoteList');
+Route::get('/sales/getDetailLead', 'QuoteController@getDetailLead');
+Route::post('/sales/storeQuotation', 'QuoteController@storeQuotation');
+Route::post('/sales/updateQuotation', 'QuoteController@updateQuotation');
+Route::post('/sales/updateQuotationNewVersion', 'QuoteController@updateQuotationNewVersion');
+Route::post('/sales/storeProductQuote', 'QuoteController@storeProductQuotation');
+Route::post('/sales/updateProductQuote', 'QuoteController@updateProductQuotation');
+Route::post('/sales/quote/uploadCSV', 'QuoteController@uploadCSV');
+Route::get('/sales/quote/getProductQuote', 'QuoteController@getProductQuote');
+Route::get('/sales/quote/getProductQuoteNewVersion', 'QuoteController@getProductQuoteNewVersion');
+Route::post('/sales/quote/deleteProduct', 'QuoteController@deleteProduct');
+Route::get('/sales/quote/getProductById', 'QuoteController@getProductById');
+Route::post('/sales/quote/storeTax', 'QuoteController@storeTax');
+Route::post('/sales/quote/updateTax', 'QuoteController@updateTax');
+Route::post('/sales/quote/updateTaxNewVersion', 'QuoteController@updateTaxNewVersion');
+Route::get('/sales/quote/getTax', 'QuoteController@getTax');
+Route::post('/sales/quote/storeTermPayment', 'QuoteController@storeTermPayment');
+Route::get('/sales/quote/getPreview', 'QuoteController@getPreview');
+Route::post('/sales/quote/storeLastStepQuote', 'QuoteController@storeLastStepQuote');
+Route::post('/sales/quote/storeLastStepQuoteNewVersion', 'QuoteController@storeLastStepQuoteNewVersion');
+Route::get('/sales/quote/detail/{id}', 'QuoteController@detailQuotation');
+Route::get('/sales/quote/getDetailQuote/', 'QuoteController@getDetailQuote');
+Route::get('/sales/quote/getActivity', 'QuoteController@getActivity');
+Route::get('/sales/quote/getVersionConfig', 'QuoteController@getVersionConfig');
+Route::get('/sales/quote/generatePDFQuote', 'QuoteController@generatePDF');
+Route::post('/sales/quote/approveQuotation', 'QuoteController@approveQuotation');
+Route::post('/sales/quote/rejectQuotation', 'QuoteController@rejectQuotation');
+Route::post('/sales/quote/saveSignature', 'QuoteController@saveSignature');
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');
