@@ -1324,10 +1324,19 @@ class SalesLeadController extends Controller
         $amount = str_replace('.', '', $request['amount_edit']);
 
         $tambah_log = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$lead_id)->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $tambah_log->lead_id = $lead_id;
         $tambah_log->nik = Auth::User()->nik;
         $tambah_log->status = 'Update Lead with Amount ';
         $tambah_log->submit_price  = $amount;
+        $tambah_log->result = $resultLead;
         $tambah_log->save();
 
         if (isset($request->id)) {
@@ -1339,8 +1348,17 @@ class SalesLeadController extends Controller
             if(isset($name_tagging)){
                 foreach($name_tagging as $data){
                     $add_changelog = new SalesChangeLog();
+                    $resultLead = Sales::where('lead_id',$lead_id)->first()->result;
+                    if ($resultLead == 'OPEN') {
+                        $resultLead = 'INITIAL';
+                    } elseif ($resultLead == '') {
+                        $resultLead = 'OPEN';
+                    } else {
+                        $resultLead;
+                    }
                     $add_changelog->lead_id = $lead_id;
                     $add_changelog->nik = Auth::User()->nik;
+                    $add_changelog->result = $resultLead;
                     $add_changelog->status = 'Delete Tagging Product ' .  $data['name_product'] . ', Technology ' .  $data['name_tech'] . ', with Price ' . str_replace('.', '', $data['price']);
                     $add_changelog->save();
                 }    
@@ -1363,7 +1381,16 @@ class SalesLeadController extends Controller
                 $store->save(); 
 
                 $add_changelog = new SalesChangeLog();
+                $resultLead = Sales::where('lead_id',$lead_id)->first()->result;
+                if ($resultLead == 'OPEN') {
+                    $resultLead = 'INITIAL';
+                } elseif ($resultLead == '') {
+                    $resultLead = 'OPEN';
+                } else {
+                    $resultLead;
+                }
                 $add_changelog->lead_id = $lead_id;
+                $add_changelog->result = $resultLead;
                 $add_changelog->nik = Auth::User()->nik;
                 $add_changelog->status = 'Add Tagging Product ' .  $value['productTagText'] . ', Technology ' .  $value['technologyTagText'] . ', with Price ' . str_replace('.', '', $value['price']);
                 $add_changelog->save();
@@ -1485,7 +1512,14 @@ class SalesLeadController extends Controller
     {
         $change_log = SalesChangeLog::join('sales_lead_register', 'sales_change_log.lead_id', '=', 'sales_lead_register.lead_id')
                         ->join('users', 'sales_change_log.nik', '=', 'users.nik')
-                        ->select('sales_change_log.created_at', 'sales_lead_register.opp_name', 'sales_change_log.status', 'users.name', 'sales_change_log.submit_price', 'sales_change_log.deal_price', 'sales_change_log.progress_date')
+                        ->selectRaw("DATE_FORMAT(sales_change_log.created_at, '%Y-%m-%d %H:%i:%s') as created_at")
+                        ->addSelect('sales_lead_register.opp_name',
+                                    'sales_change_log.status', 
+                                    'users.name', 
+                                    'sales_change_log.submit_price', 
+                                    'sales_change_log.deal_price', 
+                                    'sales_change_log.progress_date', 
+                                    'sales_change_log.result')
                         ->where('sales_change_log.lead_id',$request->lead_id)
                         ->orderBy('created_at', 'desc')
                         ->get();
@@ -1587,11 +1621,11 @@ class SalesLeadController extends Controller
         $getTa = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik_ta')->selectRaw('`users`.`name` AS `name_ta`, `sales_solution_design`.`nik_ta` AS `nik_ta`')->selectRaw('lead_id')->distinct();
 
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
-                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
+                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'),DB::raw('GROUP_CONCAT(`tb_product_tag`.`name_product`) as `name_product`'))
                         ->groupBy('lead_id');
 
         $getListTechTag = DB::table('tb_technology_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
-                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech_tag`'))
+                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech_tag`'),DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
                         ->groupBy('lead_id');
 
         $leads = DB::table('sales_lead_register')
@@ -1630,7 +1664,7 @@ class SalesLeadController extends Controller
                     'tech_tag.id_tech_tag',
                     DB::raw("(CASE WHEN (nik_ta is null) THEN '-' ELSE nik_ta END) as nik_ta"),
                     DB::raw("(CASE WHEN (name_ta is null) THEN '-' ELSE name_ta END) as name_ta"),
-                    DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif", 'id_product_tag', 'id_tech')
+                    DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif", 'id_product_tag', 'id_tech','name_product','name_tech')
                 )
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result', '!=', 'hmm')
@@ -1784,12 +1818,49 @@ class SalesLeadController extends Controller
 
     public function add_changelog_progress(Request $request) 
     {
+        $resultLead = Sales::where('lead_id',$request['changelog_lead_id'])->first()->result;
+        $getResultLog = SalesChangeLog::where('lead_id',$request->changelog_lead_id)->orderby('id','desc')->first()->result; 
+
+        if ($resultLead == 'HOLD') {
+            $latestLogs = SalesChangeLog::where('lead_id', $request['changelog_lead_id'])
+                ->orderBy('created_at', 'desc')
+                ->limit(2)
+                ->get();
+
+            if ($latestLogs->count() > 1) {
+                $logIndex1 = $latestLogs[1];
+                $id = $logIndex1->id;
+                $status = $logIndex1->status;
+                $latestResultLog = $logIndex1->result;
+            }
+
+            $update = Sales::where('lead_id', $request['changelog_lead_id'])->first();
+            if ($update) {
+                if ($latestResultLog == 'OPEN') {
+                    $update->result = '';
+                } elseif ($latestResultLog == 'INITIAL') {
+                    $update->result = 'OPEN';
+                } else {
+                    $update->result = $latestResultLog;
+                }
+                $update->save();
+            }
+        }
 
         $tambah = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request['changelog_lead_id'])->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead = $resultLead;
+        }
         $tambah->lead_id = $request['changelog_lead_id'];
         $tambah->nik = Auth::User()->nik;
         $tambah->status = $request['changelog_progress'];
         $tambah->progress_date = $request['changelog_date'];
+        $tambah->result = $resultLead;
         $tambah->deal_price = null;
         $tambah->submit_price = null;
         $tambah->save();
@@ -1801,7 +1872,6 @@ class SalesLeadController extends Controller
     public function updateTechnologyAlliance(Request $request)
     {
         $data = solution_design::where('lead_id',$request->lead_id)->get();
-        // return $count = $data->count();
         foreach ($data as $value) {
             $update = solution_design::where('id_sd',$value->id_sd)->first();
             $update->nik_ta = $request->nik_ta;
@@ -1842,8 +1912,17 @@ class SalesLeadController extends Controller
             ])));
 
             $tambah_log = new SalesChangeLog();
+            $resultLead = Sales::where('lead_id',$request->lead_id)->first()->result;
+            if ($resultLead == 'OPEN') {
+                $resultLead = 'INITIAL';
+            } elseif ($resultLead == '') {
+                $resultLead = 'OPEN';
+            } else {
+                $resultLead;
+            }
             $tambah_log->lead_id = $request['lead_id'];
             $tambah_log->nik = Auth::User()->nik;
+            $tambah_log->result = $resultLead;
             $tambah_log->status = 'Cancellation contribute '. "(" .$kirim->name.")";
             $tambah_log->save();
         }
@@ -1878,6 +1957,7 @@ class SalesLeadController extends Controller
             $tambah->deal_price = $request['deal_price'];
         }
         $tambah->submit_price = str_replace('.', '', $request['submit_price']);
+        $tambah->result = 'TP';
         $tambah->save();
     }
 
@@ -1971,6 +2051,7 @@ class SalesLeadController extends Controller
             foreach($name_tagging as $data){
                 $add_changelog = new SalesChangeLog();
                 $add_changelog->lead_id = $request->lead_id;
+                $add_changelog->result = 'SD';
                 $add_changelog->nik = Auth::User()->nik;
                 $add_changelog->status = 'Delete Tagging Product ' .  $data['name_product'] . ', Technology ' .  $data['name_tech'] . ', with Price ' . str_replace('.', '', $data['price']);
                 $add_changelog->save();
@@ -1995,6 +2076,7 @@ class SalesLeadController extends Controller
 
                     $add_changelog = new SalesChangeLog();
                     $add_changelog->lead_id = $request->lead_id;
+                    $add_changelog->result = 'SD';
                     $add_changelog->nik = Auth::User()->nik;
                     $add_changelog->status = 'Add Tagging Product ' .  $value['tag_product']['productTagText'] . ', Technology ' .  $value['tag_product']['techTagText'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
                     $add_changelog->save();
@@ -2012,6 +2094,7 @@ class SalesLeadController extends Controller
 
                 $add_changelog = new SalesChangeLog();
                 $add_changelog->lead_id = $request->lead_id;
+                $add_changelog->result = 'SD';
                 $add_changelog->nik = Auth::User()->nik;
                 $add_changelog->status = 'Add Tagging SBE ' .  $value['sbeText'] . ', with Price ' . str_replace('.', '', $value['price_sbe']);
                 $add_changelog->save();
@@ -2026,6 +2109,7 @@ class SalesLeadController extends Controller
             for($i=0; $i < count($id_sbe) ; $i++) {
                 $add_changelog_sbe = new SalesChangeLog();
                 $add_changelog_sbe->lead_id = $request->lead_id;
+                $add_changelog->result = 'SD';
                 $add_changelog_sbe->nik = Auth::User()->nik;
                 $add_changelog_sbe->status = 'Delete Tagging SBE ' .  $name[$i] . ', with Price ' . str_replace('.', '', $price[$i]);
                 $add_changelog_sbe->save();
@@ -2085,8 +2169,17 @@ class SalesLeadController extends Controller
                 ->first();
 
         $add_changelog = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request->lead_id)->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $add_changelog->lead_id = $request->lead_id;
         $add_changelog->nik = Auth::User()->nik;
+        $add_changelog->result = $resultLead;
         $add_changelog->status = 'Update Tagging Product ' .  $get_name->name_product . ', Technology ' .  $get_name->name_tech . ', with Price ' . str_replace('.', '', $request->price);
         $add_changelog->save();
 
@@ -2102,8 +2195,17 @@ class SalesLeadController extends Controller
         $update_sbe->update();
 
         $add_changelog_sbe = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request->lead_id)->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $add_changelog_sbe->lead_id = $request->lead_id;
         $add_changelog_sbe->nik = Auth::User()->nik;
+        $add_changelog_sbe->result = $resultLead;
         $add_changelog_sbe->status = 'Update Tagging SBE ' .  $request->name_sbe . ', with Price ' . str_replace('.', '', $request->price);
         $add_changelog_sbe->save();
     }
@@ -2131,6 +2233,7 @@ class SalesLeadController extends Controller
         $tambah = new SalesChangeLog();
         $tambah->lead_id = $request->lead_id;
         $tambah->nik = Auth::User()->nik;
+        $tambah->result = 'SD';
         $tambah->status = 'Update SD '. "(" .$request->status.")";
         $tambah->save();
     }
@@ -2171,8 +2274,17 @@ class SalesLeadController extends Controller
         }
 
         $tambah_log = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request->lead_cont)->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $tambah_log->lead_id = $request['lead_cont'];
         $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->result = $resultLead;
         $tambah_log->status = 'Add new contribute '. "(" .$request->concat_name.")";
         $tambah_log->save();
 
@@ -2233,6 +2345,7 @@ class SalesLeadController extends Controller
 
         $tambah = new SalesChangeLog();
         $tambah->lead_id = $request['lead_id_result'];
+        $tambah->result = $request['result'];
         $tambah->nik = Auth::User()->nik;
 
         $data = Sales::join('users','sales_lead_register.nik','=','users.nik')->where('lead_id',$request->lead_id_result)->first();
@@ -2252,6 +2365,7 @@ class SalesLeadController extends Controller
                         $add_changelog = new SalesChangeLog();
                         $add_changelog->lead_id = $request->lead_id_result;
                         $add_changelog->nik = Auth::User()->nik;
+                        $add_changelog->result = $request['result'];
                         $add_changelog->status = 'Delete Tagging Product ' .  $data['name_product'] . ', Technology ' .  $data['name_tech'] . ', with Price ' . str_replace('.', '', $data['price']);
                         $add_changelog->save();
                     }    
@@ -2276,6 +2390,7 @@ class SalesLeadController extends Controller
                             $add_changelog = new SalesChangeLog();
                             $add_changelog->lead_id = $request->lead_id_result;
                             $add_changelog->nik = Auth::User()->nik;
+                            $add_changelog->result = $request['result'];
                             $add_changelog->status = 'Add Tagging Product ' .  $value['tag_product']['productTagText'] . ', Technology ' .  $value['tag_product']['techTagText'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
                             $add_changelog->save();
                         }
@@ -2304,6 +2419,7 @@ class SalesLeadController extends Controller
                     $add_changelog = new SalesChangeLog();
                     $add_changelog->lead_id = $request->lead_id_result;
                     $add_changelog->nik = Auth::User()->nik;
+                    $add_changelog->result = $request['result'];
                     $add_changelog->status = 'Add Tagging SBE ' .  $value['tag_sbe_text'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
                     $add_changelog->save();
                 }
@@ -2315,6 +2431,7 @@ class SalesLeadController extends Controller
                     $add_changelog = new SalesChangeLog();
                     $add_changelog->lead_id = $request->lead_id_result;
                     $add_changelog->nik = Auth::User()->nik;
+                    $add_changelog->result = $request['result'];
                     $add_changelog->status = 'Delete Tagging SBE ' .  $value['name'] . ', with Price ' . str_replace('.', '', $value['price']);
                     $add_changelog->save();
 
@@ -2592,7 +2709,7 @@ class SalesLeadController extends Controller
 
         $tambah = new Sales();
         $tambah->lead_id = $lead;
-        if($cek_role->group == 'Sales' || Auth::User()->name == "Operations Team"){
+        if($cek_role->group == 'Sales'){
             $tambah->nik = Auth::User()->nik;
         } else {
             $tambah->nik = $request['owner_sales'];
@@ -2677,16 +2794,25 @@ class SalesLeadController extends Controller
         // }
         
 
-        $lead_change_log = $name->code . date('y') . date('m') . $nomor;
+        // $lead_change_log = $name->code . date('y') . date('m') . $nomor;
         $amount = str_replace('.', '', $request['amount']);
+        $resultLead = Sales::where('lead_id',$lead)->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $tambah_log = new SalesChangeLog();
-        $tambah_log->lead_id = $lead_change_log;
+        $tambah_log->lead_id = $lead;
         if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER'){
             $tambah_log->nik = Auth::User()->nik;
         } else {
             $tambah_log->nik = $request['owner_sales'];
         }
         $tambah_log->status = 'Create Lead with Amount ';
+        $tambah_log->result = $resultLead;
         $tambah_log->submit_price  = $amount;
         $tambah_log->save();
 
@@ -2783,9 +2909,18 @@ class SalesLeadController extends Controller
         $update->update();
 
         $tambah = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request['lead_id'])->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $tambah->lead_id = $request['lead_id'];
         $tambah->nik = Auth::User()->nik;
         $tambah->status = 'Assign Technology Alliance to '. $request->name_ta;
+        $tambah->result = $resultLead;
         $tambah->save();
 
         $kirim = User::select('email')->where('nik', $request['nik_ta'])->first();
@@ -2825,9 +2960,18 @@ class SalesLeadController extends Controller
         $update->update();
 
         $tambah = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request['lead_id'])->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $tambah->lead_id = $request['lead_id'];
         $tambah->nik = Auth::User()->nik;
         $tambah->status = 'Assign Presales to '. $request->name_presales;
+        $tambah->result = $resultLead;
         $tambah->save();
 
         $kirim = User::select('email')->where('nik', $request['nik_presales'])->first();
@@ -2935,14 +3079,27 @@ class SalesLeadController extends Controller
 
     public function reassignPresales(Request $request)
     {
+        $update = Sales::where('lead_id', $request['lead_id'])->first();
+        $update->result = 'SD';
+        $update->update();
+        
         $update = solution_design::where('lead_id', $request['lead_id'])->first();
         $update->nik = $request['nik_presales'];
         $update->update();
 
         $tambah = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request['lead_id'])->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $tambah->lead_id    = $request['lead_id'];
         $tambah->nik        = Auth::User()->nik;
         $tambah->status     = 'Re-Assign Presales to '. $request->name_presales;
+        $tambah->result     = $resultLead;
         $tambah->save();
 
         $kirim = User::select('email')->where('nik', $request['nik_presales'])->first();
@@ -2974,9 +3131,18 @@ class SalesLeadController extends Controller
         $update->update();
 
         $tambah = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request['lead_id'])->first()->result;
+        if ($resultLead == 'OPEN') {
+            $resultLead = 'INITIAL';
+        } elseif ($resultLead == '') {
+            $resultLead = 'OPEN';
+        } else {
+            $resultLead;
+        }
         $tambah->lead_id    = $request['lead_id'];
         $tambah->nik        = Auth::User()->nik;
         $tambah->status     = 'Re-Assign Technology Alliance to '. $request->name_ta;
+        $tambah->result     = $resultLead;
         $tambah->save();
 
         $kirim = User::select('email')->where('nik', $request['nik_ta'])->first();
@@ -3024,9 +3190,18 @@ class SalesLeadController extends Controller
         $update->update();
 
         $tambah = new SalesChangeLog();
+        $resultLead = Sales::where('lead_id',$request['lead_id'])->first()->result;
+        // if ($resultLead == 'OPEN') {
+        //     $resultLead = 'INITIAL';
+        // } elseif ($resultLead == '') {
+        //     $resultLead = 'OPEN';
+        // } else {
+        //     $resultLead;
+        // }
         $tambah->lead_id = $request['lead_id'];
         $tambah->nik = Auth::User()->nik;
         $tambah->status = 'Raise To Tender';
+        $tambah->result = $resultLead;
         $tambah->save();
 
         $nik_sales = DB::table('sales_lead_register')

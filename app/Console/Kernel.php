@@ -34,6 +34,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('closedate:mail')->dailyAt('02:10');
 
         $schedule->command('ReviewDateRiskPM:daily')->daily()->at('07:00');
+        $schedule->command('SalesUpdateStatusHold:daily')->daily()->at('02:00');
 
         $schedule->command('ReminderCreateProjectCharter:daily')->daily()->at('07:30');
         $schedule->command('ReminderMaintenanceEndAsset:daily')->daily()->at('07:40');
