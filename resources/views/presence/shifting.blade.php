@@ -555,24 +555,53 @@ Presence Shifting
 				name:$("#addNameProject").val(),
 				location:$("#addLocationProjects").val()
 			},
-			success:function(){
-				
+			beforeSend: function(){
+				Swal.fire({
+					title: 'Please Wait..!',
+					text: "It's sending..",
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					customClass: {
+						popup: 'border-radius-0',
+					},
+					didOpen: () => {
+						Swal.showLoading()
+					}
+				})
+			},
+			success: function(result){
+			//kasih alert success dan auto refresh samping kiri
+				Swal.hideLoading()
+				swalWithCustomClass.fire({
+					title: 'Success!',
+					text: "Shifting Project Added",
+					icon: 'success',
+					confirmButtonText: 'Reload',
+				}).then((result) => {
+					initiateGetProject()
+				})	
+			}
+		})
+	}
+
+
+	initiateGetProject()
+	function initiateGetProject(argument) {
+		$.ajax({
+			url:"{{url('presence/shifting/getProject')}}",
+			success: function(result){
+				$("#listProjectContent").empty("")
+				result.forEach( function ( data, key ) {
+					var project =  "'" + data.project_name + "','" + data.id + "'"
+					$("#listProjectForUser").prepend('<option value="' + data.id + '">' + data.project_name + '</option>')
+					$("#listProjectContent").prepend('<li><a href="#" onclick="showProject(' + project + ')">' + data.project_name + '</a></li>')
+				})
+				$("#listProjectForUser").append('<option value="0">--Set For Not Shifting--</option>')
 			}
 		})
 	}
 	
-	$.ajax({
-		url:"{{url('presence/shifting/getProject')}}",
-		success: function(result){
-			result.forEach( function ( data, key ) {
-				var project =  "'" + data.project_name + "','" + data.id + "'"
-				$("#listProjectForUser").prepend('<option value="' + data.id + '">' + data.project_name + '</option>')
-				$("#listProjectContent").prepend('<li><a href="#" onclick="showProject(' + project + ')">' + data.project_name + '</a></li>')
-			})
-			$("#listProjectForUser").append('<option value="0">--Set For Not Shifting--</option>')
-		}
-	})
-
 	$.ajax({
 		url:"{{url('presence/shifting/getOption')}}",
 		success: function(result){
