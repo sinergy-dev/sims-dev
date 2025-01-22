@@ -681,11 +681,11 @@ Lead Register
 
         		let loadBtn = btnEdit + btnDelete
 
-    				if (row.result_modif == 'WIN' || row.result_modif == 'LOSE' || row.result_modif == 'CANCEL') {
+    				if (row.result_modif == 'WIN' || row.result_modif == 'LOSE' || row.result_modif == 'CANCEL' || row.result_modif == 'TP' || row.result_modif == 'SD') {
     					if (row.status == 'pending') {
 								loadBtn = btnIdProject      								
 							}else{
-								loadBtn = loadBtn
+								loadBtn = btnEdit
 							}        					
     				}else{
     					if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Product Management & Development Solution')->exists()}}")){

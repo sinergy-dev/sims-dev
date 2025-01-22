@@ -54,6 +54,33 @@
 						<th></th>
 						<td></td>
 					</tr>
+					@if($data["open_count"] != 0)
+					<tr>
+						<th>{{$data["open_count"]}} Lead - OPEN Phase</th>
+						<th></th>
+						<td></td>
+					</tr>
+					<tr>
+						<th valign="top">Detail</th>
+						<th></th>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<ul>
+								@foreach($data["open_detail"] as $open)
+								<li>
+									<span style="font-family: 'Lucida Console', Monaco, monospace;">
+										<a href="https://app.sinergy.co.id/detail_project/{{$open->lead_id}}">{{$open->lead_id}}</a> 
+										[{{str_limit($open->brand_name, 20)}}]
+									</span>
+									 - {{$open->opp_name}}
+									</li>
+								@endforeach
+							</ul>
+						</td>
+					</tr>
+					@endif
 					@if($data["sd_count"] != 0)
 					<tr>
 						<th>{{$data["sd_count"]}} Lead - SD Phase</th>

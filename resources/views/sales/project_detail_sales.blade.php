@@ -777,7 +777,7 @@ Detail Lead Register
 	        </div>
 	        <div class="modal-body">
 	            @csrf
-	            <div class="form-group">
+	            <div class="form-group" style="display: none;">
 	              <label for="">Progress Date</label>
 	              <input type="text" id="changelog_date" name="changelog_date" class="form-control date">
 	            </div>
