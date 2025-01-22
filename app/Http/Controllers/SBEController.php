@@ -449,22 +449,22 @@ class SBEController extends Controller
 
         if ($cek_role->name == 'Presales' || $cek_role->name == 'System Designer' || $cek_role->name == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
             if ($cek_role->name == 'Technology Alliance') {
-                $data->where('tb_presales.nik_presales',$nik)->orwhere('tb_ta.nik_ta',$nik)->distinct()->get();
+                $data->where('tb_presales.nik_presales',$nik)->orwhere('tb_ta.nik_ta',$nik)->distinct()->get()->makeHidden('items_sbe');
             } else {
-                $data->where('tb_presales.nik_presales',$nik)->distinct()->get();
+                $data->where('tb_presales.nik_presales',$nik)->distinct()->get()->makeHidden('items_sbe');
             }
             
         } elseif($cek_role->name == 'Sales Staff'){
-            $data->where('sales_lead_register.nik',$nik)->distinct()->get();
+            $data->where('sales_lead_register.nik',$nik)->distinct()->get()->makeHidden('items_sbe');
         } else if($cek_role->name == 'Sales Manager'){
-            $data->where('u_sales.id_territory',$ter)->distinct()->get();
+            $data->where('u_sales.id_territory',$ter)->distinct()->get()->makeHidden('items_sbe');
         } else if($cek_role->name == 'PMO Officer'){
-            $data->where('sales_lead_register.result','WIN')->distinct()->get();
+            $data->where('sales_lead_register.result','WIN')->distinct()->get()->makeHidden('items_sbe');
         }else {
-            $data->distinct()->get();
+            $data->distinct()->get()->makeHidden('items_sbe');
         }
 
-        return array("data"=>$data->get());
+        return array("data"=>$data->get()->makeHidden('items_sbe'));
     }
 
     public function getSoWbyLeadID(Request $request)
@@ -1058,5 +1058,155 @@ class SBEController extends Controller
         unlink($locationFile);
         $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
         return $link;
+    }
+
+    public function dashboardSbe($value='')
+    {
+        $year = DB::table('tb_sbe')->select(DB::raw('YEAR(created_at) as year'))->distinct()->get();
+
+        // Check if the current year exists in the collection
+        $yearExists = $year->contains(function ($value) {
+            return $value->year == date('Y');
+        });
+
+        if (!$yearExists) {
+            $year->push((object) ['year' => date('Y')]);
+        }
+
+        return view('solution.sbe_dashboard',compact('year'))->with(['initView'=> $this->initMenuBase()]);;
+    }
+
+    public function getDataDashboardSbe(Request $request)
+    {
+        $chartCountSbeByStatus = DB::table('tb_sbe')
+                        ->select(
+                            'status',
+                            DB::raw('COUNT(*) as total_status'))
+                        ->groupBy('status')
+                        ->whereYear('created_at',$request->year)
+                        ->get();
+
+        $chartCountSbeByType = DB::table(DB::raw('(
+                        SELECT 
+                            tb_sbe.id AS sbe_id, 
+                            SUM(CASE 
+                                WHEN tb_sbe_config.project_type = "Implementation" AND tb_sbe_config.status = "Choosed" 
+                                THEN 1 ELSE 0 
+                            END) AS has_implementation,
+                            SUM(CASE 
+                                WHEN tb_sbe_config.project_type = "Maintenance" AND tb_sbe_config.status = "Choosed" 
+                                THEN 1 ELSE 0 
+                            END) AS has_maintenance,
+                            MAX(tb_sbe_config.project_type) AS MAX_PROJECT_TYPE
+                        FROM tb_sbe
+                        INNER JOIN tb_sbe_config ON tb_sbe.id = tb_sbe_config.id_sbe
+                        WHERE YEAR(tb_sbe.created_at) = '. $request->year .'
+                        AND tb_sbe_config.status = "Choosed"
+                        GROUP BY tb_sbe.id
+                    ) AS subquery'))
+                    ->selectRaw('
+                        CASE 
+                            WHEN has_implementation > 0 AND has_maintenance > 0 
+                            THEN "Implementation + Maintenance"
+                            ELSE MAX_PROJECT_TYPE 
+                        END AS project_type,
+                        COUNT(*) AS count
+                    ')
+                    ->groupBy('project_type')
+                    ->orderByRaw('FIELD(project_type, "Supply Only","Maintenance","Implementation","Implementation + Maintenance") ASC')
+                    ->get();
+
+        $chartSumSbeByStatus = DB::table('tb_sbe')
+                        ->select(
+                            'status',
+                            DB::raw('SUM(nominal) as sum_nominal'))
+                        ->groupBy('status')
+                        ->whereYear('created_at',$request->year)
+                        ->get();
+
+        $top5SbeByStatus = 
+                       DB::table(DB::raw('(
+                        SELECT 
+                            tb_sbe.id AS sbe_id, 
+                            SUM(CASE 
+                                WHEN tb_sbe_config.project_type = "Implementation" AND tb_sbe_config.status = "Choosed" 
+                                THEN 1 ELSE 0 
+                            END) AS has_implementation,
+                            SUM(CASE 
+                                WHEN tb_sbe_config.project_type = "Maintenance" AND tb_sbe_config.status = "Choosed" 
+                                THEN 1 ELSE 0 
+                            END) AS has_maintenance,
+                            MAX(tb_sbe_config.project_type) AS MAX_PROJECT_TYPE
+                        FROM tb_sbe
+                        INNER JOIN tb_sbe_config ON tb_sbe.id = tb_sbe_config.id_sbe
+                        WHERE YEAR(tb_sbe.created_at) = '. $request->year .'
+                        AND tb_sbe_config.status = "Choosed"
+                        GROUP BY tb_sbe.id
+                    ) AS subquery'))
+                    ->selectRaw('
+                        CASE 
+                            WHEN has_implementation > 0 AND has_maintenance > 0 
+                            THEN "Implementation + Maintenance"
+                            ELSE MAX_PROJECT_TYPE 
+                        END AS project_type,
+                        COUNT(*) AS count
+                    ')
+                    ->groupBy('project_type')
+                    ->orderByRaw('FIELD(project_type, "Implementation + Maintenance", "Implementation", "Maintenance") DESC')
+                    ->get();
+
+
+
+        $top5SbeByStatus->transform(function ($row) use ($request) {
+            // Add the top 5 nominal records for each project type
+            $row->top_nominals = DB::table(DB::raw('(
+                            SELECT 
+                                sales_lead_register.opp_name,
+                                users.name,
+                                tb_sbe.id AS sbe_id, 
+                                tb_sbe.nominal,
+                                tb_sbe.created_at,
+                                CASE 
+                                    WHEN SUM(CASE WHEN tb_sbe_config.project_type = "Implementation" AND tb_sbe_config.status = "Choosed" THEN 1 ELSE 0 END) > 0 
+                                    AND SUM(CASE WHEN tb_sbe_config.project_type = "Maintenance" AND tb_sbe_config.status = "Choosed" THEN 1 ELSE 0 END) > 0 
+                                    THEN "Implementation + Maintenance"
+                                    ELSE MAX(tb_sbe_config.project_type) 
+                                END AS project_type
+                            FROM tb_sbe
+                            INNER JOIN tb_sbe_config ON tb_sbe.id = tb_sbe_config.id_sbe
+                            JOIN sales_lead_register ON tb_sbe.lead_id = sales_lead_register.lead_id
+                            JOIN sales_solution_design ON sales_lead_register.lead_id = sales_solution_design.lead_id
+                            JOIN users ON sales_solution_design.nik_ta = users.nik
+                            WHERE YEAR(tb_sbe.created_at) = '.$request->year.'
+                            AND sales_solution_design.status = "closed"
+                            AND tb_sbe.status = "Fixed"
+                            AND tb_sbe_config.status = "Choosed"
+                            GROUP BY tb_sbe.id, users.name, opp_name
+                            ORDER BY nominal DESC
+                        ) AS subquery'))
+                        ->select(
+                            'subquery.name',
+                            'subquery.opp_name',
+                            'subquery.nominal',
+                            'subquery.sbe_id AS id',
+                            'subquery.created_at',
+                            'subquery.project_type'
+                        )
+                        ->where('subquery.project_type', '=', $row->project_type) // Filter based on project_type
+                        ->orderBy(DB::raw('CAST(subquery.nominal AS UNSIGNED)'), 'DESC')
+                        ->limit(5)
+                        ->get();
+
+            return $row;
+        });
+
+        $data = [
+            'totalSbeByStatus'=>$chartCountSbeByStatus,
+            'sumSbeByStatus'=>$chartSumSbeByStatus,
+            'top5SbeByStatus'=>$top5SbeByStatus,
+            'totalSbeByType'=>$chartCountSbeByType
+        ];
+
+        return $data;
     }
 }
