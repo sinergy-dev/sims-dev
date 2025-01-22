@@ -128,8 +128,8 @@ PMO
 	    }
 
 	    #tbInternalStakeholderRegister tr td select, #tbInternalStakeholderRegister tr td input, #tbodyTermsPayment tr td input{
-	    font-size: 12px;
-	  }
+			font-size: 12px;
+		}
 
 		.timelines {
 		  width: 100%;
@@ -262,6 +262,22 @@ PMO
 		.select2{
           width:100%!important;
       	}
+
+      	.gantt_container {
+            height: 600px;
+        }
+
+        .gantt_cal_light {
+	      position: fixed !important; /* Fixed positioning to center on the screen */
+	      top: 50% !important;       /* Move to the middle vertically */
+	      left: 50% !important;      /* Move to the middle horizontally */
+	      transform: translate(-50%, -50%) !important; /* Center it exactly */
+	      z-index: 10001;            /* Ensure it stays above the overlay */
+	  	}
+
+		.gantt_cal_cover {
+		    z-index: 10000; /* Ensure the overlay is below the lightbox */
+		}
 	</style> 
 @endsection
 @section('content')
@@ -438,7 +454,7 @@ PMO
 	            </div>
 
 	            <div class="box-body">
-	                <div id="gantt_here" style='width:100%;height: 500px;'></div>
+	                <div id="gantt_here" style='width:100%;height: 600px;'></div>
 	            </div>
 	        </div>
 
@@ -1134,9 +1150,10 @@ PMO
 @section('scriptImport')
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <!-- <script type="text/javascript" src="https://docs.dhtmlx.com/gantt/codebase/dhtmlxgantt.js?v=6.0.0"></script> -->
-<script type="text/javascript" src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script> -->
+<script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
-<script src="https://export.dhtmlx.com/gantt/api.js"></script> 
+<!-- <script src="https://export.dhtmlx.com/gantt/api.js"></script>  -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -1189,11 +1206,11 @@ PMO
 	}) 
 
     $(document).ready(function(){
-    	gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
+        gantt.plugins({ export: true });
+
+        gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
     	gantt.config.show_links = true;
         
-    	gantt.init("gantt_here");
-
     	gantt.config.columns=[
 		    {name:"text",  	label:"Milestone",  tree:true, resize:true,width:300, min_width:140 },
 		    {name:"baseline_start", label:"Baseline Start", align: "center", width:150, min_width:100 },
@@ -1353,6 +1370,8 @@ PMO
 		  { name: "time", height: 45, map_to: "auto", type: "datepicker" }
 		];
 
+    	gantt.init("gantt_here");
+
 		showMilestoneData()
 		getProgressBar()
 		
@@ -1446,7 +1465,6 @@ PMO
 
     let firstPage = ''
     function btnBack(){
-    	console.log(firstPage)
     	if (firstPage) {
     		$(".content-header").hide()
     		$(".content").hide()
@@ -1729,9 +1747,14 @@ PMO
 		            	$("#btnAddWeekly").prop("disabled",true)
 		            	$("#btnFinalProject").attr("disabled")
 
-		            	if (table.data().count() == 1) {
-		                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",false)
-		                }
+		            	table.rows().every(function() {
+			            	if (table.data().count() == 1) {
+			                	var rowData = this.data()
+			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").removeClass("disabled")
+			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",false)
+
+			                }
+		                })
 	            	}else{
 	            		// if(table.row(0).length > 0){
 		            	// 	if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
@@ -1740,13 +1763,13 @@ PMO
 		            	// 	}	
 	            		// }
 	            		table.rows().every(function() {
-			                var rowData = this.data();
+			            	if (table.data().count() == 1) {
+			                	var rowData = this.data()
+			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").removeClass("disabled")
+			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",false)
 
-			                if (table.data().count() == 1) {
-			                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
 			                }
-			            });
-
+		                })
 
 	            		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
 		            		$("#btnFinalProject").attr("disabled")
@@ -1766,10 +1789,12 @@ PMO
 		            		table.rows().every(function() {
 				                var rowData = this.data()
 				                if (rowData.milestone == "Submit Final Project Closing Report") {
+			                		$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
 				                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
 				                }
 
 				                if (rowData.length == 1) {
+			                		$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
 				                	$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
 				                }
 				            });
@@ -1779,8 +1804,10 @@ PMO
 					                var rowData = this.data();					              	
 					                if (table.data().count() == 1) {
 					                	if (window.location.href.split("?")[1].split("&")[0].split("=")[1] == 'supply_only' ) {
+			                				$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").removeClass("disabled")
 					                		$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",false)
 					                	}else{
+			                				$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
 					                		$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
 					                	}
 
@@ -1987,14 +2014,11 @@ PMO
 	    		
     		}
     	}else{
-    		console.log("siniiii")
     		if (status == "Defined") {
     			url = "/PMO/getDefaultTask"
     			width = "800px"
     			marginRight = ""
     		}else{
-    		console.log("siniiii")
-
     			url = "/PMO/getPhase"
 	    		width = "900px"
 	    		marginRight = "margin-right: 152px;"
@@ -6847,7 +6871,6 @@ PMO
 	              	})
 	            },
               	success: function(result){
-              		console.log(result)
             		Swal.fire(swalSuccess).then((result) => {
                   		if (result.value) {
                   			// window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
@@ -7089,7 +7112,6 @@ PMO
 
 
 	setTimeout(function() {
-		console.log(firstPage + "oiiiii")
 		if (firstPage) {
 			if (window.location.href.indexOf("id_risk") != -1){
 			//from email
@@ -7103,7 +7125,6 @@ PMO
 		        	window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + "?project_type=" + window.location.href.split("?")[1].split("&")[0].split("=")[1])
 		      	})
 			}else if (window.location.href.split("?")[1].split("&")[1] != undefined) {
-				console.log("woyyyy")
 				if (window.location.href.split("?")[1].split("&")[1].split("=")[1] == 'defined') {
 					btnshowMilestone('show','defined')
 				}else{
