@@ -2153,7 +2153,7 @@ class PresenceController extends Controller
         $add_option->name_option = 'Pagi';
         $add_option->start_shifting = '07:00';
         $add_option->end_shifting = '15:00';
-        $add_option->class_shifting = 'red';
+        $add_option->class_shifting = 'green';
         $add_option->id_project = $store->id;
         $add_option->status = 'NON-ACTIVE';
         $add_option->save();
@@ -2163,7 +2163,7 @@ class PresenceController extends Controller
         $add_option2->name_option = 'Sore';
         $add_option2->start_shifting = '14:00';
         $add_option2->end_shifting = '22:00';
-        $add_option2->class_shifting = 'yellow';
+        $add_option2->class_shifting = 'orange';
         $add_option2->id_project = $store->id;
         $add_option2->status = 'NON-ACTIVE';
         $add_option2->save();
@@ -2173,7 +2173,7 @@ class PresenceController extends Controller
         $add_option3->name_option = 'Libur';
         $add_option3->start_shifting = '00:00';
         $add_option3->end_shifting = '23:59';
-        $add_option3->class_shifting = 'green';
+        $add_option3->class_shifting = 'red';
         $add_option3->id_project = $store->id;
         $add_option3->status = 'NON-ACTIVE';
         $add_option3->save();
