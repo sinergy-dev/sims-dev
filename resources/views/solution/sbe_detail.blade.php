@@ -133,10 +133,6 @@ SBE Detail
         $("#spanLeadId").html("Lead ID - "+ window.location.href.split("?")[1])            
     }
 
-    accesable.forEach(function(item,index){
-      $("#" + item).show()
-    })
-
     function preventBack(){
         const beforeUnloadHandler = (event) => {
           // Recommended
@@ -362,7 +358,7 @@ SBE Detail
                     "data":{
                         id_sbe:window.location.href.split("/")[4].split("?")[0] 
                     },success:function(result){
-                        if (result.status[0].status == "Fixed") {
+                        if (result.status[0].status == "Fixed" || result.result == 'HOLD') {
                             $("#btnAddNotes").hide()
                             $("#btnGeneratePdf").hide()
                             $("#btnResetConfig").hide()
@@ -374,6 +370,10 @@ SBE Detail
                                  })                           
                             })
                         }else{
+                            accesable.forEach(function(item,index){
+                              $("#" + item).show()
+                            })
+
                             if(accesable.includes('btnGeneratePdf')){
                                 if (result.result != "WIN") {
                                     $("#btnGeneratePdf").hide()
@@ -509,11 +509,6 @@ SBE Detail
 
                         $("#boxConfigTemp").find(".row").last().after(appendGrandTotal)
                     }
-
-                    accesable.forEach(function(item,index){
-                      $("#" + item).show()
-                    })
-
                     // checkInnerHeight()
                 }
             })
@@ -1524,7 +1519,6 @@ SBE Detail
 
                 $("table[name='tableImp']:last").after(append)
             }else{
-                console.log(val)
                 $('div[name="divTableImp"]').append(append)
             }
             getDropdownDetailItems(countable,"Imp")
@@ -1679,7 +1673,7 @@ SBE Detail
             getDropdownDetailItems(countable,"MnS")
         // }
 
-        $("#addItemsMns").after("<button class='btn btn-sm btn-danger' id='removeItemsMnS' onclick='removeItemsMnS()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
+        // $("#addItemsMns").after("<button class='btn btn-sm btn-danger' id='removeItemsMnS' onclick='removeItemsMnS()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
         if (countable > 0) {
             if ($("#removeItemsMnS").length < 1) {
                 $("#addItemsMns").after("<button class='btn btn-sm btn-danger' id='removeItemsMnS' onclick='removeItemsMnS()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
