@@ -94,9 +94,20 @@ SBE
               data: "opp_name"
             },
             {
-              title: "SOL Staff",
-              data: "presales"
+              title: "Technology Alliance",
+              // data: "nominal",
+              render:function(data,type,row){
+                if (row.ta != null && row.ta != '') {
+                    return row.ta
+                }else{
+                    return row.presales
+                }
+              }
             },
+            // {
+            //   title: "Technology Alliance",
+            //   data: "presales"
+            // },
             {
               title: "Status",
               // data: "nominal",

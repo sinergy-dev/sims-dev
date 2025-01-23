@@ -445,7 +445,7 @@ class SBEController extends Controller
             $join->on("sales_lead_register.lead_id", '=', 'tb_ta.lead_id');
         })
         ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
-        ->select('tb_sbe.lead_id','tb_sbe.status','opp_name','name_presales as presales','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
+        ->select('tb_sbe.lead_id','tb_sbe.status','opp_name','name_presales as presales','name_ta as ta','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
 
         if ($cek_role->name == 'Presales' || $cek_role->name == 'System Designer' || $cek_role->name == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
             if ($cek_role->name == 'Technology Alliance') {
