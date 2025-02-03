@@ -35,7 +35,6 @@ use App\SLAProject;
 
 use App\Service\TelegramService;
 
-
 use Auth;
 use Mail;
 use Blade;
@@ -190,6 +189,7 @@ class TicketingController extends Controller
 	{
 		$startDate = $request->start . ' 00:00:01';
 		$endDate = $request->end . ' 23:59:59';
+	
 		$nik = Auth::User()->nik;
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
@@ -211,10 +211,10 @@ class TicketingController extends Controller
 		            // ->where('activity','<>','PENDING')
 					->groupBy('id_ticket');
 				})
+            ->whereRaw('ticketing__activity.date BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
 			->where('activity','<>','CLOSE')
             ->where('activity','<>','CANCEL')
-            ->where('activity','<>','PENDING')
-            ->whereRaw('ticketing__activity.date BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+            // ->where('activity','<>','PENDING')
             // ->whereNotIn('activity', ['CLOSE', 'CANCEL', 'PENDING'])
             // ->where('id_ticket','like','%'.date('Y'))
 			->get()
@@ -275,7 +275,7 @@ class TicketingController extends Controller
 		    ];
 		    if (isset($pidMap[$cek_role->name_role])) {
 		        $needed = $needed->whereIn('pid', $pidMap[$cek_role->name_role])
-		                         ->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
+		                         ->where('ticketing__detail.id_ticket', 'like', '%' . $year);
 		    }
 		}
 
@@ -354,6 +354,16 @@ class TicketingController extends Controller
 	{
 		$startDate = $request->start . ' 00:00:01';
 		$endDate = $request->end . ' 23:59:59';
+
+		if ($request->start != '' && $request->end != '') {
+			$date = Carbon::create($request->start);
+			$year = $date->year; // Using the 'year' property
+			// or
+			$year = $date->format('Y'); // Using the format method
+		}else{
+			$year = date('Y');
+		}
+
 		$nik = Auth::User()->nik;
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
@@ -372,20 +382,20 @@ class TicketingController extends Controller
 	        $detail = $detail->where('pid','like','%'.$request->client.'%');
         }else {
         	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
-        		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+        		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
         	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
-        		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+        		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.$year);
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
-        		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+        		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.$year);
         	} else {
-        		$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        		$detail = $detail->where('id_ticket','like','%'.$year);
         	}
         } 
 
         if (isset($request->start) && isset($request->end)) {
         	$detail = $detail->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
         }else{
-        	$detail = $detail->where('id_ticket','like','%'.date('Y'));
+        	$detail = $detail->where('id_ticket','like','%'.$year);
         }
 
         $detail = $detail->get()->pluck('id_ticket')->toArray();
@@ -409,7 +419,7 @@ class TicketingController extends Controller
 				        FROM
 				            `ticketing__activity`
 				        WHERE
-		                `ticketing__activity`.`id_ticket` LIKE '%" . date('Y') . "%'
+		                `ticketing__activity`.`id_ticket` LIKE '%" . $year . "%'
 		                 AND `ticketing__activity`.`id_ticket` IN ($detail)
 				        GROUP BY
 				            `id_ticket`
@@ -1785,19 +1795,22 @@ class TicketingController extends Controller
 			//Start Notification Job SLM
 	
 			if($request->id_atm != null){
-				// $this->setNotif($detailTicketOpen->engineer, $request->id_ticket, $request->location);
+				 $this->setNotif($detailTicketOpen->engineer, $request->id_ticket, $request->location);
 			}
 			//End Notification Job SLM
 	
 			$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
-			$cekId = Ticketing::where('id_ticket',$request->id_ticket)->first()->id_client_pid;
-			$cekTeleId = TicketingEmailSetting::where('id',$cekId)->first();
+            $cekId = optional(Ticketing::where('id_ticket', $request->id_ticket)->first())->id_client_pid;
+            if ($cekId) {
+                $cekTeleId = TicketingEmailSetting::where('id', $cekId)->first();
+                if ($cekTeleId) {
+                    $bodyMassage = 'Dear Tim '.$cekTeleId->client . ', Terdapat open ticket, dengan ID <b>' . $request->id_ticket . '</b> yang berlokasi di <b>' . $request->location . '</b>, dengan problem <b>'. $request->problem . '</b>. Terima kasih.';
 
-			$bodyMassage = 'Dear Tim '. $cekTeleId->client . ', Terdapat open ticket, dengan ID <b>' . $request->id_ticket . '</b> yang berlokasi di <b>' . $request->location . '</b>, dengan problem <b>'. $request->problem . '</b>. Terima kasih.';
-
-			if (isset($cekTeleId->chat_id)) {
-				$this->telegramService->sendMessage($cekTeleId->chat_id,$bodyMassage);
-			}
+                    if (isset($cekTeleId->chat_id)) {
+                        $this->telegramService->sendMessage($cekTeleId->chat_id, $bodyMassage);
+                    }
+                }
+            }
 	
 			$activityTicketOpen = new TicketingActivity();
 			$activityTicketOpen->id_ticket = $request->id_ticket;
@@ -1940,7 +1953,6 @@ class TicketingController extends Controller
 			->whereIn('pid',$getPid)
 			->whereIn('id_ticket',$occurring_ticket)
 			->where('id_ticket','33964/BBJB/Sep/2024')
-
 			->orderBy('ticketing__detail.id','DESC')
 			->get();
 
@@ -2407,20 +2419,29 @@ class TicketingController extends Controller
 			->whereIn('id_ticket',$occurring_ticket->pluck('id_ticket'))
 			->orderBy('id','DESC');
 
+		if ($request->startDate != '' && $request->endDate != '') {
+			$date = Carbon::create($request->startDate);
+			$year = $date->year; // Using the 'year' property
+			// or
+			$year = $date->format('Y'); // Using the format method
+		}else{
+			$year = date('Y');
+		}
+
 		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care' || $cek_role->name_role == 'IT Internal') {
 			if($cek_role->name_role == 'Customer Care'){
-				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->orWhere('pid','ADMF')->orWhere('pid','INTERNAL')->where('id_ticket','like','%'.date('Y'));
+				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->orWhere('pid','ADMF')->orWhere('pid','INTERNAL')->where('id_ticket','like','%'.$year);
 			} else if($cek_role->name_role == 'IT Internal'){
-				$occurring_ticket_result = $occurring_ticket_result->where('pid','INTERNAL')->where('id_ticket','like','%'.date('Y'));
+				$occurring_ticket_result = $occurring_ticket_result->where('pid','INTERNAL')->where('id_ticket','like','%'.$year);
 			} else {
-				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
 			}
     	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
-    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.$year);
     	} elseif($cek_role->name_role == 'Customer Relation Manager'){
-    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+    		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.$year);
     	} else {
-    		$occurring_ticket_result = $occurring_ticket_result->where('id_ticket','like','%'.date('Y'));
+    		$occurring_ticket_result = $occurring_ticket_result->where('id_ticket','like','%'.$year);
     	}
 
     	$occurring_ticket_result = $occurring_ticket_result->get();
@@ -2523,18 +2544,18 @@ class TicketingController extends Controller
 		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
 			if($cek_role->name_role == 'Customer Care'){
 				// $finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->where('id_ticket','like','%'.date('Y'));
-				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->orWhere('pid','ADMF')->orWhere('pid','INTERNAL')->where('id_ticket','like','%'.date('Y'));
+				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->orWhere('pid','ADMF')->orWhere('pid','INTERNAL')->where('id_ticket','like','%'.$year);
 
 			} else {
-				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
 			}
-    		// $finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
+    		// $finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
     	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
-    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
+    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.$year);
     	} elseif($cek_role->name_role == 'Customer Relation Manager'){
-    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
+    		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.$year);
     	} else {
-    		$finish_ticket_result = $finish_ticket_result->where('id_ticket','like','%'.date('Y'));
+    		$finish_ticket_result = $finish_ticket_result->where('id_ticket','like','%'.$year);
     	}
 
 		$finish_ticket_result = $finish_ticket_result->get();
@@ -2914,7 +2935,9 @@ class TicketingController extends Controller
 			$engineer = $this->getEngineerData($ticketDetail->engineer);
 			$chatIDGroup = env('TELEGRAM_GROUP_CHAT_ID');
 			$message = 'Hai, '. $engineer->name . '. Request pending dengan ID Tiket: <b>'. $idTicket .'</b> sudah diapprove oleh leader.';
-			$this->telegramService->sendMessage($engineer->id_telegram,$message);
+			if ($engineer->id_telegram != null){
+                $this->telegramService->sendMessage($engineer->id_telegram,$message);
+            }
 			$this->telegramService->sendMessage($chatIDGroup,$message);
 			$mail = new ApprovePendingTicket(collect([
 					'id_ticket' => $idTicket,
@@ -3012,14 +3035,15 @@ class TicketingController extends Controller
 				$clientIdFilter = $id_client;
 			}
 
-			DB::commit();
-			
-			$engineer = $this->getEngineerData($ticketDetail->engineer);
+            DB::commit();
+            $engineer = $this->getEngineerData($ticketDetail->engineer);
             $chatIDGroup = env('TELEGRAM_GROUP_CHAT_ID');
-			$message = 'Hai, ' .$engineer->name. '. Request pending dengan ID Tiket: <b>'. $idTicket .'</b> direject oleh leader. Kini status tiket menjadi On Progress.';
-			$this->telegramService->sendMessage($engineer->id_telegram,$message);
-			$this->telegramService->sendMessage($chatIDGroup,$message);
-			$mail = new RejectPendingTicket(collect([
+            $message = 'Hai, ' .$engineer->name. '. Request pending dengan ID Tiket: <b>'. $idTicket .'</b> direject oleh leader. Kini status tiket menjadi On Progress.';
+            if ($engineer->id_telegram != null){
+                $this->telegramService->sendMessage($engineer->id_telegram,$message);
+            }
+            $this->telegramService->sendMessage($chatIDGroup,$message);
+            $mail = new RejectPendingTicket(collect([
 				'name' => $engineer->name,
 				'id_ticket' => $idTicket,
 				'reason' => $request->reason,
@@ -3503,10 +3527,10 @@ class TicketingController extends Controller
 					// ->whereRaw('`ticketing__activity`.`date` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
 					->groupBy('id_ticket');
 				})
+            ->whereRaw('`ticketing__activity`.`date` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
 			->where('ticketing__activity.activity','<>','CLOSE')
             ->where('ticketing__activity.activity','<>','CANCEL')
-            ->where('ticketing__activity.activity','<>','PENDING')
-            ->whereRaw('`ticketing__activity`.`date` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+            // ->where('ticketing__activity.activity','<>','PENDING')
 			->get();
 
 		$occurring_ticket_result = TicketingDetail::with([
@@ -3734,7 +3758,13 @@ class TicketingController extends Controller
 		    }
 		}
 
-		return array("data" => $result);
+		if (isset($req->client)) {
+			$id_client = TB_Contact::where('code',$req->client)->first()->id_customer;
+		}else{
+			$id_client = '';
+		}
+
+		return array("data" => $result,"id_client" => $id_client);
 	}
 
 	public function getPerformanceByActivity(Request $req){
@@ -4006,9 +4036,11 @@ class TicketingController extends Controller
 		$detailTicketUpdate = TicketingDetail::where('id_ticket',$req->id_ticket)
 			->first();
 
-		if($req->engineer != null){
+		$engineer = $detailTicketUpdate->engineer;
+
+		if(isset($req->engineer)){
 			if($detailTicketUpdate->engineer != $req->engineer){
-				// $this->setNotif($req->engineer, $req->id_ticket, $detailTicketUpdate->location);
+				 $this->setNotif($req->engineer, $req->id_ticket, $detailTicketUpdate->location);
 			}
 		}
 
@@ -4025,13 +4057,13 @@ class TicketingController extends Controller
 
 		$activityTicketUpdate = new TicketingActivity();
 		$activityTicketUpdate->id_ticket = $req->id_ticket;
-		// $activityTicketUpdate->date = date("Y-m-d H:i:s.000000");
+//		 $activityTicketUpdate->date = date("Y-m-d H:i:s.000000");
 		$activityTicketUpdate->date = $req->timeOnProgress;
-		// if($checkLastActivity->activity == 'OPEN' && isset($req->engineer) && isset($detailTicketUpdate->id_atm)){
-		// 	$activityTicketUpdate->activity = "OPEN";
-		// }else{
+		 if($checkLastActivity->activity == 'OPEN' && isset($req->engineer) && $engineer != $req->engineer && isset($detailTicketUpdate->id_atm)){
+		 	$activityTicketUpdate->activity = "OPEN";
+		 }else{
 			$activityTicketUpdate->activity = "ON PROGRESS";
-		// }
+		 }
 		$activityTicketUpdate->operator = Auth::user()->name;
 		$activityTicketUpdate->note = $req->note;
 
@@ -5182,7 +5214,9 @@ class TicketingController extends Controller
 
 		if($client == 'BJBR' && $req->month > 6 && $req->year >= 2024){
 			$client = 'BBJB';
-		} else {
+		} else if($client == 'BJBR' && $req->year >= 2025){
+		    $client = 'BBJB';
+        } else {
 			$client = $client;
 		}
 
@@ -7305,13 +7339,13 @@ class TicketingController extends Controller
         $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
         $titleStyle['font']['bold'] = true;
 
-        $sheet->getStyle('A1:N1')->applyFromArray($titleStyle);
+        $sheet->getStyle('A1:O1')->applyFromArray($titleStyle);
 
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
         $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
         $head['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
-        $sheet->getStyle('A1:N1')->applyFromArray($headerStyle);;
+        $sheet->getStyle('A1:O1')->applyFromArray($headerStyle);;
 
         $headerContent = ["ID Ticket",	
         				 "Asset", 
@@ -7326,7 +7360,8 @@ class TicketingController extends Controller
         				 "Status Response Time", 
         				 "Resolution Time (Minute)", 
         				 "Status Resolution Time", 
-        				 "Operator"
+        				 "Operator",
+        				 "Engineer"
         				];
 
         $sheet->fromArray($headerContent,NULL,'A1');  
@@ -7415,6 +7450,7 @@ class TicketingController extends Controller
 			$sheet->setCellValueExplicit('L'.($key + 2),$item->sla_resolution_percentage,DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('M'.($key + 2),$item->highlight_sla_resolution,DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('N'.($key + 2),$item->lastest_activity_ticket->operator,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('O'.($key + 2),$item->engineer,DataType::TYPE_STRING);
         });
 
         $sheet->getColumnDimension('A')->setAutoSize(true);
@@ -7431,6 +7467,7 @@ class TicketingController extends Controller
         $sheet->getColumnDimension('L')->setAutoSize(true);
         $sheet->getColumnDimension('M')->setAutoSize(true);
         $sheet->getColumnDimension('N')->setAutoSize(true);
+        $sheet->getColumnDimension('O')->setAutoSize(true);
 
         $name = $title . '.xlsx';        
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');

@@ -1095,12 +1095,16 @@ Ticketing
 											Operator
 										</th>
 										<th style="text-align: center;vertical-align: middle;">
+											Engineer
+										</th>
+										<th style="text-align: center;vertical-align: middle;">
 											Action
 										</th>
 									</thead>
 									<tfoot>
 										<th style="width: 120px;text-align:center;vertical-align: middle;">ID Ticket</th>
 										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnIdAtm">Asset</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;">Serial Number</th>
 										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnTicketNum">Ticket Number</th>
 										<th style="width: 100px;text-align:center;vertical-align: middle;">Open</th>
 										<th style="vertical-align: middle;">Location - Problem</th>
@@ -1113,6 +1117,7 @@ Ticketing
 										<th style="text-align: center;vertical-align: middle;">SLA Resolution Time</th>
 										<th style="text-align: center;vertical-align: middle;">Status Resolution Time</th>
 										<th style="text-align: center;vertical-align: middle;">Operator</th>
+										<th style="text-align: center;vertical-align: middle;">Engineer</th>
 										<th style="text-align: center;vertical-align: middle;">Action</th>
 									</tfoot>
 								</table>
@@ -3247,19 +3252,22 @@ Ticketing
 						</div>
 						<div class="form-group">
 							<label>Foto</label>
-							<img src="" id="pendingPhoto" alt="">
+							<div>
+								<img src="" id="pendingPhoto" alt="">
+							</div>
 							<p>Jika foto tidak tampil: <a href="" id="pendingPhotoURL" target="_blank">Lihat disini</a></p>
 						</div>
 						<div class="row" id="requestPart" style="display:none;">
-							<div class="col-sm-6">
+							<div class="col-sm-12">
 								<div class="form-group">
 									<label>Part Name</label>
 									<input type="text" class="form-control" id="pendingPartName" readonly>
 								</div>
 							</div>
-							<div class="col-sm-6">
+							<div class="col-sm-12">
 								<div class="form-group">
-									<label>Image</label>
+									<label>Part Image</label>
+									<br>
 									<img src="" alt="Part Image" id="pendingPartImage">
 									<p>Jika foto tidak tampil: <a href="" id="pendingPartImageURL" target="_blank">Lihat disini</a></p>
 								</div>
@@ -3718,6 +3726,8 @@ Ticketing
 					startDate: moment().subtract(29, 'days'),
 					endDate: moment()
       },function(start,end){
+      	$('#filterDashboardByDate').html('<i class="fa fa-calendar"></i> <span>' + start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY') + '</span>');
+
       	startDay = start.format('YYYY-MM-DD');
 				endDay = end.format('YYYY-MM-DD');
 				if ($("#filterDashboardByPid").val() != null) {
@@ -4958,8 +4968,8 @@ Ticketing
 			$(".has-error").removeClass('has-error')
 			var waktu = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("D MMMM YYYY");
 			var waktu2 = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("HH:mm");
-			var schedule_date = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("D MMMM YYYY");
-			var schedule_time = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm");
+			var schedule_date = moment(($("#inputReportingDate").val()), "DD/MM/YYYY ").format("D MMMM YYYY");
+			var schedule_time = moment(($("#inputReportingTime").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm");
 
 			if ($("div").hasClass('has-error')) {
 				$("#tableTicket").hide();
@@ -5650,8 +5660,8 @@ Ticketing
 					$(".holderWaktu").html("<b>" + waktu2 + "</b>");
 
 					if($("#inputTypeTicket").val() == "Preventive Maintenance"){
-						var schedule_date = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("D MMMM YYYY");
-						var schedule_time = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm");
+						var schedule_date = moment(($("#inputReportingDate").val()), "DD/MM/YYYY ").format("D MMMM YYYY");
+						var schedule_time = moment(($("#inputReportingTime").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm");
 
 						$(".holderStatus").html("<b>" + schedule_date + "</b>");
 						$(".holderWaktu").html("<b>" + schedule_time + "</b>");
@@ -5879,7 +5889,7 @@ Ticketing
 								data.lastest_operator = data.lastest_activity_ticket.operator
 
 								//SLM Changes
-								if(("{{Auth::user()->id_position}}" == "ENGINEER SPV" && data.request_pending == "Y")){
+								if(("{{Auth::user()->id_position}}" == "ENGINEER SPV" && data.request_pending == "Y") || ("{{Auth::user()->id_position}}" == 'HELP DESK' && data.request_pending == "Y")){
 									data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="approvalPending(' + data.id_detail.id + ')">Approval Pending</button>'	
 								}else{
 									data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="showTicket(' + data.id_detail.id + ')">Detail</button>'	
@@ -5966,13 +5976,13 @@ Ticketing
 						{ 
 							data:'severity',
 							className:'text-center',
-							orderData:[ 11 ],
+							orderData:[ 17 ],
 							width:"3%"
 						},
 						{ 
 							data:'lastest_status',
 							className:'text-center',
-							orderData:[ 10 ],
+							orderData:[ 16 ],
 							width:"3%"
 						},
 						{ 
@@ -6000,6 +6010,11 @@ Ticketing
 							className:'text-center',
 							width:"3%"
 						},
+						{ 
+							data:'engineer',
+							className:'text-center',
+							width:"3%"
+						},
 						{
 							data:'action',
 							className:'text-center',
@@ -6009,13 +6024,13 @@ Ticketing
 						},
 						{ 
 							data: "lastest_status_numerical",
-							targets: [ 7 ] ,
+							targets: [ 8 ] ,
 							visible: false ,
 							searchable: true
 						},
 						{ 
 							data: "severity_numerical",
-							targets: [ 6 ] ,
+							targets: [ 7 ] ,
 							visible: false ,
 							searchable: true
 						},
@@ -6023,12 +6038,12 @@ Ticketing
 					// order: [[10, "DESC" ]],
 		      "createdRow": function(row, data, dataIndex) {
 		        if (data.highlight_sla_response == "Not-Comply") {
-		          $('td', row).eq(9).css('color', '#ff0a23')
+		          $('td', row).eq(10).css('color', '#ff0a23')
 		          // $('td', row).eq(9).css('color', '#ff0a23')
 		        } 
 
 		        if (data.highlight_sla_resolution == "Not-Comply") {
-		          $('td', row).eq(11).css('color', '#ff0a23')
+		          $('td', row).eq(12).css('color', '#ff0a23')
 		          // $('td', row).eq(11).css('color', '#ff0a23')
 		        }
 		      },
@@ -6038,7 +6053,7 @@ Ticketing
 					initComplete: function () {
 						var condition_available = ["OPEN","ON PROGRESS","PENDING","CANCEL","CLOSE"]
 						this.api().columns().every( function () {
-							if(this.index() == 12){
+							if(this.index() == 13 || this.index() == 14){
 								var column = this;
 								var select = $('<select class="form-control"><option value="">Show All</option></select>')
 									.appendTo( $(column.footer()).empty() )
@@ -6053,7 +6068,7 @@ Ticketing
 								column.data().unique().each( function ( d, j ) {
 									select.append( '<option value="' + d + '">' + d +'</option>' )
 								})
-							} else if (this.index() == 7){
+							} else if (this.index() == 8){
 								var column = this;
 								var select = $('<select class="form-control"><option value="">Show All</option></select>')
 									.appendTo( $(column.footer()).empty() )
@@ -6349,12 +6364,12 @@ Ticketing
 				$('#pendingEstimated').val(result.pending.estimated_pending);
 				$('#pendingPartName').val(result.pending.part_name);
 				if(result.pending.part_image){
-					$('#pendingPartImage').attr('src', 'https://drive.google.com/file/d/'+result.pending.part_image+'/view?usp=sharing');
+					$('#pendingPartImage').attr('src', 'https://drive.google.com/thumbnail?id='+result.pending.part_image+'&sz=w100');
 					$('#pendingPartImageURL').attr('href', 'https://drive.google.com/file/d/'+result.pending.part_image+'/view?usp=sharing');
 				}
 				if(result.pending.pending_image){
 
-					$('#pendingPhoto').attr('src', 'https://drive.google.com/uc?export=view&id='+result.pending.pending_image);
+					$('#pendingPhoto').attr('src', 'https://drive.google.com/thumbnail?id='+result.pending.pending_image+'&sz=w100');
 					$('#pendingPhotoURL').attr('href', 'https://drive.google.com/file/d/'+result.pending.pending_image+'/view?usp=sharing');
 				}
 				if(result.pending.type === "Request Part"){
@@ -6730,6 +6745,17 @@ Ticketing
 								$('#ticketEngineer').replaceWith('<input type="text" class="form-control" id="ticketEngineer" placeholder="" required value="">');
 								$("#ticketEngineer").val(engineers);
 							}
+						}
+
+						if ($('#ticketEngineer').is('select')) {
+							$("#ticketEngineer").val(result.engineer).trigger("change")
+							// if (result.engineer) {
+							// 	var engineerOpt = $("#ticketEngineer");
+	            //   var optiEngineer = new Option(result.engineer, result.engineer, true, true);
+	            //   engineerOpt.append(optiEngineer).trigger('change');
+							// }
+						}else{
+							$("#ticketEngineer").val(result.engineer)
 						}
 					}
 				});
@@ -11280,6 +11306,15 @@ Ticketing
 			$("#tablePerformance").DataTable().ajax.url("{{url('getPerformanceByNeedAttention?')}}" + 'pid=' + pid + '&start=' + start + '&end=' + end + '&client=' + $("#filterDashboardByClient").val()).load()
 			
 			var urlAjax = '{{url("/ticketing/report/performance")}}?client=' + $("#clientList").val() + '&pid=' + pid + '&start=' + start + '&end=' + end + '&attention=attention'
+
+			if ($("#filterDashboardByClient").val() != "") {
+				$('#clientList').find("option").filter(function () {
+				    return $(this).text().includes($("#filterDashboardByClient").val()); // Match the text
+				}).prop('selected', true);
+
+				// Trigger the change event to update Select2
+				$('#clientList').trigger('change');
+			}
 		}
 		$("#exportTablePerformance").attr('onclick',"getReport('" + urlAjax + "')")
 	}	
