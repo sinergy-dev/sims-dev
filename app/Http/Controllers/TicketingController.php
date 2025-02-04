@@ -189,7 +189,14 @@ class TicketingController extends Controller
 	{
 		$startDate = $request->start . ' 00:00:01';
 		$endDate = $request->end . ' 23:59:59';
-	
+        if ($request->start != '' && $request->end != '') {
+            $date = Carbon::create($request->start);
+            $year = $date->year;
+            // or
+            $year = $date->format('Y');
+        }else{
+            $year = date('Y');
+        }
 		$nik = Auth::User()->nik;
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
@@ -5077,7 +5084,9 @@ class TicketingController extends Controller
 
 		if($client == 'BJBR' && $req->month > 6 && $req->year >= 2024){
 			$client = 'BBJB';
-		} else {
+		} else if($client == 'BJBR' && $req->year >= 2025){
+            $client = 'BBJB';
+        } else {
 			$client = $client;
 		}
 
@@ -5561,7 +5570,7 @@ class TicketingController extends Controller
 		
 		// $value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year);
 
-		if($client == 'BJBR' && $month >= 6 && $year >= 2024){
+		if($client == 'BJBR' && $bulan >= 6 && $req->year >= 2024){
 			$client = 'BBJB';
 		} else {
 			$client = $client;
@@ -6281,7 +6290,7 @@ class TicketingController extends Controller
 			->leftJoin('ticketing__resolve','ticketing__resolve.id_ticket','=','open_activity_detail.id_ticket')
 			->leftJoin('ticketing__detail','ticketing__detail.id_ticket','=','open_activity_detail.id_ticket')
 			->leftJoin('ticketing__severity','ticketing__severity.id','=','ticketing__detail.severity')
-			->orderBy('open_activity_detail.id_tickets','ASC');
+			->orderBy('open_activity_detail.id_ticket','ASC');
 
 		if ($request->type != 'none') {
 			$data = $data->where('type_ticket',$request->type);
