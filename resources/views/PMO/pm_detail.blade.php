@@ -5884,7 +5884,6 @@ PMO
     var formatter = new Intl.NumberFormat(['ban', 'id'])
 
     function btnFinalProject(n,status){   
-    	
 		$("#divShowChecklist").next("#group-adding").remove()
 
 	    let x = document.getElementsByClassName("tab-add-final");
@@ -5956,14 +5955,17 @@ PMO
 					append2 = append2 + '   <div class="form-group">'
 					append2 = append2 + '   	<label>Customer Satisfaction Survey</label>'
 					append2 = append2 + ' 		<input type="text" class="form-control" id="link_feedback" name="link_feedback" placeholder="Link G-sheet result feedback" />'
+					append2 = append2 + ' 		<span class="help-block" style="display:none">Please fill link feedback!</span>'
 					append2 = append2 + '   </div>'
 					append2 = append2 + '   <div class="form-group">'
 					append2 = append2 + '   	<label>Lesson Learnt</label>'
 					append2 = append2 + '   	<textarea class="form-control" placeholder="List Down Both Positive and Negative Lesson Learnt" id="textareaLessonLearn" name="textareaLessonLearn"></textarea>'
+					append2 = append2 + ' 		<span class="help-block" style="display:none">Please fill Lesson Learnt!</span>'
 					append2 = append2 + '   </div>'
 					append2 = append2 + '   <div class="form-group">'
 					append2 = append2 + '   	<label>Recommendation for Future Project</label>'
 					append2 = append2 + '   	<textarea placeholder="Recomendation for future project" class="form-control" id="textareaRecommendation" name="textareaRecomendation"></textarea>'
+					append2 = append2 + ' 		<span class="help-block" style="display:none">Please fill Recomendation for future project!</span>'
 					append2 = append2 + '   </div>'
 					append2 = append2 + '   <div class="form-group">'
 					append2 = append2 + '   	<label>Additional Notes/Comments</label>'
@@ -6212,8 +6214,20 @@ PMO
 							   		selectScheduleSummary("BehindSchedule")
 							   	}
 
+							   	localStorage.setItem("cachedTextScheduleRemarks", $("#textareaScheduleRemarks").val());
 					   			$("#textareaScheduleRemarks").closest(".form-group").remove()
-							   	$("#tbMilestoneFinal").closest(".form-group").find("#selectScheduleSummaryFinal").closest("div .form-group").after("<div class='form-group'><label>Schedule Remarks</label><textarea class='form-control' id='textareaScheduleRemarks' placeholder='Schedule remarks'></textarea></div>")
+
+							   	$("#tbMilestoneFinal").closest(".form-group").find("#selectScheduleSummaryFinal").closest("div .form-group").after("<div class='form-group'><label>Schedule Remarks</label><textarea class='form-control' id='textareaScheduleRemarks' placeholder='Schedule remarks'></textarea><span class='help-block' style='display:none'>Please fill Schedule Remarks!</span></div>")
+
+							   	console.log($("#textareaScheduleRemarks").is(":visible"))
+							   	console.log(localStorage.getItem('cachedTextScheduleRemarks'))
+
+							   	setTimeout(function() {
+							   		if (localStorage.getItem('cachedTextScheduleRemarks') != "undefined") {
+								    	$("#textareaScheduleRemarks").val(localStorage.getItem('cachedTextScheduleRemarks'))
+							   		}
+								}, 1000);
+
 
 							   	if (status == 'verify') {
 							   		if (result.length > 0) {
@@ -6245,7 +6259,10 @@ PMO
 						   	}else{
 						   		selectScheduleSummary("BehindSchedule")
 						   	}
-						})			   	
+						})	
+
+						$("#textareaScheduleRemarks").closest(".form-group").removeClass(".has-error")
+						$("#textareaScheduleRemarks").next("span").hide()		   			   	
 
 				        $("#nextBtnFinal").attr('onclick','nextPrevAddFinal(1,"'+ status +'")')
 				        $("#prevBtnFinal").attr('onclick','nextPrevAddFinal(-1,"'+ status +'")')
@@ -6351,40 +6368,60 @@ PMO
 
 	    	url = "/PMO/storeApproveFinalReport"
 		}else{
-			swalFireCustom = {
-	          title: 'Are you sure?',
-	          text: "Submit Project Final",
-	          icon: 'warning',
-	          showCancelButton: true,
-	          confirmButtonColor: '#3085d6',
-	          cancelButtonColor: '#d33',
-	          confirmButtonText: 'Yes',
-	          cancelButtonText: 'No',
-	        }
+			if ($("#link_feedback").val() == "") {
+				$("#link_feedback").next("span").show()
+				$("#link_feedback").closest(".form-group").addClass("has-error")
+			}else if($("#textareaLessonLearn").val() == ""){
+				$("#textareaLessonLearn").next("span").show()
+				$("#textareaLessonLearn").closest(".form-group").addClass("has-error")
+			}else if ($("#textareaRecommendation").val() == "") {
+				$("#textareaRecommendation").next("span").show()
+				$("#textareaRecommendation").closest(".form-group").addClass("has-error")
+			}else{
+				$("#link_feedback").next("span").hide()
+				$("#link_feedback").closest(".form-group").removeClass("has-error")
 
-	        swalSuccess = {
-	        	icon: 'success',
-		        title: 'Final Report Has been Created!',
-		        text: 'Final Report will processed soon, please wait for further progress',
-	        }
+				$("#textareaLessonLearn").next("span").hide()
+				$("#textareaLessonLearn").closest(".form-group").removeClass("has-error")
 
-	        formData = new FormData
+				$("#textareaRecommendation").next("span").hide()
+				$("#textareaRecommendation").closest(".form-group").removeClass("has-error")
 
-	    	formData.append("_token","{{csrf_token()}}")
-	    	formData.append("id_pmo",window.location.href.split("/")[6].split("?")[0])
-	    	formData.append("selectScheduleSummaryFinal",$("#selectScheduleSummaryFinal").val())
-			formData.append("textareaScheduleRemarks",$("#textareaScheduleRemarks").val())
-			formData.append("link_feedback",$("#link_feedback").val())
-			formData.append("textareaLessonLearn",$("#textareaLessonLearn").val())
-			formData.append("textareaAdditionalNote",$("#textareaAdditionalNote").val())
-			formData.append("textareaRecomendation",$("#textareaRecommendation").val())
-			formData.append("arrPayDate",JSON.stringify(arrPayDate))
-			formData.append("arrToP",JSON.stringify(arrToP))
-			formData.append("arrMilestoneFinal",JSON.stringify(arrMilestoneFinal))
-			formData.append("arrChecklist",JSON.stringify(arrChecklist))
-			formData.append("status","final")
+				swalFireCustom = {
+		          title: 'Are you sure?',
+		          text: "Submit Project Final",
+		          icon: 'warning',
+		          showCancelButton: true,
+		          confirmButtonColor: '#3085d6',
+		          cancelButtonColor: '#d33',
+		          confirmButtonText: 'Yes',
+		          cancelButtonText: 'No',
+		        }
 
-	    	url = "/PMO/storeFinalReport"
+		        swalSuccess = {
+		        	icon: 'success',
+			        title: 'Final Report Has been Created!',
+			        text: 'Final Report will processed soon, please wait for further progress',
+		        }
+
+		        formData = new FormData
+
+		    	formData.append("_token","{{csrf_token()}}")
+		    	formData.append("id_pmo",window.location.href.split("/")[6].split("?")[0])
+		    	formData.append("selectScheduleSummaryFinal",$("#selectScheduleSummaryFinal").val())
+				formData.append("textareaScheduleRemarks",$("#textareaScheduleRemarks").val())
+				formData.append("link_feedback",$("#link_feedback").val())
+				formData.append("textareaLessonLearn",$("#textareaLessonLearn").val())
+				formData.append("textareaAdditionalNote",$("#textareaAdditionalNote").val())
+				formData.append("textareaRecomendation",$("#textareaRecommendation").val())
+				formData.append("arrPayDate",JSON.stringify(arrPayDate))
+				formData.append("arrToP",JSON.stringify(arrToP))
+				formData.append("arrMilestoneFinal",JSON.stringify(arrMilestoneFinal))
+				formData.append("arrChecklist",JSON.stringify(arrChecklist))
+				formData.append("status","final")
+
+		    	url = "/PMO/storeFinalReport"
+			}
 
 		}
 
@@ -6463,8 +6500,10 @@ PMO
     })
 
     function nextPrevAddFinal(n,status){
-    	
     	if (currentTab == 1) {
+    	console.log(currentTab)
+    	console.log("sana")
+
     		if (n == 1) {
     			if (status == 'update') {
     				formData = new FormData;
@@ -6491,16 +6530,24 @@ PMO
 			            }
 			        })
     			}else{
-    				let x = document.getElementsByClassName("tab-add-final");
-			        x[currentTab].style.display = "none";
-			        currentTab = currentTab + n;
-			        if (currentTab >= x.length) {
-			          x[n].style.display = "none";
-			          currentTab = 0;
-			        }
-			        btnFinalProject(currentTab,status); 
+    	console.log("sini")
+    				if ($("#textareaScheduleRemarks").val() == "") {
+		    			$("#textareaScheduleRemarks").closest(".form-group").addClass("has-error")
+		    			$("#textareaScheduleRemarks").next("span").show()
+		    		}else{
+		    			let x = document.getElementsByClassName("tab-add-final");
+				        x[currentTab].style.display = "none";
+				        currentTab = currentTab + n;
+				        if (currentTab >= x.length) {
+				          x[n].style.display = "none";
+				          currentTab = 0;
+				        }
+				        btnFinalProject(currentTab,status);
+		    		}
     			}
     		}else{
+    	console.log("situ")
+
     			let x = document.getElementsByClassName("tab-add-final");
 		        x[currentTab].style.display = "none";
 		        currentTab = currentTab + n;
@@ -6598,6 +6645,7 @@ PMO
 		        btnFinalProject(currentTab,status); 
 			}
     	}else{
+    	console.log("okee")
 			let x = document.getElementsByClassName("tab-add-final");
 	        x[currentTab].style.display = "none";
 	        currentTab = currentTab + n;
@@ -6605,7 +6653,7 @@ PMO
 	          x[n].style.display = "none";
 	          currentTab = 0;
 	        }
-	        btnFinalProject(currentTab,status); 			
+	        btnFinalProject(currentTab,status);
     	}
     	
     }
