@@ -1726,7 +1726,7 @@ class TimesheetController extends Controller
         }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
             if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+                if ($cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Asset Management') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
                     ->where('roles.mini_group','Center Point & Asset Management SVC')
@@ -1755,10 +1755,12 @@ class TimesheetController extends Controller
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                                         ->select('users.name','users.nik')
-                                        ->where('roles.group','msm')
+                                        ->where('roles.group','Supply Chain, CPS & Asset Management')
                                         ->where('roles.name','not like','%Manager')
-                                        ->where('roles.name','not like','%MSM Helpdesk%')
-                                        ->where('roles.name','not like','%MSM Lead Helpdesk%')
+                                        ->where('roles.name','not like','VP%')
+                                        // ->where('roles.name','not like','%MSM Helpdesk%')
+                                        // ->where('roles.name','not like','%MSM Lead Helpdesk%')
+                                        // ->where('roles.name','not like','%MSM Intern%')
                                         ->where('users.status_delete','-')
                                         ->whereNotIn('nik', $sumMandays->pluck('nik'))
                                         ->get();
@@ -4303,7 +4305,7 @@ class TimesheetController extends Controller
                 $data = $data->where('tb_timesheet.nik',$nik)->where('status','Done')->get();
                 $arrayName = array(Auth::User()->name => [0,0,0,0,0,0,0,0,0,0,0,0]);
                 if (count($data) == 0) {
-                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);
+                    $arrCummulativeMandays->push(['name'=>Auth::User()->name,'month_array'=>$arrayName]);                    
                 }else{
                     foreach($arrayName as $key_month_name => $month_value){
                         if ($key_month_name == Auth::User()->name) {
