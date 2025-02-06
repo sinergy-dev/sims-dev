@@ -392,7 +392,7 @@
                       <div class="input-group-addon">
                         <strong>RP</strong>
                       </div>
-                      <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money" onkeyup="fillInput('inputNilaiBuku')">
+                      <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money" onkeyup="fillInput('inputNilaiBuku')" readonly>
                     </div>
                   </div>
                 </div>
@@ -1847,9 +1847,11 @@
               div.append(label);
 
               var select = $('<select>', {
-                  id: 'inputSpesifikasi_' + item.name,
+                  id: 'inputSpesifikasi_' + item.id,
                   name: 'inputSpesifikasi_' + item.name,
                   class: 'form-control',
+                  'data-spec-id': item.id,          
+                  'data-spec-name': item.name,
                   onchange: function() {
                       fillInput('inputSpesifikasi_' + item.name);
                   }
@@ -1877,9 +1879,21 @@
 
               select.select2({
                 placeholder: 'Select ' + item.name,
-                allowClear: true
+                allowClear: true,
+                tags: true,
+                dropdownParent: $('#modal-add-asset'),
+                createTag: function(params) {
+                  let term = params.term.trim();
+                  if (term === '') {
+                    return null;
+                  }
+                  return {
+                    id: term,      
+                    text: term,
+                    newOption: true
+                  };
+                }
               });
-
             });
           }else if(category === 'FNT' || category === 'ELC'){
             $("#inputAccessoris").closest(".form-group").remove()
@@ -1935,7 +1949,7 @@
               <div class="col-md-6">
                 <div class="form-group" id="serialNumberGroupVehicle">
                   <label>Nomor Polisi</label>
-                  <input id="inputSerialNumber" name="inputSerialNumber" class="form-control" ...>
+                  <input id="inputNomorPolisi" name="inputNomorPolisi" class="form-control">
                   <span class="help-block" style="display:none;">Please fill Nomor Polisi!</span>
                 </div>
               </div>
@@ -1952,8 +1966,22 @@
                 </div>
               </div>
             `);
-            
             $("#spesifikasiContainer").append(row);
+
+            $("#inputNomorPolisi").on("input", function() {
+              const $this = $(this);
+              const $formGroup = $this.closest(".form-group");
+              const $helpBlock = $formGroup.find(".help-block");
+              
+              $formGroup.removeClass("has-error");
+              $helpBlock.hide();
+
+              if (!$this.val().trim()) {
+                $formGroup.addClass("has-error");
+                $helpBlock.show();
+              }
+            });
+
             clearValidationOnChange();
             $("#inputAccessoris").closest(".form-group").remove();
             $("#vendorContainer").show();
@@ -2000,10 +2028,9 @@
                     }
 
                     var alert = $('<span>',{
-                    class : 'help-block',
-                    style: 'display: none',
-                    text: 'Please fill ' + item.name + '!'
-
+                      class : 'help-block',
+                      style: 'display: none',
+                      text: 'Please fill ' + item.name + '!'
                     });
                     div.append(alert);
 
@@ -2052,7 +2079,7 @@
           success: function(data){
             data.forEach(function(item) {
                     $('<option>', {
-                        value: item.name,
+                        value: item.id,
                         text: item.name
                     }).appendTo(selectElement);
                 });
@@ -2095,7 +2122,7 @@
   
     $("#selectStatus").select2({
       placeholder:"Select Status",
-      dropdownParent: $('#modal-add-asset'), // optional if dropdown is inside a modal or a specific container
+      dropdownParent: $('#modal-add-asset'), 
       dropdownPosition: 'below',
       data:[
         {id:"Installed",text:"Installed"},
@@ -2110,11 +2137,25 @@
       }else{
         $("#txtAreaReason").closest(".form-group").hide()
       } 
-      if (id == "Available") {
-        $("#inputInstalledDate").closest(".form-group").hide();
-      }
     })
 
+    function toggleInstalledDate() {
+      var status = $('#selectStatus').val();
+      if (status === 'Available') {
+        $("#inputInstalledDate").closest(".form-group").hide();
+      } else {
+        $("#inputInstalledDate").closest(".form-group").show();
+      }
+    }
+
+    $('#selectStatus').on('change', function() {
+      toggleInstalledDate();
+      if ($(this).val() === 'Available') {
+        $("#inputInstalledDate").val('');
+        $("#inputInstalledDate").find('.help-block').hide();
+      }
+    });
+    
     function capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -2348,10 +2389,20 @@
         selectLicense.append(defaultOption,options);
         $('#inputLicense').replaceWith(selectLicense);
 
-        $('#inputLicense').on('change', function(event) {
-          $('#inputLicenseStart').datepicker('setDate', moment($("#inputInstalledDate").val(),'DD/MM/YYYY').format('DD/MM/YYYY')).attr('readonly',true);
-          $('#inputLicenseEnd').datepicker('setDate', moment($("#inputInstalledDate").val(),'DD/MM/YYYY').add(parseInt($("#inputLicense").val()), 'years').format("DD/MM/YYYY")).attr('readonly',true);
-        })
+        if ($('#selectStatus').val() === 'Installed') {
+          $('#inputLicense').on('change', function(event) {
+            $('#inputLicenseStart').datepicker('setDate', moment($("#inputInstalledDate").val(),'DD/MM/YYYY').format('DD/MM/YYYY')).attr('readonly',true);
+            $('#inputLicenseEnd').datepicker('setDate', moment($("#inputInstalledDate").val(),'DD/MM/YYYY').add(parseInt($("#inputLicense").val()), 'years').format("DD/MM/YYYY")).attr('readonly',true);
+          })
+        } else {
+          $('#inputLicense').on('change', function(event) {
+          var licenseStart = moment($('#inputLicenseStart').datepicker('getDate')).format('DD/MM/YYYY');
+          var durationYears = parseInt($("#inputLicense").val());
+          if (licenseStart && !isNaN(durationYears)) {
+            $('#inputLicenseEnd').datepicker('setDate', moment(licenseStart, 'DD/MM/YYYY').add(durationYears, 'years').format('DD/MM/YYYY')).attr('readonly', true);
+          }
+        });
+       }
 
         let prLabel = $('<label>',{
           text: "PR"
@@ -2475,6 +2526,13 @@
         });
         picContainer.append(selectPIC);
 
+        let helpBlock = $('<span>', {
+            class: 'help-block',
+            text: 'Please fill PIC!',
+            style: 'display:none;'
+        });
+        picContainer.append(helpBlock);
+
         clientContainer.append(picContainer);
 
         $("#inputPIC").select2({
@@ -2501,14 +2559,22 @@
           if (pid === 'INTERNAL') {
             if (status === 'Available') {
               $("#picContainer").hide();
-              // $("#picContainer").find(".form-group").removeClass("has-error");
-              // $("#picContainer").find(".help-block").hide();
-              // $("#inputPIC").val(null).trigger('change');
+              $("#inputPIC").val(null).trigger('change');
+              $("#txtAreaReason").val(null).trigger('change');
+              $("#inputPIC").closest(".form-group").removeClass("has-error");
+              $("#inputPIC").closest(".form-group").find('.help-block').hide();
             } else {
               $("#picContainer").show();
             }
-            }
+          }
         }
+
+        $("#inputPIC").on('change', function() {
+          if ($(this).val()) { 
+              $(this).closest(".form-group").removeClass("has-error");
+              $(this).closest(".form-group").find('.help-block').hide();
+          }
+        });
 
       } else {
           $("#rmaContainer").show();
@@ -2625,9 +2691,9 @@
     // $("#inputIPAddress").inputmask("ip")
     currentTab = 0
     function nextPrev(n){
-      //console.log(n)
-      //console.log(currentTab)
-      if (currentTab == 0) {
+      // console.log(n)
+      // console.log(currentTab)
+      if (currentTab == 0) { 
         if ($("#selectCategory").val() != "COM") {
           if($("#selectCategory").val() === "FNT" || $("#selectCategory").val() === "VHC" || $("#selectCategory").val() === "ELC"){
             $.each($(".tab-add:first").find("select"), function(item, data) {
@@ -2644,7 +2710,7 @@
            $.each($(".tab-add:first").find("input"),function(item,data){
               var $el = $(this);
               if ($el.css("display") !== "none") {
-                if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku" && data.id != "inputBuktiAsset" && data.id != "inputSerialNumber" && data.id != "inputClient") {
+                if (data.id != "inputRMA" && data.id != "inputSpesifikasi" && data.id != "inputServer" && data.id != "inputTglBeli" && data.id != "inputHarga" && data.id != "inputNilaiBuku" && data.id != "inputBuktiAsset" && data.id != "inputSerialNumber" && data.id != "inputClient")  {
                   if ($(data).val() == "") {
                     $("input[name='"+ data.id +"']").closest(".form-group").find(".help-block").show()
                     $("input[name='"+ data.id +"']").closest(".form-group").addClass("has-error")
@@ -2652,6 +2718,28 @@
                 }
               }
             })
+          
+          if ($("#selectStatus").val() === 'Rent' || $("#selectStatus").val() === "Unavailable") {
+            if ($("#txtAreaReason").val() === "") {
+              $("#txtAreaReason").closest(".form-group").addClass("has-error");
+              $("#txtAreaReason").closest(".form-group").find('.help-block').show();
+            } else {
+              $("#txtAreaReason").closest(".form-group").removeClass("has-error");
+              $("#txtAreaReason").closest(".form-group").find('.help-block').hide();
+            }
+          }
+
+          if ($("#selectPID").val() === 'INTERNAL') {
+            if ($("#selectStatus").val() !== ("Available")) {
+              if ($("#inputPIC").val() === null) {
+                $("#inputPIC").closest(".form-group").addClass("has-error");
+                $("#inputPIC").closest(".form-group").find('.help-block').show();
+              } else {
+                $("#inputPIC").closest(".form-group").removeClass("has-error");
+                $("#inputPIC").closest(".form-group").find('.help-block').hide();
+              }
+            }
+          }
 
           } else {   
             $.each($(".tab-add:first").find("select"),function(item,data){
@@ -2677,8 +2765,51 @@
                 }
               }
             })
+
+            if ($("#selectStatus").val() === 'Rent' || $("#selectStatus").val() === "Unavailable") {
+              if ($("#txtAreaReason").val() === "") {
+                $("#txtAreaReason").closest(".form-group").addClass("has-error");
+                $("#txtAreaReason").closest(".form-group").find('.help-block').show();
+              } else {
+                $("#txtAreaReason").closest(".form-group").removeClass("has-error");
+                $("#txtAreaReason").closest(".form-group").find('.help-block').hide();
+              }
+            }
+
+            if ($("#selectPID").val() === 'INTERNAL') {
+              if ($("#selectStatus").val() !== ("Available")) {
+                if ($("#inputPIC").val() === null) {
+                  $("#inputPIC").closest(".form-group").addClass("has-error");
+                  $("#inputPIC").closest(".form-group").find('.help-block').show();
+                } else {
+                  $("#inputPIC").closest(".form-group").removeClass("has-error");
+                  $("#inputPIC").closest(".form-group").find('.help-block').hide();
+                }
+              }
+            }
+          }
+        } else {
+          if ($("#selectStatus").val() === 'Rent' || $("#selectStatus").val() === "Unavailable") {
+            if ($("#txtAreaReason").val() === "") {
+              $("#txtAreaReason").closest(".form-group").addClass("has-error");
+              $("#txtAreaReason").closest(".form-group").find('.help-block').show();
+            } else {
+              $("#txtAreaReason").closest(".form-group").removeClass("has-error");
+              $("#txtAreaReason").closest(".form-group").find('.help-block').hide();
+            }
           }
 
+          if ($("#selectPID").val() === 'INTERNAL') {
+            if ($("#selectStatus").val() !== ("Available")) {
+              if ($("#inputPIC").val() === null) {
+                $("#inputPIC").closest(".form-group").addClass("has-error");
+                $("#inputPIC").closest(".form-group").find('.help-block').show();
+              } else {
+                $("#inputPIC").closest(".form-group").removeClass("has-error");
+                $("#inputPIC").closest(".form-group").find('.help-block').hide();
+              }
+            }
+          }
         }
 
         if ($(".tab-add:first").find(".form-group").hasClass("has-error") == false) {
@@ -2898,6 +3029,19 @@
           }
         }
       }
+
+      if ($('#selectStatus').val() !== 'Available') {
+        var installedDate = $('#inputInstalledDate').val().trim();
+        if (installedDate === '') {
+          $("#inputInstalledDate").closest(".form-group").find('.help-block').show();  
+          $("#inputInstalledDate").closest(".form-group").addClass("has-error")
+          return;
+        } else {
+          $("#inputInstalledDate").closest(".form-group").find('.help-block').hide();
+          $("#inputInstalledDate").closest(".form-group").removeClass("has-error");
+        }
+      }
+
       if (checkInput == false) {
         Swal.fire({
           title: 'Are you sure?',
@@ -2921,15 +3065,97 @@
                 const osValue = match[1].trim();
                 dataForm.append('operatingSystem', osValue);
               } 
-            } 
+            }
+            
+            let tanggalBeli = $("#inputTglBeli").val();
+            let hargaBeli = $("#inputHarga").val();
+            let nilaiBuku = 0;
 
+            if (tanggalBeli !== null) {
+              var currentDate = new Date();
+              var purchaseDate = new Date(tanggalBeli);
+              var dayDifference = Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 * 24));
+              var depreciationPercentage = 0;
+
+              if (dayDifference > 1460) {
+                  depreciationPercentage = 100;
+              } else if (dayDifference > 1095) {
+                  depreciationPercentage = 75;
+              } else if (dayDifference > 730) {
+                  depreciationPercentage = 50;
+              } else if (dayDifference > 365) {
+                  depreciationPercentage = 25;
+              }
+              
+              if (depreciationPercentage > 0) {   
+                var nilaiBeli = parseFloat(hargaBeli.replace(/\./g, ''));
+                var nilaiBukuNew = nilaiBeli * (1 - depreciationPercentage / 100);
+                if (nilaiBuku !== nilaiBukuNew) {
+                  nilaiBuku = nilaiBukuNew
+                }
+              } 
+              else {
+                nilaiBuku = parseFloat(hargaBeli.replace(/\./g, ''));
+              }
+            }
+
+            let $allSelects = $("#spesifikasiContainer select[data-spec-id]");
+            let newItems = [];
+
+            $allSelects.each(function() {
+              let $sel = $(this);
+              let val = $sel.val();
+              if (val) {
+                newItems.push({
+                  $select: $sel,
+                  specId: $sel.attr('data-spec-id'),
+                  typedValue: val
+                });
+              }
+            });
+
+            let i = 0;
+            function storeNextTag() {
+              if (i >= newItems.length) {
+                return;
+              }
+              let item = newItems[i];
+
+              $.ajax({
+                url: '{{ url("asset/storeSpesifikasiDetail") }}',
+                type: 'POST',
+                data: {
+                  _token: '{{ csrf_token() }}',
+                  id_spesifikasi: item.specId,
+                  name: item.typedValue.trim()
+                },
+                success: function(resp) {
+                  item.$select.find('option').filter(function() {
+                    return this.value === item.typedValue;
+                  }).remove();
+
+                  let newOption = new Option(resp.name, resp.id, true, true);
+                  item.$select.append(newOption).trigger('change');
+                  i++;
+                  storeNextTag();
+                },
+                error: function(err) {
+                  console.error("Error storing new detail:", err);
+                  Swal.fire("Failed to store new spesifikasi detail.", "", "error");
+                }
+              });
+            }
+            storeNextTag();
+            
             // if its vehicle remove Nomor Polisi in spesifikasi
             if ($("#selectCategory").val() === "VHC") {
               let spesifikasi = collectSpesifikasiValues().replaceAll("<br>", "\n");
               const match = spesifikasi.match(/^Nomor Polisi\s*:\s*(.*)$/m);
-              dataForm.append("serialNumber", match[1].trim());
-              spesifikasi = spesifikasi.replace(/^Nomor Polisi\s*:\s*.*$/m, "").trim();
-              dataForm.append("spesifikasi", spesifikasi);
+              if (match) {
+                dataForm.append("serialNumber", match[1].trim());
+                spesifikasi = spesifikasi.replace(/^Nomor Polisi\s*:\s*.*$/m, "").trim();
+                dataForm.append("spesifikasi", spesifikasi);
+              }
             }
             else {
               dataForm.append('serialNumber',$("#inputSerialNumber").val());
@@ -2979,7 +3205,8 @@
             //dataForm.append('tanggalBeli',moment(($("#inputTglBeli").val()), "DD/MM/YYYY").format("YYYY-MM-DD"))
             dataForm.append('tanggalBeli', $("#inputTglBeli").val())
             dataForm.append('hargaBeli',$("#inputHarga").val())
-            dataForm.append('nilaiBuku',$("#inputNilaiBuku").val())
+            //dataForm.append('nilaiBuku',$("#inputNilaiBuku").val())
+            dataForm.append('nilaiBuku', nilaiBuku)
             dataForm.append('reason',$("#txtAreaReason").val())
             dataForm.append('inputDoc',$('#inputBuktiAsset').prop('files')[0])
             dataForm.append('pr',$("#inputPr").val())
@@ -3168,6 +3395,7 @@
     function InitiateCountDashboard(url){
       $.ajax({
         url:url,
+        data: { year: new Date().getFullYear() },
         type:"GET",
         success:function(response){
           $("#countAll").text(response.countAll)

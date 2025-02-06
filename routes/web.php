@@ -1423,7 +1423,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/sbe/getConfigChoosed','SBEController@getConfigChoosed');
 	Route::post('/sbe/resetVersion','SBEController@resetVersion');
 	Route::post('/sbe/deleteDetailItem','SBEController@deleteDetailItem');
-	Route::get('sbe/dashboard','SBEController@dashboardSbe');
+	Route::get('sbe/getDashboardSbe','SBEController@dashboardSbe');
 	Route::get('sbe/getDataChartSbe','SBEController@getDataDashboardSbe');
 
 
@@ -1612,6 +1612,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/getRolesById','AssetMgmtController@getRolesById');
 	Route::get('asset/getSpesifikasi', 'AssetMgmtController@getSpesifikasi');
 	Route::get('asset/getSpesifikasiDetail', 'AssetMgmtController@getSpesifikasiDetail');
+	Route::post('asset/storeSpesifikasiDetail', 'AssetMgmtController@storeSpesifikasiDetail');
 	Route::get('asset/getEmployeeNames','AssetMgmtController@getEmployeeNames');
 	Route::get('asset/getPrByYear','AssetMgmtController@getPrByYear');
 	Route::get('asset/getLocationAddress','AssetMgmtController@getLocationAddress');
@@ -1811,8 +1812,11 @@ Route::get('/sales/quote/detail/{id}', 'QuoteController@detailQuotation');
 Route::get('/sales/quote/getDetailQuote/', 'QuoteController@getDetailQuote');
 Route::get('/sales/quote/getActivity', 'QuoteController@getActivity');
 Route::get('/sales/quote/getVersionConfig', 'QuoteController@getVersionConfig');
+Route::get('/sales/quote/getVersionDetail', 'QuoteController@getVersionDetail');
 Route::get('/sales/quote/generatePDFQuote', 'QuoteController@generatePDF');
 Route::post('/sales/quote/approveQuotation', 'QuoteController@approveQuotation');
 Route::post('/sales/quote/rejectQuotation', 'QuoteController@rejectQuotation');
 Route::post('/sales/quote/saveSignature', 'QuoteController@saveSignature');
+Route::post('/sales/quote/sendMailtoCustomer', 'QuoteController@sendMailtoCustomer');
+Route::get('sales/quote/getDataEmail', 'QuoteController@getDataEmail');
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');
