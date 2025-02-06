@@ -103,7 +103,9 @@ class AssetMgmtController extends Controller
 
     public function dashboard()
     {
-        return view('asset_management/dashboard')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_mgmt')]);
+        $year = DB::table('tb_asset_management')->selectRaw('YEAR(created_at) as year')->distinct()->get();
+
+        return view('asset_management/dashboard',compact('year'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_mgmt')]);
     }
 
     public function asset_scheduling()
@@ -1588,6 +1590,38 @@ class AssetMgmtController extends Controller
 
     public function getDetailAsset(Request $request)
     {
+        $updateAsset = AssetMgmt::where('id',$request->id_asset)->first();
+        if ($updateAsset->tanggal_pembelian) {   
+
+            $purchaseDate = new \Carbon\Carbon($updateAsset->tanggal_pembelian);
+            $dayDifference = \Carbon\Carbon::now()->diffInDays($purchaseDate);
+
+            $depreciationPercentage = 0;
+            if ($dayDifference > 1460) {
+                $depreciationPercentage = 100;
+            } elseif ($dayDifference > 1095) {
+                $depreciationPercentage = 75;
+            } elseif ($dayDifference > 730) {
+                $depreciationPercentage = 50;
+            } elseif ($dayDifference > 365) {
+                $depreciationPercentage = 25;
+            }
+
+            if ($depreciationPercentage > 0) {
+                $computedNilaiBuku = ceil(floatval($updateAsset->harga_beli) * (1 - $depreciationPercentage / 100));
+                if ($updateAsset->nilai_buku != $computedNilaiBuku) {
+                    $updateAsset->nilai_buku = $computedNilaiBuku;
+                    $updateAsset->save();
+                }
+            } 
+            else {
+                if ($updateAsset->nilai_buku != $updateAsset->harga_beli) {
+                    $updateAsset->nilai_buku = $updateAsset->harga_beli;
+                    $updateAsset->save();
+                }
+            }
+        }
+
         $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
         // return $getId->get();
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`');
@@ -1646,7 +1680,7 @@ class AssetMgmtController extends Controller
                     'tanggal_pembelian',
                     'nilai_buku',
                     'harga_beli',
-                    'tb_asset_management.id',
+                    'tb_asset_management.id as id',
                     'tb_asset_management_detail.id as id_detail_asset',
                     'reason_status',
                     'tb_asset_management_detail.link_drive as link_drive_asset',
@@ -1702,13 +1736,23 @@ class AssetMgmtController extends Controller
             $sla = 0;
             $getData = $getData->put('countTicket',$countTicket)->put('slaUptime',number_format($sla, 2, '.', ''));
         }
+
+        
+        $getData = collect($getAll);
         return $getData;
     }
 
-    public function getLog()
+    public function getLog(Request $request)
     {
-        $data = AssetMgmtLog::orderBy('date_add','desc')->get();
-        return $data;
+        if ($request->year != '') {
+            $year = $request->year;
+        }else{
+            $year = date('Y');
+        }
+
+        $data = AssetMgmtLog::whereIn(DB::raw('YEAR(date_add)'), $year)->orderBy('date_add','desc');
+
+        return array("data"=>$data->get());
     }
 
     public function getLogById(Request $request)
@@ -1936,12 +1980,49 @@ class AssetMgmtController extends Controller
 
     public function getChartAssetOwner(Request $request)
     {
-        $data = AssetMgmt::get();
-        $desc = AssetMgmt::select('asset_owner')->where('asset_owner', '!=', null)->groupBy('asset_owner')->get()->pluck('asset_owner');
+        if ($request->year != "") {
+            $year = $request->year;
+        }else{
+            $year = date('Y');
+        }
+
+        $data = AssetMgmt::join('tb_asset_management_detail','tb_asset_management.id','=','tb_asset_management_detail.id_asset')
+            ->whereIn(DB::raw('YEAR(tb_asset_management.created_at)'), $year);
+
+        $desc = AssetMgmt::whereIn(DB::raw('YEAR(tb_asset_management.created_at)'), $year)->select('asset_owner');
+
+        if (isset($request->assetOwner)) {
+            $data = $data->where('tb_asset_management.asset_owner',$request->assetOwner);
+        }
+
+        if (isset($request->category)) {
+            $data = $data->where('tb_asset_management.category',$request->category);
+        }
+
+        if (isset($request->client)) {
+            $data = $data->where('tb_asset_management_detail.client',$request->client);
+        }
+
+        if (isset($request->pid)) {
+            $data = $data->where('tb_asset_management_detail.pid',$request->pid);
+        }
+
+        $desc = $desc->whereNotNull('asset_owner')->groupBy('asset_owner')->get()->pluck('asset_owner');
+        $data = $data->whereNotNull('asset_owner')->get();
+
+        // return count($data);
+
+
         $length = $desc->count();
+        $allData = [];
 
         if (count($data) == 0) {
-            $hasil2 = [0,0,0];
+            // $hasil2 = [0,0,0];
+            $allData[] = [
+                'label' => '-',
+                'value' => 0,
+                'countValue' => 0
+            ];
         }else{
             $hasil = array_fill(0, $length, 0);
             $pie = 0;
@@ -1961,36 +2042,42 @@ class AssetMgmtController extends Controller
             });
 
             $hasil2 = array_fill(0, $length, 0);
+            $countValue = array_fill(0, $length, 0);
             $sortedDesc = $desc->toArray();
 
             if (!$isAllZeros) {
                 foreach ($hasil as $key => $value) {
                     $hasil2[$key] = round(($value / $pie) * 100, 2);
+                    $countValue[$key] = $value;
                 }
 
                 $combined = [];
                 foreach ($hasil2 as $key => $value) {
-                    $combined[] = [
-                        'label' => $desc[$key],
-                        'value' => $value
-                    ];
+                    if ($desc[$key] != 'null') {
+                        $combined[] = [
+                            'label' => $desc[$key],
+                            'value' => $value
+                        ];
+                    }
                 }
 
-                usort($combined, function ($a, $b) {
-                    return $b['value'] <=> $a['value'];
-                });
+                // usort($combined, function ($a, $b) {
+                //     return $b['value'] <=> $a['value'];
+                // });
 
                 $hasil2 = array_column($combined, 'value');
                 $sortedDesc = array_column($combined, 'label');
             }
-        }
 
-        $allData = [];
-        foreach ($sortedDesc as $key => $label) {
-            $allData[] = [
-                'label' => $label,
-                'value' => $hasil2[$key]
-            ];
+            foreach ($sortedDesc as $key => $label) {
+                $allData[] = [
+                    'label' => $label,
+                    'value' => $hasil2[$key],
+                    'countValue' => $countValue[$key]
+                ];
+            }
+
+            $allData = $allData;
         }
 
         // return collect(["allData"=>$allData,"limitData"=>$allData]);
@@ -2000,12 +2087,43 @@ class AssetMgmtController extends Controller
 
     public function getChartCategory(Request $request)
     {
-        $data = AssetMgmt::get();
-        $desc = AssetMgmt::select('category')->where('category', '!=', null)->groupBy('category')->get()->pluck('category');
+        if ($request->year != "") {
+            $year = $request->year;
+        }else{
+            $year = date('Y');
+        }
+
+        $data = AssetMgmt::join('tb_asset_management_detail','tb_asset_management.id','=','tb_asset_management_detail.id_asset')
+            ->whereIn(DB::raw('YEAR(created_at)'), $year);
+        $desc = AssetMgmt::whereIn(DB::raw('YEAR(created_at)'), $year)->select('category')->where('category', '!=', null)->groupBy('category')->get()->pluck('category');
         $length = $desc->count();
 
+        if (isset($request->assetOwner)) {
+            $data = $data->where('tb_asset_management.asset_owner',$request->assetOwner);
+        }
+
+        if (isset($request->category)) {
+            $data = $data->where('tb_asset_management.category',$request->category);
+        }
+
+        if (isset($request->client)) {
+            $data = $data->where('tb_asset_management_detail.client',$request->client);
+        }
+
+        if (isset($request->pid)) {
+            $data = $data->where('tb_asset_management_detail.pid',$request->pid);
+        }
+
+        $data = $data->whereNotNull('asset_owner')->get();
+
+        $allData = [];
+
         if (count($data) == 0) {
-            $hasil2 = [0,0,0];
+            $allData[] = [
+                'label' => '-',
+                'value' => 0,
+                'countValue' => 0
+            ];
         }else{
             $hasil = array_fill(0, $length, 0);
             $pie = 0;
@@ -2025,11 +2143,13 @@ class AssetMgmtController extends Controller
             });
 
             $hasil2 = array_fill(0, $length, 0);
+            $countValue = array_fill(0, $length, 0);
             $sortedDesc = $desc->toArray();
 
             if (!$isAllZeros) {
                 foreach ($hasil as $key => $value) {
                     $hasil2[$key] = round(($value / $pie) * 100, 2);
+                    $countValue[$key] = $value;
                 }
 
                 $combined = [];
@@ -2040,21 +2160,21 @@ class AssetMgmtController extends Controller
                     ];
                 }
 
-                usort($combined, function ($a, $b) {
-                    return $b['value'] <=> $a['value'];
-                });
+                // usort($combined, function ($a, $b) {
+                //     return $b['value'] <=> $a['value'];
+                // });
 
                 $hasil2 = array_column($combined, 'value');
                 $sortedDesc = array_column($combined, 'label');
             }
-        }
 
-        $allData = [];
-        foreach ($sortedDesc as $key => $label) {
-            $allData[] = [
-                'label' => $label,
-                'value' => $hasil2[$key]
-            ];
+            foreach ($sortedDesc as $key => $label) {
+                $allData[] = [
+                    'label' => $label,
+                    'value' => $hasil2[$key],
+                    'countValue'=> $countValue[$key]
+                ];
+            }
         }
 
         // return collect(["allData"=>$allData,"limitData"=>$allData]);
@@ -2064,15 +2184,47 @@ class AssetMgmtController extends Controller
 
     public function getChartVendor(Request $request)
     {
-        $data = AssetMgmt::get();
-        $desc = AssetMgmt::select('vendor')->where('vendor', '!=', null)->groupBy('vendor')->get()->pluck('vendor');
+        if ($request->year != "") {
+            $year = $request->year;
+        }else{
+            $year = date('Y');
+        }
+
+        $data = AssetMgmt::join('tb_asset_management_detail','tb_asset_management.id','=','tb_asset_management_detail.id_asset')
+                ->whereIn(DB::raw('YEAR(created_at)'), $year);
+                // ->whereRaw("YEAR(created_at) = ?", [$year]);
+        $desc = AssetMgmt::whereIn(DB::raw('YEAR(created_at)'), $year)->select('vendor')->where('vendor', '!=', null)->groupBy('vendor')->get()->pluck('vendor');
+
+        if (isset($request->assetOwner)) {
+            $data = $data->where('tb_asset_management.asset_owner',$request->assetOwner);
+        }
+
+        if (isset($request->category)) {
+            $data = $data->where('tb_asset_management.category',$request->category);
+        }
+
+        if (isset($request->client)) {
+            $data = $data->where('tb_asset_management_detail.client',$request->client);
+        }
+
+        if (isset($request->pid)) {
+            $data = $data->where('tb_asset_management_detail.pid',$request->pid);
+        }
+
+        $data = $data->whereNotNull('asset_owner')->get();
+
         $length = $desc->count();
 
         $hasilChart = collect();
 
+        $allData = [];
+
         if (count($data) == 0) {
-            $hasil2 = array_fill(0, $length, 0);
-            $sortedDesc = $desc->toArray();
+            $allData[] = [
+                'label' => '-',
+                'value' => 0,
+                'countValue' => 0
+            ];
         } else {
             $hasil = array_fill(0, $length, 0);
             $pie = 0;
@@ -2092,11 +2244,14 @@ class AssetMgmtController extends Controller
             });
 
             $hasil2 = array_fill(0, $length, 0);
+            $countValue = array_fill(0, $length, 0);
+
             $sortedDesc = $desc->toArray();
 
             if (!$isAllZeros) {
                 foreach ($hasil as $key => $value) {
                     $hasil2[$key] = round(($value / $pie) * 100, 2);
+                    $countValue[$key] = $value;
                 }
 
                 $combined = [];
@@ -2107,23 +2262,22 @@ class AssetMgmtController extends Controller
                     ];
                 }
 
-                usort($combined, function ($a, $b) {
-                    return $b['value'] <=> $a['value'];
-                });
+                // usort($combined, function ($a, $b) {
+                //     return $b['value'] <=> $a['value'];
+                // });
 
                 $hasil2 = array_column($combined, 'value');
                 $sortedDesc = array_column($combined, 'label');
             }
-        }
 
-        $allData = [];
-        foreach ($sortedDesc as $key => $label) {
-            $allData[] = [
-                'label' => $label,
-                'value' => $hasil2[$key]
-            ];
+            foreach ($sortedDesc as $key => $label) {
+                $allData[] = [
+                    'label' => $label,
+                    'value' => $hasil2[$key],
+                    'countValue' => $countValue[$key]
+                ];
+            }
         }
-
         // return collect(["allData"=>$allData,"limitData"=>$allData]);
 
         return $allData;
@@ -2131,12 +2285,18 @@ class AssetMgmtController extends Controller
 
     public function getChartClient(Request $request)
     {
-        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        if ($request->year != "") {
+            $year = $request->year;
+        }else{
+            $year = date('Y');
+        }
+
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id')
+            ->whereIn(DB::raw('YEAR(tb_asset_management.created_at)'), $year);
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
-        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_contact','tb_contact.customer_legal_name','tb_asset_management_detail.client')->select('asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','tb_asset_management.status','rma','spesifikasi','serial_number','notes','client','code')
+        $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_contact','tb_contact.customer_legal_name','tb_asset_management_detail.client')->select('asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','tb_asset_management.status','rma','spesifikasi','serial_number','notes','client','code');
             // ->where('category_peripheral','-')
-            ->get();
 
         $desc = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')->join('tb_contact','tb_contact.customer_legal_name','tb_asset_management_detail.client')
             ->select('tb_contact.code')
@@ -2147,11 +2307,34 @@ class AssetMgmtController extends Controller
 
         $length = $desc->count(); 
 
+        if (isset($request->assetOwner)) {
+            $data = $data->where('tb_asset_management.asset_owner',$request->assetOwner);
+        }
+
+        if (isset($request->category)) {
+            $data = $data->where('tb_asset_management.category',$request->category);
+        }
+
+        if (isset($request->client)) {
+            $data = $data->where('tb_asset_management_detail.client',$request->client);
+        }
+
+        if (isset($request->pid)) {
+            $data = $data->where('tb_asset_management_detail.pid',$request->pid);
+        }
+
+        $data = $data->get();        
+
         $hasilChart = collect(); 
 
+        $allData = [];
+
         if (count($data) == 0) {
-            $hasil2 = array_fill(0, $length, 0);
-            $sortedDesc = $desc->toArray();
+            $allData[] = [
+                'label' => '-',
+                'value' => 0,
+                'countValue' => 0
+            ];
         }else{
             $hasil = array_fill(0, $length, 0);
 
@@ -2172,11 +2355,14 @@ class AssetMgmtController extends Controller
             });
 
             $hasil2 = array_fill(0, $length, 0);
+            $countValue = array_fill(0, $length, 0);
+
             $sortedDesc = $desc->toArray();
 
             if (!$isAllZeros) {
                 foreach ($hasil as $key => $value) {
                     $hasil2[$key] = round(($value / $pie) * 100, 2);
+                    $countValue[$key] = $value;
                 }
 
                 // Combine $hasil2 and $desc into an associative array
@@ -2189,23 +2375,23 @@ class AssetMgmtController extends Controller
                 }
 
                 // Sort the combined array by percentage in descending order
-                usort($combined, function ($a, $b) {
-                    return $b['percentage'] <=> $a['percentage'];
-                });
+                // usort($combined, function ($a, $b) {
+                //     return $b['percentage'] <=> $a['percentage'];
+                // });
 
                 // Extract the sorted values back into separate arrays
                 $hasil2 = array_column($combined, 'percentage');
                 $sortedDesc = array_column($combined, 'name');
             }
-            
-        }
 
-        $allData = [];
-        foreach ($sortedDesc as $key => $label) {
-            $allData[] = [
-                'label' => $label,
-                'value' => $hasil2[$key]
-            ];
+            foreach ($sortedDesc as $key => $label) {
+                $allData[] = [
+                    'label' => $label,
+                    'value' => $hasil2[$key],
+                    'countValue' => $countValue[$key]
+                ];
+            }
+            
         }
 
         return $allData;
@@ -2213,13 +2399,37 @@ class AssetMgmtController extends Controller
 
     public function getCountDashboard(Request $request)
     {
+        if ($request->year != "") {
+            $year = [$request->year];
+        }else{
+            $year = date('Y');
+        }
+
         $nik = Auth::User()->nik;
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidPm = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('role_user','role_user.user_id','tb_pmo_assign.nik')->join('roles','roles.id','role_user.role_id')->where('nik',Auth::User()->nik)->where('name','!=','Asset Management')->get()->pluck('project_id');
 
-        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id')
+            ->whereIn(DB::raw('YEAR(tb_asset_management.created_at)'), $year);
+
+        if (isset($request->assetOwner)) {
+            $getId = $getId->where('tb_asset_management.asset_owner',$request->assetOwner);
+        }
+
+        if (isset($request->category)) {
+            $getId = $getId->where('tb_asset_management.category',$request->category);
+        }
+
+        if (isset($request->client)) {
+            $getId = $getId->where('tb_asset_management_detail.client',$request->client);
+        }
+
+        if (isset($request->pid)) {
+            $getId = $getId->where('tb_asset_management_detail.pid',$request->pid);
+        }
+
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
         $data = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
@@ -2277,13 +2487,19 @@ class AssetMgmtController extends Controller
 
     public function getFilterCount(Request $request)
     {
+        if ($request->year != "") {
+            $year = $request->year;
+        }else{
+            $year = date('Y');
+        }
+
         $nik = Auth::User()->nik;
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidPm = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('role_user','role_user.user_id','tb_pmo_assign.nik')->join('roles','roles.id','role_user.role_id')->where('nik',Auth::User()->nik)->where('name','!=','Asset Management')->get()->pluck('project_id');
 
-        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id');
+        $getId = AssetMgmt::join('tb_asset_management_detail','tb_asset_management_detail.id_asset','tb_asset_management.id')->select('tb_asset_management_detail.id_asset','detail_lokasi','tb_asset_management_detail.id')->whereYear('tb_asset_management.created_at',$year);
         $getLastId = DB::table($getId,'temp')->groupBy('id_asset')->selectRaw('MAX(`temp`.`id`) as `id_last_asset`')->selectRaw('id_asset');
 
         $countAll = DB::table($getLastId, 'temp2')->join('tb_asset_management','tb_asset_management.id','temp2.id_asset')->join('tb_asset_management_detail','tb_asset_management_detail.id','temp2.id_last_asset')
@@ -2631,6 +2847,23 @@ class AssetMgmtController extends Controller
         $data = DB::table('tb_asset_management_spesifikasi_detail')->select('id','name')->where('id_spesifikasi', $request->id)->where('name', 'like', '%'.request('q').'%')->distinct()->get();
 
         return $data;
+    }
+
+    public function storeSpesifikasiDetail(Request $request)
+    {
+        $idSpesifikasi = $request->input('id_spesifikasi');  
+        $name          = $request->input('name');           
+
+        $id = DB::table('tb_asset_management_spesifikasi_detail')->insertGetId([
+            'id_spesifikasi' => $idSpesifikasi,
+            'name'           => $name
+        ]);
+
+        return response()->json([
+            'id'   => $id,
+            'id_spesifikasi' => $idSpesifikasi,
+            'name' => $name
+        ]);
     }
 
     public function getEmployeeNames()
