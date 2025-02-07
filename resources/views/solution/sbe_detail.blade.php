@@ -132,10 +132,10 @@ SBE Detail
             }
         })
 
-        let leadId = @json($opp_name->opp_name ?? "");
-        let oppName = @json($opp_name->lead_id ?? "");
+        let lead_id = @json($opp_name->lead_id ?? "");
+        let opp_name = @json($opp_name->opp_name ?? "");
 
-        $("#spanLeadId").html(leadId + ' - ' + strLimit(oppName, 50, '...'))           
+        $("#spanLeadId").html(lead_id + ' - ' + strLimit(opp_name, 50, '...'))           
     }
 
     function strLimit(text, limit = 50, end = "...") {
