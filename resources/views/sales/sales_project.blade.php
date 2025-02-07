@@ -881,7 +881,7 @@ ID Project
           sDom: '<"top"i>rCt<"footer"><"bottom"flp><"clear">'
       });
 
-      $("#table-pid").DataTable({
+      table = $("#table-pid").DataTable({
         fnFooterCallback: function(nRow, aaData, iStart, iEnd, aiDisplay) {
           var api = this.api();
           var size = 0;
@@ -1390,6 +1390,7 @@ ID Project
       	$('#history-table').css("display","none")
       	$('#pid-table').css("display","block")
       	$('.export-msp').css("display","none")
+        $('#search-table').find("input").val("")
       	$('.export').css("display","block")
 
         initiateTablePID(id,year)
@@ -1400,6 +1401,7 @@ ID Project
       	$('#search-table').css("display","block")
       	$('#request-table').css("display","none")
       	$('#history-table').css("display","none")
+        $('#search-table').find("input").val("")
       	$('#pid-table').css("display","block")
 
         initiateTablePID(id,year)
@@ -1407,8 +1409,19 @@ ID Project
       	$('#request-table').show()
       	$('#pid-table').css("display","none")
       	$('#export-table').css("display","none")
-      	$('#search-table').css("display","none")
+      	$('#search-table').css("display","block")
+        $('#search-table').addClass("pull-right")
+        $('#search-table').find("input").val("")
       	$('#request_id').DataTable().ajax.url("{{url('getShowPIDReq')}}?id="+id).load();
+        request_table.search($('#searchBarTicket').val()).draw();
+
+        $('#searchBarTicket').keyup(function(){
+          request_table.search($('#searchBarTicket').val()).draw();
+        })
+
+        $('#applyFilterTablePerformance').click(function(){
+          request_table.search($('#searchBarTicket').val()).draw();
+        })
       }else if (id == "history") {
       	$('#request-table').show()
       	$('#pid-table').css("display","none")
