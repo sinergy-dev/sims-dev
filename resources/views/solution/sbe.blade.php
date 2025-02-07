@@ -131,7 +131,7 @@ SBE
               title: "Action",
               render:function(data, type, row)
 	          {
-	          	return '<a class="btn btn-sm btn-primary btnDetail" style="margin-right:5px" data-value="'+ row.id +'" href="{{url("/sbe_detail")}}/'+ row.id +'?'+ row.lead_id +'" id="btnDetail">Detail</a>'
+	          	return '<a class="btn btn-sm btn-primary btnDetail" style="margin-right:5px" data-value="'+ row.id +'" href="{{url("/sbe_detail")}}/'+ row.id +'?lead_id='+ row.lead_id +'" id="btnDetail">Detail</a>'
 	          },
               data: null
             },
