@@ -92,9 +92,11 @@ class SBEController extends Controller
         return view('solution.setting')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('Solution')]);
     }
 
-    public function sbe_detail()
+    public function sbe_detail(Request $request)
     {
-        return view('solution.sbe_detail')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('Solution')]);
+        $opp_name = DB::table('sales_lead_register')->select('opp_name','lead_id')->where('lead_id',$request->lead_id)->first();
+
+        return view('solution.sbe_detail',compact('opp_name'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('Solution')]);
     }
 
     public function getLead(Request $request)

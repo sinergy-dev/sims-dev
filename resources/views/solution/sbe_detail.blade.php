@@ -3,7 +3,6 @@
 SBE Detail
 @endsection
 @section('head_css')
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-barber-shop.min.css" integrity="sha512-7qRUmettmzmL6BrHrw89ro5Ki8CZZQSC/eBJTlD3YPHVthueedR4hqJyYqe1FJIA4OhU2mTes0yBtiRMCIMkzw==" crossorigin="anonymous" referrerpolicy="no-referrer"  as="style" onload="this.onload=null;this.rel='stylesheet'"/>
@@ -67,6 +66,8 @@ SBE Detail
             <li><a href="/"><i class="fa fa-dashboard"></i> SBE</a></li>
             <li class="active">SBE Detail</li>
         </ol><br>
+        <h1>
+        </h1>
     </section>
 
     <section class="content">
@@ -130,7 +131,18 @@ SBE Detail
                 $("#btnBack").attr('href','{{url("/sbe_index")}}/')
             }
         })
-        $("#spanLeadId").html("Lead ID - "+ window.location.href.split("?")[1])            
+
+        let leadId = @json($opp_name->opp_name ?? "");
+        let oppName = @json($opp_name->lead_id ?? "");
+
+        $("#spanLeadId").html(leadId + ' - ' + strLimit(oppName, 50, '...'))           
+    }
+
+    function strLimit(text, limit = 50, end = "...") {
+        if (text.length > limit) {
+            return text.substring(0, limit) + end;
+        }
+        return text;
     }
 
     function preventBack(){
