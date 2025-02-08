@@ -4046,7 +4046,7 @@ class TicketingController extends Controller
 		$engineer = $detailTicketUpdate->engineer;
 
 		if(isset($req->engineer)){
-			if($detailTicketUpdate->engineer != $req->engineer){
+			if(isset($req->engineer) && $detailTicketUpdate->id_atm != null){
 				 $this->setNotif($req->engineer, $req->id_ticket, $detailTicketUpdate->location);
 			}
 		}
@@ -7525,7 +7525,11 @@ class TicketingController extends Controller
             $message = 'Hai, '.$engineerName.'. Anda memiliki ticket baru dengan ID: '. $idTicket .' Lokasi: '.$location.'. Segera accept tiket tersebut di SLM App.';
 
             $chatIDGroup = env('TELEGRAM_GROUP_CHAT_ID');
-            $this->telegramService->sendMessage($chatIDGroup, $message);
+            // $this->telegramService->sendMessage($chatIDGroup, $message);
+            if(!empty($chatIDGroup)){
+                $this->telegramService->sendMessage($chatIDGroup, $message);
+            }
+
             if(!empty($engineer) && $engineer->id_telegram){
                 $this->telegramService->sendMessage($engineer->id_telegram, $message);
             }

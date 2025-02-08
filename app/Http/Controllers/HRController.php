@@ -594,17 +594,17 @@ class HRController extends Controller
                 $tambah_roles->save(); 
             }
 
-            $add_location_presence = new PresenceLocationUser();
-            $add_location_presence->user_id = $nik;
-            $add_location_presence->date_add = date('Y:m:d H:i:s');
-            $add_location_presence->location_id = '3';
-            $add_location_presence->save();
+            // $add_location_presence = new PresenceLocationUser();
+            // $add_location_presence->user_id = $nik;
+            // $add_location_presence->date_add = date('Y:m:d H:i:s');
+            // $add_location_presence->location_id = '3';
+            // $add_location_presence->save();
 
 
             $add_location_presence2 = new PresenceLocationUser();
             $add_location_presence2->user_id = $nik;
             $add_location_presence2->date_add = date('Y:m:d H:i:s');
-            $add_location_presence2->location_id = '4';
+            $add_location_presence2->location_id = '689';
             $add_location_presence2->save();
 
 
@@ -1626,7 +1626,8 @@ class HRController extends Controller
         }else if ($request->id_assign == 'HR') {
             return array(DB::table('tb_position')
                 ->select('name_position')
-                ->where('id_position','HR MANAGER')
+                ->where('id_position','VP HUMAN CAPITAL')
+                ->orwhere('id_position','HR MANAGER')
                 ->orWhere('id_position','STAFF HR')
                 ->orWhere('id_position','STAFF GA')
                 ->orWhere('id_position','WAREHOUSE')
