@@ -4042,7 +4042,7 @@ class AssetMgmtController extends Controller
 
         foreach ($products as $product) {
             // Generate the QR code as an image
-            $qrCodeImage = QrCode::size(100)->generate(url('asset/detail') . '?id_asset=' . $product->id);
+            $qrCodeImage = QrCode::size(75)->generate(url('asset/detail') . '?id_asset=' . $product->id);
             $qrCodes->push(['product' => $product, 'qrCode' => $qrCodeImage]);
         }
 
