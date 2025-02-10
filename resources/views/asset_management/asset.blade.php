@@ -1847,7 +1847,7 @@
               div.append(label);
 
               var select = $('<select>', {
-                  id: 'inputSpesifikasi_' + item.id,
+                  id: 'inputSpesifikasi_' + item.name,
                   name: 'inputSpesifikasi_' + item.name,
                   class: 'form-control',
                   'data-spec-id': item.id,          
@@ -1876,7 +1876,7 @@
               if (category === 'COM' && fieldsHideCOM.includes(item.name)) {
                 div.hide();
               }
-
+              
               select.select2({
                 placeholder: 'Select ' + item.name,
                 allowClear: true,
@@ -2070,7 +2070,7 @@
     }
 
     function fetchSpesifikasiDetails(spesifikasiId, selectElement){
-            $.ajax({
+        $.ajax({
           url: '{{url("asset/getSpesifikasiDetail")}}',
           data: {
             id: spesifikasiId
@@ -2078,11 +2078,11 @@
           type: 'GET',
           success: function(data){
             data.forEach(function(item) {
-                    $('<option>', {
-                        value: item.id,
-                        text: item.name
-                    }).appendTo(selectElement);
-                });
+                $('<option>', {
+                    value: item.name,
+                    text: item.name
+                }).appendTo(selectElement);
+            });
           },
           error: function(error) {
                 console.error('Error fetching spesifikasi details:', error);
@@ -3096,12 +3096,12 @@
 
             $allSelects.each(function() {
               let $sel = $(this);
-              let val = $sel.val();
-              if (val) {
+              let selectedData = $sel.select2('data')[0];
+              if (selectedData && selectedData.newOption) {
                 newItems.push({
                   $select: $sel,
                   specId: $sel.attr('data-spec-id'),
-                  typedValue: val
+                  typedValue: selectedData.text 
                 });
               }
             });
@@ -3125,7 +3125,7 @@
                   item.$select.find('option').filter(function() {
                     return this.value === item.typedValue;
                   }).remove();
-
+                  
                   let newOption = new Option(resp.name, resp.id, true, true);
                   item.$select.append(newOption).trigger('change');
                   i++;

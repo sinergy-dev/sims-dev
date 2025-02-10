@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\AssetMgmt;
 use App\AssetMgmtDetail;
@@ -1165,7 +1166,7 @@ class AssetMgmtController extends Controller
         $storeDetail->id_asset = $request->id_asset;
         $updateAssetMgmt = AssetMgmt::where('id',$request->id_asset)->orderby('id','desc')->first();
 
-        if (isset($request->inputPic)) { // && !empty($request->inputPic)
+        if (isset($request->inputPic)) {
             $updateAssetMgmt->status = 'Installed';
             $updateAssetMgmt->update();
         }else{
@@ -1498,8 +1499,6 @@ class AssetMgmtController extends Controller
 
         $storeDetail->save();
 
-        $assetMgmt = AssetMgmt::where('id',$request->id_asset)->first();
-
         if ($updatePic != $requestPic) {
             $pdfPathBaru = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
             $this->uploadPdfBAST($request->id_asset,$pdfPathBaru);
@@ -1511,10 +1510,10 @@ class AssetMgmtController extends Controller
             $data = [
                 [   
                     'name'              => $to->name,
-                    'id_asset'          => $assetMgmt->id_asset, 
-                    'category'          => $assetMgmt->category,
-                    'type_device'       => $assetMgmt->vendor . " - " . $assetMgmt->type_device . " - " . $assetMgmt->serial_number,
-                    'spesifikasi'       => $assetMgmt->spesifikasi,
+                    'id_asset'          => $storeDetail->id_asset, 
+                    'category'          => $storeDetail->category,
+                    'type_device'       => $storeDetail->vendor . " - " . $storeDetail->type_device . " - " . $storeDetail->serial_number,
+                    'spesifikasi'       => $storeDetail->spesifikasi,
                     'link_drive'        => AssetMgmtDocument::where('id_detail_asset',$storeDetail->id)->first()->link_drive,
                 ]
             ];
@@ -2852,7 +2851,20 @@ class AssetMgmtController extends Controller
     public function storeSpesifikasiDetail(Request $request)
     {
         $idSpesifikasi = $request->input('id_spesifikasi');  
-        $name          = $request->input('name');           
+        $name          = $request->input('name');
+
+        $existing = DB::table('tb_asset_management_spesifikasi_detail')
+                  ->where('id_spesifikasi', $idSpesifikasi)
+                  ->where('name', $name)
+                  ->first();
+    
+        if ($existing) {
+            return response()->json([
+                'id'   => $existing->id,
+                'id_spesifikasi' => $idSpesifikasi,
+                'name' => $name
+            ]);
+        }
 
         $id = DB::table('tb_asset_management_spesifikasi_detail')->insertGetId([
             'id_spesifikasi' => $idSpesifikasi,
@@ -3978,5 +3990,45 @@ class AssetMgmtController extends Controller
         $storeDoc->document_location    = "Asset Management/".$data->id_asset.'/';
         $storeDoc->link_drive           = "https://drive.google.com/file/d/{$fileId}/view?usp=drivesdk";
         $storeDoc->save();
+    }
+
+    public function generatePdf(Request $request)
+    {
+        // Fetch multiple products or any other items (use any collection of data)
+        $products = AssetMgmt::join('tb_asset_management_detail','tb_asset_management.id','=','tb_asset_management_detail.id_asset')
+                ->select('tb_asset_management.id','type_device','tb_asset_management.id_asset')
+                ->whereYear('tb_asset_management.created_at',date('Y')); // Fetch all products or you can limit the number based on your needs
+
+        if (isset($request->assetOwner)) {
+            $products = $products->where('tb_asset_management.asset_owner',$request->assetOwner);
+        }
+
+        if (isset($request->category)) {
+            $products = $products->where('tb_asset_management.category',$request->category);
+        }
+
+        if (isset($request->client)) {
+            $products = $products->where('tb_asset_management_detail.client',$request->client);
+        }
+
+        if (isset($request->pid)) {
+            $products = $products->where('tb_asset_management_detail.pid',$request->pid);
+        }
+
+        $products = $products->get();
+
+        $qrCodes = collect();
+
+        foreach ($products as $product) {
+            // Generate the QR code as an image
+            $qrCodeImage = QrCode::size(100)->generate(url('asset/detail') . '?id_asset=' . $product->id);
+            $qrCodes->push(['product' => $product, 'qrCode' => $qrCodeImage]);
+        }
+
+        // Pass the QR codes array to the PDF view
+        $pdf = PDF::loadView('asset_management.qr-codes', ['qrCodes' => $qrCodes]);
+
+        // Return the generated PDF as a download
+        return $pdf->download('qr-codes.pdf');
     }
 }
