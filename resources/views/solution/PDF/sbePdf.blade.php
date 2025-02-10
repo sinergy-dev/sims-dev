@@ -33,6 +33,7 @@
     }
 
     .table-bordered-child, .table-bordered-child th, .table-bordered td {
+      margin: 20px;
       border: 0.5px solid black;
       width: 75%;
     }
@@ -108,8 +109,6 @@
 
     .right {
         flex: 1; /* Takes up 1/2 of the container */
-        padding-left: 10px;
-        margin-left: 150px;
     }
   </style>
   <link rel="stylesheet" href="">
@@ -151,115 +150,117 @@
   </div>
   
   <div style="page-break-inside: avoid;"> 
-    @foreach($getFunction as $keys => $datas)
-      <div style="display: flex;margin-top: -50px;">
-        <div class="left">
-          @if($keys == "Implementation")
-            <div style="width: 100px;height: 50px;background-color: #789de5;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
-              <b style="text-align: center;">
-                  {{$keys}}
-              </b>
-            </div>
-          @elseif($keys == "Maintenance")
-            <div style="width: 100px;height: 50px;background-color: #ea3323;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
-              <b style="text-align: center;">
-                  {{$keys}}
-              </b>
-            </div>
-          @else
-            <div style="width: 100px;height: 50px;background-color: #f19e38;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
-              <b style="text-align: center;">
-                  {{$keys}}
-              </b>
-            </div>
-          @endif
-        </div>
-        <div class="right">
-          @foreach($datas as $data_config)
-            <table class="table-bordered">
-                @if($keys == "Implementation")
-                  <thead style="background-color:#789de5">
-                @elseif($keys == "Maintenance")
-                  <thead style="background-color:#ea3323">
-                @else
-                  <thead style="background-color:#f19e38">
-                @endif
-                <tr>
-                  <th style="width: 20px;text-align: center;">No</th>
-                  <th style="text-align: center;">Function</th>
-                  <th style="text-align: center;">Total</th>
-                </tr>
-              </thead> 
-              <?php $i = 0 ?>
-              @foreach($data_config->get_function as $key => $datas_config)
-              <tbody>
-                  <tr>
-                    <td style="text-align: center;">{{++$i}}</td>
-                    <td style="text-align: left;">{{$key}}</td>
-                    <td style="text-align: right">IDR {{number_format($datas_config['total_nominal'])}}</td>
-                  </tr>
-              </tbody>
-              @endforeach
-              <tfoot>
-                <tr>
-                  <th colspan="2" style="text-align:right;">Grand Total Cost</th>
-                  <th style="text-align:right;">IDR {{number_format($data_config->detail_config_nominal)}}</th>
-                </tr>
-              </tfoot>   
-            </table>
-          @endforeach
-        </div>
-      </div>
-    @endforeach   
-        <table style="width:96.5%;">
-          <tr>
-            <th style="text-align:right;width: 65%;">Grand Total SBE Operational</th>
-            <th style="text-align:right">IDR {{number_format($getNominal)}}</th>
-          </tr>
-        </table>  
-        <table style="width: 100%;text-align: center;margin-top: 20px;">
-          <tr>
-            @foreach($getSign as $data_sign)
-            @if(count($getSign) == 3)
-            <td>
-              <div style="margin-top:15px">
-                @if($data_sign->position == "VP Product Management & Development Solution")
-                Approval By:<br><br>
-                @else
-                Issued By:<br><br>
-                @endif
-                <img src="{{$data_sign->ttd_digital}}" style="height:50px;width: 50px;background-size:cover ;">
-                <br><u>{{$data_sign->name}}</u><br>
-                {{$getSign[0]->position}}
+      <table style="width:100%">
+      @foreach($getFunction as $keys => $datas)
+        <tr>
+          <td style="width: 20%;">
+            @if($keys == "Implementation")
+              <div style="width: 100px;height: 50px;background-color: #789de5;color: white;text-align: center;margin-top: 10px;padding-top: 25px;">
+                <b style="text-align: center;">
+                    {{$keys}}
+                </b>
               </div>
-              <u></u>
-              <br>
-              <i>
-                <b></b>
-              </i>
-            </td>
+            @elseif($keys == "Maintenance")
+              <div style="width: 100px;height: 50px;background-color: #ea3323;color: white;text-align: center;margin-top: 10px;padding-top: 25px;">
+                <b style="text-align: center;">
+                    {{$keys}}
+                </b>
+              </div>
             @else
-            <td>
-              <div style="margin-top:15px">
-                @if($data_sign->position == "VP Product Management & Development Solution")
-                Approval By:<br><br>
-                @else
-                Issued By:<br><br>
-                @endif
-                <img src="{{$data_sign->ttd_digital}}" style="height:50px;width: 50px;background-size:cover ;">
-                <br><u>{{$data_sign->name}}</u><br>
-                {{$data_sign->position}}
+              <div style="width: 100px;height: 50px;background-color: #f19e38;color: white;text-align: center;margin-top: 10px;padding-top: 25px;">
+                <b style="text-align: center;">
+                    {{$keys}}
+                </b>
               </div>
-              <u></u>
-              <br>
-              <i>
-                <b></b>
-              </i>
-            </td>
             @endif
-            @endforeach
-          </tr>
-        </table>  
+          </td>
+          <td style="width: 80%;">
+            <table class="table-bordered" style="width:100%">
+              @foreach($datas as $data_config)
+                    @if($keys == "Implementation")
+                      <thead style="background-color:#789de5">
+                    @elseif($keys == "Maintenance")
+                      <thead style="background-color:#ea3323">
+                    @else
+                      <thead style="background-color:#f19e38">
+                    @endif
+                    <tr>
+                      <th style="width: 20px;text-align: center;">No</th>
+                      <th style="text-align: center;">Function</th>
+                      <th style="text-align: center;">Total</th>
+                    </tr>
+                  </thead> 
+                  <?php $i = 0 ?>
+                  @foreach($data_config->get_function as $key => $datas_config)
+                  <tbody>
+                      <tr>
+                        <td style="text-align: center;">{{++$i}}</td>
+                        <td style="text-align: left;">{{$key}}</td>
+                        <td style="text-align: right">IDR {{number_format($datas_config['total_nominal'])}}</td>
+                      </tr>
+                  </tbody>
+                  @endforeach
+                  <tfoot>
+                    <tr>
+                      <th colspan="2" style="text-align:right;">Grand Total Cost</th>
+                      <th style="text-align:right;">IDR {{number_format($data_config->detail_config_nominal)}}</th>
+                    </tr>
+                  </tfoot>   
+              @endforeach
+            </table>
+          </td>
+        </tr>
+      @endforeach  
+      </table> 
+      <table style="width:100%;">
+        <tr>
+          <th style="text-align:right;width: 65%;">Grand Total SBE Operational</th>
+          <th style="text-align:right">IDR {{number_format($getNominal)}}</th>
+        </tr>
+      </table>  
+      <table style="width: 100%;text-align: center;margin-top: 20px;">
+        <tr>
+          @foreach($getSign as $data_sign)
+          @if(count($getSign) == 3)
+          <td>
+            <div style="margin-top:15px">
+              @if($data_sign->position == "VP Product Management & Development Solution")
+              Approval By:<br><br>
+              @else
+              Issued By:<br><br>
+              @endif
+              <img src="{{$data_sign->ttd_digital}}" style="height:50px;width: 50px;background-size:cover ;">
+              <br><u>{{$data_sign->name}}</u><br>
+              {{$getSign[0]->position}}
+            </div>
+            <u></u>
+            <br>
+            <i>
+              <b></b>
+            </i>
+          </td>
+          @else
+          <td>
+            <div style="margin-top:15px">
+              @if($data_sign->position == "VP Product Management & Development Solution")
+              Approval By:<br><br>
+              @else
+              Issued By:<br><br>
+              @endif
+              <img src="{{$data_sign->ttd_digital}}" style="height:50px;width: 50px;background-size:cover ;">
+              <br><u>{{$data_sign->name}}</u><br>
+              {{$data_sign->position}}
+            </div>
+            <u></u>
+            <br>
+            <i>
+              <b></b>
+            </i>
+          </td>
+          @endif
+          @endforeach
+        </tr>
+      </table>  
       <br><br><br><br><br><br>
       <p>Note : If you have any further inqueries, please do not hesitate to contact us. We thank you for your kind attention.</p>
       <img src="img/header-sbe.png" class="footer" style="width:100%;height: 15px; A_CSS_ATTRIBUTE:all;position: absolute" />
@@ -282,9 +283,9 @@
         @endif
       </tr>
       @foreach($dataConfigs as $data_configs)
-        <tr style="padding:30px">
+        <tr>
           <td colspan="6">
-            <table style="padding:30px">
+            <table>
               <tr>
                 <td>Release Date</td>
                 <td>{{date('D, F j, Y')}}</td>
@@ -312,55 +313,57 @@
             </table>
           </td>
         </tr>
-        @foreach($data_configs->detail_all_config_choosed as $data_config_choosed)
-            <table style="width:100%">
-              @if($keyConf == "Implementation")
-                <tr style="border: 0.5px solid black;background-color: #789de5;">
-              @elseif($keyConf == "Maintenance")
-                <tr style="border: 0.5px solid black;background-color: #ea3323;">
-              @else
-                <tr style="border: 0.5px solid black;background-color: #f19e38;">
-              @endif
-                  <th style="border: 0.5px solid black;width: 5%;">No</th>
-                  <th style="border: 0.5px solid black;width: 30%;">Items</th>
-                  <th style="border: 0.5px solid black;width: 30%;">Detail Items</th>
-                  <th style="border: 0.5px solid black;">Mandays</th>
-                  <th style="border: 0.5px solid black;">Engineer</th>
-                  <th style="border: 0.5px solid black;width: 30%;">Total</th>
-                </tr>
-                <?php $k = 0 ?>
-                @foreach($data_config_choosed as $keyDatasConfigChoosed => $datasConfigChoosed)
-                  <tr style="border: 0.5px solid black;">
-                    <td style="border: 0.5px solid black;text-align: center;">{{++$k}}</td>
-                    <td style="border: 0.5px solid black;text-align: center;">
-                      @if($keyDatasConfigChoosed == 0)
-                        {{$datasConfigChoosed->item}}
-                      @endif
-                    </td>
-                    <td style="border: 0.5px solid black;text-align: left;">
-                        {{$datasConfigChoosed->detail_item}}
-                    </td>
-                    <td style="border: 0.5px solid black;text-align: center;">{{$datasConfigChoosed->qty}}</td>
-                    <td style="border: 0.5px solid black;text-align: center;">{{$datasConfigChoosed->manpower}}</td>
-                    <td style="border: 0.5px solid black;text-align: right;">IDR {{number_format($datasConfigChoosed->total_nominal)}}</td>
-                  </tr>
-                @endforeach
-                @foreach($data_configs->get_function as $key => $data_config_function_nominal)
-                  @if($key == $datasConfigChoosed->item)
-                    <tr style="border: 0.5px solid black;">
-                      <th style="border: 0.5px solid black;" colspan="5">Total Cost</th>
-                      <th style="border: 0.5px solid black;text-align: right;">IDR {{number_format($data_config_function_nominal['total_nominal'])}}</th>
-                    </tr>
-                  @endif
-                @endforeach
-            </table>
-        @endforeach
       @endforeach
     </table>
+    @foreach($dataConfigs as $data_configs)
+      @foreach($data_configs->detail_all_config_choosed as $data_config_choosed)
+        <table style="width:100%!important">
+          @if($keyConf == "Implementation")
+            <tr style="border: 0.5px solid black;background-color: #789de5;">
+          @elseif($keyConf == "Maintenance")
+            <tr style="border: 0.5px solid black;background-color: #ea3323;">
+          @else
+            <tr style="border: 0.5px solid black;background-color: #f19e38;">
+          @endif
+              <th style="border: 0.5px solid black;">No</th>
+              <th style="border: 0.5px solid black;">Items</th>
+              <th style="border: 0.5px solid black;">Detail Items</th>
+              <th style="border: 0.5px solid black;">Mandays</th>
+              <th style="border: 0.5px solid black;">Engineer</th>
+              <th style="border: 0.5px solid black;">Total</th>
+            </tr>
+            <?php $k = 0 ?>
+            @foreach($data_config_choosed as $keyDatasConfigChoosed => $datasConfigChoosed)
+              <tr style="border: 0.5px solid black;">
+                <td style="border: 0.5px solid black;text-align: center;">{{++$k}}</td>
+                <td style="border: 0.5px solid black;text-align: center;">
+                  @if($keyDatasConfigChoosed == 0)
+                    {{$datasConfigChoosed->item}}
+                  @endif
+                </td>
+                <td style="border: 0.5px solid black;text-align: left;">
+                    {{$datasConfigChoosed->detail_item}}
+                </td>
+                <td style="border: 0.5px solid black;text-align: center;">{{$datasConfigChoosed->qty}}</td>
+                <td style="border: 0.5px solid black;text-align: center;">{{$datasConfigChoosed->manpower}}</td>
+                <td style="border: 0.5px solid black;text-align: right;">IDR {{number_format($datasConfigChoosed->total_nominal)}}</td>
+              </tr>
+            @endforeach
+            @foreach($data_configs->get_function as $key => $data_config_function_nominal)
+              @if($key == $datasConfigChoosed->item)
+                <tr style="border: 0.5px solid black;">
+                  <th style="border: 0.5px solid black;" colspan="5">Total Cost</th>
+                  <th style="border: 0.5px solid black;text-align: right;">IDR {{number_format($data_config_function_nominal['total_nominal'])}}</th>
+                </tr>
+              @endif
+            @endforeach
+        </table>
+      @endforeach
+    @endforeach
     <?php $j = 0;$h = 0?>
     @foreach($getFunction as $keys => $datas)
       @if($keys == $keyConf)
-        <table class="table-bordered-child" style="border: 0.5px solid black;">
+        <table style="border: 0.5px solid black;">
           @if($keys == "Implementation")
             <thead style="background-color:#789de5">
           @elseif($keys == "Maintenance")
@@ -394,7 +397,7 @@
         </table>
       @endif
     @endforeach
-      <table class="table-bordered" style="width: 100%;">
+      <table style="width: 100%;margin-right: 20px!important;">
         @if($keyConf == "Implementation")
           <tr style="background-color:#789de5">
         @elseif($keyConf == "Maintenance")

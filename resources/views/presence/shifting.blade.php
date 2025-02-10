@@ -30,7 +30,7 @@ Presence Shifting
 			right: 0;
 		}
 
-		.pagi, .Pagi {
+		.libur, .Libur, .cuti, .Cuti {
 			background-color: #dd4b39 !important;
 			border-color: #dd4b39 !important;
 			color: #fff !important;
@@ -45,12 +45,6 @@ Presence Shifting
 		.On-Site {
 			background-color: #f39c12 !important;
 			border-color: #f39c12 !important;
-			color: #fff !important;
-		}
-
-		.pagi, .Pagi {
-			background-color: #dd4b39 !important;
-			border-color: #dd4b39 !important;
 			color: #fff !important;
 		}
 
@@ -84,7 +78,7 @@ Presence Shifting
 			color: #000 !important;
 		}
 
-		.libur, .Libur {
+		.pagi, .Pagi {
 			background-color: #00a65a !important;
 			border-color: #00a65a !important;
 			color: #fff !important;
@@ -838,10 +832,11 @@ Presence Shifting
 						append = append + '			<br>';
 						if(item.shifting_summary !== undefined){
 							item.shifting_summary.forEach(function(itemSummary,indexSummary){
+								console.log(itemSummary.class_shifting + '-' + itemSummary.name_option)
 								if(itemSummary.class_shifting === null){
 									append = append + '			<small class="label bg-purple pull-right" style="margin-right: 5px;">' + itemSummary.count + ' </small>';
 								} else {
-									append = append + '			<small class="label bg-' + itemSummary.class_shifting + ' pull-right" style="margin-right: 5px;">' + itemSummary.count + ' </small>';
+									append = append + '			<small class="label bg-' + ' pull-right" style="margin-right: 5px;">' + itemSummary.count + ' </small>';
 								}
 							})
 						}

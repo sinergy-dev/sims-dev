@@ -1251,7 +1251,7 @@
         })
 
         function loadDataSubmitted(version = null){
-            localStorage.setItem('status_tax', 11)
+            localStorage.setItem('status_tax', 12)
             if(version == null){
                 version = 1;
             }else{
@@ -1377,9 +1377,15 @@
                     appendBottomProduct = appendBottomProduct + '        </div>'
                     appendBottomProduct = appendBottomProduct + '      </div>'
 
+                    appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+                    appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">DPP Nilai Lainnya</label>'
+                    appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+                    appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control dpp pull-right" id="dpp_preview" data-value="'+i+'">'
+                    appendBottomProduct = appendBottomProduct + '        </div>'
+                    appendBottomProduct = appendBottomProduct + '      </div>'
 
                     appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
-                    appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
+                    appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">PPN <span class="title_tax"></span></label>'
                     appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
                     appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
                     appendBottomProduct = appendBottomProduct + '        </div>'
@@ -1426,6 +1432,7 @@
                     var finalGrand = 0
                     var tempTotal = 0
                     var sum = 0
+                    var dpp = 0
                     var valueVat = ""
 
                     sum += valueGrandTotal;
@@ -1437,8 +1444,12 @@
                     }
 
                     if (!isNaN(valueVat)) {
-                        tempVat = (parseFloat(sum) * (parseFloat(result.config.tax_vat)/100))
-                        finalVat = tempVat
+                        if (valueVat == 12){
+                            dpp = (parseFloat(sum)) * 11 / 12
+                            tempVat = dpp * valueVat / 100
+                        }else{
+                            tempVat = (parseFloat(sum) * (parseFloat(result.config.tax_vat)/100))
+                        }                        finalVat = tempVat
 
                         tempGrand = parseFloat(sum) +  parseFloat(tempVat)
 
@@ -1456,6 +1467,7 @@
                     tempDiscount = (parseFloat(sum) * (result.config.discount == 'false'?tempDiscount:parseFloat(result.config.discount)) / 100)
 
                     // finalGrand = tempGrand + tempPb1 + tempService - tempDiscount
+                    $('#dpp_preview').val(formatCurrency(dpp))
                     $("#vat_tax_preview").val(formatCurrency(tempVat));
                     $("#inputGrandTotalProductPreview").val(formatCurrency(sum));
                     $("#inputDiscount_preview").val(formatCurrency(tempDiscount));
@@ -2232,13 +2244,13 @@
                     }else if (n == 2){
                         if(data.config == null || data.config == 'null'){
                             localStorage.setItem('store_tax', '')
-                            localStorage.setItem('status_tax', 11)
+                            localStorage.setItem('status_tax', 12)
                         }else{
                             localStorage.setItem('store_tax', data.config.id)
                             if(data.config.tax_vat != null || data.config.tax_vat > 0){
                                 localStorage.setItem('status_tax', data.config.tax_vat)
                             }else{
-                                localStorage.setItem('status_tax', 11)
+                                localStorage.setItem('status_tax', 12)
                             }
                         }
 
@@ -2384,7 +2396,16 @@
                         appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
                         appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
                         appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
-                        appendBottom = appendBottom + '      <span> Vat <span id="vat_value"></span> <span class="title_service"></span></span>'
+                        appendBottom = appendBottom + '      <span> DPP Nilai Lainnya</span>'
+                        appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;margin-left:15px;text-align:right" class="form-control" id="dpp_final" name="dpp_final">'
+                        appendBottom = appendBottom + '    </div>'
+                        appendBottom = appendBottom + '  </div>'
+                        appendBottom = appendBottom  + '</div>'
+
+                        appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                        appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+                        appendBottom = appendBottom + '      <span> PPN <span id="vat_value"></span> <span class="title_service"></span></span>'
                         appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;margin-left:15px;text-align:right" class="form-control" id="vat_tax_final" name="vat_tax_final">'
                         appendBottom = appendBottom + '    </div>'
                         appendBottom = appendBottom + '  </div>'
@@ -2414,6 +2435,7 @@
                         var tempTotal = 0
                         var sum = 0
                         var tempDiscount = 0
+                        var dpp = 0
 
                         // $('.grandTotalPreviewFinalPage').each(function() {
                         //     var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
@@ -2429,8 +2451,12 @@
                         }
 
                         if (!isNaN(valueVat)) {
-                            tempVat = (parseFloat(sum) * (parseFloat(data.config.tax_vat)/100))
-                            finalVat = tempVat
+                            if (valueVat == 12){
+                                dpp = (parseFloat(sum)) * 11 / 12
+                                tempVat = dpp * valueVat / 100
+                            }else{
+                                tempVat = (parseFloat(sum) * (parseFloat(result.config.tax_vat)/100))
+                            }                            finalVat = tempVat
 
                             tempGrand = parseFloat(sum) +  parseFloat(tempVat)
 
@@ -2456,6 +2482,7 @@
 
                         tempTotal = sum
 
+                        $('#dpp_final').val(formatCurrency(dpp))
                         $("#vat_tax_final").val(formatCurrency(tempVat))
                         $("#inputTotalPriceFinal").val(formatCurrency(sum))
                         $("#inputFinalPageGrandPrice").val(formatCurrency(tempGrand))
@@ -2554,11 +2581,11 @@
                     $('#subject').closest('.form-group').addClass('has-error')
                     $('#subject').closest('.form-group').find('span').show();
                     $('#subject').prev('.input-group-addon').css("background-color","red");
-                }else if($('#street').text() === ""){
+                }else if($('#street').val() === ""){
                     $('#street').closest('.form-group').addClass('has-error')
                     $('#street').closest('.form-group').find('span').show();
                     $('#street').prev('.input-group-addon').css("background-color","red");
-                }else if($('#city').text() === ""){
+                }else if($('#city').val() === ""){
                     $('#city').closest('.form-group').addClass('has-error')
                     $('#city').closest('.form-group').find('span').show();
                     $('#city').prev('.input-group-addon').css("background-color","red");
@@ -3129,33 +3156,51 @@
                     appendBottom = appendBottom + '  </div>'
                     appendBottom = appendBottom + '</div>'
 
-                    appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-                    appendBottom = appendBottom + '<div class="col-md-12 col-xs-12">'
-                    appendBottom = appendBottom + ' <div class="pull-right">'
-                    appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
-                    appendBottom = appendBottom + '  </span>'
-                    appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
-                    appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
-                    appendBottom = appendBottom + '  <div class="input-group-btn">'
-                    appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
-                    appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
-                    appendBottom = appendBottom + '       </button>'
-                    appendBottom = appendBottom + '       <ul class="dropdown-menu">'
-                    appendBottom = appendBottom + '       <li>'
-                    appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
-                    appendBottom = appendBottom + '       </li>'
-                    appendBottom = appendBottom + '       <li>'
-                    appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
-                    appendBottom = appendBottom + '       </li>'
+                    // appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                    // appendBottom = appendBottom + '<div class="col-md-12 col-xs-12">'
+                    // appendBottom = appendBottom + ' <div class="pull-right">'
+                    // appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
+                    // appendBottom = appendBottom + '  </span>'
+                    // appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
+                    // appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
+                    // appendBottom = appendBottom + '  <div class="input-group-btn">'
+                    // appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
+                    // appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
+                    // appendBottom = appendBottom + '       </button>'
+                    // appendBottom = appendBottom + '       <ul class="dropdown-menu">'
+                    // appendBottom = appendBottom + '       <li>'
+                    // appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
+                    // appendBottom = appendBottom + '       </li>'
+                    // appendBottom = appendBottom + '       <li>'
+                    // appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
+                    // appendBottom = appendBottom + '       </li>'
                     // appendBottom = appendBottom + '       <li>'
                     // appendBottom = appendBottom + '        <a onclick="changeVatValue(12)">Vat 12%</a>'
                     // appendBottom = appendBottom + '       </li>'
-                    appendBottom = appendBottom + '      </ul>'
-                    appendBottom = appendBottom + '     </div>'
+                    // appendBottom = appendBottom + '      </ul>'
+                    // appendBottom = appendBottom + '     </div>'
+                    // appendBottom = appendBottom + '    </div>'
+                    // appendBottom = appendBottom + '  </div>'
+                    // appendBottom = appendBottom + '</div>'
+                    // appendBottom = appendBottom + '</div>'
+
+                    appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                    appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                    appendBottom = appendBottom + '    <div class="pull-right">'
+                    appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">DPP Nilai Lainnya</span>'
+                    appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control dpp" id="dpp" name="dpp">'
                     appendBottom = appendBottom + '    </div>'
                     appendBottom = appendBottom + '  </div>'
-                    appendBottom = appendBottom + '</div>'
-                    appendBottom = appendBottom + '</div>'
+                    appendBottom = appendBottom  + '</div>'
+
+                    appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                    appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                    appendBottom = appendBottom + '    <div class="pull-right">'
+                    appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">PPN <span class="title_tax"></span></span>'
+                    appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control vat_tax" id="vat_tax" name="vat_tax">'
+                    appendBottom = appendBottom + '    </div>'
+                    appendBottom = appendBottom + '  </div>'
+                    appendBottom = appendBottom  + '</div>'
 
                     appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
                     appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
@@ -3385,6 +3430,7 @@
             var finalGrand = 0
             var tempTotal = 0
             var sum = 0
+            var dpp = 0
 
             $('.inputTotalPriceEdit').each(function() {
                 var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
@@ -3417,8 +3463,12 @@
 
             if (!isNaN(valueVat)) {
                 setTimeout(function(){
-                    tempVat = (parseFloat(sum)) * (valueVat == false?0:parseFloat(valueVat) / 100)
-
+                    if (valueVat == 12){
+                        dpp = (parseFloat(sum)) * (11 / 12)
+                        tempVat = dpp * valueVat / 100
+                    }else{
+                        tempVat = (parseFloat(sum)) * (valueVat == false?0:parseFloat(valueVat) / 100)
+                    }
                     finalVat = tempVat
 
                     finalGrand = tempGrand
@@ -3428,6 +3478,7 @@
                     $('.title_tax').text(valueVat == '' || valueVat == null ?"":valueVat + '%')
 
                     $("#vat_tax").val(formatter.format(isNaN(tempVat)?0:tempVat.toFixed(2)))
+                    $("#dpp").val(formatter.format(isNaN(dpp)?0:dpp.toFixed(2)))
                 },500)
             }else{
                 tempVat = 0

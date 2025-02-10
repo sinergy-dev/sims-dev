@@ -1044,7 +1044,16 @@
                         appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
                         appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
                         appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
-                        appendBottom = appendBottom + '      <span> Vat <span id="vat_value"></span> <span class="title_service"></span></span>'
+                        appendBottom = appendBottom + '      <span> DPP Nilai Lainnya</span>'
+                        appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;margin-left:15px;text-align:right" class="form-control" id="dpp_final" name="dpp_final">'
+                        appendBottom = appendBottom + '    </div>'
+                        appendBottom = appendBottom + '  </div>'
+                        appendBottom = appendBottom  + '</div>'
+
+                        appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                        appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+                        appendBottom = appendBottom + '      <span> PPN <span id="vat_value"></span> <span class="title_service"></span></span>'
                         appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;margin-left:15px;text-align:right" class="form-control" id="vat_tax_final" name="vat_tax_final">'
                         appendBottom = appendBottom + '    </div>'
                         appendBottom = appendBottom + '  </div>'
@@ -1074,6 +1083,7 @@
                         var tempTotal = 0
                         var sum = 0
                         var tempDiscount = 0
+                        var dpp = 0
 
                         sum += valueGrandTotal;
 
@@ -1084,7 +1094,12 @@
                         }
 
                         if (!isNaN(valueVat)) {
-                            tempVat = (parseFloat(sum) * (parseFloat(result.config.tax_vat)/100))
+                            if (valueVat == 12){
+                                dpp = (parseFloat(sum)) * 11 / 12
+                                tempVat = dpp * valueVat / 100
+                            }else{
+                                tempVat = (parseFloat(sum) * (parseFloat(result.config.tax_vat)/100))
+                            }
                             finalVat = tempVat
 
                             tempGrand = parseFloat(sum) +  parseFloat(tempVat)
@@ -1111,6 +1126,7 @@
 
                         tempTotal = sum
 
+                        $('#dpp_final').val(formatCurrency(dpp))
                         $("#vat_tax_final").val(formatCurrency(tempVat))
                         $("#inputTotalPriceFinal").val(formatCurrency(sum))
                         $("#inputFinalPageGrandPrice").val(formatCurrency(tempGrand))
@@ -1166,7 +1182,7 @@
                     }else if (n == 2){
                         if(data.config == null || data.config == 'null'){
                             localStorage.setItem('store_tax', '')
-                            localStorage.setItem('status_tax', 11)
+                            localStorage.setItem('status_tax', 12)
                         }else{
                             localStorage.setItem('store_tax', data.config.id)
                             localStorage.setItem('status_tax', data.config.tax_vat)
@@ -1308,10 +1324,20 @@
                         appendBottom = appendBottom + '  </div>'
                         appendBottom = appendBottom + '</div>'
 
+
                         appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
                         appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
                         appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
-                        appendBottom = appendBottom + '      <span> Vat <span id="vat_value"></span> <span class="title_service"></span></span>'
+                        appendBottom = appendBottom + '      <span> DPP Nilai Lainnya</span>'
+                        appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;margin-left:15px;text-align:right" class="form-control" id="dpp_final" name="dpp_final">'
+                        appendBottom = appendBottom + '    </div>'
+                        appendBottom = appendBottom + '  </div>'
+                        appendBottom = appendBottom  + '</div>'
+
+                        appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                        appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
+                        appendBottom = appendBottom + '      <span> PPN <span id="vat_value"></span> <span class="title_service"></span></span>'
                         appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;margin-left:15px;text-align:right" class="form-control" id="vat_tax_final" name="vat_tax_final">'
                         appendBottom = appendBottom + '    </div>'
                         appendBottom = appendBottom + '  </div>'
@@ -1341,7 +1367,7 @@
                         var tempTotal = 0
                         var sum = 0
                         var tempDiscount = 0
-
+                        var dpp = 0
                         sum += valueGrandTotal;
 
                         if (data.config.tax_vat == null || data.config.tax_vat == 0 || data.config.tax_vat == 'null') {
@@ -1351,7 +1377,13 @@
                         }
 
                         if (!isNaN(valueVat)) {
-                            tempVat = (parseFloat(sum) * (parseFloat(data.config.tax_vat)/100))
+                            if (valueVat == 12){
+                                dpp = (parseFloat(sum)) * 11 / 12
+                                tempVat = dpp * valueVat / 100
+                            }else{
+                                tempVat = (parseFloat(sum) * (parseFloat(result.config.tax_vat)/100))
+                            }
+
                             finalVat = tempVat
 
                             tempGrand = parseFloat(sum) +  parseFloat(tempVat)
@@ -1378,11 +1410,11 @@
 
                         tempTotal = sum
 
+                        $('#dpp_final').val(formatCurrency(dpp))
                         $("#vat_tax_final").val(formatCurrency(tempVat))
                         $("#inputTotalPriceFinal").val(formatCurrency(sum))
                         $("#inputFinalPageGrandPrice").val(formatCurrency(tempGrand))
                         $("#inputDiscountFinal").val(tempDiscount)
-
                     }
                 }
             })
@@ -2676,33 +2708,51 @@
                     appendBottom = appendBottom + '  </div>'
                     appendBottom = appendBottom + '</div>'
 
-                    appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-                    appendBottom = appendBottom + '<div class="col-md-12 col-xs-12">'
-                    appendBottom = appendBottom + ' <div class="pull-right">'
-                    appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
-                    appendBottom = appendBottom + '  </span>'
-                    appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
-                    appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
-                    appendBottom = appendBottom + '  <div class="input-group-btn">'
-                    appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
-                    appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
-                    appendBottom = appendBottom + '       </button>'
-                    appendBottom = appendBottom + '       <ul class="dropdown-menu">'
-                    appendBottom = appendBottom + '       <li>'
-                    appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
-                    appendBottom = appendBottom + '       </li>'
-                    appendBottom = appendBottom + '       <li>'
-                    appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
-                    appendBottom = appendBottom + '       </li>'
+                    // appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                    // appendBottom = appendBottom + '<div class="col-md-12 col-xs-12">'
+                    // appendBottom = appendBottom + ' <div class="pull-right">'
+                    // appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
+                    // appendBottom = appendBottom + '  </span>'
+                    // appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
+                    // appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
+                    // appendBottom = appendBottom + '  <div class="input-group-btn">'
+                    // appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
+                    // appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
+                    // appendBottom = appendBottom + '       </button>'
+                    // appendBottom = appendBottom + '       <ul class="dropdown-menu">'
+                    // appendBottom = appendBottom + '       <li>'
+                    // appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
+                    // appendBottom = appendBottom + '       </li>'
+                    // appendBottom = appendBottom + '       <li>'
+                    // appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
+                    // appendBottom = appendBottom + '       </li>'
                     // appendBottom = appendBottom + '       <li>'
                     // appendBottom = appendBottom + '        <a onclick="changeVatValue(12)">Vat 12%</a>'
                     // appendBottom = appendBottom + '       </li>'
-                    appendBottom = appendBottom + '      </ul>'
-                    appendBottom = appendBottom + '     </div>'
+                    // appendBottom = appendBottom + '      </ul>'
+                    // appendBottom = appendBottom + '     </div>'
+                    // appendBottom = appendBottom + '    </div>'
+                    // appendBottom = appendBottom + '  </div>'
+                    // appendBottom = appendBottom + '</div>'
+                    // appendBottom = appendBottom + '</div>'
+
+                    appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                    appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                    appendBottom = appendBottom + '    <div class="pull-right">'
+                    appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">DPP Nilai Lainnya</span>'
+                    appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control dpp" id="dpp" name="dpp">'
                     appendBottom = appendBottom + '    </div>'
                     appendBottom = appendBottom + '  </div>'
-                    appendBottom = appendBottom + '</div>'
-                    appendBottom = appendBottom + '</div>'
+                    appendBottom = appendBottom  + '</div>'
+
+                    appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                    appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+                    appendBottom = appendBottom + '    <div class="pull-right">'
+                    appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">PPN <span class="title_tax"></span></span>'
+                    appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control vat_tax" id="vat_tax" name="vat_tax">'
+                    appendBottom = appendBottom + '    </div>'
+                    appendBottom = appendBottom + '  </div>'
+                    appendBottom = appendBottom  + '</div>'
 
                     appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
                     appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
@@ -2837,6 +2887,7 @@
             var finalGrand = 0
             var tempTotal = 0
             var sum = 0
+            var dpp = 0
 
             $('.inputTotalPriceEdit').each(function() {
                 var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
@@ -2868,7 +2919,12 @@
 
             if (!isNaN(valueVat)) {
                 setTimeout(function(){
-                    tempVat = (parseFloat(sum)) * (valueVat == false?0:parseFloat(valueVat) / 100)
+                    if (valueVat == 12){
+                        dpp = (parseFloat(sum)) * (11 / 12)
+                        tempVat = dpp * valueVat / 100
+                    }else{
+                        tempVat = (parseFloat(sum)) * (valueVat == false?0:parseFloat(valueVat) / 100)
+                    }
 
                     finalVat = tempVat
 
@@ -2879,6 +2935,7 @@
                     $('.title_tax').text(valueVat == '' || valueVat == null ?"":valueVat + '%')
 
                     $("#vat_tax").val(formatter.format(isNaN(tempVat)?0:tempVat.toFixed(2)))
+                    $("#dpp").val(formatter.format(isNaN(dpp)?0:dpp.toFixed(2)))
                 },500)
             }else{
                 tempVat = 0
@@ -2922,7 +2979,7 @@
         initQuoTable();
 
         function initQuoTable(temp) {
-            localStorage.setItem('status_tax', 11)
+            localStorage.setItem('status_tax', 12)
             var temp = ''
             if (temp == undefined) {
                 temp = '?' + temp
@@ -2945,7 +3002,6 @@
                             } else {
                                 data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button>";
                             }
-
                         });
                         return json.data;
 

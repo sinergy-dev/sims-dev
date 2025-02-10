@@ -259,6 +259,8 @@
 
             $nominalGrandTotalFinal = str_replace(',', '.', $config->nominal);
             $nominalGrandTotalFinal = floatval($nominalGrandTotalFinal);
+            $dpp = $nominalTotalFinal * 11/12;
+            $ppn = $dpp * $config->tax_vat / 100;
         @endphp
         <tr>
             @if($isPriceList)
@@ -275,14 +277,26 @@
         <tr>
             @if($isPriceList)
                 <td colspan="8" class="text-8" style="text-align: right;">
-                    PPn
+                    Tax Basis
                 </td>
             @else
                 <td colspan="6" class="text-8" style="text-align: right;">
-                    PPn
+                    Tax Basis
                 </td>
             @endif
-            <td class="text-8" style="font-style: italic;">Rp <span style="text-align: right; float:right;">{{ number_format($nominalTotalFinal * $config->tax_vat / 100, 2, ',', '.') }}</span></td>
+            <td class="text-8" style="font-style: italic;">Rp <span style="text-align: right; float:right;">{{ number_format($dpp, 2, ',', '.') }}</span></td>
+        </tr>
+        <tr>
+            @if($isPriceList)
+                <td colspan="8" class="text-8" style="text-align: right;">
+                    PPN {{$config->tax_vat}}%
+                </td>
+            @else
+                <td colspan="6" class="text-8" style="text-align: right;">
+                    PPN
+                </td>
+            @endif
+            <td class="text-8" style="font-style: italic;">Rp <span style="text-align: right; float:right;">{{ number_format($ppn, 2, ',', '.') }}</span></td>
         </tr>
         <tr style="border-top: 2px;">
             @if($isPriceList)

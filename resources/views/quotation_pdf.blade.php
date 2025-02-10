@@ -177,6 +177,8 @@
 
             $nominalGrandTotalFinal = str_replace(',', '.', $config->nominal);
             $nominalGrandTotalFinal = floatval($nominalGrandTotalFinal);
+            $dpp = $nominalTotalFinal * 11/12;
+            $ppn = $dpp * $config->tax_vat / 100;
         @endphp
         @if($isPriceList)
             <th colspan="8" style="text-align:right">Total</th>
@@ -187,21 +189,25 @@
     </tr>
     @if($config->tax_vat != null)
         <tr>
-            @if($isPriceList)
-                @if($config->tax_vat == '11')
-                    <th colspan="8" style="text-align:right">VAT 11%</th>
-                @else
-                    <th colspan="8" style="text-align:right"></th>
-                @endif
+            @if($config->tax_vat != null)
+                <th colspan="8" style="text-align:right">DPP Nilai Lainnya</th>
             @else
-                @if($config->tax_vat == '11')
-                    <th colspan="6" style="text-align:right">VAT 11%</th>
-                @else
-                    <th colspan="6" style="text-align:right"></th>
-                @endif
+                <th colspan="8" style="text-align:right"></th>
             @endif
-            @if($config->tax_vat == '11' || $config->tax_vat == '12')
-                <th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($nominalTotalFinal * $config->tax_vat / 100,2)}}</th>
+            @if($config->tax_vat == 11 || $config->tax_vat == 12)
+                <th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($dpp,2)}}</th>
+            @else
+                <th style="text-align:right;font-family:Consolas, monaco, monospace;">0</th>
+            @endif
+        </tr>
+        <tr>
+            @if($config->tax_vat != null)
+                <th colspan="8" style="text-align:right">PPN {{$config->tax_vat}}%</th>
+            @else
+                <th colspan="8" style="text-align:right"></th>
+            @endif
+            @if($config->tax_vat == 11 || $config->tax_vat == 12)
+                <th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($ppn,2)}}</th>
             @else
                 <th style="text-align:right;font-family:Consolas, monaco, monospace;">0</th>
             @endif

@@ -109,7 +109,7 @@
                   <div class="input-group-addon">
                     <strong>RP</strong>
                   </div>
-                  <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money">
+                  <input id="inputNilaiBuku" type="text" name="inputNilaiBuku" class="form-control money" readonly>
                 </div>
               </div>
             </div>
