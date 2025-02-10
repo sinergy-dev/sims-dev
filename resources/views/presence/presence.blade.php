@@ -197,7 +197,7 @@ Presence
 			</center>
 			<br>
 			<div style="padding: 10px;">
-				<span style="flex-grow: 1;margin-right: 5px;"><i class="fa fa-desktop"></i></span><span style="flex-grow: 2;">Accessed : </span><span id="current_time">{{date("l, d M Y H:i:s")}}</span><br>
+				<span style="flex-grow: 1;margin-right: 5px;"><i class="fa fa-desktop"></i></span><span style="flex-grow: 2;">Accessed : </span><span id="current_time">{{ now()->timezone('Asia/Jakarta')->format('l, d M Y H:i:s') }}</span><br>
 				<span style="flex-grow: 1;margin-right: 5px;"><i class="fa fa-map-pin"></i></span><span>Current Location : </span><span id="current_location"></span>
 			</div>
 		</div> 
@@ -227,6 +227,7 @@ Presence
 
 		function updateTime () {
 			now = new Date ();
+			// console.log(now);
 			document.getElementById("hour-hand").style.webkitTransform = "rotate(" + (now.getHours() * 30 + now.getMinutes() / 2) + "deg)";
 			document.getElementById("min-hand").style.webkitTransform = "rotate(" + (now.getMinutes() * 6 + now.getSeconds() / 10) + "deg)";
 			document.getElementById("sec-hand").style.webkitTransform = "rotate(" + now.getSeconds() * 6 + "deg)";
@@ -507,7 +508,7 @@ Presence
 	      	var s = today.getSeconds();
 	      	m = checkTime(m);
 	      	s = checkTime(s);
-	      	document.getElementById('current_time').innerHTML =  time;
+	      	// document.getElementById('current_time').innerHTML =  time;
 	      	var t = setTimeout(startTime, 500);
 	  	}
 	</script>

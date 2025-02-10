@@ -384,42 +384,35 @@ class PresenceController extends Controller
 
     public function getAllUser()
     {
-        $getUserSip = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik`  AS `nik`,`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSip = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik`  AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserMsp = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','2')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserMsp = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','2')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipMsm = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'MSM')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipSims = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Solution Implementation & Managed Service')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipBcd = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'BCD')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipPmds = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Product Management & Development')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipFin = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'FINANCE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipFin = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('id_division', 'FINANCE')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipHr = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')
-                ->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')
-                // ->where('id_company','1')
-                // ->where('id_division', 'HR')
-                // ->orWhere('id_division', 'WAREHOUSE')
-                // ->where('status_karyawan','!=','dummy')
-                ->whereRaw("(`id_company` = '1' AND `id_division` = 'HR' AND `status_karyawan` != 'dummy' OR `id_division` = 'WAREHOUSE')")
-                ->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipHc = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')
+                ->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')
+                ->where('group','Human Capital')
+                ->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipPmo = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'PMO')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipPmo = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Project Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserShifting = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->join('presence__shifting_user', 'presence__shifting_user.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserShifting = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->join('presence__shifting_user', 'presence__shifting_user.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
         
-        $getUserSipSid = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_territory', 'DPG')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
-
-        $getUserSipSol = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_territory', 'PRESALES')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipSccam = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Supply Chain, CPS & Asset Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
         return array(
             collect(["text"=>'SIP',"children"=>$getUserSip]),
-            collect(["text"=>'MSM',"children"=>$getUserSipMsm]),
-            collect(["text"=>'BCD',"children"=>$getUserSipBcd]),
+            collect(["text"=>'SIMS',"children"=>$getUserSipSims]),
+            collect(["text"=>'PMDS',"children"=>$getUserSipPmds]),
             collect(["text"=>'FIN',"children"=>$getUserSipFin]),
-            collect(["text"=>'HR',"children"=>$getUserSipHr]),
+            collect(["text"=>'HC',"children"=>$getUserSipHc]),
             collect(["text"=>'PMO',"children"=>$getUserSipPmo]),
-            collect(["text"=>'SID', "children"=>$getUserSipSid]),
-            collect(["text"=>'SOL', "children"=>$getUserSipSol]),
+            collect(["text"=>'SCCAM', "children"=>$getUserSipSccam]),
             collect(["text"=>'MSP',"children"=>$getUserMsp]),
             collect(["text"=>'Shifting', "children"=>$getUserShifting])
         );
@@ -615,8 +608,26 @@ class PresenceController extends Controller
         return $getCurrentLocation = PresenceLocation::join('presence__location_user', 'presence__location.id', '=', 'presence__location_user.location_id')->select('location_name')->where('user_id',Auth::User()->nik)->where('presence__location.id',$req->id_location)->first()->location_name;
     }
 
-    public function checkIn(Request $req) {
+    function getNtpTime($server = "pool.ntp.org", $port = 123, $timezone = 'Asia/Jakarta')
+    {
+        $sock = fsockopen("udp://$server", $port, $errNo, $errStr, 2);
+        if (!$sock) return false;
 
+        $data = "\010" . str_repeat("\0", 47);
+        fwrite($sock, $data);
+        $response = fread($sock, 48);
+        fclose($sock);
+
+        if (strlen($response) != 48) return false;
+
+        $unpack = unpack('N12', $response);
+        $timestamp = sprintf('%u', $unpack[9]) - 2208988800; // Convert NTP time
+
+        // Convert UTC to your local timezone
+        return \Carbon\Carbon::createFromTimestamp($timestamp, 'UTC')->setTimezone($timezone);
+    }
+
+    public function checkIn(Request $req) {
         $history = new PresenceHistory();
         $agent = new Agent();
         if (isset(Auth::User()->nik)) {
@@ -632,17 +643,24 @@ class PresenceController extends Controller
             $setting_schedule = $this->makeShiftingSchedule($req->nik,"15");
         }
 
+        $ntpTime = $this->getNtpTime();
+
+        if (!$ntpTime) {
+            return response()->json(['error' => 'Failed to fetch NTP time'], 500);
+        }
+
         $history->nik = $req->nik;
         $history->presence_setting = $setting_schedule->id;
         $history->presence_schedule = $setting_schedule->setting_on_time;
-        $history->presence_actual = $req->presence_actual;
+        // $history->presence_actual = $req->presence_actual;
+        $history->presence_actual = $ntpTime->format('Y-m-d H:i:s');
         $history->presence_location = $req->id_location;
         $history->presence_condition = $this->checkPresenceCondition($req->presence_actual,$setting_schedule);
         $history->presence_type = "Check-In";
         $history->ip_address = $req->getClientIp();
         $deviceType = $agent->device();
         $platform = $agent->platform();
-        $platformVersion = $agent->version($platform); 
+        $platformVersion = $agent->version($platform);
         $browser = $agent->browser();
         $browserVersion = $agent->version($browser);
         $history->device = "Device: " . $deviceType . " Platform: " . $platform . ' ' . $platformVersion . ' Browser : ' . $browser . ' ' . $browserVersion;
@@ -681,7 +699,7 @@ class PresenceController extends Controller
         $history->presence_type = "Check-Out";
         $deviceType = $agent->device();
         $platform = $agent->platform();
-        $platformVersion = $agent->version($platform); 
+        $platformVersion = $agent->version($platform);
         $browser = $agent->browser();
         $browserVersion = $agent->version($browser);
         $history->device = "Device: " . $deviceType . " Platform: " . $platform . ' ' . $platformVersion . ' Browser : ' . $browser . ' ' . $browserVersion;

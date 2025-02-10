@@ -58,7 +58,7 @@ Route::get('/admin/mergePdf', 'PrDraftController@mergePdf');
 Route::get('/admin/mergePdfPr', 'PrDraftController@mergePdfPr');
 Route::get('/asset/getPdfBASTAsset','AssetMgmtController@getPdfBASTAsset');
 Route::get('/asset/getPdfBASTPengembalian','AssetMgmtController@getPdfBASTPengembalian');
-
+Route::get('/generate-qr-pdf', 'AssetMgmtController@generatePdf');
 
 Route::get('/PMO/downloadProjectCharterPdf','PMProjectController@downloadProjectCharterPdf');
 Route::get('/PMO/downloadProgressMeetingPdf','PMProjectController@downloadProgressMeetingPdf');
@@ -67,6 +67,7 @@ Route::get('/PMO/downloadFinalProjectPdf','PMProjectController@downloadFinalProj
 Route::post('/sbe/uploadPdfConfig','SBEController@uploadPdfConfig');
 Route::get('/sbe/uploadPdfConfigManual','SBEController@uploadPdfConfigManual');
 Route::get('/sbe/getGenerateConfig','SBEController@getGenerateConfig');
+Route::get('/sbe/testing/getGenerateConfig','TestController@getGenerateConfig');
 
 Route::get('testSbePdf','TestController@testSbePdf');
 
@@ -597,7 +598,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/store_sho','SHOController@store');
 	Route::post('/store_sho_transac','SHOController@store_sho_transac');
 
-	Route::get('/quote', 'QuoteController@index');
+	Route::get('/quoteIndex', 'QuoteController@index');
 
 
 	Route::get('/add', 'QuoteController@create');
@@ -1196,6 +1197,7 @@ Route::group(['middleware' => ['auth']], function () {
 	//presence
 	Route::get('/presence', 'PresenceController@index');
 	Route::get('/presence/getPresenceParameter','PresenceController@getPresenceParameter');
+	Route::get('/presence/get-ntp-time','PresenceController@getNtpTime');
 	Route::post('/presence/checkIn', 'PresenceController@checkIn');
 	Route::post('/presence/checkOut', 'PresenceController@checkOut');
 	Route::get('/presence/history/personal', 'PresenceController@personalHistory');
