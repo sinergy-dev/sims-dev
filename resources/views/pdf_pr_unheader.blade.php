@@ -250,68 +250,26 @@
 			</thead>
 			<tbody>
 				@foreach($product as $key => $eachProduct)
-					@php
-					    // Maximum number of characters per row
-					    $maxCharactersPerRow = 3249; // Adjust as needed
-
-					    if($key == 0){
-					    	$maxCharactersPerRow = $maxCharactersPerRow;
-					    }else{
-					    	$maxCharactersPerRow = $maxCharactersPerRow - (strlen($product[$key]->description)-$maxCharactersPerRow) + 400;
-					    }
-					    // Check if the length of the content exceeds the maximum characters per row
-					    if (strlen($eachProduct->description) > $maxCharactersPerRow) {
-					        // Split the content into an array of chunks with maximum characters per row
-					        $contentChunks = str_split($eachProduct->description, $maxCharactersPerRow);
-					    } else {
-					        // If the length of the content does not exceed the maximum characters per row, use the original content as the only chunk
-					        $contentChunks = [$eachProduct->description];
-					    }
-					@endphp
-					@foreach ($contentChunks as $keys => $chunk)
-						@if ($keys == 0)
-						<tr style="page-break-before: always;">
-							<td style="text-align:center;vertical-align:top;width: 1%">{{++$key}}</td>
-							<td style="width: 2%;vertical-align:top;">{{$eachProduct->name_product}}</td>
-							@if($data->type_of_letter == 'EPR')
-							<td style="width: 2%;vertical-align:top;">{{$eachProduct->part_number}}</td>
-							<td style="width: 2%;vertical-align:top;">{{$eachProduct->serial_number}}</td>
-							@endif
-							<td>
-								<pre>
-	          						{!! $chunk !!}
-	          					</pre>
-	          				</td>
-							<td style="text-align:center;width: 1%">{{$eachProduct->qty}}</td>
-							<td style="text-align:center;width: 1%">{{$eachProduct->unit}}</td>
-							@if($data->isRupiah == 'true')
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">Rp. {{number_format($eachProduct->nominal_product,2)}}</td>
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">Rp. {{number_format($eachProduct->grand_total,2)}}</td>
-							@else
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">USD {{number_format($eachProduct->nominal_product,2)}}</td>
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">USD {{number_format($eachProduct->grand_total,2)}}</td>
-							@endif
-						</tr>
-						@else
-						<tr style="page-break-before: always;">
-							<td style="text-align:center;vertical-align:top;width: 1%"></td>
-							<td style="width: 2%;vertical-align:top;"></td>
-							@if($data->type_of_letter == 'EPR')
-							<td style="width: 2%;vertical-align:top;">{{$eachProduct->part_number}}</td>
-							<td style="width: 2%;vertical-align:top;">{{$eachProduct->serial_number}}</td>
-							@endif
-							<td>
-								<pre>
-	          						{!! $chunk !!}
-	          					</pre>
-	          				</td>
-							<td style="text-align:center"></td>
-							<td style="text-align:center"></td>
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;"></td>
-							<td style="text-align:right;font-family:Consolas, monaco, monospace;"></td>
-						</tr>
+					<tr>
+						<td style="text-align:center;vertical-align:top;width: 1%">{{++$key}}</td>
+						<td style="width: 2%;vertical-align:top;">{{$eachProduct->name_product}}</td>
+						@if($data->type_of_letter == 'EPR')
+						<td style="width: 2%;vertical-align:top;">{{$eachProduct->part_number}}</td>
+						<td style="width: 2%;vertical-align:top;">{{$eachProduct->serial_number}}</td>
 						@endif
-					@endforeach
+						<td style="width:10%">
+							{!!$eachProduct->description!!}
+          				</td>
+						<td style="text-align:center;width: 1%">{{$eachProduct->qty}}</td>
+						<td style="text-align:center;width: 1%">{{$eachProduct->unit}}</td>
+						@if($data->isRupiah == 'true')
+						<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">Rp. {{number_format($eachProduct->nominal_product,2)}}</td>
+						<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">Rp. {{number_format($eachProduct->grand_total,2)}}</td>
+						@else
+						<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">USD {{number_format($eachProduct->nominal_product,2)}}</td>
+						<td style="text-align:right;font-family:Consolas, monaco, monospace;width: 5%">USD {{number_format($eachProduct->grand_total,2)}}</td>
+						@endif
+					</tr>
 				@endforeach
 			</tbody>
 			<tfoot style="">
