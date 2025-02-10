@@ -313,21 +313,24 @@
 		@endif
 
 		<br><br>
-		<div style="display: flex;">
-			<p style="margin-left: 20px;">Yang menyerahkan,</p>
-			<span style="float:left;margin-left: 20px;"><h4>PIHAK PERTAMA</h4></span>
-			<span style="float:right;margin-right: 70px;"><h4>PIHAK KEDUA</h4></span>
+		<div style="width: 100%; margin-bottom: 20px;">
+		  <div style="float: left; text-align: center; width: 45%;">
+		    <h4>PIHAK PERTAMA</h4>
+		  </div>
+		  <div style="float: right; text-align: center; width: 45%;">
+		    <h4>PIHAK KEDUA</h4>
+		  </div>
 		</div>
-		<br><br><br>
-		<div style="display:flex;">
-			<div style="float:left;margin-left: 20px;">
-				<img src="{{$pihak_pertama->ttd}}" style="width: 100px;height: 100px;">
-				<span style="margin-left:30px"><h4>{{$pihak_pertama->name}}</h4></span>
-			</div>
-			<div style="float:right;margin-right: 30px;">
-				<img src="{{$pihak_kedua->ttd}}" style="margin-right: 20px;width: 100px;height: 100px;">
-				<span style="margin-left:30px"><h4>{{$pihak_kedua->name_pk}}</h4></span>
-			</div>
+
+		<div style="width: 100%; margin-top: 50px;">
+		  <div style="float: left; text-align: center; width: 45%;">
+		    <img src="{{$pihak_pertama->ttd}}" style="width: 100px; height: 100px;">
+		    <h4 style="margin-top: 10px;">{{$pihak_pertama->name}}</h4>
+		  </div>
+		  <div style="float: right; text-align: center; width: 45%;">
+		    <img src="{{$pihak_kedua->ttd}}" style="width: 100px; height: 100px;">
+		    <h4 style="margin-top: 10px;">{{$pihak_kedua->name_pk}}</h4>
+		  </div>
 		</div>
 	</div>
 </body>

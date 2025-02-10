@@ -24,10 +24,10 @@ use Illuminate\Support\Facades\Mail;
 
 class QuoteController extends Controller
 {
-	public function __construct()
-    {
-        $this->middleware('auth');
-    }
+//	public function __construct()
+//    {
+//        $this->middleware('auth');
+//    }
     
 	public function index()
 	{
@@ -485,9 +485,9 @@ class QuoteController extends Controller
             $query = $query->where('tb_quote.nik', $user);
         }
 //            ->where('date','like',$tahun."%")
-            $query = $query->select('tb_quote.id_quote','quote_number','position','type_of_letter','date','to','attention','title','project',
+            $query = $query->select('tb_quote.id_quote','quote_number','position','type_of_letter','date','to','tb_quote.attention','title','project',
                 'tb_quote.status', 'description', 'from', 'division', 'project_id','note', 'status_backdate',
-                'tb_quote.nik', 'name', 'month', 'tb_quote.project_type', 'tb_contact.id_customer', 'customer_legal_name','c.nominal')->get();
+                'tb_quote.nik', 'name', 'month', 'tb_quote.project_type', 'tb_contact.id_customer', 'customer_legal_name','c.nominal')->whereYear('date',date('Y'))->get();
 
         return array("data" => $query);
     }
@@ -1554,7 +1554,7 @@ class QuoteController extends Controller
         $config = QuoteConfig::join('tb_quote as a', 'tb_quote_config.id_quote', 'a.id_quote')
             ->select('a.from', 'a.to', 'a.no_telp', 'a.quote_number', 'a.title', 'a.term_payment', 'a.address', 'a.building', 'a.street','a.city',
                 'tb_quote_config.email','tb_quote_config.project_type', 'tb_quote_config.attention', 'tb_quote_config.nominal', 'tb_quote_config.tax_vat',
-                'a.nik', 'tb_quote_config.id','a.date', 'a.sign','parent_drive_id','is_uploaded','a.id_quote')
+                'a.nik', 'tb_quote_config.id','a.date', 'a.sign','a.parent_drive_id','is_uploaded','a.id_quote')
             ->where('tb_quote_config.id_quote', $request['id_quote'])
             ->where('tb_quote_config.status', 'Choosed')
             ->first();
@@ -1777,7 +1777,7 @@ class QuoteController extends Controller
             
         }
 
-        return redirect('quote')->with('success', 'Create Quote Number Successfully!');
+        return redirect('quoteIndex')->with('success', 'Create Quote Number Successfully!');
     }
 
     public function addBackdateNum(Request $request)
@@ -2426,7 +2426,7 @@ class QuoteController extends Controller
             )
         );
 
-        return array($result->id);
+        return $result->id;
     }
 
     public function googleDriveUploadPdf($fileName,$pdf,$parentID){
@@ -2436,7 +2436,7 @@ class QuoteController extends Controller
 
             $file = new Google_Service_Drive_DriveFile();
             $file->setName($fileName);
-            $file->setParents($parentID);
+            $file->setParents([$parentID]);
 
             $result = $service->files->create(
                 $file,

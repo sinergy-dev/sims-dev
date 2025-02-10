@@ -190,6 +190,7 @@
                   <button class="btn btn-sm btn-primary" onclick="btnAddServicePoint()" id="btnAddServicePoint" style="display:none"><i class="fa fa-plus"></i> Service Point</button>
                   <button class="btn btn-sm bg-maroon" onclick="btnAddCategory()" id="btnAddCategory" style="display:none"><i class="fa fa-plus"></i> Category</button>
                   <button class="btn btn-sm btn-warning btnAssignEngineer" id="btnAssignEngineer" onclick="btnAssignEngineer()" style="display: none;"><i class="fa fa-cog"></i> Assign Engineer</button>
+                  <button class="btn btn-sm btn-info btnGenerateQR" id="btnGenerateQR" onclick="btnGenerateQR()"><i class="fa fa-qrcode"></i> Generate QR</button>
                 </div>
                 <div class="pull-right" style="display: flex;">
                   <div class="input-group" style="margin-right:10px">
@@ -3906,6 +3907,74 @@
           </html>
       `);
       printWindow.document.close();
+    }
+
+    function btnGenerateQR(argument) {
+      let pid = ""
+      if ($("#selectFilterPID").val() == null) {
+        pid = ""
+      }else{
+        pid = $("#selectFilterPID").val()
+      }
+
+      var urlAjax = '{{url("/generate-qr-pdf")}}?assetOwner=' + $("#selectFilterAssetOwner").val() + '&client=' + $("#selectFilterClient").val() + '&category=' + $("#selectFilterCategory").val() + '&pid=' + pid
+      getReport(urlAjax)
+    }
+
+    function getReport(urlAjax){
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Make sure there is nothing wrong to get this report!",
+        icon: "warning",
+        showCancelButton: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.value){
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "Prossesing Data Report",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+
+            $.ajax({
+              type: "GET",
+              url: urlAjax,
+              success: function(result){
+                Swal.hideLoading()
+                if(result == 0){
+                  Swal.fire({
+                    //icon: 'error',
+                    title: 'Success!',
+                    text: "The file is unavailable",
+                    type: 'error',
+                    //confirmButtonText: '<a style="color:#fff;" href="report/' + result.slice(1) + '">Get Report</a>',
+                  })
+                }else{
+                  Swal.fire({
+                    title: 'Success!',
+                    text: "You can get your file now",
+                    type: 'success',
+                    confirmButtonText: '<a style="color:#fff;" href="' + urlAjax + '">Get Report</a>',
+                    // confirmButtonText: '<a style="color:#fff;" href="' + result + '">Get Report</a>',
+                  })
+                }
+              }
+            });
+          }
+        }
+      );
     }
   </script>
 @endsection
