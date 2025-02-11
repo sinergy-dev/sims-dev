@@ -2709,7 +2709,7 @@ class SalesLeadController extends Controller
 
         $tambah = new Sales();
         $tambah->lead_id = $lead;
-        if($cek_role->group == 'Sales'){
+        if($cek_role->group == 'Sales' || $cek_role->name_role == 'VP Product Management & Development Solution'){
             $tambah->nik = Auth::User()->nik;
         } else {
             $tambah->nik = $request['owner_sales'];
@@ -2806,7 +2806,7 @@ class SalesLeadController extends Controller
         }
         $tambah_log = new SalesChangeLog();
         $tambah_log->lead_id = $lead;
-        if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER'){
+        if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER'|| $cek_role->name_role == 'VP Product Management & Development Solution'){
             $tambah_log->nik = Auth::User()->nik;
         } else {
             $tambah_log->nik = $request['owner_sales'];
@@ -2815,8 +2815,6 @@ class SalesLeadController extends Controller
         $tambah_log->result = $resultLead;
         $tambah_log->submit_price  = $amount;
         $tambah_log->save();
-
-
 
         $nik_sales = $request['owner_sales'];
 

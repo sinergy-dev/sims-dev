@@ -347,14 +347,15 @@ Lead Register
 	        <div class="modal-body">
 	          <!-- <form method="POST" action="{{url('store')}}" id="modalSalesLead" name="modalSalesLead"> -->
 	            @csrf
-            <div class="form-group" style="display:none" id="ownerSales">
-              <label for="">Owner</label>
-              <select class="form-control select2" style="width: 100%;" id="owner_sales"  name="owner_sales">
-                <option value=""></option>
-              </select>
-              <span class="help-block" style="display:none">Please Choose Owner Sales!</span>
-            </div>
-
+				  @if(Auth::user()->roles->first()->name != 'VP Product Management & Development Solution')
+					<div class="form-group" style="display:none" id="ownerSales">
+					  <label for="">Owner</label>
+					  <select class="form-control select2" style="width: 100%;" id="owner_sales"  name="owner_sales">
+						<option value=""></option>
+					  </select>
+					  <span class="help-block" style="display:none">Please Choose Owner Sales!</span>
+					</div>
+				  @endif
 	          <div class="form-group">
 	            <label for="">Customer (Brand Name)</label>
 	             <select class="form-control select2" style="width: 100%;" id="contact" onkeyup="copytextbox();" name="contact" required>
