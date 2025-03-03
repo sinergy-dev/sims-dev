@@ -5750,7 +5750,7 @@ class PrDraftController extends Controller
             ->where('email','!=',NULL)
             ->union($data)->get();
     }
-
+   
     public function getUserOperasional()
     {
         $data = User::select(DB::raw('`users`.`nik` AS `id`,`users`.`name` AS `text`'))->join('role_user','users.nik','=','role_user.user_id')
