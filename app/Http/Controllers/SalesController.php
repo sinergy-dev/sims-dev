@@ -2547,10 +2547,10 @@ class SalesController extends Controller{
             $tambah->lead_id = $lead;
             if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->name == "Operations Team"){
 
-                return Auth::User()->id_division;
+//                return Auth::User()->id_division;
                 $tambah->nik = Auth::User()->nik;
             } else {
-                return Auth::User()->id_division;
+//                return Auth::User()->id_division;
                 
                 $tambah->nik = $request['owner_sales'];
             }
@@ -4606,7 +4606,7 @@ class SalesController extends Controller{
 
         $pid_request_lead_done = PID::where('status','=','done')->get();  
 
-        $year_before = SalesProject::select(DB::raw('YEAR(date) year'))->groupBy('year')->orderBy('year','DESC')->get();
+        $year_before = SalesProject::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->orderBy('year','DESC')->get();
 
         $year_now = date('Y');
 
