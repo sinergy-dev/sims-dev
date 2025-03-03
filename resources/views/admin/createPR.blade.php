@@ -985,7 +985,7 @@
      
         // Allowing file type
         var allowedExtensions =
-        /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
+        /(\.pdf)$/i;
 
         var ErrorText = []
         // 
@@ -1001,13 +1001,13 @@
 
         var ext = filePath.name.split(".");
         ext = ext[ext.length-1].toLowerCase();      
-        var arrayExtensions = ["jpg" , "jpeg", "png", "pdf"];
+        var arrayExtensions = ["pdf"];
 
         if (arrayExtensions.lastIndexOf(ext) == -1) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Invalid file type, just allow png/jpg/pdf file',
+            text: 'Invalid file type, just allow pdf file',
           }).then((result) => {
             this.value = ''
           })
@@ -1374,7 +1374,7 @@
                   onClick = ""
                   title = "Verify"
                   btnClass = "btnCekDraft btn-primary"
-                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
+                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement & Vendor Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Internal Chain Management')->exists()}}") {
                     isDisabled = ""
                     onclick = "cekByAdmin(0,"+ row.id +")"
                   }else{
@@ -1408,7 +1408,7 @@
                 else if(row.status == 'UNAPPROVED'){
                   title = "Revision"
                   btnClass = "btn-warning"
-                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
+                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement & Vendor Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Internal Chain Management')->exists()}}") {
                     status = '"revision"'
                     value = status
                     onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
@@ -1431,7 +1431,7 @@
                     isDisabledCancel = ''
                   }
                 }else{
-                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Supply Chain, CPS & Asset Management')->exists()}}") {
+                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Procurement & Vendor Management')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Internal Chain Management')->exists()}}") {
                     isDisabledCancel = ''
                   }else{
                     isDisabledCancel = 'disabled'
@@ -2087,7 +2087,7 @@
                 append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="40%">'
-                  append = append + '<textarea readonly class="form-control" style="resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + '\n' + item.part_number + '\n\n' + item.for  + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="5%">'
                   append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
@@ -2460,6 +2460,83 @@
 
               //button add initiate product show form-group
               $("#btnInitiateAddProduct").click(function(){
+                console.log(result.pr.category)
+                console.log($("#selectCategory").val())
+
+                var append = "", appendFrom = ""
+
+                $("select[name='selectBudgetType']").closest(".form-group").remove()
+                $("select[name='fromBudgetType']").closest(".form-group").remove() 
+                if (result.pr.category == 'Perjalanan Dinas') {
+                  append = append + '<div class="form-group">'
+                    append = append + '<label>Budget Type*</label>'
+                      append = append + '<select name="selectBudgetType" class="form-control" id="selectBudgetType" placeholder="Select Budget Type" onchange="fillInput(' + "'" + 'budget_type' + "'" + ')">'
+                        append = append + '<option value="" disabled selected>Select Budget Type</option>'
+                        append = append + '<option value="OPERASIONAL">OPERASIONAL</option>'
+                        append = append + '<option value="NON-OPERASIONAL">NON-OPERASIONAL</option>'
+                      append = append + '</select>'
+                    append = append + '<span class="help-block" style="display:none;">Please fill Budget Type!</span>'
+                  append = append + '</div>'
+
+                  console.log(!$("#selectBudgetType").is(":visible"))
+                  if (!$("#selectBudgetType").is(":visible")) {
+                    $("#inputNameProduct").closest(".form-group").before(append)
+                  }
+
+                  $("#selectBudgetType").change(function(){
+                    console.log(this.value)
+                    if (this.value == 'OPERASIONAL') {
+                      appendFrom = appendFrom + '<div class="form-group">'
+                        appendFrom = appendFrom + '<label>For*</label>'
+                          appendFrom = appendFrom + '<select name="fromBudgetType" class="form-control" id="fromBudgetType" placeholder="Select Budget Type" onchange="fillInput(' + "'" + 'fromBudgetType' + "'" + ')">'
+                            appendFrom = appendFrom + '<option></option>'
+                          appendFrom = appendFrom + '</select>'
+                        appendFrom = appendFrom + '<span class="help-block" style="display:none;">Please fill Budget Type!</span>'
+                      appendFrom = appendFrom + '</div>'
+
+                      if ($("#selectBudgetType").closest(".form-group").next().find("#fromBudgetType").length == 0) {
+                        console.log("sini lagi")
+                        $("#selectBudgetType").closest(".form-group").after(appendFrom)
+
+                        $("#fromBudgetType").select2({
+                          // data:dataCategory,
+                          placeholder:"Select User",
+                          ajax: {
+                            url: '{{url("admin/getUserOperasional")}}',
+                            dataType: 'json',
+                            delay: 250,
+                            data: function (params) {
+                              return {
+                                q:params.term
+                              };
+                            },
+                            processResults: function(data, params) {
+                              params.page = params.page || 1;
+                              return {
+                                  results: data,
+                                  pagination: {
+                                      more: (params.page * 10) < data.count_filtered
+                                  }
+                              };
+                            },
+                          },
+                        })
+                      }else{
+                        console.log("cuman show lagi")
+
+                        $("#fromBudgetType").closest(".form-group").show()
+                      }                
+                    }else{
+                      console.log("ini hide")
+                      var from = $("#fromBudgetType");
+                      var option = new Option('', '', true, true);
+                      from.append(option).trigger('change');
+
+                      $("#fromBudgetType").closest(".form-group").hide()
+                    }
+                  })
+                }
+
                 $(".tabGroupInitiateAdd").hide()
                 x[n].children[1].style.display = 'inline'
                 $("#inputNameProduct").val('')
@@ -3141,7 +3218,7 @@
                 append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '\n\n' + item.for  +'</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -3386,6 +3463,83 @@
 
           //button add initiate product show form-group
           $("#btnInitiateAddProduct").click(function(){
+            console.log("bukan sini kan")
+            console.log($("#selectCategory").val())
+
+            var append = "", appendFrom = ""
+
+            $("select[name='selectBudgetType']").closest(".form-group").remove() 
+            $("select[name='fromBudgetType']").closest(".form-group").remove()
+            if ($("#selectCategory").val() == 'Perjalanan Dinas') {
+              append = append + '<div class="form-group">'
+                append = append + '<label>Budget Type*</label>'
+                  append = append + '<select name="selectBudgetType" class="form-control" id="selectBudgetType" placeholder="Select Budget Type" onchange="fillInput(' + "'" + 'budget_type' + "'" + ')">'
+                    append = append + '<option value="" disabled selected>Select Budget Type</option>'
+                    append = append + '<option value="OPERASIONAL">OPERASIONAL</option>'
+                    append = append + '<option value="NON-OPERASIONAL">NON-OPERASIONAL</option>'
+                  append = append + '</select>'
+                append = append + '<span class="help-block" style="display:none;">Please fill Budget Type!</span>'
+              append = append + '</div>'
+
+              console.log(!$("#selectBudgetType").is(":visible"))
+              if (!$("#selectBudgetType").is(":visible")) {
+                $("#inputNameProduct").closest(".form-group").before(append)
+              }
+
+              $("#selectBudgetType").change(function(){
+                console.log(this.value)
+                if (this.value == 'OPERASIONAL') {
+                  appendFrom = appendFrom + '<div class="form-group">'
+                    appendFrom = appendFrom + '<label>For*</label>'
+                      appendFrom = appendFrom + '<select name="fromBudgetType" class="form-control" id="fromBudgetType" placeholder="Select Budget Type" onchange="fillInput(' + "'" + 'fromBudgetType' + "'" + ')">'
+                        appendFrom = appendFrom + '<option></option>'
+                      appendFrom = appendFrom + '</select>'
+                    appendFrom = appendFrom + '<span class="help-block" style="display:none;">Please fill Budget Type!</span>'
+                  appendFrom = appendFrom + '</div>'
+
+                  if ($("#selectBudgetType").closest(".form-group").next().find("#fromBudgetType").length == 0) {
+                    console.log("sini lagi")
+                    $("#selectBudgetType").closest(".form-group").after(appendFrom)
+
+                    $("#fromBudgetType").select2({
+                      // data:dataCategory,
+                      placeholder:"Select User",
+                      ajax: {
+                        url: '{{url("admin/getUserOperasional")}}',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                          return {
+                            q:params.term
+                          };
+                        },
+                        processResults: function(data, params) {
+                          params.page = params.page || 1;
+                          return {
+                              results: data,
+                              pagination: {
+                                  more: (params.page * 10) < data.count_filtered
+                              }
+                          };
+                        },
+                      },
+                      dropdownParent: $('#ModalDraftPr'),
+                    })
+                  }else{
+                    console.log("cuman show lagi")
+
+                    $("#fromBudgetType").closest(".form-group").show()
+                  }                
+                }else{
+                  console.log("ini hide")
+                  var from = $("#fromBudgetType");
+                  var option = new Option('', '', true, true);
+                  from.append(option).trigger('change');
+
+                  $("#fromBudgetType").closest(".form-group").hide()
+                }
+              })
+            }
             $(".tabGroupInitiateAdd").hide()
             x[n].children[1].style.display = 'inline'
           })
@@ -4384,7 +4538,7 @@
                   append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                   append = append + '</td>'
                   append = append + '<td width="40%">'
-                    append = append + '<textarea style="font-size: 12px;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                    append = append + '<textarea style="font-size: 12px;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '\n\n' + item.for +'</textarea>'
                   append = append + '</td>'
                   append = append + '<td width="5%">'
                     append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px;">'
@@ -4631,7 +4785,7 @@
               append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ value.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number + '\n\n' + value.for 
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -4936,6 +5090,12 @@
         $("#inputNameProduct").closest('input').next('span').hide();
         $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
       }
+
+      if (val == "budget_type") {
+        $("#selectBudgetType").closest('.form-group').removeClass('has-error')
+        $("#selectBudgetType").next('span').hide();
+      }
+
       if (val == "desc_product") {
         $("#inputDescProduct").closest('.form-group').removeClass('has-error')
         $("#inputDescProduct").closest('textarea').next('span').hide();
@@ -5353,6 +5513,11 @@
         
         if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
           if (n == 1) {
+            if ($("#selectBudgetType").val() == "" || $("#selectBudgetType").val() == null) {
+              $("#selectBudgetType").closest('.form-group').addClass('has-error')
+              $("#selectBudgetType").next('.help-block').show();
+            }
+                   
             if ($("#inputNameProduct").val() == "") {
               $("#inputNameProduct").closest('.form-group').addClass('has-error')
               $("#inputNameProduct").closest('input').next('span').show();
@@ -5434,6 +5599,8 @@
                   data: {
                    _token:"{{ csrf_token() }}",
                    no_pr:no_pr,
+                   selectBudgetType:$("#selectBudgetType").val(),
+                   inputFromBudgetType:$("#fromBudgetType").text(),
                    inputNameProduct:$("#inputNameProduct").val(),
                    inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
                    inputQtyProduct:$("#inputQtyProduct").val(),
@@ -6109,7 +6276,7 @@
                 append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '\n\n' + item.for 
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -6180,9 +6347,15 @@
               appendBottom = appendBottom + '       <li>'
               appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
               appendBottom = appendBottom + '       </li>'
+              // appendBottom = appendBottom + '       <li>'
+              // appendBottom = appendBottom + '        <a onclick="changeVatValue(12)">Vat 12%</a>'
+              // appendBottom = appendBottom + '       </li>'
               appendBottom = appendBottom + '       <li>'
               appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
               appendBottom = appendBottom + '       </li>'
+              // appendBottom = appendBottom + '       <li>'
+              // appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.2) +')">Vat 1,2%</a>'
+              // appendBottom = appendBottom + '       </li>'
               appendBottom = appendBottom + '       <li>'
               appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,1%</a>'
               appendBottom = appendBottom + '       </li>'
@@ -6427,6 +6600,75 @@
           valueEdit = parseFloat(valueEdit)
         }
         if (!isNaN(valueEdit)) {
+          var append = '', appendFrom = ''
+          $("select[name='selectBudgetType']").closest(".form-group").remove() 
+          if ($("#selectCategory").val() == 'Perjalanan Dinas') {
+            append = append + '<div class="form-group">'
+              append = append + '<label>Budget Type*</label>'
+                append = append + '<select name="selectBudgetType" class="form-control" id="selectBudgetType" placeholder="Select Budget Type" onchange="fillInput(' + "'" + 'budget_type' + "'" + ')">'
+                  append = append + '<option value="" disabled selected>Select Budget Type</option>'
+                  append = append + '<option value="OPERASIONAL">OPERASIONAL</option>'
+                  append = append + '<option value="NON-OPERASIONAL">NON-OPERASIONAL</option>'
+                append = append + '</select>'
+              append = append + '<span class="help-block" style="display:none;">Please fill Budget Type!</span>'
+            append = append + '</div>'
+
+            if (!$("#selectBudgetType").is(":visible")) {
+              $("#inputNameProduct").closest(".form-group").before(append)
+            }
+
+            $("#selectBudgetType").change(function(){
+              console.log(this.value)
+              if (this.value == 'OPERASIONAL') {
+                appendFrom = appendFrom + '<div class="form-group">'
+                  appendFrom = appendFrom + '<label>For*</label>'
+                    appendFrom = appendFrom + '<select name="fromBudgetType" class="form-control" id="fromBudgetType" placeholder="Select Budget Type" onchange="fillInput(' + "'" + 'fromBudgetType' + "'" + ')">'
+                      appendFrom = appendFrom + '<option></option>'
+                    appendFrom = appendFrom + '</select>'
+                  appendFrom = appendFrom + '<span class="help-block" style="display:none;">Please fill Budget Type!</span>'
+                appendFrom = appendFrom + '</div>'
+
+                if ($("#selectBudgetType").closest(".form-group").next().find("#fromBudgetType").length == 0) {
+                  console.log("sini lagi")
+                  $("#selectBudgetType").closest(".form-group").after(appendFrom)
+
+                  $("#fromBudgetType").select2({
+                    // data:dataCategory,
+                    placeholder:"Select User",
+                    ajax: {
+                      url: '{{url("admin/getUserOperasional")}}',
+                      dataType: 'json',
+                      delay: 250,
+                      data: function (params) {
+                        return {
+                          q:params.term
+                        };
+                      },
+                      processResults: function(data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data,
+                            pagination: {
+                                more: (params.page * 10) < data.count_filtered
+                            }
+                        };
+                      },
+                    },
+                    dropdownParent: $('#ModalDraftPr'),
+                  })
+                }else{
+                  $("#fromBudgetType").closest(".form-group").show()
+                }                
+              }else{
+                var from = $("#fromBudgetType");
+                var option = new Option('', '', true, true);
+                from.append(option).trigger('change');
+
+                $("#fromBudgetType").closest(".form-group").hide()
+              }
+            })
+          }
+
           $(".tabGroupInitiateAdd").hide()
           $(".tab-add")[1].children[1].style.display = 'inline'
           $.ajax({
@@ -6437,6 +6679,16 @@
             },
             success: function(result) {
               $.each(result,function(value,item){
+                if (item.budget_type) {
+                  $("#selectBudgetType").val(item.budget_type)
+                }
+
+                if (item.for) {
+                  var from = $("#fromBudgetType");
+                  var option = new Option(item.from, item.from, true, true);
+                  from.append(option).trigger('change');
+                }
+
                 $("#prevBtnAdd").css("display", "none");
                 localStorage.setItem('isEditProduct',true)
                 localStorage.setItem('id_product',item.id_product)
@@ -6645,6 +6897,7 @@
                   data: {
                    _token:"{{ csrf_token() }}",
                    id_product:localStorage.getItem('id_product'),
+                   selectBudgetType:$("#selectBudgetType").val(),
                    inputNameProduct:$("#inputNameProduct").val(),
                    inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
                    inputQtyProduct:$("#inputQtyProduct").val(),
@@ -6700,6 +6953,8 @@
                   data: {
                    _token:"{{ csrf_token() }}",
                    no_pr:localStorage.getItem('no_pr'),
+                   selectBudgetType:$("#selectBudgetType").val(),
+                   inputFromBudgetType:$("#fromBudgetType").text(),
                    inputNameProduct:$("#inputNameProduct").val(),
                    inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
                    inputSerialNumber:$("#inputSerialNumber").val(),

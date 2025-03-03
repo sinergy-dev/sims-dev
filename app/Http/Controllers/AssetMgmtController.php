@@ -3394,7 +3394,7 @@ class AssetMgmtController extends Controller
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                             ->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')
-                            ->where('roles.name','like','VP Project Management')
+                            ->where('roles.name','like','VP Program & Project Management')
                             ->first(); 
         } 
         else if (substr($roleName, -7) === 'Manager') {
@@ -3475,7 +3475,7 @@ class AssetMgmtController extends Controller
             $mini_group = $cek_role_pk->mini_group;
             if ($mini_group === 'Human Capital') {
                 $atasan_pk = $atasan_pk
-                        ->where('roles.name','like','VP Project Management')
+                        ->where('roles.name','like','VP Program & Project Management')
                         ->first();
             }
             else if ($mini_group == "" or $mini_group == null) {
@@ -3753,7 +3753,7 @@ class AssetMgmtController extends Controller
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                             ->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')
-                            ->where('roles.name','like','VP Project Management')
+                            ->where('roles.name','like','VP Program & Project Management')
                             ->first(); 
         }  
         else if (substr($roleName, -7) === 'Manager') {
@@ -3798,7 +3798,7 @@ class AssetMgmtController extends Controller
             $mini_group = $cek_role_pk->mini_group;
             if ($mini_group === 'Human Capital') {
                 $atasan_pk = $atasan_pk
-                        ->where('roles.name','like','VP Project Management')
+                        ->where('roles.name','like','VP Program & Project Management')
                         ->first();
             }
             else if ($mini_group == "" or $mini_group = null) {

@@ -234,7 +234,7 @@ class HRController extends Controller
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
                 ->where('status_delete','D')
-                ->where('roles.name', '!=', 'PMO Admin')
+                ->where('roles.name', '!=', 'Project Transformation Officer')
                 ->get();
 
         $data_resign = $data_resign->unique('nik')->toArray();
@@ -259,7 +259,7 @@ class HRController extends Controller
 
         $data_resign_msp = $data_resign_msp->unique('nik')->toArray();
         
-        $roles = DB::table('roles')->where('name', '!=', 'PMO Admin')->get();
+        $roles = DB::table('roles')->where('name', '!=', 'Project Transformation Officer')->get();
 
         $code = $request['code_input'];     
 

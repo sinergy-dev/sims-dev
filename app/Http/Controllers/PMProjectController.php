@@ -1194,7 +1194,7 @@ class PMProjectController extends Controller
 
         // return $end_date . $update->estimated_end_date;
         if ($end_date != $update->estimated_end_date) {
-            $this->postEventCalendar($name_project_calendar,$end_date,array(Auth::User()->email,User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->orwhere('roles.name','VP Project Management')->first()->email));
+            $this->postEventCalendar($name_project_calendar,$end_date,array(Auth::User()->email,User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Office Manager')->orwhere('roles.name','VP Program & Project Management')->first()->email));
         }
         // return $update->name_project;
         $update->project_description = $request['textAreaProjectDesc'];
@@ -1793,10 +1793,10 @@ class PMProjectController extends Controller
         if ($data->project_type == 'maintenance') {
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
-                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
                     ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                 } else{
-                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
                     ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                 }
             }
@@ -1804,11 +1804,11 @@ class PMProjectController extends Controller
         } else if ($data->project_type == 'implementation'){
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
-                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
                     ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","Operations Director")');
                     return $sign->get();
                 } else {
-                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
                     ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                 }
             }
@@ -2060,7 +2060,9 @@ class PMProjectController extends Controller
                 //          'market_segment', 'customer_address')
           //               ->where('tb_pmo_project_charter.id_project',$request->id_pmo)->get();
 
-        $data = PMOProjectCharter::join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->where('tb_pmo_project_charter.id_project',$request->id_pmo)->get();
+        $data = PMOProjectCharter::join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')
+            ->leftjoin('tb_sla_project', 'tb_pmo.project_id', 'tb_sla_project.pid')
+            ->where('tb_pmo_project_charter.id_project',$request->id_pmo)->get();
 
         return $data;
     }
@@ -3414,7 +3416,7 @@ class PMProjectController extends Controller
                     "subject_email" => 'New Final Report',
                     "subject"       => 'There is new final report,',
                     "pid"           => $data->project_id,
-                    "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->select('users.name as name')->first()->name,
+                    "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Office Manager')->select('users.name as name')->first()->name,
                     "name_project"  => DB::table('tb_id_project')->where('id_project',$data->project_id)->first()->name_project,
                     "project_type"  => $datas->type_project,
                     "sales_owner"   => $data->name,
@@ -3951,15 +3953,69 @@ class PMProjectController extends Controller
 
     public function getTotalProjectType(Request $request)
     {
-        $data = DB::table('tb_pmo')->select(
-                DB::raw('COUNT(project_type) as count'),
-                // 'project_type',
-                DB::raw('(CASE WHEN project_type = "implementation" THEN "Implementation" WHEN project_type = "maintenance" THEN "Maintenance & Managed Service" WHEN project_type = "supply_only" THEN "Supply Only" ELSE project_type END) AS project_type'),
-            )
-            ->where('project_id','like','%'.$request->year)
-            ->groupBy('project_type');
+//        $data = DB::table('tb_pmo')->select(
+//                DB::raw('COUNT(project_type) as count'),
+//                // 'project_type',
+//                DB::raw('(CASE WHEN project_type = "implementation" THEN "Implementation" WHEN project_type = "maintenance" THEN "Maintenance & Managed Service" WHEN project_type = "supply_only" THEN "Supply Only" ELSE project_type END) AS project_type'),
+//            )
+//            ->where('project_id','like','%'.$request->year)
+//            ->groupBy('project_type')->get();
 
-        return array("data" => $data->get());
+        $subquery = DB::table('tb_pmo')
+            ->selectRaw('DISTINCT project_id')
+            ->where('project_id', 'like', '%' . $request->year);
+
+        $processedProjects = DB::table('tb_pmo AS pmo')
+            ->joinSub($subquery, 'subquery', function ($join) {
+                $join->on('subquery.project_id', '=', 'pmo.project_id');
+            })
+            ->select(
+                'pmo.project_id',
+                DB::raw("
+            CASE 
+                WHEN GROUP_CONCAT(DISTINCT pmo.project_type ORDER BY pmo.project_type SEPARATOR ' + ') = 'implementation + maintenance' 
+                THEN 'Implementation + Maintenance & Managed Service'
+                WHEN GROUP_CONCAT(DISTINCT pmo.project_type ORDER BY pmo.project_type) = 'implementation' 
+                THEN 'Implementation'
+                WHEN GROUP_CONCAT(DISTINCT pmo.project_type ORDER BY pmo.project_type) = 'maintenance' 
+                THEN 'Maintenance & Managed Service'
+                WHEN GROUP_CONCAT(DISTINCT pmo.project_type ORDER BY pmo.project_type) = 'supply_only' 
+                THEN 'Supply Only'
+                ELSE GROUP_CONCAT(DISTINCT pmo.project_type ORDER BY pmo.project_type SEPARATOR ' + ')
+            END AS project_type
+        ")
+            )
+            ->groupBy('pmo.project_id');
+
+        $countedProjects = DB::table(DB::raw("({$processedProjects->toSql()}) as processed_projects"))
+            ->mergeBindings($processedProjects)
+            ->select(
+                'processed_projects.project_type',
+                DB::raw('COUNT(DISTINCT processed_projects.project_id) AS total_projects')
+            )
+            ->groupBy('processed_projects.project_type');
+
+        $categories = collect([
+            ['project_type' => 'Implementation'],
+            ['project_type' => 'Maintenance & Managed Service'],
+            ['project_type' => 'Supply Only'],
+            ['project_type' => 'Implementation + Maintenance & Managed Service'],
+        ]);
+
+        $data = DB::table(DB::raw("(SELECT * FROM (SELECT 'Implementation' AS project_type UNION ALL
+            SELECT 'Maintenance & Managed Service' UNION ALL
+            SELECT 'Supply Only' UNION ALL
+            SELECT 'Implementation + Maintenance & Managed Service') AS categories) AS categories"))
+            ->leftJoinSub($countedProjects, 'counted_projects', function ($join) {
+                $join->on('categories.project_type', '=', 'counted_projects.project_type');
+            })
+            ->select(
+                'categories.project_type',
+                DB::raw('COALESCE(counted_projects.total_projects, 0) AS count')
+            )
+            ->get();
+
+        return array("data" => $data);
     }
 
     public function getMarketSegment(Request $request)
@@ -3993,15 +4049,40 @@ class PMProjectController extends Controller
 
         // return $data = DB::table('tb_pmo')->join('tb_id_project','tb_pmo.project_id','tb_id_project.id_project')->select('id_project', 'amount_idr')->get();
 
-        $data = DB::table('tb_pmo')->join('tb_id_project','tb_pmo.project_id','tb_id_project.id_project')->select(
-                // DB::raw('SUM(amount_idr) as amount_idr'),
-                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` <= "1000000000",1,NULL)) AS "dibawah_1M"'),
-                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "1000000000" && `tb_id_project`.`amount_idr` <= 5000000000,1,NULL)) AS "one_until_five_M"'),
-                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "5000000000" && `tb_id_project`.`amount_idr` <= 10000000000,1,NULL)) AS "five_until_ten_M"'),
-                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "10000000000",1,NULL)) AS "diatas_10M"')
+//        $data = DB::table('tb_pmo')->join('tb_id_project','tb_pmo.project_id','tb_id_project.id_project')->select(
+//                // DB::raw('SUM(amount_idr) as amount_idr'),
+//                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` <= "1000000000",1,NULL)) AS "dibawah_1M"'),
+//                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "1000000000" && `tb_id_project`.`amount_idr` <= 5000000000,1,NULL)) AS "one_until_five_M"'),
+//                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "5000000000" && `tb_id_project`.`amount_idr` <= 10000000000,1,NULL)) AS "five_until_ten_M"'),
+//                DB::raw('COUNT(IF(`tb_id_project`.`amount_idr` > "10000000000",1,NULL)) AS "diatas_10M"')
+//            )
+//            ->where('project_id','like','%'.$request->year)
+//            ->first();
+
+        $data = DB::table('tb_pmo')
+            ->join('tb_id_project', 'tb_pmo.project_id', '=', 'tb_id_project.id_project')
+            ->select(
+                DB::raw('COUNT(DISTINCT CASE 
+            WHEN tb_id_project.amount_idr <= 1000000000 THEN tb_pmo.project_id 
+        END) AS dibawah_1M'),
+
+                DB::raw('COUNT(DISTINCT CASE 
+            WHEN tb_id_project.amount_idr > 1000000000 
+            AND tb_id_project.amount_idr <= 5000000000 THEN tb_pmo.project_id 
+        END) AS one_until_five_M'),
+
+                DB::raw('COUNT(DISTINCT CASE 
+            WHEN tb_id_project.amount_idr > 5000000000 
+            AND tb_id_project.amount_idr <= 10000000000 THEN tb_pmo.project_id 
+        END) AS five_until_ten_M'),
+
+                DB::raw('COUNT(DISTINCT CASE 
+            WHEN tb_id_project.amount_idr > 10000000000 THEN tb_pmo.project_id 
+        END) AS diatas_10M')
             )
-            ->where('project_id','like','%'.$request->year)
+            ->where('tb_pmo.project_id', 'like', '%' . $request->year)
             ->first();
+
             // ->whereYear('project_id', date('Y'))
             // ->groupBy('amount_idr');
 

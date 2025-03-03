@@ -2569,9 +2569,9 @@ button{
           <form method="POST" action="{{url('add_changelog_progress')}}" id="modalChangeLog_Progress" name="modalChangeLog_Progress">
             @csrf
 
-            <div class="form-group">
+            <div class="form-group" style="display: none">
               <label for="">Progress Date</label>
-              <input type="text" id="changelog_date" name="changelog_date" class="form-control">
+              <input type="text" id="changelog_date" style="display: none" name="changelog_date" class="form-control">
             </div>
           
           <div class="form-group">

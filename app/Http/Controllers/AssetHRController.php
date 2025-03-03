@@ -126,7 +126,7 @@ class AssetHRController extends Controller
                     ->where('user_id', Auth::User()->nik)
                     ->first(); 
 
-        if ($cek_role->mini_group == "Center Point & Asset Management SVC") {
+        if ($cek_role->mini_group == "Supply Chain & IT Support") {
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('role_user','role_user.user_id','=','tb_asset_hr_request.accept_by')

@@ -589,7 +589,7 @@
 
     function initiateSumSbe(id){
       var isPMO = false
-      if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','Project Management')->exists()}}") {
+      if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','Program & Project Management')->exists()}}") {
         isPMO = true
         var colspan = 4
         var enabledClick = true

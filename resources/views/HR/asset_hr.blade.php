@@ -2210,7 +2210,7 @@ GA Asset
               $("#notes_accept").closest(".form-group").next(".box-container").next(".box-footer").hide()
             }
 
-            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Asset Management')->exists()}}") {
+            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Asset, Facility & HSE Management')->exists()}}") {
               if (status == 'ACCEPT') {
                 $("#btnRejectRequest").show()
                 $("#btnRejectRequest").attr("onclick","requestAssetAccept('"+ id_request +"','REJECT')")

@@ -100,9 +100,9 @@ class PMOProjectCharter extends Model
     {
         $get_id_pmo = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->select('tb_pmo.id','project_id')->where('tb_pmo.id', $this->id_project)->first();
 
-    	// $data = PMO::join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Project Coordinator')->where('tb_pmo.id', $get_id_pmo->id)->first();
+    	// $data = PMO::join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Delivery Project Coordinator')->where('tb_pmo.id', $get_id_pmo->id)->first();
 
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Project Coordinator')->where('tb_pmo.project_id', $get_id_pmo->project_id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Delivery Project Coordinator')->where('tb_pmo.project_id', $get_id_pmo->project_id)->first();
 
     	// return $data->project_pc;
     	return empty($data->project_pc)?'-':$data->project_pc;
@@ -199,7 +199,7 @@ class PMOProjectCharter extends Model
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
                         ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                     } else{
-                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
                         ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                     }
                 }
@@ -210,8 +210,8 @@ class PMOProjectCharter extends Model
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
                         ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                     } else {
-                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                        $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                        ->orderByRaw('FIELD(position, "Project Manager","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
                     }
                 }
                 
@@ -270,7 +270,7 @@ class PMOProjectCharter extends Model
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                 ->select(
                     'users.name', 
-                    DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Project Coordinator') THEN 'Project Coordinator' WHEN (`roles`.`name` = 'PMO Staff') THEN 'Project Manager' WHEN (`roles`.`name` = 'Sales Staff') THEN 'Account Manager'  WHEN (`roles`.`name` = 'Sales Manager') THEN 'Account Manager' ELSE `roles`.`name` END) as position"), 
+                    DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Delivery Project Coordinator') THEN 'Delivery Project Coordinator' WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Sales Staff') THEN 'Account Manager'  WHEN (`roles`.`name` = 'Sales Manager') THEN 'Account Manager' ELSE `roles`.`name` END) as position"), 
                     'roles.group as group',
                     'users.ttd as ttd_digital',
                     'users.email',
@@ -289,10 +289,10 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     // if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     //     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    //     ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Account Manager","Sales Manager")');
+                    //     ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management","Account Manager","Sales Manager")');
                     // } else{
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management", "Project Management Manager","Account Manager","Operations Director")')->havingRaw('signed = "true"');
+                        ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management", "Project Management Manager","Account Manager","Operations Director")')->havingRaw('signed = "true"');
                     // }
                 }
     
@@ -300,7 +300,7 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     // if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     //     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    //     ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Account Manager","Operations Director")');
+                    //     ->orderByRaw('FIELD(position, "Delivery Project Manager","VP Project Management","Account Manager","Operations Director")');
                     // } else {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
                         ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Project Management Manager","Account Manager","Operations Director")')->havingRaw('signed = "true"');;
@@ -347,7 +347,7 @@ class PMOProjectCharter extends Model
         $get_name_pm = PMO_assign::join('users', 'users.nik', 'tb_pmo_assign.nik')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_assign.id_project')->select('users.name')->where('id_project', $get_id_pmo->id)->first();
 
         $get_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')
-            ->select('users.name', 'roles.name as position', 'email', DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Staff') THEN 'Project Manager' WHEN (`roles`.`name` = 'Sales Staff') THEN 'Account Manager' ELSE `roles`.`name` END) as position"))
+            ->select('users.name', 'roles.name as position', 'email', DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Sales Staff') THEN 'Account Manager' ELSE `roles`.`name` END) as position"))
             ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `id_territory` is null OR `users`.`name` = '" . $get_name_sales->name . "' OR `users`.`name` = '" . $get_name_pm->name . "')")
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy')
