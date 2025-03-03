@@ -126,7 +126,7 @@ class AssetHRController extends Controller
                     ->where('user_id', Auth::User()->nik)
                     ->first(); 
 
-        if ($cek_role->mini_group == "Center Point & Asset Management SVC") {
+        if ($cek_role->mini_group == "Supply Chain & IT Support") {
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('role_user','role_user.user_id','=','tb_asset_hr_request.accept_by')
@@ -692,7 +692,7 @@ class AssetHRController extends Controller
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
                 ->where('users.status_karyawan','<>','dummy')
-                ->where('roles.name','Center Point & Asset Management SVC Manager')->get();
+                ->where('roles.name','Supply Chain & IT Support Manager')->get();
 
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
 
@@ -729,7 +729,7 @@ class AssetHRController extends Controller
             ->join('role_user','role_user.user_id','=','users.nik')
             ->join('roles','roles.id','=','role_user.role_id')
             ->where('users.status_karyawan','<>','dummy')
-            ->where('roles.name','<>','Project Manager')
+            ->where('roles.name','<>','Delivery Project Manager')
             ->where('roles.name','like','%Manager%')
             ->where('roles.mini_group','like','%'. $cek_role->mini_group .'%')->first();
 
@@ -739,7 +739,7 @@ class AssetHRController extends Controller
                 ->join('roles','roles.id','=','role_user.role_id')
                 ->where('users.status_karyawan','<>','dummy')
                 ->where('roles.name','like','%Manager%')
-                ->orwhere('roles.name','<>','Project Manager')
+                ->orwhere('roles.name','<>','Delivery Project Manager')
                 ->where('roles.mini_group','like','%'. $cek_role->mini_group .'%')->first();
         }
 
@@ -1256,7 +1256,7 @@ class AssetHRController extends Controller
             if($request->status_notes == 'ACCEPT' || $update->status_notes == 'ACCEPT'){
                 $status_email = 'accept';
 
-                if ($cek_role->mini_group == 'Center Point & Asset Management SVC') {
+                if ($cek_role->mini_group == 'Supply Chain & IT Support') {
                     $update->status         = 'ACCEPT';
                 }else{
                     $update->status         = 'ON PROGRESS';
@@ -1349,7 +1349,7 @@ class AssetHRController extends Controller
             $to = User::join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->select('users.name','email', 'roles.group')
-                        ->where('roles.name', 'Asset Management')
+                        ->where('roles.name', 'Asset, Facility & HSE Management')
                         ->where('users.status_karyawan','<>','dummy')
                         ->first(); 
 
@@ -1357,12 +1357,12 @@ class AssetHRController extends Controller
                     ->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('email')
                     ->where('nik',$update->nik)
-                    ->orwhere('roles.name','Center Point & Asset Management SVC Manager')->get();
+                    ->orwhere('roles.name','Supply Chain & IT Support Manager')->get();
 
             $users = User::join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->where('users.status_karyawan','<>','dummy')
-                        ->select('users.name', 'roles.group')->where('roles.name', 'Asset Management')->first(); 
+                        ->select('users.name', 'roles.group')->where('roles.name', 'Asset, Facility & HSE Management')->first();
 
             Mail::to($to->email)->cc($cc)->send(new RequestAssetHr($status_email,$users,$req_asset,$emailSubject));  
         }else{
@@ -1382,7 +1382,7 @@ class AssetHRController extends Controller
                         ->where('users.status_karyawan','<>','dummy')
                         ->where('roles.name','like','VP%')
                         ->where('roles.group', 'like','%'. $cek_role->group .'%')
-                        ->orwhere('roles.name','Center Point & Asset Management SVC Manager')
+                        ->orwhere('roles.name','Supply Chain & IT Support Manager')
                         ->get(); 
 
             }else if (stripos($cek_role->name_role, 'VP') !== false) {
@@ -1391,7 +1391,7 @@ class AssetHRController extends Controller
                         ->select('email')
                         ->where('users.status_karyawan','<>','dummy')
                         ->where('roles.name','Operations Director')
-                        ->orwhere('roles.name','Center Point & Asset Management SVC Manager')
+                        ->orwhere('roles.name','Supply Chain & IT Support Manager')
                         ->get();
 
             }else{
@@ -1401,10 +1401,10 @@ class AssetHRController extends Controller
                         ->where('users.status_karyawan','<>','dummy')
                         ->where('roles.name','like',"VP%")
                         ->where('roles.group', 'like','%'. $cek_role->group .'%')
-                        ->orwhere('roles.name','<>','Project Manager')
+                        ->orwhere('roles.name','<>','Delivery Project Manager')
                         ->where('roles.name','like','%Manager%')
                         ->where('roles.mini_group', 'like','%'. $cek_role->mini_group .'%')
-                        ->orwhere('roles.name','Center Point & Asset Management SVC Manager')
+                        ->orwhere('roles.name','Supply Chain & IT Support Manager')
                         ->get(); 
             }
             
@@ -1704,7 +1704,7 @@ class AssetHRController extends Controller
         $emailSubject = '[SIMS-APP] New Notes Request Asset - ' . $request->id_request;
 
         $cekRoles = RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->first();
-        if ($cekRoles->mini_group == "Center Point & Asset Management SVC") {
+        if ($cekRoles->mini_group == "Supply Chain & IT Support") {
             $getData    = AssetHrRequest::where('id_request',$request->id_request)->first();
             $to         = User::select('email')->where('nik',$getData->nik)->get();
             $users      = User::select('name')->where('nik',$getData->nik)->first();
@@ -1716,19 +1716,19 @@ class AssetHRController extends Controller
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
                 ->where('users.status_karyawan','<>','dummy')
-                ->where('roles.name','Asset Management')->first();
+                ->where('roles.name','Asset, Facility & HSE Management')->first();
 
             $to = User::select('email')
                     ->join('role_user','role_user.user_id','=','users.nik')
                     ->join('roles','roles.id','=','role_user.role_id')
                     ->where('users.status_karyawan','<>','dummy')
-                    ->where('roles.name','Asset Management')->get();
+                    ->where('roles.name','Asset, Facility & HSE Management')->get();
 
             $cc = User::select('email')
                     ->join('role_user','role_user.user_id','=','users.nik')
                     ->join('roles','roles.id','=','role_user.role_id')
                     ->where('users.status_karyawan','<>','dummy')
-                    ->where('roles.name','Center Point & Asset Management SVC Manager')->get();
+                    ->where('roles.name','Supply Chain & IT Support Manager')->get();
 
             Mail::to($to)->cc($cc)->send(new RequestAssetHr('pending',$users,$req_asset,$emailSubject));
         }

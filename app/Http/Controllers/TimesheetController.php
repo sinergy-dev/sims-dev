@@ -29,6 +29,7 @@ use Session;
 use Auth;
 use PDF;
 use Carbon\Carbon;
+use Log;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -410,7 +411,7 @@ class TimesheetController extends Controller
             }
         } else{
             $arrTimesheet = json_decode($request->arrTimesheet,true);
-            foreach ($arrTimesheet as $value) {
+            foreach ($arrTimesheet as $value) {pre
                 $startDateActivity = Carbon::createFromFormat('Y-m-d', $value['startDate'], 'Asia/Jakarta');
                 $endDateActivity = Carbon::createFromFormat('Y-m-d', $value['endDate'], 'Asia/Jakarta');
 
@@ -534,7 +535,7 @@ class TimesheetController extends Controller
                     $rolesAlias = 'SOL';
                 }else if ($roles->group == 'DPG') {
                     $rolesAlias = 'SID';
-                }else if ($roles->group == 'bcd') {
+                }else if ($roles->group == 'Solutions & Partnership Management') {
                     $rolesAlias = $roles->name;
                 }else{
                     $rolesAlias = $roles->group;
@@ -950,7 +951,7 @@ class TimesheetController extends Controller
                 return $getPidByPic;
             }
         }
-        // if ($cek_role->group == 'hr' || $cek_role->group == 'pmo') {
+        // if ($cek_role->group == 'hr' || $cek_role->group == 'Program & Project Management') {
             
         // } else {
             
@@ -977,19 +978,19 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        if ($cek_role->group == 'bcd') {
-            if ($cek_role->name == 'BCD Manager') {
+        if ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management') {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
                 $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_task', function ($join) {
                     $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_task.id AS JSON), "$")'), '=', DB::raw('1'));
                 })
                 ->select('tb_timesheet_task.id as id', 'tb_timesheet_task.task as text')->where('group',$getGroupRoles)->distinct()->get();
-            }else if ($cek_role->name == 'BCD Development SPV' || $cek_role->name == 'BCD Development') {
+            }else if ($cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Application Development Specialist') {
                 $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_task', function ($join) {
                     $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_task.id AS JSON), "$")'), '=', DB::raw('1'));
                 })
-                ->select('tb_timesheet_task.id as id', 'tb_timesheet_task.task as text')->where('name','BCD Development')->distinct()->get();
+                ->select('tb_timesheet_task.id as id', 'tb_timesheet_task.task as text')->where('name','Application Development Specialist')->distinct()->get();
             } else {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('name')->where('user_id',Auth::User()->nik)->first()->name;
 
@@ -1018,19 +1019,19 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group','mini_group')->where('user_id', $nik)->first(); 
 
-        if ($cek_role->mini_group == 'Application Development') {
-            if ($cek_role->name == 'BCD Manager') {
+        if ($cek_role->mini_group == 'Application Development Specialist') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management') {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
                 $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase',function ($join) {
                         $join->on('tb_timesheet_config.phase', 'LIKE', DB::raw("CONCAT('%', tb_timesheet_phase.id, '%')"));
                     })
                 ->select('tb_timesheet_phase.id as id', 'tb_timesheet_phase.phase as text')->where('group',$getGroupRoles)->distinct()->get();
-            }else if ($cek_role->name == 'BCD Development SPV' || $cek_role->name == 'BCD Development') {
+            }else if ($cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Application Development Specialist') {
                 $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase',function ($join) {
                     $join->on('tb_timesheet_config.phase', 'LIKE', DB::raw("CONCAT('%', tb_timesheet_phase.id, '%')"));
                 })
-                ->select('tb_timesheet_phase.id as id', 'tb_timesheet_phase.phase as text')->where('name','BCD Development')->get();
+                ->select('tb_timesheet_phase.id as id', 'tb_timesheet_phase.phase as text')->where('name','Application Development Specialist')->get();
             } else {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('name')->where('user_id',Auth::User()->nik)->first()->name;
 
@@ -1073,11 +1074,11 @@ class TimesheetController extends Controller
 
         if($getGroupRoles == 'msm'){
             $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("MSM") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
-        } else if($getGroupRoles == 'pmo'){
-            $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("PMO") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
+        } else if($getGroupRoles == 'Program & Project Management'){
+            $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("Program & Project Management") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
         } else if($getGroupRoles == 'DPG'){
             $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("SID") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
-        } else if($getGroupRoles == 'presales'){
+        } else if($getGroupRoles == 'Synergy System Management'){
             $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,CONCAT("SOL") AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where("name","not like","%Admin%")->where('group',$getGroupRoles)->distinct()->get()->take(1);
         }else if($getGroupRoles == 'hr'){
             $getRoles = DB::table('roles')->selectRaw('`id` AS `id`,`name` AS `text`')->where("name","not like","%SPV%")->where("name","not like","%Manager%")->where("name","not like","%Director%")->where("name","not like","%MSP%")->where('group',$getGroupRoles)->distinct()->get();
@@ -1275,7 +1276,7 @@ class TimesheetController extends Controller
                 // $getAll = DB::table($get_id_max, 'temp2')->join('tb_timesheet_pid', 'tb_timesheet_pid.id', '=', 'temp2.id')->join('users','users.nik','tb_timesheet_pid.nik')->select('name', 'pid', 'temp2.id','role')->get();
 
                 // $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division','TECHNICAL')->get();
-            }else if ($request->roles == 'presales') {
+            }else if ($request->roles == 'Synergy System Management') {
                 // $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
                 // ->select(
                 //     'users.name',
@@ -1328,7 +1329,7 @@ class TimesheetController extends Controller
                 ->get();
             }
 
-            // if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
+            // if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager') {
             //     $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')
             //     ->select('users.name',
             //         DB::raw("max(tb_timesheet_pid.id) as id"),
@@ -1443,14 +1444,14 @@ class TimesheetController extends Controller
         $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('group')->where('user_id',Auth::User()->nik)->first()->group;
 
 
-        if ($cek_role->group == 'bcd') {
-            if ($cek_role->name == 'BCD Development SPV' || $cek_role->name == 'BCD Development') {
+        if ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Application Development Specialist') {
                 // $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('name')->where('user_id',Auth::User()->nik)->first()->name;
 
                 $data = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_task', function ($join) {
                     $join->on(DB::raw('JSON_CONTAINS(tb_timesheet_config.task, CAST(tb_timesheet_task.id AS JSON), "$")'), '=', DB::raw('1'));
                 })
-                ->select('tb_timesheet_task.id', 'tb_timesheet_task.task as title','tb_timesheet_task.description')->where('name','BCD Development')->distinct()->get();
+                ->select('tb_timesheet_task.id', 'tb_timesheet_task.task as title','tb_timesheet_task.description')->where('name','Application Development Specialist')->distinct()->get();
             } else {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('name')->where('user_id',Auth::User()->nik)->first()->name;
 
@@ -1475,8 +1476,8 @@ class TimesheetController extends Controller
      //    ->select('tb_timesheet_task.id', 'tb_timesheet_task.task as title','tb_timesheet_task.description')->where('group',$getGroupRoles)->distinct()->get();
 
 
-        if ($cek_role->group == 'bcd') {
-            if ($cek_role->name == 'BCD Development SPV' || $cek_role->name == 'BCD Development') {
+        if ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Application Development Specialist') {
                 // $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('name')->where('user_id',Auth::User()->nik)->first()->name;
 
                 // $dataPhase = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase', function ($join) {
@@ -1485,7 +1486,7 @@ class TimesheetController extends Controller
                 $dataPhase = DB::table('tb_timesheet_config')->join('roles','roles.id','tb_timesheet_config.roles')->join('tb_timesheet_phase',function ($join) {
                     $join->on('tb_timesheet_config.phase', 'LIKE', DB::raw("CONCAT('%', tb_timesheet_phase.id, '%')"));
                 })
-                ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase as title','tb_timesheet_phase.description')->where('name','BCD Development')->get();
+                ->select('tb_timesheet_phase.id', 'tb_timesheet_phase.phase as title','tb_timesheet_phase.description')->where('name','Application Development Specialist')->get();
             } else {
                 $getGroupRoles = DB::table('role_user')->join('roles','roles.id','role_user.role_id')->select('name')->where('user_id',Auth::User()->nik)->first()->name;
 
@@ -1585,9 +1586,9 @@ class TimesheetController extends Controller
 
         $getPublicHolidayAdjustment = PublicHolidayAdjustment::select('date')->whereYear('date',date('Y'))->count();
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->pluck('nik');
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->pluck('nik');
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
@@ -1596,15 +1597,15 @@ class TimesheetController extends Controller
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                                         ->select('users.name','users.nik')
-                                        ->where('roles.group','pmo')
+                                        ->where('roles.group','Program & Project Management')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
                                         ->whereNotIn('nik', $sumMandays->pluck('nik'))
                                         ->get();
                 $isStaff = false;
 
-            } else if ($cek_role->name == 'Project Management Manager') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+            } else if ($cek_role->name == 'Project Management Office Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->pluck('nik');
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
@@ -1613,7 +1614,7 @@ class TimesheetController extends Controller
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                                         ->select('users.name','users.nik')
-                                        ->where('roles.group','pmo')
+                                        ->where('roles.group','Program & Project Management')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
                                         ->whereNotIn('nik', $sumMandays->pluck('nik'))
@@ -1627,16 +1628,16 @@ class TimesheetController extends Controller
                 $isStaff = true;
 
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System & Services')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Delivery')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Architecture')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->pluck('nik');
                 }
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
@@ -1660,14 +1661,14 @@ class TimesheetController extends Controller
 
                 $isStaff = true;
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager') {
-                if ($cek_role->name == 'Application Development Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development')->pluck('nik');
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager') {
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development Specialist')->pluck('nik');
                 } else if ($cek_role->name == 'Customer Relation Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Customer Relationship Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solutions & Partnership Management')->pluck('nik');
                 }
 
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
@@ -1677,7 +1678,7 @@ class TimesheetController extends Controller
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                                         ->select('users.name','users.nik')
-                                        ->where('roles.group','presales')
+                                        ->where('roles.group','Solutions & Partnership Management')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('users.status_delete','-')
                                         ->whereNotIn('nik', $sumMandays->pluck('nik'))
@@ -1692,15 +1693,15 @@ class TimesheetController extends Controller
                 $isStaff = true;
 
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'Renumeration, Personalia & GS Manager' || $cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'People Operations & Services Manager' || $cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager') {
 
-                if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
+                if ($cek_role->name == 'People Operations & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital Management')->pluck('nik');
                 } elseif ($cek_role->name == 'Human Capital Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital Management')->pluck('nik');
                 }
                 $getLeavingPermit   = $getLeavingPermit->whereIn('tb_cuti.nik',$listGroup)->get();
                 $getPermit          = $getPermit->whereIn('tb_timesheet_permit.nik',$listGroup)->get();
@@ -1723,18 +1724,18 @@ class TimesheetController extends Controller
                 $isStaff = true;
 
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Asset Management') {
+                if ($cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Asset Management') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Center Point & Asset Management SVC')
+                    ->where('roles.mini_group','Supply Chain & IT Support')
                     ->pluck('users.nik');
-                } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+                } else if ($cek_role->name == 'Internal Operation Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
+                    ->where('roles.mini_group','Internal Operation Support')
                     ->pluck('users.nik');
                 } else if ($cek_role->name == 'Supply Chain Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -1744,7 +1745,7 @@ class TimesheetController extends Controller
                 } else {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
+                    ->where('roles.group','Internal Chain Management')
                     ->pluck('users.nik');
                 }
 
@@ -1755,7 +1756,7 @@ class TimesheetController extends Controller
                 $getUserByGroup     = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
                                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                                         ->select('users.name','users.nik')
-                                        ->where('roles.group','Supply Chain, CPS & Asset Management')
+                                        ->where('roles.group','Internal Chain Management')
                                         ->where('roles.name','not like','%Manager')
                                         ->where('roles.name','not like','VP%')
                                         // ->where('roles.name','not like','%MSM Helpdesk%')
@@ -1959,7 +1960,7 @@ class TimesheetController extends Controller
         $sumPointMandays = collect();
 
         if (isset($request->roles)) {
-            if ($request->roles == 'Project Management' || $request->roles == 'Solution Implementation & Managed Service') {
+            if ($request->roles == 'Program & Project Management' || $request->roles == 'Synergy System Management') {
                 foreach($groupByProject as $key_pid => $value){
                     foreach($sumPointByProject as $key_group => $value_group){
                         if ($key_group == $key_pid) {
@@ -1973,10 +1974,10 @@ class TimesheetController extends Controller
                                             $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }else{
-                                        if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
-                                            $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty'];
+                                        if (isset($sumPointByProject[$key_group]['Synergy System Management'])) {
+                                            $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] = $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] + (int)$value_pid['qty'];
                                         }else{
-                                            $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                            $sumPointByProject[$key_group]->put("Synergy System Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Synergy System Management",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }
                                 }else if($value_pid['project_type'] == 'Supply Only'){
@@ -1996,10 +1997,10 @@ class TimesheetController extends Controller
                                             $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }else{
-                                        if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
-                                            $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty']; 
+                                        if (isset($sumPointByProject[$key_group]['Synergy System Management'])) {
+                                            $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] = $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                         }else{
-                                            $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
+                                            $sumPointByProject[$key_group]->put("Synergy System Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Synergy System Management",$key_group,$request->roles),"name_project"=>$value_pid['name_project']]));
                                         }
                                     }
                                 }   
@@ -2046,10 +2047,10 @@ class TimesheetController extends Controller
                                         $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }else{
-                                    if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
-                                        $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty'];
+                                    if (isset($sumPointByProject[$key_group]['Synergy System Management'])) {
+                                        $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] = $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] + (int)$value_pid['qty'];
                                     }else{
-                                        $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                        $sumPointByProject[$key_group]->put("Synergy System Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Synergy System Management",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }
                             }else if($value_pid['project_type'] == 'Supply Only'){
@@ -2068,10 +2069,10 @@ class TimesheetController extends Controller
                                         $sumPointByProject[$key_group]->put("Project Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Project Management",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }else{
-                                    if (isset($sumPointByProject[$key_group]['Solution Implementation & Managed Service'])) {
-                                        $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] = $sumPointByProject[$key_group]["Solution Implementation & Managed Service"]["sumMandays"] + (int)$value_pid['qty']; 
+                                    if (isset($sumPointByProject[$key_group]['Synergy System Management'])) {
+                                        $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] = $sumPointByProject[$key_group]["Synergy System Management"]["sumMandays"] + (int)$value_pid['qty']; 
                                     }else{
-                                        $sumPointByProject[$key_group]->put("Solution Implementation & Managed Service",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Solution Implementation & Managed Service",$key_group,""),"name_project"=>$value_pid['name_project']]));
+                                        $sumPointByProject[$key_group]->put("Synergy System Management",collect(["sumMandays"=>(int)$value_pid['qty'],$this->sumPointMandaysSbe("Synergy System Management",$key_group,""),"name_project"=>$value_pid['name_project']]));
                                     }
                                 }
                             }   
@@ -2119,24 +2120,24 @@ class TimesheetController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
         // return $role;
-        if ($role == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
-                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+        if ($role == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
+                $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->pluck('nik');
 
                 $sumMandays = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
             } else {
                 $sumMandays  = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->where('tb_timesheet.nik',$nik)->where('status','Done')->where('pid',$pid)->where('type','project')->get();
             }
-        }elseif ($role == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
+        }elseif ($role == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System & Services')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Delivery')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Architecture')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->pluck('nik');
                 }
 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select('point_mandays','users.name','users.nik')->selectRaw('MONTH(start_date) AS month_number')->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->where('status_karyawan','!=','dummy')->where('pid',$pid)->where('type','project')->get();
@@ -2247,14 +2248,14 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->where('status_karyawan','!=','dummy')
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management') {
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->where('status_karyawan','!=','dummy')
                 // ->whereMonth('start_date',date('m'))->get();
                 ->whereYear('start_date',date('Y'))
                         ->get();
-            } elseif ($cek_role->name == 'Project Management Manager') {
-                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->where('status_karyawan','!=','dummy')
+            } elseif ($cek_role->name == 'Project Management Office Manager') {
+                $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->where('status_karyawan','!=','dummy')
                 // ->whereMonth('start_date',date('m'))->get();
                 ->whereYear('start_date',date('Y'))
                         ->get();
@@ -2264,17 +2265,17 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager' || $cek_role->name == 'Managed Service Manager') {
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager' || $cek_role->name == 'Synergy System & Services Manager') {
                 $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $level->where('roles.mini_group','Managed Service & Problem Solving');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $level->where('roles.mini_group','Solution Execution');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $level->where('roles.mini_group','Solution Architect');
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $level->where('roles.mini_group','Synergy System & Services');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $level->where('roles.mini_group','Synergy System Delivery');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $level->where('roles.mini_group','Synergy System Architecture');
                 } else {
-                    $level->where('roles.group','Solution Implementation & Managed Service');
+                    $level->where('roles.group','Synergy System Management');
                 }
 
                 // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->where('status_karyawan','!=','dummy')
@@ -2288,21 +2289,21 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Management & Solution Manager') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Development Specialist Manager') {
                 $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
-                if ($cek_role->name == 'Application Development Manager') {
-                    $level->where('roles.mini_group','Application Development ');
-                } elseif ($cek_role->name == 'Product Management & Solution Manager') {
-                    $level->where('roles.mini_group','Product Management & Solution');
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $level->where('roles.mini_group','Application Development Specialist ');
+                } elseif ($cek_role->name == 'Product Development Specialist Manager') {
+                    $level->where('roles.mini_group','Product Development Specialist');
                 } elseif ($cek_role->name == 'Customer Relation Manager') {
                     $level->where('roles.mini_group','Customer Relationship Management');
                 } else {
-                    $level->where('roles.group','Product Management & Development');
+                    $level->where('roles.group','Solutions & Partnership Management');
                 }
 
-                // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->where('status_karyawan','!=','dummy')
+                // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->where('status_karyawan','!=','dummy')
                 // // ->whereMonth('start_date',date('m'))->get();
                 // ->whereYear('start_date',date('Y'))
                 //         ->get();
@@ -2313,16 +2314,16 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'Renumeration, Personalia & GS Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'People Operations & Services Manager') {
                 $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
                 if ($cek_role->name == 'Human Capital Manager') {
-                    $level->where('roles.mini_group','Human Capital');
-                } elseif ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $level->where('roles.mini_group','Renumeration, Personalia & GS ');
+                    $level->where('roles.mini_group','Human Capital Management');
+                } elseif ($cek_role->name == 'People Operations & Services Manager') {
+                    $level->where('roles.mini_group','People Operations & Services ');
                 }  else {
-                    $level->where('roles.group','Human Capital');
+                    $level->where('roles.group','Human Capital Management');
                 }
 
                 $level = $level->get();
@@ -2333,18 +2334,18 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Supply Chain Manager') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Supply Chain Manager') {
                 $level = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
-                    $level->where('roles.mini_group','Center Point & Asset Management SVC');
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
+                    $level->where('roles.mini_group','Supply Chain & IT Support');
                 } elseif ($cek_role->name == 'Supply Chain Manager') {
                     $level->where('roles.mini_group','Supply Chain Management');
-                } elseif ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
-                    $level->where('roles.mini_group','Risk Management, Sys Dev & Compliance');
+                } elseif ($cek_role->name == 'Internal Operation Support Manager') {
+                    $level->where('roles.mini_group','Internal Operation Support');
                 }  else {
-                    $level->where('roles.group','Human Capital');
+                    $level->where('roles.group','Human Capital Management');
                 }
 
                 $level = $level->get();;
@@ -2413,14 +2414,14 @@ class TimesheetController extends Controller
                     ->whereYear('start_date',date('Y'))
                     ->groupBy('tb_timesheet.task');
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management') {
-                $task = $task->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management') {
+                $task = $task->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')
                     ->get();
 
                 $count_task = $task->sum('total_aktivitas');
-            } elseif ($cek_role->name == 'Project Management Manager') {
-                $task = $task->where('roles.group','Project Management')
+            } elseif ($cek_role->name == 'Project Management Office Manager') {
+                $task = $task->where('roles.group','Program & Project Management')
                     ->get();
 
                 $count_task = $task->sum('total_aktivitas');
@@ -2430,16 +2431,16 @@ class TimesheetController extends Controller
 
                 $count_task = $task->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager' || $cek_role->name == 'Managed Service Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $task = $task->where('roles.mini_group','Managed Service & Problem Solving');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $task = $task->where('roles.mini_group','Solution Execution');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $task = $task->where('roles.mini_group','Solution Architect');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager' || $cek_role->name == 'Synergy System & Services Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $task = $task->where('roles.mini_group','Synergy System & Services');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $task = $task->where('roles.mini_group','Synergy System Delivery');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $task = $task->where('roles.mini_group','Synergy System Architecture');
                 } else {
-                    $task = $task->where('roles.group','Solution Implementation & Managed Service');
+                    $task = $task->where('roles.group','Synergy System Management');
                 }
 
                 $task = $task->get();
@@ -2451,17 +2452,17 @@ class TimesheetController extends Controller
 
                 $count_task = $task->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Management & Solution Manager') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Development Specialist Manager') {
 
-                if ($cek_role->name == 'Application Development Manager') {
-                    $task = $task->where('roles.mini_group','Application Development ');
-                } elseif ($cek_role->name == 'Product Management & Solution Manager') {
-                    $task = $task->where('roles.mini_group','Product Management & Solution');
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $task = $task->where('roles.mini_group','Application Development Specialist ');
+                } elseif ($cek_role->name == 'Product Development Specialist Manager') {
+                    $task = $task->where('roles.mini_group','Product Development Specialist');
                 } elseif ($cek_role->name == 'Customer Relation Manager') {
                     $task = $task->where('roles.mini_group','Customer Relationship Management');
                 } else {
-                    $task = $task->where('roles.group','Product Management & Development');
+                    $task = $task->where('roles.group','Solutions & Partnership Management');
                 }
 
                 $task = $task->get();
@@ -2473,15 +2474,15 @@ class TimesheetController extends Controller
 
                 $count_task = $task->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'Renumeration, Personalia & GS Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'People Operations & Services Manager') {
 
                 if ($cek_role->name == 'Human Capital Manager') {
-                    $task = $task->where('roles.mini_group','Human Capital');
-                } elseif ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $task = $task->where('roles.mini_group','Renumeration, Personalia & GS ');
+                    $task = $task->where('roles.mini_group','Human Capital Management');
+                } elseif ($cek_role->name == 'People Operations & Services Manager') {
+                    $task = $task->where('roles.mini_group','People Operations & Services ');
                 }  else {
-                    $task = $task->where('roles.group','Human Capital');
+                    $task = $task->where('roles.group','Human Capital Management');
                 }
 
                 $task = $task->get();
@@ -2493,17 +2494,17 @@ class TimesheetController extends Controller
 
                 $count_task = $task->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Supply Chain Manager') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Supply Chain Manager') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
-                    $task = $task->where('roles.mini_group','Center Point & Asset Management SVC');
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
+                    $task = $task->where('roles.mini_group','Supply Chain & IT Support');
                 } elseif ($cek_role->name == 'Supply Chain Manager') {
                     $task = $task->where('roles.mini_group','Supply Chain Management');
-                } elseif ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
-                    $task = $task->where('roles.mini_group','Risk Management, Sys Dev & Compliance');
+                } elseif ($cek_role->name == 'Internal Operation Support Manager') {
+                    $task = $task->where('roles.mini_group','Internal Operation Support');
                 }  else {
-                    $task = $task->where('roles.group','Human Capital');
+                    $task = $task->where('roles.group','Human Capital Management');
                 }
 
                 $task = $task->get();
@@ -2549,14 +2550,14 @@ class TimesheetController extends Controller
                     ->groupBy('tb_timesheet.phase')
                     ->whereYear('start_date',date('Y'));
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management') {
-                $phase = $phase->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management') {
+                $phase = $phase->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')
                     ->get();
 
                 $count_phase = $phase->sum('total_aktivitas');
-            } elseif ($cek_role->name == 'Project Management Manager') {
-                $phase = $phase->where('roles.group','Project Management')
+            } elseif ($cek_role->name == 'Project Management Office Manager') {
+                $phase = $phase->where('roles.group','Program & Project Management')
                     ->get();
 
                 $count_phase = $phase->sum('total_aktivitas');
@@ -2566,16 +2567,16 @@ class TimesheetController extends Controller
 
                 $count_phase = $phase->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager' || $cek_role->name == 'Managed Service Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $phase = $phase->where('roles.mini_group','Managed Service & Problem Solving');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $phase = $phase->where('roles.mini_group','Solution Execution');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $phase = $phase->where('roles.mini_group','Solution Architect');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager' || $cek_role->name == 'Synergy System & Services Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $phase = $phase->where('roles.mini_group','Synergy System & Services');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $phase = $phase->where('roles.mini_group','Synergy System Delivery');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $phase = $phase->where('roles.mini_group','Synergy System Architecture');
                 } else {
-                    $phase = $phase->where('roles.group','Solution Implementation & Managed Service');
+                    $phase = $phase->where('roles.group','Synergy System Management');
                 }
 
                 $phase = $phase->get();
@@ -2587,17 +2588,17 @@ class TimesheetController extends Controller
 
                 $count_phase = $phase->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Management & Solution Manager') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Development Specialist Manager') {
 
-                if ($cek_role->name == 'Application Development Manager') {
-                    $phase = $phase->where('roles.mini_group','Application Development ');
-                } elseif ($cek_role->name == 'Product Management & Solution Manager') {
-                    $phase = $phase->where('roles.mini_group','Product Management & Solution');
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $phase = $phase->where('roles.mini_group','Application Development Specialist ');
+                } elseif ($cek_role->name == 'Product Development Specialist Manager') {
+                    $phase = $phase->where('roles.mini_group','Product Development Specialist');
                 } elseif ($cek_role->name == 'Customer Relation Manager') {
                     $phase = $phase->where('roles.mini_group','Customer Relationship Management');
                 } else {
-                    $phase = $phase->where('roles.group','Product Management & Development');
+                    $phase = $phase->where('roles.group','Solutions & Partnership Management');
                 }
 
                 $phase = $phase->get();
@@ -2609,15 +2610,15 @@ class TimesheetController extends Controller
 
                 $count_phase = $phase->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'Renumeration, Personalia & GS Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'People Operations & Services Manager') {
 
                 if ($cek_role->name == 'Human Capital Manager') {
-                    $phase = $phase->where('roles.mini_group','Human Capital');
-                } elseif ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $phase = $phase->where('roles.mini_group','Renumeration, Personalia & GS ');
+                    $phase = $phase->where('roles.mini_group','Human Capital Management');
+                } elseif ($cek_role->name == 'People Operations & Services Manager') {
+                    $phase = $phase->where('roles.mini_group','People Operations & Services ');
                 }  else {
-                    $phase = $phase->where('roles.group','Human Capital');
+                    $phase = $phase->where('roles.group','Human Capital Management');
                 }
 
                 $phase = $phase->get();
@@ -2629,17 +2630,17 @@ class TimesheetController extends Controller
 
                 $count_phase = $phase->sum('total_aktivitas');
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Supply Chain Manager') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Supply Chain Manager') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
-                    $phase = $phase->where('roles.mini_group','Center Point & Asset Management SVC');
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
+                    $phase = $phase->where('roles.mini_group','Supply Chain & IT Support');
                 } elseif ($cek_role->name == 'Supply Chain Manager') {
                     $phase = $phase->where('roles.mini_group','Supply Chain Management');
-                } elseif ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
-                    $phase = $phase->where('roles.mini_group','Risk Management, Sys Dev & Compliance');
+                } elseif ($cek_role->name == 'Internal Operation Support Manager') {
+                    $phase = $phase->where('roles.mini_group','Internal Operation Support');
                 }  else {
-                    $phase = $phase->where('roles.group','Human Capital');
+                    $phase = $phase->where('roles.group','Human Capital Management');
                 }
 
                 $phase = $phase->get();
@@ -2679,14 +2680,14 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->where('status_karyawan','!=','dummy')
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management') {
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->where('status_karyawan','!=','dummy')
                 // ->whereMonth('start_date',date('m'))->get();
                 ->whereYear('start_date',date('Y'))
                         ->get();
-            } elseif ($cek_role->name == 'Project Management Manager') {
-                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->where('status_karyawan','!=','dummy')
+            } elseif ($cek_role->name == 'Project Management Office Manager') {
+                $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->where('status_karyawan','!=','dummy')
                 // ->whereMonth('start_date',date('m'))->get();
                 ->whereYear('start_date',date('Y'))
                         ->get();
@@ -2696,17 +2697,17 @@ class TimesheetController extends Controller
                         ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager' || $cek_role->name == 'Managed Service Manager') {
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager' || $cek_role->name == 'Synergy System & Services Manager') {
                 $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $status->where('roles.mini_group','Managed Service & Problem Solving');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $status->where('roles.mini_group','Solution Execution');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $status->where('roles.mini_group','Solution Architect');
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $status->where('roles.mini_group','Synergy System & Services');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $status->where('roles.mini_group','Synergy System Delivery');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $status->where('roles.mini_group','Synergy System Architecture');
                 } else {
-                    $status->where('roles.group','Solution Implementation & Managed Service');
+                    $status->where('roles.group','Synergy System Management');
                 }
 
                 // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->where('status_karyawan','!=','dummy')
@@ -2720,21 +2721,21 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Management & Solution Manager') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Development Specialist Manager') {
                 $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
-                if ($cek_role->name == 'Application Development Manager') {
-                    $status->where('roles.mini_group','Application Development ');
-                } elseif ($cek_role->name == 'Product Management & Solution Manager') {
-                    $status->where('roles.mini_group','Product Management & Solution');
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $status->where('roles.mini_group','Application Development Specialist ');
+                } elseif ($cek_role->name == 'Product Development Specialist Manager') {
+                    $status->where('roles.mini_group','Product Development Specialist');
                 } elseif ($cek_role->name == 'Customer Relation Manager') {
                     $status->where('roles.mini_group','Customer Relationship Management');
                 } else {
-                    $status->where('roles.group','Product Management & Development');
+                    $status->where('roles.group','Solutions & Partnership Management');
                 }
 
-                // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->where('status_karyawan','!=','dummy')
+                // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->where('status_karyawan','!=','dummy')
                 // // ->whereMonth('start_date',date('m'))->get();
                 // ->whereYear('start_date',date('Y'))
                 //         ->get();
@@ -2745,16 +2746,16 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'Renumeration, Personalia & GS Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'People Operations & Services Manager') {
                 $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
                 if ($cek_role->name == 'Human Capital Manager') {
-                    $status->where('roles.mini_group','Human Capital');
-                } elseif ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $status->where('roles.mini_group','Renumeration, Personalia & GS ');
+                    $status->where('roles.mini_group','Human Capital Management');
+                } elseif ($cek_role->name == 'People Operations & Services Manager') {
+                    $status->where('roles.mini_group','People Operations & Services ');
                 }  else {
-                    $status->where('roles.group','Human Capital');
+                    $status->where('roles.group','Human Capital Management');
                 }
 
                 $status = $status->get();
@@ -2765,18 +2766,18 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Supply Chain Manager') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Supply Chain Manager') {
                 $status = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
-                    $status->where('roles.mini_group','Center Point & Asset Management SVC');
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
+                    $status->where('roles.mini_group','Supply Chain & IT Support');
                 } elseif ($cek_role->name == 'Supply Chain Manager') {
                     $status->where('roles.mini_group','Supply Chain Management');
-                } elseif ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
-                    $status->where('roles.mini_group','Risk Management, Sys Dev & Compliance');
+                } elseif ($cek_role->name == 'Internal Operation Support Manager') {
+                    $status->where('roles.mini_group','Internal Operation Support');
                 }  else {
-                    $status->where('roles.group','Human Capital');
+                    $status->where('roles.group','Human Capital Management');
                 }
 
                 $status = $status->get();;
@@ -2840,14 +2841,14 @@ class TimesheetController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->where('status_karyawan','!=','dummy')
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management') {
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->where('status_karyawan','!=','dummy')
                 // ->whereMonth('start_date',date('m'))->get();
                 ->whereYear('start_date',date('Y'))
                         ->get();
-            } elseif ($cek_role->name == 'Project Management Manager') {
-                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->where('status_karyawan','!=','dummy')
+            } elseif ($cek_role->name == 'Project Management Office Manager') {
+                $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->where('status_karyawan','!=','dummy')
                 // ->whereMonth('start_date',date('m'))->get();
                 ->whereYear('start_date',date('Y'))
                         ->get();
@@ -2857,17 +2858,17 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager' || $cek_role->name == 'Managed Service Manager') {
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager' || $cek_role->name == 'Synergy System & Services Manager') {
                 $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $schedule->where('roles.mini_group','Managed Service & Problem Solving');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $schedule->where('roles.mini_group','Solution Execution');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $schedule->where('roles.mini_group','Solution Architect');
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $schedule->where('roles.mini_group','Synergy System & Services');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $schedule->where('roles.mini_group','Synergy System Delivery');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $schedule->where('roles.mini_group','Synergy System Architecture');
                 } else {
-                    $schedule->where('roles.group','Solution Implementation & Managed Service');
+                    $schedule->where('roles.group','Synergy System Management');
                 }
 
                 // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->where('status_karyawan','!=','dummy')
@@ -2881,21 +2882,21 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Management & Solution Manager') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager' || $cek_role->name == 'Product Development Specialist Manager') {
                 $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
-                if ($cek_role->name == 'Application Development Manager') {
-                    $schedule->where('roles.mini_group','Application Development ');
-                } elseif ($cek_role->name == 'Product Management & Solution Manager') {
-                    $schedule->where('roles.mini_group','Product Management & Solution');
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $schedule->where('roles.mini_group','Application Development Specialist ');
+                } elseif ($cek_role->name == 'Product Development Specialist Manager') {
+                    $schedule->where('roles.mini_group','Product Development Specialist');
                 } elseif ($cek_role->name == 'Customer Relation Manager') {
                     $schedule->where('roles.mini_group','Customer Relationship Management');
                 } else {
-                    $schedule->where('roles.group','Product Management & Development');
+                    $schedule->where('roles.group','Solutions & Partnership Management');
                 }
 
-                // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->where('status_karyawan','!=','dummy')
+                // $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->where('status_karyawan','!=','dummy')
                 // // ->whereMonth('start_date',date('m'))->get();
                 // ->whereYear('start_date',date('Y'))
                 //         ->get();
@@ -2906,16 +2907,16 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'Renumeration, Personalia & GS Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager' || $cek_role->name == 'People Operations & Services Manager') {
                 $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
                 if ($cek_role->name == 'Human Capital Manager') {
-                    $schedule->where('roles.mini_group','Human Capital');
-                } elseif ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $schedule->where('roles.mini_group','Renumeration, Personalia & GS ');
+                    $schedule->where('roles.mini_group','Human Capital Management');
+                } elseif ($cek_role->name == 'People Operations & Services Manager') {
+                    $schedule->where('roles.mini_group','People Operations & Services ');
                 }  else {
-                    $schedule->where('roles.group','Human Capital');
+                    $schedule->where('roles.group','Human Capital Management');
                 }
 
                 $schedule = $schedule->get();
@@ -2926,18 +2927,18 @@ class TimesheetController extends Controller
                 ->whereYear('start_date',date('Y'))
                         ->get();
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Supply Chain Manager') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Supply Chain Manager') {
                 $schedule = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('status_karyawan','!=','dummy')->whereYear('start_date',date('Y'));
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
-                    $schedule->where('roles.mini_group','Center Point & Asset Management SVC');
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
+                    $schedule->where('roles.mini_group','Supply Chain & IT Support');
                 } elseif ($cek_role->name == 'Supply Chain Manager') {
                     $schedule->where('roles.mini_group','Supply Chain Management');
-                } elseif ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
-                    $schedule->where('roles.mini_group','Risk Management, Sys Dev & Compliance');
+                } elseif ($cek_role->name == 'Internal Operation Support Manager') {
+                    $schedule->where('roles.mini_group','Internal Operation Support');
                 }  else {
-                    $schedule->where('roles.group','Human Capital');
+                    $schedule->where('roles.group','Human Capital Management');
                 }
 
                 $schedule = $schedule->get();;
@@ -3047,12 +3048,12 @@ class TimesheetController extends Controller
 
         $workdays = $this->getWorkDays($startDateFinal,$endDateFinal)["workdays"]->values()->count();
                 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
-                if ($cek_role->name == 'VP Project Management') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->pluck('nik');
-                } elseif ($cek_role->name == 'Project Management Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
+                if ($cek_role->name == 'VP Program & Project Management') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->pluck('nik');
+                } elseif ($cek_role->name == 'Project Management Office Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->pluck('nik');
                 }
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -3214,16 +3215,16 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->where('status_karyawan','!=','dummy')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System & Services')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Delivery')->where('status_karyawan','!=','dummy')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Architecture')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->pluck('nik');
                 }
                 
                 
@@ -3386,14 +3387,14 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager') {
-                if ($cek_role->name == 'Application Development Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development')->pluck('nik');
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager') {
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development Specialist')->pluck('nik');
                 } else if ($cek_role->name == 'Customer Relation Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Customer Relationship Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solutions & Partnership Management')->pluck('nik');
                 }
                 
                 
@@ -3556,15 +3557,15 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'Renumeration, Personalia & GS Manager' || $cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'People Operations & Services Manager' || $cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager') {
 
-                if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
+                if ($cek_role->name == 'People Operations & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital Management')->pluck('nik');
                 } elseif ($cek_role->name == 'Human Capital Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital Management')->pluck('nik');
                 }
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -3726,18 +3727,18 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Center Point & Asset Management SVC')
+                    ->where('roles.mini_group','Supply Chain & IT Support')
                     ->pluck('users.nik');
-                } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+                } else if ($cek_role->name == 'Internal Operation Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
+                    ->where('roles.mini_group','Internal Operation Support')
                     ->pluck('users.nik');
                 } else if ($cek_role->name == 'Supply Chain Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -3747,13 +3748,13 @@ class TimesheetController extends Controller
                 } else {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
+                    ->where('roles.group','Internal Chain Management')
                     ->pluck('users.nik');
                 }
 
                 $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
+                    ->where('roles.group','Internal Chain Management')
                     ->pluck('users.nik');
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -3967,12 +3968,12 @@ class TimesheetController extends Controller
 
 
         $arrCummulativeMandays = collect();
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
-                if ($cek_role->name == 'VP Project Management') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->pluck('nik');
-                } elseif ($cek_role->name == 'Project Management Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
+                if ($cek_role->name == 'VP Program & Project Management') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->pluck('nik');
+                } elseif ($cek_role->name == 'Project Management Office Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->pluck('nik');
                 }
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
@@ -4033,16 +4034,16 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }          
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System & Services')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Delivery')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Architecture')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->pluck('nik');
                 }
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
@@ -4103,14 +4104,14 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }          
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager') {
-                if ($cek_role->name == 'Application Development Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development')->pluck('nik');
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager') {
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development Specialist')->pluck('nik');
                 } else if ($cek_role->name == 'Customer Relation Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Customer Relationship Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solutions & Partnership Management')->pluck('nik');
                 }
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
                 // return $data;
@@ -4170,15 +4171,15 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'Renumeration, Personalia & GS Manager' || $cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'People Operations & Services Manager' || $cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager') {
 
-                if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
+                if ($cek_role->name == 'People Operations & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital Management')->pluck('nik');
                 } elseif ($cek_role->name == 'Human Capital Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital Management')->pluck('nik');
                 }
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get()->groupBy('name');
@@ -4239,18 +4240,18 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Center Point & Asset Management SVC')
+                    ->where('roles.mini_group','Supply Chain & IT Support')
                     ->pluck('users.nik');
-                } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+                } else if ($cek_role->name == 'Internal Operation Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
+                    ->where('roles.mini_group','Internal Operation Support')
                     ->pluck('users.nik');
                 } else if ($cek_role->name == 'Supply Chain Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -4260,7 +4261,7 @@ class TimesheetController extends Controller
                 } else {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
+                    ->where('roles.group','Internal Chain Management')
                     ->pluck('users.nik');
                 }
 
@@ -4384,12 +4385,12 @@ class TimesheetController extends Controller
                         ->where('users.status_karyawan','!=','dummy'); 
         }
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
-                if ($cek_role->name == 'VP Project Management') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->pluck('nik');
-                } elseif ($cek_role->name == 'Project Management Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
+                if ($cek_role->name == 'VP Program & Project Management') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->pluck('nik');
+                } elseif ($cek_role->name == 'Project Management Office Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->pluck('nik');
                 }
 
                 $sumMandays  = DB::table('tb_timesheet')->join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('status_karyawan','!=','dummy')->where(function ($query) use ($arrayMonth) {
@@ -4457,16 +4458,16 @@ class TimesheetController extends Controller
                     $isNeedOtherUser = false;
                 }
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System & Services')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Delivery')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Architecture')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->pluck('nik');
                 }
 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('status_karyawan','!=','dummy')->where(function ($query) use ($arrayMonth) {
@@ -4534,14 +4535,14 @@ class TimesheetController extends Controller
                     $isNeedOtherUser = false;
                 }
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager') {
-                if ($cek_role->name == 'Application Development Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development')->pluck('nik');
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager') {
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development Specialist')->pluck('nik');
                 } else if ($cek_role->name == 'Customer Relation Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Customer Relationship Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solutions & Partnership Management')->pluck('nik');
                 }
                 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('status_karyawan','!=','dummy')->where(function ($query) use ($arrayMonth) {
@@ -4609,15 +4610,15 @@ class TimesheetController extends Controller
                     $isNeedOtherUser = false;
                 }
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'Renumeration, Personalia & GS Manager' || $cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'People Operations & Services Manager' || $cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager') {
 
-                if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
+                if ($cek_role->name == 'People Operations & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
                 } elseif ($cek_role->name == 'Human Capital Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital Management')->pluck('nik');
                 }
                 
                 $sumMandays         = Timesheet::join('users','users.nik','tb_timesheet.nik')->select(DB::raw('CASE WHEN point_mandays IS NULL THEN 0 ELSE point_mandays END AS point_mandays'),'users.name','tb_timesheet.nik','task')->selectRaw('MONTH(start_date) AS month_number')->where('status_karyawan','!=','dummy')->where(function ($query) use ($arrayMonth) {
@@ -4686,18 +4687,18 @@ class TimesheetController extends Controller
                 }
 
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Center Point & Asset Management SVC')
+                    ->where('roles.mini_group','Supply Chain & IT Support')
                     ->pluck('users.nik');
-                } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+                } else if ($cek_role->name == 'Internal Operation Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
+                    ->where('roles.mini_group','Internal Operation Support')
                     ->pluck('users.nik');
                 } else if ($cek_role->name == 'Supply Chain Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -4707,7 +4708,7 @@ class TimesheetController extends Controller
                 } else {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
+                    ->where('roles.group','Internal Chain Management')
                     ->pluck('users.nik');
                 }
                 
@@ -5042,12 +5043,12 @@ class TimesheetController extends Controller
             $data = $data->whereIn('schedule',$request->schedule);                    
         }
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
-                if ($cek_role->name == 'VP Project Management') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->pluck('nik');
-                } elseif ($cek_role->name == 'Project Management Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
+                if ($cek_role->name == 'VP Program & Project Management') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->pluck('nik');
+                } elseif ($cek_role->name == 'Project Management Office Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->pluck('nik');
                 }
                 
                 if ($request->pic[0] === null) {
@@ -5117,16 +5118,16 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }            
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System & Services')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Delivery')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Architecture')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->pluck('nik');
                 }
 
                 if ($request->pic[0] === null) {
@@ -5220,14 +5221,14 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }            
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager') {
-                if ($cek_role->name == 'Application Development Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development')->pluck('nik');
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager') {
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development Specialist')->pluck('nik');
                 } else if ($cek_role->name == 'Customer Relation Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Customer Relationship Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solutions & Partnership Management')->pluck('nik');
                 }
                 
                 if ($request->pic[0] === null) {
@@ -5321,15 +5322,15 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'Renumeration, Personalia & GS Manager' || $cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'People Operations & Services Manager' || $cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager') {
 
-                if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
+                if ($cek_role->name == 'People Operations & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
                 } elseif ($cek_role->name == 'Human Capital Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital Management')->pluck('nik');
                 }
 
                 if ($request->pic[0] === null) {
@@ -5423,18 +5424,18 @@ class TimesheetController extends Controller
                     $arrCummulativeMandays->push(['name'=>$value->name,'month_array'=>$arrayName]);
                 }
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Center Point & Asset Management SVC')
+                    ->where('roles.mini_group','Supply Chain & IT Support')
                     ->pluck('users.nik');
-                } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+                } else if ($cek_role->name == 'Internal Operation Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
+                    ->where('roles.mini_group','Internal Operation Support')
                     ->pluck('users.nik');
                 } else if ($cek_role->name == 'Supply Chain Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -5444,7 +5445,7 @@ class TimesheetController extends Controller
                 } else {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
+                    ->where('roles.group','Internal Chain Management')
                     ->pluck('users.nik');
                 }
 
@@ -5733,12 +5734,12 @@ class TimesheetController extends Controller
         //             ->get();
         // }     
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
-                if ($cek_role->name == 'VP Project Management') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->orWhere('roles.group','Human Capital')->pluck('nik');
-                } elseif ($cek_role->name == 'Project Management Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Project Management')->pluck('nik');
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
+                if ($cek_role->name == 'VP Program & Project Management') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->orWhere('roles.group','Human Capital Management')->pluck('nik');
+                } elseif ($cek_role->name == 'Project Management Office Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Program & Project Management')->pluck('nik');
                 }
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -5900,16 +5901,16 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service' || $cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Solution Execution Manager' || $cek_role->name == 'Solution Architect Manager') {
-                if ($cek_role->name == 'Managed Service Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Managed Service & Problem Solving')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Execution Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Execution')->pluck('nik');
-                } elseif ($cek_role->name == 'Solution Architect Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Solution Architect')->pluck('nik');
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management' || $cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Synergy System Delivery Manager' || $cek_role->name == 'Synergy System Architecture Manager') {
+                if ($cek_role->name == 'Synergy System & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System & Services')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Delivery')->pluck('nik');
+                } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Synergy System Architecture')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solution Implementation & Managed Service')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Synergy System Management')->pluck('nik');
                 }
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -6071,14 +6072,14 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'Application Development Manager' || $cek_role->name == 'Customer Relation Manager') {
-                if ($cek_role->name == 'Application Development Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development')->pluck('nik');
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager' || $cek_role->name == 'Customer Relation Manager') {
+                if ($cek_role->name == 'Application Development Specialist Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Application Development Specialist')->pluck('nik');
                 } else if ($cek_role->name == 'Customer Relation Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Customer Relationship Management')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Product Management & Development')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Solutions & Partnership Management')->pluck('nik');
                 }
 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -6240,15 +6241,15 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'Renumeration, Personalia & GS Manager' || $cek_role->name == 'VP Human Capital' || $cek_role->name == 'Human Capital Manager') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'People Operations & Services Manager' || $cek_role->name == 'VP Human Capital Management' || $cek_role->name == 'Human Capital Manager') {
 
-                if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
+                if ($cek_role->name == 'People Operations & Services Manager') {
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital')->pluck('nik');
                 } elseif ($cek_role->name == 'Human Capital Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.mini_group','Human Capital')->pluck('nik');
                 } else {
-                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital')->pluck('nik');
+                    $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','Human Capital Management')->pluck('nik');
                 }
                 
                 $data = $data->whereIn('tb_timesheet.nik',$listGroup)->where('status','Done')->get();
@@ -6410,18 +6411,18 @@ class TimesheetController extends Controller
                     }
                 }
             }
-        }elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Risk Management, Sys Dev & Compliance Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
+        }elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'Legal Compliance & Contract Doc Management') {
 
-                if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+                if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Center Point & Asset Management SVC')
+                    ->where('roles.mini_group','Supply Chain & IT Support')
                     ->pluck('users.nik');
-                } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+                } else if ($cek_role->name == 'Internal Operation Support Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.mini_group','Risk Management, Sys Dev & Compliance')
+                    ->where('roles.mini_group','Internal Operation Support')
                     ->pluck('users.nik');
                 } else if ($cek_role->name == 'Supply Chain Manager') {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -6431,7 +6432,7 @@ class TimesheetController extends Controller
                 } else {
                     $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     // ->where('roles.name','not like','%Manager')
-                    ->where('roles.group','Supply Chain, CPS & Asset Management')
+                    ->where('roles.group','Internal Chain Management')
                     ->pluck('users.nik');
                 }
 
@@ -6757,11 +6758,11 @@ class TimesheetController extends Controller
             $data = $data->whereIn('schedule',$request->schedule);                    
         }
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
                 if ($request->pic[0] === null) {
-                    if ($cek_role->name == 'VP Project Management') {
-                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital');
+                    if ($cek_role->name == 'VP Program & Project Management') {
+                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital Management');
                     } else {
                         $data = $data->where('roles.group',$cek_role->group);
                     }
@@ -6771,44 +6772,44 @@ class TimesheetController extends Controller
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service') {
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Managed Service Manager') {
+            } elseif ($cek_role->name == 'Synergy System & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Managed Service & Problem Solving');
+                    $data = $data->where('roles.mini_group','Synergy System & Services');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Execution Manager') {
+            } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Execution');
+                    $data = $data->where('roles.mini_group','Synergy System Delivery');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Architect Manager') {
+            } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Architect');
+                    $data = $data->where('roles.mini_group','Synergy System Architecture');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Application Development Manager') {
+            } else if ($cek_role->name == 'Application Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Application Development');
+                    $data = $data->where('roles.mini_group','Application Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -6818,25 +6819,25 @@ class TimesheetController extends Controller
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Product Management & Solution Manager') {
+            } else if ($cek_role->name == 'Product Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Product Management & Solution');
+                    $data = $data->where('roles.mini_group','Product Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
+            } else if ($cek_role->name == 'People Operations & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital');
+                    $data = $data->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -6849,22 +6850,22 @@ class TimesheetController extends Controller
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management') {
+        }elseif($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+            } else if ($cek_role->name == 'Internal Operation Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Risk Management, Sys Dev & Compliance');
+                    $data = $data->where('roles.group','Internal Operation Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+            } else if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Center Point & Asset Management SVC');
+                    $data = $data->where('roles.group','Supply Chain & IT Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -6960,11 +6961,11 @@ class TimesheetController extends Controller
             $data = $data->whereIn('schedule',$request->schedule);                    
         }
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
                 if ($request->pic[0] === null) {
-                    if ($cek_role->name == 'VP Project Management') {
-                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital');
+                    if ($cek_role->name == 'VP Program & Project Management') {
+                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital Management');
                     } else {
                         $data = $data->where('roles.group',$cek_role->group);
                     }
@@ -6974,44 +6975,44 @@ class TimesheetController extends Controller
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service') {
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Managed Service Manager') {
+            } elseif ($cek_role->name == 'Synergy System & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Managed Service & Problem Solving');
+                    $data = $data->where('roles.mini_group','Synergy System & Services');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Execution Manager') {
+            } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Execution');
+                    $data = $data->where('roles.mini_group','Synergy System Delivery');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Architect Manager') {
+            } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Architect');
+                    $data = $data->where('roles.mini_group','Synergy System Architecture');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Application Development Manager') {
+            } else if ($cek_role->name == 'Application Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Application Development');
+                    $data = $data->where('roles.mini_group','Application Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7021,25 +7022,25 @@ class TimesheetController extends Controller
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Product Management & Solution Manager') {
+            } else if ($cek_role->name == 'Product Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Product Management & Solution');
+                    $data = $data->where('roles.mini_group','Product Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
+            } else if ($cek_role->name == 'People Operations & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital');
+                    $data = $data->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7052,22 +7053,22 @@ class TimesheetController extends Controller
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management') {
+        }elseif($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+            } else if ($cek_role->name == 'Internal Operation Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Risk Management, Sys Dev & Compliance');
+                    $data = $data->where('roles.group','Internal Operation Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+            } else if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Center Point & Asset Management SVC');
+                    $data = $data->where('roles.group','Supply Chain & IT Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7172,11 +7173,11 @@ class TimesheetController extends Controller
             $data = $data->whereIn('schedule',$request->schedule);                    
         }
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
                 if ($request->pic[0] === null) {
-                    if ($cek_role->name == 'VP Project Management') {
-                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital');
+                    if ($cek_role->name == 'VP Program & Project Management') {
+                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital Management');
                     } else {
                         $data = $data->where('roles.group',$cek_role->group);
                     }
@@ -7186,44 +7187,44 @@ class TimesheetController extends Controller
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service') {
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Managed Service Manager') {
+            } elseif ($cek_role->name == 'Synergy System & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Managed Service & Problem Solving');
+                    $data = $data->where('roles.mini_group','Synergy System & Services');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Execution Manager') {
+            } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Execution');
+                    $data = $data->where('roles.mini_group','Synergy System Delivery');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Architect Manager') {
+            } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Architect');
+                    $data = $data->where('roles.mini_group','Synergy System Architecture');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Application Development Manager') {
+            } else if ($cek_role->name == 'Application Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Application Development');
+                    $data = $data->where('roles.mini_group','Application Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7233,25 +7234,25 @@ class TimesheetController extends Controller
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Product Management & Solution Manager') {
+            } else if ($cek_role->name == 'Product Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Product Management & Solution');
+                    $data = $data->where('roles.mini_group','Product Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
+            } else if ($cek_role->name == 'People Operations & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital');
+                    $data = $data->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7264,22 +7265,22 @@ class TimesheetController extends Controller
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management') {
+        }elseif($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+            } else if ($cek_role->name == 'Internal Operation Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Risk Management, Sys Dev & Compliance');
+                    $data = $data->where('roles.group','Internal Operation Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+            } else if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Center Point & Asset Management SVC');
+                    $data = $data->where('roles.group','Supply Chain & IT Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7383,11 +7384,11 @@ class TimesheetController extends Controller
             $data = $data->whereIn('schedule',$request->schedule);                    
         }
 
-        if ($cek_role->group == 'Project Management') {
-            if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager') {
+        if ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager') {
                 if ($request->pic[0] === null) {
-                    if ($cek_role->name == 'VP Project Management') {
-                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital');
+                    if ($cek_role->name == 'VP Program & Project Management') {
+                        $data = $data->where('roles.group',$cek_role->group)->orWhere('roles.group','Human Capital Management');
                     } else {
                         $data = $data->where('roles.group',$cek_role->group);
                     }
@@ -7397,44 +7398,44 @@ class TimesheetController extends Controller
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name == 'VP Solution Implementation & Managed Service') {
+        }elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name == 'VP Synergy System Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Managed Service Manager') {
+            } elseif ($cek_role->name == 'Synergy System & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Managed Service & Problem Solving');
+                    $data = $data->where('roles.mini_group','Synergy System & Services');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Execution Manager') {
+            } elseif ($cek_role->name == 'Synergy System Delivery Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Execution');
+                    $data = $data->where('roles.mini_group','Synergy System Delivery');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } elseif ($cek_role->name == 'Solution Architect Manager') {
+            } elseif ($cek_role->name == 'Synergy System Architecture Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Solution Architect');
+                    $data = $data->where('roles.mini_group','Synergy System Architecture');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                 $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name == 'VP Product Management & Development Solution') {
+        }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Solutions & Partnership Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Application Development Manager') {
+            } else if ($cek_role->name == 'Application Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Application Development');
+                    $data = $data->where('roles.mini_group','Application Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7444,25 +7445,25 @@ class TimesheetController extends Controller
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Product Management & Solution Manager') {
+            } else if ($cek_role->name == 'Product Development Specialist Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Product Management & Solution');
+                    $data = $data->where('roles.mini_group','Product Development Specialist');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name == 'VP Human Capital') {
+        }elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name == 'VP Human Capital Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Renumeration, Personalia & GS Manager') {
+            } else if ($cek_role->name == 'People Operations & Services Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.mini_group','Renumeration, Personalia & GS')->orWhere('roles.mini_group','Human Capital');
+                    $data = $data->where('roles.mini_group','People Operations & Services')->orWhere('roles.mini_group','Human Capital');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7475,22 +7476,22 @@ class TimesheetController extends Controller
             } else {
                $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
             }
-        }elseif($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management') {
+        }elseif($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name == 'VP Internal Chain Management') {
                 if ($request->pic[0] === null) {
                     $data = $data->where('roles.group',$cek_role->group);
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Risk Management, Sys Dev & Compliance Manager') {
+            } else if ($cek_role->name == 'Internal Operation Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Risk Management, Sys Dev & Compliance');
+                    $data = $data->where('roles.group','Internal Operation Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
-            } else if ($cek_role->name == 'Center Point & Asset Management SVC Manager') {
+            } else if ($cek_role->name == 'Supply Chain & IT Support Manager') {
                 if ($request->pic[0] === null) {
-                    $data = $data->where('roles.group','Center Point & Asset Management SVC');
+                    $data = $data->where('roles.group','Supply Chain & IT Support');
                 }else{
                     $data = $data->whereIn('tb_timesheet.nik',$request->pic);
                 }
@@ -7595,7 +7596,7 @@ class TimesheetController extends Controller
             $data = $data->whereIn('tb_timesheet.nik',$request->pic);
         }
 
-        // if ($cek_role->group == 'pmo') {
+        // if ($cek_role->group == 'Program & Project Management') {
         //     if ($cek_role->name == 'PMO Manager' || $cek_role->name == 'PMO SPV') {
         //         if (isset($request->pic[1]))) {
         //             $data = $data->where('roles.group',$cek_role->group);
@@ -7615,7 +7616,7 @@ class TimesheetController extends Controller
         //     } else {
         //         $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
         //     }
-        // }elseif ($cek_role->group == 'presales') {
+        // }elseif ($cek_role->group == 'Synergy System Management') {
         //     if ($cek_role->name == 'SOL Manager') {
         //         if ($request->pic[0]) {
         //             $data = $data->where('roles.group',$cek_role->group);
@@ -7625,8 +7626,8 @@ class TimesheetController extends Controller
         //     } else {
         //        $data = $data->where('tb_timesheet.nik',Auth::User()->nik);
         //     }
-        // }elseif ($cek_role->group == 'bcd') {
-        //     if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Development SPV') {
+        // }elseif ($cek_role->group == 'Solutions & Partnership Management') {
+        //     if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Application Development Specialist Manager') {
         //         if ($request->pic[0]) {
         //             $data = $data->where('roles.group',$cek_role->group);
         //         }else{

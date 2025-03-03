@@ -72,7 +72,7 @@ class SalesRemainder extends Command
         $users_vp = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
             ->where('status_karyawan','!=','dummy')
             ->select('nik','roles.name','email')
-            ->where('roles.name','VP Product Management & Development Solution')
+            ->where('roles.name','VP Solutions & Partnership Management')
             ->get();
 
         $parameterEmail = collect();

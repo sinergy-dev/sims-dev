@@ -3677,7 +3677,7 @@ class ReportController extends Controller
                 ->join('roles','role_user.role_id','=','roles.id')
                 ->select('users.name', 'users.nik')
                 ->where('status_karyawan','!=','dummy')
-                ->where('roles.group', 'presales')
+                ->where('roles.group', 'Synergy System Management')
                 ->get();
 
         // return $users;

@@ -1381,7 +1381,7 @@ PMO
     		$(".content-header").show()
     		$(".content").show()
 
-    		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}") {
+    		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Office Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Program & Project Management')->exists()}}") {
     			$("#btnAddMilestone").find("i").removeClass('fa-plus').addClass('fa-eye')
     			$("#btnFinalProject").find("i").removeClass('fa-plus').addClass('fa-eye')
     		}else{
@@ -1449,7 +1449,7 @@ PMO
                 "data": null,
                 render:function(data, type, row)
                 {	
-                	if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Officer')->exists()}}") {
+                	if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Transformation Officer')->exists()}}") {
 						return '<button class="btn btn-sm btn-danger disabled" ><i class="fa fa-trash-o"></i>&nbspDelete</button>'
 					} else {
 						return '<button class="btn btn-sm btn-danger" onclick="deleteDoc('+ row.id_document +')"><i class="fa fa-trash-o"></i>&nbspDelete</button>'
@@ -1703,7 +1703,7 @@ PMO
 		            	}
             		}
             	}else{
-            		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Project Management')->exists()}}") {
+            		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Office Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Program & Project Management')->exists()}}") {
 		    			$("#btnAddMilestone").find("i").removeClass('fa-plus').addClass('fa-eye')
 		    			$("#btnFinalProject").find("i").removeClass('fa-plus').addClass('fa-eye')
 		    			if (result.data.ganttStatus == "custom") {
@@ -4239,6 +4239,24 @@ PMO
 				append = append + '                    	</table>'
 				append = append + '                    </div>'
 				append = append + '                </div>'
+				if (result[0].pid !== null){
+					append = append + '                <div class="form-group">'
+					append = append + '                    <label>SLA Project*</label>'
+					append = append + '                    <div class="table-responsive">'
+					append = append + '                    	<table class="table" style="border-collapse:collapse;width: 100%;white-space: nowrap;" id="tbInternalStakeholderRegister">'
+					append = append + '                    		<tr>'
+					append = append + '                    			<th>SLA Response</th>'
+					append = append + '                    			<th>SLA Resolution Critical</th>'
+					append = append + '                    			<th>SLA Resolution Major</th>'
+					append = append + '                    			<th>SLA Resolution Moderate</th>'
+					append = append + '                    			<th>SLA Resolution Minor</th>'
+					append = append + '                    		</tr>'
+					append = append + '                    		<tbody id="tbodySLAProjectCharter">'
+					append = append + '                    		</tbody>'
+					append = append + '                    	</table>'
+					append = append + '                    </div>'
+					append = append + '                </div>'
+				}
 				append = append + '	    	</fieldset>'
 				append = append + '	    </div>'
 				append = append + '	  </div>'
@@ -4266,6 +4284,44 @@ PMO
 			    if (result[0].project_type == 'implementation') {
 
 			    }
+
+				var appendSla = ""
+				if(result[0].pid !== null || result[0].pid !== ""){
+					let slaResponse = result[0].sla_response;
+					let slaRsolutionCritical = result[0].sla_resolution_critical;
+					let slaRsolutionMajor = result[0].sla_resolution_major;
+					let slaRsolutionModerate = result[0].sla_resolution_moderate;
+					let slaRsolutionMinor = result[0].sla_resolution_minor;
+
+					let formattedSlaResponse = slaResponse < 1
+							? Math.round(slaResponse * 60) + " Menit"
+							: slaResponse + " Jam";
+
+					let formattedSlaResolutionCritical = slaRsolutionCritical < 1
+							? Math.round(slaRsolutionCritical * 60) + " Menit"
+							: slaRsolutionCritical + " Jam";
+
+					let formattedSlaResolutionMajor = slaRsolutionMajor < 1
+							? Math.round(slaRsolutionMajor * 60) + " Menit"
+							: slaRsolutionMajor + " Jam";
+					let formattedSlaResolutionModerate = slaRsolutionModerate < 1
+							? Math.round(slaRsolutionModerate * 60) + " Menit"
+							: slaRsolutionModerate + " Jam";
+					let formattedSlaResolutionMinor = slaRsolutionMinor < 1
+							? Math.round(slaRsolutionMinor * 60) + " Menit"
+							: slaRsolutionMinor + " Jam";
+
+					appendSla = appendSla + '<tr>'
+					appendSla = appendSla + '<td><input readonly type="text" name="" class="form-control" value="'+formattedSlaResponse+'"></td>'
+					appendSla = appendSla + '<td><input readonly type="text" name="" class="form-control" value="'+formattedSlaResolutionCritical+'"></td>'
+					appendSla = appendSla + '<td><input readonly type="text" name="" class="form-control" value="'+ formattedSlaResolutionMajor+'"></td>'
+					appendSla = appendSla + '<td><input readonly type="text" name="" class="form-control" value="'+formattedSlaResolutionModerate+'"></td>'
+					appendSla = appendSla + '<td><input readonly type="text" name="" class="form-control" value="'+formattedSlaResolutionMinor+'"></td>'
+					appendSla = appendSla + '</tr>'
+
+					$('#tbodySLAProjectCharter').append(appendSla)
+				}
+
 
 			    var appendRisk = ""
 

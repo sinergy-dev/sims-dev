@@ -347,7 +347,7 @@ Lead Register
 	        <div class="modal-body">
 	          <!-- <form method="POST" action="{{url('store')}}" id="modalSalesLead" name="modalSalesLead"> -->
 	            @csrf
-				  @if(Auth::user()->roles->first()->name != 'VP Product Management & Development Solution')
+				  @if(Auth::user()->roles->first()->name != 'VP Solutions & Partnership Management')
 					<div class="form-group" style="display:none" id="ownerSales">
 					  <label for="">Owner</label>
 					  <select class="form-control select2" style="width: 100%;" id="owner_sales"  name="owner_sales">
@@ -689,7 +689,7 @@ Lead Register
 								loadBtn = btnEdit
 							}        					
     				}else{
-    					if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Product Management & Development Solution')->exists()}}")){
+    					if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','VP Solutions & Partnership Management')->exists()}}")){
     						if (row.name_ta == '-') {
       						title_assign = 'Assign'
 		      				onclickAssign = "onclick=btnAssignTechAlliance('assign','"+row.lead_id+"')"
@@ -703,7 +703,7 @@ Lead Register
       					loadBtn = '<button class="btn btn-xs btn-primary"'+ onclickAssign +'>'+ title_assign +'</button>'+btnEdit + btnDelete
       				}
 
-      				if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}")){
+      				if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance Solutions')->exists()}}")){
       					if (row.name_presales == '-') {
       						title_assign = 'Assign'
 		      				onclickAssign = "onclick=btnAssignPresales('assign','"+row.lead_id+"')"
@@ -833,7 +833,7 @@ Lead Register
 	}
 
 	function submitLead(){
-		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Solution Execution Manager')->exists()}}" ) {
+		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales Support Architecture')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Synergy System Delivery Manager')->exists()}}" ) {
 			var owner_sales = $("#owner_sales").val()
 		}else{
 			var owner_sales = 'bukan presales'

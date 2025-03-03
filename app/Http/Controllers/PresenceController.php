@@ -388,22 +388,22 @@ class PresenceController extends Controller
 
         $getUserMsp = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','2')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipSims = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Solution Implementation & Managed Service')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
+        $getUserSipSims = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Synergy System Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipPmds = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Product Management & Development')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
+        $getUserSipPmds = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Solutions & Partnership Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
         $getUserSipFin = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('id_division', 'FINANCE')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
         $getUserSipHc = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')
                 ->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')
-                ->where('group','Human Capital')
+                ->where('group','Human Capital Management')
                 ->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
-        $getUserSipPmo = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Project Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
+        $getUserSipPmo = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Program & Project Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
         $getUserShifting = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->join('presence__shifting_user', 'presence__shifting_user.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
         
-        $getUserSipSccam = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Supply Chain, CPS & Asset Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
+        $getUserSipSccam = User::join('role_user','role_user.user_id','users.nik')->join('roles','role_user.role_id','roles.id')->join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`users`.`name` AS `text`')->where('id_company','1')->where('group', 'Internal Chain Management')->where('status_karyawan','!=','dummy')->orderBy('users.name','asc')->groupBy('users.nik')->get();
 
         return array(
             collect(["text"=>'SIP',"children"=>$getUserSip]),

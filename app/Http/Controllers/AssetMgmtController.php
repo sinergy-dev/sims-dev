@@ -183,11 +183,11 @@ class AssetMgmtController extends Controller
 
         $searchFields = ['asset_owner', 'tb_asset_management_detail.pid', 'serial_number', 'tb_asset_management.id_asset', 'type_device', 'vendor', 'rma', 'spesifikasi','notes','id_device_customer','client','pid','users.name','roles.name'];
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $data = $data->whereIn('pid',$getPidPm);
         }
 
@@ -291,15 +291,15 @@ class AssetMgmtController extends Controller
             )
             ->orderBy('tb_asset_management.created_at','desc'); 
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $data = $data->whereIn('pid',$getPidPm);
-        } elseif($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->mini_group == 'Supply Chain Management'){
+        } elseif($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->mini_group == 'Internal Operation Support'){
             $data = $data->where('pid','INTERNAL');
-        } else if ($cek_role->name_role == 'Managed Service Manager' ) {
+        } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $data = $data->where('pid','!=','INTERNAL');
         } 
 
@@ -420,15 +420,15 @@ class AssetMgmtController extends Controller
             $data->where('client',$request->client);
         }    
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $data = $data->whereIn('pid',$getPidPm);
-        } else if ($cek_role->name_role == 'Managed Service Manager' ) {
+        } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $data = $data->where('pid','!=','INTERNAL');
-        } elseif($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->mini_group == 'Supply Chain Management'){
+        } elseif($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->mini_group == 'Internal Operation Support'){
             $data = $data->where('pid','INTERNAL');
         } 
 
@@ -445,13 +445,13 @@ class AssetMgmtController extends Controller
 
         $getClient = DB::table('tb_asset_management_detail')->select('client as id','client as text')->where('client','like','%'.request('q').'%')->groupby('client');
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director') {
             $getClient = $getClient;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getClient = $getClient->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $getClient = $getClient->whereIn('pid',$getPidPm);
-        } else if ($cek_role->name_role == 'Managed Service Manager' ) {
+        } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $getClient = $getClient->where('pid','!=','INTERNAL');
         } 
 
@@ -817,16 +817,16 @@ class AssetMgmtController extends Controller
 
         $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company', '1')->where('id_project','like','%'.request('q').'%')->orderBy('tb_id_project.created_at','desc');
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Customer Care') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Customer Care') {
             $getAllPid = $getAllPid->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getAllPid = $getAllPid->whereIn('id_project',$getPid)->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $getAllPid = $getAllPid->whereIn('id_project',$getPidPm)->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
-        } elseif ($cek_role->name_role == 'Managed Service Manager') {
+        } elseif ($cek_role->name_role == 'Synergy System & Services Manager') {
             $getAllPid = $getAllPid->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         }
@@ -1976,13 +1976,13 @@ class AssetMgmtController extends Controller
             ")->orderBy('pid', 'ASC')
             ->groupBy('pid');
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director') {
             $getPid = $getPid;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getPid = $getPid->whereIn('pid',$getPidEoS);
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $getPid = $getPid->whereIn('pid',$getPidPm);
-        } else if ($cek_role->name_role == 'Managed Service Manager' ) {
+        } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $getPid = $getPid->where('pid','!=','INTERNAL');
         } 
 
@@ -2463,7 +2463,7 @@ class AssetMgmtController extends Controller
             ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
             ->orderBy('tb_asset_management.created_at','desc')->where('status','Rent'); 
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director') {
             $countAll = $data->count();
             $countInstalled = $dataInstalled->count();
             $countAvailable = $dataAvailable->count();
@@ -2475,14 +2475,14 @@ class AssetMgmtController extends Controller
             $countRent = $dataRent->whereIn('pid',$getPid)->count();
 
             // $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $countAll = $data->whereIn('pid',$getPidPm)->count();
             $countInstalled = $dataInstalled->whereIn('pid',$getPidPm)->count();
             $countAvailable = $dataInstalled->whereIn('pid',$getPidPm)->count();
             $countRent = $dataRent->whereIn('pid',$getPidPm)->count();
 
             // $data = $data->whereIn('pid',$getPidPm);
-        } else if ($cek_role->name_role == 'Managed Service Manager' ) {
+        } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $countAll = $data->where('pid','!=','INTERNAL')->count();
             $countInstalled = $dataInstalled->where('pid','!=','INTERNAL')->count();
             $countAvailable = $dataInstalled->where('pid','!=','INTERNAL')->count();
@@ -2563,7 +2563,7 @@ class AssetMgmtController extends Controller
             $countRent->where('client',$request->client);
         } 
 
-        if ($cek_role->mini_group == 'Center Point & Asset Management SVC' || $cek_role->name_role == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name_role == 'Operations Director') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Operations Director') {
             $countAll = $countAll;
             $countInstalled = $countInstalled;
             $countAvailable = $countAvailable;
@@ -2575,14 +2575,14 @@ class AssetMgmtController extends Controller
             $countRent = $countRent->whereIn('pid',$getPid);
 
             // $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Project Manager' || $cek_role->name_role == 'Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
             $countAll = $countAll->whereIn('pid',$getPidPm);
             $countInstalled = $countInstalled->whereIn('pid',$getPidPm);
             $countAvailable = $countAvailable->whereIn('pid',$getPidPm);
             $countRent = $countRent->whereIn('pid',$getPidPm);
 
             // $data = $data->whereIn('pid',$getPidPm);
-        } else if ($cek_role->name_role == 'Managed Service Manager' ) {
+        } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $countAll = $countAll->where('pid','!=','INTERNAL');
             $countInstalled = $countInstalled->where('pid','!=','INTERNAL');
             $countAvailable = $countAvailable->where('pid','!=','INTERNAL');
@@ -2679,7 +2679,7 @@ class AssetMgmtController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', Auth::User()->nik)->first(); 
 
-        if ($cek_role->name == 'Managed Service Manager') {
+        if ($cek_role->name == 'Synergy System & Services Manager') {
             $data = $data->where('temp3.pid','!=',null)->get(); 
         } else {
             $data = $data->whereRaw("(`category` = 'ATM' OR `category` = 'CRM')")
@@ -2985,7 +2985,7 @@ class AssetMgmtController extends Controller
 
         $getIdPmo = DB::table('tb_pmo')->whereIn('project_id',$getAll)->get()->pluck('id');
 
-        $getPidPm = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik','tb_pmo_assign.nik')->whereIn('id_project',$getIdPmo)->select('name','email')->where('role','Project Coordinator');
+        $getPidPm = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik','tb_pmo_assign.nik')->whereIn('id_project',$getIdPmo)->select('name','email')->where('role','Delivery Project Coordinator');
 
         $dataAll = DB::table('users')
                     ->whereIn('nik',function($query) use ($getAll){
@@ -3002,7 +3002,7 @@ class AssetMgmtController extends Controller
                             ->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')
                             ->join('users','users.nik','tb_pmo_assign.nik')
                             ->whereIn('id_project',$getIdPmo)
-                            ->where('role','Project Coordinator')
+                            ->where('role','Delivery Project Coordinator')
                             ->groupBy('users.nik');
                     })
                     ->select('nik','users.email','users.name')
@@ -3304,7 +3304,7 @@ class AssetMgmtController extends Controller
             $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
-                        ->where('roles.mini_group','Center Point & Asset Management SVC')
+                        ->where('roles.mini_group','Supply Chain & IT Support')
                         ->where('roles.name','like','%Manager%')
                         ->first(); 
         }
@@ -3385,7 +3385,7 @@ class AssetMgmtController extends Controller
                 ->where('status_karyawan','!=','dummy')
                 ->first();
         } 
-        else if (strpos($roleName, 'Project Manager') !== false) {
+        else if (strpos($roleName, 'Delivery Project Manager') !== false) {
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                             ->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')
@@ -3397,7 +3397,7 @@ class AssetMgmtController extends Controller
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                             ->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')
-                            ->where('roles.name','like','VP Project Management')
+                            ->where('roles.name','like','VP Program & Project Management')
                             ->first(); 
         } 
         else if (substr($roleName, -7) === 'Manager') {
@@ -3479,14 +3479,14 @@ class AssetMgmtController extends Controller
             $mini_group = $cek_role_pk->mini_group;
             if ($mini_group === 'Human Capital') {
                 $atasan_pk = $atasan_pk
-                        ->where('roles.name','like','VP Project Management')
+                        ->where('roles.name','like','VP Program & Project Management')
                         ->first();
             }
             else if ($mini_group == "" or $mini_group == null) {
                 $group = $cek_role_pk->group;
                 $atasan_pk =  $atasan_pk
                         ->where('roles.name','like','%Manager%')
-                        ->where('roles.name','<>','Project Manager')
+                        ->where('roles.name','<>','Delivery Project Manager')
                         ->where('group','like','%'. $group .'%')
                         ->first();
             } 
@@ -3496,14 +3496,14 @@ class AssetMgmtController extends Controller
                                 ->join('role_user','role_user.user_id','=','users.nik')
                                 ->join('roles','roles.id','=','role_user.role_id')
                                 ->where('roles.name','like','%Manager%')
-                                ->where('roles.name','<>','Project Manager')
+                                ->where('roles.name','<>','Delivery Project Manager')
                                 ->where('roles.mini_group','like','%'.$mini_group.'%')
                                 ->first();
         
                 if ($isManagerOnMiniGroup) {
                     $atasan_pk = $atasan_pk
                             ->where('roles.name','like','%Manager%')
-                            ->where('roles.name','<>','Project Manager')
+                            ->where('roles.name','<>','Delivery Project Manager')
                             ->where('roles.mini_group','like','%'.$mini_group.'%')
                             ->first();
                 } else{
@@ -3519,7 +3519,7 @@ class AssetMgmtController extends Controller
             //                     ->join('role_user','role_user.user_id','=','users.nik')
             //                     ->join('roles','roles.id','=','role_user.role_id')
             //                     ->where('roles.name','like','%Manager%')
-            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where('roles.name','<>','Delivery Project Manager')
             //                     ->where(function($query) use ($mini_group) {
             //                         $query->where('roles.mini_group','like','%'.$mini_group.'%')
             //                               ->orWhere('roles.group','like','%'.$mini_group.'%');
@@ -3528,7 +3528,7 @@ class AssetMgmtController extends Controller
             
             // $atasan_pk = $atasan_pk
             //                     ->where('roles.name','like','%Manager%')
-            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where('roles.name','<>','Delivery Project Manager')
             //                     ->where(function($query) use ($mini_group) {
             //                         $query->where('roles.mini_group','like','%'.$mini_group.'%')
             //                             ->orWhere('roles.group','like','%'.$mini_group.'%');
@@ -3538,7 +3538,7 @@ class AssetMgmtController extends Controller
             // if ($isManagerOnMiniGroup) {
                 // $atasan_pk = $atasan_pk
                 //         ->where('roles.name','like','%Manager%')
-                //         ->where('roles.name','<>','Project Manager')
+                //         ->where('roles.name','<>','Delivery Project Manager')
                 //         ->where(function($query) use ($mini_group) {
                 //             $query->where('roles.group','like','%'.$mini_group.'%')
                 //                 ->orWhere('roles.mini_group','like','%'.$mini_group.'%');
@@ -3657,7 +3657,7 @@ class AssetMgmtController extends Controller
             $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
-                        ->where('roles.mini_group','Center Point & Asset Management SVC')
+                        ->where('roles.mini_group','Supply Chain & IT Support')
                         ->where('roles.name','like','%Manager%')
                         ->first(); 
         }
@@ -3746,7 +3746,7 @@ class AssetMgmtController extends Controller
                 ->first();
 
         }
-        else if (strpos($roleName, 'Project Manager') !== false) {
+        else if (strpos($roleName, 'Delivery Project Manager') !== false) {
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                             ->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')
@@ -3758,7 +3758,7 @@ class AssetMgmtController extends Controller
             $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
                             ->join('role_user','role_user.user_id','=','users.nik')
                             ->join('roles','roles.id','=','role_user.role_id')
-                            ->where('roles.name','like','VP Project Management')
+                            ->where('roles.name','like','VP Program & Project Management')
                             ->first(); 
         }  
         else if (substr($roleName, -7) === 'Manager') {
@@ -3806,14 +3806,14 @@ class AssetMgmtController extends Controller
             if ($mini_group === 'Human Capital') {
 
                 $atasan_pk = $atasan_pk
-                        ->where('roles.name','like','VP Project Management')
+                        ->where('roles.name','like','VP Program & Project Management')
                         ->first();
             }
             else if ($mini_group == "" or $mini_group = null) {
                 $group = $cek_role_pk->group;
                 $atasan_pk =  $atasan_pk
                         ->where('roles.name','like','%Manager%')
-                        ->where('roles.name','<>','Project Manager')
+                        ->where('roles.name','<>','Delivery Project Manager')
                         ->where('group','like','%'. $group .'%')
                         ->first();
 
@@ -3822,14 +3822,14 @@ class AssetMgmtController extends Controller
                 //                 ->join('role_user','role_user.user_id','=','users.nik')
                 //                 ->join('roles','roles.id','=','role_user.role_id')
                 //                 ->where('roles.name','like','%Manager%')
-                //                 ->where('roles.name','<>','Project Manager')
+                //                 ->where('roles.name','<>','Delivery Project Manager')
                 //                 ->where('roles.group','like','%'.$mini_group.'%')
                 //                 ->first();
 
                 // if ($isManagerOnMiniGroup) {
                 //     $atasan_pk = $atasan_pk
                 //             ->where('roles.name','like','%Manager%')
-                //             ->where('roles.name','<>','Project Manager')
+                //             ->where('roles.name','<>','Delivery Project Manager')
                 //             ->where('roles.mini_group','like','%'.$mini_group.'%')
                 //             ->first();
                 // } else{
@@ -3846,14 +3846,14 @@ class AssetMgmtController extends Controller
                                 ->join('role_user','role_user.user_id','=','users.nik')
                                 ->join('roles','roles.id','=','role_user.role_id')
                                 ->where('roles.name','like','%Manager%')
-                                ->where('roles.name','<>','Project Manager')
+                                ->where('roles.name','<>','Delivery Project Manager')
                                 ->where('roles.mini_group','like','%'.$mini_group.'%')
                                 ->first();
         
                 if ($isManagerOnMiniGroup) {
                     $atasan_pk = $atasan_pk
                             ->where('roles.name','like','%Manager%')
-                            ->where('roles.name','<>','Project Manager')
+                            ->where('roles.name','<>','Delivery Project Manager')
                             ->where('roles.mini_group','like','%'.$mini_group.'%')
                             ->first();
                 } else{
@@ -3872,7 +3872,7 @@ class AssetMgmtController extends Controller
             //                     ->join('role_user','role_user.user_id','=','users.nik')
             //                     ->join('roles','roles.id','=','role_user.role_id')
             //                     ->where('roles.name','like','%Manager%')
-            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where('roles.name','<>','Delivery Project Manager')
             //                     ->where(function($query) use ($mini_group) {
             //                         $query->where('roles.group','like','%'.$mini_group.'%')
             //                               ->orWhere('roles.mini_group','like','%'.$mini_group.'%');
@@ -3881,7 +3881,7 @@ class AssetMgmtController extends Controller
             
             // $atasan_pk = $atasan_pk
             //                     ->where('roles.name','like','%Manager%')
-            //                     ->where('roles.name','<>','Project Manager')
+            //                     ->where('roles.name','<>','Delivery Project Manager')
             //                     ->where(function($query) use ($mini_group) {
             //                         $query->where('roles.group','like','%'.$mini_group.'%')
             //                             ->orWhere('roles.mini_group','like','%'.$mini_group.'%');
@@ -3898,7 +3898,7 @@ class AssetMgmtController extends Controller
             //                         ->join('role_user','role_user.user_id','=','users.nik')
             //                         ->join('roles','roles.id','=','role_user.role_id')
             //                         ->where('roles.name','like','%Manager%')
-            //                         ->where('roles.name','<>','Project Manager')
+            //                         ->where('roles.name','<>','Delivery Project Manager')
             //                         ->where('roles.mini_group','like','%'.$mini_group.'%')
             //                         ->first();
 

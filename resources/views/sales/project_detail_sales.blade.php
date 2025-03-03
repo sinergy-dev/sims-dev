@@ -1286,7 +1286,7 @@ Detail Lead Register
 		  		  		append = append + '</table>'
 	  		  		append = append + '</td>'
 	  		  	append = append + '</tr>'
-	  		  	@if(!App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Manager')->exists())
+	  		  	@if(!App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Project Management Office Manager')->exists())
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Amount</th>'
 	  		  		append = append + '<td><span class="amount_lead">'+ new Intl.NumberFormat('id').format(result.data[0].amount) +'</span><button class="btn btn-warning btn-edit-amount btn-xs pull-right" style="display:none">Edit</button></td>'
@@ -1962,13 +1962,13 @@ Detail Lead Register
 		})
 
 		function initiateSD(){
-			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-					if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance Solutions')->exists()}}") {
+					if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales Support Architecture')->exists()}}") {
 						$("#pov,#assesment,#propossed_design").prop("disabled",false)
 					}else{
 						$("#pov,#assesment,#propossed_design").prop("disabled",true)
 					}
-			}else if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','System Designer')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}"){
+			}else if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','System Designer Architecture')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales Support Architecture')->exists()}}"){
 				$("#project_budget,#priority,#proyek_size").prop("disabled",true)
 				$("#btn-addTagging").hide()
 				$("#tbtagging").closest("form").prop("disabled",true)
@@ -2123,8 +2123,8 @@ Detail Lead Register
       		if ($('#table-tagging tr').length <= 0) {
 		  			$("#btnRaiseTP").prop("disabled",true)
 		  		}else{
-		  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-		  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+		  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance Solutions')->exists()}}") {
+		  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales Support Architecture')->exists()}}") {
 		  					$("#btnRaiseTP").prop("disabled",false)
 		  				}else{
 		  					$("#btnRaiseTP").prop("disabled",true)
@@ -2240,8 +2240,8 @@ Detail Lead Register
 	      		if ($('#tbtagging tr').length <= 0) {
 			  			$("#btnRaiseTP").prop("disabled",true)
 			  		}else{
-			  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-			  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+			  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance Solutions')->exists()}}") {
+			  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales Support Architecture')->exists()}}") {
 			  					$("#btnRaiseTP").prop("disabled",false)
 			  				}else{
 			  					$("#btnRaiseTP").prop("disabled",true)
@@ -2643,8 +2643,8 @@ Detail Lead Register
 			$("#btnSubmitSD").prop("disabled",false)
 
       if ($('#tbtagging tr').length < 0) {
-      	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-      		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+      	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance Solutions')->exists()}}") {
+      		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales Support Architecture')->exists()}}") {
   					$("#btnRaiseTP").prop("disabled",false)
   				}else{
   					$("#btnRaiseTP").prop("disabled",true)
@@ -2664,8 +2664,8 @@ Detail Lead Register
     $(document).on('click', '.btn-trash-tagging-sbe', function() {
       $(this).closest("tr").remove();
       if ($('#tbSbe tr').length < 0) {
-  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance')->exists()}}") {
-  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales')->exists()}}") {
+  			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Technology Alliance Solutions')->exists()}}") {
+  				if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Presales Support Architecture')->exists()}}") {
   					$("#btnRaiseTP").prop("disabled",false)
   				}else{
   					$("#btnRaiseTP").prop("disabled",true)

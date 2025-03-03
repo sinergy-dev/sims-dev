@@ -184,7 +184,7 @@ Leaving Permitte
               <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
             </li>
             <li class="tabs_item">
-              {{-- @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}")
+              {{-- @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','People Operations & Services Manager')->exists()}}")
                 <a href="#staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
               @else
                 <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
@@ -1585,7 +1585,7 @@ Leaving Permitte
         ],
         initComplete: function() {
           if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','Director Operational')->exists()}}" || 
-            "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}") 
+            "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','People Operations & Services Manager')->exists()}}") 
           {
             if (this.api().data().length) 
             {
@@ -2160,7 +2160,7 @@ Leaving Permitte
       }
     })
 
-    @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}")
+    @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','People Operations & Services Manager')->exists()}}")
       $(document).on('click',"button[class^='date_off']",function(e) {
           $.ajax({
             type:"GET",
@@ -2355,7 +2355,7 @@ Leaving Permitte
       if (id == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
       } else if(id == "request") {
-        @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Renumeration, Personalia & GS Manager')->exists()}}")
+        @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','People Operations & Services Manager')->exists()}}")
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
         @else 
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();

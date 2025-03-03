@@ -30,14 +30,14 @@ class PMOProgressReport extends Model
 
     public function getProjectPmAttribute()
     {
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm')->where('role', 'Project Manager')->where('tb_pmo.id', $this->id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm')->where('role', 'Delivery Project Manager')->where('tb_pmo.id', $this->id)->first();
 
         return empty($data->project_pm)?'-':$data->project_pm;
     }
 
     public function getProjectPcAttribute()
     {
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Project Coordinator')->where('tb_pmo.id', $this->id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Delivery Project Coordinator')->where('tb_pmo.id', $this->id)->first();
 
         return empty($data->project_pc)?'-':$data->project_pc;
     }
@@ -184,7 +184,7 @@ class PMOProgressReport extends Model
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                 ->select(
                     'users.name', 
-                    DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Project Coordinator') THEN 'Project Coordinator' WHEN (`roles`.`name` = 'PMO Staff') THEN 'Project Manager' ELSE `roles`.`name` END) as position"), 
+                    DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Delivery Project Coordinator') THEN 'Delivery Project Coordinator' WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' ELSE `roles`.`name` END) as position"), 
                     'roles.group as group',
                     'users.ttd as ttd_digital',
                     'users.email',
