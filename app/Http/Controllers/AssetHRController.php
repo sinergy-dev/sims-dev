@@ -293,7 +293,7 @@ class AssetHRController extends Controller
                             ->where('tb_asset_hr_request.status','<>','REQUEST')
                             ->where('tb_asset_hr_request.status','<>','ON PROGRESS')
                             ->get();
-            }else if($cek_role->name == "Operations Director" || $cek_role->name == "President Director" || $cek_role->name == "Financial Director") {
+            }else if($cek_role->name == "Chief Operating Officer" || $cek_role->name == "Chief Executive Officer" || $cek_role->name == "Financial Director") {
                 //for ops & direktur
                 $current_request = $current_request
                             ->join('role_user','role_user.user_id','=','tb_asset_hr_request.nik')
@@ -716,14 +716,14 @@ class AssetHRController extends Controller
             ->join('role_user','role_user.user_id','=','users.nik')
             ->join('roles','roles.id','=','role_user.role_id')
             ->where('users.status_karyawan','<>','dummy')
-            ->where('roles.name','Operations Director')->first();
+            ->where('roles.name','Chief Operating Officer')->first();
 
             $users = User::select('email')
                 ->select('users.name')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
                 ->where('users.status_karyawan','<>','dummy')
-                ->where('roles.name','Operations Director')->first();
+                ->where('roles.name','Chief Operating Officer')->first();
         }else{
             $to = User::select('email')
             ->join('role_user','role_user.user_id','=','users.nik')
@@ -780,13 +780,13 @@ class AssetHRController extends Controller
         $to = User::select('email')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->where('id_division','HR')
-                ->where('id_position','HR MANAGER')
+                ->where('id_position','HR MANAGER')->where('users.status_karyawan','!=','dummy')
                 ->where('role_id',11)->get();
 
         $users = User::select('name')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->where('id_division','HR')
-                ->where('id_position','HR MANAGER')
+                ->where('id_position','HR MANAGER')->where('users.status_karyawan','!=','dummy')
                 ->where('role_id',11)->first();
 
         Mail::to($to)->send(new RequestAssetHr($sendFor,$users,$req_asset,'[SIMS-APP] Request Asset dibatalkan'));  
@@ -814,13 +814,13 @@ class AssetHRController extends Controller
         $to = User::select('email')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->where('id_division','HR')
-                ->where('id_position','HR MANAGER')
+                ->where('id_position','HR MANAGER')->where('users.status_karyawan','!=','dummy')
                 ->where('role_id',11)->get();
 
         $users = User::select('name')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->where('id_division','HR')
-                ->where('id_position','HR MANAGER')
+                ->where('id_position','HR MANAGER')->where('users.status_karyawan','!=','dummy')
                 ->where('role_id',11)->first();
 
         Mail::to($to)->send(new RequestAssetHr($sendFor,$users,$req_asset,'[SIMS-APP] Request New Asset (Update)'));  
@@ -1390,7 +1390,7 @@ class AssetHRController extends Controller
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')
                         ->select('email')
                         ->where('users.status_karyawan','<>','dummy')
-                        ->where('roles.name','Operations Director')
+                        ->where('roles.name','Chief Operating Officer')
                         ->orwhere('roles.name','Supply Chain & IT Support Manager')
                         ->get();
 

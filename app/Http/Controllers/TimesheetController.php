@@ -1322,7 +1322,7 @@ class TimesheetController extends Controller
                 // $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')->select('users.name','tb_timesheet_pid.pid','role')->where('id_division',$request->roles)->get();
             }
         }else{
-            if ($cek_role->name == 'Operations Director') {
+            if ($cek_role->name == 'Chief Operating Officer') {
                 $data = [];
             }else{
                 $data = TimesheetPid::join('users','users.nik','tb_timesheet_pid.nik')

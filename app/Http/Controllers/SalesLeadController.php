@@ -306,7 +306,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-            } else if ($cek_role->name_role == 'Operations Director' ){
+            } else if ($cek_role->name_role == 'Chief Operating Officer' ){
                 $count_lead = $total_lead->count('lead_id');
 
                 $count_open = $total_open->count('lead_id');
@@ -462,7 +462,7 @@ class SalesLeadController extends Controller
     public function getPresales()
     {
         $getPresales = collect(User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))
-            ->whereRaw("(`roles`.`mini_group` = 'Solution Architect' OR `nik` = '1230100050')")
+            ->whereRaw("(`roles`.`mini_group` = 'Synergy System Architecture')")
             ->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->distinct()->get());
 
         return array("data" => $getPresales);
@@ -471,7 +471,7 @@ class SalesLeadController extends Controller
     public function getTa()
     {
         $getPresales = collect(User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))
-            ->whereRaw("(`roles`.`name` = 'Technology Alliance Solutions')")
+            ->whereRaw("(`roles`.`name` = 'Technology Alliance Solutions' or `roles`.`name` = 'Product Development Specialist Manager')")
             ->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPresales);
@@ -479,14 +479,14 @@ class SalesLeadController extends Controller
 
     public function getSales(Request $request)
     {
-        $getSales = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `group` = 'sales' AND `status_karyawan` != 'dummy')")->orWhereRaw("(`roles`.`name` = 'Operations Director' AND `id_company` = '1'  AND `status_karyawan` != 'dummy')");
+        $getSales = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `group` = 'sales' AND `status_karyawan` != 'dummy')")->orWhereRaw("(`roles`.`name` = 'Chief Operating Officer' AND `id_company` = '1'  AND `status_karyawan` != 'dummy')");
 
         return array("data" => collect($getSales->get()));
     }
 
     public function getSalesByTerritory(Request $request)
     {
-        $getSales = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `group` = 'sales' AND `status_karyawan` != 'dummy')")->orWhereRaw("(`roles`.`name` = 'Operations Director' AND `id_company` = '1'  AND `status_karyawan` != 'dummy')");
+        $getSales = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `group` = 'sales' AND `status_karyawan` != 'dummy')")->orWhereRaw("(`roles`.`name` = 'Chief Operating Officer' AND `id_company` = '1'  AND `status_karyawan` != 'dummy')");
 
         if (isset($request->territory)) {
             $getSales->whereIn('id_territory', $request->territory);
@@ -567,7 +567,7 @@ class SalesLeadController extends Controller
         $getTerritory = DB::table('users')
             ->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
             ->select('id_territory')
-            ->whereRaw("(`group` = 'sales' OR `roles`.`name` = 'Operations Director' )")
+            ->whereRaw("(`group` = 'sales' OR `roles`.`name` = 'Chief Operating Officer' )")
             ->where('status_karyawan', '!=', 'dummy')
             ->where('id_company', '1')
             ->orderBy('id_territory')
@@ -643,7 +643,7 @@ class SalesLeadController extends Controller
             }
         // }
          
-        if($ter != null && $div != 'BCD' || $cek_role->name_role == 'Operations Director'){
+        if($ter != null && $div != 'BCD' || $cek_role->name_role == 'Chief Operating Officer'){
             $leadsnow->where('u_sales.id_company', '1');
             if ($cek_role->name_role == 'Presales Support Architecture' || $cek_role->name_role == 'System Designer Architecture' || $cek_role->name_role == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
                 if ($cek_role->name_role == 'Technology Alliance Solutions') {
@@ -1671,7 +1671,7 @@ class SalesLeadController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->where('status_karyawan', '!=', 'dummy');
 
-        if($ter != null || $cek_role->name_role != 'Operations Director'){
+        if($ter != null || $cek_role->name_role != 'Chief Operating Officer'){
             // $leads->where('u_sales.id_company','1');
             if ($cek_role->name_role == 'Presales Support Architecture' || $cek_role->name_role == 'System Designer Architecture' || $cek_role->name_role == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
                 if ($cek_role->name_role == 'Technology Alliance Solutions') {
@@ -2510,7 +2510,7 @@ class SalesLeadController extends Controller
                 $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
        
                 Mail::to('hellosinergy@gmail.com')->send(new MailResult($users,$pid_info));
-                Mail::to($users->email)->cc('ganjar@sinergy.co.id')->send(new MailResult($users,$pid_info));
+                Mail::to($users->email)->cc(['ganjar@sinergy.co.id','damarsusanto@sinergy.co.id'])->send(new MailResult($users,$pid_info));
 
                 //Disabled push notification
                 /*$jsonInsert = array(
@@ -2821,10 +2821,10 @@ class SalesLeadController extends Controller
         if($cek_role->name_role == 'VP Solutions & Partnership Management'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('nik', $nik_sales)
-                        ->orWhere('roles.name', 'Operations Director')
+                        ->orWhere('roles.name', 'Chief Operating Officer')
                         ->where('status_karyawan','!=','dummy')
                         ->get();
-        } elseif($cek_role->name_role == 'Operations Director'){
+        } elseif($cek_role->name_role == 'Chief Operating Officer'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('roles.name', 'VP Solutions & Partnership Management')
                         ->where('status_karyawan','!=','dummy')
@@ -2833,7 +2833,7 @@ class SalesLeadController extends Controller
         } elseif($cek_role->group == 'Sales'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('roles.name', 'VP Solutions & Partnership Management')
-                        ->orWhere('roles.name', 'Operations Director')
+                        ->orWhere('roles.name', 'Chief Operating Officer')
                         ->where('status_karyawan','!=','dummy')
                         ->get();
         }

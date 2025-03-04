@@ -2,6 +2,8 @@
 
 namespace App;
 use DB;
+use App\Sbe;
+use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +14,7 @@ class PMO extends Model
     protected $fillable = ['current_phase','project_type', 'implementation_type','project_id'];
     public $timestamps = false;
 
-    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status'];
+    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status','plan_sbe','actual_sbe','health_status','sbe'];
 
     public function getIncrementingNumberAttribute()
     {
@@ -34,9 +36,7 @@ class PMO extends Model
             return 'Done';
         } else {
             return $data->status;
-        }
-
-        
+        }        
     }
 
     public function getPhaseAttribute()
@@ -55,18 +55,16 @@ class PMO extends Model
 
     public function getProjectPmAttribute()
     {
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm')->where('role', 'Project Manager')->where('tb_pmo.project_id', $this->project_id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm','tb_pmo.project_type')->where('role', 'Project Manager')->where('tb_pmo.project_id', $this->project_id)->first();
 
         // return $data;
-
         return empty($data->project_pm)?'-':$data->project_pm;
     }
 
     public function getProjectPcAttribute()
     {
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Project Coordinator')->where('tb_pmo.project_id', $this->project_id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc','tb_pmo.project_type')->where('role', 'Project Coordinator')->where('tb_pmo.project_id', $this->project_id)->first();
 
-        // return $data->project_pc;
         return empty($data->project_pc)?'-':$data->project_pc;
     }
 
@@ -190,20 +188,20 @@ class PMO extends Model
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 } else{
-                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             }
         } else if ($this->project_type == 'implementation'){
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 } else {
-                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                    $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
+                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             } 
         }
@@ -221,5 +219,211 @@ class PMO extends Model
             return '-';
         }
         
+    }
+
+    public function getPlanSbeAttribute($value='')
+    {
+        // return $this->project_id;
+
+        $data = PMO::join('tb_id_project','tb_pmo.project_id','=','tb_id_project.id_project')
+                    ->join('sales_lead_register','tb_id_project.lead_id','=','sales_lead_register.lead_id')
+                    ->join('tb_sbe','tb_id_project.lead_id','=','tb_sbe.lead_id')
+                    ->where('tb_sbe.status','Fixed')
+                    ->select('tb_sbe.nominal')
+                    ->where('tb_pmo.project_id',$this->project_id)
+                    ->first();
+
+        if (empty($data)) {
+            $data = 0;
+        }else{
+            $data = (int)$data->nominal;
+        }
+
+        return $data;
+    }
+
+    public function getActualSbeAttribute($value='')
+    {
+        $checkYear = explode("/", $this->project_id);
+        // Get the last part (the year)
+        $year = end($checkYear);
+
+        $duplicateCount     = DB::table('tb_pmo')
+                                ->select(DB::raw('COUNT(project_id) as count'))
+                                ->where('project_id',$this->project_id)
+                                ->havingRaw('COUNT(*) > 1')
+                                ->count();
+
+        $nik_pmo = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo.id','=','tb_pmo_assign.id_project')
+                        ->where('tb_pmo.id',$this->id)
+                        ->select('tb_pmo_assign.nik')->first()->nik;
+
+        $amount_pr  = DB::table('tb_pr')
+                    ->join('tb_pr_product_draft','tb_pr.id_draft_pr','=','tb_pr_product_draft.id_draft_pr')
+                    // ->joinSub($subQuery, 'aggregated_product_pr', function ($join) {
+                    //     $join->on('tb_pr_product_draft.id_product', '=', 'aggregated_product_pr.id'); // Join subquery on PID
+                    // })
+                    ->join('tb_pr_product','tb_pr_product_draft.id_product','=','tb_pr_product.id')
+                    ->select(DB::raw('SUM(tb_pr_product.grand_total) as used_amount_pr'))
+                    ->where('tb_pr.type_of_letter','EPR')
+                    ->where('tb_pr.category','Perjalanan Dinas')
+                    ->where('budget_type','OPERASIONAL') 
+                    ->where('tb_pr.status','Done')
+                    ->where('tb_pr.project_id',$this->project_id);
+
+        $amount_claim  = DB::table('tb_claim_pid')
+                        ->join('tb_claim','tb_claim.id','=','tb_claim_pid.id_claim')
+                        ->select(DB::raw('SUM(tb_claim.nominal) as used_amount_claim'))
+                        ->whereNotNull('tb_claim.nominal')
+                        ->where('tb_claim.status','DONE')
+                        ->where('tb_claim_pid.pid',$this->project_id);
+
+
+        if ($duplicateCount > 0) {
+            $checkLastTimeActivityImp = DB::table('tb_pmo_activity')
+                    ->where('id_project',$this->id)
+                    ->where('phase','Submit Final Project Closing Report')
+                    ->select('date_time')
+                    ->first();
+
+            $checkRoleEngforPr = DB::table('tb_pmo')
+                ->join('tb_id_project','tb_pmo.project_id','=','tb_id_project.id_project')
+                ->join('tb_sbe','tb_id_project.lead_id','=','tb_sbe.lead_id')
+                ->join('tb_sbe_config','tb_sbe.id','=','tb_sbe_config.id_sbe')
+                ->join('tb_sbe_detail_config','tb_sbe_config.id','=','tb_sbe_detail_config.id_config_sbe')
+                ->join('tb_sbe_detail_item','tb_sbe_detail_config.detail_item','=','tb_sbe_detail_item.id')->select('tb_sbe_detail_config.item')
+                ->where('tb_pmo.project_id',$this->project_id)
+                ->where('tb_sbe.status','Fixed')
+                ->where('tb_sbe_config.status','Choosed');
+
+            if (isset($checkLastTimeActivityImp)) {
+                $checkLastTimeActivityImp = Carbon::parse($checkLastTimeActivityImp->date_time)->format('Y-m-d');
+            }else{
+                $latestDate = Carbon::create($year, 12, 31);
+                $currentYear = Carbon::now()->year;
+
+                if ($year < $currentYear) {
+                  $formattedDate = $latestDate->format('Y-m-d');
+                }else{
+                  $formattedDate = date('Y-m-d');
+                }
+
+                $checkLastTimeActivityImp = $formattedDate;
+                $checkLastTimeActivityImp = date('Y-m-d');
+            }
+
+            if ($this->project_type == 'maintenance') {
+                $checkRoleEngforPr = $checkRoleEngforPr
+                                    ->where('tb_sbe_config.project_type','Maintenance')
+                                    ->distinct()
+                                    ->pluck('item')
+                                    ->toArray();
+
+               $amount_claim  = $amount_claim->where('tb_claim.date','>=',$checkLastTimeActivityImp)->get()->first();
+               $amount_pr     = $amount_pr->whereIn('roles_engineer',$checkRoleEngforPr)->orWhere('for',$this->project_pc)->get()->first();
+            }else if ($this->project_type == 'implementation') {
+                $checkRoleEngforPr = $checkRoleEngforPr
+                                    ->where('tb_sbe_config.project_type','Implementation')
+                                    ->distinct()
+                                    ->pluck('item')
+                                    ->toArray();
+
+                $amount_claim  = $amount_claim->where('tb_claim.date','<=',$checkLastTimeActivityImp)->get()->first();
+                $amount_pr     = $amount_pr->whereIn('roles_engineer',$checkRoleEngforPr)->orWhere('for',$this->project_pm)->get()->first();
+            }
+        }else{
+            $amount_claim  = $amount_claim->get()->first();
+            $amount_pr     = $amount_pr->get()->first();
+        }
+
+        if (empty($amount_pr)) {
+            $amount_pr = 0;
+        }else{
+            $amount_pr = $amount_pr->used_amount_pr;
+        }
+
+        if (empty($amount_claim) && isset($amount_claim)) {
+            $amount_claim = 0;
+        }else{
+            $amount_claim = $amount_claim->used_amount_claim;
+        }
+
+        $amount_settlement  = DB::table('tb_settlement_pid')
+                        ->join('tb_settlement','tb_settlement.id','=','tb_settlement_pid.id_settlement')
+                        ->select(DB::raw('SUM(tb_settlement.nominal) as used_amount_settlement'))
+                        // ->whereYear('tb_settlement_pid.date_add',$year)
+                        ->whereNotNull('tb_settlement.nominal')
+                        ->where('tb_settlement.status','DONE')
+                        ->where('tb_settlement_pid.pid',$this->project_id)
+                        // ->where('tb_settlement.issuance',$nik_pmo)
+                        ->get()->first();
+
+        if (empty($amount_settlement)) {
+            $amount_settlement = 0;
+        }else{
+            $amount_settlement = $amount_settlement->used_amount_settlement;
+        }
+
+        return $amount_pr + $amount_settlement + $amount_claim;
+    }
+
+    public function getHealthStatusAttribute($value='')
+    {
+        if ($this->getActualSbeAttribute() == 0 || $this->getPlanSbeAttribute() == 0) {
+            $percentageAvgSbe = 0;
+        }else{
+            $percentageAvgSbe = $this->getActualSbeAttribute() / $this->getPlanSbeAttribute() * 100;
+        }
+
+        if ($percentageAvgSbe > 90 && $percentageAvgSbe < 100) {
+            $healthStatus = 'Almost Over Budget';
+        }else if($percentageAvgSbe < 90){
+            if ($percentageAvgSbe == 0) {
+                $healthStatus = '-';
+            }else{
+                $healthStatus = 'On Budget';
+            }
+        }else if ($percentageAvgSbe > 100) {
+            $healthStatus = 'Over Budget';
+        }
+
+        return $healthStatus;
+    }
+
+    public function getSbeAttribute($value='')
+    {
+        $data = Sbe::join('tb_id_project','tb_sbe.lead_id','=','tb_id_project.lead_id')
+                ->join('tb_sbe_config','tb_sbe.id','=','tb_sbe_config.id_sbe')
+                ->where('tb_sbe_config.status','Choosed')
+                ->select('tb_sbe_config.id','tb_sbe_config.project_type')
+                ->where('id_project',$this->project_id)
+                ->where('tb_sbe.status','Fixed')
+                ->groupBy('tb_sbe_config.project_type','tb_sbe_config.id')
+                ->orderByRaw("FIELD(tb_sbe_config.project_type, 'Implementation', 'Maintenance', 'Supply Only')");
+            
+
+        if ($this->getTypeProjectAttribute() == 'Maintenance & Managed Service') {
+            $data = $data->where('tb_sbe_config.project_type','Maintenance')
+                ->get()->makeHidden([
+                    'link_document'
+                ]);
+        }else if($this->getTypeProjectAttribute() == 'Implementation') {
+            $data = $data->where('tb_sbe_config.project_type','Implementation')
+                ->get()->makeHidden([
+                    'link_document'
+                ]);
+        }else if ($this->getTypeProjectAttribute() == 'Supply Only') {
+            $data = $data->where('tb_sbe_config.project_type','Supply Only')
+                ->get()->makeHidden([
+                    'link_document'
+                ]);
+        }else if ($this->getTypeProjectAttribute() == 'Implementation + Maintenance & Managed Service') {
+            $data = $data
+                ->get()->makeHidden([
+                    'link_document'
+                ]);
+        }
+
+        return $data;
     }
 }

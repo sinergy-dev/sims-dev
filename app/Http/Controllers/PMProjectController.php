@@ -147,7 +147,7 @@ class PMProjectController extends Controller
         //      ->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
         //      ->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
-  //       if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
+  //       if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Chief Operating Officer') {
   //        $data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array','type_project_array']);
   //           // $data = PMO::get();
   //       } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
@@ -178,7 +178,7 @@ class PMProjectController extends Controller
 
         $data =  PMO::select('tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
-        if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager' || $cek_role->name == 'Operations Director' || $cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'PMO Officer') {
+        if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'PMO Officer') {
             $data = $data->orderBy('tb_pmo.id','desc');
         } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
             $data = $data->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
@@ -1794,10 +1794,10 @@ class PMProjectController extends Controller
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 } else{
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             }
 
@@ -1805,11 +1805,11 @@ class PMProjectController extends Controller
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","Operations Director")');
+                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","Chief Operating Officer")');
                     return $sign->get();
                 } else {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
+                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             }
             
@@ -1843,7 +1843,7 @@ class PMProjectController extends Controller
         $store_activity->date_time = Carbon::now()->toDateTimeString();
         $store_activity->save();
 
-        if ($cek_role->group == 'Sales' || $cek_role->name == 'Operations Director') {
+        if ($cek_role->group == 'Sales' || $cek_role->name == 'Chief Operating Officer') {
             $update->status = 'Done';
             $subject_email = 'Approve Project Charter';
             $subject = 'Your project is available to run,';

@@ -186,28 +186,28 @@ class PRDraft extends Model
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Chief Operating Officer")');
                     } else {
-                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Operations Director')")
-                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Operations Director")');
+                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Chief Operating Officer')")
+                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
                     }
                 }
 
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Operations Director")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
             } else {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Program & Project Management", "VP Solutions & Partnership Management", "Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Program & Project Management", "VP Solutions & Partnership Management", "Chief Operating Officer")');
                     } else {         
-                       $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'Operations Director' OR `roles`.`name` = 'VP Solutions & Partnership Management' OR `roles`.`name` = 'VP Program & Project Management')")
-                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Program & Project Management", "VP Solutions & Partnership Management", "Operations Director")');
+                       $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'Chief Operating Officer' OR `roles`.`name` = 'VP Solutions & Partnership Management' OR `roles`.`name` = 'VP Program & Project Management')")
+                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Program & Project Management", "VP Solutions & Partnership Management", "Chief Operating Officer")');
                     }
                 }
 
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "BCD Manager", "VP Program & Project Management", "VP Solutions & Partnership Management", "Operations Director")');
+                // ->orderByRaw('FIELD(position, "BCD Manager", "VP Program & Project Management", "VP Solutions & Partnership Management", "Chief Operating Officer")');
             }
         } else {
             if ($cek_group->group == 'Program & Project Management') {
@@ -215,84 +215,84 @@ class PRDraft extends Model
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Program & Project Management", "Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Program & Project Management", "Chief Operating Officer")');
                     } else {
-                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Program & Project Management' OR `roles`.`name` = 'Operations Director')")
-                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Program & Project Management", "Operations Director")');
+                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Program & Project Management' OR `roles`.`name` = 'Chief Operating Officer')")
+                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Program & Project Management", "Chief Operating Officer")');
                     }
                 }
 
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Program & Project Management", "Operations Director")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Program & Project Management", "Chief Operating Officer")');
 
             } elseif ($cek_group->group == 'Internal Chain Management') {
 
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "Chief Operating Officer")');
                     } else {
-                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'Operations Director')")
-                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Operations Director")');
+                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'Chief Operating Officer')")
+                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Chief Operating Officer")');
                     }
                 }
 
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Operations Director")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Chief Operating Officer")');
 
             }elseif ($cek_group->group == 'Solutions & Partnership Management') {
 
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Solutions & Partnership Management", "Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Solutions & Partnership Management", "Chief Operating Officer")');
                     } else {
-                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Solutions & Partnership Management' OR `roles`.`name` = 'Operations Director')")
-                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Solutions & Partnership Management", "Operations Director")');
+                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Solutions & Partnership Management' OR `roles`.`name` = 'Chief Operating Officer')")
+                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Solutions & Partnership Management", "Chief Operating Officer")');
                     }
                 }
 
                 // $sign->whereRaw("( `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "BCD Manager","Operations Director")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "BCD Manager","Chief Operating Officer")');
 
             } elseif ($cek_group->group == 'Synergy System Management') {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Synergy System Management","Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Synergy System Management","Chief Operating Officer")');
                     } else {
-                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Synergy System Management' OR `roles`.`name` = 'Operations Director')")
-                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Synergy System Management","Operations Director")');
+                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Synergy System Management' OR `roles`.`name` = 'Chief Operating Officer')")
+                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Synergy System Management","Chief Operating Officer")');
                     }
                 }
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Synergy System Management","Operations Director")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Synergy System Management","Chief Operating Officer")');
 
             } elseif ($cek_group->group == 'Human Capital Management') {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'VP Human Capital Management' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Human Capital Management", "Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "VP Human Capital Management", "Chief Operating Officer")');
                     } else {
-                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Human Capital Management' OR `roles`.`name` = 'Operations Director')")
-                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Human Capital Management", "Operations Director")');
+                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `roles`.`name` = 'VP Human Capital Management' OR `roles`.`name` = 'Chief Operating Officer')")
+                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Human Capital Management", "Chief Operating Officer")');
                     }
                 }
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'VP Human Capital Management' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Human Capital Management", "Operations Director")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Human Capital Management", "Chief Operating Officer")');
 
             } elseif ($cek_group->group == 'Sales') {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                        ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+                        ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Chief Operating Officer")');
                     } else {
-                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Operations Director')")
-                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Operations Director")');
+                        $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Chief Operating Officer')")
+                        ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
                     }
                 }
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Operations Director")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
             }
         }
 

@@ -3092,9 +3092,9 @@
                                     return `<button style='width:70px' class="btn btn-xs btn-warning btnDraft" disabled >Draft</button>`;
                                 }
                             }else{
-                                if (roleName === 'President Director' && row.role_name === 'Sales Manager' && row.status === 'ON GOING'){
+                                if (roleName === 'Chief Executive Officer' && row.role_name === 'Sales Manager' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
-                                }else if(roleName === 'Operations Director' && row.role_name === 'VP Solutions & Partnership Management' && row.status === 'ON GOING'){
+                                }else if(roleName === 'Chief Operating Officer' && row.role_name === 'VP Solutions & Partnership Management' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
                                 }else if(roleName === 'VP Solutions & Partnership Management' && row.role_name === 'Technology Alliance Solutions' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
@@ -3169,7 +3169,7 @@
             var i = 0
             var append = ""
             var colors = []
-            @if($role->name == 'President Director' || $role->name == 'Operations Director' )
+            @if($role->name == 'Chief Executive Officer' || $role->name == 'Chief Operating Officer' )
                 var ArrColors = [
                     {
                         name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:"OG",index: 1
@@ -3199,7 +3199,7 @@
 
             @endif
             colors.push(ArrColors)
-            @if($role->name == 'President Director' || $role->name == 'Operations Director' )
+            @if($role->name == 'Chief Executive Officer' || $role->name == 'Chief Operating Officer' )
                 $.each(colors[0], function(key, value){
                     var status = "'"+ value.status +"'"
                     append = append + '<div class="col-lg-4 col-xs-12">'
