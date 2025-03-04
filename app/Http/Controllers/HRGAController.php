@@ -1074,7 +1074,7 @@ class HRGAController extends Controller
                     ->groupby('nik')
                     
                     ->get();
-            }else if($cek_role->name_role == 'Chief Operating Officer'){
+            }else if($cek_role->name_role == 'Chief Operating Officer'){
                 $cuti = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
@@ -1652,7 +1652,7 @@ class HRGAController extends Controller
         $status     = $getStatus->status;
 
         if(Str::contains($cek_role->name_role, 'VP')){
-            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         } elseif(Str::contains($cek_role->name_role, 'Manager')){
             if ($cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Executive Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
@@ -1703,7 +1703,7 @@ class HRGAController extends Controller
                     }
                 }
             }
-        } elseif($cek_role->name_role == 'Chief Operating Officer'){
+        } elseif($cek_role->name_role == 'Chief Operating Officer'){
             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Executive Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         }
         
@@ -2200,11 +2200,11 @@ class HRGAController extends Controller
             $update->update();
 
             if(Str::contains($cek_role->name_role, 'VP')){
-                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             } elseif(Str::contains($cek_role->name_role, 'Manager')){
                 if($cek_role->name_role == 'People Operations & Services Manager' &&  $cek_role->name_role == 'Organizational & People Development Manager'){
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Human Capital Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
-                } elseif ($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
+                } elseif ($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Executive Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 } else {
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
@@ -2253,7 +2253,7 @@ class HRGAController extends Controller
                         }
                     }
                 }
-            } elseif($cek_role->name_role == 'Chief Operating Officer' ){
+            } elseif($cek_role->name_role == 'Chief Operating Officer' ){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Executive Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             }
 
@@ -2326,7 +2326,7 @@ class HRGAController extends Controller
         //         $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
         //     }else if ($div == 'WAREHOUSE'){
         //         $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
-        //     }else if ($cek_role->name_role == 'Chief Operating Officer'){
+        //     }else if ($cek_role->name_role == 'Chief Operating Officer'){
         //         $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
         //     }else{
         //         $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
@@ -2350,11 +2350,11 @@ class HRGAController extends Controller
         $hitung = CutiDetil::where('id_cuti',$request->id_cuti)->where('status','NEW')->count();
 
         if(Str::contains($cek_role->name_role, 'VP')){
-            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         } elseif(Str::contains($cek_role->name_role, 'Manager')){
             if($cek_role->name_role == 'People Operations & Services Manager' &&  $cek_role->name_role == 'Organizational & People Development Manager'){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Human Capital Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
-            } elseif ($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
+            } elseif ($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Executive Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             } else {
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
@@ -2403,7 +2403,7 @@ class HRGAController extends Controller
                     }
                 }
             }
-        } elseif($cek_role->name_role == 'Chief Operating Officer'){
+        } elseif($cek_role->name_role == 'Chief Operating Officer'){
             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Executive Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         }
 
@@ -3251,11 +3251,11 @@ class HRGAController extends Controller
                 } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
                     $data = $data
                         ->where('users.id_division','FINANCE');
-                } else if($cek_role->name_role == 'Chief Operating Officer'){
+                } else if($cek_role->name_role == 'Chief Operating Officer'){
                     $data =  $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
                         // ->get();
                 }elseif ($cek_role->name_role == 'Chief Executive Officer') {
-                    $data = $data->whereRaw("(`roles`.`name` = 'Chief Operating Officer' OR `roles`.`name` = 'Sales Manager')");
+                    $data = $data->whereRaw("(`roles`.`name` = 'Chief Operating Officer' OR `roles`.`name` = 'Sales Manager')");
                 } else{
                     $data = $data
                         ->where('users.nik',$nik);
@@ -3339,11 +3339,11 @@ class HRGAController extends Controller
                     } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
                         $data = $data
                             ->where('users.id_division','FINANCE');
-                    } else if($cek_role->name_role == 'Chief Operating Officer'){
+                    } else if($cek_role->name_role == 'Chief Operating Officer'){
                         $data = $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
                             // ->get();
                     }elseif ($cek_role->name_role == 'Chief Executive Officer') {
-                        $data = $data->whereRaw("(`roles`.`name` = 'Chief Operating Officer' OR `roles`.`name` = 'Sales Manager' OR `roles`.`name` = 'Finance & Accounting Manager')");
+                        $data = $data->whereRaw("(`roles`.`name` = 'Chief Operating Officer' OR `roles`.`name` = 'Sales Manager' OR `roles`.`name` = 'Finance & Accounting Manager')");
                     } else{
                         $data = $data
                             ->where('users.nik',$nik);
@@ -3439,7 +3439,7 @@ class HRGAController extends Controller
                             ->where('users.id_company',$request->filter_com)
                             ->where('users.id_division','FINANCE')
                             ->get();
-                    }  else if($cek_role->name_role == 'Chief Operating Officer'){
+                    }  else if($cek_role->name_role == 'Chief Operating Officer'){
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
                             ->get();
@@ -3602,7 +3602,7 @@ class HRGAController extends Controller
                 } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
                     $cuti = $cuti
                         ->where('users.id_division','FINANCE');
-                } else if($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Chief Executive Officer'){
+                } else if($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Chief Executive Officer'){
                      $cuti = $cuti;
                         // ->where('date_off', '>=', $request->start_date)
                         // ->where('date_off', '<=', $request->end_date);
@@ -3959,11 +3959,11 @@ class HRGAController extends Controller
             }
         } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
             $data = $data->where('users.id_division','FINANCE');
-        } else if($cek_role->name_role == 'Chief Operating Officer'){
+        } else if($cek_role->name_role == 'Chief Operating Officer'){
             $data = $data->where('roles.name','like','VP%')->orWhere('users.nik',$nik);
                 // ->get();
         }elseif ($cek_role->name_role == 'Chief Executive Officer') {
-            $data = $data->whereRaw("(`roles`.`name` = 'Chief Operating Officer' OR `roles`.`name` = 'Sales Manager' OR `roles`.`name` = 'Finance & Accounting Manager')");
+            $data = $data->whereRaw("(`roles`.`name` = 'Chief Operating Officer' OR `roles`.`name` = 'Sales Manager' OR `roles`.`name` = 'Finance & Accounting Manager')");
         } else{
             $data = $data->where('users.nik',$nik);
                 // ->get();
@@ -3986,7 +3986,7 @@ class HRGAController extends Controller
 
             // } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
             //     $data = $data->where('users.id_division','FINANCE');
-            // } elseif ($cek_role->name_role == 'Chief Operating Officer') {
+            // } elseif ($cek_role->name_role == 'Chief Operating Officer') {
             //     $data = $data->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')");
             // }else{
             //     $data = $data->where('users.nik',$nik);
@@ -4135,7 +4135,7 @@ class HRGAController extends Controller
                 ->groupby('tb_cuti.id_cuti')
                 ->orderBy('id_cuti','desc')
                 ->get();
-            } elseif($cek_role->name_role == 'Chief Operating Officer') {
+            } elseif($cek_role->name_role == 'Chief Operating Officer') {
                 $cuti = DB::table('tb_cuti')
                         ->join('users','users.nik','=','tb_cuti.nik')
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')

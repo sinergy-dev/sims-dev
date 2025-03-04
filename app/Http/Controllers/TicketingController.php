@@ -933,7 +933,7 @@ class TicketingController extends Controller
             ->orderBy('code')
             ->groupBy('tb_contact.id_customer','code','brand_name')
 			->where('ticketing__user.nik',$nik)->get();
-		}else if ($cek_role->name_role == "Customer Support Center" || $cek_role->name_role = 'Chief Operating Officer' || $cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Customer Relation Manager') {
+		}else if ($cek_role->name_role == "Customer Support Center" || $cek_role->name_role = 'Chief Operating Officer' || $cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Customer Relation Manager') {
 			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -1064,7 +1064,7 @@ class TicketingController extends Controller
             ->orderBy('code')
             ->groupBy('tb_contact.id_customer','code','brand_name');
 
-        if ($cek_role->name_role == "Customer Support Center" || $cek_role->name_role = 'Chief Operating Officer' || $cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Customer Relation Manager') {
+        if ($cek_role->name_role == "Customer Support Center" || $cek_role->name_role = 'Chief Operating Officer' || $cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Customer Relation Manager') {
             $get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -7153,7 +7153,7 @@ class TicketingController extends Controller
 
     	$cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
 
-    	if($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Synergy System & Services Manager'){
+    	if($cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Synergy System & Services Manager'){
     		$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
     			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
     			->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
