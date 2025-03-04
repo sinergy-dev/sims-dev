@@ -346,7 +346,7 @@ GA Asset
                           @if($datas->status == 'PENDING')
                             <button class="btn btn-warning btn-sm" onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Update</button>
                           @else
-                            @if(App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Financial Director')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','President Director')->exists())
+                            @if(App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Financial Director')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Chief Executive Officer')->exists())
                               N/A
                             @elseif($datas->name_requestor != Auth::User()->name)
                               @if($datas->status == "ON PROGRESS")

@@ -236,7 +236,7 @@
                     <td style="width: 25%;">
                         Approved By : <br><br><br><br><br>
                         <u>Rony Cahyadi</u><br>
-                        <i>President Director</i>
+                        <i>Chief Executive Officer</i>
                     </td>
                     <td style="width: 15%;">
                         Received By : <br><br><br><br><br>
