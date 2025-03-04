@@ -534,7 +534,7 @@ class QuoteController extends Controller
         }else if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance Solutions'){
             $query1 = $query1->where('tb_quote.nik', $user);
             $query2 = $query2->where('tb_quote.nik', $user)->where('tb_quote.status', 'SAVED');
-        }else if($role->name == 'Chief Executive Officer' || $role->name == 'Chief Operating Officer'){
+        }else if($role->name == 'Chief Executive Officer' || $role->name == 'Chief Operating Officer'){
             $query1 = $query1->where('tb_quote.status', 'APPROVED');
 //            $query2 = $query2->where('tb_quote.status', 'APPROVED');
         }
@@ -549,7 +549,7 @@ class QuoteController extends Controller
             $query2 = $query2->whereBetween('tb_quote.date', [$request->startDate, $request->endDate]);
         }
 
-        if ($role->name == 'Chief Executive Officer' || $role->name == 'Chief Operating Officer'){
+        if ($role->name == 'Chief Executive Officer' || $role->name == 'Chief Operating Officer'){
             $query1 = $query1->select('tb_quote.id_quote','quote_number','position','type_of_letter','date','to','tb_quote.attention','title','project',
                 'tb_quote.status', 'tb_quote.description', 'from', 'division', 'project_id','note', 'status_backdate','r.name as role_name',
                 'tb_quote.nik', 'users.name', 'month', 'c.project_type', 'tb_contact.id_customer', 'customer_legal_name','c.nominal');
@@ -641,7 +641,7 @@ class QuoteController extends Controller
                 $quote->position = 'SPM';
             }else if($role->name = 'Sales Staff' || $role->name == 'Sales Manager'){
                 $quote->position = 'TAM';
-            }else if($role->name == 'Chief Operating Officer'){
+            }else if($role->name == 'Chief Operating Officer'){
                 $quote->position == 'DIR';
             }
             $quote->save();
@@ -689,7 +689,7 @@ class QuoteController extends Controller
                 $quote->position = 'SPM';
             }else if($role->name = 'Sales Staff' || $role->name == 'Sales Manager'){
                 $quote->position = 'TAM';
-            }else if($role->name == 'Chief Operating Officer'){
+            }else if($role->name == 'Chief Operating Officer'){
                 $quote->position == 'DIR';
             }
             $quote->save();
@@ -1437,7 +1437,7 @@ class QuoteController extends Controller
         $canApproveReject = false;
         if($roleData->name == 'Technology Alliance Solutions' && $roleUser->name == 'VP Solutions & Partnership Management'){
             $canApproveReject = true;
-        }else if($roleData->name == 'VP Solutions & Partnership Management' && $roleUser->name == 'Chief Operating Officer'){
+        }else if($roleData->name == 'VP Solutions & Partnership Management' && $roleUser->name == 'Chief Operating Officer'){
             $canApproveReject = true;
         }else if($roleData->name == 'Sales Manager' && $roleUser->name == 'Chief Executive Officer'){
             $canApproveReject = true;
@@ -2209,7 +2209,7 @@ class QuoteController extends Controller
         }else if($role == 'Technology Alliance Solutions'){
             $userToSend = $userToSend->where('r.name', 'VP Solutions & Partnership Management');
         }else if($role == 'VP Solutions & Partnership Management'){
-            $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+            $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
         }
 
         if ($status == 'ON GOING' && $action == 'Store New'){
@@ -2267,7 +2267,7 @@ class QuoteController extends Controller
             $countDone = Quote::whereIn('nik', $nikList)->where('status', 'APPROVED');
             $countNeedAttention = Quote::whereIn('nik', $nikList)->where('status', 'ON GOING');
             $countOngoing = Quote::whereIn('nik', $nikList)->where('status', 'REJECTED');
-        }else if($role->name == 'Chief Operating Officer'){
+        }else if($role->name == 'Chief Operating Officer'){
 
             $countAll = Quote::all();
             $countDone = Quote::where('status', 'APPROVED');

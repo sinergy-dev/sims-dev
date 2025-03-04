@@ -183,7 +183,7 @@ class AssetMgmtController extends Controller
 
         $searchFields = ['asset_owner', 'tb_asset_management_detail.pid', 'serial_number', 'tb_asset_management.id_asset', 'type_device', 'vendor', 'rma', 'spesifikasi','notes','id_device_customer','client','pid','users.name','roles.name'];
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
@@ -291,7 +291,7 @@ class AssetMgmtController extends Controller
             )
             ->orderBy('tb_asset_management.created_at','desc'); 
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
@@ -420,7 +420,7 @@ class AssetMgmtController extends Controller
             $data->where('client',$request->client);
         }    
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $data = $data;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $data = $data->whereIn('pid',$getPid);
@@ -445,7 +445,7 @@ class AssetMgmtController extends Controller
 
         $getClient = DB::table('tb_asset_management_detail')->select('client as id','client as text')->where('client','like','%'.request('q').'%')->groupby('client');
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $getClient = $getClient;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getClient = $getClient->whereIn('pid',$getPid);
@@ -817,7 +817,7 @@ class AssetMgmtController extends Controller
 
         $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company', '1')->where('id_project','like','%'.request('q').'%')->orderBy('tb_id_project.created_at','desc');
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Customer Care') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Customer Care') {
             $getAllPid = $getAllPid->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
@@ -1976,7 +1976,7 @@ class AssetMgmtController extends Controller
             ")->orderBy('pid', 'ASC')
             ->groupBy('pid');
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $getPid = $getPid;
         } else if ($cek_role->name_role == 'Engineer on Site' ) {
             $getPid = $getPid->whereIn('pid',$getPidEoS);
@@ -2463,7 +2463,7 @@ class AssetMgmtController extends Controller
             ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
             ->orderBy('tb_asset_management.created_at','desc')->where('status','Rent'); 
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $countAll = $data->count();
             $countInstalled = $dataInstalled->count();
             $countAvailable = $dataAvailable->count();
@@ -2563,7 +2563,7 @@ class AssetMgmtController extends Controller
             $countRent->where('client',$request->client);
         } 
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $countAll = $countAll;
             $countInstalled = $countInstalled;
             $countAvailable = $countAvailable;
@@ -3380,7 +3380,7 @@ class AssetMgmtController extends Controller
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
-                ->where('roles.name','like', '%Chief Operating Officer%')
+                ->where('roles.name','like', '%Chief Operating Officer%')
                 ->whereNotNull('user_id')
                 ->where('status_karyawan','!=','dummy')
                 ->first();
@@ -3448,7 +3448,7 @@ class AssetMgmtController extends Controller
         //     $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
         //         ->join('role_user','role_user.user_id','=','users.nik')
         //         ->join('roles','roles.id','=','role_user.role_id')
-        //         ->where('roles.name','like', '%Chief Operating Officer%')
+        //         ->where('roles.name','like', '%Chief Operating Officer%')
         //         ->whereNotNull('user_id')
         //         ->where('status_karyawan','!=','dummy')
         //         ->first();
@@ -3457,7 +3457,7 @@ class AssetMgmtController extends Controller
         //     $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
         //                 ->join('role_user','role_user.user_id','=','users.nik')
         //                 ->join('roles','roles.id','=','role_user.role_id')
-        //                 ->where('roles.name','like', '%Chief Operating Officer%')
+        //                 ->where('roles.name','like', '%Chief Operating Officer%')
         //                 ->first();
         //     dd($atasan_pk);
         // }
@@ -3705,7 +3705,7 @@ class AssetMgmtController extends Controller
         //     $atasan_pk = User::select('users.name','users.nik','roles.mini_group as departement','phone')
         //                 ->join('role_user','role_user.user_id','=','users.nik')
         //                 ->join('roles','roles.id','=','role_user.role_id')
-        //                 ->where('roles.name','like','%Chief Operating Officer%')
+        //                 ->where('roles.name','like','%Chief Operating Officer%')
         //                 ->first();
         // }
         if (strpos($roleName, 'Sales Manager') !== false ) {
@@ -3740,7 +3740,7 @@ class AssetMgmtController extends Controller
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
-                ->where('roles.name','like', '%Chief Operating Officer%')
+                ->where('roles.name','like', '%Chief Operating Officer%')
                 ->whereNotNull('user_id')
                 ->where('status_karyawan','!=','dummy')
                 ->first();

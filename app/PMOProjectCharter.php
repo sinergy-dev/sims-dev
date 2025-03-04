@@ -197,10 +197,10 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                     } else{
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                     }
                 }
     
@@ -208,10 +208,10 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                     } else {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Manager","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                     }
                 }
                 
@@ -292,7 +292,7 @@ class PMOProjectCharter extends Model
                     //     ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management","Account Manager","Sales Manager")');
                     // } else{
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management", "Project Management Manager","Account Manager","Chief Operating Officer")')->havingRaw('signed = "true"');
+                        ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management", "Project Management Manager","Account Manager","Chief Operating Officer")')->havingRaw('signed = "true"');
                     // }
                 }
     
@@ -300,10 +300,10 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     // if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     //     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    //     ->orderByRaw('FIELD(position, "Delivery Project Manager","VP Project Management","Account Manager","Chief Operating Officer")');
+                    //     ->orderByRaw('FIELD(position, "Delivery Project Manager","VP Project Management","Account Manager","Chief Operating Officer")');
                     // } else {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Project Management Manager","Account Manager","Chief Operating Officer")')->havingRaw('signed = "true"');;
+                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Project Management Manager","Account Manager","Chief Operating Officer")')->havingRaw('signed = "true"');;
                     // }
                 }
                 

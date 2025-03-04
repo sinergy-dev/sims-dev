@@ -98,7 +98,7 @@ class rejectCuti extends Command
             //         $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
             //     }else if ($div == 'BCD'){
             //         $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_territory', 'BCD')->where('id_company','1')->first();
-            //     }else if($cek_role->name_role == 'Chief Operating Officer'){
+            //     }else if($cek_role->name_role == 'Chief Operating Officer'){
             //         $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
             //     }else{
             //         $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->where('status_karyawan', '!=', 'dummy')->first();
@@ -119,7 +119,7 @@ class rejectCuti extends Command
             // }
 
             if(Str::contains($cek_role->name_role, 'VP')){
-                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Operating Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             } elseif(Str::contains($cek_role->name_role, 'Manager')){
                 if($cek_role->name_role == 'People Operations & Services Manager' &&  $cek_role->name_role == 'Organizational & People Development Manager'){
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Program & Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
@@ -154,7 +154,7 @@ class rejectCuti extends Command
                         }
                     }
                 }
-            } elseif($cek_role->name_role == 'Chief Operating Officer'){
+            } elseif($cek_role->name_role == 'Chief Operating Officer'){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Chief Executive Officer')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             }
 

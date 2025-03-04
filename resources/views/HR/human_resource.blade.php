@@ -204,7 +204,7 @@ Human Resources
 									    <div class="box-tools pull-right">
 									      <span class="label label-primary">
 									      		@if($data->id_position == 'DIRECTOR' && $data->id_division == 'NULL')
-					                              President Director
+					                              Chief Executive Officer
 					                            @elseif($data->id_division == 'TECHNICAL')
 					                              @if($data->id_territory == 'DPG')
 					                                @if($data->id_position == 'ENGINEER MANAGER')
@@ -403,7 +403,7 @@ Human Resources
 											    <div class="box-tools pull-right">
 											      <span class="label label-primary">
 											      	@if($data->id_position == 'DIRECTOR' && $data->id_division == '')
-							                              President Director
+							                              Chief Executive Officer
 							                            @elseif($data->id_division == 'TECHNICAL')
 							                              @if($data->id_territory == 'DPG')
 							                                @if($data->id_position == 'ENGINEER MANAGER')
@@ -704,7 +704,9 @@ Human Resources
 			                      	@if($data->status_kerja == 'Tetap')
 			                      	Karyawan Tetap 
 			                      	@elseif($data->status_kerja == 'Kontrak')
-			                      	Karyawan Kontrak 
+			                      	Karyawan Kontrak
+			                      	@elseif($data->status_kerja == 'Outsource')
+			                      	Karyawan Outsource 
 			                      	@else
 			                      	-
 			                      	<!-- <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i> -->
@@ -769,7 +771,7 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->group == 'Sales' || $data->roles == 'President Director')
+		                    @if($data->group == 'Sales' || $data->roles == 'Chief Executive Officer')
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
@@ -1173,6 +1175,8 @@ Human Resources
 						                      	Karyawan Tetap 
 						                      	@elseif($data->status_kerja == 'Kontrak')
 						                      	Karyawan Kontrak 
+						                      	@elseif($data->status_kerja == 'Outsource')
+			                      				Karyawan Outsource
 						                      	@else
 						                      	-
 						                      	@endif
@@ -1951,6 +1955,7 @@ Human Resources
 		                            <option value="Tetap">Karyawan Tetap</option>
 		                            <option value="Kontrak">Karyawan Kontrak</option>
 		                            <option value="Magang">Karyawan Magang</option>
+		                            <option value="Outsource">Karyawan Outsource</option>
 		                        </select>
 		                    </div>
 		                </div>
@@ -2217,6 +2222,7 @@ Human Resources
 		                            <option value="Tetap">Karyawan Tetap</option>
 		                            <option value="Kontrak">Karyawan Kontrak</option>
 		                            <option value="Magang">Karyawan Magang</option>
+		                            <option value="Outsource">Karyawan Outsource</option>
 		                        </select>
 		                    </div>
 		                </div>
@@ -2822,6 +2828,8 @@ Human Resources
 	               	$("#status_karyawan_update").val("Karyawan Kontrak").prop("readonly", true);
 	               }else if (value.status_kerja == 'Magang') {
 	               	$("#status_karyawan_update").val("Karyawan Magang").prop("readonly", true);
+	               }else if (value.status_kerja == 'Outsource') {
+	               	$("#status_karyawan_update").val("Karyawan Outsource").prop("readonly", true);
 	               }else{
 	               	$("#status_karyawan_update").val("").prop("readonly", true);
 	               }
@@ -2897,7 +2905,7 @@ Human Resources
 				   localStorage.setItem("address_update", $("#address_update").val())
 				   if (!localStorage.getItem("address_update") == true) {
 				   	localStorage.setItem("address_update", $("#address_update").val())
-				   	if (value.address != "") {
+				   	if (value.address != "" && value.address != null) {
 	               		$("#address_update").val(value.address);
 				   	}else{
 	               		$("#address_update").val(localStorage.getItem("address_update"));
@@ -2906,10 +2914,10 @@ Human Resources
 				   	localStorage.setItem("address_update", $("#address_update").val())
 				   }
 
-				   localStorage.setItem('address_ktp_update', $("#address_ktp_update").val());
-				   if (!localStorage.getItem("addres_ktp_update") == true) {
+				   	localStorage.setItem('address_ktp_update', $("#address_ktp_update").val())
+				   	if (!localStorage.getItem("addres_ktp_update") == true) {
 				   	localStorage.setItem('address_ktp_update', $("#address_ktp_update").val());
-				   	if (value.alamat_ktp != "") {
+				   	if (value.alamat_ktp != "" && value.alamat_ktp != null) {
 				   		console.log(value.alamat_ktp)
 	               		$("#address_ktp_update").val(value.alamat_ktp);
 				   	}else{
@@ -3027,6 +3035,8 @@ Human Resources
 	               	$("#status_karyawan_update").val("Karyawan Kontrak");
 	               }else if (value.status_kerja == 'Magang') {
 	               	$("#status_karyawan_update").val("Karyawan Magang");
+	               }else if (value.status_kerja == 'Outsource') {
+	               	$("#status_karyawan_update").val("Karyawan Outsource");
 	               }else{
 	               	$("#status_karyawan_update").val("");
 	               }
@@ -4259,6 +4269,8 @@ Human Resources
 			$("#status_karyawan_update").val("Karyawan Kontrak");
 		}else if (id.value == 'Magang') {
 			$("#status_karyawan_update").val("Karyawan Magang");
+		}else if (id.value == 'Outsource') {
+			$("#status_karyawan_update").val("Karyawan Outsource");
 		}else{
 			$("#status_karyawan_update").val("");
 		}
@@ -4330,6 +4342,7 @@ Human Resources
 		}else if(id.value == 'HR'){
 			var append = "<option value=''>-- Select Option --</option>";
 
+            append = append + "<option value='VP HUMAN CAPITAL'>" + "VP HUMAN CAPITAL" + "</option>";
     		append = append + "<option value='HR MANAGER'>" + "HR MANAGER" + "</option>";
             append = append + "<option value='HR STAFF'>" + "STAFF HR" + "</option>";
             append = append + "<option value='STAFF GA'>" + "STAFF GA" + "</option>";
@@ -4345,8 +4358,6 @@ Human Resources
             append = append + "<option value='TERRITORY 4'>" + "TERRITORY 4" + "</option>";
             append = append + "<option value='TERRITORY 5'>" + "TERRITORY 5" + "</option>";	
             append = append + "<option value='SALES MSP'>" + "SALES MSP" + "</option>";	
-
-			
 		}
 
 		$('#sub_divisi_update').html(append);
@@ -4365,6 +4376,12 @@ Human Resources
             append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
 
             $("#divisi_view_update").val('');
+		}else if (id.value == 'HUMAN RESOURCE') {
+			var append = "<option value=''>-- Select Option --</option>";
+
+            append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+            append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
+            append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
 		}
 		$('#posisi_update').html(append);
 
