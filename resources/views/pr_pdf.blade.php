@@ -138,7 +138,9 @@
 				<td style="text-align:center;">{{$eachProduct->part_number}}</td>
 				<td style="text-align:center;">{{$eachProduct->serial_number}}</td>
 				@endif
-				<td>{!! nl2br($eachProduct->description) !!}</td>
+				<td>{!! nl2br($eachProduct->description) !!}
+					<br><br>
+	          		{{$eachProduct->for}}</td>
 				<td style="text-align:center">{{$eachProduct->qty}}</td>
 				<td style="text-align:center">{{$eachProduct->unit}}</td>
 				@if($data->isRupiah == 'true')
@@ -216,9 +218,7 @@
 				<th></th>
 				<th></th>
 				@if($data->isRupiah == 'true')
-					@if($data->status_tax == '11')
-					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax,2)}}</th>
-					@elseif($data->status_tax == '1.1')
+					@if($data->status_tax == '11' || $data->status_tax == '1.1' || $data->status_tax == '1.2' || $data->status_tax == '12')
 					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax,2)}}</th>
 					@else
 					<th style="text-align:right;font-family:Consolas, monaco, monospace;">0</th>

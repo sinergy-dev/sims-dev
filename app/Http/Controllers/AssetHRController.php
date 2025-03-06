@@ -126,7 +126,7 @@ class AssetHRController extends Controller
                     ->where('user_id', Auth::User()->nik)
                     ->first(); 
 
-        if ($cek_role->mini_group == "Supply Chain & IT Support") {
+        if ($cek_role->mini_group == "Supply Chain & IT Support Manager" || $cek_role->name == 'Internal Operation Support Manager' || $cek_role->name == 'VP Internal Chain Management') {
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('role_user','role_user.user_id','=','tb_asset_hr_request.accept_by')
@@ -692,7 +692,7 @@ class AssetHRController extends Controller
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
                 ->where('users.status_karyawan','<>','dummy')
-                ->where('roles.name','Supply Chain & IT Support Manager')->get();
+                ->where('roles.name','Supply Chain & IT Support Manager')->orwhere('roles.name','Internal Operation Support Manager')->get();
 
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
 
@@ -1249,7 +1249,7 @@ class AssetHRController extends Controller
                 $store_notes                = new AssetNotesTransaction();
                 $store_notes->id_request    = $request->id_request;
                 $store_notes->nik           = Auth::User()->nik;
-                $store_notes->notes         = $request->notes;
+                $store_notes->notes         = 'Approve';
                 $store_notes->save();
             }
 
@@ -1284,7 +1284,7 @@ class AssetHRController extends Controller
             $store_notes = new AssetNotesTransaction();
             $store_notes->id_request = $request->id_request;
             $store_notes->nik        = Auth::User()->nik;
-            $store_notes->notes        = $request->notes;
+            $store_notes->notes        = 'Approve';
             $store_notes->save();
 
             $update->status         = 'PENDING';
@@ -1357,7 +1357,7 @@ class AssetHRController extends Controller
                     ->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('email')
                     ->where('nik',$update->nik)
-                    ->orwhere('roles.name','Supply Chain & IT Support Manager')->get();
+                    ->orwhere('roles.name','Supply Chain & IT Support Manager')->orwhere('roles.name','Internal Operation Support Manager')->get();
 
             $users = User::join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles', 'roles.id', '=', 'role_user.role_id')

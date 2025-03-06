@@ -444,6 +444,7 @@ GA Asset
                 <table class="table table-bordered DataTable" id="history_table" width="100%" cellspacing="0">
                   <thead>
                     <tr>
+                      <th>No Request</th>
                       <th >Request By</th>
                       <th >Request Date</th>
                       <th >Approve Date</th>
@@ -463,6 +464,7 @@ GA Asset
                     <?php $no = 1?>
                     @foreach($history_request as $datas)
                       <tr>
+                        <td>{{$datas->id_request}}</td>
                         <td>{{$datas->name_requestor}}</td>
                         <td>{{$datas->created_at}}</td> 
                         <td>{{$datas->updated_at}}</td>                        
@@ -2210,7 +2212,7 @@ GA Asset
               $("#notes_accept").closest(".form-group").next(".box-container").next(".box-footer").hide()
             }
 
-            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Asset, Facility & HSE Management')->exists()}}") {
+            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Internal Operation Support Manager')->exists() || App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Supply Chain & IT Support Manager')->exists()}}") {
               if (status == 'ACCEPT') {
                 $("#btnRejectRequest").show()
                 $("#btnRejectRequest").attr("onclick","requestAssetAccept('"+ id_request +"','REJECT')")
@@ -2241,7 +2243,7 @@ GA Asset
           // }
           status = 'PENDING'
           textTitle = 'Accepting Asset Request, it will process to asset management!'
-          notes = notes
+          notes = $("#notes_accept").val()
 
           swalAccept = Swal.fire({
             title: titleStatus,

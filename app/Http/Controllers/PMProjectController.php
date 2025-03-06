@@ -178,7 +178,7 @@ class PMProjectController extends Controller
 
         $data =  PMO::select('tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
-        if ($cek_role->name == 'VP Project Management' || $cek_role->name == 'Project Management Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'VP Product Management & Development Solution' || $cek_role->name == 'PMO Officer') {
+        if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'PMO Officer') {
             $data = $data->orderBy('tb_pmo.id','desc');
         } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
             $data = $data->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
@@ -387,7 +387,7 @@ class PMProjectController extends Controller
   //                   $join->on('tb_pmo.project_id', '=', 'project_id.id_project');
   //               })->join('tb_pmo_assign','tb_pmo_assign.id_project','=','tb_pmo.id')
         //      ->join('users','users.nik','=','tb_pmo_assign.nik')
-        //      ->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',DB::raw('(CASE WHEN role = "Project Manager" THEN name END) AS project_pm'),DB::raw('(CASE WHEN role = "Project Coordinator" THEN name END) AS project_pc'));
+        //      ->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',DB::raw('(CASE WHEN role = "Delivery Project Manager" THEN name END) AS project_pm'),DB::raw('(CASE WHEN role = "Delivery Project Coordinator" THEN name END) AS project_pc'));
 
 
         return $data = PMO::where('tb_pmo.id',$request->id_pmo)->get()->makeHidden(['indicator_project', 'sign','type_project','status']);
@@ -1693,14 +1693,14 @@ class PMProjectController extends Controller
         $user_pm = $update->project_pm;
         $user_pc = $update->project_pc;
 
-        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
+        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Office Manager')->first()->email;
 
         $mail = new MailPMProject(collect([
                 "image"         => 'project_charter.png',
                 "subject_email" => 'New Project Charter',
                 "subject"       => 'There is new project charter,',
                 "pid"           => $datas->project_id,
-                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->select('users.name as name')->first()->name,
+                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Office Manager')->select('users.name as name')->first()->name,
                 "name_project"  => DB::table('tb_id_project')->where('id_project',$datas->project_id)->first()->name_project,
                 // "project_type"  => $project_type,
                 "project_type"  => $datas->type_project,
@@ -1794,10 +1794,10 @@ class PMProjectController extends Controller
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Program & Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 } else{
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             }
 
@@ -1805,11 +1805,11 @@ class PMProjectController extends Controller
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Manager","VP Program & Project Management","Sales Staff","Sales Manager","Chief Operating Officer")');
                     return $sign->get();
                 } else {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Manager","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             }
             
@@ -2039,8 +2039,8 @@ class PMProjectController extends Controller
                 //      ->join('users','users.nik','=','tb_pmo_assign.nik')
                 //      // ->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
                 //      ->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',
-                //          DB::raw('(CASE WHEN role = "Project Manager" THEN name END) AS project_pm'),
-                //          DB::raw('(CASE WHEN role = "Project Coordinator" THEN name END) AS project_pc'),
+                //          DB::raw('(CASE WHEN role = "Delivery Project Manager" THEN name END) AS project_pm'),
+                //          DB::raw('(CASE WHEN role = "Delivery Project Coordinator" THEN name END) AS project_pc'),
                 //          'project_description',
                 //          'project_objectives',
                 //          'estimated_start_date',
@@ -3338,14 +3338,14 @@ class PMProjectController extends Controller
                 $datas = PMO::where('id',$request->id_pmo)->first();
 
 
-                $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
+                $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Office Manager')->first()->email;
 
                 $mail = new MailPMProject(collect([
                         "image"         => 'sirkulasi_pr.png',
                         "subject_email" => 'New Final Report',
                         "subject"       => 'There is new final report,',
                         "pid"           => $data->project_id,
-                        "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->select('users.name as name')->first()->name,
+                        "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Office Manager')->select('users.name as name')->first()->name,
                         "name_project"  => DB::table('tb_id_project')->where('id_project',$data->project_id)->first()->name_project,
                         "project_type"  => $datas->type_project,
                         "sales_owner"   => $data->name,
@@ -3409,7 +3409,7 @@ class PMProjectController extends Controller
 
             $datas = PMO::where('id',$request->id_pmo)->first();
 
-            $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Manager')->first()->email;
+            $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'Project Management Office Manager')->first()->email;
 
             $mail = new MailPMProject(collect([
                     "image"         => 'sirkulasi_pr.png',

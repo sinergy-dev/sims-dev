@@ -109,7 +109,7 @@
 				Best Regard,
 			</p><br>
 			<p style="font-size: 16px">
-				Tech - Dev
+				Application Development
 			</p>
 		</div>
 	</div>

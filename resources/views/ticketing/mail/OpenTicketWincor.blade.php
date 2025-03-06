@@ -1,6 +1,6 @@
-<p style="font-family: 'calibri' , sans-serif;">Dear GCCC,</p>
+<p style="font-family: 'calibri' , sans-serif;" id="emailOpenHeader">Dear GCCC,</p>
 <br>
-<p style="font-family: 'calibri' , sans-serif;">Mohon untuk di openkan ticket untuk perbaikan problem pada mesin ATM/CDM berikut ini :</p>
+<p style="font-family: 'calibri' , sans-serif;">Mohon untuk kunjungan perbaikan problem pada mesin ATM/CRM berikut ini:</p>
 <br>
 <p style="font-family: 'calibri' , sans-serif;"><b>Name of Bank :</b> <span class="holderCustomer"></span>;</p>
 <p style="font-family: 'calibri' , sans-serif;"><b>Machine ID :</b> <span class="holderIDATM"></span>;</p>

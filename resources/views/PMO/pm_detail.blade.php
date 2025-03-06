@@ -1153,7 +1153,7 @@ PMO
 <!-- <script type="text/javascript" src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script> -->
 <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
-<!-- <script src="https://export.dhtmlx.com/gantt/api.js"></script>  -->
+<script src="https://export.dhtmlx.com/gantt/api.js"></script> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

@@ -449,7 +449,7 @@ class SBEController extends Controller
         ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
         ->select('tb_sbe.lead_id','tb_sbe.status','opp_name','name_presales as presales','name_ta as ta','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
 
-        if ($cek_role->name == 'Presales Support Architecture' || $cek_role->name == 'System Designer Architecture' || $cek_role->name == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+        if ($cek_role->name == 'Presales Support Architecture' || $cek_role->name == 'System Designer Architecture' || $cek_role->name == 'Technology Alliance Solutions') {
             if ($cek_role->name == 'Technology Alliance Solutions') {
                 $data->where('tb_presales.nik_presales',$nik)->orwhere('tb_ta.nik_ta',$nik)->distinct()->get()->makeHidden('items_sbe');
             } else {

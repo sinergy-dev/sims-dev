@@ -2983,7 +2983,7 @@
 
     $("#showDetail").append(append)
     if (reqMethode == "Purchase Order") {
-      createEmailBody('Felicia Debi Noor')
+      createEmailBody('Elen Tania Ciputri')
     }else if (reqMethode == "Reimbursement") {
       createEmailBody('Clara Keneyzia')
     }else{
@@ -3001,7 +3001,7 @@
       },
       type:"GET",
       success: function (result){
-        if (user == 'Felicia Debi Noor') {
+        if (user == 'Elen Tania Ciputri') {
           $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>"+ user +"</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon untuk dibuatkan PO dengan detail berikut:</span><br><br>" + result)   
         }else if (user == 'Clara Keneyzia') {
           $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>"+ user +"</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon dilakukan pembayaran dengan detail berikut:</span><br><br>" + result)   
@@ -3018,16 +3018,25 @@
       },
       success: function(result){
         arrEmailCc = []
+        arrEmailTo = []
         $.each(result.cc,function(value,item){
           
           arrEmailCc.push(item.email)
+        })
+        $.each(result.to,function(value,item){
+          
+          arrEmailTo.push(item.email)
         })
         arrEmailCcJoin = arrEmailCc.filter(function(i) {
             if (i != null || i != false)
                 return i;
         }).join(";")
+        arrEmailToJoin = arrEmailTo.filter(function(i) {
+            if (i != null || i != false)
+                return i;
+        }).join(";")
        
-        $("#emailOpenTo").val(result.to)
+        $("#emailOpenTo").val(arrEmailToJoin)
         $("#emailOpenCc").val(arrEmailCcJoin)
         $("#emailOpenSubject").val(result.subject);
       },complete: function(){

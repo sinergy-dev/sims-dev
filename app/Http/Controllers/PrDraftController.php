@@ -2687,6 +2687,9 @@ class PrDraftController extends Controller
                 $this->uploadPdf($request->no_pr);
 
                 $response = $this->uploadPdfMerge($request->no_pr,$approver,'verify');
+                $update = PRDraft::where('id', $request['no_pr'])->first();
+                $update->status = 'VERIFIED';
+                $update->save();
 
                 if (isset($response['status']) || $response['status'] === 'success') {
                     $update = PRDraft::where('id', $request['no_pr'])->first();
@@ -5608,7 +5611,7 @@ class PrDraftController extends Controller
                     else {
                         $insertProduct[] = ['name_product' => $value[1], 'description' => (string)$value[2], 'serial_number' => $value[3], 'part_number' => $value[4], 'qty' => $value[5], 'unit' => $value[6], 'nominal_product' => preg_replace("/[^0-9]/", "", substr($value[7], 0, strpos($value[7], ","))),
                             // 'grand_total' => $value[5]*$value[7]
-                            'grand_total' => $value[5] * preg_replace("/[^0-9]/", "", substr($value[7], 0, strpos($value[7], ",")))
+                            'grand_total' => intval($value[5]) * intval(preg_replace("/[^0-9]/", "", substr($value[7], 0, strpos($value[7], ","))))
                         ];
                     }
 

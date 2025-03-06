@@ -450,7 +450,7 @@ class PrController extends Controller
                     ->where('id_company', '1')
                     ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
                     // ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
-                    ->whereRaw("(`tb_pr`.`status` = 'Done')")
+                    ->whereRaw("( `tb_pr`.`status` = 'Done')")
                     ->groupBy('project_id');
 
         // $data = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')

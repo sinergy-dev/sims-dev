@@ -9,6 +9,7 @@
       table {
         border-spacing: 0;
         width: 100%;
+        table-layout: fixed;
       }
       @font-face {
         font-family: Wingdings;
@@ -70,6 +71,7 @@
 
       /* Style Definitions */
       p.MsoNormal,
+      span.MsoNormal,
       li.MsoNormal,
       div.MsoNormal {
         margin-top: 3.0pt;
@@ -83,6 +85,7 @@
       }
 
       p.MsoBodyText,
+      span.MsoBodyText,
       li.MsoBodyText,
       div.MsoBodyText {
         mso-style-link: "Body Text Char";
@@ -93,6 +96,7 @@
       }
 
       p.Introtext-Centre,
+      span.Introtext-Centre,
       li.Introtext-Centre,
       div.Introtext-Centre {
         mso-style-name: "Intro text - Centre";
@@ -107,6 +111,7 @@
       }
 
       p.Introtext,
+      span.Introtext,
       li.Introtext,
       div.Introtext {
         mso-style-name: "Intro text";
@@ -120,6 +125,7 @@
       }
 
       p.TableText,
+      span.TableText,
       li.TableText,
       div.TableText {
         mso-style-name: "Table Text";
@@ -134,6 +140,7 @@
       }
 
       p.ProposalText,
+      span.ProposalText,
       li.ProposalText,
       div.ProposalText {
         mso-style-name: "Proposal Text";
@@ -161,6 +168,7 @@
       }
 
       p.Table,
+      span.Table,
       li.Table,
       div.Table {
         mso-style-name: Table;
@@ -174,6 +182,7 @@
       }
 
       p.TableHeading,
+      span.TableHeading,
       li.TableHeading,
       div.TableHeading {
         mso-style-name: Table_Heading;
@@ -189,6 +198,7 @@
       }
 
       p.InfoBlue,
+      span.InfoBlue,
       li.InfoBlue,
       div.InfoBlue {
         mso-style-name: InfoBlue;
@@ -216,6 +226,7 @@
       }
 
       p.HeadingB,
+      span.HeadingB,
       li.HeadingB,
       div.HeadingB {
         mso-style-name: "Heading B";
@@ -386,28 +397,28 @@
       </p>
       <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=624 style='border-collapse:collapse;border:none'>
         <tr>
-          <td width=64 style='width:48.2pt;border:solid windowtext 1.0pt;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=64 style='width:48.2pt;border:solid windowtext 1.0pt;background:silver;'>
             <p class=TableText align=center style='margin-right:1.8pt;text-align:center;text-indent:.1pt'>
               <a name=TRevisionNumber>
                 <span style='font-size:10.0pt'>Revision Number</span>
               </a>
             </p>
           </td>
-          <td width=64 style='width:48.2pt;border:solid windowtext 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=64 style='width:48.2pt;border:solid windowtext 1.0pt;border-left:none;background:silver;'>
             <p class=TableText align=center style='margin-left:-.1pt;text-align:center'>
               <a name=TRevisionDate>
                 <span style='font-size:10.0pt'>Revision Date</span>
               </a>
             </p>
           </td>
-          <td width=341 style='width:255.65pt;border:solid windowtext 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=341 style='width:255.65pt;border:solid windowtext 1.0pt;border-left:none;background:silver;'>
             <p class=TableText align=center style='margin-left:1.2pt;text-align:center'>
               <a name=TSummaryOfChanges>
                 <span style='font-size:10.0pt'>Summary of Changes</span>
               </a>
             </p>
           </td>
-          <td width=154 style='width:115.65pt;border:solid windowtext 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=154 style='width:115.65pt;border:solid windowtext 1.0pt;border-left:none;background:silver;'>
             <p class=TableText align=center style='margin-left:33.55pt;text-align:center;text-indent:-32.6pt'>
               <a name=TChangesMarked>
                 <span style='font-size:10.0pt'>Changes marked</span>
@@ -416,26 +427,26 @@
           </td>
         </tr>
         <tr>
-          <td width=64 style='width:48.2pt;border:solid windowtext 1.0pt;border-top:none;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=64 style='width:48.2pt;border:solid windowtext 1.0pt;border-top:none;'>
             <p class=TableText style='margin-left:3.1pt'>
               <i>
                 <span style='font-size:10.0pt;color:windowtext'>[1]</span>
               </i>
             </p>
           </td>
-          <td width=64 style='width:48.2pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=64 style='width:48.2pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;'>
             <p class=TableText style='margin-left:-.1pt'>
               <i>
                 <span style='font-size:10.0pt;color:windowtext'>[date]</span>
               </i>
             </p>
           </td>
-          <td width=341 style='width:255.65pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=341 style='width:255.65pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;'>
             <p class=InfoBlue>
               <span style='color:windowtext'>[Describe change and reason for change]</span>
             </p>
           </td>
-          <td width=154 style='width:115.65pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
+          <td width=154 style='width:115.65pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;'>
             <p class=InfoBlue>
               <span style='color:windowtext'>[List of changed pages]</span>
             </p>
@@ -450,11 +461,11 @@
         <span lang=EN-GB style='font-size:12.0pt;color:#548DD4'>&nbsp;</span>
       </p>
 
-      <p class=Introtext style='margin-left:0px'>
+      <span class=Introtext style='margin-left:0px'>
         <b>
           <span lang=EN-AU style='font-size:10.0pt;color: black;'>DOCUMENT DISTRIBUTION</span>
         </b>
-      </p>
+      </span>
       <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=619 style='border-collapse:collapse;border:none;'>
         <tr>
           <td width=84 valign=top style='width:63.0pt;border:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
