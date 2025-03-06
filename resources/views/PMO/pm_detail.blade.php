@@ -6548,29 +6548,34 @@ PMO
 
     		if (n == 1) {
     			if (status == 'update') {
-    				formData = new FormData;
-			        formData.append("_token","{{csrf_token()}}")
-			        formData.append("id_pmo",window.location.href.split("/")[6].split("?")[0])
-			        formData.append("selectScheduleSummaryFinal",$("#selectScheduleSummaryFinal").val())
-			        formData.append("textareaScheduleRemarks",$("#textareaScheduleRemarks").val())
+    				if ($("#textareaScheduleRemarks").val() == "") {
+		    			$("#textareaScheduleRemarks").closest(".form-group").addClass("has-error")
+		    			$("#textareaScheduleRemarks").next("span").show()
+		    		}else{
+		    			formData = new FormData;
+				        formData.append("_token","{{csrf_token()}}")
+				        formData.append("id_pmo",window.location.href.split("/")[6].split("?")[0])
+				        formData.append("selectScheduleSummaryFinal",$("#selectScheduleSummaryFinal").val())
+				        formData.append("textareaScheduleRemarks",$("#textareaScheduleRemarks").val())
 
-			        $.ajax({
-			            url:"{{url('/PMO/storeScheduleRemarksFinalReport')}}",
-			            type:"POST",
-			            processData: false,
-			            contentType: false,
-			            data:formData
-			            ,success:function(){
-			              let x = document.getElementsByClassName("tab-add-final");
-					        x[currentTab].style.display = "none";
-					        currentTab = currentTab + n;
-					        if (currentTab >= x.length) {
-					          x[n].style.display = "none";
-					          currentTab = 0;
-					        }
-					        btnFinalProject(currentTab,status); 
-			            }
-			        })
+				        $.ajax({
+				            url:"{{url('/PMO/storeScheduleRemarksFinalReport')}}",
+				            type:"POST",
+				            processData: false,
+				            contentType: false,
+				            data:formData
+				            ,success:function(){
+				              let x = document.getElementsByClassName("tab-add-final");
+						        x[currentTab].style.display = "none";
+						        currentTab = currentTab + n;
+						        if (currentTab >= x.length) {
+						          x[n].style.display = "none";
+						          currentTab = 0;
+						        }
+						        btnFinalProject(currentTab,status); 
+				            }
+				        })
+		    		}
     			}else{
     	console.log("sini")
     				if ($("#textareaScheduleRemarks").val() == "") {
