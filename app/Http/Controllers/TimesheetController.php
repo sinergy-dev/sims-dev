@@ -116,7 +116,7 @@ class TimesheetController extends Controller
                     //     'sendNotifications' => true,
                     //     'maxResults': 2500,
                     // ],
-                ],
+                ]
             );
             // Check for successful response (status code in the range of 200-299)
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) { 
@@ -411,7 +411,7 @@ class TimesheetController extends Controller
             }
         } else{
             $arrTimesheet = json_decode($request->arrTimesheet,true);
-            foreach ($arrTimesheet as $value) {pre
+            foreach ($arrTimesheet as $value) {
                 $startDateActivity = Carbon::createFromFormat('Y-m-d', $value['startDate'], 'Asia/Jakarta');
                 $endDateActivity = Carbon::createFromFormat('Y-m-d', $value['endDate'], 'Asia/Jakarta');
 

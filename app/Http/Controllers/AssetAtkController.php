@@ -710,12 +710,12 @@ class AssetAtkController extends Controller
 
         // $receiver_final = $get_email_manager;
         $get_divisi_hr = User::select('email','id_position', 'name', 'id_division')->where('email', 'andi@sinergy.co.id')->first();
-        $get_email_cc = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
+        // $get_email_cc = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
         $req_atk = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
         // foreach ($receiver_final as $final) {
-            Mail::to($get_divisi_hr)->cc($get_email_cc)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'PENDING','ATK'));
+            Mail::to($get_divisi_hr)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'PENDING','ATK'));
         // }
 
 		return redirect()->back()->with('update', 'Request ATK akan diproses!');
@@ -758,12 +758,12 @@ class AssetAtkController extends Controller
         // $receiver_final = $get_email_manager;
 
         $get_divisi_hr = User::select('email','id_position', 'name', 'id_division')->where('email', 'andi@sinergy.co.id')->first();
-        $get_email_cc = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
+        // $get_email_cc = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
         $req_atk = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
         // foreach ($receiver_final as $final) {
-            Mail::to($get_divisi_hr)->cc($get_email_cc)->send(new RequestATK('[SIMS-App] Request ATK Baru', $req_atk,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'REQUEST','ATK'));
+            Mail::to($get_divisi_hr)->send(new RequestATK('[SIMS-App] Request ATK Baru', $req_atk,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'REQUEST','ATK'));
         // }
 
         return redirect()->back()->with('update', 'Request ATK akan diproses!');
@@ -841,9 +841,9 @@ class AssetAtkController extends Controller
 
         $get_email_user = collect([$kirim]);
 
-        $get_divisi_hr = User::select('email','id_position', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
+        // $get_divisi_hr = User::select('email','id_position', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
-        $receiver = $get_email_user->concat([$get_divisi_hr]);
+        // $receiver = $get_email_user->concat([$get_divisi_hr]);
 
         // $receiver_final = $receiver->all();
 

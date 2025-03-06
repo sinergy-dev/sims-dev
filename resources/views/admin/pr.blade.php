@@ -119,7 +119,6 @@
               <th><div class="truncate">Description</div></th>
               <th>From</th>
               <th></th>
-              <th>Issued By</th>
               <th>Project ID</th>
               <th>Amount</th>
               <th>Amount</th>
@@ -127,7 +126,6 @@
               <th>Action</th>
             </tr>
             <tr id="status">
-              <th></th>
               <th></th>
               <th></th>
               <th></th>
@@ -529,7 +527,6 @@
       $('.search_filter').select2();
     }
 
-
     $("#data_pr").DataTable({
       "ajax":{
         "type":"GET",
@@ -607,7 +604,6 @@
         },
         { "data": "user_from" },
         { "data": "status" },
-        { "data": "issuance" },
         {
            "render": function ( data, type, row, meta ) {
               if (row.project_id == null) {
@@ -619,13 +615,13 @@
         },
         { 
           "data":"amount",
-          "targets":[15],
+          "targets":[14],
         },
         { 
           render: function ( data, type, row ) {
             return new Intl.NumberFormat('id').format(row.amount)
           },
-          "orderData":[14]
+          "orderData":[13]
         },
         
         { "data": "status" },
@@ -788,6 +784,7 @@
     });
 
     function exportPr(url){
+      console.log(url)
       window.location = url + "?year=" + $("#year_filter").val();
     }
   </script>

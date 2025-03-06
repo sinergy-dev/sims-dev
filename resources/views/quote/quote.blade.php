@@ -82,14 +82,14 @@ Quote Number
             </div>
           </div>
           <div class="col-md-10 col-xs-12">
-            <div class="form-group btn-action-letter" style="float:right;">
+            <!-- <div class="form-group btn-action-letter" style="float:right;">
               <button type="button" class="btn btn-success btn-flat" style="width: 100px" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
               @if($counts)
               <button type="button" class="btn btn-success btn-flat" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
               @else
               <button type="button" class="btn btn-success btn-flat disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
               @endif
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="nav-tabs-custom">

@@ -185,9 +185,9 @@ class AssetMgmtController extends Controller
 
         if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $data = $data;
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
             $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $data = $data->whereIn('pid',$getPidPm);
         }
 
@@ -293,9 +293,9 @@ class AssetMgmtController extends Controller
 
         if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $data = $data;
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
             $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $data = $data->whereIn('pid',$getPidPm);
         } elseif($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->mini_group == 'Internal Operation Support'){
             $data = $data->where('pid','INTERNAL');
@@ -422,9 +422,9 @@ class AssetMgmtController extends Controller
 
         if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $data = $data;
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
             $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $data = $data->whereIn('pid',$getPidPm);
         } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $data = $data->where('pid','!=','INTERNAL');
@@ -447,9 +447,9 @@ class AssetMgmtController extends Controller
 
         if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $getClient = $getClient;
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
             $getClient = $getClient->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $getClient = $getClient->whereIn('pid',$getPidPm);
         } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $getClient = $getClient->where('pid','!=','INTERNAL');
@@ -820,10 +820,10 @@ class AssetMgmtController extends Controller
         if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Customer Care') {
             $getAllPid = $getAllPid->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
             $getAllPid = $getAllPid->whereIn('id_project',$getPid)->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $getAllPid = $getAllPid->whereIn('id_project',$getPidPm)->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } elseif ($cek_role->name_role == 'Synergy System & Services Manager') {
@@ -1978,9 +1978,9 @@ class AssetMgmtController extends Controller
 
         if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
             $getPid = $getPid;
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
             $getPid = $getPid->whereIn('pid',$getPidEoS);
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $getPid = $getPid->whereIn('pid',$getPidPm);
         } else if ($cek_role->name_role == 'Synergy System & Services Manager' ) {
             $getPid = $getPid->where('pid','!=','INTERNAL');
@@ -2468,14 +2468,14 @@ class AssetMgmtController extends Controller
             $countInstalled = $dataInstalled->count();
             $countAvailable = $dataAvailable->count();
             $countRent = $dataRent->count();
-        } else if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator' || $cek_role->name_role == 'Customer Care') {
             $countAll = $data->whereIn('pid',$getPid)->count();
             $countInstalled = $dataInstalled->whereIn('pid',$getPid)->count();
             $countAvailable = $dataInstalled->whereIn('pid',$getPid)->count();
             $countRent = $dataRent->whereIn('pid',$getPid)->count();
 
             // $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $countAll = $data->whereIn('pid',$getPidPm)->count();
             $countInstalled = $dataInstalled->whereIn('pid',$getPidPm)->count();
             $countAvailable = $dataInstalled->whereIn('pid',$getPidPm)->count();
@@ -2568,14 +2568,14 @@ class AssetMgmtController extends Controller
             $countInstalled = $countInstalled;
             $countAvailable = $countAvailable;
             $countRent = $countRent;
-        } else if ($cek_role->name_role == 'Engineer on Site' ) {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
             $countAll = $countAll->whereIn('pid',$getPid);
             $countInstalled = $countInstalled->whereIn('pid',$getPid);
             $countAvailable = $countAvailable->whereIn('pid',$getPid);
             $countRent = $countRent->whereIn('pid',$getPid);
 
             // $data = $data->whereIn('pid',$getPid);
-        } elseif ($cek_role->name_role == 'Delivery Project Manager' || $cek_role->name_role == 'Delivery Project Coordinator') {
+        } elseif ($cek_role->name_role == 'Delivery Project Manager') {
             $countAll = $countAll->whereIn('pid',$getPidPm);
             $countInstalled = $countInstalled->whereIn('pid',$getPidPm);
             $countAvailable = $countAvailable->whereIn('pid',$getPidPm);

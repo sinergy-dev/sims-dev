@@ -141,7 +141,7 @@
 				Best Regard,
 			</p><br>
 			<p style="font-size: 16px">
-				BCD - Dev
+				Application Development
 			</p>
 		</div>
 	</div>

@@ -14,7 +14,8 @@ class PMO extends Model
     protected $fillable = ['current_phase','project_type', 'implementation_type','project_id'];
     public $timestamps = false;
 
-    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status','plan_sbe','actual_sbe','health_status','sbe'];
+    // protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status','plan_sbe','actual_sbe','health_status','sbe'];
+    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status'];
 
     public function getIncrementingNumberAttribute()
     {
@@ -55,7 +56,7 @@ class PMO extends Model
 
     public function getProjectPmAttribute()
     {
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm','tb_pmo.project_type')->where('role', 'Project Manager')->where('tb_pmo.project_id', $this->project_id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm','tb_pmo.project_type')->where('role', 'Delivery Project Manager')->where('tb_pmo.project_id', $this->project_id)->first();
 
         // return $data;
         return empty($data->project_pm)?'-':$data->project_pm;
@@ -63,7 +64,7 @@ class PMO extends Model
 
     public function getProjectPcAttribute()
     {
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc','tb_pmo.project_type')->where('role', 'Project Coordinator')->where('tb_pmo.project_id', $this->project_id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc','tb_pmo.project_type')->where('role', 'Delivery Project Coordinator')->where('tb_pmo.project_id', $this->project_id)->first();
 
         return empty($data->project_pc)?'-':$data->project_pc;
     }
@@ -188,20 +189,20 @@ class PMO extends Model
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Program & Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 } else{
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             }
         } else if ($this->project_type == 'implementation'){
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Manager","VP Program & Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 } else {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Project Manager","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Manager","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
                 }
             } 
         }

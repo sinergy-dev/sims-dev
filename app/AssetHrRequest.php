@@ -22,6 +22,7 @@ class AssetHrRequest extends Model
                             ELSE (users.avatar) END AS image'))
             ->join('users','users.nik','=','tb_asset_hr_notes_transaction.nik')
             ->where('id_request',$this->id_request)
+            ->where('notes','!=',null)
             ->orderBy('tb_asset_hr_notes_transaction.created_at','DESC')->get();
 
         return $data;

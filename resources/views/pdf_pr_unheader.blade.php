@@ -576,7 +576,7 @@
 		<table style="width: 100%;text-align: center;">
 			<tr>
 				@foreach($sign as $key => $eachSign)
-					@if($eachSign["position"] != "VP Supply Chain, CPS & Asset Management")
+					@if($eachSign["position"] != "VP Internal Chain Management")
 						@if(count($sign) == 4)
 						<td style="width:33%;">
 						@else
@@ -631,11 +631,11 @@
 							
 						</td>
 					@else
-						@if($cek_role->group == 'Supply Chain, CPS & Asset Management' && $data->type_of_letter == 'IPR')
+						@if($cek_role->group == 'Internal Chain Management' && $data->type_of_letter == 'IPR')
 							<td style="width: 50%">
 								@if($eachSign["signed"] == 'true')
 									<div>
-										@if($eachSign["position"] == "VP Supply Chain, CPS & Asset Management")
+										@if($eachSign["position"] == "VP Internal Chain Management")
 										Request By
 										@endif
 									</div>
@@ -647,7 +647,7 @@
 									</div>
 								@else
 									<div>
-										@if($eachSign["position"] == "VP Supply Chain, CPS & Asset Management")
+										@if($eachSign["position"] == "VP Internal Chain Management")
 										Request By
 										@endif
 									</div>

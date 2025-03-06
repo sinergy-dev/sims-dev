@@ -19,7 +19,7 @@ class HRMiddleware
     {
         $getRole = DB::table('roles')->join('role_user','role_user.role_id','roles.id')->select('roles.name')->where('user_id',Auth::User()->nik)->first();
 
-        if ( Auth::check() && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'HR STAFF')
+        if ( Auth::check() && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'HR STAFF' || Auth::User()->id_position == 'STAFF HR')
         {
             return $next($request);
         } 

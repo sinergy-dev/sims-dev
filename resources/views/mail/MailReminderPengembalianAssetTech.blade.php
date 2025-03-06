@@ -62,7 +62,7 @@
 		Thanks<br>
 		Best Regard,
 	</p>
-	<h5 style="color: #f39c12 !important;margin-top: 0px" class="text-yellow" ><i>Tech - Dev</i></h5>
+	<h5 style="color: #f39c12 !important;margin-top: 0px" class="text-yellow" ><i>Application Development</i></h5>
 	<p>
 		----------------------------------------<br>
 		PT. Sinergy Informasi Pratama (SIP)<br>

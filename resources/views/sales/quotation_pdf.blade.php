@@ -58,9 +58,11 @@
             font-size: 8px !important;
             margin: 0;
             padding: 0;
+            vertical-align: middle;
         }
         .text-8 * {
             font-size: 8px !important;
+            vertical-align: middle;
         }
 
         .pdf-container {
@@ -224,17 +226,17 @@
                 $totalPriceList = floatval($totalPriceList);
             @endphp
             <tr style="border: 2px;">
-                <td class="text-8" style="text-align: right;">{{$index + 1}}</td>
+                <td class="text-8" style="text-align: right;"><center>{{$index + 1}}</center></td>
                 <td class="text-8">{{$prod->name}}</td>
                 <td class="text-8">{{$prod->description}}</td>
-                <td class="text-8" style="text-align: right;">{{$prod->qty}}</td>
-                <td class="text-8">{{$prod->unit}}</td>
+                <td class="text-8" style="text-align: right;"><center>{{$prod->qty}}</center></td>
+                <td class="text-8"><center>{{$prod->unit}}</center></td>
                 @if($isPriceList)
-                    <td class="text-8">Rp  <span style="text-align: right; float:right;"> {{ number_format($nominalPriceList, 2, ',', '.')  }}</span></td>
-                    <td class="text-8">Rp  <span style="text-align: right; float:right;"> {{ number_format($totalPriceList, 2, ',', '.')  }}</span></td>
+                    <td class="text-8"><p>Rp  <span style="text-align: center; float:right;"> {{ number_format($nominalPriceList, 2, ',', '.')  }}</span></p></td>
+                    <td class="text-8"><p>Rp  <span style="text-align: center; float:right;"> {{ number_format($totalPriceList, 2, ',', '.')  }}</span></p></td>
                 @endif
-                <td class="text-8">Rp  <span style="text-align: right; float:right;"> {{ number_format($nominalFinal, 2, ',', '.')  }}</span></td>
-                <td class="text-8">Rp  <span style="text-align: right; float:right;"> {{ number_format($grandTotalFinal, 2, ',', '.')  }}</span></td>
+                <td class="text-8" style="display: table-cell; vertical-align: middle; width: 100%;"><p>Rp  <span style="float:right;vertical-align: middle;"> {{ number_format($nominalFinal, 2, ',', '.')  }}</span></p></td>
+                <td class="text-8"><p>Rp  <span style="text-align: right; float:right;"><center> {{ number_format($grandTotalFinal, 2, ',', '.')  }}</center></span></p></td>
                 @php
                     $nominalTotal += $prod->grand_total;
                 @endphp
