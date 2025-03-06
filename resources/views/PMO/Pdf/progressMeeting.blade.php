@@ -2,7 +2,7 @@
 <head>
   <meta http-equiv=Content-Type content="text/html; charset=utf-8">
   <meta name=Generator content="Microsoft Word 15 (filtered)">
-  <title>SIP-PMO-Project Charter</title>
+  <title>SIP-PMO-Progress Meeting</title>
 
   <style>
     <!--
@@ -1398,8 +1398,7 @@
         </td>
         <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;height:4.0pt;text-align:center;'>
             <span class=MsoNormal align=center style='margin-bottom:3.0pt;line-height:normal;font-size:8.0pt;color:black;'>
-
-                @if($issue['status'] == 'open')
+              @if($issue['status'] == 'open')
                 Open
               @else
                 Close
@@ -1461,12 +1460,12 @@
       </td>
     </tr>
     <tr style='height:4.0pt'>
-      <td  colspan=7 vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;background:#A6A6A6;height:4.0pt'>
-        <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-          <b>
-            <span lang=EN-GB style='font-size:9.0pt;color:black'>Risks</span>
-          </b>
-        </p>
+      <td  colspan=7 vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;background:#A6A6A6;height:4.0pt;padding:0in 5.4pt 0in 5.4pt;'>
+          <span class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
+            <b>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>Risks</span>
+            </b>
+          </span>
       </td>
     </tr>
     <tr style='height:4.0pt'>
@@ -1542,7 +1541,7 @@
         </td>
         <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;height:4.0pt;text-align:center;'>
             <span class=MsoNormal align=center style='margin-bottom:3.0pt;line-height:normal;font-size:8.0pt;color:black;'>
-                {{$issue['impact']*$issue['likelihood']}}
+                {{intval($issue['impact']) * intval($issue['likelihood'])}}
             </span>
         </td>
         <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;height:4.0pt;text-align:center;'>

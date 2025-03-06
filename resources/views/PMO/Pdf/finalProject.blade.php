@@ -2,13 +2,14 @@
   <head>
     <meta http-equiv=Content-Type content="text/html; charset=utf-8">
     <meta name=Generator content="Microsoft Word 15 (filtered)">
-    <title>SIP-PMO-Project Charter</title>
+    <title>SIP-PMO-Final Project</title>
     <style>
       <!--
       /* Font Definitions */
       table {
         border-spacing: 0;
         width: 100%;
+        table-layout: fixed;
       }
       @font-face {
         font-family: Wingdings;
@@ -84,7 +85,8 @@
 
       p.MsoBodyText,
       li.MsoBodyText,
-      div.MsoBodyText {
+      div.MsoBodyText,
+      span.MsoBodyText {
         mso-style-link: "Body Text Char";
         margin: 0in;
         font-size: 10.0pt;
@@ -108,7 +110,8 @@
 
       p.Introtext,
       li.Introtext,
-      div.Introtext {
+      div.Introtext,
+      span.Introtext {
         mso-style-name: "Intro text";
         margin-top: 4.0pt;
         margin-right: 0in;
@@ -121,13 +124,14 @@
 
       p.TableText,
       li.TableText,
-      div.TableText {
+      div.TableText,
+      span.TableText {
         mso-style-name: "Table Text";
         margin-top: 2.0pt;
         margin-right: 0in;
         margin-bottom: 2.0pt;
         margin-left: 0in;
-    line-height: 14.0pt;
+        line-height: 14.0pt;
         font-size: 11.0pt;
         font-family: "Arial", sans-serif;
         color: #3F4243;
@@ -190,7 +194,8 @@
 
       p.InfoBlue,
       li.InfoBlue,
-      div.InfoBlue {
+      div.InfoBlue,
+      span.InfoBlue {
         mso-style-name: InfoBlue;
         mso-style-link: "InfoBlue Char";
         margin-top: 0in;
@@ -325,16 +330,16 @@
       <table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width=662 style='border-collapse:collapse;border:none'>
         <tr style='height:22.7pt'>
           <td style='border:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:22.7pt'>
-            <p class=MsoBodyText>
+            <span class=MsoBodyText>
               <span lang=EN-GB style='font-size:10.0pt;color:black'>Date of this revision: </span>
               <span lang=EN-GB style='font-size:10.0pt;color:#D9D9D9'>N/A</span>
-            </p>
+            </span>
           </td>
           <td style='border:solid black 1.0pt;border-left:none;padding:0in 5.4pt 0in 5.4pt;height:22.7pt'>
-            <p class=MsoBodyText>
+            <span class=MsoBodyText>
               <span lang=EN-GB style='font-size:10.0pt;color:black'>Date of next revision: </span>
               <span lang=EN-GB style='font-size:10.0pt;color:#D9D9D9'>N/A</span>
-            </p>
+            </span>
           </td>
         </tr>
       </table>
@@ -345,218 +350,216 @@
         <span lang=EN-GB>&nbsp;</span>
       </p>
       
-      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=624 style='border-collapse:collapse;border:none'>
+      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=624 style='border-collapse:collapse;border:none;'>
         <tr>
-          <td width=64 style='width:48.2pt;border:solid black 1.0pt;background:silver;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=TableText align=center style='margin-right:1.8pt;text-align:center;text-indent:.1pt'>
+          <td colspan=2 style='width:48.2pt;border:solid black 1.0pt;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=TableText align=center style='margin-right:1.8pt;text-align:center;text-indent:.1pt'>
               <a name=TRevisionNumber>
                 <span style='font-size:10.0pt'>Revision Number</span>
               </a>
-            </p>
+            </span>
           </td>
-          <td width=64 style='width:48.2pt;border:solid black 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=TableText align=center style='margin-left:-.1pt;text-align:center'>
+          <td style='width:48.2pt;border:solid black 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=TableText align=center style='margin-left:-.1pt;text-align:center'>
               <a name=TRevisionDate>
                 <span style='font-size:10.0pt'>Revision Date</span>
               </a>
-            </p>
+            </span>
           </td>
-          <td width=341 style='width:255.65pt;border:solid black 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=TableText align=center style='margin-left:1.2pt;text-align:center'>
+          <td colspan=3 style='width:255.65pt;border:solid black 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=TableText align=center style='margin-left:1.2pt;text-align:center'>
               <a name=TSummaryOfChanges>
                 <span style='font-size:10.0pt'>Summary of Changes</span>
               </a>
-            </p>
+            </span>
           </td>
-          <td width=154 style='width:115.65pt;border:solid black 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=TableText align=center style='margin-left:33.55pt;text-align:center;text-indent:-32.6pt'>
+          <td colspan=2 style='width:115.65pt;border:solid black 1.0pt;border-left:none;background:silver;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=TableText align=center style='margin-left:33.55pt;text-align:center;text-indent:-32.6pt'>
               <a name=TChangesMarked>
                 <span style='font-size:10.0pt'>Changes marked</span>
               </a>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
-          <td width=64 style='width:48.2pt;border:solid black 1.0pt;border-top:none;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=TableText style='margin-left:3.1pt'>
+          <td colspan=2 style='width:48.2pt;border:solid black 1.0pt;border-top:none;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=TableText style='margin-left:3.1pt'>
               <i>
-                <span style='font-size:10.0pt;color:black'>[1]</span>
+                <span style='font-size:9.0pt;color:black'>[1]</span>
               </i>
-            </p>
+            </span>
           </td>
-          <td width=64 style='width:48.2pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=TableText style='margin-left:-.1pt'>
+          <td style='width:48.2pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=TableText style='margin-left:-.1pt'>
               <i>
-                <span style='font-size:10.0pt;color:black'>[date]</span>
+                <span style='font-size:9.0pt;color:black'>[date]</span>
               </i>
-            </p>
+            </span>
           </td>
-          <td width=341 style='width:255.65pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=InfoBlue>
-              <span style='color:black'>[Describe change and reason for change]</span>
-            </p>
+          <td colspan=3 style='width:255.65pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=InfoBlue>
+              <span style='color:black;font-size:9.0pt;'>[Describe change and reason for change]</span>
+            </span>
           </td>
-          <td width=154 style='width:115.65pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
-            <p class=InfoBlue>
-              <span style='color:black'>[List of changed pages]</span>
-            </p>
+          <td colspan=2 style='width:115.65pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 1.4pt 0in 1.4pt'>
+            <span class=InfoBlue>
+              <span style='color:black;font-size:9.0pt;'>[List of changed pages]</span>
+            </span>
           </td>
         </tr>
       </table>
 
-      <p class=MsoNormal align=center style='text-align:center'>
+      <span class=MsoNormal align=center style='text-align:center'>
         <span lang=EN-GB>&nbsp;</span>
-      </p>
-      <p class=Introtext-Centre>
+      </span>
+      <span class=Introtext-Centre>
         <b>
           <span lang=EN-AU style='text-transform:uppercase'>&nbsp;</span>
         </b>
-      </p>
-      <p class=Introtext style='margin-left:0px'>
-        <b>
-          <span lang=EN-AU style='font-size:10.0pt;color: black;'>DOCUMENT DISTRIBUTION</span>
-        </b>
+      </span>
+      <p class=HeadingB style='margin-left:45px;text-indent:-.5in;border:none'>
+        <span style='font-size:10.0pt;color: black;'>DOCUMENT DISTRIBUTION</span>
       </p>
       <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=619 style='border-collapse:collapse;border:noertical-ne'>
           <tr>
             <td width=84 valign=top style='width:63.0pt;border:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=Introtext>
+              <span class=Introtext>
                 <span lang=EN-AU style='font-size:10.0pt;color: black;'>Recipient</span>
-              </p>
+              </span>
             </td>
             <td width=234 valign=top style='width:175.5pt;border:solid black 1.0pt;border-left:none;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=Introtext>
+              <span class=Introtext>
                 <span lang=EN-AU style='font-size:10.0pt;color: black;'>Company</span>
-              </p>
+              </span>
             </td>
             <td width=161 valign=top style='width:120.6pt;border:solid black 1.0pt;border-left:none;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=Introtext>
+              <span class=Introtext>
                 <span lang=EN-AU style='font-size:10.0pt;color: black;'>Title</span>
-              </p>
+              </span>
             </td>
             <td width=140 valign=top style='width:105.2pt;border:solid black 1.0pt;border-left:none;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=Introtext style='margin-left:-33.75pt;text-indent:33.75pt'>
+              <span class=Introtext style='margin-left:-33.75pt;text-indent:33.75pt'>
                 <span lang=EN-AU style='font-size:10.0pt;color: black;'>Email</span>
-              </p>
+              </span>
             </td>
           </tr>
           @foreach($data['document_distribution'] as $key => $eachName)
           <tr style='height:28.85pt'>
             <td width=84 style='width:63.0pt;border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:28.85pt'>
-              <p class=Introtext>
+              <span class=Introtext>
                 <span lang=EN-AU style='font-size:9.0pt;color:black'>{{date('d-m-Y')}}</span>
-              </p>
+              </span>
             </td>
             <td width=234 style='width:175.5pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:28.85pt'>
-              <p class=Introtext>
+              <span class=Introtext>
                 <span lang=EN-AU style='font-size:9.0pt;color:black'>{{$eachName['name']}}</span>
-              </p>
+              </span>
             </td>
             <td width=161 style='width:120.6pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:28.85pt'>
-              <p class=Introtext>
+              <span class=Introtext>
                 <span lang=EN-AU style='font-size:9.0pt;color:black'>SIP - {{$eachName['position']}}</span>
-              </p>
+              </span>
             </td>
             <td width=140 style='width:105.2pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:28.85pt'>
-              <p class=Introtext align=center style='margin-left:-.9pt;text-align:center;text-indent:.9pt'>
+              <span class=Introtext align=center style='margin-left:-.9pt;text-align:center;text-indent:.9pt'>
                 <span lang=EN-AU style='font-size:9.0pt;color:black'>{{$eachName['email']}}</span>
-              </p>
+              </span>
             </td>
           </tr>
           @endforeach
       </table>
 
-      <p class=MsoNormal align=center style='text-align:center'>
+      <span class=MsoNormal align=center style='text-align:center'>
         <span lang=EN-GB>&nbsp;</span>
-      </p>
-      <p class=MsoNormal style='text-align:justify'>
+      </span>
+      <span class=MsoNormal style='text-align:justify'>
         <span lang=EN-GB style='font-size:12.0pt;color:#548DD4'>&nbsp;</span>
-      </p>
+      </span>
 
        <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=659 style='border-collapse:collapse;border:none'>
         <tr style='height:10.2pt'>
-          <td  colspan=8 style='border:solid black 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:10.2pt'>
-            <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center;line-height:150%'>
+          <td  colspan=8 style='border:solid black 1.0pt;background:#0F243E;text-align: center;'>
+            <span class=MsoTocHeading align=center style='margin-top:0in;text-align:center;line-height:150%'>
               <span lang=EN-GB style='font-size:10.0pt;line-height:150%;font-family:"Calibri",sans-serif;color:white;font-weight:bold'>Project Information</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
           <td style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt' width="84">
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Customer</span>
-            </p>
+            </span>
           </td>
           <td  colspan=7 style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['customer_info']['customer_name']}}</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
           <td  style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>PID Number</span>
-            </p>
+            </span>
           </td>
           <td  colspan=2 style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['project_id']['project_id']}}</span>
-            </p>
+            </span>
           </td>
           <td  colspan=2 style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Value</span>
-            </p>
+            </span>
           </td>
           <td  colspan=3 style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{number_format($data['project_id']['amount'],2)}}</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=2 vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Name</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td  colspan=6 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['customer_info']['name_project']}}</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
           @if($data['project_pm'] != '-')
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=2  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Manager</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['project_pm']}}</span>
-            </p>
+            </span>
           </td>
           @else
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=2  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Coordinator</span>
-            </p>
+            </span>
           </td>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['project_pc']}}</span>
-            </p>
+            </span>
           </td>
           @endif
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Team Member</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=3 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+          <td colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <!-- <p class=MsoTocHeading style='margin-top:0in'> -->
               <ul class=MsoTocHeading style='margin-top:0in'>
                 @foreach($data['internal_stakeholder'] as $dataEngineer)
@@ -570,25 +573,25 @@
           </td>
         </tr>
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=2 vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Description</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=6 vertical-align=top  style='text-align: left; vertical-align: top; white-space: normal; word-wrap: break-word; max-width: 500px;padding:0in 5.4pt 0in 5.4pt;border:solid black 1.0pt;'>
+            <span class=MsoTocHeading style="display: block; text-indent: 0;">
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{!! nl2br($data['project_description'])!!}</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=2  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Schedule Summary</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=6 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               @if($data['schedule_summary'] == "OnSchedule")
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>On Schedule</span>
               @elseif($data['schedule_summary'] == "BehindSchedule")
@@ -597,92 +600,92 @@
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>Ahead Schedule</span>
               @endif
               <!-- <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>Schedule</span> -->
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
-          <td style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=2 style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <b>
-                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Milestone</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black'>Project Milestone</span>
               </b>
-            </p>
+            </span>
           </td>
-          <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt' width="150">
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=4 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt' width="150">
+            <span class=MsoTocHeading style='margin-top:0in'>
               <b>
-                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Main Task</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black'>Main Task</span>
               </b>
-            </p>
+            </span>
           </td>
-          <td  colspan=4 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <b>
-                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Planned Date</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black'>Planned Date</span>
               </b>
-            </p>
+            </span>
           </td>
-          <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <b>
-                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Actual Date</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black'>Actual Date</span>
               </b>
-            </p>
+            </span>
           </td>
           </tr>
               @foreach($data['get_milestone'] as $key => $datas)
             @foreach($datas as $dataMilestone)
             <tr>
-              <td style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-                <p class=MsoTocHeading style='margin-top:0in'>
+              <td colspan=2 style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+                <span class=MsoTocHeading style='margin-top:0in'>
                   <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{$key}}</span>
-                </p>
+                </span>
               </td>
-              <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black; 1.0pt;padding:0in 5.4pt 0in 5.4pt' width="150">
-                <p class=MsoTocHeading style='margin-top:0in'>
+              <td colspan=4 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black;padding:0in 5.4pt 0in 5.4pt' width="150">
+                <span class=MsoTocHeading style='margin-top:0in'>
                   <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{$dataMilestone['text']}}</span>
-                </p>
+                </span>
               </td>
-              <td  colspan=4 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black; 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-                <p class=MsoTocHeading style='margin-top:0in'>
+              <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black;padding:0in 5.4pt 0in 5.4pt'>
+                <span class=MsoTocHeading style='margin-top:0in'>
                   <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{$dataMilestone['baseline_end']}}</span>
-                </p>
+                </span>
               </td>
-              <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black; 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-                <p class=MsoTocHeading style='margin-top:0in'>
+              <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black;padding:0in 5.4pt 0in 5.4pt'>
+                <span class=MsoTocHeading style='margin-top:0in'>
                   <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{$dataMilestone['end_date']}}</span>
-                </p>
+                </span>
               </td>
             </tr>
             @endforeach
           @endforeach
           <tr>
-            <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading style='margin-top:0in'>
+            <td colspan=2 vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+              <span class=MsoTocHeading style='margin-top:0in'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Schedule Remarks</span>
-              </p>
+              </span>
             </td>
-            <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading style='margin-top:0in'>
+            <td colspan=6 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+              <span class=MsoTocHeading style='margin-top:0in'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['schedule_remarks']}}</span>
-              </p>
+              </span>
             </td>
           </tr>
           <tr>
-            <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading style='margin-top:0in'>
+            <td colspan=2  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+              <span class=MsoTocHeading style='margin-top:0in'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Project Documents</span>
-              </p>
+              </span>
             </td>
-            <td  colspan=5 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
+            <td colspan=4 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+              <span class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Documents</span>
-              </p>
+              </span>
             </td>
             <td colspan=2  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
+              <span class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Checklist</span>
-              </p>
+              </span>
             </td>
           </tr>
         <?php
@@ -690,116 +693,120 @@
         ?>
         @foreach($data["project_document"] as $dataProjectDocument)
           <tr>
-            <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading style='margin-top:0in'>
+            <td colspan=2 vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+              <span class=MsoTocHeading style='margin-top:0in'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>&nbsp;</span>
-              </p>
+              </span>
             </td>
-            <td  colspan=5 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading style='margin-top:0in'>
+            <td  colspan=4 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+              <span class=MsoTocHeading style='margin-top:0in'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{++$no}}. {{$dataProjectDocument["text"]}}</span>
-              </p>
+              </span>
             </td>
             <td colspan=2 style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-              <p class=MsoTocHeading style='margin-top:0in'>
+              <span class=MsoTocHeading style='margin-top:0in'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>
                   <a name=Check1></a>
                 </span>
-                <label lang=EN-GB style='font-size:9.0pt;font-family:"Calibr",sans-serif;color:black;font-weight:normal;margin-right: 10px;'><input type="radio" name="" {{ $dataProjectDocument['deliverable_document'] == 'Done' ? 'checked' : '' }} value="Yes" style="font-size:12px;margin-top: 2px;">Yes</label>
-                <label lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'><input type="radio" name="" {{ $dataProjectDocument['deliverable_document'] == 'true' ? 'checked' : '' }} value="No" style="font-size:12px;margin-top: 2px;">No</label>
-              </p>
+                <label lang=EN-GB style='font-size:9.0pt;font-family:"Calibr",sans-serif;color:black;font-weight:normal;margin-right: 10px;'>
+                  <input type="radio" name="" {{ $dataProjectDocument['deliverable_document'] == 'Done' ? 'checked' : '' }} value="Yes" style="font-size:12px;margin-top: 2px;display: inline;">Yes
+                </label>
+                <label lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>
+                  <input type="radio" name="" {{ $dataProjectDocument['deliverable_document'] == 'true' ? 'checked' : '' }} value="No" style="font-size:12px;margin-top: 2px;display: inline;">No
+                </label>
+              </span>
             </td>
           </tr>
         @endforeach
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=3 vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Term of Payments</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=3 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+          <td colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <?php
               $no = 0;
               $no_pay = 0;
             ?>
             @foreach($data["term_payment"] as $dataTerms)
-              <p class=MsoListParagraphCxSpFirst style='margin-left:15.5pt;text-indent:-.25in'>
+              <span class=MsoListParagraphCxSpFirst style='margin-left:15.5pt;text-indent:-.25in'>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{++$no}}. <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;'>{{$dataTerms["termPayment"]}}</span>
-              </p>
+              </span>
             @endforeach
           </td>
           <td vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;'>Payment Date</span>
-            </p>
+            <span class=MsoTocHeading style='margin-top:0in'>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black;'>Payment Date</span>
+            </span>
           </td>
-          <td  colspan=3 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+          <td colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             @foreach($data["payment_date"] as $dataPayDate)
-            <p class=MsoListParagraphCxSpFirst style='margin-left:16.95pt;text-indent:-.25in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>{{++$no_pay}}. <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+            <span class=MsoListParagraphCxSpFirst style='margin-left:16.95pt;text-indent:-.25in'>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black'>{{++$no_pay}}. <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
               </span>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;'>{{$dataPayDate["payDate"]}}</span>
-            </p>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:black;'>{{$dataPayDate["payDate"]}}</span>
+            </span>
             @endforeach
           </td>
         </tr>
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=3  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Customer Satisfaction Survey</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=5 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>Sent
               </span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=3 vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Lesson Learnt</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-left:15.5pt;'>
+          <td colspan=5 vertical-align=top style="text-align: left; vertical-align: top; white-space: normal; word-wrap: break-word; max-width: 500px;padding:0in 5.4pt 0in 5.4pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;">
+            <span class=MsoTocHeading style="display: block; text-indent: 0;">
               <!-- <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'></span> -->
               <!-- </span> -->
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;text-align:justify'>{!! nl2br($data['lesson_learn']) !!}</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=3  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Recommendation for Future Project</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-left:15.5pt;text-indent:'>
+          <td colspan=5 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-left:15.5pt;text-indent:'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal;text-align:justify;'>{!! nl2br($data['recommendation_future']) !!}</span>
-            </p>
-            <p class=MsoNormal>
+            </span>
+            <span class=MsoNormal>
               <span lang=EN-GB>&nbsp;</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-top:0in'>
+          <td colspan=3  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-top:0in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;'>Additional Notes / Comments</span>
-            </p>
+            </span>
           </td>
-          <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
-            <p class=MsoTocHeading style='margin-left:15.5pt;text-indent:-.25in'>
+          <td colspan=5 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+            <span class=MsoTocHeading style='margin-left:15.5pt;text-indent:-.25in'>
               <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['additional_notes']}}</span>
-            </p>
-            <p class=MsoNormal>
+            </span>
+            <span class=MsoNormal>
               <span lang=EN-GB>&nbsp;</span>
-            </p>
+            </span>
           </td>
         </tr>
         <tr height=0>
@@ -822,83 +829,83 @@
 
       <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=659 style='border-collapse:collapse;border:none'>
         <tr style='height:4.0pt'>
-          <td  vertical-align=top style='border:solid black 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
+          <td  vertical-align=top style='border:solid black 1.0pt;background:#0F243E;;height:4.0pt;text-align: center;'>
+            <span class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:white'>Reported By</span>
               </b>
-            </p>
+            </span>
           </td>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-left:none;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
+          <td  vertical-align=top style='border:solid black 1.0pt;border-left:none;background:#0F243E;;height:4.0pt;text-align: center;'>
+            <span class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:white'>Approved By</span>
               </b>
-            </p>
+            </span>
           </td>
         </tr>
         <tr style='height:4.0pt'>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p align=center class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
+          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;;height:4.0pt;text-align:center;text-align:center;vertical-align: middle;height: 50pt;padding: 20px;'>
+            <span align=center class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
               <b>
-                <img style='height: 60px;margin-bottom: 30px;object-fit: cover;' src="{{$data['get_sign']['0']['ttd_digital']}}"></img>
+                <img style='height: 60px;object-fit: cover;' src="{{$data['get_sign']['0']['ttd_digital']}}"></img>
               </b>
-            </p>
+            </span>
           </td>
-          <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
-            <p align=center class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
+          <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;padding: 20px;border-right:solid black 1.0pt;text-align:center;vertical-align: middle;height: 50pt'>
+            <span align=center class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
               <b>
-                <img style='height: 60px;margin-bottom: 30px;object-fit: cover;' src="{{$data['get_sign']['1']['ttd_digital']}}"></img>
+                <img style='height: 60px;object-fit: cover;' src="{{$data['get_sign']['1']['ttd_digital']}}"></img>
               </b>
-            </p>
+            </span>
           </td>
         </tr>
         <tr style='height:17.8pt'>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:17.8pt'>
-            <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
+          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;background:#0F243E;;height:17.8pt;text-align:center;'>
+            <span class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:white'>{{$data['get_sign']['0']['name']}}</span>
               </b>
-            </p>
+            </span>
           </td>
-          <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:17.8pt'>
-            <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
+          <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;background:#0F243E;;height:17.8pt;text-align:center;'>
+            <span class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:white'>{{$data['get_sign']['1']['name']}}</span>
               </b>
-            </p>
+            </span>
           </td>
         </tr>
         <tr style='height:12.25pt'>
-          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:12.25pt'>
-            <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
+          <td  vertical-align=top style='border:solid black 1.0pt;border-top:none;height:12.25pt;text-align:center;'>
+            <span class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>SIP Project Manager</span>
               </b>
-            </p>
+            </span>
           </td>
-          <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:12.25pt'>
-            <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
+          <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;height:12.25pt;text-align:center;'>
+            <span class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>SIP Project Manager Dept. Head</span>
               </b>
-            </p>
+            </span>
           </td>
         </tr>
         <tr style='height:15.75pt'>
-          <td  vertical-align=bottom style='border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:15.75pt'>
-            <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
+          <td  vertical-align=bottom style='border:solid black 1.0pt;border-top:none;height:15.75pt'>
+            <span class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Date : {{$data['get_sign']['0']['date_sign']}}</span>
               </b>
-            </p>
+            </span>
           </td>
-          <td  vertical-align=bottom style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.75pt'>
-            <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
+          <td  vertical-align=bottom style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;height:15.75pt'>
+            <span class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Date : {{$data['get_sign']['1']['date_sign']}}</span>
               </b>
-            </p>
+            </span>
           </td>
         </tr>
       </table>
