@@ -178,7 +178,7 @@ class PMProjectController extends Controller
 
         $data =  PMO::select('tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
-        if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'PMO Officer') {
+        if ($cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'Project Management Office Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'Project Transformation Officer') {
             $data = $data->orderBy('tb_pmo.id','desc');
         } elseif ($cek_role->group == 'Sales' || $cek_role->group == 'bcd') {
             $data = $data->LeftjoinSub($getListLeadRegister, 'project_id', function($join){
@@ -1794,10 +1794,10 @@ class PMProjectController extends Controller
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Program & Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Program & Project Management","Account Executive","VP Sales","BCD Manager","Chief Operating Officer")');
                 } else{
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Coordinator","Project Management Office Manager","Account Executive","VP Sales","BCD Manager","Chief Operating Officer")');
                 }
             }
 
@@ -1805,11 +1805,11 @@ class PMProjectController extends Controller
             foreach ($sign->get() as $key => $value) {
                 if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'VP Program & Project Management' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Delivery Project Manager","VP Program & Project Management","Sales Staff","Sales Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Manager","VP Program & Project Management","Account Executive","VP Sales","Chief Operating Officer")');
                     return $sign->get();
                 } else {
                     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    ->orderByRaw('FIELD(position, "Delivery Project Manager","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                    ->orderByRaw('FIELD(position, "Delivery Project Manager","Project Management Office Manager","Account Executive","VP Sales","BCD Manager","Chief Operating Officer")');
                 }
             }
             

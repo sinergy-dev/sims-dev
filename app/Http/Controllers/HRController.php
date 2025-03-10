@@ -216,7 +216,14 @@ class HRController extends Controller
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                 ->join('role_user','users.nik','=','role_user.user_id')
                 ->join('roles','role_user.role_id','=','roles.id')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja','roles.name as roles','roles.group', DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja',
+                    DB::raw("
+                        CASE 
+                            WHEN roles.group = 'Sales' 
+                            THEN CONCAT(roles.name, ' ', CONCAT(UCASE(LEFT(users.id_territory, 1)), LCASE(SUBSTRING(users.id_territory, 2))))
+                            ELSE roles.name 
+                        END AS roles
+                    "),'roles.group', DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'mini_group')
                 ->where('users.status_karyawan','!=','dummy')                
                 ->where('status_delete','!=','D')
                 ->where('users.email','!=','dev@sinergy.co.id')
@@ -261,11 +268,14 @@ class HRController extends Controller
         
         $roles = DB::table('roles')->where('name', '!=', 'Project Transformation Officer')->get();
 
+        $group = DB::table('roles')->select('acronym','mini_group')->where('name','like','%Manager')->where('name','!=','Delivery Project Manager')->where('mini_group','!=',null)->orderBy('group','asc')->get();
+        // $group->push((object) ['acronym' => 'AE1','mini_group'=>'Sales Territory 1']);
+
         $code = $request['code_input'];     
 
         $sidebar_collapse = true;   
 
-        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim', 'data_resign', 'roles', 'data_resign_msp','sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
+        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim', 'data_resign', 'roles', 'data_resign_msp','sidebar_collapse','group'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
     }
 
     public function getemps(Request $request)
@@ -1384,7 +1394,14 @@ class HRController extends Controller
             $check                  = in_array($extension,$allowedfileExtension);
 
             if ($check) {
-                $req->file('npwp_file')->move("image/", $fileName);
+                // if (is_writable(public_path('image/'))) {
+                //     return "Directory is writable!";
+                // } else {
+                //     return "Directory is NOT writable!";
+                // }
+                // $file->storeAs('public/image', $fileName);
+                $file->move(public_path('image/'), $fileName);
+                // $req->file('npwp_file')->move("image/", $fileName);
                 $update->npwp_file = $fileName;
             } else {
                 return redirect()->back()->with('alert','Oops! Only jpg, png');

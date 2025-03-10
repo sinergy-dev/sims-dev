@@ -214,7 +214,7 @@ class PMOFinalReport extends Model
         $get_name_pm = PMO_assign::join('users', 'users.nik', 'tb_pmo_assign.nik')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_assign.id_project')->select('users.name')->where('id_project', $get_id_pmo->id)->first();
 
         $get_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')
-            ->select('users.name', 'roles.name as position', 'email', DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Sales Staff') THEN 'Account Manager' ELSE `roles`.`name` END) as position"))
+            ->select('users.name', 'roles.name as position', 'email', DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Account Executive') THEN 'Account Manager' ELSE `roles`.`name` END) as position"))
             ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `id_territory` is null OR `users`.`name` = '" . $get_name_sales->name . "' OR `users`.`name` = '" . $get_name_pm->name . "')")
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy')

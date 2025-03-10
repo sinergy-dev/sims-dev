@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\IdeaHubPoint;
+use App\Mail\MailIdeaHub;
 use Illuminate\Http\Request;
 use App\Sales;
-use DB;
 use Auth;
 use Charts;
+use App\IdeaHub;
+use App\IdeaHubActivity;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class DASHBOARDController extends Controller
 {
@@ -1742,7 +1748,7 @@ class DASHBOARDController extends Controller
             ->orderBy('deal_prices', 'desc');
 
 
-        if ($cek_role->name == 'Sales Staff') {
+        if ($cek_role->name == 'Account Executive') {
             $sum_amounts_ter = $sum_amounts_ter->where('users.nik',$nik)->groupBy('users.id_territory')
             ->get()
             ->keyBy('id_territory');
@@ -1770,7 +1776,7 @@ class DASHBOARDController extends Controller
 
             $top_win_sip_ter = $merged_results;
 
-        } elseif ($cek_role->name == 'Sales Manager') {
+        } elseif ($cek_role->name == 'VP Sales') {
             $sum_amounts_ter = $sum_amounts_ter->where('users.id_territory',$ter)->groupBy('users.id_territory')
             ->get()
             ->keyBy('id_territory');
@@ -1900,6 +1906,74 @@ class DASHBOARDController extends Controller
                     ->select(DB::raw('`year` AS `id`,`year` AS `text`'))->groupBy('year')->orderBy('year','desc')->get();
 
         return $loop_year;
+    }
+
+    public function storeIdea(Request $request)
+    {
+        try{
+            DB::beginTransaction();
+            $idea = IdeaHub::create([
+                'nik' => Auth::user()->nik,
+                'ide' => $request->idea,
+                'konsep_bisnis' => $request->konsep_bisnis,
+                'referensi' => $request->referensi_bisnis,
+                'posisi' => Auth::user()->roles()->first()->name,
+                'divisi' => Auth::user()->roles()->first()->group
+            ]);
+
+            IdeaHubActivity::create([
+                'id_idea_hub' => $idea->id,
+                'operator' => Auth::user()->name,
+                'activity' => 'Create new idea',
+                'date_add' => Carbon::today(),
+                'status' => 'New'
+            ]);
+
+            $checkPoint = IdeaHubPoint::where('nik', Auth::user()->nik)->first();
+
+            if (!empty($checkPoint)){
+                $point = $checkPoint->point;
+                $id = $checkPoint->id;
+                $updatePoint = IdeaHubPoint::find($id);
+                $updatePoint->update([
+                    'point' => $point + 1
+                ]);
+            }else{
+                IdeaHubPoint::create([
+                    'nik' => $idea->nik,
+                    'point' => 1,
+                    'nama' => Auth::user()->nik
+                ]);
+            }
+
+            $userToSend = DB::table('roles as r')
+                ->join('role_user as ru', 'r.id', 'ru.role_id')
+                ->join('users as u', 'ru.user_id', 'u.nik')
+                ->select('u.name', 'u.email');
+
+            if ($idea->divisi == 'Solutions & Partnership Management'){
+                $userToSend = $userToSend->where('r.name', 'VP Solutions & Partnership Management');
+            }elseif ($idea->divisi == 'Program & Project Management'){
+                $userToSend = $userToSend->where('r.name', 'VP Program & Project Management');
+            }elseif ($idea->divisi == 'Synergy System Management'){
+                $userToSend = $userToSend->where('r.name', 'VP Synergy System Management');
+            }elseif ($idea->divisi == 'Internal Chain Management'){
+                $userToSend = $userToSend->where('r.name', 'VP Internal Chain Management');
+            }elseif ($idea->divisi == 'Human Capital Management'){
+                $userToSend = $userToSend->where('r.name', 'VP Human Capital Management');
+            }elseif ($idea->divisi == 'Sales'){
+                $userToSend = $userToSend->where('r.name', 'VP Sales')->where('u.id_territory', Auth::user()->id_territory);
+            }
+            $userToSend = $userToSend->first();
+
+            $sender = Auth::user()->name;
+
+            Mail::to($userToSend->email)->send(new MailIdeaHub('[SIMS-App] Idea Hub - New Business Idea', $idea, $userToSend, $sender));
+            DB::commit();
+        }catch (\Exception $exception){
+            DB::rollBack();
+        }
+
     }
 
 }

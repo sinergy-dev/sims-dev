@@ -3,6 +3,9 @@
 Human Resources
 @endsection
 @section('head_css')
+	@php
+	    use Illuminate\Support\Str;
+	@endphp
   	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" integrity="sha512-OWGg8FcHstyYFwtjfkiCoYHW2hG3PDWwdtczPAPUcETobBJOVCouKig8rqED0NMLcT9GtE4jw6IT1CSrwY87uw==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
@@ -622,19 +625,31 @@ Human Resources
 		          <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">ALL</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales" role="tab" aria-controls="sales" aria-selected="false"> SALES</a>
+		          <a class="nav-link" id="management-tab" data-toggle="tab" href="#management" role="tab" aria-controls="all" aria-selected="true">Management</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="finance-tab" data-toggle="tab" href="#finance" role="tab" aria-controls="finance" aria-selected="false"> FINANCE</a>
+		          <a class="nav-link" id="ae1-tab" data-toggle="tab" href="#ae1" role="tab" aria-controls="all" aria-selected="true">AE1</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation" role="tab" aria-controls="operation" aria-selected="false">OPERATION</a>
+		          <a class="nav-link" id="ae2-tab" data-toggle="tab" href="#ae2" role="tab" aria-controls="all" aria-selected="true">AE2</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="hr-tab" data-toggle="tab" href="#hr" role="tab" aria-controls="hr" aria-selected="false">HR</a>
+		          <a class="nav-link" id="ae3-tab" data-toggle="tab" href="#ae3" role="tab" aria-controls="all" aria-selected="true">AE3</a>
 		        </li>
+		        @foreach ($group as $item)
+				    <li class="nav-item">
+				        <a class="nav-link" id="{{ Str::slug($item->acronym, '-') }}-tab" 
+				           data-toggle="tab" 
+				           href="#{{ Str::slug($item->acronym, '-') }}" 
+				           role="tab" 
+				           aria-controls="{{ Str::slug($item->acronym, '-') }}" 
+				           aria-selected="false">
+				           {{ ($item->acronym) }}
+				        </a>
+				    </li>
+				@endforeach
 		        <li class="nav-item">
-		          <a class="nav-link" id="resign-tab" data-toggle="tab" href="#resign" role="tab" aria-controls="resign" aria-selected="false">RESIGN</a>
+		          <a class="nav-link" id="resign-tab" data-toggle="tab" href="#resign" role="tab" aria-controls="all" aria-selected="true">Resign</a>
 		        </li>
 		      </ul>
 
@@ -735,11 +750,11 @@ Human Resources
 		                </table>
 		            </div> 
 		        </div>
-		        <div class="tab-pane" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+		        <div class="tab-pane" id="management" role="tabpanel" aria-labelledby="management-tab">
 		        	<div class="row">
 			        	<div class="col-md-12">
 				        	<div class="col-md-4 input-group pull-right">
-			                    <input id="searchSales" type="text" class="form-control" onkeyup="searchCustom('data_sales','searchSales')" placeholder="Search Anything">
+			                    <input id="searchManagement" type="text" class="form-control" onkeyup="searchCustom('data_sales','searchManagement')" placeholder="Search Anything">
 			                    <div class="input-group-btn">
 			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 			                        Show 10 entries
@@ -752,7 +767,7 @@ Human Resources
 			                      </ul>
 			                    </div>
 			                    <span class="input-group-btn">
-			                      <button onclick="searchCustom('data_sales','searchSales')" type="button" class="btn btn-default btn-flat">
+			                      <button onclick="searchCustom('data_sales','searchManagement')" type="button" class="btn btn-default btn-flat">
 			                        <i class="fa fa-fw fa-search"></i>
 			                      </button>
 			                    </span>
@@ -771,7 +786,7 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->group == 'Sales' || $data->roles == 'Chief Executive Officer')
+		                    @if(Str::contains($data->roles, ['VP', 'Chief']))
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
@@ -792,11 +807,182 @@ Human Resources
 		                </table>
 		            </div>
 		        </div>
-		        <div class="tab-pane" id="finance" role="tabpanel" aria-labelledby="finance-tab">
+		        <div class="tab-pane" id="ae1" role="tabpanel" aria-labelledby="ae1-tab">
 		        	<div class="row">
 			        	<div class="col-md-12">
 				        	<div class="col-md-4 input-group pull-right">
-			                    <input id="searchFinance" type="text" class="form-control" onkeyup="searchCustom('data_finance','searchFinance')" placeholder="Search Anything">
+			                    <input id="searchAe1" type="text" class="form-control" onkeyup="searchCustom('data_ae1','searchAe1')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_ae1','searchAe1')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		             </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_ae1" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->id_territory == 'TERRITORY 1' && $data->id_position != 'MANAGER')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>
+		                        {{$data->roles}}
+		                      </td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="ae2" role="tabpanel" aria-labelledby="ae2-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchAe2" type="text" class="form-control" onkeyup="searchCustom('data_ae2','searchAe2')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_ae2','searchAe2')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		             </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_ae2" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->id_territory == 'TERRITORY 2' && $data->id_position != 'MANAGER')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>
+		                        {{$data->roles}}
+		                      </td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="ae3" role="tabpanel" aria-labelledby="ae3-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchAe3" type="text" class="form-control" onkeyup="searchCustom('data_ae3','searchAe3')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_ae3','searchAe3')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		             </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_ae3" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->id_territory == 'TERRITORY 3' && $data->id_position != 'MANAGER')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>
+		                        {{$data->roles}}
+		                      </td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="acc" role="tabpanel" aria-labelledby="acc-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchAcc" type="text" class="form-control" onkeyup="searchCustom('data_acc','searchAcc')" placeholder="Search Anything">
 			                    <div class="input-group-btn">
 			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 			                        Show 10 entries
@@ -809,7 +995,7 @@ Human Resources
 			                      </ul>
 			                    </div>
 			                    <span class="input-group-btn">
-			                      <button onclick="searchCustom('data_finance','searchFinance')" type="button" class="btn btn-default btn-flat">
+			                      <button onclick="searchCustom('data_acc','searchAcc')" type="button" class="btn btn-default btn-flat">
 			                        <i class="fa fa-fw fa-search"></i>
 			                      </button>
 			                    </span>
@@ -817,7 +1003,7 @@ Human Resources
 		                </div>
 		            </div>
 		            <div class="table-responsive">
-		                <table class="table table-bordered table-striped dataTable" id="data_finance" width="100%" cellspacing="0">
+		                <table class="table table-bordered table-striped dataTable" id="data_acc" width="100%" cellspacing="0">
 		                  <thead>
 		                    <tr>
 		                      <th>NIK</th>
@@ -828,7 +1014,7 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->id_division == 'FINANCE')
+		                    @if($data->mini_group == 'Accounting')
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
@@ -847,32 +1033,32 @@ Human Resources
 		                </table>
 		            </div>
 		        </div>
-		        <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
+		        <div class="tab-pane" id="fns" role="tabpanel" aria-labelledby="fns-tab">
 		        	<div class="row">
 			        	<div class="col-md-12">
 				        	<div class="col-md-4 input-group pull-right">
-			                    <input id="searchTech" type="text" class="form-control" onkeyup="searchCustom('data_tech','searchTech')" placeholder="Search Anything">
+			                    <input id="searchFns" type="text" class="form-control" onkeyup="searchCustom('data_fns','searchFns')" placeholder="Search Anything">
 			                    <div class="input-group-btn">
 			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 			                        Show 10 entries
 			                      </button>
 			                      <ul class="dropdown-menu">
-			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
-			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
-			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
-			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
 			                      </ul>
 			                    </div>
 			                    <span class="input-group-btn">
-			                      <button onclick="searchCustom('data_tech','searchTech')" type="button" class="btn btn-default btn-flat">
+			                      <button onclick="searchCustom('data_fns','searchFns')" type="button" class="btn btn-default btn-flat">
 			                        <i class="fa fa-fw fa-search"></i>
 			                      </button>
 			                    </span>
 		                  	</div>
-	                  	</div>
-	              	</div>
+		                </div>
+		            </div>
 		            <div class="table-responsive">
-		                <table class="table table-bordered table-striped dataTable" id="data_tech" width="100%" cellspacing="0">
+		                <table class="table table-bordered table-striped dataTable" id="data_fns" width="100%" cellspacing="0">
 		                  <thead>
 		                    <tr>
 		                      <th>NIK</th>
@@ -883,32 +1069,525 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-			                    @if($data->group == 'Project Management' || $data->group == 'Solution Implementation & Managed Service' || $data->group == 'Product Management & Development' || $data->group == 'Director Operational' || $data->group == 'Supply Chain, CPS & Asset Management')
-			                    <tr>
-			                      <td><?=str_replace('/', '', $data->nik)?></td>
-			                      <td>{{ucwords(strtolower($data->name))}}</td>
-			                      <td>
-			                       {{$data->roles}}
-			                      </td>
-			                      <td>
-			                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+		                    @if($data->mini_group == 'Finance Support')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
-			                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-			                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
-			                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
-			                      </td>
-			                    </tr>
-			                    @endif
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
 		                    @endforeach
 		                  </tbody>
 		                </table>
 		            </div>
 		        </div>
-		        <div class="tab-pane" id="hr" role="tabpanel" aria-labelledby="hr-tab">
+		        <div class="tab-pane" id="sss" role="tabpanel" aria-labelledby="sss-tab">
 		        	<div class="row">
 			        	<div class="col-md-12">
 				        	<div class="col-md-4 input-group pull-right">
-			                    <input id="searchOperation" type="text" class="form-control" onkeyup="searchCustom('data_operation','searchOperation')" placeholder="Search Anything">
+			                    <input id="searchSss" type="text" class="form-control" onkeyup="searchCustom('data_sss','searchSss')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_sss','searchSss')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_sss" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Synergy System & Services')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="ssa" role="tabpanel" aria-labelledby="ssa-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchSsa" type="text" class="form-control" onkeyup="searchCustom('data_ssa','searchSsa')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_ssa','searchSsa')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_ssa" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Synergy System Architecture')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="ssd" role="tabpanel" aria-labelledby="ssd-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchSsd" type="text" class="form-control" onkeyup="searchCustom('data_ssd','searchSsd')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_ssd','searchSsd')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_ssd" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Synergy System Delivery')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="sci" role="tabpanel" aria-labelledby="sci-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchSci" type="text" class="form-control" onkeyup="searchCustom('data_sci','searchSci')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_sci','searchSci')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_sci" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Supply Chain & IT Support')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="ios" role="tabpanel" aria-labelledby="ios-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchIos" type="text" class="form-control" onkeyup="searchCustom('data_ios','searchIos')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_ios','searchIos')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_ios" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Internal Operation Support')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="ads" role="tabpanel" aria-labelledby="ads-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchAds" type="text" class="form-control" onkeyup="searchCustom('data_ads','searchAds')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_ads','searchAds')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_ads" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Application Development Specialist')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="pds" role="tabpanel" aria-labelledby="pds-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchPds" type="text" class="form-control" onkeyup="searchCustom('data_pds','searchPds')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_pds','searchPds')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_pds" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Product Development Specialist')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="pmo" role="tabpanel" aria-labelledby="pmo-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchPmo" type="text" class="form-control" onkeyup="searchCustom('data_pmo','searchPmo')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_pmo','searchPmo')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_pmo" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Project Management Office')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="sdc" role="tabpanel" aria-labelledby="sdc-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchSdc" type="text" class="form-control" onkeyup="searchCustom('data_sdc','searchSdc')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_sdc','searchSdc')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_sdc" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'Service Desk Center')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>{{$data->roles}}</td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="opd" role="tabpanel" aria-labelledby="opd-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchOpd" type="text" class="form-control" onkeyup="searchCustom('data_opd','searchOpd')" placeholder="Search Anything">
 			                    <div class="input-group-btn">
 			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 			                        Show 10 entries
@@ -921,7 +1600,7 @@ Human Resources
 			                      </ul>
 			                    </div>
 			                    <span class="input-group-btn">
-			                      <button onclick="searchCustom('data_operation','searchOperation')" type="button" class="btn btn-default btn-flat">
+			                      <button onclick="searchCustom('data_opd','searchOpd')" type="button" class="btn btn-default btn-flat">
 			                        <i class="fa fa-fw fa-search"></i>
 			                      </button>
 			                    </span>
@@ -929,7 +1608,7 @@ Human Resources
 		                </div>
 		            </div>
 		            <div class="table-responsive">
-		                <table class="table table-bordered table-striped dataTable" id="data_operation" width="100%" cellspacing="0">
+		                <table class="table table-bordered table-striped dataTable" id="data_opd" width="100%" cellspacing="0">
 		                  <thead>
 		                    <tr>
 		                      <th>NIK</th>
@@ -940,7 +1619,63 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->group == 'Human Capital')
+		                    @if($data->mini_group == 'Organizational & People Development')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      <td>
+		                         {{$data->roles}}
+		                      </td>
+		                      <td>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+		                      </td>
+		                    </tr>
+		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="pos" role="tabpanel" aria-labelledby="pos-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchPos" type="text" class="form-control" onkeyup="searchCustom('data_pos','searchPos')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_pos','searchPos')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_pos" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($hr as $data)
+		                    @if($data->mini_group == 'People Operations & Services')
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
@@ -4114,7 +4849,7 @@ Human Resources
         sDom: 'lrtip',
     });
 
-  	var table5 = $('#data_sales').DataTable({
+  	var table5 = $('#data_management').DataTable({
   		"lengthChange": false,
         "paging": true,
         sDom: 'lrtip',
@@ -4151,6 +4886,102 @@ Human Resources
     });
 
     var table12 = $('#data_resign_msp').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    var table13 = $('#data_pmo').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    var table14 = $('#data_acc').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_fns').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_opd').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_pos').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_ios').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_ads').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_sci').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_ae1').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_ae2').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_ae3').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_pds').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_sss').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_ssa').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_ssd').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
+    });
+
+    $('#data_sdc').DataTable({
     	"lengthChange": false,
         "paging": true,
         sDom: 'lrtip',

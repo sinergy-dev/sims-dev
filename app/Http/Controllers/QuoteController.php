@@ -214,9 +214,9 @@ class QuoteController extends Controller
 
         $lead = DB::table('sales_lead_register')->whereRaw("(`result` = 'OPEN' OR `result` = 'SD' OR `result` = 'TP')");
 
-        if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
+        if ($role->name == 'VP Solutions & Partnership Management'){
             $leadId = $lead->where('nik', '1061184050');
-        } else if($role->name == 'Technology Alliance Solutions'){
+        } else if($role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
             $leadId = $lead->where('nik', '1110492070');
         }else {
             $leadId = $lead->where('nik', Auth::user()->nik);
@@ -417,9 +417,9 @@ class QuoteController extends Controller
 
         $lead = DB::table('sales_lead_register')->whereRaw("(`result` = 'INITIAL' OR `result` = '' OR  `result` = 'SD' OR `result` = 'TP')");
 
-        if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
+        if ($role->name == 'VP Solutions & Partnership Management'){
             $leadId = $lead->where('nik', '1061184050');
-        } elseif($role->name == 'Technology Alliance Solutions'){
+        } elseif($role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
             $leadId = $lead->where('nik', '1110492070');
         }else {
             $leadId = $lead->where('nik', Auth::user()->nik);
@@ -478,14 +478,14 @@ class QuoteController extends Controller
             });
 //            ->where('c.status', 'Choosed');
 
-        if($role->name == 'Sales Manager'){
+        if($role->name == 'VP Sales'){
             $roleSalesByTerritory = DB::table('roles as r')
                 ->join('role_user as ru', 'r.id', 'ru.role_id')
                 ->join('users as u', 'ru.user_id', 'u.nik')
-                ->whereIn('r.name', ['Sales Staff', 'Sales Manager'])
+                ->whereIn('r.name', ['Account Executive', 'VP Sales'])
                 ->select('ru.user_id as nik')->pluck('nik')->toArray();
             $query = $query->whereIn('tb_quote.nik', $roleSalesByTerritory);
-        }else if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance Solutions'){
+        }else if($role->name == 'Account Executive' || $role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
             $query = $query->where('tb_quote.nik', $user);
         }
 //            ->where('date','like',$tahun."%")
@@ -499,7 +499,7 @@ class QuoteController extends Controller
 
     public function getDataQuoteFilter(Request $request)
     {
-        $status = $request->status ?? [];
+        $status = $request->status ?: [];
         $tahun = date("Y");
         $user = Auth::user()->nik;
         $role = $this->cekRole($user);
@@ -520,18 +520,18 @@ class QuoteController extends Controller
             ->join('roles as r', 'ru.role_id', 'r.id')
             ->leftjoin('tb_quote_config as c', 'tb_quote.id_quote', 'c.id_quote');
 
-        if($role->name == 'Sales Manager'){
+        if($role->name == 'VP Sales'){
             $roleSalesByTerritory = DB::table('roles as r')
                 ->join('role_user as ru', 'r.id', 'ru.role_id')
                 ->join('users as u', 'ru.user_id', 'u.nik')
-                ->whereIn('r.name', ['Sales Staff', 'Sales Manager'])
+                ->whereIn('r.name', ['Account Executive', 'VP Sales'])
                 ->where('u.id_territory', Auth::user()->id_territory)
                 ->select('ru.user_id as nik')->pluck('nik')->toArray();
             $query1 = $query1->whereIn('tb_quote.nik', $roleSalesByTerritory);
             $query2 = $query2->whereIn('tb_quote.nik', $roleSalesByTerritory)->where('tb_quote.status', 'SAVED');
         }else if ($role->name == 'VP Solutions & Partnership Management'){
             $query2 = $query2->where('tb_quote.status', 'SAVED');
-        }else if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance Solutions'){
+        }else if($role->name == 'Account Executive' || $role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
             $query1 = $query1->where('tb_quote.nik', $user);
             $query2 = $query2->where('tb_quote.nik', $user)->where('tb_quote.status', 'SAVED');
         }else if($role->name == 'Chief Executive Officer' || $role->name == 'Chief Operating Officer'){
@@ -637,9 +637,9 @@ class QuoteController extends Controller
             $quote->lead_id = $request['lead_id'];
             $quote->date = $request['date'];
             $quote->status = 'SAVED';
-            if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
+            if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
                 $quote->position = 'SPM';
-            }else if($role->name = 'Sales Staff' || $role->name == 'Sales Manager'){
+            }else if($role->name = 'Account Executive' || $role->name == 'VP Sales'){
                 $quote->position = 'TAM';
             }else if($role->name == 'Chief Operating Officer'){
                 $quote->position == 'DIR';
@@ -685,9 +685,9 @@ class QuoteController extends Controller
             $quote->lead_id = $request['lead_id'];
             $quote->date = $request['date'];
             $quote->status = 'SAVED';
-            if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
+            if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
                 $quote->position = 'SPM';
-            }else if($role->name = 'Sales Staff' || $role->name == 'Sales Manager'){
+            }else if($role->name = 'Account Executive' || $role->name == 'VP Sales'){
                 $quote->position = 'TAM';
             }else if($role->name == 'Chief Operating Officer'){
                 $quote->position == 'DIR';
@@ -1439,9 +1439,9 @@ class QuoteController extends Controller
             $canApproveReject = true;
         }else if($roleData->name == 'VP Solutions & Partnership Management' && $roleUser->name == 'Chief Operating Officer'){
             $canApproveReject = true;
-        }else if($roleData->name == 'Sales Manager' && $roleUser->name == 'Chief Executive Officer'){
+        }else if($roleData->name == 'VP Sales' && $roleUser->name == 'Chief Executive Officer'){
             $canApproveReject = true;
-        }else if($roleData->name == 'Sales Staff' && $roleUser->name == 'Sales Manager'){
+        }else if($roleData->name == 'Account Executive' && $roleUser->name == 'VP Sales'){
             if($idTerritory == Auth::user()->id_territory){
                 $canApproveReject = true;
             }
@@ -2202,9 +2202,9 @@ class QuoteController extends Controller
         $userToSend = DB::table('roles as r')->join('role_user as ru', 'r.id', 'ru.role_id')
             ->join('users as u', 'ru.user_id', 'u.nik');
 
-        if($role == 'Sales Staff'){
-            $userToSend = $userToSend->where('r.name', 'Sales Manager')->where('u.id_territory', $sender->id_territory);
-        }else if($role == 'Sales Manager'){
+        if($role == 'Account Executive'){
+            $userToSend = $userToSend->where('r.name', 'VP Sales')->where('u.id_territory', $sender->id_territory);
+        }else if($role == 'VP Sales'){
             $userToSend = $userToSend->where('r.name', 'Chief Executive Officer');
         }else if($role == 'Technology Alliance Solutions'){
             $userToSend = $userToSend->where('r.name', 'VP Solutions & Partnership Management');
@@ -2255,12 +2255,12 @@ class QuoteController extends Controller
             $countDone = Quote::whereIn('nik', $nikList)->where('status', 'APPROVED');
             $countNeedAttention = Quote::whereIn('nik', $nikList)->where('status', 'ON GOING');
             $countOngoing = Quote::whereIn('nik', $nikList)->where('status', 'REJECTED');
-        }else if($role->name == 'Sales Manager'){
+        }else if($role->name == 'VP Sales'){
             $roleSalesByTerritory = DB::table('roles as r')
                 ->join('role_user as ru', 'r.id', 'ru.role_id')
                 ->join('users as u', 'ru.user_id', 'u.nik')
                 ->where('u.id_territory', Auth::user()->id_territory)
-                ->whereIn('r.name', ['Sales Staff', 'Sales Manager'])
+                ->whereIn('r.name', ['Account Executive', 'VP Sales'])
                 ->select('ru.user_id as nik')->get();
             $nikList = $roleSalesByTerritory->pluck('nik')->toArray();
             $countAll = Quote::whereIn('nik', $nikList);

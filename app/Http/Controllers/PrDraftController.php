@@ -74,7 +74,7 @@ class PrDraftController extends Controller
             $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR' OR `status` = 'SAVED'  OR `status` = 'DRAFT')")->count();
 
             $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED' OR `status` = 'SENDED')")->count();
-        } else if ($cek_role->name == 'Sales Manager'){
+        } else if ($cek_role->name == 'VP Sales'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
 
             $count_all = PRDraft::whereIn('issuance',$listTerritory)->count();
@@ -142,7 +142,7 @@ class PrDraftController extends Controller
                     ;
                 }
 
-            } else if ($cek_role->name == 'Sales Manager'){
+            } else if ($cek_role->name == 'VP Sales'){
                 $listTerritory = User::where('id_territory',$territory)->pluck('nik');
                 $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
             } else {
@@ -159,7 +159,7 @@ class PrDraftController extends Controller
                     ;
                 }
 
-            } else if ($cek_role->name == 'Sales Manager'){
+            } else if ($cek_role->name == 'VP Sales'){
                 $listTerritory = User::where('id_territory',$territory)->pluck('nik');
                 $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
             } else if ($cek_role->name == 'VP Program & Project Management'){
@@ -267,7 +267,7 @@ class PrDraftController extends Controller
                         $getData->whereIn('users.name', $request->user);
                     }
                 }
-            } elseif($cek_role->name == 'Sales Manager'){
+            } elseif($cek_role->name == 'VP Sales'){
                 $listTerritoryName = User::select('name')->where('id_territory',$territory)->pluck('name');
                 $listTerritoryNik = User::select('nik')->where('id_territory',$territory)->pluck('nik');
 
@@ -344,7 +344,7 @@ class PrDraftController extends Controller
                 if (!in_array(null, $request->user)) {
                     $getData->whereIn('users.name', $request->user);
                 }
-            } elseif($cek_role->name == 'Sales Manager'){
+            } elseif($cek_role->name == 'VP Sales'){
                 $listTerritoryName = User::select('name')->where('id_territory',$territory)->pluck('name');
                 $listTerritoryNik = User::select('nik')->where('id_territory',$territory)->pluck('nik');
 
@@ -625,7 +625,7 @@ class PrDraftController extends Controller
 
 
 
-        } elseif($cek_role->name == 'Sales Manager'){
+        } elseif($cek_role->name == 'VP Sales'){
             $listTerritoryName = User::select('name')->where('id_territory',$territory)->pluck('name');
             $listTerritoryNik = User::select('nik')->where('id_territory',$territory)->pluck('nik');
 
@@ -711,7 +711,7 @@ class PrDraftController extends Controller
             $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR' OR `status` = 'SAVED'  OR `status` = 'DRAFT')");
 
             $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED' OR `status` = 'SENDED')");
-        } else if ($cek_role->name == 'Sales Manager'){
+        } else if ($cek_role->name == 'VP Sales'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
 
             $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listTerritory);
@@ -983,7 +983,7 @@ class PrDraftController extends Controller
                 ;
             }
 
-        } else if ($cek_role->name == 'Sales Manager'){
+        } else if ($cek_role->name == 'VP Sales'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
             $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else {
@@ -1001,7 +1001,7 @@ class PrDraftController extends Controller
                 ;
             }
 
-        } else if ($cek_role->name == 'Sales Manager'){
+        } else if ($cek_role->name == 'VP Sales'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
             $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         } else if ($cek_role->name == 'VP Program & Project Management'){
@@ -4176,7 +4176,7 @@ class PrDraftController extends Controller
                 $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`roles`.`name` = 'Chief Operating Officer' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             }
         } else {
-            if ($cek_group->name == 'Sales Staff') {
+            if ($cek_group->name == 'Account Executive') {
                 $email_cc = DB::table('users')->select('users.email')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
                     ->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Chief Operating Officer' OR `users`.`nik` = '" .$cek_group->user_id. "')")
                     ->where('status_karyawan','!=','dummy')->where('id_company','1')->get();
@@ -4234,6 +4234,8 @@ class PrDraftController extends Controller
                         ELSE ROUND(`tb_pr`.`discount`, 2) 
                     END) as discount"),'tb_pr.discount as discount_nominal',DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
+        $data->tax_base_other_customer = round($data->amount_idr_before_tax * 11/12);
+
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
             ->select('name', 'group')->where('user_id', $data->issuance)->first();
 
@@ -4275,7 +4277,7 @@ class PrDraftController extends Controller
         if ($data->status_tax == '1.1') {
             $amount_tax = round(($sum_nominal_subtracted * 11)/1000);
         } elseif ($data->status_tax == '1.2') {
-            $amount_tax = round(($sum_nominal_subtracted * 12)/1000);
+            $amount_tax = round(($sum_nominal_subtracted * 1.2)/1000);
         } elseif ($data->status_tax == '11') {
             $amount_tax = round(($sum_nominal_subtracted * 11)/100);
         } elseif ($data->status_tax == '12') {
@@ -4295,6 +4297,8 @@ class PrDraftController extends Controller
         } else {
             $amount_service_charge = 0;
         }
+
+        $tax_base_other = round($sum_nominal_subtracted * 11/12);
 
         // return $sum_nominal_subtracted;
 
@@ -4359,14 +4363,14 @@ class PrDraftController extends Controller
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                            ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "BCD Manager", "VP Sales", "Chief Operating Officer")');
                     } else {
                         $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Chief Operating Officer')")
-                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
                     }
                 }
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
             } else {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
@@ -4465,21 +4469,21 @@ class PrDraftController extends Controller
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                            ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "BCD Manager", "VP Sales", "Chief Operating Officer")');
                     } else {
                         $sign->whereRaw("(`roles`.`name` = 'VP Internal Chain Management' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `roles`.`name` = 'Chief Operating Officer')")
-                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
                     }
                 }
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
             }
         }
 
         // return $sign = $sign->get();
         // return $sign;
         // $data->term_payment = "<b>Terms & Condition :</b> <br>" . $data->term_payment;
-        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_pb','amount_service_charge','amount_discount'));
+        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_pb','amount_service_charge','amount_discount','tax_base_other'));
         $fileName =   $data->no_pr  . ' ' . $data->title  . '.pdf';
         $nameFileFix = str_replace(' ', '_', $fileName);
 
@@ -4495,6 +4499,8 @@ class PrDraftController extends Controller
                 THEN 'false' 
                 ELSE ROUND(`tb_pr`.`discount`, 2) 
             END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $data->tax_base_other_customer = round($amount_idr_before_tax * 11/12);
 
         if ($data->status_draft_pr == 'draft') {
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
@@ -4564,6 +4570,8 @@ class PrDraftController extends Controller
             $amount_pb = 0;
         }
 
+        $tax_base_other = round($sum_nominal_subtracted * 11/12);
+
         if ($data->service_charge != 'false') {
             $amount_service_charge = round($sum_nominal_subtracted * ($data->service_charge))/100;
         } else {
@@ -4612,7 +4620,7 @@ class PrDraftController extends Controller
 
         // return "</pre>endd---";
 
-        return view('pr_pdf', compact('data','product','dokumen', 'sum_nominal', 'amount_tax','amount_tax_project','linkDrive','grand_total', 'amount_pb', 'amount_service_charge','amount_discount'));
+        return view('pr_pdf', compact('data','product','dokumen', 'sum_nominal', 'amount_tax','amount_tax_project','linkDrive','grand_total', 'amount_pb', 'amount_service_charge','amount_discount','tax_base_other'));
     }
 
     public function sendMailtoFinance(Request $request)
@@ -4703,6 +4711,8 @@ class PrDraftController extends Controller
                         ELSE ROUND(`tb_pr`.`discount`, 2) 
                     END) as discount"), 'tb_pr.discount as discount_nominal', DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $no_pr)->first();
 
+        $data->tax_base_other_customer = round($data->amount_idr_before_tax * 11/12);
+
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
             ->select('name', 'group')->where('user_id', $data->issuance)->first();
 
@@ -4750,6 +4760,8 @@ class PrDraftController extends Controller
             $amount_tax = 0;
         }
 
+        $tax_base_other = round($sum_nominal_subtracted * 11/12);
+
         $amount_pb = $data->tax_pb !== 'false' ? round($sum_nominal_subtracted * $data->tax_pb / 100) : 0;
         $amount_service_charge = $data->service_charge !== 'false' ? round($sum_nominal_subtracted * $data->service_charge / 100) : 0;
 
@@ -4760,7 +4772,7 @@ class PrDraftController extends Controller
 
         // $data->term_payment = "<b>Terms & Condition :</b> <br>" . $data->term_payment;
 
-        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_pb','amount_service_charge','amount_discount'));
+        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax', 'cek_role','grand_total','amount_pb','amount_service_charge','amount_discount','tax_base_other'));
         $fileName =   $data->no_pr  . ' ' . $data->title  . '.pdf';
         $nameFileFix = str_replace(' ', '_', $fileName);
 
@@ -5035,15 +5047,15 @@ class PrDraftController extends Controller
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                            ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "BCD Manager", "VP Sales", "Chief Operating Officer")');
                     } else {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
                     }
                 }
 
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
             } else {
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
@@ -5135,14 +5147,14 @@ class PrDraftController extends Controller
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Endraw Denny Hermanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                            ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "BCD Manager", "VP Sales", "Chief Operating Officer")');
                     } else {
                         $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'MSM' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                            ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
                     }
                 }
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "Sales Manager", "Chief Operating Officer")');
+                // ->orderByRaw('FIELD(position, "VP Internal Chain Management", "VP Sales", "Chief Operating Officer")');
             }
         }
 

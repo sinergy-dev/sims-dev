@@ -817,7 +817,7 @@ class AssetMgmtController extends Controller
 
         $getAllPid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project as id',DB::raw("CONCAT(`id_project`,' - ',`name_project`) AS text"))->where('id_company', '1')->where('id_project','like','%'.request('q').'%')->orderBy('tb_id_project.created_at','desc');
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Customer Care') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Customer Support Center') {
             $getAllPid = $getAllPid->get();
             $getAllPid = $getAllPid->prepend((object)(['id' => 'INTERNAL','text' => 'INTERNAL']));
         } else if ($cek_role->name_role == 'Delivery Project Coordinator') {
@@ -2468,7 +2468,7 @@ class AssetMgmtController extends Controller
             $countInstalled = $dataInstalled->count();
             $countAvailable = $dataAvailable->count();
             $countRent = $dataRent->count();
-        } else if ($cek_role->name_role == 'Delivery Project Coordinator' || $cek_role->name_role == 'Customer Care') {
+        } else if ($cek_role->name_role == 'Delivery Project Coordinator' || $cek_role->name_role == 'Customer Support Center') {
             $countAll = $data->whereIn('pid',$getPid)->count();
             $countInstalled = $dataInstalled->whereIn('pid',$getPid)->count();
             $countAvailable = $dataInstalled->whereIn('pid',$getPid)->count();
@@ -3347,8 +3347,7 @@ class AssetMgmtController extends Controller
         $ppGroup = $pihak_kedua->group;
         $territory_sales = $pihak_kedua->id_territory;
 
-
-        if (strpos($roleName, 'Sales Manager') !== false ) {
+        if (strpos($roleName, 'VP Sales') !== false ) {
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
@@ -3357,17 +3356,17 @@ class AssetMgmtController extends Controller
                 ->where('status_karyawan','!=','dummy')
                 ->first();
         }
-        else if (strpos($roleName, 'Sales Staff') !== false ) {
+        else if (strpos($roleName, 'Account Executive') !== false ) {
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
-                ->where('roles.name','like', '%Sales Manager%')
+                ->where('roles.name','like', '%VP Sales%')
                 ->where('id_territory','like','%'.$territory_sales.'%')
                 ->whereNotNull('user_id')
                 ->where('status_karyawan','!=','dummy')
                 ->first();
         }
-        else if (strpos($roleName, 'Finance & Accounting Manager') !== false ) {
+        else if (strpos($roleName, 'VP Financial & Accounting') !== false ) {
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
@@ -3708,7 +3707,7 @@ class AssetMgmtController extends Controller
         //                 ->where('roles.name','like','%Chief Operating Officer%')
         //                 ->first();
         // }
-        if (strpos($roleName, 'Sales Manager') !== false ) {
+        if (strpos($roleName, 'VP Sales') !== false ) {
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
@@ -3717,17 +3716,17 @@ class AssetMgmtController extends Controller
                 ->where('status_karyawan','!=','dummy')
                 ->first();
         }
-        else if (strpos($roleName, 'Sales Staff') !== false ) {
+        else if (strpos($roleName, 'Account Executive') !== false ) {
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')
-                ->where('roles.name','like', '%Sales Manager%')
+                ->where('roles.name','like', '%VP Sales%')
                 ->where('id_territory','like','%'.$territory_sales.'%')
                 ->whereNotNull('user_id')
                 ->where('status_karyawan','!=','dummy')
                 ->first();
         }
-        else if (strpos($roleName, 'Finance & Accounting Manager') !== false ) {
+        else if (strpos($roleName, 'VP Financial & Accounting') !== false ) {
             $atasan_pk = User::select('users.name','users.nik','roles.name as departement','phone')
                 ->join('role_user','role_user.user_id','=','users.nik')
                 ->join('roles','roles.id','=','role_user.role_id')

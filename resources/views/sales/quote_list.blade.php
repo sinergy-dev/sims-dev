@@ -89,7 +89,7 @@
 {{--                            </select>--}}
 {{--                        </div>--}}
 {{--                    </div>--}}
-                    @if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance Solutions')
+                    @if($role->name == 'Account Executive' || $role->name == 'Technology Alliance Solutions')
                     <div class="col-md-12 col-xs-12">
                         <div class="form-group btn-action-letter" style="float:right;">
                             <button type="button" class="btn btn-success btn-flat" style="width: 100px" data-target="#modalAdd" data-toggle="modal" onclick="addQuote(0)"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
@@ -730,17 +730,9 @@
         function searchCustom(startDate,endDate){
             var tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate='
 
-            $.each($('#inputFilterStatus').val(),function(key,value){
-                if (tempStatus == 'status[]=') {
-                    tempStatus = tempStatus + value
-                }else{
-                    tempStatus = tempStatus + '&status[]=' + value
-                }
-
-                if(value == ''){
-                    localStorage.removeItem("arrFilterBack")
-                }
-            })
+            let statusArray = $('#inputFilterStatus').val();
+            let encodedDivisi = statusArray.map(value => encodeURIComponent(value));
+            tempStatus = encodedDivisi.map(value => `status[]=${value}`).join('&');
 
             if (startDate != undefined) {
                 tempStartDate = tempStartDate + startDate
@@ -3092,13 +3084,13 @@
                                     return `<button style='width:70px' class="btn btn-xs btn-warning btnDraft" disabled >Draft</button>`;
                                 }
                             }else{
-                                if (roleName === 'Chief Executive Officer' && row.role_name === 'Sales Manager' && row.status === 'ON GOING'){
+                                if (roleName === 'Chief Executive Officer' && row.role_name === 'VP Sales' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
                                 }else if(roleName === 'Chief Operating Officer' && row.role_name === 'VP Solutions & Partnership Management' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
                                 }else if(roleName === 'VP Solutions & Partnership Management' && row.role_name === 'Technology Alliance Solutions' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
-                                }else if(roleName === 'Sales Manager' && row.role_name === 'Sales Staff' && row.status === 'ON GOING'){
+                                }else if(roleName === 'VP Sales' && row.role_name === 'Account Executive' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
                                 }else{
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style='width:70px' class="btn btn-xs btn-primary btnDetail">Detail</a>`;

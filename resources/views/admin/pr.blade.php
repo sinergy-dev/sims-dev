@@ -633,7 +633,7 @@
         },
       ],
       'columnDefs' : [
-          { 'visible': false, 'targets': [1,2,3,11,14] }
+          { 'visible': false, 'targets': [1,2,3,11,13] }
       ],
       "order": [[ 0, "desc" ]],
       "responsive":true,
