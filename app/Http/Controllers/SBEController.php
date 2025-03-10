@@ -456,9 +456,9 @@ class SBEController extends Controller
                 $data->where('tb_presales.nik_presales',$nik)->distinct()->get()->makeHidden('items_sbe');
             }
             
-        } elseif($cek_role->name == 'Sales Staff'){
+        } elseif($cek_role->name == 'Account Executive'){
             $data->where('sales_lead_register.nik',$nik)->distinct()->get()->makeHidden('items_sbe');
-        } else if($cek_role->name == 'Sales Manager'){
+        } else if($cek_role->name == 'VP Sales'){
             $data->where('u_sales.id_territory',$ter)->distinct()->get()->makeHidden('items_sbe');
         } else if($cek_role->name == 'PMO Officer'){
             $data->where('sales_lead_register.result','WIN')->distinct()->get()->makeHidden('items_sbe');

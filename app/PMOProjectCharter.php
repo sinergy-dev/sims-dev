@@ -197,10 +197,10 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Coordinator","VP Project Management","Account Executive","VP Sales","BCD Manager","Chief Operating Officer")');
                     } else{
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Coordinator","Project Management Manager","Account Executive","VP Sales","BCD Manager","Chief Operating Officer")');
                     }
                 }
     
@@ -208,10 +208,10 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Manager","VP Project Management","Account Executive","VP Sales","BCD Manager","Chief Operating Officer")');
                     } else {
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `roles`.`name` = 'Project Management Office Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                        ->orderByRaw('FIELD(position, "Project Manager","Project Management Office Manager","Sales Staff","Sales Manager","BCD Manager","Chief Operating Officer")');
+                        ->orderByRaw('FIELD(position, "Project Manager","Project Management Office Manager","Account Executive","VP Sales","BCD Manager","Chief Operating Officer")');
                     }
                 }
                 
@@ -270,7 +270,7 @@ class PMOProjectCharter extends Model
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                 ->select(
                     'users.name', 
-                    DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Delivery Project Coordinator') THEN 'Delivery Project Coordinator' WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Sales Staff') THEN 'Account Manager'  WHEN (`roles`.`name` = 'Sales Manager') THEN 'Account Manager' ELSE `roles`.`name` END) as position"), 
+                    DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Delivery Project Coordinator') THEN 'Delivery Project Coordinator' WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Account Executive') THEN 'Account Manager'  WHEN (`roles`.`name` = 'VP Sales') THEN 'Account Manager' ELSE `roles`.`name` END) as position"),
                     'roles.group as group',
                     'users.ttd as ttd_digital',
                     'users.email',
@@ -289,7 +289,7 @@ class PMOProjectCharter extends Model
                 foreach ($sign->get() as $key => $value) {
                     // if ($value->name == 'Agustinus Angger Muryanto' && $value->signed == 'true') {
                     //     $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `users`.`name` = '" . $get_name_sales->name . "')")
-                    //     ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management","Account Manager","Sales Manager")');
+                    //     ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management","Account Manager","VP Sales")');
                     // } else{
                         $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`name` = 'Agustinus Angger Muryanto' OR `roles`.`name` = 'Project Management Manager' OR `users`.`name` = '" . $get_name_sales->name . "')")
                         ->orderByRaw('FIELD(position, "Delivery Project Coordinator","VP Project Management", "Project Management Manager","Account Manager","Chief Operating Officer")')->havingRaw('signed = "true"');
@@ -347,7 +347,7 @@ class PMOProjectCharter extends Model
         $get_name_pm = PMO_assign::join('users', 'users.nik', 'tb_pmo_assign.nik')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_assign.id_project')->select('users.name')->where('id_project', $get_id_pmo->id)->first();
 
         $get_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')
-            ->select('users.name', 'roles.name as position', 'email', DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Sales Staff') THEN 'Account Manager' ELSE `roles`.`name` END) as position"))
+            ->select('users.name', 'roles.name as position', 'email', DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Account Executive') THEN 'Account Manager' ELSE `roles`.`name` END) as position"))
             ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `id_territory` is null OR `users`.`name` = '" . $get_name_sales->name . "' OR `users`.`name` = '" . $get_name_pm->name . "')")
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy')

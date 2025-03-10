@@ -139,7 +139,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-            } else if ($cek_role->name_role == 'Sales Manager') {
+            } else if ($cek_role->name_role == 'VP Sales') {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
@@ -184,7 +184,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-            } else if ($cek_role->name_role == 'Sales Staff') {
+            } else if ($cek_role->name_role == 'Account Executive') {
                 $count_lead = $total_lead->where('users.nik',$nik)
                         ->where('id_company','1')
                         ->count('lead_id');
@@ -651,9 +651,9 @@ class SalesLeadController extends Controller
                 } else {
                     $leadsnow->where('nik_presales', 'like', '%'.$nik.'%');
                 }
-            } else if ($cek_role->name_role == 'Sales Manager') {
+            } else if ($cek_role->name_role == 'VP Sales') {
                 $leadsnow->where('u_sales.id_territory', $ter);
-            } else if ($cek_role->name_role == 'Sales Staff') {
+            } else if ($cek_role->name_role == 'Account Executive') {
                 $leadsnow->where('u_sales.nik', $nik);
             } 
         }  
@@ -950,7 +950,7 @@ class SalesLeadController extends Controller
 
         $presales = false;
 
-        if ($cek_role->name_role == 'Sales Staff') {
+        if ($cek_role->name_role == 'Account Executive') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('sales_lead_register.nik',$nik);
             $total_open->where('sales_lead_register.result',"")->where('sales_lead_register.nik',$nik);
             $total_initial->where('sales_lead_register.result',"OPEN")->where('sales_lead_register.nik',$nik);
@@ -975,7 +975,7 @@ class SalesLeadController extends Controller
             } else {
                 $presales = false;
             }
-        } elseif ($cek_role->name_role == 'Sales Manager') {
+        } elseif ($cek_role->name_role == 'VP Sales') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('users.id_territory',$ter);
             $total_open->where('sales_lead_register.result',"")->where('users.id_territory',$ter);
             $total_initial->where('sales_lead_register.result',"OPEN")->where('users.id_territory',$ter);
@@ -1684,9 +1684,9 @@ class SalesLeadController extends Controller
                     $leads = $leads->where('nik_presales', 'like', '%'.$nik.'%');
                 }
                 
-            } else if ($cek_role->name_role == 'Sales Manager') {
+            } else if ($cek_role->name_role == 'VP Sales') {
                 $leads = $leads->where('u_sales.id_territory', $ter);
-            } else if ($cek_role->name_role == 'Sales Staff') {
+            } else if ($cek_role->name_role == 'Account Executive') {
                 $leads = $leads->where('u_sales.nik', $nik);
             } elseif ($cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->name_role == 'Synergy System Architecture Manager') {
                 $leads->where('u_sales.id_company','1');

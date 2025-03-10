@@ -1628,6 +1628,13 @@
         appendBottom = appendBottom + '      </div>'
 
         appendBottom = appendBottom + '      <div class="form-group">'
+        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Tax Base Other </label>'
+        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '          <input readonly="" style="text-align:right" type="text" class="form-control tax_base_other_preview" id="tax_base_other_previewData" data-value="'+i+'">'
+        appendBottom = appendBottom + '        </div>'
+        appendBottom = appendBottom + '      </div>'
+
+        appendBottom = appendBottom + '      <div class="form-group">'
         appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
         appendBottom = appendBottom + '        <div class="col-sm-4">'
         appendBottom = appendBottom + '          <input readonly="" style="text-align:right" type="text" class="form-control vat_tax_preview" id="vat_tax_previewData" data-value="'+i+'">'
@@ -1792,6 +1799,7 @@
         // tempGrand = sum - tempDiscount + tempVat + tempPb1 + tempService
 
         $("#vat_tax_previewData").val(formatter.format(tempVat))
+        $("#tax_base_other_previewData").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12))))
         $("#inputGrandTotalProductPreviewData").val(formatter.format(sum))
         $("#pb1_previewData").val(formatter.format(tempPb1))
         $("#service_previewData").val(formatter.format(tempService))
@@ -1844,6 +1852,11 @@
     }
     
   })
+
+  function customRound(num) {
+    var parseNum = parseFloat(num.replace(/\./g, "").replace(",", "."));
+    return Math.round(parseNum);
+  } 
 
   function loadDataSubmitted(){
     $.ajax({
@@ -2006,6 +2019,13 @@
         appendBottomProduct = appendBottomProduct + '      </div>'
 
         appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Tax Base Other</label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control tax_base_other pull-right" id="tax_base_other_preview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
         appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
         appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
         appendBottomProduct = appendBottomProduct + '          <input readonly="" style="text-align:right" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
@@ -2164,6 +2184,14 @@
 
           tempTotal = sum
 
+          if (valueVat == 11) {
+            valueVat = 12
+          }else if(valueVat == 1.2) {
+            valueVat = 1.2
+          }else{
+            valueVat = valueVat
+          }
+
           $('.title_tax').text(valueVat + '%')
         }else{
           tempGrand = sum
@@ -2182,6 +2210,10 @@
         // finalGrand = tempGrand + tempPb1 + tempService - tempDiscount
 
         $("#vat_tax_preview").val(formatter.format(tempVat))
+        $("#tax_base_other_preview").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12))))
+
+        console.log(formatter.format((tempTotal - tempDiscount)*11/12))
+
         $("#inputGrandTotalProductPreview").val(formatter.format(sum))
         $("#inputPb1_preview").val(formatter.format(tempPb1))
         $("#inputServiceCharge_preview").val(formatter.format(tempService))
@@ -3431,6 +3463,15 @@
             appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
 
+          appendBottom = appendBottom + '<div class="row">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+          appendBottom = appendBottom + '    <div class="pull-right">'
+          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Tax Base Other</span>'
+          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;text-align:right" class="form-control inputTaxBaseOtherPembandingModal" id="inputTaxBaseOtherPembandingModal" name="inputTaxBaseOtherPembandingModal">'
+          appendBottom = appendBottom + '    </div>'
+          appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
           appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '   <div class="pull-right">'
@@ -3568,6 +3609,14 @@
 
             tempTotal = sum
 
+            if (valueVat == 11) {
+              valueVat = 12
+            }else if (valueVat == 1.1) {
+              valueVat = 1.2
+            }else{
+              valueVat = valueVat
+            }
+
             $('.title_tax').text(valueVat == ''?'':valueVat + '%')
           }else{
             tempVat = 0
@@ -3588,6 +3637,7 @@
           $('.title_discount').text(result.pr.discount == 'false' || result.pr.discount == 0?"":parseFloat(result.pr.discount).toFixed(2)+"%")
 
           $("#vat_tax_PembandingModal").val(formatter.format(tempVat))
+          $("#inputTaxBaseOtherPembandingModal").val(customRound(formatter.format((tempTotal - tempDiscNominal)*11/12)))
           $("#inputPb1PembandingModal").val(formatter.format(tempPb1))
           $("#inputServiceChargePembandingModal").val(formatter.format(tempService))
           $("#inputDiscountPembandingModal").val(formatter.format(tempDiscNominal))
@@ -4923,12 +4973,21 @@
       }
 
     $('.money').mask('#.##0,00', {reverse: true})
+    localStorage.setItem('status_tax',valueVat)
 
     if (!isNaN(valueVat)) {
       console.log("hoooo")
       console.log(valueVat)
       tempVat = Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
       if (!isNaN(value)) {
+        if (valueVat == 11) {
+          valueVat = 12
+        }else if(valueVat == 1.1) {
+          valueVat = 1.2
+        }else {
+          valueVat = valueVat
+        }
+
         $('.title_tax_add_pembanding').text(valueVat == '' || valueVat == 0?"":valueVat + '%')
 
         $("#vat_tax").val(formatter.format(tempVat))
@@ -4950,6 +5009,7 @@
     tempPb1 = Math.round(((parseFloat(sum) - tempDiscNominal)* ($("#inputPb1Final").val() == ""?0:parseFloat($("#inputPb1Final").val())) / 100))
     tempService = Math.round(((parseFloat(sum) - tempDiscNominal) * ($("#inputServiceChargeFinal").val() == ""?0:parseFloat($("#inputServiceChargeFinal").val())) / 100))
     
+    $("#tax_base_other_pembanding").val(formatter.format(customRound(formatter.format((sum - tempDiscNominal)*11/12))))
     $("#inputPb1Nominal").val(formatter.format(tempPb1))
     $("#inputServiceChargeNominal").val(formatter.format(tempService))
     $("#inputDiscountFinal").val((tempDiscount))
@@ -4960,7 +5020,6 @@
     console.log(tempPb1)
 
     $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
-    localStorage.setItem('status_tax',valueVat)
     localStorage.setItem('tax_pb',$("#inputPb1Final").val() == ""?0:parseFloat($("#inputPb1Final").val()))
     localStorage.setItem('service_charge',$("#inputServiceChargeFinal").val() == ""?0:parseFloat($("#inputServiceChargeFinal").
       val()))
@@ -5069,6 +5128,15 @@
           appendBottom = appendBottom + '</div>'
 
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Tax Base Other</span>'
+            appendBottom = appendBottom + '      <input disabled type="text" style="width:250px;display: inline;" class="form-control tax_base_other_pembanding" id="tax_base_other_pembanding" name="tax_base_other_pembanding">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+
+          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
             appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + ' <div class="pull-right">'
             appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax_add_pembanding"></span>'
@@ -5087,13 +5155,13 @@
             // appendBottom = appendBottom + '        <a onclick="changeVatValue(12)">Vat 12%</a>'
             // appendBottom = appendBottom + '       </li>'
             appendBottom = appendBottom + '       <li>'
-            appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 12%</a>'
             appendBottom = appendBottom + '       </li>'
             // appendBottom = appendBottom + '       <li>'
             // appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.2) +')">Vat 1,2%</a>'
             // appendBottom = appendBottom + '       </li>'
             appendBottom = appendBottom + '       <li>'
-            appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,1%</a>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,2%</a>'
             appendBottom = appendBottom + '       </li>'
             appendBottom = appendBottom + '      </ul>'
             appendBottom = appendBottom + '  </div>'
@@ -5111,6 +5179,7 @@
             appendBottom = appendBottom + '    </div>'
             appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
+
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
             appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '    <div class="pull-right" style="display:flex">'
@@ -5120,6 +5189,7 @@
             appendBottom = appendBottom + '    </div>'
             appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
+
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
             appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '    <div class="pull-right">'

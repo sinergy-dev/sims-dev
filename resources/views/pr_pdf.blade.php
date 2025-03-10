@@ -199,6 +199,19 @@
 			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_discount,2)}}</th>
 		</tr>
 		@endif
+		<tr>
+			<th></th>
+			<th></th>
+			@if($data->type_of_letter == 'EPR')
+			<th></th>
+			<th></th>
+			@endif
+			<th style="text-align:right">Tax Base Other</th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($tax_base_other,2)}}</th>
+		</tr>
 		@if($data->status_tax != 'False')
 			<tr>
 				<th></th>
@@ -411,12 +424,25 @@
 			<th></th>
 			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($data->amount_idr_before_tax,2)}}</th>
 		</tr>
+		@if($data->date_pid >= "2025-01-01")
 		<tr>
 			<th></th>
 			<th></th>
-			@if($data->date_pid >= "2022-04-01")
-				<th style="text-align:right" 11%>VAT 11%</th>
-			@else 
+			<th style="text-align:right">Tax Base Other</th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($data->tax_base_other_customer,2)}}</th>
+		</tr>
+		@endif
+		<tr>
+			<th></th>
+			<th></th>
+			@if($data->date_pid >= "2025-01-01")
+				<th style="text-align:right" 11%>VAT 12%</th>
+			@elseif($data->date_pid >= "2022-04-01" && $data->date_pid <= "2024-12-31") 
+				<th style="text-align: right" 11%>VAT 11%</th>
+			@else
 				<th style="text-align: right" 11%>VAT 10%</th>
 			@endif
 			<th></th>

@@ -334,10 +334,10 @@
     @endif
     <p class="text-10" style="margin-top: 0; padding: 0;"><u>{{$config->from}}</u></p>
     <p class="text-10"><i>
-            @if($role->name == 'Sales Staff')
+            @if($role->name == 'Account Executive')
                 Account Manager
-            @elseif($role->name == 'Sales Manager')
-                VP Of {{$territory}}
+            @elseif($role->name == 'VP Sales')
+                VP Of Sales {{$territory}}
             @else
                 {{$role->name}}
             @endif
