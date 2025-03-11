@@ -54,11 +54,6 @@
         <h1>
             <a id="BtnBack"><button class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i>&nbspBack</button></a> Quotation Detail
         </h1>
-{{--        <ol class="breadcrumb">--}}
-{{--            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>--}}
-{{--            <li class="active">Admin</li>--}}
-{{--            <li class="active">Purchase Request Detail</li>--}}
-{{--        </ol>--}}
     </section>
     <section class="content">
         <div class="row" id="showDetail">

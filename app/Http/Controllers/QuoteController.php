@@ -640,7 +640,7 @@ class QuoteController extends Controller
             if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
                 $quote->position = 'SPM';
             }else if($role->name = 'Account Executive' || $role->name == 'VP Sales'){
-                $quote->position = 'TAM';
+                $quote->position = $request['position'];
             }else if($role->name == 'Chief Operating Officer'){
                 $quote->position == 'DIR';
             }
@@ -688,7 +688,7 @@ class QuoteController extends Controller
             if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions' || $role->name == 'Product Development Specialist Manager'){
                 $quote->position = 'SPM';
             }else if($role->name = 'Account Executive' || $role->name == 'VP Sales'){
-                $quote->position = 'TAM';
+                $quote->position = $request['position'];
             }else if($role->name == 'Chief Operating Officer'){
                 $quote->position == 'DIR';
             }

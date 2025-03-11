@@ -174,7 +174,6 @@
         <!--MODAL ADD-->
         <div class="modal fade" id="modalAdd" role="dialog" data-backdrop="static">
             <div class="modal-dialog modal-lg">
-                <!-- Modal content-->
                 <div class="modal-content modal-md">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="location.reload()">
@@ -196,6 +195,17 @@
                                         </select>
                                         <span class="help-block" style="display:none;">Please fill Lead ID!</span>
                                     </div>
+                                    @if($role->name == 'Account Executive')
+                                        <div class="form-group">
+                                            <label for="">Position</label>
+                                            <select type="text" class="form-control" name="position" id="position" required>
+                                                <option value="">--Choose Position--</option>
+                                                <option value="TAM">TAM</option>
+                                                <option value="DIR">DIR</option>
+                                            </select>
+                                            <span class="help-block" style="display:none;">Please fill Position!</span>
+                                        </div>
+                                    @endif
                                     <div class="form-group">
                                         <label>Customer</label>
                                         <input type="text" class="form-control" name="customer" id="customer" required disabled>
@@ -451,186 +461,6 @@
             </div>
         </div
         >
-
-        <!-- BACKDATE -->
-        <div class="modal fade" id="letter_backdate" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content modal-md">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add Quote (Backdate)</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" action="{{url('/store_quotebackdate')}}" id="quote_backdate" name="quote_backdate">
-                            @csrf
-                            <div class="form-group">
-                                <label for="">Date</label>
-                                <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <input type="text" class="form-control pull-right date" name="date" id="date_backdate">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Backdate Number</label>
-                                <select type="text" class="form-control disabled" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" disabled>
-                                </select>
-                                <span id="errorname" style="color:red"></span>
-                                <span class="pull-right" style="display:none;cursor: pointer;" id="addBackdateNum"><i class="fa fa-plus"></i> backdate number</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Position</label>
-                                <select type="text" class="form-control" name="position" id="position" required>
-                                    <option value="">--Choose Position--</option>
-                                    <option value="TAM">TAM</option>
-                                    <option value="DIR">DIR</option>
-                                    <option value="MSM">MSM</option>
-                                    <option value="PMS">PMS</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Customer</label>
-                                <select class="form-control" id="customer_quote_backdate" name="customer_quote_backdate" required style="width: 100%">
-                                    @foreach($customer as $data)
-                                        <option value="{{$data->id_customer}}">{{$data->customer_legal_name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Attention</label>
-                                <input type="text" class="form-control" placeholder="Enter Attention" name="attention" id="attention">
-                            </div>
-                            <div class="form-group">
-                                <label for="">Title</label>
-                                <input type="text" class="form-control" placeholder="Enter Title" name="title" id="title">
-                            </div>
-                            <div class="form-group">
-                                <label for="">Project</label>
-                                <input type="text" class="form-control" placeholder="Enter Project" name="project" id="project">
-                            </div>
-                            <div class="form-group">
-                                <label for="">Description</label>
-                                <textarea class="form-control" id="description" name="description" placeholder="Enter Description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Division</label>
-                                <select type="text" class="form-control" name="division" id="division" required>
-                                    <option value="">--Choose Division--</option>
-                                    <option>PMO</option>
-                                    <option>MSM</option>
-                                    <option>SAL</option>
-                                    <option>PMS</option>
-                                </select>
-                            </div>
-                            <!-- <div class="form-group">
-                              <label for="">Project ID</label>
-                              <input type="text" class="form-control" placeholder="Enter Project ID" name="project_id" id="project_id">
-                            </div> -->
-                            <div class="form-group" id="pid">
-                                <label for="">Project ID</label>
-                                <select type="text" class="form-control select2" name="project_id_backdate" id="project_id_backdate" style="width: 100%">
-                                    <option value="">--Choose Project Id--</option>
-                                    @foreach($pid as $data)
-                                        <option value="{{$data->id_project}}">{{$data->id_project}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Project Type</label>
-                                <select class="form-control" id="project_type" name="project_type" required style="width: 100%">
-                                    <option value="">--Choose Project Type--</option>
-                                    <option value="Supply Only">Supply Only</option>
-                                    <option value="Maintenance">Maintenance</option>
-                                    <option value="Implementation">Implementation</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-                                <button type="submit" class="btn btn-primary" id="addBackdate"><i class="fa fa-check"> </i>&nbspSubmit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!--MODAL EDIT-->
-        <div class="modal fade" id="modalEdit" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <!-- Modal content-->
-                <div class="modal-content modal-md">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Edit Quote</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" action="{{url('/quote/update')}}" id="modalEditQuote" name="modalQuote">
-                            @csrf
-                            <div class="form-group" hidden>
-                                <label>Quote Number</label>
-                                <input class="form-control" id="edit_quote_number" name="quote_number">
-                            </div>
-                            <div class="form-group">
-                                <label>Position</label>
-                                <select class="form-control" id="edit_position" name="edit_position" required>
-                                    <option value="TAM">TAM</option>
-                                    <option value="DIR">DIR</option>
-                                    <option value="MSM">MSM</option>
-                                    <option value="PMS">PMS</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="">Date</label>
-                                <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <input type="date" class="form-control pull-right" name="edit_date" id="edit_date">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>To</label>
-                                <select id="edit_to" name="edit_to" class="form-control" style="width:100%"></select>
-                                <!-- <input class="form-control" id="edit_to" placeholder="Enter To" name="edit_to" > -->
-                            </div>
-
-                            <div class="form-group">
-                                <label>Attention</label>
-                                <input class="form-control" id="edit_attention" placeholder="Enter Attention" name="edit_attention" >
-                            </div>
-
-                            <div class="form-group">
-                                <label>Title</label>
-                                <input class="form-control" id="edit_title" placeholder="Enter Title" name="edit_title" >
-                            </div>
-
-                            <div class="form-group">
-                                <label>Project</label>
-                                <input class="form-control" id="edit_project" name="edit_project" placeholder="Enter Project">
-                            </div>
-                            <div class="form-group">
-                                <label for="">Description</label>
-                                <textarea class="form-control" id="edit_description" name="edit_description" placeholder="Enter Description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Project ID</label>
-                                <input class="form-control" id="edit_project_id" name="edit_project_id" placeholder="Enter Project ID">
-                            </div>
-                            <div class="form-group">
-                                <label>Note</label>
-                                <input class="form-control" id="edit_note" name="edit_note" placeholder="Enter Note">
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-                                <button type="submit" class="btn btn-success"><i class="fa fa-check"> </i>&nbspUpdate</button>
-                                <!-- <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspUpdate</button> -->
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
 @endsection
 @section('scriptImport')
@@ -1151,7 +981,9 @@
                             $("#nextBtnAdd").attr('onclick','nextPrevUnfinished(1)')
                         }
                         $('#leadId').val(data.quote.lead_id).trigger('change')
-                        // $('#leadId').val(data.quote.lead_id).trigger('click')
+                        @if($role->name == 'Account Executive')
+                            $('#position').val(data.quote.position)
+                        @endif
                         $('#subject').val(data.quote.title)
                         $('#date').val(data.quote.date)
                         $('#email').val(data.quote.email)
@@ -1487,7 +1319,15 @@
                     $('#leadId').closest('.form-group').addClass('has-error')
                     $('#leadId').closest('.form-group').find('span').show();
                     $('#leadId').prev('.input-group-addon').css("background-color","red");
-                }else if($('#customer').val() === ""){
+                }
+                @if($role->name == 'Account Executive')
+                    else if($('#position').val() === ""){
+                        $('#position').closest('.form-group').addClass('has-error')
+                        $('#position').closest('.form-group').find('span').show();
+                        $('#position').prev('.input-group-addon').css("background-color","red");
+                    }
+                @endif
+                else if($('#customer').val() === ""){
                     $('#customer').closest('.form-group').addClass('has-error')
                     $('#customer').closest('.form-group').find('span').show();
                     $('#customer').prev('.input-group-addon').css("background-color","red");
@@ -1547,6 +1387,9 @@
                                         telp: $('#no_telp').val(),
                                         email: $('#email').val(),
                                         building: $('#building').val(),
+                                        @if($role->name =='Account Executive')
+                                            position: $('#position').val(),
+                                        @endif
                                         street: $('#street').val(),
                                         city: $('#city').val(),
                                         subject: $('#subject').val(),
@@ -1600,7 +1443,6 @@
                         }
                         addQuote(currentTab);
                     }
-
                 }
             }else if(currentTab == 1){
                 if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
@@ -2052,7 +1894,15 @@
                     $('#leadId').closest('.form-group').addClass('has-error')
                     $('#leadId').closest('.form-group').find('span').show();
                     $('#leadId').prev('.input-group-addon').css("background-color","red");
-                }else if($('#customer').val() === ""){
+                }
+                @if($role->name == 'Account Executive')
+                    else if($('#position').val() === ""){
+                        $('#position').closest('.form-group').addClass('has-error')
+                        $('#position').closest('.form-group').find('span').show();
+                        $('#position').prev('.input-group-addon').css("background-color","red");
+                    }
+                @endif
+                else if($('#customer').val() === ""){
                     $('#customer').closest('.form-group').addClass('has-error')
                     $('#customer').closest('.form-group').find('span').show();
                     $('#customer').prev('.input-group-addon').css("background-color","red");
@@ -2110,6 +1960,9 @@
                                     telp: $('#no_telp').val(),
                                     email: $('#email').val(),
                                     building: $('#building').val(),
+                                    @if($role->name =='Account Executive')
+                                        position: $('#position').val(),
+                                    @endif
                                     street: $('#street').val(),
                                     city: $('#city').val(),
                                     subject: $('#subject').val(),
