@@ -1165,16 +1165,6 @@ class AssetMgmtController extends Controller
         $storeDetail->id_asset = $request->id_asset;
         $updateAssetMgmt = AssetMgmt::where('id',$request->id_asset)->orderby('id','desc')->first();
 
-        if (isset($request->inputPic)) {
-            $updateAssetMgmt->status = 'Installed';
-            $updateAssetMgmt->update();
-        }else{
-            if ($updateAssetMgmt->status != 'Rent' || $updateAssetMgmt != 'Unavailable') {
-                $updateAssetMgmt->status = 'Available';
-                $updateAssetMgmt->update();
-            }
-        }
-
         if ($update->id_device_customer != $request->idDeviceCustomer) {
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
@@ -1396,9 +1386,8 @@ class AssetMgmtController extends Controller
         }
         $storeDetail->maintenance_end = $request->maintenanceEnd;
 
-
-        $updatePic = ($update->pic === null) ? "null" : $update->pic;
-        $requestPic = ($request->inputPic === null) ? "null" : $request->inputPic;
+        $updatePic = !isset($update->pic) ? "" : $update->pic;
+        $requestPic = !isset($request->inputPic) ? "" : $request->inputPic;
         
         if ($updatePic != $requestPic && $update->pid == 'INTERNAL') {
             $checkBASTPengembalian = DB::table('tb_asset_management_dokumen')
@@ -1412,8 +1401,8 @@ class AssetMgmtController extends Controller
                 // $storeDetailAvailable->pic = null;
                 // $storeDetailAvailable->save();   
 
-                $pdfPathPengembalian = $this->getPdfBASTPengembalian($update->id_asset, $update->id);
-                $this->uploadPdfBASTPengembalian($update->id_asset, $pdfPathPengembalian);
+                //$pdfPathPengembalian = $this->getPdfBASTPengembalian($update->id_asset, $update->id);
+                //$this->uploadPdfBASTPengembalian($update->id_asset, $pdfPathPengembalian);
             }
 
 
@@ -1514,8 +1503,8 @@ class AssetMgmtController extends Controller
         $storeDetail->save();
 
         if ($updatePic != $requestPic) {
-            $pdfPathBaru = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
-            $this->uploadPdfBAST($request->id_asset,$pdfPathBaru);
+            //$pdfPathBaru = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
+            //$this->uploadPdfBAST($request->id_asset,$pdfPathBaru);
 
             $to = User::select('email','name')
                     ->join('role_user','role_user.user_id','=','users.nik')
