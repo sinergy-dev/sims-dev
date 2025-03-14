@@ -1067,8 +1067,10 @@
             })
 
             var pic = $("#inputPIC");
-            var option = new Option(result.text_name, result.pic, true, true);
-            pic.append(option).trigger('change');
+            if (result.pic != null) {
+              var option = new Option(result.text_name, result.pic, true, true);
+              pic.append(option).trigger('change');
+            }
 
             let labelPr = $("<label>",{
               text: "PR"
@@ -1521,7 +1523,7 @@
             var option = new Option(result.category_text, result.category_code, true, true);
             categorySelect.append(option).trigger('change');
 
-            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Managed Service Manager')->exists()}}") {
+            if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Synergy System & Services Manager')->exists()}}") {
               if (result.pid != null) {
                 $("#selectEngAssign").closest(".form-group").show() 
               }else{
@@ -2105,7 +2107,7 @@
               formData.append('maintenanceStart',$("#inputMaintenanceStart").val())
               formData.append('maintenanceEnd',$("#inputMaintenanceEnd").val())
               formData.append('servicePoint',$("#service_point").val())
-              formData.append('inputPic',$("#inputPIC").val()) //samain buat status yg updateAsset
+              formData.append('inputPic',$("#inputPIC").val() == null?'':$("#inputPIC").val()) //samain buat status yg updateAsset
               formData.append('accessoris',$("#inputAccessoris").val())
 
               if ($('#inputBuktiAsset').is(":visible")) {
