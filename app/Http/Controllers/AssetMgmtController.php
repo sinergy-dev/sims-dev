@@ -1401,8 +1401,8 @@ class AssetMgmtController extends Controller
                 // $storeDetailAvailable->pic = null;
                 // $storeDetailAvailable->save();   
 
-                //$pdfPathPengembalian = $this->getPdfBASTPengembalian($update->id_asset, $update->id);
-                //$this->uploadPdfBASTPengembalian($update->id_asset, $pdfPathPengembalian);
+                $pdfPathPengembalian = $this->getPdfBASTPengembalian($update->id_asset, $update->id);
+                $this->uploadPdfBASTPengembalian($update->id_asset, $pdfPathPengembalian);
             }
 
 
@@ -1503,8 +1503,8 @@ class AssetMgmtController extends Controller
         $storeDetail->save();
 
         if ($updatePic != $requestPic) {
-            //$pdfPathBaru = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
-            //$this->uploadPdfBAST($request->id_asset,$pdfPathBaru);
+            $pdfPathBaru = $this->getPdfBASTAsset($request->id_asset,$storeDetail->id);
+            $this->uploadPdfBAST($request->id_asset,$pdfPathBaru);
 
             $to = User::select('email','name')
                     ->join('role_user','role_user.user_id','=','users.nik')
@@ -3286,7 +3286,7 @@ class AssetMgmtController extends Controller
             $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
-                        ->where('roles.group','Supply Chain, CPS & Asset Management')
+                        ->where('roles.group','Internal Chain Management')
                         ->where('roles.name','like','VP%')
                         ->first();
         }else{
@@ -3294,6 +3294,7 @@ class AssetMgmtController extends Controller
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('roles.mini_group','Supply Chain & IT Support')
+                        ->orWhere('roles.mini_group','Internal Operation Support Manager')
                         ->where('roles.name','like','%Manager%')
                         ->first(); 
         }
@@ -3638,7 +3639,7 @@ class AssetMgmtController extends Controller
             $atasan_pp = User::select('users.name','users.nik','roles.name as departement','phone','ttd')
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
-                        ->where('roles.group','Supply Chain, CPS & Asset Management')
+                        ->where('roles.group','Internal Chain Management')
                         ->where('roles.name','like','VP%')
                         ->first();
         }else{
@@ -3646,6 +3647,7 @@ class AssetMgmtController extends Controller
                         ->join('role_user','role_user.user_id','=','users.nik')
                         ->join('roles','roles.id','=','role_user.role_id')
                         ->where('roles.mini_group','Supply Chain & IT Support')
+                        ->orWhere('roles.mini_group','Internal Operation Support Manager')
                         ->where('roles.name','like','%Manager%')
                         ->first(); 
         }
