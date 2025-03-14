@@ -1046,10 +1046,17 @@
             let input = $("<select>",{
               class: "form-control",
               name: "inputPIC",
-              id: "inputPIC"
+              id: "inputPIC",
+              onchange:"clearValidationOnChange(this)"
             });
 
-            picContainer.append(label,input);
+            let span = $("<span>",{
+              text: "Please fill Name PIC - Department!",
+              style: "display:none",
+              class:"help-block text-red"
+            });
+
+            picContainer.append(label,input,span);
 
             $("#inputPIC").select2({
               ajax: {
@@ -1060,11 +1067,24 @@
                       };
                   },
               },
-              placeholder: 'Select PIC'
+              placeholder: 'Select PIC',
+              allowClear:true
             }).on('select2:select', function(e) {
-              $("#inputInstalledDate").val("")
-              $("#inputInstalledDate").closest(".input-group").next("span").show()
-            })
+              console.log(e.params.data.id)
+              if (e.params.data.id == null || e.params.data.id == '') {
+                $("#inputInstalledDate").val("")
+                $("#inputInstalledDate").closest(".input-group").next("span").hide()
+              }else{
+                $("#inputInstalledDate").val("")
+                $("#inputInstalledDate").closest(".input-group").next("span").show()
+              }
+            }).on('select2:unselect', function (e) {
+                $("#inputInstalledDate").val("")
+                $("#inputInstalledDate").closest(".input-group").next("span").hide()
+                $("#inputBeritaAcara").val("")
+                $("#span_link_drive_berita_acara").hide()
+            });
+
 
             var pic = $("#inputPIC");
             if (result.pic != null) {
@@ -1192,13 +1212,27 @@
                 },
               },
               placeholder:"Select 2nd Level Support",
-              tags:true
+              tags:true,
+              createTag: function(params) {
+                // Capitalize the first letter of the new tag
+                const capitalizedTag = capitalizeFirstLetter(params.term);
+                return {
+                    id: capitalizedTag,
+                    text: capitalizedTag
+                };
+              }
             })
 
             if (result.second_level_support != null) {
               var levelSupportSelect = $("#selectLevelSupport");
               var optionLevelSupport = new Option(result.second_level_support, result.second_level_support, true, true);
               levelSupportSelect.append(optionLevelSupport).trigger('change');
+            }
+
+            if (result.status == 'Available') {
+              $("#btnAssignPeripheral").show()
+            }else{
+              $("#btnAssignPeripheral").hide()
             }
           }
 
@@ -1284,10 +1318,8 @@
 
           $("#titleDetailIdAsset").text(result.id_asset)
           if(result.status == "Available"){
-            $("#btnAssignPeripheral").show()
             $("#txtAreaReason").closest(".form-group").hide()
           }else if(result.status == "Installed"){
-            $("#btnAssignPeripheral").hide()
             $("#txtAreaReason").closest(".form-group").hide()
           }else if(result.status == "Rent" || result.status == "Unavailable"){
             $("#txtAreaReason").closest(".form-group").show()
@@ -1368,13 +1400,18 @@
           })
 
           $("#updateAssetDetail").click(function(){
-            if ($("#inputInstalledDate").closest(".input-group").next("span").is(":visible") == false) {
-              $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
-            }else{
+            if($("#inputPIC").closest(".form-group").find(".help-block").is(":visible") == true){
+              Swal.fire({
+                icon:'warning',
+                text:'Please Select Name PIC - Department!'
+              })
+            }else if ($("#inputInstalledDate").closest(".input-group").next("span").is(":visible") == true) {
               Swal.fire({
                 icon:'warning',
                 text:'Please fill New Installed Date!'
               })
+            }else{
+              $("#updateAssetDetail").attr("onclick",UpdateAsset(result.id,"detail"))
             }
           })
 
@@ -1561,7 +1598,17 @@
               if ($("#txtAreaReason").val() == "") {
                 $("#txtAreaReason").closest(".form-group").addClass("has-error")
               }
+            }else if (id == "Available") {
+              $("#txtAreaReason").closest(".form-group").hide()
+              $("#inputPIC").empty("")
+              $("#inputPIC").next("span").next(".help-block").hide()
+              $("#inputBeritaAcara").val("")
+              $("#span_link_drive_berita_acara").hide()
+            }else if (id == "Installed") {
+              $("#txtAreaReason").closest(".form-group").hide()
+              $("#inputPIC").next("span").next(".help-block").show()
             }else{
+              $("#inputPIC").next("span").next(".help-block").hide()
               $("#txtAreaReason").closest(".form-group").hide()
             }
           
@@ -1649,24 +1696,32 @@
             ]
           }).val(result.status_cust).trigger("change") 
 
-          $("#selectVendor,#selectVendorPeripheral").select2({
-            ajax:{
-              url: '{{url("asset/getVendor")}}',
-              data: function (params) {
-                return {
-                  q:params.term
-                };
+          $("#selectVendor, #selectVendorPeripheral").select2({
+              ajax: {
+                  url: '{{url("asset/getVendor")}}',
+                  data: function (params) {
+                    return {
+                      q:params.term
+                    };
+                  },
+                  processResults: function(data) {
+                      // Transforms the top-level key of the response object from 'items' to 'results'
+                      return {
+                          results: data
+                      };
+                  },
               },
-              processResults: function (data) {
-                // Transforms the top-level key of the response object from 'items' to 'results'
+              placeholder: "Select Vendor",
+              tags: true,
+              createTag: function(params) {
+                // Capitalize the first letter of the new tag
+                const capitalizedTag = capitalizeFirstLetter(params.term);
                 return {
-                  results: data
+                    id: capitalizedTag,
+                    text: capitalizedTag
                 };
-              },
-            },
-            placeholder:"Select Vendor",
-            tags:true,
-          })
+              }
+          });
 
           // Fetch the preselected item, and add to the control
           if (result.vendor != null) {
@@ -1911,20 +1966,20 @@
     
     function UpdateAsset(id_asset,type){
       let rma = "", notes = "", assetOwner = "", vendor = "", typeDevice = "", serialNumber = "", spesifikasi = "", tanggalBeli = "", hargaBeli = "", nilaiBuku = ""
-      if (type == "peripheral") {
-        rma = $("input[name='inputRMAPeripheral']").val()
-        notes = $("textarea[name='txtAreaNotesPeripheral']").val()
-        assetOwner = $("select[name='selectAssetOwnerPeripheral']").val()
-        vendor = $("select[name='selectVendorPeripheral']").val()
-        typeDevice = $("select[name='selectTypeDevicePeripheral']").val()
-        serialNumber = $("input[name='inputSerialNumberPeripheral']").val()
-        spesifikasi = $("input[name='inputSpesifikasiPeripheral']").val()
-        status = $("select[name='selectStatusPeripheral']").val()
-        tanggalBeli = $("input[name='inputTglBeliPeripheral']").val()
-        hargaBeli = $("input[name='inputHargaPeripheral']").val()
-        nilaiBuku = $("input[name='inputNilaiBukuPeripheral']").val()
+        if (type == "peripheral") {
+          rma = $("input[name='inputRMAPeripheral']").val()
+          notes = $("textarea[name='txtAreaNotesPeripheral']").val()
+          assetOwner = $("select[name='selectAssetOwnerPeripheral']").val()
+          vendor = $("select[name='selectVendorPeripheral']").val()
+          typeDevice = $("select[name='selectTypeDevicePeripheral']").val()
+          serialNumber = $("input[name='inputSerialNumberPeripheral']").val()
+          spesifikasi = $("input[name='inputSpesifikasiPeripheral']").val()
+          status = $("select[name='selectStatusPeripheral']").val()
+          tanggalBeli = $("input[name='inputTglBeliPeripheral']").val()
+          hargaBeli = $("input[name='inputHargaPeripheral']").val()
+          nilaiBuku = $("input[name='inputNilaiBukuPeripheral']").val()
 
-        url = "{{url('asset/updateAsset')}}"
+          url = "{{url('asset/updateAsset')}}"
         }else{
           rma = $("input[name='inputRMA']").val()
           notes = $("textarea[name='txtAreaNotes']").val()

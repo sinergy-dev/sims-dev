@@ -321,17 +321,13 @@ class TimesheetController extends Controller
 
     public function addTimesheet(Request $request)
     {
-        // return $request->id_activity;
         $startDate = Carbon::now()->startOfMonth()->format("Y-m-d");
         $endDate = Carbon::now()->endOfMonth()->format("Y-m-d");
 
         $startDateInput = $request->startDate . '00:01:02';
         $endDateInput = $request->endDate . '23:59:59';
 
-        // $toDate = Carbon::parse($startDateInput)->addDays(1);
-        // $fromDate = Carbon::parse($request->endDate)->addDays(1);
         Carbon::setTestNow();
-        // $allDaysPlanned = $days+1;
 
         if ($request->isGCal == 'true') {
             $toDate = Carbon::createFromFormat('Y-m-d', $request->endDate, 'Asia/Jakarta');
@@ -500,8 +496,6 @@ class TimesheetController extends Controller
                 }
             }
         } 
-
-        // return $storeAll;
     }
 
     public function getActivitybyDate(Request $request)
@@ -7974,8 +7968,6 @@ class TimesheetController extends Controller
         $update->start_date   = $request->dates;
         $update->end_date     = $request->dates;
         $update->update();
-
-        return $update;
     }
 
     public function detailActivitybyPid(Request $request)

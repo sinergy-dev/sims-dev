@@ -1717,22 +1717,14 @@ PMO
             	}
 
             	if (result.data.sendCss == 'false') {
-            		// if (table.row(0).data()) {
-            		// 	if(table.row(0).data().milestone == "Submit Customer Satisfaction Survey (CSS)" ){
-	            	// 		$("#btnSendCSS").prop("disabled",false)
-	            	// 		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-	            	// 		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-	            	// 	} 
-            		// }    
             		table.rows().every(function() {
 		                var rowData = this.data()
 		                if (rowData.milestone == "Submit Customer Satisfaction Survey (CSS)") {
 		                	$("#btnSendCSS").prop("disabled",false)
-	            			$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
-	            			$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
-
+	            			  $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
+	            			  $("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").prop("disabled",true)
 		                }
-		            });       		         		
+		            }); 
             	}else{
             		$("#btnSendCSS").prop("disabled",true)
             	}
@@ -1756,12 +1748,6 @@ PMO
 			                }
 		                })
 	            	}else{
-	            		// if(table.row(0).length > 0){
-		            	// 	if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-		            	// 		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-		            	// 		$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-		            	// 	}	
-	            		// }
 	            		table.rows().every(function() {
 			            	if (table.data().count() == 1) {
 			                	var rowData = this.data()
@@ -1786,7 +1772,7 @@ PMO
 	            			$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"update")')
 	            			$("#btnFinalProject").find("i").removeClass("fa fa-plus").addClass("fa fa-wrench")
 	            			$("#btnFinalProject").removeAttr("disabled")
-		            		table.rows().every(function() {
+	            			table.rows().every(function() {
 				                var rowData = this.data()
 				                if (rowData.milestone == "Submit Final Project Closing Report") {
 			                		$("input[name='cbTaskDone'][value="+ rowData.id_gantt +"]").closest("div").addClass("disabled")
@@ -1844,7 +1830,7 @@ PMO
 	            		}
 	            	}else{
 	            		$("#btnFinalProject").attr("disabled")
-	            	}           	
+	            	}	            
             	}
 
             	if (result.data.isProgressReport == 'true'){
@@ -4857,11 +4843,11 @@ PMO
 		    // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
 		    //   $("#btnFinalProject").prop("disabled",false)
 		    // }
-		},
+		    },
         drawCallback: function(settings) {
-	        if (!accesable.includes("cbTaskDone")) {
-	          var api = this.api();
-	          api.columns(4).visible(false);          
+        	if (!accesable.includes("cbTaskDone")) {	
+	        	var api = this.api();
+	          api.columns(4).visible(false);    
 	        }
 
 	        $('input[type="checkbox"].minimal').iCheck({
