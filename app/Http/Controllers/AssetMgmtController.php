@@ -1395,7 +1395,7 @@ class AssetMgmtController extends Controller
                                     ->where('document_name', 'Berita Acara Pengembalian')
                                     ->orderBy('id','desc')->first();
 
-            if ($checkBASTPengembalian == null && $update->pic !== "null") {
+            if ($checkBASTPengembalian == null && $update->pic !== null) {
                 // $storeDetailAvailable = $update->replicate();
                 // $storeDetailAvailable->installed_date = null;
                 // $storeDetailAvailable->pic = null;
