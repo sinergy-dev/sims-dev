@@ -4,11 +4,13 @@ Dashboard
 @endsection
 @section('head_css')
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.css" integrity="sha512-OWGg8FcHstyYFwtjfkiCoYHW2hG3PDWwdtczPAPUcETobBJOVCouKig8rqED0NMLcT9GtE4jw6IT1CSrwY87uw==" crossorigin="anonymous" referrerpolicy="no-referrer" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+
 <style type="text/css">
   .icon{
     width: 90px;
   }
-  
+
   .table-sip tbody tr:first-child td {
       background-color: #ffd324;
   }
@@ -245,12 +247,12 @@ Dashboard
               </tr>
             </thead>
             <tbody id="tbody-table-sip-ter">
-             
+
             </tbody>
           </table>
         </div>
       </div>
-    </div>  
+    </div>
   </div>
 
   <div class="row" id="BoxTopWinTerritory" style="display:none;">
@@ -314,8 +316,8 @@ Dashboard
           </div>
         </div>
     </div>
-  </div>        
-    
+  </div>
+
   <div class="row" id="BoxTotalLead" style="display:none;">
     <div class="col-lg-6 col-xs-12" id="boxChartTotalAmountLead">
       <div class="box box-primary">
@@ -352,7 +354,7 @@ Dashboard
               <canvas id="barChartByStatus"></canvas>
           </div>
         </div>
-    </div>  
+    </div>
   </div>
 
   <div class="row" id="BoxTotalLeadByStatus" style="display:none;">
@@ -365,8 +367,8 @@ Dashboard
               <canvas id="barChartByStatus"></canvas>
           </div>
         </div>
-    </div>  
- 
+    </div>
+
     <div class="col-lg-3 col-xs-12" id="boxChartDonutWinLose2" style="display:none;">
       <div class="box box-danger">
           <div class="box-header with-border">
@@ -387,7 +389,7 @@ Dashboard
             <canvas id="myPieChart2" width="100%" height="100%"></canvas>
           </div>
         </div>
-    </div>      
+    </div>
   </div>
 
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -444,7 +446,7 @@ Dashboard
                   <li>Untuk status Multiyears / Blanket, Deal Price adalah PO tahun ini dan Deal Price Total adalah total nominal PO keseluruhan<br><br></li>
                 </ul>
                 <b>Mohon Deal Price diisi untuk perhitungan dan report.</b><br><br>
-                
+
                 Terkait perubahan tersebut, Lead Register yang ber-status Win bisa di edit kembali untuk pengisian Deal Price.<br><br>
                 Terimakasih.
               </h4>
@@ -477,7 +479,54 @@ Dashboard
           </span>
         </div>
         <div class="modal-footer">
-          <p class="text-center">©SIMS - 2023</p>              
+          <p class="text-center">©SIMS - 2023</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ideaHub" class="modal fade" role="dialog" >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content modal-style">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
+          <h4 class="modal-title">IDEA HUB</h4>
+        </div>
+        <div class="modal-body">
+          <h5 class="box-title text-center">
+            <b>You have a business idea?</b><br>Please fill in the form below
+          </h5>
+          <form action="">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="">Idea*</label>
+                  <input type="text" class="form-control" name="idea" id="idea" placeholder="Input ide anda" onkeyup="fillInput('idea')" required>
+                  <span class="help-block" style="display:none;">Please fill Idea!</span>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="">Business Concept*</label>
+                  <textarea class="form-control" name="konsep_bisnis" id="konsep_bisnis" cols="30" rows="10" onkeyup="fillInput('konsep_bisnis')" required></textarea>
+                  <span class="help-block" style="display:none;">Please fill Business Concept!</span>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="">Reference*</label>
+                  <textarea class="form-control" name="referensi_bisnis" id="referensi_bisnis" cols="30" rows="10" onkeyup="fillInput('referensi')" required></textarea>
+                  <span class="help-block" style="display:none;">Please fill Reference!</span>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="submitIdea">Submit</button>
         </div>
       </div>
     </div>
@@ -488,6 +537,8 @@ Dashboard
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.8/sweetalert2.min.js" integrity="sha512-FbWDiO6LEOsPMMxeEvwrJPNzc0cinzzC0cB/+I2NFlfBPFlZJ3JHSYJBtdK7PhMn0VQlCY1qxflEG+rplMwGUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -502,8 +553,105 @@ Dashboard
   }
 
   $(document).ready(function(){
+    let userDivision = "{{ Auth::User()->id_division }}";
+    let dontLoad = sessionStorage.getItem("dontLoad");
+
+    if (dontLoad === null || dontLoad === 'null') {
+      if (userDivision === "SALES") {
+        $("#ideaHub").modal("show");
+
+        $("#ideaHub").on("hidden.bs.modal", function () {
+          $("#popUp").modal("show");
+        });
+      } else {
+        $("#ideaHub").modal("show");
+      }
+      sessionStorage.setItem("dontLoad", "true");
+      console.log(dontLoad);
+    }else{
+      $("#ideaHub").modal("show");
+    }
+
+
+    $("#submitIdea").click(function () {
+      let idea = $("#idea").val();
+      let konsepBisnis = $("#konsep_bisnis").val();
+      let deskripsiBisnis = $("#deskripsi_bisnis").val();
+      let referensiBisnis = $("#referensi_bisnis").val();
+
+      if (!idea) {
+        $("#idea").closest('.form-group').addClass('has-error')
+        $("#idea").next('.help-block').show();
+        $("#idea").prev('.input-group-addon').css("background-color","red");
+      }else if(!konsepBisnis){
+        $("#konsep_bisnis").closest('.form-group').addClass('has-error')
+        $("#konsep_bisnis").next('.help-block').show();
+        $("#konsep_bisnis").prev('.input-group-addon').css("background-color","red");
+      }else if(!referensiBisnis){
+        $("#referensi_bisnis").closest('.form-group').addClass('has-error')
+        $("#referensi_bisnis").next('.help-block').show();
+        $("#referensi_bisnis").prev('.input-group-addon').css("background-color","red");
+      }else{
+        $.ajax({
+          url: "{{ url('/idea_hub/store') }}",
+          type: "POST",
+          data: {
+            _token: "{{ csrf_token() }}",
+            idea: idea,
+            konsep_bisnis: konsepBisnis,
+            referensi_bisnis: referensiBisnis
+          },
+          beforeSend: function () {
+            $("#submitIdea").prop("disabled", true).text("Mengirim...");
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                Swal.showLoading()
+              }
+            })
+          },
+          success: function (response) {
+            Swal.close();
+            Swal.fire(
+                    'Successfully!',
+                    'Your Idea has been submited.',
+                    'success'
+            )
+            $("#ideaHub").modal("hide");
+            sessionStorage.setItem("dontLoad", "true");
+          },
+          error: function (xhr) {
+            Swal.fire(
+                    'Error!',
+                    'Something Went Wrong, Please Try Again!',
+                    'error'
+            )
+            console.error(xhr.responseText);
+          },
+          complete: function () {
+            $("#submitIdea").prop("disabled", false).text("Submit");
+          }
+        });
+      }
+    });
+
+    $("#ideaHub").on("hidden.bs.modal", function () {
+      let userRole = "{{ Auth::User()->id_division }}";
+      if (userRole === "SALES") {
+        $("#popUp").modal("show");
+      }
+    });
     startTime()
     initiateSmallBox(moment().year(),"initiate")
+
+
   });
 
   function startTime() {
@@ -524,6 +672,22 @@ Dashboard
     return i;
   }
 
+  function fillInput(val) {
+    if (val == "idea") {
+      $("#idea").closest('.form-group').removeClass('has-error')
+      $("#idea").closest('.form-group').find('.help-block').hide();
+      $("#idea").prev('.input-group-addon').css("background-color", "red");
+    } else if (val == "konsep_bisnis") {
+      $("#konsep_bisnis").closest('.form-group').closest('.form-group').removeClass('has-error')
+      $("#konsep_bisnis").closest('.form-group').find('.help-block').hide();
+      $("#konsep_bisnis").prev('.input-group-addon').css("background-color", "red");
+    } else if (val == "referensi") {
+      $("#referensi_bisnis").closest('.form-group').closest('.form-group').removeClass('has-error')
+      $("#referensi_bisnis").closest('.form-group').find('.help-block').hide();
+      $("#referensi_bisnis").prev('.input-group-addon').css("background-color", "red");
+    }
+  }
+
 
   function initiateSmallBox(year,status){
     $.ajax({
@@ -531,7 +695,7 @@ Dashboard
       url:"{{url('/getDashboardBox')}}?year="+year,
       success: function(result){
         var colors = []
-        var prepend = ""  
+        var prepend = ""
 
         if ("{{Auth::User()->name == 'TECH HEAD'}}") {
             var ArrColors = [
@@ -602,7 +766,7 @@ Dashboard
       }
     })
   }
-  
+
   function clickableDiv(url){
     window.location = "{{url('/project/index')}}/?status=" + url.split('/')[1]
     // localStorage.setItem('status_lead',url.split('/')[1])
@@ -651,7 +815,7 @@ Dashboard
         var no = 1;
 
         $.each(result, function(key, value) {
-          
+
             append += '<tr style="background-color:dodgerblue;color: white;">';
             append += '<td>' + no++ + '</td>';
             append += '<td>' + key + '</td>';
@@ -745,7 +909,7 @@ Dashboard
 
             // append += '<tr>';
             // append += '<td colspan="4">';
-            
+
             // // Display the details without collapsing
             // append += '<table class="table table-condensed">';
             // append += '<thead>';
@@ -767,7 +931,7 @@ Dashboard
 
             // append += '</tbody>';
             // append += '</table>';
-            
+
             // append += '</td>';
             // append += '</tr>';
           }
@@ -917,7 +1081,7 @@ Dashboard
             type: 'bar',
             data: {
                   labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Desember"],
-                  labels2:[amount_INITIAL,amount_OPEN,amount_SD,amount_TP,amount_WIN,amount_LOSE],        
+                  labels2:[amount_INITIAL,amount_OPEN,amount_SD,amount_TP,amount_WIN,amount_LOSE],
               datasets: [{
                   label: "INITIAL",
                   backgroundColor: "#7735a3",
@@ -989,7 +1153,7 @@ Dashboard
 
           return initiateMybarChartByStatus = barChartByStatus
         }
-      })   
+      })
     }
 
     // initiateTotalLead(moment().year())
@@ -1024,7 +1188,7 @@ Dashboard
                  return ['Total : ' + tooltipItem.value]
                 },
                 footer: function(tooltipItem, data) {
-                  
+
                 },
                 afterLabel: function(tooltipItem, data) {
                 }
@@ -1044,7 +1208,7 @@ Dashboard
       if (initiateAreaChart) {
         initiateAreaChart.destroy()
       }
-      
+
       $.ajax({
         type:"GET",
         url:"{{url('/getAreaChart2019')}}?year="+year,
@@ -1104,7 +1268,7 @@ Dashboard
         }
       })
     }
-    
+
     // initiateStatusLead(moment().year())
     var initiateMyPieChart = ''
     function initiateStatusLead(year){
@@ -1256,16 +1420,13 @@ Dashboard
       });
     }
 
-    if("{{Auth::User()->id_division}}" == 'SALES'){ 
-      if (sessionStorage.getItem('dontLoad') == null){
-          $("#popUp").modal("show");
-      }
-      sessionStorage.setItem('dontLoad', 'true');
-    }
+  // $("#ideaHub").modal("show");
+
 
     $(document).keyup(function(e) {
       if (e.keyCode == 27) {
           $('#popUp').modal('hide');
+          $("#ideaHub").modal("hide");
       }
     });
 

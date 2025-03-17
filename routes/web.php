@@ -41,6 +41,7 @@ Route::get('/create-storage-link', function () {
 });
 
 Route::get('testCutiEmail','TestController@mailCuti');
+Route::get('testSideBar','TestController@testSideBar');
 Route::get('testFilter','TestController@testFilter');
 Route::get('getWin','TestController@getWin');
 
@@ -234,6 +235,13 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/','DASHBOARDController@index')->middleware('HRDash');
 	Route::get('/getDashboardBox','DASHBOARDController@getDashboardBox');
+	Route::post('/idea_hub/store', 'DASHBOARDController@storeIdea');
+	Route::get('/idea_hub', 'IdeaHubController@index');
+	Route::get('/idea_hub/detail/{id}', 'IdeaHubController@detail');
+	Route::get('/idea_hub/getCount', 'IdeaHubController@getCount');
+	Route::get('/idea_hub/getDataByFilter', 'IdeaHubController@getDataByFilter');
+	Route::get('/idea_hub/getDataPoint', 'IdeaHubController@getDataPoint');
+	Route::get('/idea_hub/getDetail/{id}', 'IdeaHubController@getDetail');
 	//notif
 	Route::get('/notif_view_all','DASHBOARDController@notif_view_all');
 
@@ -320,6 +328,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getdatapr', 'PrController@getdatapr');
 	Route::get('/getCountPr', 'PrController@getCountPr');
 	Route::get('/reportPr', 'PrController@reportPr');
+	Route::get('/reportPrCOO', 'PrController@reportPr');
 	Route::get('/getTotalPrbyType', 'PrController@getTotalPr');
 	Route::get('/getTotalPrByMonth', 'PrController@getTotalPrByMonth');
 	Route::get('/getTotalAmountByType', 'PrController@getTotalAmountByType');
@@ -1113,6 +1122,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/project','PMProjectController@pmoPmIndex');
 	Route::get('/PMO/project/detail/{id_pmo}','PMProjectController@pmoPmDetail');
 	Route::get('/PMO/dashboard','PMProjectController@pmoPmDashboard');
+	Route::get('/PMO/dashboardCOO','PMProjectController@pmoPmDashboard');
 	Route::get('/PMO/getListDataProject','PMProjectController@getListDataProject');
 	Route::get('/PMO/getListDataPid','PMProjectController@getListDataPid');
 	Route::get('/PMO/getPMStaff','PMProjectController@getPMStaff');
@@ -1426,6 +1436,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/sbe/resetVersion','SBEController@resetVersion');
 	Route::post('/sbe/deleteDetailItem','SBEController@deleteDetailItem');
 	Route::get('sbe/getDashboardSbe','SBEController@dashboardSbe');
+	Route::get('sbe/getDashboardSbeCOO','SBEController@dashboardSbe');
 	Route::get('sbe/getDataChartSbe','SBEController@getDataDashboardSbe');
 
 
@@ -1436,6 +1447,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('timesheet/timesheet','TimesheetController@timesheet');
 	Route::get('timesheet/dashboard','TimesheetController@timesheet_dashboard');
+	Route::get('timesheet/dashboardCOO','TimesheetController@timesheet_dashboard');
 	Route::get('timesheet/config','TimesheetController@timesheet_config');
 
 	Route::post('timesheet/addConfig','TimesheetController@addConfig');
@@ -1556,6 +1568,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset/index','AssetMgmtController@index');
 	Route::get('asset/detail','AssetMgmtController@detail_asset');
 	Route::get('asset/dashboard','AssetMgmtController@dashboard');
+	Route::get('asset/dashboardCOO','AssetMgmtController@dashboard');
 	Route::get('asset/getProvince','AssetMgmtController@getProvince');
 	Route::get('asset/getDetailAsset','AssetMgmtController@getDetailAsset');
 	Route::post('asset/storeAsset','AssetMgmtController@storeAsset');
