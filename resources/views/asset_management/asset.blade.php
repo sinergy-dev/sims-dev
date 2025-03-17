@@ -938,7 +938,7 @@
             }else if (row.status == 'Rent') {
               bgColor = "bg-yellow"
             }else if (row.status == 'Unavailable') {
-              bgColor = "bg-grey"
+              bgColor = "bg-red"
             }
 
             return '<span class="label '+ bgColor +'" style="font-size:80%!important">'+ row.status +'</span>'
@@ -1156,8 +1156,8 @@
         document.getElementById("prevBtnAdd").style.display = "inline";
         document.getElementById("nextBtnAdd").innerHTML = "Next";
       }
-      // $("#modal-add-asset").modal({backdrop: 'static', keyboard: false})  
-      $("#modal-add-asset").modal("show")
+      $("#modal-add-asset").modal({backdrop: 'static', keyboard: false})  
+      // $("#modal-add-asset").modal("show")
     }
 
     function btnAssignEngineer(){
@@ -2353,7 +2353,7 @@
             id: 'inputLicense',
             name: 'inputLicense',
             class: 'form-control',
-            onchange: function() {
+            onkeyup: function() {
               fillInput('inputLicense');
             }
         });
@@ -3028,7 +3028,6 @@
         if (installedDate === '') {
           $("#inputInstalledDate").closest(".form-group").find('.help-block').show();  
           $("#inputInstalledDate").closest(".form-group").addClass("has-error")
-          return;
         } else {
           $("#inputInstalledDate").closest(".form-group").find('.help-block').hide();
           $("#inputInstalledDate").closest(".form-group").removeClass("has-error");
