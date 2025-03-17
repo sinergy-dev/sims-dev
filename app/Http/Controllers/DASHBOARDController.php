@@ -1963,6 +1963,8 @@ class DASHBOARDController extends Controller
                 $userToSend = $userToSend->where('r.name', 'VP Human Capital Management');
             }elseif ($idea->divisi == 'Sales'){
                 $userToSend = $userToSend->where('r.name', 'VP Sales')->where('u.id_territory', Auth::user()->id_territory);
+            }elseif ($idea->divisi == 'Financial And Accounting'){
+                $userToSend = $userToSend->where('r.name', 'VP Financial & Accounting');
             }
             $userToSend = $userToSend->first();
 
