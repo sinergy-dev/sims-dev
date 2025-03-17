@@ -2386,6 +2386,13 @@
     append = append + '            </div>'
 
     append = append + '          <div class="form-group">'
+    append = append + '            <label for="inputEmail4" class="col-sm-4 control-label"> Tax Base Other</label>'
+    append = append + '            <div class="col-sm-8">'
+    append = append + '              <input readonly="" type="text" class="form-control tax_base_other_pembanding_preview_detail" style="text-align:right" id="tax_base_other_pembanding_preview_detail" data-value="'+i+'">'
+    append = append + '            </div>'
+    append = append + '          </div>'
+
+    append = append + '          <div class="form-group">'
     append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat <span class="title_tax_pembanding"></span></label>'
     append = append + '            <div class="col-sm-8">'
     append = append + '              <input readonly="" type="text" class="form-control vat_tax" style="text-align:right" id="vat_tax_pembanding" data-value="'+i+'">'
@@ -2649,7 +2656,8 @@
     $("#inputPb1Pembanding[data-value='" + i + "']").val(formatter.format(tempPb1))
     $("#inputServiceChargePembanding[data-value='" + i + "']").val(formatter.format(tempService))
     $("#inputDiscountPembanding[data-value='" + i + "']").val(formatter.format(tempDiscount))
-    $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(item.nominal))
+    $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(sum))
+    $("#tax_base_other_pembanding_preview_detail[data-value='" + i + "']").val(formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12))))
 
     if (item.tax_pb == 'false') {
       $("#inputPb1Pembanding[data-value='"+ i +"']").closest('.form-group').hide()
@@ -3637,7 +3645,7 @@
           $('.title_discount').text(result.pr.discount == 'false' || result.pr.discount == 0?"":parseFloat(result.pr.discount).toFixed(2)+"%")
 
           $("#vat_tax_PembandingModal").val(formatter.format(tempVat))
-          $("#inputTaxBaseOtherPembandingModal").val(customRound(formatter.format((tempTotal - tempDiscNominal)*11/12)))
+          $("#inputTaxBaseOtherPembandingModal").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscNominal)*11/12))))
           $("#inputPb1PembandingModal").val(formatter.format(tempPb1))
           $("#inputServiceChargePembandingModal").val(formatter.format(tempService))
           $("#inputDiscountPembandingModal").val(formatter.format(tempDiscNominal))
