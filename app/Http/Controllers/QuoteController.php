@@ -434,7 +434,7 @@ class QuoteController extends Controller
 
         $pid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project')->where('id_company', '1')->get();
 
-        return view('sales/quote_list',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote','tahun','year_before', 'pid','leadId', 'role', 'quoteStatus'))->with(['initView'=> $this->initMenuBase()]);
+        return view('sales/quote_list',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote','tahun','year_before', 'pid','leadId', 'role', 'quoteStatus'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('quotation_list')]);
     }
 
 	public function create()
@@ -1435,7 +1435,7 @@ class QuoteController extends Controller
         $roleUser = $this->cekRole(Auth::user()->nik);
         $idTerritory = DB::table('users')->where('nik', $nik)->first()->id_territory;
         $canApproveReject = false;
-        if($roleData->name == 'Technology Alliance Solutions' && $roleUser->name == 'VP Solutions & Partnership Management'){
+        if(($roleData->name == 'Technology Alliance Solutions' || $roleData->name == 'Product Development Specialist Manager') && $roleUser->name == 'VP Solutions & Partnership Management'){
             $canApproveReject = true;
         }else if($roleData->name == 'VP Solutions & Partnership Management' && $roleUser->name == 'Chief Operating Officer'){
             $canApproveReject = true;
