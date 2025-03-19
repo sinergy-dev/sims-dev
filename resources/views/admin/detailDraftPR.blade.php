@@ -2656,7 +2656,7 @@
     $("#inputPb1Pembanding[data-value='" + i + "']").val(formatter.format(tempPb1))
     $("#inputServiceChargePembanding[data-value='" + i + "']").val(formatter.format(tempService))
     $("#inputDiscountPembanding[data-value='" + i + "']").val(formatter.format(tempDiscount))
-    $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(sum))
+    $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(item.nominal))
     $("#tax_base_other_pembanding_preview_detail[data-value='" + i + "']").val(formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12))))
 
     if (item.tax_pb == 'false') {

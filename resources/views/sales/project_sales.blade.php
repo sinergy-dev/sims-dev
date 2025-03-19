@@ -695,11 +695,11 @@ Lead Register
 		      				onclickAssign = "onclick=btnAssignTechAlliance('assign','"+row.lead_id+"')"
 		      				status = 'assign'
 
-		      				if (row.name_presales == '-') {
+		      				// if (row.name_presales == '-') {
 		      					title_assign_presales = 'Assign Presales'
 			      				onclickAssign_presales = "onclick=btnAssignPresales('assign','"+row.lead_id+"')"
 			      				status_presales = 'assign'
-		      				}
+		      				// }
       					}else{
       						title_assign = 'Re-Assign'
 		      				onclickAssign = "onclick=btnAssignTechAlliance('reassign','"+row.lead_id+"')"
@@ -716,7 +716,11 @@ Lead Register
 		      				}
       					}
       					if (("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Product Development Specialist Manager')->exists()}}")){
-      						loadBtn = '<button class="btn btn-xs btn-primary"'+ onclickAssign +'>'+ title_assign +'</button>'+btnEdit + btnDelete + '<button class="btn btn-xs btn-primary"'+ onclickAssign_presales +'>'+ title_assign_presales +'</button>'
+      						if (row.name_presales == '-' && row.result_modif != 'INITIAL') {
+      							loadBtn = '<button class="btn btn-xs btn-primary"'+ onclickAssign +'>'+ title_assign +'</button>'+btnEdit + btnDelete + '<button class="btn btn-xs btn-primary"'+ onclickAssign_presales +'>'+ title_assign_presales +'</button>'   
+      						} else {
+      							loadBtn = '<button class="btn btn-xs btn-primary"'+ onclickAssign +'>'+ title_assign +'</button>'+btnEdit + btnDelete
+      						}						
       					} else {
       						loadBtn = '<button class="btn btn-xs btn-primary"'+ onclickAssign +'>'+ title_assign +'</button>'+btnEdit + btnDelete
       					}
