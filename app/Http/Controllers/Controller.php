@@ -40,11 +40,11 @@ class Controller extends BaseController
 			// }
 
 
-    		$getName = DB::table('features')->pluck('name')->unique()->values();
+    	$getName = DB::table('features')->pluck('name')->unique()->values();
 
 			// return $listMenuAll;
 
-			$getGroupAll = DB::table('features')->select('group')->whereNotIn('group',$getName)->whereIn('id',DB::table('roles_feature')
+			$getGroupAll = DB::table('features')->select('group')->whereIn('id',DB::table('roles_feature')
 					->whereIn('role_id',DB::table('role_user')
 						->where('user_id',Auth::User()->nik)
 						->pluck('role_id'))
@@ -58,6 +58,9 @@ class Controller extends BaseController
 				->pluck('feature_id'))
 				->select('features.group','url','icon_group','notif_status',DB::raw("REPLACE(`name`,'-','') as `name`"),'features.index_of')
 				->orderBy('index_of','ASC')->get()->groupBy('group');
+
+			// return dd($getGroupAll);
+
 
 			$getGroupChild = DB::table('features')->select('group')->whereIn('group',$getName)->whereIn('id',DB::table('roles_feature')
 					->whereIn('role_id',DB::table('role_user')
@@ -90,6 +93,27 @@ class Controller extends BaseController
 				}
 			}
 
+			$childGroups = [
+          'Dashboard' => ['SAL', 'ICM', 'SPM', 'HCM', 'PPM', 'FAT'],
+          'General Affair' => ['Consumable']
+      ];
+
+      foreach ($childGroups as $parentGroup => $children) {
+          if (isset($getChildAll[$parentGroup])) {
+              foreach ($children as $childGroup) {
+                  if (isset($getChildAll[$childGroup])) {
+                      foreach ($getChildAll[$parentGroup] as &$parentItem) {
+                          if ($parentItem->name === $childGroup) {
+                              $parentItem->child[$childGroup] = $getChildAll[$childGroup];
+                              $parentItem->count = count($getChildAll[$childGroup]);
+                          }
+                      }
+                      unset($getChildAll[$childGroup]);
+                  }
+              }
+          }
+      }
+
 			$role_user = DB::table('role_user')->where('user_id','=',Auth::User()->nik)->first();
 			if(!$role_user){
 				$role_user = 1;
@@ -112,6 +136,8 @@ class Controller extends BaseController
 				'listMenu' => $getChildAll, 
 				'countPRByCircularBy' => $countPRByCircularBy
 			]);
+
+
 	    		// code...
     }
 

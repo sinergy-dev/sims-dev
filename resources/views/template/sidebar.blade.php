@@ -35,10 +35,10 @@
 				@endif
 			</div>
 			<div class="pull-left info">
-				<p>{{ Auth::User()->name }}</p>
+				<p style="text-wrap: wrap;">{{ Auth::User()->name }}</p>
 				<a href="#" style="text-wrap: wrap;" class="content-side"><i class="fa fa-circle text-success"></i>
 					{{$initView['userRole']->name}}
-					<!-- Operations Director Operations Director Operations Director
+					<!-- Chief Operating Officer Operations Director Operations Director
 					Operations Director Operations Director Operations Director  -->
 				</a>
 			</div>
@@ -70,7 +70,7 @@
 									</a>
 								</li>
 							@else
-								@if($group[$keys]->name == "Consumable")
+								@if($group[$keys]->name == "Consumable" || $group[$keys]->name == 'ICM' || $group[$keys]->name == 'SAL' || $group[$keys]->name == 'PPM' || $group[$keys]->name == 'SPM' || $group[$keys]->name == 'HCM' || $group[$keys]->name == 'SAL' || $group[$keys]->name == 'FAT' || $group[$keys]->name == 'SSM')
 								<li class="treeview">
 									<a href="#">
 										<i class="fa fa-circle-o"></i>

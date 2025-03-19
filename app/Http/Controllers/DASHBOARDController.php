@@ -1925,8 +1925,7 @@ class DASHBOARDController extends Controller
                 'id_idea_hub' => $idea->id,
                 'operator' => Auth::user()->name,
                 'activity' => 'Create new idea',
-                'date_add' => Carbon::today(),
-                'status' => 'New'
+                'date_add' => Carbon::today()
             ]);
 
             $checkPoint = IdeaHubPoint::where('nik', Auth::user()->nik)->first();
@@ -1942,7 +1941,7 @@ class DASHBOARDController extends Controller
                 IdeaHubPoint::create([
                     'nik' => $idea->nik,
                     'point' => 1,
-                    'nama' => Auth::user()->nik
+                    // 'nama' => Auth::user()->nik
                 ]);
             }
 
@@ -1972,8 +1971,10 @@ class DASHBOARDController extends Controller
 
             Mail::to($userToSend->email)->send(new MailIdeaHub('[SIMS-App] Idea Hub - New Business Idea', $idea, $userToSend, $sender));
             DB::commit();
+            return $idea->id;
         }catch (\Exception $exception){
             DB::rollBack();
+            return $exception->getMessage();
         }
 
     }

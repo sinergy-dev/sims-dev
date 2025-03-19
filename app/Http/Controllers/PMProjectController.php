@@ -2060,9 +2060,18 @@ class PMProjectController extends Controller
                 //          'market_segment', 'customer_address')
           //               ->where('tb_pmo_project_charter.id_project',$request->id_pmo)->get();
 
+        $getPid = DB::table('tb_pmo')->select('project_id')->where('id',$request->id_pmo)->first()->project_id;
+        $countPid = DB::table('tb_pmo')->where('project_id',$getPid)->count();
+
+        if ($countPid == 2 && DB::table('tb_pmo')->select('project_type')->where('id',$request->id_pmo)->first()->project_type == 'maintenance') {
+            $id_pmo = $request->id_pmo-1;
+        } else {
+            $id_pmo = $request->id_pmo;
+        }
+
         $data = PMOProjectCharter::join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')
             ->leftjoin('tb_sla_project', 'tb_pmo.project_id', 'tb_sla_project.pid')
-            ->where('tb_pmo_project_charter.id_project',$request->id_pmo)->get();
+            ->where('tb_pmo_project_charter.id_project',$id_pmo)->get();
 
         return $data;
     }

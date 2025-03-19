@@ -1127,7 +1127,7 @@ class AssetMgmtController extends Controller
             $delete = AssetMgmtAssign::where('id_asset_peripheral',$request->id_asset)->delete();
         }
 
-        if (isset($request->engineer['name'])) {
+        if (isset($request->engineer != '[]' || $request->engineer != null)) {
             $data = json_decode($request->engineer,true);
 
             $delete_engineer_assign = AssetMgmtAssignEngineer::where('id_asset',$request->id_asset)->delete();
@@ -2451,7 +2451,8 @@ class AssetMgmtController extends Controller
             ->select('tb_asset_management_detail.pid','asset_owner','category','category_peripheral','tb_asset_management.id_asset','type_device','vendor','status','rma','spesifikasi','serial_number','notes','tb_asset_management.id','id_device_customer')
             ->orderBy('tb_asset_management.created_at','desc')->where('status','Rent'); 
 
-        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer') {
+        if ($cek_role->mini_group == 'Supply Chain & IT Support' || $cek_role->name_role == 'VP Internal Chain Management' || $cek_role->name_role == 'Chief Operating Officer' || $cek_role->name_role == 'Asset, Facility & HSE Management') {
+            return 'oy';
             $countAll = $data->count();
             $countInstalled = $dataInstalled->count();
             $countAvailable = $dataAvailable->count();
@@ -2681,7 +2682,7 @@ class AssetMgmtController extends Controller
 
     public function getEngineer(Request $request)
     {
-        return $data = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`users`.`name` AS `id`,`users`.`name` AS `text`'))->where('roles.name','Engineer on Site')->where('status_karyawan','!=','dummy')->where('users.name','like','%'.request('q').'%')->get();
+        return $data = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`users`.`name` AS `id`,`users`.`name` AS `text`'))->where('roles.name','Field Engineer SLM')->where('status_karyawan','!=','dummy')->where('users.name','like','%'.request('q').'%')->get();
     }
 
     public function getEngineerById(Request $request)

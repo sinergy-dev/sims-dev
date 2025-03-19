@@ -79,7 +79,7 @@ class PermissionConfigController extends Controller
                     DB::raw('`name` AS `text`'),
                 )
             ->where('id_company','=','1')
-            ->where('status_karyawan','=','cuti')
+            ->where('status_karyawan','!=','dummy')
             ->get();
 
         $roles = DB::table('roles')
@@ -144,7 +144,7 @@ class PermissionConfigController extends Controller
 
     public function setRoles(Request $req){
         foreach ($req->id_role as $id_role) {
-            User::find($req->id_user)->attachRole(Role::find($id_role));
+            User::find($req->id_user)->roles()->sync([$id_role]);
         }
         // return $req->id_role;
         return "Success";

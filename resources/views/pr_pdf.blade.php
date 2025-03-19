@@ -221,9 +221,9 @@
 				<th></th>
 				@endif
 				@if($data->status_tax == '11')
-				<th style="text-align:right" 11%>VAT 11%</th>
+				<th style="text-align:right" 11%>VAT 12%</th>
 				@elseif($data->status_tax == '1.1')
-				<th style="text-align:right" 11%>VAT 1.1%</th>
+				<th style="text-align:right" 11%>VAT 1.2%</th>
 				@else
 				<th style="text-align:right" 11%></th>
 				@endif

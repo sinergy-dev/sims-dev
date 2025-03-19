@@ -668,7 +668,7 @@
             @if($status != 'APPROVED' && $status != 'REJECTED')
                 @if($canApproveReject)
                 append = append + '<button class="btn btn-sm btn-danger" style="margin-right:5px" id="btnReject" data-target="#ModalRejectQuotation" data-toggle="modal">Reject</button>'
-            append = append + '<button class="btn btn-sm btn-success" style="margin-right:5px" id="btnApprove" onclick="approveQuotation()">Approve</button>'
+                append = append + '<button class="btn btn-sm btn-success" style="margin-right:5px" id="btnApprove" onclick="approveQuotation()">Approve</button>'
                 @endif
             @endif
             @if($status == 'APPROVED' && Auth::user()->nik == $nik)

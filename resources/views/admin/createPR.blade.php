@@ -2293,7 +2293,7 @@
 
                 if (valueVat == 11) {
                   valueVat = 12
-                }else if (valueEdit == 1.1) {
+                }else if (valueVat == 1.1) {
                   valueVat = 1.2
                 }else{
                   valueVat
@@ -2330,7 +2330,7 @@
               
               $("#vat_tax_unfinishPreview").val(formatter.format(tempVat))
               $("#inputPb1_unfinishPreview").val(formatter.format(tempPb1))
-              $("#inputTextBaseOther_unfinishPreview").val(customRound(formatter.format((tempTotal - tempDiscount)*11/12)))
+              $("#inputTextBaseOther_unfinishPreview").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12))))
               $("#inputServiceCharge_unfinishPreview").val(formatter.format(tempService))
               $("#inputDiscount_unfinishPreview").val(formatter.format(tempDiscount))
               $("#inputGrandTotalProduct_unfinishPreview").val(formatter.format(sum))
@@ -4786,7 +4786,7 @@
 
                 if (valueVat == 11) {
                   valueVat = 12
-                }else if (valueEdit == 1.1) {
+                }else if (valueVat == 1.1) {
                   valueVat = 1.2
                 }else{
                   valueVat
@@ -4812,7 +4812,7 @@
 
               $("#vat_tax_PreviewCek").val(formatter.format(tempVat))
               $("#inputGrandTotalProductPreviewCek").val(formatter.format(sum))
-              $("#tax_base_other_previewCek").val(customRound(formatter.format((tempTotal - tempDiscount)*11/12)))
+              $("#tax_base_other_previewCek").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12))))
               $("#inputPb1ProductFinalCek").val(formatter.format(tempPb1))
               $("#inputServiceChargeFinalProductCek").val(formatter.format(tempService))
               $("#inputDiscountFinalProductCek").val(formatter.format(tempDiscount))
@@ -4932,7 +4932,7 @@
 
               if (valueVat == 11) {
                 valueVat = 12
-              }else if (valueEdit == 1.1) {
+              }else if (valueVat == 1.1) {
                 valueVat = 1.2
               }else{
                 valueVat
@@ -4962,7 +4962,7 @@
 
             $("#vat_tax_cek").val(formatter.format(tempVat))
             $("#inputGrandTotalProductCek").val(formatter.format(sum))
-            $("#tax_base_other_cek").val(customRound(formatter.format((tempTotal - tempDiscount)*11/12)))
+            $("#tax_base_other_cek").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12))))
             $("#pb1_cek").val(formatter.format(tempPb1))
             $("#service_charge_cek").val(formatter.format(tempService))
             $("#discount_cek").val(formatter.format(tempDiscount))
@@ -5246,8 +5246,8 @@
     // localStorage.setItem('tax_pb',0)
     // localStorage.setItem('service_charge',0)
     function customRound(num) {
-      var parseNum = parseFloat(num)
-      return Math.round(parseNum * 1000) / 1000;
+      var parseNum = parseFloat(num.replace(/\./g, "").replace(",", "."));
+      return Math.round(parseNum);
     } 
 
     function changeVatValue(value=false){
@@ -5307,7 +5307,7 @@
 
           if (valueVat == 11) {
             valueVat = 12
-          }else if (valueEdit == 1.1) {
+          }else if (valueVat == 1.1) {
             valueVat = 1.2
           }else{
             valueVat
@@ -5344,7 +5344,7 @@
         console.log(formatter.format((tempTotal - tempDiscNominal)*11/12))
         
         $("#inputServiceChargeNominal").val(formatter.format(tempService))
-        $("#inputTaxBaseOtherFinal").val(customRound(formatter.format((tempTotal - tempDiscNominal)*11/12)))
+        $("#inputTaxBaseOtherFinal").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscNominal)*11/12))))
 
         $("#inputPb1Nominal").val(formatter.format(tempPb1))
         $("#inputDiscountProduct").val(tempDiscount)

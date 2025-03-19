@@ -6629,9 +6629,16 @@ class TicketingController extends Controller
 
 	public function getUser(Request $request)
 	{
-		$getUser = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN' AND `id_position` != 'MANAGER')");
+		$getUser = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+		    ->join('roles', 'roles.id', '=', 'role_user.role_id')
+		    ->select(DB::raw('`nik` AS `id`, `users`.`name` AS `text`'))
+		    ->whereRaw("(`roles`.`name` = 'Engineer Onsite Enterprise' 
+		                OR `roles`.`name` = 'Engineer Onsite SOC' 
+		                OR `roles`.`name` = 'Engineer Onsite ATM' 
+		                OR `roles`.`name` = 'Customer Support Center')")
+		    ->get();        
 
-        return array("data" => collect($getUser->get()));
+		return ["data" => collect($getUser)];
 	}
 
 	public function getCustomer()
@@ -6691,29 +6698,45 @@ class TicketingController extends Controller
     	$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name')->where('user_id', Auth::User()->nik)->first();
 
-        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Synergy System & Services Manager' || $nik == '1181195100') {
+        if ($cek_role->name == 'Synergy System & Services Manager' || $nik == '1181195100') {
         	$data = DB::table('presence__shifting_user')->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')->join('users','users.nik','presence__shifting_user.nik')->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location')->where('status_karyawan','!=','dummy')->orderBy('project_name','asc')->get();
 
-	    	$dataNonShifting = DB::table('users')
+	    	$dataNonShifting = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
 	    			->whereNotExists(function($query)
 	                {
 	                    $query->select(DB::raw(1))
 	                          ->from('presence__shifting_user')
 	                          ->whereRaw('presence__shifting_user.nik = users.nik');
-	                })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN')")
+	                })
+	                ->whereRaw("(`roles`.`name` = 'Engineer Onsite Enterprise' OR `roles`.`name` = 'Engineer Onsite SOC' OR `roles`.`name` = 'Engineer Onsite ATM')")
+	                ->select('users.name','users.nik',DB::raw("CONCAT('Not-Set') AS `project_name`"),DB::raw("CONCAT('-') AS `id_location`"))->orderBy('project_name','asc')->get();
+
+	        $data = $data->merge($dataNonShifting);
+        } elseif ($cek_role->name == 'Project Transformation Officer') {
+        	$data = DB::table('presence__shifting_user')->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')->join('users','users.nik','presence__shifting_user.nik')->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location')->where('status_karyawan','!=','dummy')->orderBy('project_name','asc')->get();
+
+	    	$dataNonShifting = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
+	    			->whereNotExists(function($query)
+	                {
+	                    $query->select(DB::raw(1))
+	                          ->from('presence__shifting_user')
+	                          ->whereRaw('presence__shifting_user.nik = users.nik');
+	                })
+	                ->whereRaw("(`roles`.`name` = 'Customer Support Center')")
 	                ->select('users.name','users.nik',DB::raw("CONCAT('Not-Set') AS `project_name`"),DB::raw("CONCAT('-') AS `id_location`"))->orderBy('project_name','asc')->get();
 
 	        $data = $data->merge($dataNonShifting);
         } else {
         	$data = DB::table('presence__shifting_user')->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')->join('users','users.nik','presence__shifting_user.nik')->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location')->where('status_karyawan','!=','dummy')->where('presence__shifting_user.nik',Auth::User()->nik)->orderBy('project_name','asc')->get();
 
-	    	$dataNonShifting = DB::table('users')
+	    	$dataNonShifting = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')
 	    			->whereNotExists(function($query)
 	                {
 	                    $query->select(DB::raw(1))
 	                          ->from('presence__shifting_user')
 	                          ->whereRaw('presence__shifting_user.nik = users.nik');
-	                })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN')")
+	                })
+	                ->whereRaw("(`roles`.`name` = 'Engineer Onsite Enterprise' OR `roles`.`name` = 'Engineer Onsite SOC' OR `roles`.`name` = 'Engineer Onsite ATM' OR `roles`.`name` = 'Customer Support Center')")
 	                ->select('users.name','users.nik',DB::raw("CONCAT('Not-Set') AS `project_name`"),DB::raw("CONCAT('-') AS `id_location`"))->orderBy('project_name','asc')->where('users.nik',Auth::User()->nik)->get();
 
 	        $data = $data->merge($dataNonShifting);
