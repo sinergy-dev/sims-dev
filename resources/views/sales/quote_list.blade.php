@@ -36,6 +36,7 @@
     </style>
 @endsection
 @section('content')
+    <input type="" style="display: none;" value="jirrrrrrrrrr" name="">
     <section class="content-header">
         <h1>
             Quotation List
@@ -89,13 +90,11 @@
 {{--                            </select>--}}
 {{--                        </div>--}}
 {{--                    </div>--}}
-                    @if($role->name == 'Account Executive' || $role->name == 'Technology Alliance Solutions')
                     <div class="col-md-12 col-xs-12">
                         <div class="form-group btn-action-letter" style="float:right;">
-                            <button type="button" class="btn btn-success btn-flat" style="width: 100px" data-target="#modalAdd" data-toggle="modal" onclick="addQuote(0)"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
+                            <button type="button" id="btnAddQuote" class="btn btn-success btn-flat" style="width: 100px;display: none;" data-target="#modalAdd" data-toggle="modal" onclick="addQuote(0)"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
                         </div>
                     </div>
-                    @endif
                 </div>
                 <div class="row" style="margin-bottom:10px" id="filterBox">
                     <div class="col-md-2 col-xs-12">
@@ -459,8 +458,7 @@
                     </div>
                 </div>
             </div>
-        </div
-        >
+        </div>
     </section>
 @endsection
 @section('scriptImport')
@@ -485,6 +483,10 @@
 @endsection
 @section('script')
     <script type="text/javascript">
+        var accesable = @json($feature_item);
+        accesable.forEach(function(item,index){
+            $("#" + item).show()
+        })
         $(document).ready(function(){
             $('#addBackdate').prop("disabled",true)
 
