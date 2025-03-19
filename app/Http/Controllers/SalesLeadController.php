@@ -2838,6 +2838,9 @@ class SalesLeadController extends Controller
                         ->get();
         }
 
+        $cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->where('roles.name', 'Product Development Specialist Manager')->first()->email;
+
         if (is_null($request['po'])) {
             $users = User::select('email')->where('id_position', 'STAFF')->where('id_division', 'TECHNICAL')->where('id_territory', 'DVG')->get();
             $data = DB::table('sales_lead_register')
@@ -2848,7 +2851,7 @@ class SalesLeadController extends Controller
                 ->first();
 
 
-            Mail::to($kirim)->send(new CreateLeadRegister($data));
+            Mail::to($kirim)->cc($cc)->send(new CreateLeadRegister($data));
 
         }
         $user_to = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
@@ -2983,7 +2986,10 @@ class SalesLeadController extends Controller
                     ->where('sales_lead_register.lead_id',$tambah->lead_id)
                     ->first();
 
-        Mail::to($kirim)->send(new AssignPresales(collect([
+        $cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->where('roles.name', 'VP Synergy System Management')->orWhere('roles.name','Synergy System Architecture Manager')->get();
+
+        Mail::to($kirim)->cc($cc)->send(new AssignPresales(collect([
             "data"   => $data,
             "status" => 'assign',
             "title"  => 'Assign Presales',
