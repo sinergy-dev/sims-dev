@@ -27,11 +27,15 @@ class PMOFinalReport extends Model
 
     public function getProjectDescriptionAttribute()
     {
-        $data = DB::table('tb_pmo_final_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_final_report.id_project')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->select('project_description')->where('tb_pmo.id', $this->id_project)->first();
+        $getPid = DB::table('tb_pmo')->select('project_id')->where('id',$this->id_project)->first()->project_id;
+        $countPid = DB::table('tb_pmo')->where('project_id',$getPid)->count();
+        if ($countPid == 2 && DB::table('tb_pmo')->select('project_type')->where('id',$this->id_project)->first()->project_type == 'maintenance') {
+            $id_pmo = $this->id_project-1;
+        } else {
+            $id_pmo = $this->id_project;
+        }
 
-        // $data = json_decode($data->term_payment);
-
-        return $data->project_description;
+        $data = DB::table('tb_pmo_final_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_final_report.id_project')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->select('project_description')->where('tb_pmo.id', $id_pmo)->first();
     }
 
     public function getPaymentDateAttribute()
@@ -107,7 +111,14 @@ class PMOFinalReport extends Model
 
     public function getOwnerAttribute()
     {
-        $data = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->join('tb_id_project','tb_id_project.id_project','=','tb_pmo.project_id')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->select('users.name as owner')->where('tb_pmo.id', $this->id_project)->first();
+        $getPid = DB::table('tb_pmo')->select('project_id')->where('id',$this->id_project)->first()->project_id;
+        $countPid = DB::table('tb_pmo')->where('project_id',$getPid)->count();
+        if ($countPid == 2 && DB::table('tb_pmo')->select('project_type')->where('id',$this->id_project)->first()->project_type == 'maintenance') {
+            $id_pmo = $this->id_project-1;
+        } else {
+            $id_pmo = $this->id_project;
+        }
+        $data = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->join('tb_id_project','tb_id_project.id_project','=','tb_pmo.project_id')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->select('users.name as owner')->where('tb_pmo.id', $id_pmo)->first();
 
         return $data->owner;
     }
@@ -205,7 +216,20 @@ class PMOFinalReport extends Model
 
     public function getDocumentDistributionAttribute()
     {
-        $get_id_pmo = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->select('tb_pmo.id')->where('tb_pmo.id', $this->id_project)->first();
+        // $get_id_pmo = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->select('tb_pmo.id')->where('tb_pmo.id', $this->id_project)->first();
+        $getPid = DB::table('tb_pmo')->select('project_id')->where('id',$this->id_project)->first()->project_id;
+        $countPid = DB::table('tb_pmo')->where('project_id',$getPid)->count();
+        if ($countPid == 2 && DB::table('tb_pmo')->select('project_type')->where('id',$this->id_project)->first()->project_type == 'maintenance') {
+            $get_id_pmo = $this->id_project-1;
+        } else {
+            $get_id_pmo = $this->id_project;
+        }
+
+        $data = PMO::where('id', $get_id_pmo)->first();
+
+        $get_name_sales = DB::table('tb_id_project')->join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')->join('users', 'users.nik','sales_lead_register.nik')->select('users.name')->where('tb_id_project.id_project', $data->project_id)->first();
+
+        $get_name_pm = PMO_assign::join('users', 'users.nik', 'tb_pmo_assign.nik')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_assign.id_project')->select('users.name')->where('id_project', $get_id_pmo)->first();
 
         $data = PMO::where('id', $get_id_pmo->id)->first();
 

@@ -320,6 +320,7 @@
 				</tr>
 				@endif
 				
+				@if($data->status_tax != 'false')
 				<tr>
 					<th></th>
 					<th></th>
@@ -333,8 +334,9 @@
 					<th></th>
 					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($tax_base_other,2)}}</th>
 				</tr>
+				@endif
 
-				@if($data->status_tax != 'False')
+				@if($data->status_tax != 'false')
 				<tr>
 					<th></th>
 					<th></th>

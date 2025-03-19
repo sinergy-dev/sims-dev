@@ -1680,7 +1680,10 @@ Partnership
 		}
 
 		$('#tbListCert .new-list').each(function () {
-			formData.append('imageData', $(this).find('#certificate_eng').prop('files')[0])
+			let file = $(this).find('#certificate_eng').prop('files')[0]; 
+		    if (file) {
+		        formData.append('imageData[]', file); // Append as an array
+		    }
 		});
 
 		// var engData = {

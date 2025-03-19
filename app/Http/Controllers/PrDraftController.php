@@ -67,7 +67,7 @@ class PrDraftController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
             ->select('name', 'roles.group')->where('user_id', $nik)->first();
 
-        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'VP Solutions & Partnership Management') {
+        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'VP Solutions & Partnership Management') {
             $count_all = PRDraft::count();
             $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->count();
 
@@ -133,7 +133,7 @@ class PrDraftController extends Controller
 
         if (in_array(null, $request->type_of_letter) && in_array(null, $request->status) && in_array(null, $request->user) && $request->startDate == "" && $request->endDate == "" && $request->searchFor == "") {
             // return 'askjkf';
-            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'VP Solutions & Partnership Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'VP Solutions & Partnership Management') {
                 $getDataEPR = PRDraft::where('type_of_letter', 'EPR');
                 if ($cek_role->name == 'Procurement & Vendor Management') {
                     $getDataEPR = $getDataEPR->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
@@ -149,7 +149,7 @@ class PrDraftController extends Controller
                 $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
             }
 
-            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer') {
                 $getData = PRDraft::where('type_of_letter', 'IPR');
                 if ($cek_role->name == 'Procurement & Vendor Management') {
                     $getData = $getData->whereRaw("(`status` != 'CANCEL' AND `status` != 'SENDED')")
@@ -216,7 +216,7 @@ class PrDraftController extends Controller
                 $data = collect($data)->skip($start)->take($pageLength);
             }
         }else{
-            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'VP Program & Project Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'VP Program & Project Management') {
                 if (!in_array(null, $request->type_of_letter)) {
                     if(in_array("EPR", $request->type_of_letter)){
                         // return 'true';
@@ -340,7 +340,7 @@ class PrDraftController extends Controller
                 }
             }
 
-            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'VP Program & Project Management') {
+            if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'VP Program & Project Management') {
                 if (!in_array(null, $request->user)) {
                     $getData->whereIn('users.name', $request->user);
                 }
@@ -538,7 +538,7 @@ class PrDraftController extends Controller
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
             ->select('name', 'roles.group')->where('user_id', $nik)->first();
 
-        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'VP Program & Project Management') {
+        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->name == 'VP Program & Project Management') {
             // if (!in_array(null, $request->type_of_letter)) {
             //     // if(in_array("EPR", $request->type_of_letter)){
             //     //     $getData->orWhere('tb_pr_draft.type_of_letter', "EPR");
@@ -704,7 +704,7 @@ class PrDraftController extends Controller
 
         $count = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance');
         // return $count;
-        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer') {
+        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer') {
             $count_all = DB::table('tb_pr_draft')->join('users','users.nik', '=', 'tb_pr_draft.issuance');
             $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')");
 
@@ -972,7 +972,7 @@ class PrDraftController extends Controller
             ->select('name', 'roles.group')->where('user_id', $nik)->first();
 
         // $cek_status = PR::join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->select('status_draft_pr')->get();
-        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'VP Solutions & Partnership Management') {
+        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer' || $cek_role->name == 'VP Program & Project Management' || $cek_role->name == 'VP Solutions & Partnership Management') {
             $getDataEPR = PRDraft::where('type_of_letter', 'EPR');
             // ->whereYear('tb_pr_draft.updated_at',date('Y'));
             if ($cek_role->name == 'Procurement & Vendor Management') {
@@ -990,7 +990,7 @@ class PrDraftController extends Controller
             $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->whereRaw("(`status` != 'CANCEL' && `status` != 'SENDED')");
         }
 
-        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer') {
+        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Procurement & Vendor Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Chief Operating Officer' || $cek_role->name == 'Chief Executive Officer') {
             $getData = PRDraft::where('type_of_letter', 'IPR');
             // ->whereYear('tb_pr_draft.updated_at',date('Y'));
             if ($cek_role->name == 'Procurement & Vendor Management') {
@@ -3919,9 +3919,9 @@ class PrDraftController extends Controller
             );
 
             $this->getNotifBadgeInsert($jsonInsertCreate);*/
-            if($cek_role->name == 'VP Internal Chain Management' || $detail->type_of_letter == 'IPR'){
-                $this->uploadPdfMerge($request->no_pr, $approver,'circular');
-            }
+            // if($cek_role->name == 'VP Internal Chain Management' || $detail->type_of_letter == 'IPR'){
+            //     $this->uploadPdfMerge($request->no_pr, $approver,'circular');
+            // }
         }
 
         // $this->mergePdf($request->no_pr);
@@ -4500,7 +4500,7 @@ class PrDraftController extends Controller
                 ELSE ROUND(`tb_pr`.`discount`, 2) 
             END) as discount"), DB::raw("(CASE WHEN (`tb_pr`.`status_tax` is null) THEN 'false' ELSE `tb_pr`.`status_tax` END) as status_tax"))->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
-        $data->tax_base_other_customer = round($amount_idr_before_tax * 11/12);
+        $data->tax_base_other_customer = round($data->amount_idr_before_tax * 11/12);
 
         if ($data->status_draft_pr == 'draft') {
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')

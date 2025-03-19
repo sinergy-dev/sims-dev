@@ -381,37 +381,57 @@ class PartnershipController extends Controller
         $get_partner = Partnership::select('partner')->where('id_partnership', $id_partnership)->first();
         if(isset($request->engData)){
             $dataAll = json_decode($request->engData,true);
-            foreach ($dataAll as $data) {
+            if ($request->hasFile('imageData')) {
+                $files = $request->file('imageData');
+            } else {
+                $files = [];
+            }
+            foreach ($dataAll as $index => $data) {
                 $store = new PartnershipCertification;
                 $store->id_partnership      = $id_partnership;
                 $store->name                = $data['cert_person'];
                 $store->level_certification = $data['cert_type'];
                 $store->name_certification  = $data['cert_name'];
-                if ($data['expired_date'] == 'Lifetime') {
-                    $store->expired_date        = 'Lifetime';
-                } else {
-                    // $edate                      = strtotime($data['expired_date']); 
-                    // $edate                      = date("Y-m-d",$edate);
-                    $store->expired_date        = $data['expired_date'];
-                }
-                if ($request->file('imageData') === null) {
-                }else{
-                    $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
-                    $file                   = $request->file('imageData');
-                    $fileName               = $file->getClientOriginalName();
-                    $strfileName            = explode('.', $fileName);
-                    $lastElement            = end($strfileName);
-                    $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $data['cert_name'] . '_' . $data['cert_person'] . '.' . $lastElement;
-                    $extension              = $file->getClientOriginalExtension();
-                    $check                  = in_array($extension,$allowedfileExtension);
+                // if ($data['expired_date'] == 'Lifetime') {
+                //     $store->expired_date        = 'Lifetime';
+                // } else {
+                //     // $edate                      = strtotime($data['expired_date']); 
+                //     // $edate                      = date("Y-m-d",$edate);
+                //     $store->expired_date        = $data['expired_date'];
+                // }
+                $store->expired_date        = ($data['expired_date'] == 'Lifetime') ? 'Lifetime' : $data['expired_date'];
 
-                    if ($check) {
-                        $request->file('imageData')->move("image/certificate_engineer/", $nameDoc);
-                        $store->certificate         = $nameDoc;
-                    } else {
-                        return redirect()->back()->with('alert','Oops! Only jpg, png, pdf');
+                if (isset($files[$index])) {
+                    $file = $files[$index];
+                    $allowedExtensions = ['jpg', 'png', 'jpeg', 'pdf'];
+                    $extension = $file->getClientOriginalExtension();
+
+                    if (in_array($extension, $allowedExtensions)) {
+                        $fileName = 'certificate_engineer_' . $get_partner->partner . '_' . $data['cert_name'] . '_' . $data['cert_person'] . '.' . $extension;
+                        $file->move("image/certificate_engineer/", $fileName);
+                        $store->certificate = $fileName;
                     }
                 }
+
+
+                // if ($request->file('imageData') === null) {
+                // }else{
+                //     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                //     $file                   = $request->file('imageData');
+                //     $fileName               = $file->getClientOriginalName();
+                //     $strfileName            = explode('.', $fileName);
+                //     $lastElement            = end($strfileName);
+                //     $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $data['cert_name'] . '_' . $data['cert_person'] . '.' . $lastElement;
+                //     $extension              = $file->getClientOriginalExtension();
+                //     $check                  = in_array($extension,$allowedfileExtension);
+
+                //     if ($check) {
+                //         $request->file('imageData')->move("image/certificate_engineer/", $nameDoc);
+                //         $store->certificate         = $nameDoc;
+                //     } else {
+                //         return redirect()->back()->with('alert','Oops! Only jpg, png, pdf');
+                //     }
+                // }
                 $store->save();
                 
                 $tambah_log = new PartnershipLog;
