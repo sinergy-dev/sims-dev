@@ -94,7 +94,7 @@ class SBEController extends Controller
 
     public function sbe_detail(Request $request)
     {
-        $opp_name = DB::table('sales_lead_register')->select('opp_name','lead_id')->where('lead_id',$request->lead_id)->first();
+        $opp_name = DB::table('sales_lead_register')->select('lead_id','opp_name')->where('lead_id',$request->lead_id)->first();
 
         return view('solution.sbe_detail',compact('opp_name'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('Solution')]);
     }
@@ -110,8 +110,8 @@ class SBEController extends Controller
         ->whereRaw("(`sales_lead_register`.`result` = '' OR `sales_lead_register`.`result` = 'SD' OR `sales_lead_register`.`result` = 'TP')")
             ->orderBy('year','desc');
 
-        if ($cek_role->name == 'VP Product Management & Development Solution' || $cek_role->mini_group == 'Solution Architect' || $cek_role->name == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
-            if ($cek_role->name == 'Technology Alliance') {
+        if ($cek_role->name == 'VP Solutions & Partnership Management' || $cek_role->mini_group == 'Solution Architect' || $cek_role->name == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+            if ($cek_role->name == 'Technology Alliance Solutions') {
                 $data->where('sales_solution_design.nik',$nik)->orwhere('sales_solution_design.nik_ta',$nik)->get();
             } else {
                 $data->where('sales_solution_design.nik',$nik)->get();
@@ -370,11 +370,11 @@ class SBEController extends Controller
         $updateNominalSbe->nominal = DB::table('tb_sbe_config')->where('status','Choosed')->where('id_sbe',$create->id)->groupby('id_sbe')->sum('nominal');
         $updateNominalSbe->save();
 
-        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Product Management & Development Solution')->first()->email;
+        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Solutions & Partnership Management')->first()->email;
 
         $mail = new MailReviewConfigSBE(collect([
                 "subject_email" => 'Please Review this Temporary SBE',
-                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Product Management & Development Solution')->select('users.name as name')->first()->name,
+                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Solutions & Partnership Management')->select('users.name as name')->first()->name,
                 "data"          => SbeConfig::where('status','Choosed')->where('id_sbe', $create->id)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config','detail_all_config_choosed'])->groupby('project_type'),
                 "status"        => 'Review SBE',
                 "id"            => $create->id,
@@ -387,7 +387,7 @@ class SBEController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
-        if ($cek_role->name != 'VP Product Management & Development Solution') {
+        if ($cek_role->name != 'VP Solutions & Partnership Management') {
             Mail::to($email_user)->send($mail);
         }
     }
@@ -449,8 +449,8 @@ class SBEController extends Controller
         ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
         ->select('tb_sbe.lead_id','tb_sbe.status','opp_name','name_presales as presales','name_ta as ta','tb_sbe.nominal as detail_config_nominal','tb_sbe.id');
 
-        if ($cek_role->name == 'Presales' || $cek_role->name == 'System Designer' || $cek_role->name == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
-            if ($cek_role->name == 'Technology Alliance') {
+        if ($cek_role->name == 'Presales Support Architecture' || $cek_role->name == 'System Designer Architecture' || $cek_role->name == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+            if ($cek_role->name == 'Technology Alliance Solutions') {
                 $data->where('tb_presales.nik_presales',$nik)->orwhere('tb_ta.nik_ta',$nik)->distinct()->get()->makeHidden('items_sbe');
             } else {
                 $data->where('tb_presales.nik_presales',$nik)->distinct()->get()->makeHidden('items_sbe');
@@ -628,11 +628,11 @@ class SBEController extends Controller
         $storeActivity->date_add = Carbon::now()->toDateTimeString();
         $storeActivity->save();
 
-        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Product Management & Development Solution')->first()->email;
+        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Solutions & Partnership Management')->first()->email;
 
         $mail = new MailReviewConfigSBE(collect([
                 "subject_email" => 'Please Review this Temporary SBE',
-                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Product Management & Development Solution')->select('users.name as name')->first()->name,
+                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Solutions & Partnership Management')->select('users.name as name')->first()->name,
                 "data"          => SbeConfig::where('status','Choosed')->where('id_sbe',$request->id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config','detail_all_config_choosed'])->groupby('project_type'),
                 "status"        => 'Review SBE',
                 "id"            => $request->id_sbe,
@@ -644,7 +644,7 @@ class SBEController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
-        if ($cek_role->name != 'VP Product Management & Development Solution') {
+        if ($cek_role->name != 'VP Solutions & Partnership Management') {
             Mail::to($email_user)->send($mail);
         }
     }
@@ -720,11 +720,11 @@ class SBEController extends Controller
         $update->save();
 
 
-        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Product Management & Development Solution')->first()->email;
+        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Solutions & Partnership Management')->first()->email;
 
         $mail = new MailReviewConfigSBE(collect([
                 "subject_email" => 'Please Review this Temporary SBE',
-                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Product Management & Development Solution')->select('users.name as name')->first()->name,
+                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'VP Solutions & Partnership Management')->select('users.name as name')->first()->name,
                 "data"          => SbeConfig::where('status','Choosed')->where('id_sbe',$getId->id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config','detail_all_config_choosed'])->groupby('project_type'),
                 "status"        => 'Review SBE',
                 "id"            => $getId->id_sbe,
@@ -736,7 +736,7 @@ class SBEController extends Controller
         $nik = Auth::User()->nik;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
-        if ($cek_role->name != 'VP Product Management & Development Solution') {
+        if ($cek_role->name != 'VP Solutions & Partnership Management') {
             Mail::to($email_user)->send($mail);
         }
         
@@ -826,13 +826,13 @@ class SBEController extends Controller
                     ->where('users.id_company', '1')
                     ->where('users.status_karyawan', '!=', 'dummy');
 
-        if ($cek_role->name == 'Technology Alliance') {
-            $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik_ta . "' OR `roles`.`name` = 'VP Product Management & Development Solution')")
-            ->orderByRaw('FIELD(position, "Technology Alliance","VP Product Management & Development Solution","Presales")')->take(2)
+        if ($cek_role->name == 'Technology Alliance Solutions') {
+            $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik_ta . "' OR `roles`.`name` = 'VP Solutions & Partnership Management')")
+            ->orderByRaw('FIELD(position, "Technology Alliance Solutions","VP Solutions & Partnership Management","Presales")')->take(2)
             ->get();
         }else {
-            $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik . "' OR `roles`.`name` = 'VP Product Management & Development Solution')")
-            ->orderByRaw('FIELD(position, "Presales","System Designer","VP Product Management & Development Solution")')
+            $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik . "' OR `roles`.`name` = 'VP Solutions & Partnership Management')")
+            ->orderByRaw('FIELD(position, "Presales","System Designer","VP Solutions & Partnership Management")')
             ->get();
         }  
 

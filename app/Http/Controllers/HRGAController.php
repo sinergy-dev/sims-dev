@@ -1654,9 +1654,7 @@ class HRGAController extends Controller
         if(Str::contains($cek_role->name_role, 'VP')){
             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Operations Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         } elseif(Str::contains($cek_role->name_role, 'Manager')){
-            if($cek_role->name_role == 'Renumeration, Personalia & GS Manager' &&  $cek_role->name_role == 'Human Capital Manager'){
-                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
-            } elseif ($cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
+            if ($cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             } else {
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
@@ -1667,38 +1665,38 @@ class HRGAController extends Controller
             } elseif ($cek_role->name_role == 'Finance Staff') {
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('id_company','1')->where('roles.name','Finance & Accounting Manager')->first();
             } else {
-                if ($cek_role->mini_group == 'Product Management & Solution' || $cek_role->mini_group == 'Supply Chain Management' || $cek_role->mini_group == 'Risk Management, Sys Dev & Compliance') {
+                if ($cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->mini_group == 'Supply Chain Management') {
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 } else {
                     if ($hitung >= 5) {
-                        if ($cek_role->mini_group == 'Human Capital') {
+                        if ($cek_role->mini_group == 'Organizational & People Development') {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                             ->whereRaw(
-                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
-                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                "(`roles`.`name` = ?)", 
+                                ['VP Human Capital Management']
                             )
                             ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         } else {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
                                     "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`group` = ? AND `roles`.`name` LIKE ?)", 
-                                    [$cek_role->mini_group, '%Manager', 'Project Manager', $cek_role->group, 'VP%']
+                                    [$cek_role->mini_group, '%Manager', 'Delivery Project Manager', $cek_role->group, 'VP%']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         }
                     } else {
-                        if ($cek_role->mini_group == 'Human Capital') {
+                        if ($cek_role->mini_group == 'Organizational & People Development') {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                             ->whereRaw(
-                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
-                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                "(`roles`.`name` = ?)", 
+                                ['VP Human Capital Management']
                             )
                             ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         } else {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
                                     "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?  AND `roles`.`name` != ?)", 
-                                    [$cek_role->mini_group, '%Manager', 'Project Manager']
+                                    [$cek_role->mini_group, '%Manager', 'Delivery Project Manager']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         }
@@ -2204,8 +2202,8 @@ class HRGAController extends Controller
             if(Str::contains($cek_role->name_role, 'VP')){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('roles.name','Operations Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             } elseif(Str::contains($cek_role->name_role, 'Manager')){
-                if($cek_role->name_role == 'Renumeration, Personalia & GS Manager' &&  $cek_role->name_role == 'Human Capital Manager'){
-                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+                if($cek_role->name_role == 'People Operations & Services Manager' &&  $cek_role->name_role == 'Organizational & People Development Manager'){
+                    $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Human Capital Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 } elseif ($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 } else {
@@ -2217,38 +2215,38 @@ class HRGAController extends Controller
                 } elseif ($cek_role->name_role == 'Finance Staff') {
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('id_company','1')->where('roles.name','Finance & Accounting Manager')->first();
                 }  else {
-                    if ($cek_role->mini_group == 'Product Management & Solution' || $cek_role->mini_group == 'Supply Chain Management' || $cek_role->mini_group == 'Risk Management, Sys Dev & Compliance') {
+                    if ($cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->mini_group == 'Supply Chain Management') {
                         $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                     } else {
                         if (sizeof($resultB) >= 5) {
-                            if ($cek_role->mini_group == 'Human Capital') {
+                            if ($cek_role->mini_group == 'Organizational & People Development') {
                                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
-                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
-                                    [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                    "(`roles`.`name` = ?)", 
+                                    ['VP Human Capital Management']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                             } else {
                                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                     ->whereRaw(
                                         "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`group` = ? AND `roles`.`name` LIKE ?)", 
-                                        [$cek_role->mini_group, '%Manager', 'Project Manager', $cek_role->group, 'VP%']
+                                        [$cek_role->mini_group, '%Manager', 'Delivery Project Manager', $cek_role->group, 'VP%']
                                     )
                                     ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                             }
                         } else {
-                            if ($cek_role->mini_group == 'Human Capital') {
+                            if ($cek_role->mini_group == 'Organizational & People Development') {
                                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
-                                    "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
-                                    [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                    "(`roles`.`name` = ?)", 
+                                    ['VP Human Capital Management']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                             } else {
                                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
                                     "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?  AND `roles`.`name` != ?)", 
-                                    [$cek_role->mini_group, '%Manager', 'Project Manager']
+                                    [$cek_role->mini_group, '%Manager', 'Delivery Project Manager']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                             }
@@ -2354,8 +2352,8 @@ class HRGAController extends Controller
         if(Str::contains($cek_role->name_role, 'VP')){
             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','Operations Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
         } elseif(Str::contains($cek_role->name_role, 'Manager')){
-            if($cek_role->name_role == 'Renumeration, Personalia & GS Manager' &&  $cek_role->name_role == 'Human Capital Manager'){
-                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Project Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
+            if($cek_role->name_role == 'People Operations & Services Manager' &&  $cek_role->name_role == 'Organizational & People Development Manager'){
+                $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','VP Human Capital Management')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             } elseif ($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Sales Manager' || $cek_role->name_role == 'Finance & Accounting Manager'){
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','President Director')->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
             } else {
@@ -2367,38 +2365,38 @@ class HRGAController extends Controller
             } elseif ($cek_role->name_role == 'Finance Staff') {
                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('status_karyawan','!=','dummy')->where('id_company','1')->where('roles.name','Finance & Accounting Manager')->first();
             }  else {
-                if ($cek_role->mini_group == 'Product Management & Solution' || $cek_role->mini_group == 'Supply Chain Management' || $cek_role->mini_group == 'Risk Management, Sys Dev & Compliance') {
+                if ($cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->mini_group == 'Supply Chain Management') {
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 } else {
                     if ($hitung >= 5) {
-                        if ($cek_role->mini_group == 'Human Capital') {
+                        if ($cek_role->mini_group == 'Organizational & People Development') {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                             ->whereRaw(
-                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
-                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                "(`roles`.`name` = ?)", 
+                                ['VP Human Capital Management']
                             )
                             ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         } else {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
                                     "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`group` = ? AND `roles`.`name` LIKE ?)", 
-                                    [$cek_role->mini_group, '%Manager', 'Project Manager', $cek_role->group, 'VP%']
+                                    [$cek_role->mini_group, '%Manager', 'Delivery Project Manager', $cek_role->group, 'VP%']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         }
                     } else {
-                        if ($cek_role->mini_group == 'Human Capital') {
+                        if ($cek_role->mini_group == 'Organizational & People Development') {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                             ->whereRaw(
-                                "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ? AND `roles`.`name` != ? OR `roles`.`name` = ?)", 
-                                [$cek_role->mini_group, '%Manager', 'Project Manager', 'VP Project Management']
+                                "(`roles`.`name` = ?)", 
+                                ['VP Human Capital Management']
                             )
                             ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         } else {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
                                     "(`roles`.`mini_group` = ? AND `roles`.`name` LIKE ?  AND `roles`.`name` != ?)", 
-                                    [$cek_role->mini_group, '%Manager', 'Project Manager']
+                                    [$cek_role->mini_group, '%Manager', 'Delivery Project Manager']
                                 )
                                 ->where('status_karyawan','!=','dummy')->where('id_company','1')->get()->pluck('email');
                         }
@@ -3180,74 +3178,74 @@ class HRGAController extends Controller
             if ($request->filter_com == 'all') {
 
                 if($div == 'SALES' && $pos == 'MANAGER'){
-                    $data = $datas
+                    $data = $data
                         ->where('users.id_company',$request->filter_com)
                         ->where('id_territory', $ter);
-                }  elseif ($cek_role->group == 'Product Management & Development') {
-                    if ($cek_role->name_role == 'VP Product Management & Development Solution') {
-                        $data = $data->where('group','Product Management & Development');
-                    } elseif($cek_role->name_role == 'Application Development Manager'){
-                        $data = $data->whereRaw("(`mini_group` = 'Application Development' OR `tb_cuti`.`nik` = $nik)");
+                }  elseif ($cek_role->group == 'Solutions & Partnership Management') {
+                    if ($cek_role->name_role == 'VP Solutions & Partnership Management') {
+                        $data = $data->where('group','Solutions & Partnership Management');
+                    } elseif($cek_role->name_role == 'Application Development Specialist Manager'){
+                        $data = $data->whereRaw("(`mini_group` = 'Application Development Specialist' OR `tb_cuti`.`nik` = $nik)");
                         // ->where('mini_group','Application Development')-;
-                    } elseif($cek_role->name_role == 'Customer Relation Manager'){
+                    } elseif($cek_role->name_role == 'Product Development Specialist Manager'){
                         $data = $data
-                        ->where('mini_group','Customer Relationship Management');
-                    } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
-                        $data = $data
-                        ->where('mini_group','Product Management & Solution');
-                    }else {
+                        ->where('mini_group','Product Development Specialist');
+                    } else {
                         $data = $data->where('users.nik',$nik);
                     }
                     
-                } elseif ($cek_role->group == 'Project Management') {
-                    if ($cek_role->name_role == 'VP Project Management') {
-                        $data = $data->whereRaw("(`group` = 'Project Management' OR `group` = 'Human Capital')");
+                } elseif ($cek_role->group == 'Program & Project Management') {
+                    if ($cek_role->name_role == 'VP Program & Project Management') {
+                        $data = $data->whereRaw("(`group` = 'Program & Project Management')");
                         // ->where('group','Project Management')->orWhere('group','Human Capital');
-                    } elseif($cek_role->name_role == 'Project Management Manager'){
+                    } elseif($cek_role->name_role == 'Project Management Office Manager'){
                         $data = $data
                         ->where('mini_group','Project Management Office');
+                    }elseif ($cek_role->name_role == 'Service Desk Center Manager'){
+                        $data = $data
+                            ->where('mini_group','Service Desk Center');
+                    } else {
+                        $data = $data->where('users.nik',$nik);
+                    }
+                } elseif ($cek_role->group == 'Synergy System Management') {
+                    if ($cek_role->name_role == 'VP Synergy System Management') {
+                        $data = $data
+                        ->where('group','Synergy System Management');
+                    } elseif($cek_role->name_role == 'Synergy System & Services Manager'){
+                        $data = $data
+                        ->where('mini_group','Synergy System & Services');
+                    } elseif($cek_role->name_role == 'Synergy System Architecture Manager'){
+                        $data = $data
+                        ->where('mini_group','Synergy System Architecture');
+                    } elseif($cek_role->name_role == 'Synergy System Delivery Manager'){
+                        $data = $data
+                        ->where('mini_group','Synergy System Delivery');
                     }else {
                         $data = $data->where('users.nik',$nik);
                     }
-                } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-                    if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
+                } elseif ($cek_role->group == 'Internal Chain Management') {
+                    if ($cek_role->name_role == 'VP Internal Chain Management') {
                         $data = $data
-                        ->where('group','Solution Implementation & Managed Service');
-                    } elseif($cek_role->name_role == 'Managed Service Manager'){
+                        ->where('group','Internal Chain Management');
+                    } elseif($cek_role->name_role == 'Supply Chain & IT Support Manager'){
                         $data = $data
-                        ->where('mini_group','Managed Service & Problem Solving');
-                    } elseif($cek_role->name_role == 'Solution Architect Manager'){
+                        ->where('mini_group','Supply Chain & IT Support');
+                    } elseif($cek_role->name_role == 'Internal Operation Support Manager'){
                         $data = $data
-                        ->where('mini_group','Solution Architect');
-                    } elseif($cek_role->name_role == 'Solution Execution Manager'){
-                        $cuti = $cuti
-                        ->where('mini_group','Solution Execution');
-                    }else {
-                        $data = $data->where('users.nik',$nik);
-                    }
-                } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-                    if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
-                        $data = $data
-                        ->where('group','Supply Chain, CPS & Asset Management');
-                    } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
-                        $data = $data
-                        ->where('mini_group','Center Point & Asset Management SVC');
-                    } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
-                        $data = $data
-                        ->where('mini_group','Risk Management, Sys Dev & Compliance');
+                        ->where('mini_group','Internal Operation Support');
                     } elseif($cek_role->name_role == 'Supply Chain Manager'){
                         $data = $data
                         ->where('mini_group','Supply Chain Management');
                     }else {
                         $data = $data->where('users.nik',$nik);
                     }
-                } elseif ($cek_role->group == 'Human Capital') {
-                    if ($cek_role->name_role == 'Human Capital Manager') {
+                } elseif ($cek_role->group == 'Human Capital Management') {
+                    if ($cek_role->name_role == 'Organizational & People Development Manager') {
                         $data = $data
-                        ->where('mini_group','Human Capital');
-                    } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+                        ->where('mini_group','Organizational & People Development');
+                    } elseif($cek_role->name_role == 'People Operations & Services Manager' || $cek_role->name_role == 'VP Human Capital Management'){
                         $data = $data;
-                    }else {
+                    } else {
                         $data = $data->where('users.nik',$nik);
                     }
                 } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
@@ -3269,69 +3267,71 @@ class HRGAController extends Controller
                         $data = $datas
                             ->where('users.id_company',$request->filter_com)
                             ->where('id_territory', $ter);
-                    }  elseif ($cek_role->group == 'Product Management & Development') {
-                        if ($cek_role->name_role == 'VP Product Management & Development Solution') {
-                            $data = $data->where('group','Product Management & Development');
-                        } elseif($cek_role->name_role == 'Application Development Manager'){
-                            $data = $data->whereRaw("(`mini_group` = 'Application Development' OR `tb_cuti`.`nik` = $nik)");
+                    }  elseif ($cek_role->group == 'Solutions & Partnership Management') {
+                        if ($cek_role->name_role == 'VP Solutions & Partnership Management') {
+                            $data = $data->where('group','Solutions & Partnership Management');
+                        } elseif($cek_role->name_role == 'Application Development Specialist Manager'){
+                            $data = $data->whereRaw("(`mini_group` = 'Application Development Specialist' OR `tb_cuti`.`nik` = $nik)");
                             // ->where('mini_group','Application Development')-;
-                        } elseif($cek_role->name_role == 'Customer Relation Manager'){
+                        } elseif($cek_role->name_role == 'Product Development Specialist Manager'){
                             $data = $data
-                            ->where('mini_group','Customer Relationship Management');
-                        } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
-                            $data = $data
-                            ->where('mini_group','Product Management & Solution');
-                        }else {
+                            ->where('mini_group','Product Development Specialist');
+                        } else {
                             $data = $data->where('users.nik',$nik);
                         }
                         
-                    } elseif ($cek_role->group == 'Project Management') {
-                        if ($cek_role->name_role == 'VP Project Management') {
-                            $data = $data->whereRaw("(`group` = 'Project Management' OR `group` = 'Human Capital')");
+                    } elseif ($cek_role->group == 'Program & Project Management') {
+                        if ($cek_role->name_role == 'VP Program & Project Management') {
+                            $data = $data->whereRaw("(`group` = 'Program & Project Management')");
                             // ->where('group','Project Management')->orWhere('group','Human Capital');
-                        } elseif($cek_role->name_role == 'Project Management Manager'){
+                        } elseif($cek_role->name_role == 'Project Management Office Manager'){
                             $data = $data
                             ->where('mini_group','Project Management Office');
-                        }else {
+                        }elseif ($cek_role->name_role == 'Service Desk Center Manager'){
+                            $data = $data
+                                ->where('mini_group','Service Desk Center');
+                        } else {
                             $data = $data->where('users.nik',$nik);
                         }
-                    } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-                        if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
+                    } elseif ($cek_role->group == 'Synergy System Management') {
+                        if ($cek_role->name_role == 'VP Synergy System Management') {
                             $data = $data
-                            ->where('group','Solution Implementation & Managed Service');
-                        } elseif($cek_role->name_role == 'Managed Service Manager'){
+                            ->where('group','Synergy System Management');
+                        } elseif($cek_role->name_role == 'Synergy System & Services Manager'){
                             $data = $data
-                            ->where('mini_group','Managed Service & Problem Solving');
-                        } elseif($cek_role->name_role == 'Solution Architect Manager'){
+                            ->where('mini_group','Synergy System & Services');
+                        } elseif($cek_role->name_role == 'Synergy System Architecture Manager'){
                             $data = $data
-                            ->where('mini_group','Solution Architect');
-                        } elseif($cek_role->name_role == 'Solution Execution Manager'){
+                            ->where('mini_group','Synergy System Architecture');
+                        } elseif($cek_role->name_role == 'Synergy System Delivery Manager'){
                             $cuti = $cuti
-                            ->where('mini_group','Solution Execution');
+                            ->where('mini_group','Synergy System Delivery');
                         }else {
                             $data = $data->where('users.nik',$nik);
                         }
-                    } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-                        if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
+                    } elseif ($cek_role->group == 'Internal Chain Management') {
+                        if ($cek_role->name_role == 'VP Internal Chain Management') {
                             $data = $data
-                            ->where('group','Supply Chain, CPS & Asset Management');
-                        } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
+                            ->where('group','Internal Chain Management');
+                        } elseif($cek_role->name_role == 'Supply Chain & IT Support Manager'){
                             $data = $data
-                            ->where('mini_group','Center Point & Asset Management SVC');
-                        } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
+                            ->where('mini_group','Supply Chain & IT Support');
+                        } elseif($cek_role->name_role == 'Internal Operation Support Manager'){
                             $data = $data
-                            ->where('mini_group','Risk Management, Sys Dev & Compliance');
+                            ->where('mini_group','Internal Operation Support');
                         } elseif($cek_role->name_role == 'Supply Chain Manager'){
                             $data = $data
                             ->where('mini_group','Supply Chain Management');
                         }else {
                             $data = $data->where('users.nik',$nik);
                         }
-                    } elseif ($cek_role->group == 'Human Capital') {
-                        if ($cek_role->name_role == 'Human Capital Manager') {
+                    } elseif ($cek_role->group == 'Human Capital Management') {
+                        if ($cek_role->name_role == 'Organizational & People Development Manager') {
                             $data = $data
-                            ->where('mini_group','Human Capital');
-                        } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+                            ->where('mini_group','Organizational & People Development');
+                        } elseif($cek_role->name_role == 'People Operations & Services Manager'){
+                            $data = $data;
+                        } elseif ( $cek_role->name_role = 'VP Human Capital Management'){
                             $data = $data;
                         }else {
                             $data = $data->where('users.nik',$nik);
@@ -3526,61 +3526,61 @@ class HRGAController extends Controller
                 if($div == 'SALES' && $pos == 'MANAGER'){
                     $cuti = $cuti
                         ->where('id_territory', $ter);
-                } elseif ($cek_role->group == 'Product Management & Development') {
-                    if ($cek_role->name_role == 'VP Product Management & Development Solution') {
+                } elseif ($cek_role->group == 'Solutions & Partnership Management') {
+                    if ($cek_role->name_role == 'VP Solutions & Partnership Management') {
                         $cuti = $cuti
-                        ->where('group','Product Management & Development');
-                    } elseif($cek_role->name_role == 'Application Development Manager'){
+                        ->where('group','Solutions & Partnership Management');
+                    } elseif($cek_role->name_role == 'Application Development Specialist Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Application Development');
-                    } elseif($cek_role->name_role == 'Customer Relation Manager'){
+                        ->where('mini_group','Application Development Specialist');
+                    } elseif($cek_role->name_role == 'Product Development Specialist Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Customer Relationship Management');
-                    } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
-                        $cuti = $cuti
-                        ->where('mini_group','Product Management & Solution');
-                    }else {
+                        ->where('mini_group','Product Development Specialist');
+                    } else {
                         $cuti = $cuti->where('users.nik',$nik);
                     }
                     
-                } elseif ($cek_role->group == 'Project Management') {
-                    if ($cek_role->name_role == 'VP Project Management') {
+                } elseif ($cek_role->group == 'Program & Project Management') {
+                    if ($cek_role->name_role == 'VP Program & Project Management') {
                         $cuti = $cuti
-                        ->where('group','Project Management')->orWhere('group','Human Capital');
-                    } elseif($cek_role->name_role == 'Project Management Manager'){
+                        ->where('group','Program & Project Management');
+                    } elseif($cek_role->name_role == 'Project Management Office Manager'){
                         $cuti = $cuti
                         ->where('mini_group','Project Management Office');
+                    }elseif ($cek_role->name_role == 'Service Desk Center Manager'){
+                        $cuti = $cuti
+                            ->where('mini_group','Service Desk Center');
                     }else {
                         $cuti = $cuti->where('users.nik',$nik);
                     }
 
-                } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-                    if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
+                } elseif ($cek_role->group == 'Synergy System Management') {
+                    if ($cek_role->name_role == 'VP Synergy System Management') {
                         $cuti = $cuti
-                        ->where('group','Solution Implementation & Managed Service');
-                    } elseif($cek_role->name_role == 'Managed Service Manager'){
+                        ->where('group','Synergy System Management');
+                    } elseif($cek_role->name_role == 'Synergy System & Services Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Managed Service & Problem Solving');
-                    } elseif($cek_role->name_role == 'Solution Architect Manager'){
+                        ->where('mini_group','Synergy System & Services');
+                    } elseif($cek_role->name_role == 'Synergy System Architecture Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Solution Architect');
-                    } elseif($cek_role->name_role == 'Solution Execution Manager'){
+                        ->where('mini_group','Synergy System Architecture');
+                    } elseif($cek_role->name_role == 'Synergy System Delivery Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Solution Execution');
+                        ->where('mini_group','Synergy System Delivery');
                     }else {
                         $cuti = $cuti->where('users.nik',$nik);
                     }
 
-                } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-                    if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
+                } elseif ($cek_role->group == 'Internal Chain Management') {
+                    if ($cek_role->name_role == 'VP Internal Chain Management') {
                         $cuti = $cuti
-                        ->where('group','Supply Chain, CPS & Asset Management');
-                    } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
+                        ->where('group','Internal Chain Management');
+                    } elseif($cek_role->name_role == 'Supply Chain & IT Support Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Center Point & Asset Management SVC');
-                    } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
+                        ->where('mini_group','Supply Chain & IT Support');
+                    } elseif($cek_role->name_role == 'Internal Operation Support Manager'){
                         $cuti = $cuti
-                        ->where('mini_group','Risk Management, Sys Dev & Compliance');
+                        ->where('mini_group','Internal Operation Support');
                     } elseif($cek_role->name_role == 'Supply Chain Manager'){
                         $cuti = $cuti
                         ->where('mini_group','Supply Chain Management');
@@ -3588,11 +3588,11 @@ class HRGAController extends Controller
                         $cuti = $cuti->where('users.nik',$nik);
                     }
 
-                } elseif ($cek_role->group == 'Human Capital') {
-                    if ($cek_role->name_role == 'Human Capital Manager') {
+                } elseif ($cek_role->group == 'Human Capital Management') {
+                    if ($cek_role->name_role == 'Organizational & People Development Manager') {
                         $cuti = $cuti
-                        ->where('mini_group','Human Capital');
-                    } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+                        ->where('mini_group','Organizational & People Development');
+                    } elseif($cek_role->name_role == 'People Operations & Services Manager' || $cek_role->name_role == 'VP Human Capital Management'){
                         $cuti = $cuti->where('date_off', '>=', $request->start_date)
                             ->where('date_off', '<=', $request->end_date);
                     }else {
@@ -3901,57 +3901,58 @@ class HRGAController extends Controller
 
         if($div == 'SALES' && $pos == 'MANAGER'){
             $data = $data->where('id_territory', $ter);
-        } elseif ($cek_role->group == 'Product Management & Development') {
-            if ($cek_role->name_role == 'VP Product Management & Development Solution') {
-                $data = $data->where('group','Product Management & Development');
-            } elseif($cek_role->name_role == 'Application Development Manager'){
+        } elseif ($cek_role->group == 'Solutions & Partnership Management') {
+            if ($cek_role->name_role == 'VP Solutions & Partnership Management') {
+                $data = $data->where('group','Solutions & Partnership Management');
+            } elseif($cek_role->name_role == 'Application Development Specialist Manager'){
                 // $data = $data
-                $data = $data->whereRaw("(`mini_group` = 'Application Development')");
-            } elseif($cek_role->name_role == 'Customer Relation Manager'){
-                $data = $data->where('mini_group','Customer Relationship Management');
-            } elseif($cek_role->name_role == 'Product Management & Solution Manager'){
-                $data = $data->where('mini_group','Product Management & Solution');
+                $data = $data->whereRaw("(`mini_group` = 'Application Development Specialist')");
+            } elseif($cek_role->name_role == 'Product Development Specialist Manager'){
+                $data = $data->where('mini_group','Product Development Specialist');
             } else {
                 $data = $data->where('users.nik',$nik);
             }
             
-        } elseif ($cek_role->group == 'Project Management') {
-            if ($cek_role->name_role == 'VP Project Management') {
-                $data = $data->whereRaw("(`group` = 'Project Management' OR `group` = 'Human Capital')");
+        } elseif ($cek_role->group == 'Program & Project Management') {
+            if ($cek_role->name_role == 'VP Program & Project Management') {
+                $data = $data->whereRaw("(`group` = 'Program & Project Management')");
                 // ->where('group','Project Management')->orWhere('group','Human Capital');
-            } elseif($cek_role->name_role == 'Project Management Manager'){
+            } elseif($cek_role->name_role == 'Project Management Office Manager'){
                 $data = $data->where('mini_group','Project Management Office');
+            }elseif ($cek_role->name_role == 'Service Desk Center Manager'){
+                $data = $data
+                    ->where('mini_group','Service Desk Center');
             }else {
                 $data = $data->where('users.nik',$nik);
             }
-        } elseif ($cek_role->group == 'Solution Implementation & Managed Service') {
-            if ($cek_role->name_role == 'VP Solution Implementation & Managed Service') {
-                $data = $data->where('group','Solution Implementation & Managed Service');
-            } elseif($cek_role->name_role == 'Managed Service Manager'){
-                $data = $data->where('mini_group','Managed Service & Problem Solving');
-            } elseif($cek_role->name_role == 'Solution Architect Manager'){
-                $data = $data->where('mini_group','Solution Architect');
-            } elseif($cek_role->name_role == 'Solution Execution Manager'){
-                $data = $data->where('mini_group','Solution Execution');
+        } elseif ($cek_role->group == 'Synergy System Management') {
+            if ($cek_role->name_role == 'VP Synergy System Management') {
+                $data = $data->where('group','Synergy System Management');
+            } elseif($cek_role->name_role == 'Synergy System & Services Manager'){
+                $data = $data->where('mini_group','Synergy System & Services');
+            } elseif($cek_role->name_role == 'Synergy System Architecture Manager'){
+                $data = $data->where('mini_group','Synergy System Architecture');
+            } elseif($cek_role->name_role == 'Synergy System Delivery Manager'){
+                $data = $data->where('mini_group','Synergy System Delivery');
             }else {
                 $data = $data->where('users.nik',$nik);
             }
-        } elseif ($cek_role->group == 'Supply Chain, CPS & Asset Management') {
-            if ($cek_role->name_role == 'VP Supply Chain, CPS & Asset Management') {
-                $data = $data->where('group','Supply Chain, CPS & Asset Management');
-            } elseif($cek_role->name_role == 'Center Point & Asset Management SVC Manager'){
-                $data = $data->where('mini_group','Center Point & Asset Management SVC');
-            } elseif($cek_role->name_role == 'Risk Management, Sys Dev & Compliance Manager'){
-                $data = $data->where('mini_group','Risk Management, Sys Dev & Compliance');
+        } elseif ($cek_role->group == 'Internal Chain Management') {
+            if ($cek_role->name_role == 'VP Internal Chain Management') {
+                $data = $data->where('group','Internal Chain Management');
+            } elseif($cek_role->name_role == 'Supply Chain & IT Support Manager'){
+                $data = $data->where('mini_group','Supply Chain & IT Support');
+            } elseif($cek_role->name_role == 'Internal Operation Support Manager'){
+                $data = $data->where('mini_group','Internal Operation Support');
             } elseif($cek_role->name_role == 'Supply Chain Manager'){
                 $data = $data->where('mini_group','Supply Chain Management');
             }else {
                 $data = $data->where('users.nik',$nik);
             }
-        } elseif ($cek_role->group == 'Human Capital') {
-            if ($cek_role->name_role == 'Human Capital Manager') {
-                $data = $data->where('mini_group','Human Capital');
-            } elseif($cek_role->name_role == 'Renumeration, Personalia & GS Manager'){
+        } elseif ($cek_role->group == 'Human Capital Management') {
+            if ($cek_role->name_role == 'Organizational & People Development Manager') {
+                $data = $data->where('mini_group','Organizational & People Development');
+            } elseif($cek_role->name_role == 'People Operations & Services Manager' || $cek_role->name_role == 'VP Human Capital Management'){
                 $data = $data;
             }else {
                 $data = $data->where('users.nik',$nik);

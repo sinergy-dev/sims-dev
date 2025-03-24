@@ -200,7 +200,7 @@ class TicketingController extends Controller
 		$nik = Auth::User()->nik;
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -266,9 +266,9 @@ class TicketingController extends Controller
 		} else if (isset($request->client)) {
 		    $needed = $needed->where('pid','like','%'. $request->client.'%');
 		} else {
-		    // if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+		    // if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
 		    //     $needed = $needed->whereIn('pid', $getPid)->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
-		    // } elseif ($cek_role->name_role == 'Managed Service Manager') {
+		    // } elseif ($cek_role->name_role == 'Synergy System & Services Manager') {
 		    //     $needed = $needed->whereIn('pid', $getPidEoS)->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
 		    // } elseif ($cek_role->name_role == 'Customer Relation Manager') {
 		    //     $needed = $needed->whereIn('pid', $getPidCC)->where('ticketing__detail.id_ticket', 'like', '%' . date('Y'));
@@ -375,7 +375,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -388,9 +388,9 @@ class TicketingController extends Controller
         }else if (isset($request->client)) {
 	        $detail = $detail->where('pid','like','%'.$request->client.'%');
         }else {
-        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
-        	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+        	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
         		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.$year);
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
         		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.$year);
@@ -459,7 +459,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -472,9 +472,9 @@ class TicketingController extends Controller
         }else if (isset($request->client)) {
 	        $detail = $detail->where('pid','like','%'.$request->client.'%');
         }else {
-        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
-        	} elseif($cek_role->name_role == 'Managed Service Manager'  || Auth::User()->nik = '1181195100'){
+        	} elseif($cek_role->name_role == 'Synergy System & Services Manager'  || Auth::User()->nik = '1181195100'){
         		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
         		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
@@ -662,7 +662,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -675,9 +675,9 @@ class TicketingController extends Controller
         }else if(isset($request->client)){
 	        $detail = $detail->where('pid','like','%'.$request->pid.'%');
         }else {
-        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        	if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         		$detail = $detail->whereIn('pid',$getPid)->where('id_ticket','like','%'.date('Y'));
-        	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+        	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
         		$detail = $detail->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.date('Y'));
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
         		$detail = $detail->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.date('Y'));
@@ -894,9 +894,9 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
-        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         	$getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         } else {
         	$getPid = [];
@@ -911,10 +911,10 @@ class TicketingController extends Controller
             ->groupBy('ticketing__detail.severity')
             ->where('id_ticket','like','%'.date('Y'));
 
-        if ($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100') {
+        if ($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100') {
             $severity_count = $severity_count->whereIn('pid',$getPidEoS)->get()
             ->keyBy('name');
-        } elseif($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care'){
+        } elseif($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center'){
             $severity_count = $severity_count->whereIn('pid',$getPid)->get()
             ->keyBy('name');
         } elseif ($cek_role->name_role == 'Customer Relation Manager') {
@@ -933,7 +933,7 @@ class TicketingController extends Controller
             ->orderBy('code')
             ->groupBy('tb_contact.id_customer','code','brand_name')
 			->where('ticketing__user.nik',$nik)->get();
-		}else if ($cek_role->name_role == "Customer Care" || $cek_role->name_role = 'Operations Director' || $cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Customer Relation Manager') {
+		}else if ($cek_role->name_role == "Customer Support Center" || $cek_role->name_role = 'Operations Director' || $cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Customer Relation Manager') {
 			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -942,7 +942,7 @@ class TicketingController extends Controller
             ->groupBy('tb_contact.id_customer','code','brand_name')->get();
 
         	$get_client = $get_client->prepend((object)(['id' => 'INTERNAL','client_acronym' => 'INTERNAL','client_name' => 'INTERNAL']))->prepend((object)(['id' => '13','client_acronym' => 'ADMF','client_name' => 'PT. Adira Finance, Tbk']));
-		} elseif ($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100') {
+		} elseif ($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100') {
 			$get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -989,10 +989,10 @@ class TicketingController extends Controller
         //     "))
         //     ->orderBy('ticket_count', 'DESC');
 
-        // if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        // if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         //     $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPid)->limit(10)
         //     ->get();
-        // } elseif($cek_role->name_role == 'Managed Service Manager'){
+        // } elseif($cek_role->name_role == 'Synergy System & Services Manager'){
         //     $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPidEoS)->limit(10)
         //     ->get();
         // } elseif ($cek_role->name_role == 'Customer Relation Manager') {
@@ -1023,7 +1023,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -1040,9 +1040,9 @@ class TicketingController extends Controller
         }else if(isset($request->client)){
             $severity_count = $severity_count->where('pid','like','%'.$request->client.'%');
         }else{
-            if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+            if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
                 $severity_count = $severity_count->whereIn('pid',$getPid);
-            } elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+            } elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
                 $severity_count = $severity_count->whereIn('pid',$getPidEoS);
             } elseif ($cek_role->name_role == 'Customer Relation Manager') {
                 $severity_count = $severity_count->whereIn('pid',$getPidCC);
@@ -1064,7 +1064,7 @@ class TicketingController extends Controller
             ->orderBy('code')
             ->groupBy('tb_contact.id_customer','code','brand_name');
 
-        if ($cek_role->name_role == "Customer Care" || $cek_role->name_role = 'Operations Director' || $cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Customer Relation Manager') {
+        if ($cek_role->name_role == "Customer Support Center" || $cek_role->name_role = 'Operations Director' || $cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Customer Relation Manager') {
             $get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -1073,7 +1073,7 @@ class TicketingController extends Controller
             ->groupBy('tb_contact.id_customer','code','brand_name')->get();
 
             $get_client = $get_client->prepend((object)(['id' => 'INTERNAL','client_acronym' => 'INTERNAL','client_name' => 'INTERNAL']))->prepend((object)(['id' => '13','client_acronym' => 'ADMF','client_name' => 'PT. Adira Finance, Tbk']));
-        } elseif ($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100') {
+        } elseif ($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100') {
             $get_client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -1131,9 +1131,9 @@ class TicketingController extends Controller
         // if (isset($request->pid)) {
         //  $count_ticket_by_client = $count_ticket_by_client->where('ticketing__detail.pid',$request->pid);
         // }else {
-        //  if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        //  if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         //         $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPid)->where('ticketing__id.id_ticket','like','%'.date('Y'));
-        //     } elseif($cek_role->name_role == 'Managed Service Manager'){
+        //     } elseif($cek_role->name_role == 'Synergy System & Services Manager'){
         //         $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPidEoS)->where('ticketing__id.id_ticket','like','%'.date('Y'));
         //     } elseif ($cek_role->name_role == 'Customer Relation Manager') {
         //         $count_ticket_by_client = $count_ticket_by_client->whereIn('ticketing__detail.pid',$getPidCC)->where('ticketing__id.id_ticket','like','%'.date('Y'));
@@ -1176,7 +1176,7 @@ class TicketingController extends Controller
 		$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name')->where('user_id', Auth::User()->nik)->first();
 
-		if ($cek_role->name == "Customer Care" || $cek_role->name == 'IT Internal') {
+		if ($cek_role->name == "Customer Support Center" || $cek_role->name == 'IT Internal') {
 			$client = DB::table('tb_id_project')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
 			->join('ticketing__user','ticketing__user.pid','=','tb_id_project.id_project')
 			->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -1484,7 +1484,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         // $getClient = DB::table('ticketing__id')
         // 			->join('ticketing__client','ticketing__client.id','=','ticketing__id.id_client')
@@ -1509,9 +1509,9 @@ class TicketingController extends Controller
         					DB::raw('CONCAT(code," - ",brand_name) as text'))
         				->where(DB::raw('CONCAT(code," - ",brand_name)'),'like','%'.request('q').'%');
 
-        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
             $getClient = $getClient->where('ticketing__user.nik',$nik)->distinct()->get();
-        } elseif($cek_role->name_role == 'Managed Service Manager'  || Auth::User()->nik = '1181195100'){
+        } elseif($cek_role->name_role == 'Synergy System & Services Manager'  || Auth::User()->nik = '1181195100'){
             $getClient = $getClient->whereIn('ticketing__user.nik',$nikEoS)->distinct()->get();
         } elseif ($cek_role->name_role == 'Customer Relation Manager') {
             $getClient = $getClient->whereIn('ticketing__user.nik',$nikCC)->distinct()->get();
@@ -1528,7 +1528,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         if (isset($request->code)) {
         	$getPid = DB::table('ticketing__user')->select('pid as id', 'pid as text')
@@ -1538,9 +1538,9 @@ class TicketingController extends Controller
         	$getPid = DB::table('ticketing__user')->select('pid as id', 'pid as text')->where('pid','like','%'.request('q').'%');
         }
 
-        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+        if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
             $getPid = $getPid->where('nik',$nik)->distinct()->get();
-        } elseif($cek_role->name_role == 'Managed Service Manager'  || Auth::User()->nik = '1181195100'){
+        } elseif($cek_role->name_role == 'Synergy System & Services Manager'  || Auth::User()->nik = '1181195100'){
             $getPid = $getPid->whereIn('nik',$nikEoS)->distinct()->get();
         } elseif ($cek_role->name_role == 'Customer Relation Manager') {
             $getPid = $getPid->whereIn('nik',$nikCC)->distinct()->get();
@@ -1801,7 +1801,7 @@ class TicketingController extends Controller
 	
 			//Start Notification Job SLM
 	
-			if($request->id_atm != null){
+			if($request->id_atm != null || $request->client != 'BBJB'){
 				 $this->setNotif($detailTicketOpen->engineer, $request->id_ticket, $request->location);
 			}
 			//End Notification Job SLM
@@ -1854,7 +1854,6 @@ class TicketingController extends Controller
 			}
 		});
 
-		Log::info([$response]);
 	}
 
 	public function sendEmailSlm($to, $cc, $subject, $body, $driveId = null)
@@ -1878,8 +1877,6 @@ class TicketingController extends Controller
 				$message->attach($attachment);
 			}
 		});
-
-		Log::info([$response]);
 
 		if ($attachment) {
 			unlink($attachment); 
@@ -1908,7 +1905,7 @@ class TicketingController extends Controller
 		// dd(Auth::user());
 		$cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         // $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         // $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -1916,9 +1913,9 @@ class TicketingController extends Controller
 
 		$getPid = TicketingUser::select('pid');
 
-		if ($cek_role->name_role == 'Managed Service Manager') {
+		if ($cek_role->name_role == 'Synergy System & Services Manager') {
             $getPid = $getPid->whereIn('nik',$nikEoS)->get()->pluck('pid');
-        } elseif($cek_role->name_role == 'Engineer on Site' && Auth::User()->nik != '1181195100' || $cek_role->name_role == 'Customer Care'){
+        } elseif($cek_role->name_role == 'Engineer on Site' && Auth::User()->nik != '1181195100' || $cek_role->name_role == 'Customer Support Center'){
             $getPid = $getPid->where('nik',Auth::User()->nik)->get()->pluck('pid');
         } elseif ($cek_role->name_role == 'Customer Relation Manager') {
             $getPid = $getPid->whereIn('nik',$nikCC)->get()->pluck('pid');
@@ -2335,7 +2332,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->distinct()->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->distinct()->get()->pluck('pid');
@@ -2435,15 +2432,15 @@ class TicketingController extends Controller
 			$year = date('Y');
 		}
 
-		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care' || $cek_role->name_role == 'IT Internal') {
-			if($cek_role->name_role == 'Customer Care'){
+		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center' || $cek_role->name_role == 'IT Internal') {
+			if($cek_role->name_role == 'Customer Support Center'){
 				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->orWhere('pid','ADMF')->orWhere('pid','INTERNAL')->where('id_ticket','like','%'.$year);
 			} else if($cek_role->name_role == 'IT Internal'){
 				$occurring_ticket_result = $occurring_ticket_result->where('pid','INTERNAL')->where('id_ticket','like','%'.$year);
 			} else {
 				$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
 			}
-    	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+    	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
     		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.$year);
     	} elseif($cek_role->name_role == 'Customer Relation Manager'){
     		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.$year);
@@ -2548,8 +2545,8 @@ class TicketingController extends Controller
 			->take($limit)
 			->orderBy('id','DESC');
 
-		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
-			if($cek_role->name_role == 'Customer Care'){
+		if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
+			if($cek_role->name_role == 'Customer Support Center'){
 				// $finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->where('id_ticket','like','%'.date('Y'));
 				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->orWhere('pid','13')->orWhere('pid','ADMF')->orWhere('pid','INTERNAL')->where('id_ticket','like','%'.$year);
 
@@ -2557,7 +2554,7 @@ class TicketingController extends Controller
 				$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
 			}
     		// $finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->where('id_ticket','like','%'.$year);
-    	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+    	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
     		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->where('id_ticket','like','%'.$year);
     	} elseif($cek_role->name_role == 'Customer Relation Manager'){
     		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->where('id_ticket','like','%'.$year);
@@ -3143,7 +3140,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -3177,9 +3174,9 @@ class TicketingController extends Controller
 
 		if (isset($req->start) && isset($req->end)){
 			// $occurring_ticket_result = $occurring_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
-			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
-        	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+        	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
@@ -3221,9 +3218,9 @@ class TicketingController extends Controller
 		} 
 		if (isset($req->start) && isset($req->end)){
 			// $finish_ticket_result = $finish_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
-			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPid)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
-        	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+        	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
         		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidEoS)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
         		$finish_ticket_result = $finish_ticket_result->whereIn('pid',$getPidCC)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
@@ -3520,7 +3517,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
         $getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -3557,9 +3554,9 @@ class TicketingController extends Controller
 
 		if (isset($req->start) && isset($req->end)){
 			// $occurring_ticket_result = $occurring_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
-			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
-        	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+        	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
@@ -3782,7 +3779,7 @@ class TicketingController extends Controller
         $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',$nik)->first();
 
         $nikEoS = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Engineer on Site')->get()->pluck('nik');
-        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Care')->get()->pluck('nik');
+        $nikCC = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group','nik')->where('roles.name','Customer Support Center')->get()->pluck('nik');
 
        	$getPid = DB::table('ticketing__user')->where('nik',Auth::User()->nik)->get()->pluck('pid');
         $getPidEoS = DB::table('ticketing__user')->whereIn('nik',$nikEoS)->get()->pluck('pid');
@@ -3813,9 +3810,9 @@ class TicketingController extends Controller
 		} 
 		if (isset($req->start) && isset($req->end)){
 			// $occurring_ticket_result = $occurring_ticket_result->whereRaw('`ticketing__detail`.`reporting_time` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
-			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Care') {
+			if ($cek_role->name_role == 'Engineer on Site' || $cek_role->name_role == 'Customer Support Center') {
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPid)->where('ticketing__detail.id_ticket','like','%'.date('Y'));
-        	} elseif($cek_role->name_role == 'Managed Service Manager' || Auth::User()->nik = '1181195100'){
+        	} elseif($cek_role->name_role == 'Synergy System & Services Manager' || Auth::User()->nik = '1181195100'){
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidEoS)->where('ticketing__detail.id_ticket','like','%'.date('Y'));
         	} elseif($cek_role->name_role == 'Customer Relation Manager'){
         		$occurring_ticket_result = $occurring_ticket_result->whereIn('pid',$getPidCC)->where('ticketing__detail.id_ticket','like','%'.date('Y'));
@@ -4040,13 +4037,15 @@ class TicketingController extends Controller
 			$this->sendEmail($req->to,$req->cc,$req->subject,$req->body);
 		}
 
+		$clientAcronym = explode("/", $req->id_ticket);
+
 		$detailTicketUpdate = TicketingDetail::where('id_ticket',$req->id_ticket)
 			->first();
 
 		$engineer = $detailTicketUpdate->engineer;
 
 		if(isset($req->engineer)){
-			if(isset($req->engineer) && $detailTicketUpdate->id_atm != null){
+			if(isset($req->engineer) && $detailTicketUpdate->id_atm != null && $clientAcronym[1] == 'BBJB'){
 				 $this->setNotif($req->engineer, $req->id_ticket, $detailTicketUpdate->location);
 			}
 		}
@@ -4066,7 +4065,7 @@ class TicketingController extends Controller
 		$activityTicketUpdate->id_ticket = $req->id_ticket;
 //		 $activityTicketUpdate->date = date("Y-m-d H:i:s.000000");
 		$activityTicketUpdate->date = $req->timeOnProgress;
-		 if($checkLastActivity->activity == 'OPEN' && isset($req->engineer) && $engineer != $req->engineer && isset($detailTicketUpdate->id_atm)){
+		 if($checkLastActivity->activity == 'OPEN' && isset($req->engineer) && $engineer != $req->engineer && isset($detailTicketUpdate->id_atm) && $clientAcronym[1] == 'BBJB'){
 		 	$activityTicketUpdate->activity = "OPEN";
 		 }else{
 			$activityTicketUpdate->activity = "ON PROGRESS";
@@ -4316,7 +4315,6 @@ class TicketingController extends Controller
 	}
 
 	public function sendEmailPending(Request $request){
-		// Log::info([$request->to,$request->cc,$request->subject,$request->body]);
 
 		$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
 
@@ -4544,7 +4542,7 @@ class TicketingController extends Controller
 		$requestChange->save();
 
 		if (Str::contains($req->idTicket, 'BJBR') || Str::contains($req->idTicket, 'BBJB') || Str::contains($req->idTicket, 'BPJS') || Str::contains($req->idTicket, 'BKES')) {
-			$cek_role = $cek_role->where('roles.name','Managed Service Manager')->first();
+			$cek_role = $cek_role->where('roles.name','Synergy System & Services Manager')->first();
 			$to = $cek_role->name;
 			$kirim = $cek_role->email;
 		} else {
@@ -6693,7 +6691,7 @@ class TicketingController extends Controller
     	$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name')->where('user_id', Auth::User()->nik)->first();
 
-        if ($cek_role->name == 'VP Supply Chain, CPS & Asset Management' || $cek_role->name == 'Center Point & Asset Management SVC Manager' || $cek_role->name == 'Managed Service Manager' || $nik == '1181195100') {
+        if ($cek_role->name == 'VP Internal Chain Management' || $cek_role->name == 'Supply Chain & IT Support Manager' || $cek_role->name == 'Synergy System & Services Manager' || $nik == '1181195100') {
         	$data = DB::table('presence__shifting_user')->join('presence__shifting_project','presence__shifting_project.id','presence__shifting_user.shifting_project')->join('users','users.nik','presence__shifting_user.nik')->select('users.name','project_name','presence__shifting_user.nik','presence__shifting_project.id as id_location')->where('status_karyawan','!=','dummy')->orderBy('project_name','asc')->get();
 
 	    	$dataNonShifting = DB::table('users')
@@ -6757,7 +6755,7 @@ class TicketingController extends Controller
                 })->whereRaw("(`id_company` = '1' AND `id_division` = 'MSM' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN' AND `id_position` != 'MANAGER')")
                 ->select('users.name',DB::raw("CONCAT('Not-Set') AS `project_name`"),'users.nik',DB::raw("CONCAT('-') AS `id_location`"),'tb_pid.pid',DB::raw("CONCAT('-') AS `brand_name`"))->orderBy('project_name','asc');
 
-            if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
+            if ($cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Supply Chain & IT Support Manager') {
             	$dataNonShifting = $dataNonShifting;
             } else{
             	$dataNonShifting = $dataNonShifting->where('users.nik',Auth::User()->nik);
@@ -6790,7 +6788,7 @@ class TicketingController extends Controller
     				->orderBy('project_name','asc')
     				->union($dataNonShifting);
 
-    		if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
+    		if ($cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Supply Chain & IT Support Manager') {
             	$data = $data;
             } else{
             	$data = $data->where('users.nik',Auth::User()->nik);
@@ -6844,7 +6842,7 @@ class TicketingController extends Controller
 	    			->selectRaw('GROUP_CONCAT(DISTINCT `tb_contact`.`brand_name`) AS `brand_name`')
 	    			->selectRaw('presence__shifting_project.project_name')->where('status_karyawan','!=','dummy')->groupBy('presence__shifting_project.project_name');
 
-	    	if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
+	    	if ($cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Supply Chain & IT Support Manager') {
             	$data = $data;
             } else{
             	// $data = $data;
@@ -6998,7 +6996,7 @@ class TicketingController extends Controller
     				->where('users.status_karyawan','!=','dummy')
     				->orderBy('project_name','asc');
 
-    		if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
+    		if ($cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Supply Chain & IT Support Manager') {
             	$dataNonShifting = $dataNonShifting->get();
             	$dataAll = $dataAll->get();
             } else{
@@ -7040,7 +7038,7 @@ class TicketingController extends Controller
 	    			->selectRaw('GROUP_CONCAT( DISTINCT `pid`, " - ", `name_project`) AS `pid`')
 	    			->selectRaw('presence__shifting_project.project_name')->where('status_karyawan','!=','dummy')->groupBy('presence__shifting_project.project_name');
 
-	    	if ($cek_role->name == 'Managed Service Manager' || $cek_role->name == 'Center Point & Asset Management SVC Manager') {
+	    	if ($cek_role->name == 'Synergy System & Services Manager' || $cek_role->name == 'Supply Chain & IT Support Manager') {
             	$dataAll = $dataAll;
             } else{
             	$dataAll = $dataAll->where('presence__shifting_user.nik',Auth::User()->nik);
@@ -7155,12 +7153,12 @@ class TicketingController extends Controller
 
     	$cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role','group','mini_group')->where('user_id',Auth::User()->nik)->first();
 
-    	if($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Managed Service Manager'){
+    	if($cek_role->name_role == 'Operations Director' || $cek_role->name_role == 'Synergy System & Services Manager'){
     		$data = SalesProject::join('ticketing__user','tb_id_project.id_project','ticketing__user.pid')
     			->select(DB::raw('`tb_id_project`.`id_project` AS `id`,CONCAT(`id_project`," - ", `name_project`) AS `text`'))
     			->where('pid', 'like', '%'.$client_acronym.'%')->distinct()->get();
     	} else {
-    		if ($cek_role->name_role == "Customer Care" || $cek_role->name_role == 'IT Internal') {
+    		if ($cek_role->name_role == "Customer Support Center" || $cek_role->name_role == 'IT Internal') {
     			if ($request->client_acronym == "INTR") {
     				$data = collect([
     					['id' => 'INTERNAL',   // Replace with your desired ID
@@ -7492,7 +7490,7 @@ class TicketingController extends Controller
 						->leftjoin('role_user as b', 'a.id', 'b.role_id')
 						->leftjoin('users as c', 'b.user_id', 'c.nik')
 						->select('c.name as name', 'c.email as email','c.nik as nik', 'c.telegram_id as id_telegram')
-						->where('a.name', 'Managed Service Manager')
+						->where('a.name', 'Synergy System & Services Manager')
 						->first();
 
         $oldJob = DB::table('slm_notification_job')->where('id_ticket', $idTicket)
@@ -7537,7 +7535,10 @@ class TicketingController extends Controller
             $message = 'Hai, '.$leader->name.'. Ticket dengan ID: '. $idTicket .' Lokasi: '.$location.'. Tidak memiliki engineer / engineer belum di set. Segera update ticket pada SIMS App agar tiket dapat segera ditangani. Terima kasih.';
 
             $chatIDGroup = env('TELEGRAM_GROUP_CHAT_ID');
-            $this->telegramService->sendMessage($chatIDGroup, $message);
+            if(!empty($chatIDGroup)){
+                $this->telegramService->sendMessage($chatIDGroup, $message);
+            }
+
             if($leader->id_telegram){
                 $this->telegramService->sendMessage($leader->id_telegram, $message);
             }

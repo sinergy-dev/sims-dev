@@ -94,7 +94,7 @@ class SalesLeadController extends Controller
         $presales = false;
 
         if($ter != null){
-            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+            if ($cek_role->name_role == 'Presales Support Architecture' || $cek_role->name_role == 'System Designer Architecture' || $cek_role->name_role == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
                 $count_lead = $total_lead->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
@@ -229,7 +229,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-            } else if ($cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Partnership & Marketing' || $cek_role->name_role == 'Solution Architect Manager') {
+            } else if ($cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->name_role == 'Synergy System Architecture Manager') {
                 $count_lead = $total_lead->where('users.id_company','1')
                             ->count('lead_id');
 
@@ -254,7 +254,7 @@ class SalesLeadController extends Controller
                 $count_initial = $total_initial->where('users.id_company','1')
                             ->count('lead_id');
 
-                if ($cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Solution Architect Manager') {
+                if ($cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Synergy System Architecture Manager') {
                     $sum_amount_lead = $total_initial->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
                 } else {
                     $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->where('users.id_company','1')->first();
@@ -270,7 +270,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-                if ($cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Solution Architect Manager') {
+                if ($cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Synergy System Architecture Manager') {
                     $presales = true;
                 } else {
                     $presales = false;
@@ -471,7 +471,7 @@ class SalesLeadController extends Controller
     public function getTa()
     {
         $getPresales = collect(User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select(DB::raw('`nik` AS `id`,`users`.`name` AS `text`'))
-            ->whereRaw("(`roles`.`name` = 'Technology Alliance')")
+            ->whereRaw("(`roles`.`name` = 'Technology Alliance Solutions')")
             ->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPresales);
@@ -638,15 +638,15 @@ class SalesLeadController extends Controller
                 ->orderBy('created_at', 'desc');
 
         // if ($div == 'BCD') {
-            if ($cek_role->name_role == 'Partnership & Marketing') {
+            if ($cek_role->name_role == 'Channeling Partnership & Marketing') {
                 $leadsnow->where('u_sales.id_company', '1');
             }
         // }
          
         if($ter != null && $div != 'BCD' || $cek_role->name_role == 'Operations Director'){
             $leadsnow->where('u_sales.id_company', '1');
-            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
-                if ($cek_role->name_role == 'Technology Alliance') {
+            if ($cek_role->name_role == 'Presales Support Architecture' || $cek_role->name_role == 'System Designer Architecture' || $cek_role->name_role == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+                if ($cek_role->name_role == 'Technology Alliance Solutions') {
                     $leadsnow->where('nik_presales', 'like', '%'.$nik.'%')->orWhere('nik_ta','like','%'.$nik.'%');
                 } else {
                     $leadsnow->where('nik_presales', 'like', '%'.$nik.'%');
@@ -960,7 +960,7 @@ class SalesLeadController extends Controller
             $total_lose->where('sales_lead_register.result',"LOSE")->where('sales_lead_register.nik',$nik);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('sales_lead_register.nik',$nik);
             $total_hold->where('sales_lead_register.result',"HOLD")->where('sales_lead_register.nik',$nik);
-        } elseif ($cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Solution Architect Manager') {
+        } elseif ($cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Synergy System Architecture Manager') {
             $total_lead->where('sales_lead_register.result',"OPEN")->where('users.id_company','1');
             $total_open->where('sales_lead_register.result',"")->where('users.id_company','1');
             $total_initial->where('sales_lead_register.result',"OPEN")->where('users.id_company','1');
@@ -985,7 +985,7 @@ class SalesLeadController extends Controller
             $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_territory',$ter);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_territory',$ter);
             $total_hold->where('sales_lead_register.result',"HOLD")->where('users.id_territory',$ter);
-        } elseif ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+        } elseif ($cek_role->name_role == 'Presales Support Architecture' || $cek_role->name_role == 'System Designer Architecture' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('nik_presales',$nik);
             $total_open->where('sales_lead_register.result',"")->where('nik_presales',$nik);
             $total_initial->where('sales_lead_register.result',"OPEN")->where('nik_presales',$nik);
@@ -995,7 +995,7 @@ class SalesLeadController extends Controller
             $total_lose->where('sales_lead_register.result',"LOSE")->where('nik_presales',$nik);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('nik_presales',$nik);
             $total_hold->where('sales_lead_register.result',"HOLD")->where('nik_presales',$nik);
-        } elseif ($cek_role->name_role == 'Technology Alliance') {
+        } elseif ($cek_role->name_role == 'Technology Alliance Solutions') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
             $total_open->where('sales_lead_register.result',"")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
             $total_initial->where('sales_lead_register.result',"OPEN")->where('nik_ta',$nik)->orwhere('nik_presales',$nik);
@@ -1673,8 +1673,8 @@ class SalesLeadController extends Controller
 
         if($ter != null || $cek_role->name_role != 'Operations Director'){
             // $leads->where('u_sales.id_company','1');
-            if ($cek_role->name_role == 'Presales' || $cek_role->name_role == 'System Designer' || $cek_role->name_role == 'Technology Alliance' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
-                if ($cek_role->name_role == 'Technology Alliance') {
+            if ($cek_role->name_role == 'Presales Support Architecture' || $cek_role->name_role == 'System Designer Architecture' || $cek_role->name_role == 'Technology Alliance Solutions' || Auth::User()->nik == '1221199080' || Auth::User()->nik == '1230896110') {
+                if ($cek_role->name_role == 'Technology Alliance Solutions') {
                     // $leads = $leads->where('nik_presales', 'like', '%'.$nik.'%')->orWhere('nik_ta','like', '%'.$nik.'%');
                     $leads = $leads->whereRaw(
                                         "(`nik_presales` LIKE ? OR `nik_ta` LIKE ? )", 
@@ -1688,7 +1688,7 @@ class SalesLeadController extends Controller
                 $leads = $leads->where('u_sales.id_territory', $ter);
             } else if ($cek_role->name_role == 'Sales Staff') {
                 $leads = $leads->where('u_sales.nik', $nik);
-            } elseif ($cek_role->name_role == 'VP Product Management & Development Solution' || $cek_role->name_role == 'Partnership & Marketing' || $cek_role->name_role == 'Solution Architect Manager') {
+            } elseif ($cek_role->name_role == 'VP Solutions & Partnership Management' || $cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->name_role == 'Synergy System Architecture Manager') {
                 $leads->where('u_sales.id_company','1');
             }
         } 
@@ -2709,7 +2709,7 @@ class SalesLeadController extends Controller
 
         $tambah = new Sales();
         $tambah->lead_id = $lead;
-        if($cek_role->group == 'Sales' || $cek_role->name_role == 'VP Product Management & Development Solution'){
+        if($cek_role->group == 'Sales' || $cek_role->name_role == 'VP Solutions & Partnership Management'){
             $tambah->nik = Auth::User()->nik;
         } else {
             $tambah->nik = $request['owner_sales'];
@@ -2806,7 +2806,7 @@ class SalesLeadController extends Controller
         }
         $tambah_log = new SalesChangeLog();
         $tambah_log->lead_id = $lead;
-        if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER'|| $cek_role->name_role == 'VP Product Management & Development Solution'){
+        if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER'|| $cek_role->name_role == 'VP Solutions & Partnership Management'){
             $tambah_log->nik = Auth::User()->nik;
         } else {
             $tambah_log->nik = $request['owner_sales'];
@@ -2818,7 +2818,7 @@ class SalesLeadController extends Controller
 
         $nik_sales = $request['owner_sales'];
 
-        if($cek_role->name_role == 'VP Product Management & Development Solution'){
+        if($cek_role->name_role == 'VP Solutions & Partnership Management'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                         ->where('nik', $nik_sales)
                         ->orWhere('roles.name', 'Operations Director')
@@ -2826,13 +2826,13 @@ class SalesLeadController extends Controller
                         ->get();
         } elseif($cek_role->name_role == 'Operations Director'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
-                        ->where('roles.name', 'VP Product Management & Development Solution')
+                        ->where('roles.name', 'VP Solutions & Partnership Management')
                         ->where('status_karyawan','!=','dummy')
                         ->orWhere('nik', $nik_sales)
                         ->get();
         } elseif($cek_role->group == 'Sales'){
             $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
-                        ->where('roles.name', 'VP Product Management & Development Solution')
+                        ->where('roles.name', 'VP Solutions & Partnership Management')
                         ->orWhere('roles.name', 'Operations Director')
                         ->where('status_karyawan','!=','dummy')
                         ->get();
@@ -2852,7 +2852,7 @@ class SalesLeadController extends Controller
 
         }
         $user_to = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
-                ->where('roles.name', 'VP Product Management & Development Solution')->first()->email;
+                ->where('roles.name', 'VP Solutions & Partnership Management')->first()->email;
 
         $sales_sd_filtered = DB::table('sales_solution_design');
 
@@ -3085,6 +3085,12 @@ class SalesLeadController extends Controller
         $update->nik = $request['nik_presales'];
         $update->update();
 
+        if (!TenderProcess::where('lead_id', $request->lead_id)->exists()){
+            $tambahtp = new TenderProcess();
+            $tambahtp->lead_id = $request['lead_id'];
+            $tambahtp->save();
+        }
+
         $tambah = new SalesChangeLog();
         $resultLead = Sales::where('lead_id',$request['lead_id'])->first()->result;
         if ($resultLead == 'OPEN') {
@@ -3231,7 +3237,7 @@ class SalesLeadController extends Controller
 
 
         User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
-                ->where('roles.name', 'VP Product Management & Development Solution')->first()->email;
+                ->where('roles.name', 'VP Solutions & Partnership Management')->first()->email;
 
         $sales_sd_filtered = DB::table('sales_solution_design');
 

@@ -214,8 +214,10 @@ class QuoteController extends Controller
 
         $lead = DB::table('sales_lead_register')->whereRaw("(`result` = 'OPEN' OR `result` = 'SD' OR `result` = 'TP')");
 
-        if ($role->name == 'VP Product Management & Development Solution' || $role->name == 'Technology Alliance'){
+        if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
             $leadId = $lead->where('nik', '1061184050');
+        } else if($role->name == 'Technology Alliance Solutions'){
+            $leadId = $lead->where('nik', '1110492070');
         }else {
             $leadId = $lead->where('nik', Auth::user()->nik);
         }
@@ -413,10 +415,12 @@ class QuoteController extends Controller
                 ->get();
         }
 
-        $lead = DB::table('sales_lead_register')->whereRaw("(`result` = 'OPEN' OR `result` = 'SD' OR `result` = 'TP')");
+        $lead = DB::table('sales_lead_register')->whereRaw("(`result` = 'INITIAL' OR `result` = '' OR  `result` = 'SD' OR `result` = 'TP')");
 
-        if ($role->name == 'VP Product Management & Development Solution' || $role->name == 'Technology Alliance'){
+        if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
             $leadId = $lead->where('nik', '1061184050');
+        } elseif($role->name == 'Technology Alliance Solutions'){
+            $leadId = $lead->where('nik', '1110492070');
         }else {
             $leadId = $lead->where('nik', Auth::user()->nik);
         }
@@ -481,7 +485,7 @@ class QuoteController extends Controller
                 ->whereIn('r.name', ['Sales Staff', 'Sales Manager'])
                 ->select('ru.user_id as nik')->pluck('nik')->toArray();
             $query = $query->whereIn('tb_quote.nik', $roleSalesByTerritory);
-        }else if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance'){
+        }else if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance Solutions'){
             $query = $query->where('tb_quote.nik', $user);
         }
 //            ->where('date','like',$tahun."%")
@@ -525,9 +529,9 @@ class QuoteController extends Controller
                 ->select('ru.user_id as nik')->pluck('nik')->toArray();
             $query1 = $query1->whereIn('tb_quote.nik', $roleSalesByTerritory);
             $query2 = $query2->whereIn('tb_quote.nik', $roleSalesByTerritory)->where('tb_quote.status', 'SAVED');
-        }else if ($role->name == 'VP Product Management & Development Solution'){
+        }else if ($role->name == 'VP Solutions & Partnership Management'){
             $query2 = $query2->where('tb_quote.status', 'SAVED');
-        }else if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance'){
+        }else if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance Solutions'){
             $query1 = $query1->where('tb_quote.nik', $user);
             $query2 = $query2->where('tb_quote.nik', $user)->where('tb_quote.status', 'SAVED');
         }else if($role->name == 'President Director' || $role->name == 'Operations Director'){
@@ -633,8 +637,8 @@ class QuoteController extends Controller
             $quote->lead_id = $request['lead_id'];
             $quote->date = $request['date'];
             $quote->status = 'SAVED';
-            if ($role->name == 'VP Product Management & Development Solution' || $role->name == 'Technology Alliance'){
-                $quote->position = 'PMS';
+            if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
+                $quote->position = 'SPM';
             }else if($role->name = 'Sales Staff' || $role->name == 'Sales Manager'){
                 $quote->position = 'TAM';
             }else if($role->name == 'Operations Director'){
@@ -681,8 +685,8 @@ class QuoteController extends Controller
             $quote->lead_id = $request['lead_id'];
             $quote->date = $request['date'];
             $quote->status = 'SAVED';
-            if ($role->name == 'VP Product Management & Development Solution' || $role->name == 'Technology Alliance'){
-                $quote->position = 'PMS';
+            if ($role->name == 'VP Solutions & Partnership Management' || $role->name == 'Technology Alliance Solutions'){
+                $quote->position = 'SPM';
             }else if($role->name = 'Sales Staff' || $role->name == 'Sales Manager'){
                 $quote->position = 'TAM';
             }else if($role->name == 'Operations Director'){
@@ -887,7 +891,8 @@ class QuoteController extends Controller
     public function storeTermPayment(Request $request)
     {
         $quote = Quote::find($request['id_quote']);
-        $quote->term_payment = $request['term_payment'];
+
+        $quote->term_payment = str_replace('•', '-', $request['term_payment']);
         $quote->save();
     }
 
@@ -1107,7 +1112,9 @@ class QuoteController extends Controller
     public function storeLastStepQuote(Request $request)
     {
         $countQuote = Quote::where('quote_number', '!=', '-')
-            ->whereYear('quote_number_update', date('Y'))->count();
+//            ->whereYear('quote_number_update', date('Y'))
+            ->where('quote_number', 'like', '%'.date('Y'))
+            ->count();
         $type = 'QO';
         $quotation = Quote::find($request['id_quote']);
         $config = QuoteConfig::where('id_quote', $request['id_quote'])->first();
@@ -1140,10 +1147,10 @@ class QuoteController extends Controller
                 if ($checkBackDateNumber != null){
                     $no   = $checkBackDateNumber->quote_number.'/'.$position .'/'. $type.'/' . $month .'/'. $yearQuote;
                 }else{
-                    $countBackDate = Quote::where('status_backdate', 'F')
-                        ->whereYear('quote_number_update', date('Y'));
+                    $countBackDate = Quote::where('status_backdate', 'F')->where('quote_number', 'like', '%'.date('Y'));
+//                        ->whereYear('quote_number_update', date('Y'));
                     if ($countBackDate->count() > 0){
-                        $lastBackDate = $countBackDate->orderBy('quote_number', 'desc')->first()->quote_number;
+                        $lastBackDate = $countBackDate->orderBy('date', 'desc')->first()->quote_number;
                         $getLastNumberBackDate = explode("/",$lastBackDate)[0];
                         $newBackDateNumber = $getLastNumberBackDate + 10;
                         if($newBackDateNumber < 10){
@@ -1168,9 +1175,10 @@ class QuoteController extends Controller
             }else{
                 if ($countQuote > 0){
                     $quote = Quote::where('status_backdate','A')
-                        ->whereYear('quote_number_update',date('Y'))
+//                        ->whereYear('quote_number_update',date('Y'))
+                        ->where('quote_number', 'like', '%'.date('Y'))
                         ->where('quote_number', '!=', '-')
-                        ->orderBy('quote_number','desc')
+                        ->orderBy('date','desc')
                         ->first()->quote_number;
 
                     $getLastNumberQuote =  explode("/",$quote)[0];
@@ -1322,13 +1330,14 @@ class QuoteController extends Controller
 
             if ($quoteNumberYear != date('Y')){
                 if ($quote->status_backdate == 'F'){
-                    $countBackDate = Quote::where('status_backdate', 'F')
-                        ->whereYear('quote_number_update', date('Y'));
+                    $countBackDate = Quote::where('status_backdate', 'F')->where('quote_number', 'like', '%'.date('Y'));
+//                        ->whereYear('quote_number_update', date('Y'));
                     if ($countBackDate > 0){
                         $quoteNumberBackdate = Quote::where('status_backdate','F')
-                            ->whereYear('quote_number_update',date('Y'))
+//                            ->whereYear('quote_number_update',date('Y'))
+                            ->where('quote_number', 'like', '%'.date('Y'))
                             ->where('quote_number', '!=', '-')
-                            ->orderBy('quote_number','desc')
+                            ->orderBy('date','desc')
                             ->first()->quote_number;
                         $nmr = $quoteNumberBackdate + 10;
                         if($nmr < 10){
@@ -1345,12 +1354,15 @@ class QuoteController extends Controller
                 }else if ($quote->status_backdate == 'A'){
                     $countQuote = Quote::where('quote_number', '!=', '-')
                         ->where('status_backdate', '!=', 'F')
-                        ->whereYear('quote_number_update', date('Y'))->count();
+//                        ->whereYear('quote_number_update', date('Y'))
+                        ->where('quote_number', 'like', '%'.date('Y'))
+                        ->count();
                     if ($countQuote > 0){
                         $quoteNumbers = Quote::where('status_backdate','A')
-                            ->whereYear('quote_number_update',date('Y'))
+//                            ->whereYear('quote_number_update',date('Y'))
+                            ->where('quote_number', 'like', '%'.date('Y'))
                             ->where('quote_number', '!=', '-')
-                            ->orderBy('quote_number','desc')
+                            ->orderBy('date','desc')
                             ->first()->quote_number;
                         $lastNumber = substr($quoteNumbers, -1);
                         if ($lastNumber == '4'){
@@ -1423,9 +1435,9 @@ class QuoteController extends Controller
         $roleUser = $this->cekRole(Auth::user()->nik);
         $idTerritory = DB::table('users')->where('nik', $nik)->first()->id_territory;
         $canApproveReject = false;
-        if($roleData->name == 'Technology Alliance' && $roleUser->name == 'VP Product Management & Development Solution'){
+        if($roleData->name == 'Technology Alliance Solutions' && $roleUser->name == 'VP Solutions & Partnership Management'){
             $canApproveReject = true;
-        }else if($roleData->name == 'VP Product Management & Development Solution' && $roleUser->name == 'Operations Director'){
+        }else if($roleData->name == 'VP Solutions & Partnership Management' && $roleUser->name == 'Operations Director'){
             $canApproveReject = true;
         }else if($roleData->name == 'Sales Manager' && $roleUser->name == 'President Director'){
             $canApproveReject = true;
@@ -2194,9 +2206,9 @@ class QuoteController extends Controller
             $userToSend = $userToSend->where('r.name', 'Sales Manager')->where('u.id_territory', $sender->id_territory);
         }else if($role == 'Sales Manager'){
             $userToSend = $userToSend->where('r.name', 'President Director');
-        }else if($role == 'Technology Alliance'){
-            $userToSend = $userToSend->where('r.name', 'VP Product Management & Development Solution');
-        }else if($role == 'VP Product Management & Development Solution'){
+        }else if($role == 'Technology Alliance Solutions'){
+            $userToSend = $userToSend->where('r.name', 'VP Solutions & Partnership Management');
+        }else if($role == 'VP Solutions & Partnership Management'){
             $userToSend = $userToSend->where('r.name', 'Operations Director');
         }
 
@@ -2231,10 +2243,10 @@ class QuoteController extends Controller
     {
         $nik = Auth::user()->nik;
         $role = $this->cekRole($nik);
-        if($role->name == 'VP Product Management & Development Solution'){
+        if($role->name == 'VP Solutions & Partnership Management'){
             $roleTA = DB::table('roles as r')
                 ->join('role_user as ru', 'r.id', 'ru.role_id')
-                ->whereIn('r.name', ['Technology Alliance', 'VP Product Management & Development Solution'])
+                ->whereIn('r.name', ['Technology Alliance Solutions', 'VP Solutions & Partnership Management'])
                 ->select('ru.user_id as nik')
                 ->get();
             $nikList = $roleTA->pluck('nik')->toArray();

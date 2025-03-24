@@ -89,7 +89,7 @@
 {{--                            </select>--}}
 {{--                        </div>--}}
 {{--                    </div>--}}
-                    @if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance')
+                    @if($role->name == 'Sales Staff' || $role->name == 'Technology Alliance Solutions')
                     <div class="col-md-12 col-xs-12">
                         <div class="form-group btn-action-letter" style="float:right;">
                             <button type="button" class="btn btn-success btn-flat" style="width: 100px" data-target="#modalAdd" data-toggle="modal" onclick="addQuote(0)"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
@@ -3094,9 +3094,9 @@
                             }else{
                                 if (roleName === 'President Director' && row.role_name === 'Sales Manager' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
-                                }else if(roleName === 'Operations Director' && row.role_name === 'VP Product Management & Development Solution' && row.status === 'ON GOING'){
+                                }else if(roleName === 'Operations Director' && row.role_name === 'VP Solutions & Partnership Management' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
-                                }else if(roleName === 'VP Product Management & Development Solution' && row.role_name === 'Technology Alliance' && row.status === 'ON GOING'){
+                                }else if(roleName === 'VP Solutions & Partnership Management' && row.role_name === 'Technology Alliance Solutions' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
                                 }else if(roleName === 'Sales Manager' && row.role_name === 'Sales Staff' && row.status === 'ON GOING'){
                                     return `<a href="/sales/quote/detail/${row.id_quote}" target="_blank" style="width:70px; white-space:normal; word-wrap:break-word; text-align:center; min-height:40px;" class="btn btn-xs btn-warning btnDetail">Need Attention</a>`;
