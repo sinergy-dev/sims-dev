@@ -1798,8 +1798,17 @@
         
         // tempGrand = sum - tempDiscount + tempVat + tempPb1 + tempService
 
+        console.log(tempTotal + "kkkk")
+        console.log(tempDiscount)
+
+        if (valueVat = 0) {
+          tax_base_other = formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12)))
+        }else{
+          tax_base_other = 0
+        }
+
         $("#vat_tax_previewData").val(formatter.format(tempVat))
-        $("#tax_base_other_previewData").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12))))
+        $("#tax_base_other_previewData").val(tax_base_other)
         $("#inputGrandTotalProductPreviewData").val(formatter.format(sum))
         $("#pb1_previewData").val(formatter.format(tempPb1))
         $("#service_previewData").val(formatter.format(tempService))
@@ -2208,12 +2217,13 @@
         tempService = Math.round(((parseFloat(sum) - tempDiscount) * (result.pr.service_charge == 'false'?tempService:parseFloat(result.pr.service_charge)) / 100))
         
         // finalGrand = tempGrand + tempPb1 + tempService - tempDiscount
-
         $("#vat_tax_preview").val(formatter.format(tempVat))
-        $("#tax_base_other_preview").val(formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12))))
-
-        console.log(formatter.format((tempTotal - tempDiscount)*11/12))
-
+        if (valueVat = 0) {
+          tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12)))
+        }else{
+          tax_base_other = 0
+        }
+        $("#tax_base_other_preview").val(tax_base_other)
         $("#inputGrandTotalProductPreview").val(formatter.format(sum))
         $("#inputPb1_preview").val(formatter.format(tempPb1))
         $("#inputServiceCharge_preview").val(formatter.format(tempService))
@@ -2645,7 +2655,7 @@
     $(".title_service_pembanding[data-value='" + i + "']").text(item.service_charge == 'false'?"":item.service_charge+"%")
     $(".title_discount_pembanding[data-value='" + i + "']").text(item.discount == 'false'?"":parseFloat(item.discount).toFixed(2)+"%")
 
-    tempDiscount = Math.round(tempTotal * (item.discount == null || item.discount == 'false'?0:parseFloat(item.discount) / 100))
+    tempDiscount = Math.round(sum * (item.discount == null || item.discount == 'false'?0:parseFloat(item.discount) / 100))
 
     tempPb1 = Math.round(((parseFloat(sum) - tempDiscount) * (item.tax_pb == 'false'?tempPb1:parseFloat(item.tax_pb) / 100)))
     tempService = Math.round(((parseFloat(sum) - tempDiscount) * (item.service_charge == 'false'?tempService:parseFloat(item.service_charge) / 100)))
@@ -2657,7 +2667,14 @@
     $("#inputServiceChargePembanding[data-value='" + i + "']").val(formatter.format(tempService))
     $("#inputDiscountPembanding[data-value='" + i + "']").val(formatter.format(tempDiscount))
     $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(item.nominal))
-    $("#tax_base_other_pembanding_preview_detail[data-value='" + i + "']").val(formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12))))
+
+    if (valueVat = 0) {
+      tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12)))
+    }else{
+      tax_base_other = 0
+    }
+
+    $("#tax_base_other_pembanding_preview_detail[data-value='" + i + "']").val(tax_base_other)
 
     if (item.tax_pb == 'false') {
       $("#inputPb1Pembanding[data-value='"+ i +"']").closest('.form-group').hide()
@@ -5016,8 +5033,14 @@
     tempDiscNominal = isNaN(parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','')))?0:parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))
     tempPb1 = Math.round(((parseFloat(sum) - tempDiscNominal)* ($("#inputPb1Final").val() == ""?0:parseFloat($("#inputPb1Final").val())) / 100))
     tempService = Math.round(((parseFloat(sum) - tempDiscNominal) * ($("#inputServiceChargeFinal").val() == ""?0:parseFloat($("#inputServiceChargeFinal").val())) / 100))
+
+    if (valueVat = 0) {
+      tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscNominal)*11/12)))
+    }else{
+      tax_base_other = 0
+    }
     
-    $("#tax_base_other_pembanding").val(formatter.format(customRound(formatter.format((sum - tempDiscNominal)*11/12))))
+    $("#tax_base_other_pembanding").val(tax_base_other)
     $("#inputPb1Nominal").val(formatter.format(tempPb1))
     $("#inputServiceChargeNominal").val(formatter.format(tempService))
     $("#inputDiscountFinal").val((tempDiscount))

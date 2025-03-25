@@ -4640,7 +4640,7 @@ class SalesController extends Controller{
                         DB::raw('IF(tb_id_project.date >= "2022-04-01", (tb_id_project.amount_idr*100)/111, (tb_id_project.amount_idr*10)/11) as amount_idr_before_tax'),
                         'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note',
                         'tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name',
-                        'sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
+                        'sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','kontrak_customer','kontrak_vendor','invoice_customer','invoice_vendor','notes_kontrak_customer','notes_kontrak_vendor','notes_invoice_vendor','notes_invoice_customer')
                     // ->where('sales_lead_register.nik',$nik)
                     ->where('id_territory', $ter)
                     // ->orWhere('tb_id_project.sales_name',Auth::User()->name)
@@ -4692,7 +4692,7 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',
                         DB::raw('IF(tb_id_project.date >= "2022-04-01", (tb_id_project.amount_idr*100)/111, (tb_id_project.amount_idr*10)/11) as amount_idr_before_tax'),
-                        'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
+                        'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company','kontrak_customer','kontrak_vendor','invoice_customer','invoice_vendor','notes_kontrak_customer','notes_kontrak_vendor','notes_invoice_vendor','notes_invoice_customer')
                     ->where('users.id_company','2')
                     ->whereYear('tb_id_project.date',date('Y'))
                     ->where('tb_id_project.status','!=','WO')
@@ -4764,7 +4764,7 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',
                         DB::raw('IF(tb_id_project.date >= "2022-04-01", (tb_id_project.amount_idr*100)/111, (tb_id_project.amount_idr*10)/11) as amount_idr_before_tax'),
-                        'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','invoice')
+                        'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','invoice','kontrak_customer','kontrak_vendor','invoice_customer','invoice_vendor','notes_kontrak_customer','notes_kontrak_vendor','notes_invoice_vendor','notes_invoice_customer')
                     ->where('id_company','1')
                     // ->whereYear('tb_id_project.date',$request->year_filter)
                     ->whereYear('tb_id_project.date',$request->year_filter)
@@ -4834,7 +4834,7 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',
                         DB::raw('IF(tb_id_project.date >= "2022-04-01", (tb_id_project.amount_idr*100)/111, (tb_id_project.amount_idr*10)/11) as amount_idr_before_tax'),
-                        'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
+                        'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','kontrak_customer','kontrak_vendor','invoice_customer','invoice_vendor','notes_kontrak_customer','notes_kontrak_vendor','notes_invoice_vendor','notes_invoice_customer')
                     ->where('id_company','1')
                     // ->whereYear('tb_id_project.date',date('Y'))
                     ->whereYear('tb_id_project.date',$request->year_filter)
@@ -4888,7 +4888,7 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','sales_lead_register.lead_id',
                         DB::raw('IF(tb_id_project.date >= "2022-04-01", (tb_id_project.amount_idr*100)/111, (tb_id_project.amount_idr*10)/11) as amount_idr_before_tax'),
-                        'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','users.id_company','tb_id_project.amount_idr','tb_id_project.sales_name')
+                        'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','users.id_company','tb_id_project.amount_idr','tb_id_project.sales_name','kontrak_customer','kontrak_vendor','invoice_customer','invoice_vendor','notes_kontrak_customer','notes_kontrak_vendor','notes_invoice_vendor','notes_invoice_customer')
                     ->where('id_company','1')
                     // ->whereYear('tb_id_project.date',date('Y'))
                     ->whereYear('tb_id_project.date',$request->year_filter)
@@ -4937,7 +4937,7 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',
                         DB::raw('IF(tb_id_project.date >= "2022-04-01", (tb_id_project.amount_idr*100)/111, (tb_id_project.amount_idr*10)/11) as amount_idr_before_tax'),
-                        'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
+                        'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company','kontrak_customer','kontrak_vendor','invoice_customer','invoice_vendor','notes_kontrak_customer','notes_kontrak_vendor','notes_invoice_vendor','notes_invoice_customer')
                     ->where('users.id_company','2')
                     ->whereYear('tb_id_project.date',date('Y'))
                     ->where('tb_id_project.status','!=','WO')
@@ -5335,7 +5335,7 @@ class SalesController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','sales_lead_register.lead_id',
                         DB::raw('IF(tb_id_project.date >= "2022-04-01", (tb_id_project.amount_idr*100)/111, (tb_id_project.amount_idr*10)/11) as amount_idr_before_tax'),
-                        'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','users.id_company','tb_id_project.amount_idr','tb_id_project.sales_name')
+                        'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','users.id_company','tb_id_project.amount_idr','tb_id_project.sales_name','kontrak_customer','kontrak_vendor','invoice_customer','invoice_vendor','notes_kontrak_customer','notes_kontrak_vendor','notes_invoice_vendor','notes_invoice_customer')
                     ->where('tb_id_project.id_pro',$request->id_pro)
                     ->get();
 
@@ -5886,6 +5886,12 @@ class SalesController extends Controller{
     {
         $id_project = $request['id_project_edit'];
 
+        $roles = DB::table('role_user')->join('roles','role_user.role_id','=','roles.id')
+                ->select('roles.name')
+                // ->join('users','role_user.user_id','=','users.nik')
+                ->where('role_user.user_id',Auth::User()->nik)
+                ->first();
+
         $edate = strtotime($request['date_edit']); 
         $edate = date("Y-m-d",$edate);
         $month = date("n",strtotime($request['date_edit']));
@@ -5915,28 +5921,49 @@ class SalesController extends Controller{
         $get_number_before = explode("/",$id_year_before)[0] + 1;
 
         $update = SalesProject::where('id_project', $id_project)->first();
-        if ($year == date('Y')) {
-           $update->id_project = $getnumber . '/' . $getcus . '/' . $getcom . '/' . $bln . '/' . $year;
+        if ($roles->name == 'Legal & Compliance Management') {
+            $update->kontrak_vendor = $request['statusKontrakVendor'];
+            $update->notes_kontrak_vendor = nl2br($request['notesKontrakVendor']);
+            $update->kontrak_customer = $request['statusKontrakCustomer'];
+            $update->notes_kontrak_customer = nl2br($request['notesKontrakCustomer']);
+            // $update->invoice_customer = $request['statusInvoiceCustomer'];
+            // $update->notes_invoice_customer = nl2br($request['notesInvoiceCustomer']);
+            // $update->invoice_vendor = $request['statusInvoiceVendor'];
+            // $update->notes_invoice_vendor = nl2br($request['notesInvoiceVendor']);
         } else {
-            if ($cek_com = '1') {
-                $update->id_project = $get_number_before . '/' . $getcus . '/SIP/' . $bln . '/' . $year;
+            if ($year == date('Y')) {
+               $update->id_project = $getnumber . '/' . $getcus . '/' . $getcom . '/' . $bln . '/' . $year;
             } else {
-                $update->id_project = $get_number_before . '/' . $getcus . '/MSP/' . $bln . '/' . $year;
+                if ($cek_com = '1') {
+                    $update->id_project = $get_number_before . '/' . $getcus . '/SIP/' . $bln . '/' . $year;
+                } else {
+                    $update->id_project = $get_number_before . '/' . $getcus . '/MSP/' . $bln . '/' . $year;
+                }
             }
-        }
-        $update->no_po_customer = $request['po_customer_edit'];
-        $update->name_project = $request['name_project_edit'];
-        if (Auth::User()->id_position == 'MANAGER') {
-            $amunt = str_replace(',', '', $request['amount_edit']);
-            // $update->amount_idr = $amunt.(int)"00";
-            $update->amount_idr = $amunt;
-            $update->amount_usd = $request['kurs_edit'];
-        }else{
+            $update->no_po_customer = $request['po_customer_edit'];
+            $update->name_project = $request['name_project_edit'];
+            if (Auth::User()->id_position == 'MANAGER') {
+                $amunt = str_replace(',', '', $request['amount_edit']);
+                // $update->amount_idr = $amunt.(int)"00";
+                $update->amount_idr = $amunt;
+                $update->amount_usd = $request['kurs_edit'];
+            }else{
 
+            }
+            $update->note = $request['note_edit'];
+            $update->invoice = $request['invoice'];
+            $update->date = $edate;
+            $update->kontrak_vendor = $request['statusKontrakVendor'];
+            $update->notes_kontrak_vendor = $request['notesKontrakVendor'];
+            $update->kontrak_customer = $request['statusKontrakCustomer'];
+            $update->notes_kontrak_customer = $request['notesKontrakCustomer'];
+            // $update->invoice_customer = $request['statusInvoiceCustomer'];
+            // $update->notes_invoice_customer = $request['notesInvoiceCustomer'];
+            // $update->invoice_vendor = $request['statusInvoiceVendor'];
+            // $update->notes_invoice_vendor = $request['notesInvoiceVendor'];
         }
-        $update->note = $request['note_edit'];
-        $update->invoice = $request['invoice'];
-        $update->date = $edate;
+        
+        
         $update->update();//
 
         $lead_id = Salesproject::select('lead_id')->where('id_project',$update->id_project)->first()->lead_id;

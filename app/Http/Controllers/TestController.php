@@ -15,6 +15,11 @@ use App\Mail\AssignPresales;
 use App\Mail\RaiseTender;
 use App\Mail\AddContribute;
 use App\Cuti;
+use App\SalesChangeLog;
+use App\SbeConfig;
+use App\SbeActivity;
+use App\PRDraft;
+
 
 use App\Mail\RequestNewAssetHr;
 use App\Notifications\Testing;
@@ -116,6 +121,114 @@ class TestController extends Controller
         
     }
 
+    public function testSideBar()
+    {
+        $getName = DB::table('features')->pluck('name')->unique()->values();
+
+            // return $listMenuAll;
+
+            $getGroupAll = DB::table('features')->select('group')->whereIn('id',DB::table('roles_feature')
+                    ->whereIn('role_id',DB::table('role_user')
+                        ->where('user_id',Auth::User()->nik)
+                        ->pluck('role_id'))
+                    ->pluck('feature_id'))->groupBy('group');
+
+            $getChildAll = DB::table($getGroupAll, 'temp')->join('features','features.group','temp.group')
+                ->whereIn('id',DB::table('roles_feature')
+                ->whereIn('role_id',DB::table('role_user')
+                    ->where('user_id',Auth::User()->nik)
+                    ->pluck('role_id'))
+                ->pluck('feature_id'))
+                ->select('features.group','url','icon_group','notif_status',DB::raw("REPLACE(`name`,'-','') as `name`"),'features.index_of')
+                ->orderBy('index_of','ASC')->get()->groupBy('group');
+
+            // return dd($getGroupAll);
+
+
+        $getGroupChild = DB::table('features')->select('group')->whereIn('group',$getName)->whereIn('id',DB::table('roles_feature')
+                ->whereIn('role_id',DB::table('role_user')
+                    ->where('user_id',Auth::User()->nik)
+                    ->pluck('role_id'))
+                ->pluck('feature_id'))->groupBy('group');
+
+        $getChildLevelTwo = DB::table($getGroupChild, 'temp')->join('features','features.group','temp.group')
+            ->whereIn('id',DB::table('roles_feature')
+            ->whereIn('role_id',DB::table('role_user')
+                ->where('user_id',Auth::User()->nik)
+                ->pluck('role_id'))
+            ->pluck('feature_id'))
+            ->select('features.group','url','icon_group','notif_status',DB::raw("REPLACE(`name`,'-','') as `name`"),'features.index_of')
+            ->orderBy('index_of','ASC')->get()->groupBy('group');
+        // $getChildLevelTwo->pluck('group')->unique()->values();
+        // return $getChildLevelTwo->keys()->toArray();
+
+        foreach ($getChildAll as $allData) {
+            foreach ($allData as $key => $value) {
+                $modified = $value->name;
+
+                // Ensure child is added correctly only if the parent exists in the second level.
+                if (in_array($value->name, $getChildLevelTwo->keys()->toArray())) {
+                    // Add the child structure for the matching parent group
+                    $value->child[$modified] = $getChildLevelTwo[$value->name];
+                    $value->count = count($getChildLevelTwo[$value->name]);
+                } else {
+                    // Ensure empty child and set count to "0" if no child exists.
+                    $value->child = [];
+                    $value->count = '0';
+                }
+            }
+        }
+
+        $childGroups = [
+            'Dashboard' => ['SAL', 'ICM', 'SPM', 'HCM'],
+            'General Affair' => ['Consumable'],
+            'PMO' => ['Project Budget']
+        ];
+
+        foreach ($childGroups as $parentGroup => $children) {
+            if (isset($getChildAll[$parentGroup])) {
+                foreach ($children as $childGroup) {
+                    if (isset($getChildAll[$childGroup])) {
+                        foreach ($getChildAll[$parentGroup] as &$parentItem) {
+                            if ($parentItem->name === $childGroup) {
+                                $parentItem->child[$childGroup] = $getChildAll[$childGroup];
+                                $parentItem->count = count($getChildAll[$childGroup]);
+                            }
+                        }
+                        unset($getChildAll[$childGroup]);
+                    }
+                }
+            }
+        }
+
+        // return $getChildAll;
+
+
+        $role_user = DB::table('role_user')->where('user_id','=',Auth::User()->nik)->first();
+        if(!$role_user){
+            $role_user = 1;
+        } else {
+            $role_user = $role_user->role_id;
+        }
+
+        $authUserName = Auth::user()->name;
+        $allPRs = PRDraft::where('status', 'CIRCULAR')->get();
+
+        $countPRByCircularBy = 0;
+        if ($allPRs->isNotEmpty()) {
+            $countPRByCircularBy = $allPRs->filter(function ($pr) use ($authUserName) {
+                return $pr->circularby === $authUserName;
+            })->count();
+        }
+
+        return collect([
+            'userRole' => DB::table('roles')->where('id','=',$role_user)->first(),
+            'listMenu' => $getChildAll, 
+            'countPRByCircularBy' => $countPRByCircularBy
+        ]);
+
+    }
+
 	public function send_mail(){
 		// $email = 'faiqoh@sinergy.co.id';
 	//       Notification::route('mail', $email)->notify(new NewLead($email));  
@@ -137,6 +250,54 @@ class TestController extends Controller
 				return new MailResult($users,$pid_info);
 
 				// return Mail::to('tito@sinergy.co.id')->send(new MailResult($users,$pid_info));
+	}
+
+	public function getLastStatusPr()
+	{
+		// $data = DB::table('tb_pr_activity')->join('tb_pr','tb_pr.id_draft_pr','tb_pr_activity.id_draft_pr')->select('tb_pr_activity.id_draft_pr','tb_pr_activity.id','tb_pr_activity.status')->where('tb_pr.status','On Progress')->where('date','>','2022-11-01');
+
+		// $getLastId = DB::table($data,'temp')->groupBy('id_draft_pr')->selectRaw('MAX(`temp`.`id`) as `id`')->selectRaw('id_draft_pr');
+
+		// return $data = DB::table($getLastId, 'temp2')
+        //     ->join('tb_pr_activity','tb_pr_activity.id','temp2.id')
+        //     ->join('tb_pr','tb_pr.id_draft_pr','temp2.id_draft_pr')->select('no_pr','to','title','amount','tb_pr_activity.status')->get();
+
+		$twoMonthsAgo = now()->subMonths(2)->format('Y-m-d');
+
+        $years = [date('Y'),date('Y', strtotime('-1 year'))];
+        // $years = [date('Y')];
+
+        $getId = DB::table('sales_lead_register')->join('sales_change_log','sales_change_log.lead_id','sales_lead_register.lead_id')->select('sales_change_log.lead_id','id','year','sales_change_log.result')->where('sales_lead_register.nik','like','1%')->whereIn('year',$years);
+        $getLastId = DB::table($getId,'temp')->groupBy('lead_id')->selectRaw('MAX(`temp`.`id`) as `last_id_log`')->selectRaw('lead_id');
+
+        // return $getLastId->get();
+
+        $data = DB::table($getLastId, 'temp2')->join('sales_change_log','sales_change_log.id','temp2.last_id_log')->join('sales_lead_register','sales_change_log.lead_id','sales_lead_register.lead_id')->select('status','sales_change_log.id','sales_change_log.created_at','sales_change_log.lead_id','sales_lead_register.result','sales_change_log.id','sales_change_log.result as result_log')
+            ->where('sales_change_log.created_at', '<=', $twoMonthsAgo)
+            ->whereRaw("(`sales_lead_register`.`result` = 'INITIAL' OR `sales_lead_register`.`result` = 'SD' OR `sales_lead_register`.`result` = '' OR `sales_lead_register`.`result` = 'TP')")->get();
+
+        // return $data;
+        // foreach ($data as $key => $value) {
+        // 	$updateLead = Sales::where('lead_id',$value['lead_id'])->first();
+        // 	$updateLead->result = 'HOLD';
+        // 	$updateLead->save();
+        // }
+
+        // foreach ($data as $key => $value) {
+        // 	$result = Sales::where('lead_id',$value->lead_id)->first()->result;
+        // 	if ($result == '') {
+        // 		$result = 'OPEN';
+        // 	} elseif ($result == 'OPEN') {
+        // 		$result = 'INITIAL';
+        // 	} else {
+        // 		$result = $result;
+        // 	}
+        // 	$updateLog = SalesChangeLog::where('id',$value->id)->first();
+        // 	$updateLog->result = $result;
+        // 	$updateLog->save();
+        // }
+
+        return response()->json($data);
 	}
 
 	public function getWin(Request $request)
@@ -1600,5 +1761,67 @@ class TestController extends Controller
 		    echo "Directory $directoryPath does not exist.";
 		}
 	}
+
+    public function testSbePdf(Request $request)
+    {
+        $id_sbe = $request->id_sbe;
+
+        $getFunction = SbeConfig::where('status','Choosed')->where('id_sbe',$id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config','detail_all_config_choosed'])->groupby('project_type');
+
+        $getPresales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->where('id',$id_sbe)->first();
+
+        $getAll = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_lead_register.nik')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select('tb_sbe.lead_id','users.name as owner','project_location','estimated_running','duration','opp_name','tb_sbe.nominal as grand_total','customer_legal_name')->where('id_sbe',$id_sbe)->first();
+
+        // $getNominal = SBE::where('id',$request->id_sbe)->first()->detail_config_nominal;
+
+        $getNominalConfig = DB::table('tb_sbe')->join('tb_sbe_config','tb_sbe_config.id_sbe','tb_sbe.id')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('item','detail_item','total_nominal','qty','price','manpower')->where('tb_sbe.id',$id_sbe)->where('tb_sbe_config.status','Choosed')->orderBy('item','asc')->distinct()->get();
+
+        $getNominal = 0;
+            foreach($getNominalConfig as $key_point => $valueSumPoint){
+            $getNominal += $valueSumPoint->total_nominal;
+        }
+
+        $getIdConfigSbe = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('id_sbe','id_config_sbe')->where('tb_sbe_config.status','Choosed')->where('id_sbe',$id_sbe)->get();
+
+        $getConfig = SbeConfig::where('status','Choosed')->where('id_sbe',$id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config'])->groupby('project_type');
+
+
+
+        $user = SbeActivity::where('id_sbe',$id_sbe)->first()->operator;
+
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group','user_id')->where('user_id', $user)->first();
+
+        $getSign = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                    ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select(
+                        'users.name', 
+                        'roles.name as position', 
+                        'roles.group as group',
+                        'users.ttd as ttd_digital',
+                        'users.email',
+                        'users.avatar'
+                    )
+                    ->where('users.id_company', '1')
+                    ->where('users.status_karyawan', '!=', 'dummy');
+
+        if ($cek_role->name == 'Technology Alliance') {
+            $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik_ta . "' OR `roles`.`name` = 'VP Product Management & Development Solution')")
+            ->orderByRaw('FIELD(position, "Technology Alliance","VP Product Management & Development Solution","Presales")')->take(2)
+            ->get();
+        }else {
+            $getSign = $getSign->whereRaw("(`users`.`nik` = '" . $getPresales->nik . "' OR `roles`.`name` = 'VP Product Management & Development Solution')")
+            ->orderByRaw('FIELD(position, "Presales","System Designer","VP Product Management & Development Solution")')
+            ->get();
+        }  
+
+        collect(["data"=>$getAll,"function"=>$getFunction,"config"=>$getConfig,"sign"=>$getSign,"grand_total" => $getNominal]);
+
+        $pdf = PDF::loadView('solution.PDF.sbePdf', compact('getAll','getFunction','getConfig','getSign','getNominal'));
+        $fileName = 'SBE ' . $getAll->lead_id . '.pdf';
+
+        return $pdf->stream($fileName);
+        // return $pdf->output();
+    }
 
 }

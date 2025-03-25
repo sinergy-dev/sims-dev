@@ -87,30 +87,16 @@
 			</tr>
 			<tr>
 				<td style="width: 12%;font: 9px;">
-					<b>Central Office</b>
+					<b>Head Office</b>
 				</td>
 				<td style="width: 68%;font: 9px;">
-					: Jl. Puri Kencana Blok K6 No.2M-2L, Kembangan, Jakarta Barat 11610
+					: Jakarta International Tower Jl. Letjen S. Parman Nomor 1AA, Kemanggisan - Pal Merah, Jakarta Barat 11480
 				</td>
 				<td style="width: 5%;font: 9px;">
-					Tel
+					Telp
 				</td>
 				<td style="width: 15%;font: 9px;">
-					: +62 21 583 55599
-				</td>
-			</tr>
-			<tr>
-				<td style="width: 12%;font: 9px;">
-					<b>Operational Office</b>
-				</td>
-				<td style="width: 68%;font: 9px;">
-					: Gedung Inlingua Jl. Puri indah Kav. A2/3 No. 33-35, Puri Indah, Jakarta Barat 11610
-				</td>
-				<td style="width: 5%;font: 9px;">
-					Fax
-				</td>
-				<td style="width: 15%;font: 9px;">
-					: +62 21 583 55188
+					: +62 21 50865 777
 				</td>
 			</tr>
 			<tr>
@@ -420,9 +406,9 @@
 					<th></th>
 					<th></th>
 					@if($data->isRupiah == 'true')
-					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal,2)}}</th>
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal_subtracted,2)}}</th>
 					@else
-					<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal,2)}}</th>
+					<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal_subtracted,2)}}</th>
 					@endif
 				</tr> 
 				@endif

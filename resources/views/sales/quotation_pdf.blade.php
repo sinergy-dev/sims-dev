@@ -123,9 +123,7 @@
     <p class="text-10" >Jakarta 11480 - Indonesia</p>
     <img src="{{ public_path('img/logo-sip-hd.png') }}" alt="Logo SIP" style="max-width: 20%; height: auto; margin-top: -70px; margin-left: 280px;">
     <p class="text-10" style="margin-left: 550px; margin-top: -50px; margin-bottom: -20px;">
-        Phone <span style=""> : </span> <span> 62 21 583 555 99 </span>
-        <br>
-        Fax &nbsp;&nbsp;&nbsp;&nbsp; <span>: </span> <span> 62 21 583 55 188 </span>
+        Phone <span style=""> : </span> <span> 62 21 50865 777 </span>
         <br>
         Email  &nbsp;<span> : </span>  <span> sales@sinergy.co.id </span>
     </p>
@@ -228,7 +226,7 @@
             <tr style="border: 2px;">
                 <td class="text-8" style="text-align: right;"><center>{{$index + 1}}</center></td>
                 <td class="text-8">{{$prod->name}}</td>
-                <td class="text-8">{{$prod->description}}</td>
+                <td class="text-8">{!! $prod->description !!}</td>
                 <td class="text-8" style="text-align: right;"><center>{{$prod->qty}}</center></td>
                 <td class="text-8"><center>{{$prod->unit}}</center></td>
                 @if($isPriceList)
@@ -236,7 +234,7 @@
                     <td class="text-8"><p>Rp  <span style="text-align: center; float:right;"> {{ number_format($totalPriceList, 2, ',', '.')  }}</span></p></td>
                 @endif
                 <td class="text-8" style="display: table-cell; vertical-align: middle; width: 100%;"><p>Rp  <span style="float:right;vertical-align: middle;"> {{ number_format($nominalFinal, 2, ',', '.')  }}</span></p></td>
-                <td class="text-8"><p>Rp  <span style="text-align: right; float:right;"><center> {{ number_format($grandTotalFinal, 2, ',', '.')  }}</center></span></p></td>
+                <td class="text-8"><p>Rp  <span style="text-align: right; float:right;"> {{ number_format($grandTotalFinal, 2, ',', '.')  }}</span></p></td>
                 @php
                     $nominalTotal += $prod->grand_total;
                 @endphp

@@ -231,11 +231,11 @@ class PMOFinalReport extends Model
 
         $get_name_pm = PMO_assign::join('users', 'users.nik', 'tb_pmo_assign.nik')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_assign.id_project')->select('users.name')->where('id_project', $get_id_pmo)->first();
 
-        $data = PMO::where('id', $get_id_pmo->id)->first();
+        // $data = PMO::where('id', $get_id_pmo->id)->first();
 
-        $get_name_sales = DB::table('tb_id_project')->join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')->join('users', 'users.nik','sales_lead_register.nik')->select('users.name')->where('tb_id_project.id_project', $data->project_id)->first();
+        // $get_name_sales = DB::table('tb_id_project')->join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')->join('users', 'users.nik','sales_lead_register.nik')->select('users.name')->where('tb_id_project.id_project', $data->project_id)->first();
 
-        $get_name_pm = PMO_assign::join('users', 'users.nik', 'tb_pmo_assign.nik')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_assign.id_project')->select('users.name')->where('id_project', $get_id_pmo->id)->first();
+        // $get_name_pm = PMO_assign::join('users', 'users.nik', 'tb_pmo_assign.nik')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_assign.id_project')->select('users.name')->where('id_project', $get_id_pmo->id)->first();
 
         $get_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')
             ->select('users.name', 'roles.name as position', 'email', DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Staff') THEN 'Delivery Project Manager' WHEN (`roles`.`name` = 'Account Executive') THEN 'Account Manager' ELSE `roles`.`name` END) as position"))

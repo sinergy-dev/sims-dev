@@ -929,14 +929,23 @@ class TimesheetController extends Controller
 
                 return $getPidByPic;
             }else if ($cekPidStatus->status_assign_pid == 'Pid') {
-                $getPidByPic = DB::table('tb_timesheet_pid')
-                    ->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')
+                if ($cek_role->name == 'Delivery Project Coordinator' || $cek_role->name == 'Delivery Project Manager') {
+                    $getPidByPic = DB::table('tb_pmo')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('tb_id_project','tb_id_project.id_project','tb_pmo.project_id')
                     ->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')
-                    ->groupBy('tb_timesheet_pid.pid','opp_name')
-                    ->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`opp_name`) AS text"))
-                    ->where('tb_timesheet_pid.nik',Auth::User()->nik)
+                    ->select('tb_pmo.project_id as id',DB::raw("CONCAT(`tb_pmo`.`project_id`,' - ',`opp_name`) AS text"))
+                    ->where('tb_pmo_assign.nik',Auth::User()->nik)
                     ->orderby('id','desc')
                     ->get();
+                } else {
+                    $getPidByPic = DB::table('tb_timesheet_pid')
+                        ->join('tb_id_project','tb_timesheet_pid.pid','tb_id_project.id_project')
+                        ->join('sales_lead_register','sales_lead_register.lead_id','tb_id_project.lead_id')
+                        ->groupBy('tb_timesheet_pid.pid','opp_name')
+                        ->select('tb_timesheet_pid.pid as id',DB::raw("CONCAT(`tb_timesheet_pid`.`pid`,' - ',`opp_name`) AS text"))
+                        ->where('tb_timesheet_pid.nik',Auth::User()->nik)
+                        ->orderby('id','desc')
+                        ->get();
+                }
 
                 return $getPidByPic;
             }

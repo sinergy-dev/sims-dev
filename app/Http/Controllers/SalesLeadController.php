@@ -2264,6 +2264,12 @@ class SalesLeadController extends Controller
     {      
         $getNikTa = solution_design::where('lead_id',$request->lead_cont)->first()->nik_ta;
 
+        if (!TenderProcess::where('lead_id', $request->lead_id)->exists()){
+            $tambahtp = new TenderProcess();
+            $tambahtp->lead_id = $request['lead_id'];
+            $tambahtp->save();
+        }
+
         foreach ($request->nik_cont as $value) {
             $tambah = new solution_design();
             $tambah->nik_ta = $getNikTa;
@@ -2290,8 +2296,11 @@ class SalesLeadController extends Controller
 
         $kirim = User::select('email','nik')->whereIn('nik', $request->nik_cont)->get();
 
+        $cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->where('roles.name', 'VP Synergy System Management')->get();
+
         foreach($kirim as $kirim){
-            Mail::to($kirim->email)->send(new AddContribute(collect([
+            Mail::to($kirim->email)->cc($cc)->send(new AddContribute(collect([
                 "data" => DB::table('sales_lead_register')
                     ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')

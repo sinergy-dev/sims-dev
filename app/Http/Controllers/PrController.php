@@ -731,7 +731,7 @@ class PrController extends Controller
         $no_update = $getnumberPr.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
 
         $update = PR::where('no',$no)->first();
-        $update->no_pr = $no_update;
+        // $update->no_pr = $no_update;
         $update->position = $posti;
         $update->type_of_letter = $type;
         $update->month = $bln;
@@ -745,6 +745,10 @@ class PrController extends Controller
         $amount = str_replace('.', '', $request['edit_amount']);
         $update->status = $request['edit_status'];
         $update->amount = $amount;
+        $update->invoice_customer = $request['statusInvoiceCustomer'];
+        $update->notes_invoice_customer = nl2br($request['notesInvoiceCustomer']);
+        $update->invoice_vendor = $request['statusInvoiceVendor'];
+        $update->notes_invoice_vendor = nl2br($request['notesInvoiceVendor']);
 
 
         $update->update();
@@ -757,7 +761,7 @@ class PrController extends Controller
         $filter_pr = DB::table('tb_pr')
                         ->join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                         ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'status', 'amount','id_draft_pr','isRupiah')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'status', 'amount','id_draft_pr','isRupiah','request_method',DB::raw("(CASE WHEN (invoice_customer is null) THEN '-' ELSE invoice_customer END) as invoice_customer"),DB::raw("(CASE WHEN (invoice_vendor is null) THEN '-' ELSE invoice_vendor END) as invoice_vendor"),DB::raw("(CASE WHEN (notes_invoice_customer is null) THEN '-' ELSE notes_invoice_customer END) as notes_invoice_customer"),DB::raw("(CASE WHEN (notes_invoice_vendor is null) THEN '-' ELSE notes_invoice_vendor END) as notes_invoice_vendor"))
                         ->where('result', '!=', 'R')
                         ->whereYear('tb_pr.created_at', $request->data)
                         ->get();
@@ -771,7 +775,7 @@ class PrController extends Controller
 
         $data = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                                 ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount', 'status','id_draft_pr','isRupiah')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount', 'status','id_draft_pr','isRupiah','request_method',DB::raw("(CASE WHEN (invoice_customer is null) THEN '-' ELSE invoice_customer END) as invoice_customer"),DB::raw("(CASE WHEN (invoice_vendor is null) THEN '-' ELSE invoice_vendor END) as invoice_vendor"),DB::raw("(CASE WHEN (notes_invoice_customer is null) THEN '-' ELSE notes_invoice_customer END) as notes_invoice_customer"),DB::raw("(CASE WHEN (notes_invoice_vendor is null) THEN '-' ELSE notes_invoice_vendor END) as notes_invoice_vendor"))
                                 ->where('result', '!=', 'R')
                                 ->where('date','like',$tahun."%")
                                 ->get();
