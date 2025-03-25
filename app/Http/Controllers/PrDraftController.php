@@ -2861,7 +2861,7 @@ class PrDraftController extends Controller
         } else {
             $sum_nominal = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
-                ->select('grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->sum('grand_total');
+                ->select('grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('tb_pr_compare.status','Selected')->sum('grand_total');
         }
 
         if ($data->discount != 'false') {

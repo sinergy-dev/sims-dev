@@ -452,8 +452,8 @@
                 
               </div>
             </div>
-            <div class="form-group" style="margin-top:10px">
-              <button class="btn btn-sm btn-primary" style="display:flex;margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
+            <div class="form-group" style="margin-top:10px;display: flex;justify-content: center;">
+              <button class="btn btn-sm btn-primary" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
             </div>
           </div>
           <div class="tab-add" style="display:none">
@@ -1801,7 +1801,7 @@
         console.log(tempTotal + "kkkk")
         console.log(tempDiscount)
 
-        if (valueVat = 0) {
+        if (valueVat != 0) {
           tax_base_other = formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12)))
         }else{
           tax_base_other = 0
@@ -2218,7 +2218,7 @@
         
         // finalGrand = tempGrand + tempPb1 + tempService - tempDiscount
         $("#vat_tax_preview").val(formatter.format(tempVat))
-        if (valueVat = 0) {
+        if (valueVat != 0) {
           tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12)))
         }else{
           tax_base_other = 0
@@ -2668,7 +2668,7 @@
     $("#inputDiscountPembanding[data-value='" + i + "']").val(formatter.format(tempDiscount))
     $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(item.nominal))
 
-    if (valueVat = 0) {
+    if (valueVat != 0) {
       tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12)))
     }else{
       tax_base_other = 0
@@ -5001,9 +5001,7 @@
     localStorage.setItem('status_tax',valueVat)
 
     if (!isNaN(valueVat)) {
-      console.log("hoooo")
-      console.log(valueVat)
-      tempVat = Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ',''))) * (valueVat == false?0:parseFloat(valueVat) / 100))
+      tempVat = Math.round((parseFloat(sum) - parseFloat($("#inputDiscountNominal").val().replace(/\./g,'').replace(',','.').replace(' ','')?"":0)) * (valueVat == false?0:parseFloat(valueVat) / 100))
       if (!isNaN(value)) {
         if (valueVat == 11) {
           valueVat = 12
@@ -5034,7 +5032,7 @@
     tempPb1 = Math.round(((parseFloat(sum) - tempDiscNominal)* ($("#inputPb1Final").val() == ""?0:parseFloat($("#inputPb1Final").val())) / 100))
     tempService = Math.round(((parseFloat(sum) - tempDiscNominal) * ($("#inputServiceChargeFinal").val() == ""?0:parseFloat($("#inputServiceChargeFinal").val())) / 100))
 
-    if (valueVat = 0) {
+    if (valueVat != 0) {
       tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscNominal)*11/12)))
     }else{
       tax_base_other = 0
