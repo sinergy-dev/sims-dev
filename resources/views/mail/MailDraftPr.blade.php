@@ -110,7 +110,7 @@
 						PR sudah mulai disirkulasi untuk diperiksa dan disetujui. Kepada masing-masing approver dimohon untuk segera melakukan pemeriksaan dan penyetujuan dari PR yang diajukan.
 					@endif
 				@elseif($detail->status == 'FINALIZED')
-					Proses sirkulasi PR sudah selesai dilakukan, kemudian PR sudah siap untuk di Finalisasi oleh BCD Procurement.
+					Proses sirkulasi PR sudah selesai dilakukan, kemudian PR sudah siap untuk di Finalisasi oleh Procurement.
 				@elseif($detail->status == 'UNAPPROVED')
 					Untuk proses sirkulasi PR Anda terhenti dengan alasan sebagai berikut:
 				@elseif($detail->status == 'CANCEL')
@@ -234,7 +234,7 @@
 						<b>Dimohon untuk Approver selanjutnya untuk memeriksa serta memastikan PR sudah sesuai. Jika dirasa tidak ada kesalahan dimohon untuk segera Approve PR tersebut.</b>
 					@endif
 				@elseif($detail->status == 'FINALIZED')
-					Dimohon untuk menantikan email finalisasi yang dikirim oleh BCD Procurement kepada Finance dengan lampiran yang sudah disiapkan.
+					Dimohon untuk menantikan email finalisasi yang dikirim oleh Procurement kepada Finance dengan lampiran yang sudah disiapkan.
 				@endif
 			</p>
 			@if($detail->status == 'DRAFT')
@@ -264,10 +264,10 @@
 			<center>PT. Sinergy Informasi Pratama</center>
 		</p>
 		<p>
-			<center>Jl. Puri Raya, Blok A 2/3 No. 33-35 Puri Indah, Kembangan, Jakarta, Indonesia 11610</center>
+			<center>Jakarta International Tower Jl. Letjen S. Parman Nomor 1AA, Kemanggisan - Pal Merah, Jakarta, Indonesia 11480</center>
 		</p>
 		<p>
-			<center><i class="fa fa-phone"></i>021 - 58355599</center>
+			<center><i class="fa fa-phone"></i>021 - 50865 777</center>
 		</p>
 	</div>
 </footer>

@@ -268,7 +268,7 @@ class HRController extends Controller
         
         $roles = DB::table('roles')->where('name', '!=', 'Project Transformation Officer')->get();
 
-        $group = DB::table('roles')->select('acronym','mini_group')->where('name','like','%Manager')->where('name','!=','Delivery Project Manager')->where('mini_group','!=',null)->orderBy('group','asc')->get();
+        $group = DB::table('roles')->select('acronym','mini_group')->where('name','like','%Manager')->where('name','!=','Delivery Project Manager')->where('mini_group','!=',null)->where('acronym','!=',null)->orderBy('group','asc')->get();
         // $group->push((object) ['acronym' => 'AE1','mini_group'=>'Sales Territory 1']);
 
         $code = $request['code_input'];     

@@ -1063,10 +1063,10 @@ class AssetMgmtController extends Controller
         $update->tanggal_pembelian = $request->tanggalBeli;
 
         if ($update->pr != $request->inputPr) {
-            $getIdDetailAsset = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
-                $storeDetail = $getIdDetailAsset->replicate();
-                $storeDetail->pr = $request->inputPr;
-                $storeDetail->save();
+            // $getIdDetailAsset = AssetMgmtDetail::where('id_asset',$request->id_asset)->orderby('id','desc')->first();
+            //     $storeDetail = $getIdDetailAsset->replicate();
+            //     $storeDetail->pr = $request->inputPr;
+            //     $storeDetail->save();
 
             $storeLog = new AssetMgmtLog();
             $storeLog->id_asset = $request->id_asset;
@@ -1127,7 +1127,7 @@ class AssetMgmtController extends Controller
             $delete = AssetMgmtAssign::where('id_asset_peripheral',$request->id_asset)->delete();
         }
 
-        if (isset($request->engineer != '[]' || $request->engineer != null)) {
+        if (!empty($request->engineer) && $request->engineer !== '[]') {
             $data = json_decode($request->engineer,true);
 
             $delete_engineer_assign = AssetMgmtAssignEngineer::where('id_asset',$request->id_asset)->delete();

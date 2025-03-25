@@ -391,65 +391,99 @@ ID Project
           <form method="POST" action="{{url('update_sp')}}">
             @csrf
           <input type="" name="id_project_edit" id="id_project_edit" hidden>
-          <div class="form-group">
-            <label for="">No. PO Customer</label>
-            <input type="text" name="po_customer_edit" id="po_customer_edit" class="form-control">
-          </div>
+            <div style="display:none;" id="divFinanceVP">
+              <div class="form-group">
+                <label for="">No. PO Customer</label>
+                <input type="text" name="po_customer_edit" id="po_customer_edit" class="form-control">
+              </div>
 
-          <div class="form-group">
-            <label for="">Project Name</label>
-            <textarea type="text" name="name_project_edit" id="name_project_edit" class="form-control"></textarea>
-          </div>
+              <div class="form-group">
+                <label for="">Project Name</label>
+                <textarea type="text" name="name_project_edit" id="name_project_edit" class="form-control"></textarea>
+              </div>
 
-          @if(Auth::User()->id_position == 'MANAGER')
-          <!-- <div class="form-group  modalIcon inputIconBg">
-            <label for="">Amount</label>
-            <input type="text" class="form-control money" placeholder="Enter Amount" name="amount_edit" id="amount_edit" required>
-            <i class="" aria-hidden="true" style="margin-bottom: 24px">Rp.</i>
-          </div> -->
-            <div class="form-group">
-              <label for="">Amount</label>
-              <div class="input-group">
-                <div class="input-group-addon" style="background-color:#aaa;color:white">
-                  <b><i>Rp</i></b>
+              <div class="form-group">
+                <label for="">Amount</label>
+                <div class="input-group">
+                  <div class="input-group-addon" style="background-color:#aaa;color:white">
+                    <b><i>Rp</i></b>
+                  </div>
+                  <input type="text" class="form-control money" placeholder="Enter Amount" name="amount_edit" id="amount_edit">
                 </div>
-                <input type="text" class="form-control money" placeholder="Enter Amount" name="amount_edit" id="amount_edit">
+              </div>
+
+              <div class="form-group">
+                <label for="">Date</label>
+                <input type="date" name="date_edit" id="inputDateEdit" class="form-control" required>
               </div>
             </div>
-          @endif
 
-          <div class="form-group">
-            <label for="">Date</label>
-            <input type="date" name="date_edit" id="inputDateEdit" class="form-control" required>
-          </div>
+            <div class="form-group row">
+              <div class="col-sm-6">
+                <label class="col-sm-12">Kontrak Customer</label>
+                <select name="statusKontrakCustomer" id="statusKontrakCustomer" class="form-control select2">
+                  <option value="">Select Status Kontrak Customer</option>
+                  <option value="UnAvailable">UnAvailable</option>
+                  <option value="On Review">On Review</option>
+                  <option value="On Progress">On Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="col-sm-6">Notes</label>
+                <textarea name="notesKontrakCustomer" id="notesKontrakCustomer" class="form-control"></textarea>
+              </div>
+            </div>
 
-          <!-- <div class="form-group">
-            <label for="">Note</label>
-            <input type="text" placeholder="Enter Note" name="note_edit" id="note_edit" class="form-control">
-          </div> -->
+            <div class="form-group row">
+              <div class="col-sm-6">
+                <label class="col-sm-12">Kontrak Vendor</label>
+                <select name="statusKontrakVendor" id="statusKontrakVendor" class="form-control select2">
+                  <option value="">Select Status Kontrak Vendor</option>
+                  <option value="UnAvailable">UnAvailable</option>
+                  <option value="On Review">On Review</option>
+                  <option value="On Progress">On Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="col-sm-6">Notes</label>
+                <textarea name="notesKontrakVendor" id="notesKontrakVendor" class="form-control"></textarea>
+              </div>
+            </div>
 
-          <!-- <label for="">Invoice info</label><a class="check-reset">(<i class="fa  fa-refresh"></i> Reset)</a><br>
+            <!-- <div class="form-group row">
+              <div class="col-sm-6">
+                <label class="col-sm-12">Invoice Customer</label>
+                <select name="statusInvoiceCustomer" id="statusInvoiceCustomer" class="form-control select2">
+                  <option value="">Select Status Kontrak Vendor</option>
+                  <option value="UnAvailable">UnAvailable</option>
+                  <option value="On Progress">On Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="col-sm-12">Notes</label>
+                <textarea name="notesInvoiceCustomer" id="notesInvoiceCustomer" class="form-control"></textarea>
+              </div>
+            </div>
 
-          <div style="padding-left: 20px">
-            
-            
-            <label class="radio">
-              <input type="radio" name="invoice" id="invoice_edit_f" value="F">
-              <span>Done</span>
-            </label>
-            
+            <div class="form-group row">
+              <div class="col-sm-6">
+                <label class="col-sm-12">Invoice Vendor</label>
+                <select name="statusInvoiceVendor" id="statusInvoiceVendor" class="form-control select2">
+                  <option value="">Select Status Kontrak Vendor</option>
+                  <option value="UnAvailable">UnAvailable</option>
+                  <option value="On Progress">On Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="col-sm-12">Notes</label>
+                <textarea name="notesInvoiceVendor" id="notesInvoiceVendor" class="form-control"></textarea>
+              </div>
+            </div> -->
 
-            <label class="radio">
-              <input type="radio" name="invoice" id="invoice_edit_h" value="H">
-              <span>Setengah Bayar</span>
-            </label>
-          </div> -->
-
-          <!-- <div class="form-group modalIcon inputIconBg">
-            <label for="">Kurs To Dollar</label>
-            <input type="text" class="form-control" readonly placeholder="Kurs" name="kurs_edit" id="kurs_edit">
-            <i class="" aria-hidden="true">&nbsp$&nbsp </i>
-          </div>   -->     
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
               <button type="submit" class="btn btn-warning"><i class="fa fa-check">&nbsp</i>Edit</button>
@@ -457,6 +491,20 @@ ID Project
         </form>
         </div>
       </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Full Notes</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="notesDetails"></p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -578,6 +626,16 @@ ID Project
     $("#showRequestProjectID").modal("show")
   }
 
+  $(document).on("click", ".notes-preview", function () {
+    var fullText = $(this).data("fulltext");
+    $("#notesDetails").html(fullText);
+  });
+
+  $(document).on("click", "#notesModalCustomer", function () {
+    var fullText = $(this).data("fulltext");
+    $("#notesDetailsCustomer").html(fullText);
+  });
+
 
   $(document).ready(function(){
     var accesable = @json($feature_item);
@@ -661,30 +719,30 @@ ID Project
           // console.log(api.column(7))
           // Remove the formatting to get integer data for summation
 
-          var total = api.column(14, {page:'current'}).data().sum();
+          var total = api.column(17, {page:'current'}).data().sum();
 
-          var filtered = api.column(14, {"filter": "applied"} ).data().sum();
+          var filtered = api.column(17, {"filter": "applied"} ).data().sum();
 
-          var totalpage = api.column(14).data().sum();
+          var totalpage = api.column(17).data().sum();
 
-          var filteredgrand = api.column(15, {"filter": "applied"} ).data().sum();
+          var filteredgrand = api.column(18, {"filter": "applied"} ).data().sum();
 
-          var totalpagegrand = api.column(15).data().sum();
+          var totalpagegrand = api.column(18).data().sum();
 
-          $( api.column( 6 ).footer() ).addClass('text-right');
-          $( api.column( 6 ).footer() ).html("Total Amount");
-
-
-          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(totalpage));
+          $( api.column( 5 ).footer() ).addClass('text-right');
+          $( api.column( 5 ).footer() ).html("Total Amount");
 
 
-          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(filtered));
+          $( api.column( 6 ).footer() ).html(new Intl.NumberFormat('id').format(totalpage));
 
 
-          $( api.column( 8 ).footer() ).html(new Intl.NumberFormat('id').format(totalpagegrand));
+          $( api.column( 6 ).footer() ).html(new Intl.NumberFormat('id').format(filtered));
 
 
-          $( api.column( 8 ).footer() ).html(new Intl.NumberFormat('id').format(filteredgrand));
+          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(totalpagegrand));
+
+
+          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(filteredgrand));
         },
         "ajax":{
             "type":"GET",
@@ -725,22 +783,6 @@ ID Project
                   return row.no_po
                 }else{
                   return "-"
-                }
-              }
-            }
-          },
-          { // No Quotation
-            "title":"No. Quotation",
-            render: function ( data, type, row ) {
-              if (row.id_company == 1) {
-                return "-";
-              }else{
-                if (row.lead_id == "MSPQUO") {
-                  return row.no_po_customer;
-                }else if (row.quote_number) {
-                  return row.quote_number;  
-                }else{
-                  return "-";  
                 }
               }
             }
@@ -800,6 +842,46 @@ ID Project
             "title":"Current Phase",
             "data": "current_phase" 
           },
+          { // Kontrak Customer
+            "title":"Kontrak Customer",
+            "data": "kontrak_customer"
+          },
+          { // Notes Kontrak Customer
+            "title":"Notes Kontrak Customer",
+            "data": "notes_kontrak_customer",
+            "render": function (data, type, row) {
+              if (type === "display" && data) {
+                  let firstLine = data.split('<br>')[0];
+                  let displayText = firstLine.length > 40 ? firstLine.substring(0, 40) + "..." : firstLine; 
+
+                  return `<span class="notes-preview" data-toggle="modal" data-target="#notesModal" 
+                        data-fulltext="${data}">
+                        ${displayText}
+                    </span>`;
+              }
+              return data;
+            }
+          },
+          { // Kontrak Vendor
+            "title":"Kontrak Vendor",
+            "data": "kontrak_vendor"
+          },
+          { // Notes Kontrak Vendor
+            "title":"Notes Kontrak Vendor",
+            "data": "notes_kontrak_vendor",
+            "render": function (data, type, row) {
+              if (type === "display" && data) {
+                  let firstLine = data.split('<br>')[0];
+                  let displayText = firstLine.length > 40 ? firstLine.substring(0, 40) + "..." : firstLine; 
+
+                  return `<span class="notes-preview" data-toggle="modal" data-target="#notesModal" 
+                        data-fulltext="${data}">
+                        ${displayText}
+                    </span>`;
+              }
+              return data;
+            }
+          },
           { // Action
             "title":"Action",
             render: function ( data, type, row ) {
@@ -834,21 +916,21 @@ ID Project
         columnDefs: [
           {
             targets: [7],
-            orderData: [14],
+            orderData: [17],
             className: 'text-right',
           },
           {
             targets: [8],
-            orderData: [15],
+            orderData: [18],
             className: 'text-right'
           },
           {
-            targets: [14] ,
+            targets: [17],
             visible: false,
             searchable: false
           }
           ,{
-            targets: [15] ,
+            targets: [18],
             visible: false,
             searchable: false
           }
@@ -857,16 +939,16 @@ ID Project
 
       if (!(accesable.includes('amount_pid'))) {
         // Column Amount IDR
-        var column1 = table.column(7);
+        var column1 = table.column(6);
         column1.visible(!column1.visible() );
         // Column Amount IDR Before Tax
-        var column2 = table.column(8);
+        var column2 = table.column(7);
         column2.visible(!column2.visible() );
       }
 
       if (!(accesable.includes('btnEdit'))) {
         //action
-        var column3 = table.column(13);
+        var column3 = table.column(16);
         column3.visible(!column3.visible());
       }
     }else{
@@ -1091,6 +1173,12 @@ ID Project
       });
     }
 
+    $(document).ready(function() {
+      $('.select2').select2({
+        width: '100%' // Makes the dropdown full width
+      });
+    });
+
     $('#searchBarTicket').keyup(function(){
       table.search($('#searchBarTicket').val()).draw();
     })
@@ -1287,6 +1375,15 @@ ID Project
       success: function(result){
         	  $('#tunggu').modal('hide');
             $.each(result[0], function(key, value){
+              $('#id_project_edit').val(value.id_project);
+              $('#notesInvoiceVendor').val(value.notes_invoice_vendor.replace(/<br\s*\/?>/g, '\n'));
+              $('#notesInvoiceCustomer').val(value.notes_invoice_customer.replace(/<br\s*\/?>/g, '\n'));
+              $('#notesKontrakVendor').val(value.notes_kontrak_vendor.replace(/<br\s*\/?>/g, '\n'));
+              $('#notesKontrakCustomer').val(value.notes_kontrak_customer.replace(/<br\s*\/?>/g, '\n'));
+              $('#statusInvoiceCustomer').val(value.invoice_customer).trigger('change');
+              $('#statusInvoiceVendor').val(value.invoice_vendor).trigger('change');
+              $('#statusKontrakCustomer').val(value.kontrak_customer).trigger('change');
+              $('#statusKontrakVendor').val(value.kontrak_vendor).trigger('change');
               $('#id_project_edit').val(value.id_project);
               $('#name_project_edit').val(value.name_project);
               $('#note_edit').val(value.note);

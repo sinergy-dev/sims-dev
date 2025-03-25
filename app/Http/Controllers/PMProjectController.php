@@ -3778,6 +3778,17 @@ class PMProjectController extends Controller
         $count_periode = DB::table('tb_pmo_progress_report')->where('tb_pmo_progress_report.id_project',$id_pmo)->count();
         // return $count_periode;
 
+        $projectType = DB::table('tb_pmo')->where('id', $id_pmo)->value('project_type');
+        if (($projectType == 'Implementation + Maintenance & Managed Service' && $data->project_type == 'maintenance') || $data->parent_id_drive == null) {
+            $parentDriveID = $this->googleDriveMakeFolder($data->project_id);
+
+            DB::table('tb_pmo')
+                ->where('id', $id_pmo)
+                ->update(['parent_id_drive' => $parentDriveID]);
+
+            $data = DB::table('tb_pmo')->join('tb_pmo_progress_report','tb_pmo_progress_report.id_project','tb_pmo.id')->select('parent_id_drive','project_id')->where('tb_pmo.id', $id_pmo)->orderby('tb_pmo_progress_report.id','desc')->first();
+        }
+
         $parent_id = explode('"', $data->parent_id_drive)[1];
         // if (!empty($data)) {
             // return $fileName = 'Project Progress Report Periode 1.pdf';

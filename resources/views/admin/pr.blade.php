@@ -15,7 +15,7 @@
       text-align: center;
     }
 
-    td>.truncate{
+    td.truncate{
       word-break:break-all;
       white-space: normal;
       width:200px;  
@@ -116,16 +116,22 @@
               <th>To</th>
               <th><div class="truncate">Attention</div></th>
               <th><div class="truncate">Title/Subject</div></th>
-              <th><div class="truncate">Description</div></th>
               <th>From</th>
               <th></th>
               <th>Project ID</th>
               <th>Amount</th>
               <th>Amount</th>
               <th>Status</th>
+              <th>Invoice Customer</th>
+              <th>Notes Invoice Customer</th>
+              <th>Invoice Vendor</th>
+              <th>Notes Invoice Vendor</th>
               <th>Action</th>
             </tr>
             <tr id="status">
+              <th></th>
+              <th></th>
+              <th></th>
               <th></th>
               <th></th>
               <th></th>
@@ -219,7 +225,7 @@
               </div>
             </div> 
 
-            <div class="row">
+            <!-- <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
                   <label>From</label>
@@ -245,7 +251,7 @@
                   </select>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div class="form-group">
               <label for="">Date</label>
@@ -325,7 +331,7 @@
                 <option value="EPR">EPR (Eksternal Purchase Request)</option>
               </select>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="">Position</label>
               <select type="text" class="form-control" placeholder="Select Position" name="edit_position" id="edit_position" required>
                 <option>PMO</option>
@@ -336,7 +342,7 @@
                 <option>HRD</option>
                 <option>WHO</option>
               </select>
-            </div>
+            </div> -->
             <div class="form-group">
               <label for="">Date</label>
               <input type="date" class="form-control" placeholder="Enter To" name="edit_date" id="edit_date" >
@@ -345,9 +351,6 @@
               <label for="">To</label>
               <input type="text" class="form-control" placeholder="Enter To" name="edit_to" id="edit_to" >
             </div>
-            
-            
-            
             <div class="form-group">
               <label for="">Attention</label>
               <input type="text" class="form-control" placeholder="Enter Attention" name="edit_attention" id="edit_attention" >
@@ -356,10 +359,10 @@
               <label for="">Title</label>
               <input type="text" class="form-control" placeholder="Enter Title" name="edit_title" id="edit_title" >
             </div> 
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="">Description</label>
               <textarea type="text" class="form-control" placeholder="Enter Description" name="edit_description" id="edit_description" > </textarea>
-            </div>
+            </div> -->
             <div class="form-group">
               <label for="">Amount</label>
               <input type="text" class="form-control" placeholder="Enter Amount" name="edit_amount" id="edit_amount">
@@ -377,6 +380,37 @@
                   <option value="Cancel">Cancel</option>
               </select>
             </div>
+            <div class="form-group row">
+              <div class="col-sm-6">
+                <label class="col-sm-12">Invoice Customer</label>
+                <select name="statusInvoiceCustomer" id="statusInvoiceCustomer" class="form-control select2">
+                  <option value="">Select Status Invoice Customer</option>
+                  <option value="UnAvailable">UnAvailable</option>
+                  <option value="On Progress">On Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="col-sm-12">Notes</label>
+                <textarea name="notesInvoiceCustomer" id="notesInvoiceCustomer" class="form-control"></textarea>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-sm-6">
+                <label class="col-sm-12">Invoice Vendor</label>
+                <select name="statusInvoiceVendor" id="statusInvoiceVendor" class="form-control select2">
+                  <option value="">Select Status Invoice Vendor</option>
+                  <option value="UnAvailable">UnAvailable</option>
+                  <option value="On Progress">On Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="col-sm-12">Notes</label>
+                <textarea name="notesInvoiceVendor" id="notesInvoiceVendor" class="form-control"></textarea>
+              </div>
+            </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
               <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
@@ -385,6 +419,20 @@
           </div>
         </div>
       </div>
+  </div>
+
+  <div class="modal fade" id="notesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Full Notes</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="notesDetails"></p>
+            </div>
+        </div>
+    </div>
   </div>
     
 </section>
@@ -410,6 +458,11 @@
     $("#amount").click(function() {
       var inputLength = $("#amount").val().length;
       setCaretToPos($("#amount")[0], inputLength)
+    });
+
+    $(document).on("click", ".notes-preview", function () {
+      var fullText = $(this).data("fulltext");
+      $("#notesDetails").html(fullText);
     });
 
     var options = {
@@ -475,14 +528,13 @@
 
     var formatter = new Intl.NumberFormat(['ban', 'id']);
 
-    function edit_pr(no,to,attention,title,description,amount,project_id,status,type,date,position,isRupiah) {
-      console.log(amount)
+    function edit_pr(no,to,attention,title,amount,project_id,status,type,date,isRupiah,invoice_customer,notes_invoice_customer,invoice_vendor,notes_invoice_vendor,request_method) {
+      console.log(request_method)
       $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
       $('#edit_to').val(to);
       $('#edit_type').val(type);
       $('#edit_date').val(date);
-      $('#edit_position').val(position);
       if (attention == "null") {
         '';
       } else {
@@ -493,12 +545,6 @@
         '';
       } else {
         $('#edit_title').val(title);
-      }
-
-      if (description == "null") {
-        '';
-      } else {
-        $('#edit_description').val(description);
       }
 
       if (amount == "null") {
@@ -516,6 +562,16 @@
       }
 
       $('#edit_status').val(status);
+      $('#statusInvoiceCustomer').val(invoice_customer || '').trigger('change');
+      $('#notesInvoiceCustomer').val((notes_invoice_customer || "").replace(/<br\s*\/?>/g, '\n'));
+      $('#statusInvoiceVendor').val(invoice_vendor || '').trigger('change');
+      $('#notesInvoiceVendor').val((notes_invoice_vendor || "").replace(/<br\s*\/?>/g, '\n'));
+
+      if (request_method == 'Purchase Order' && status == 'Done') {
+        $('#statusInvoiceCustomer, #notesInvoiceCustomer, #statusInvoiceVendor, #notesInvoiceVendor').prop('disabled', false);
+      } else {
+        $('#statusInvoiceCustomer, #notesInvoiceCustomer, #statusInvoiceVendor, #notesInvoiceVendor').prop('disabled', true);
+      }
     }
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
@@ -535,7 +591,7 @@
           json.data.forEach(function(data,index){
             data.btn_show_pdf = ""
             if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done' || "{{Auth::User()->id_position}}" == "PROCUREMENT") {
-              var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date+ '","' + data.position + '","' + data.isRupiah + '"'
+              var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date + '","' + data.isRupiah + '","' + data.invoice_customer + '","' + data.notes_invoice_customer + '","' + data.invoice_vendor + '","' + data.notes_invoice_vendor + '","' + data.request_method + '"'
               if (data.status == 'Done') {
                 if (data.id_draft_pr != null) {
                   data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/detail/draftPR')}}/"+ data.id_draft_pr +"?hide'>&nbsp Show Detail PR</a>";
@@ -593,15 +649,6 @@
               }
             }
         },
-        {
-           "render": function ( data, type, row, meta ) {
-              if (row.description == null) {
-                return '<div class="truncate"> - </div>'
-              } else {
-                return '<div class="truncate">' + row.description + '</div>'                  
-              }
-            }
-        },
         { "data": "user_from" },
         { "data": "status" },
         {
@@ -625,6 +672,46 @@
         },
         
         { "data": "status" },
+        { // Kontrak Customer
+          "title":"Invoice Customer",
+          "data": "invoice_customer"
+        },
+        { // Notes Kontrak Customer
+          "title":"Notes Invoice Customer",
+          "data": "notes_invoice_customer",
+          "render": function (data, type, row) {
+            if (type === "display" && data) {
+                let firstLine = data.split('<br>')[0];
+                let displayText = firstLine.length > 40 ? firstLine.substring(0, 40) + "..." : firstLine; 
+
+                return `<span class="notes-preview" data-toggle="modal" data-target="#notesModal" 
+                      data-fulltext="${data}">
+                      ${displayText}
+                  </span>`;
+            }
+            return data;
+          }
+        },
+        { // Kontrak Vendor
+          "title":"Invoice Vendor",
+          "data": "invoice_vendor"
+        },
+        { // Notes Kontrak Vendor
+          "title":"Notes Invoice Vendor",
+          "data": "notes_invoice_vendor",
+          "render": function (data, type, row) {
+            if (type === "display" && data) {
+                let firstLine = data.split('<br>')[0];
+                let displayText = firstLine.length > 40 ? firstLine.substring(0, 40) + "..." : firstLine; 
+
+                return `<span class="notes-preview" data-toggle="modal" data-target="#notesModal" 
+                      data-fulltext="${data}">
+                      ${displayText}
+                  </span>`;
+            }
+            return data;
+          }
+        },
         {
           "className": 'btn_edit',
           "orderable": false,
@@ -633,14 +720,14 @@
         },
       ],
       'columnDefs' : [
-          { 'visible': false, 'targets': [1,2,3,11,13] }
+          { 'visible': false, 'targets': [1,2,3,10,12] }
       ],
       "order": [[ 0, "desc" ]],
       "responsive":true,
       "orderCellsTop": true,
       "pageLength": 20,
       initComplete: function () {
-        this.api().columns([[1],[2],[3],[11]]).every( function () {
+        this.api().columns([[1],[2],[3],[15],[17]]).every( function () {
           var column = this;
           var title = $(this).text();
           var select = $('<select class="form-control search_filter" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Show All '+ title +'</option></select>')

@@ -1945,25 +1945,55 @@ class DASHBOARDController extends Controller
                 ]);
             }
 
+            $role = Auth::user()->roles()->first()->name;
+
             $userToSend = DB::table('roles as r')
                 ->join('role_user as ru', 'r.id', 'ru.role_id')
                 ->join('users as u', 'ru.user_id', 'u.nik')
                 ->select('u.name', 'u.email');
 
             if ($idea->divisi == 'Solutions & Partnership Management'){
-                $userToSend = $userToSend->where('r.name', 'VP Solutions & Partnership Management');
+                if ($role != 'VP Solutions & Partnership Management'){
+                    $userToSend = $userToSend->where('r.name', 'VP Solutions & Partnership Management');
+                }else{
+                    $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+                }
             }elseif ($idea->divisi == 'Program & Project Management'){
-                $userToSend = $userToSend->where('r.name', 'VP Program & Project Management');
+                if ($role != 'VP Program & Project Management'){
+                    $userToSend = $userToSend->where('r.name', 'VP Program & Project Management');
+                }else {
+                    $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+                }
             }elseif ($idea->divisi == 'Synergy System Management'){
-                $userToSend = $userToSend->where('r.name', 'VP Synergy System Management');
+                if ($role != 'VP Synergy System Management'){
+                    $userToSend = $userToSend->where('r.name', 'VP Synergy System Management');
+                }else{
+                    $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+                }
             }elseif ($idea->divisi == 'Internal Chain Management'){
-                $userToSend = $userToSend->where('r.name', 'VP Internal Chain Management');
+                if ($role != 'VP Internal Chain Management'){
+                    $userToSend = $userToSend->where('r.name', 'VP Internal Chain Management');
+                }else{
+                    $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+                }
             }elseif ($idea->divisi == 'Human Capital Management'){
-                $userToSend = $userToSend->where('r.name', 'VP Human Capital Management');
+                if ($role != 'VP Human Capital Management'){
+                    $userToSend = $userToSend->where('r.name', 'VP Human Capital Management');
+                }else{
+                    $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+                }
             }elseif ($idea->divisi == 'Sales'){
-                $userToSend = $userToSend->where('r.name', 'VP Sales')->where('u.id_territory', Auth::user()->id_territory);
+                if ($role != 'VP Sales'){
+                    $userToSend = $userToSend->where('r.name', 'VP Sales')->where('u.id_territory', Auth::user()->id_territory);
+                }else{
+                    $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+                }
             }elseif ($idea->divisi == 'Financial And Accounting'){
-                $userToSend = $userToSend->where('r.name', 'VP Financial & Accounting');
+                if ($role != 'VP Financial & Accounting'){
+                    $userToSend = $userToSend->where('r.name', 'VP Financial & Accounting');
+                }else{
+                    $userToSend = $userToSend->where('r.name', 'Chief Operating Officer');
+                }
             }
             $userToSend = $userToSend->first();
 

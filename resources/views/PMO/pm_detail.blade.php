@@ -6287,11 +6287,19 @@ PMO
 
 							   	if (status == 'verify') {
 							   		if (result.length > 0) {
-										$("#textareaScheduleRemarks").val(result[0].schedule_remarks).prop("disabled",true)
+										if (result[0].schedule_remarks == null) {
+							   				$("#textareaScheduleRemarks").val("-").prop("disabled",true)
+									   	}else{
+											$("#textareaScheduleRemarks").val(result[0].schedule_remarks).prop("disabled",true)
+									   	}
 								   	}
 							   	}else{
 							   		if (result.length > 0) {
-										$("#textareaScheduleRemarks").val(result[0].schedule_remarks)
+										if (result[0].schedule_remarks == null) {
+							   				$("#textareaScheduleRemarks").val("-")
+									   	}else{
+											$("#textareaScheduleRemarks").val(result[0].schedule_remarks)
+									   	}
               							reasonReject(result[0].note_reject,"block","tabGroup")
 								   	}
 							   	}
