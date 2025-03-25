@@ -33,6 +33,7 @@ class AssetMgmtDetail extends Model
         'license_end_date',
         'maintenance_start_date',
         'maintenance_end_date',
+        'accessoris',
         'date_add',
         'pr'
     ];
