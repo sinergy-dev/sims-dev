@@ -2264,9 +2264,9 @@ class SalesLeadController extends Controller
     {      
         $getNikTa = solution_design::where('lead_id',$request->lead_cont)->first()->nik_ta;
 
-        if (!TenderProcess::where('lead_id', $request->lead_id)->exists()){
+        if (!TenderProcess::where('lead_id', $request->lead_cont)->exists()){
             $tambahtp = new TenderProcess();
-            $tambahtp->lead_id = $request['lead_id'];
+            $tambahtp->lead_id = $request->lead_cont;
             $tambahtp->save();
         }
 

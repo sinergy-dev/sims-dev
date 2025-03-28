@@ -1712,6 +1712,64 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('pmo/pbc/getViewDetailProjectBudgetControl','PMOBudgetingController@getViewDetailProjectBudgetControl');
 	Route::get('pmo/pbc/getViewDetailPBC','PMOBudgetingController@getViewDetailPBC');
 	Route::post('/pbc/store/updateRole','PMOBudgetingController@updateRole');
+
+    //quotation list
+    Route::get('/quote/getCount', 'QuoteController@getCount');
+    Route::get('/quote/getCountFilter/{year}', 'QuoteController@getCountFilter');
+    Route::get('/quote/getDataQuoteFilter', 'QuoteController@getDataQuoteFilter');
+    Route::get('/quote/getDropdownFilterQuote', 'QuoteController@getDropdownFilterQuote');
+    Route::get('/sales/quote', 'QuoteController@quoteList');
+    Route::get('/sales/getDetailLead', 'QuoteController@getDetailLead');
+    Route::post('/sales/storeQuotation', 'QuoteController@storeQuotation');
+    Route::post('/sales/updateQuotation', 'QuoteController@updateQuotation');
+    Route::post('/sales/updateQuotationNewVersion', 'QuoteController@updateQuotationNewVersion');
+    Route::post('/sales/storeProductQuote', 'QuoteController@storeProductQuotation');
+    Route::post('/sales/updateProductQuote', 'QuoteController@updateProductQuotation');
+    Route::post('/sales/quote/uploadCSV', 'QuoteController@uploadCSV');
+    Route::get('/sales/quote/getProductQuote', 'QuoteController@getProductQuote');
+    Route::get('/sales/quote/getProductQuoteNewVersion', 'QuoteController@getProductQuoteNewVersion');
+    Route::post('/sales/quote/deleteProduct', 'QuoteController@deleteProduct');
+    Route::get('/sales/quote/getProductById', 'QuoteController@getProductById');
+    Route::post('/sales/quote/storeTax', 'QuoteController@storeTax');
+    Route::post('/sales/quote/updateTax', 'QuoteController@updateTax');
+    Route::post('/sales/quote/updateTaxNewVersion', 'QuoteController@updateTaxNewVersion');
+    Route::get('/sales/quote/getTax', 'QuoteController@getTax');
+    Route::post('/sales/quote/storeTermPayment', 'QuoteController@storeTermPayment');
+    Route::get('/sales/quote/getPreview', 'QuoteController@getPreview');
+    Route::post('/sales/quote/storeLastStepQuote', 'QuoteController@storeLastStepQuote');
+    Route::post('/sales/quote/storeLastStepQuoteNewVersion', 'QuoteController@storeLastStepQuoteNewVersion');
+    Route::get('/sales/quote/detail/{id}', 'QuoteController@detailQuotation');
+    Route::get('/sales/quote/getDetailQuote/', 'QuoteController@getDetailQuote');
+    Route::get('/sales/quote/getActivity', 'QuoteController@getActivity');
+    Route::get('/sales/quote/getVersionConfig', 'QuoteController@getVersionConfig');
+    Route::get('/sales/quote/getVersionDetail', 'QuoteController@getVersionDetail');
+    Route::get('/sales/quote/generatePDFQuote', 'QuoteController@generatePDF');
+    Route::post('/sales/quote/approveQuotation', 'QuoteController@approveQuotation');
+    Route::post('/sales/quote/rejectQuotation', 'QuoteController@rejectQuotation');
+    Route::post('/sales/quote/saveSignature', 'QuoteController@saveSignature');
+    Route::post('/sales/quote/sendMailtoCustomer', 'QuoteController@sendMailtoCustomer');
+    Route::get('sales/quote/getDataEmail', 'QuoteController@getDataEmail');
+
+    //certification list
+    Route::get('/certification_list', 'CertificationListController@index');
+    Route::get('/certification_list/getDataByFilter', 'CertificationListController@getDataByFilter');
+    Route::post('/certification_list/storeRequest', 'CertificationListController@storeRequest');
+    Route::post('/certification_list/updateRequest', 'CertificationListController@updateRequest');
+    Route::post('/certification_list/storeRequestDetail', 'CertificationListController@storeRequestDetail');
+    Route::post('/certification_list/updateRequestDetail', 'CertificationListController@updateRequestDetail');
+    Route::post('/certification_list/deleteDetail', 'CertificationListController@deleteDetail');
+    Route::post('/certification_list/storeLastStepRequest', 'CertificationListController@storeLastStepRequest');
+    Route::post('/certification_list/updateLastStepRequest', 'CertificationListController@updateLastStepRequest');
+    Route::post('/certification_list/assignManager', 'CertificationListController@assignManager');
+    Route::post('/certification_list/rejectRequest', 'CertificationListController@rejectRequest');
+    Route::post('/certification_list/approveRequest', 'CertificationListController@approveRequest');
+    Route::get('/certification_list/getRequestDetail', 'CertificationListController@getRequestDetail');
+    Route::get('/certification_list/getDetail', 'CertificationListController@getDetail');
+    Route::get('/certification_list/getActivity', 'CertificationListController@getActivity');
+    Route::get('/certification_list/getParticipantList', 'CertificationListController@getParticipantList');
+    Route::get('/certification_list/getDetailById', 'CertificationListController@getDetailById');
+    Route::get('/certification_list/getPreview', 'CertificationListController@getPreview');
+    Route::get('/certification_list/detail/{id}', 'CertificationListController@detail');
 });
 
 Route::get('/authLogin/{id}','TestController@authentication');
@@ -1798,40 +1856,5 @@ Route::delete('/solution/delete/{id}','SolutionController@destroy');
 
 Route::get('/getWarning','TestController@getWarning');
 
-//quotation list
- Route::get('/quote/getCount', 'QuoteController@getCount');
- Route::get('/quote/getCountFilter/{year}', 'QuoteController@getCountFilter');
- Route::get('/quote/getDataQuoteFilter', 'QuoteController@getDataQuoteFilter');
- Route::get('/quote/getDropdownFilterQuote', 'QuoteController@getDropdownFilterQuote');
-Route::get('/sales/quote', 'QuoteController@quoteList');
-Route::get('/sales/getDetailLead', 'QuoteController@getDetailLead');
-Route::post('/sales/storeQuotation', 'QuoteController@storeQuotation');
-Route::post('/sales/updateQuotation', 'QuoteController@updateQuotation');
-Route::post('/sales/updateQuotationNewVersion', 'QuoteController@updateQuotationNewVersion');
-Route::post('/sales/storeProductQuote', 'QuoteController@storeProductQuotation');
-Route::post('/sales/updateProductQuote', 'QuoteController@updateProductQuotation');
-Route::post('/sales/quote/uploadCSV', 'QuoteController@uploadCSV');
-Route::get('/sales/quote/getProductQuote', 'QuoteController@getProductQuote');
-Route::get('/sales/quote/getProductQuoteNewVersion', 'QuoteController@getProductQuoteNewVersion');
-Route::post('/sales/quote/deleteProduct', 'QuoteController@deleteProduct');
-Route::get('/sales/quote/getProductById', 'QuoteController@getProductById');
-Route::post('/sales/quote/storeTax', 'QuoteController@storeTax');
-Route::post('/sales/quote/updateTax', 'QuoteController@updateTax');
-Route::post('/sales/quote/updateTaxNewVersion', 'QuoteController@updateTaxNewVersion');
-Route::get('/sales/quote/getTax', 'QuoteController@getTax');
-Route::post('/sales/quote/storeTermPayment', 'QuoteController@storeTermPayment');
-Route::get('/sales/quote/getPreview', 'QuoteController@getPreview');
-Route::post('/sales/quote/storeLastStepQuote', 'QuoteController@storeLastStepQuote');
-Route::post('/sales/quote/storeLastStepQuoteNewVersion', 'QuoteController@storeLastStepQuoteNewVersion');
-Route::get('/sales/quote/detail/{id}', 'QuoteController@detailQuotation');
-Route::get('/sales/quote/getDetailQuote/', 'QuoteController@getDetailQuote');
-Route::get('/sales/quote/getActivity', 'QuoteController@getActivity');
-Route::get('/sales/quote/getVersionConfig', 'QuoteController@getVersionConfig');
-Route::get('/sales/quote/getVersionDetail', 'QuoteController@getVersionDetail');
-Route::get('/sales/quote/generatePDFQuote', 'QuoteController@generatePDF');
-Route::post('/sales/quote/approveQuotation', 'QuoteController@approveQuotation');
-Route::post('/sales/quote/rejectQuotation', 'QuoteController@rejectQuotation');
-Route::post('/sales/quote/saveSignature', 'QuoteController@saveSignature');
-Route::post('/sales/quote/sendMailtoCustomer', 'QuoteController@sendMailtoCustomer');
-Route::get('sales/quote/getDataEmail', 'QuoteController@getDataEmail');
+
 // Route::get('timesheet/getPhaseByDivisionForTable','TimesheetController@getPhaseByDivisionForTable');

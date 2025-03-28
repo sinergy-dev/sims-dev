@@ -1129,22 +1129,24 @@ class AssetMgmtController extends Controller
         if (!empty($request->engineer) && $request->engineer !== '[]') {
             $data = json_decode($request->engineer,true);
 
-            $delete_engineer_assign = AssetMgmtAssignEngineer::where('id_asset',$request->id_asset)->delete();
-
             foreach ($data as $value) {
-                $store = new AssetMgmtAssignEngineer();
-                $store->id_asset     = $request->id_asset;
-                $store->engineer_atm = $value['name'];
-                $store->role         = $value['roles'];
-                $store->date_add     = Carbon::now()->toDateTimeString();
-                $store->save();
+                if (!empty($value['name'])) {
+                    $delete_engineer_assign = AssetMgmtAssignEngineer::where('id_asset',$request->id_asset)->delete();
 
-                $storeLog = new AssetMgmtLog();
-                $storeLog->id_asset = $request->id_asset;
-                $storeLog->operator = Auth::User()->name;
-                $storeLog->date_add = Carbon::now()->toDateTimeString();
-                $storeLog->activity = 'Assign Engineer ' .$value['name'] . ' as ' . $value['roles'] . ' Engineer to asset ' . AssetMgmt::where('id',$request->id_asset)->first()->id_asset;
-                $storeLog->save();
+                    $store = new AssetMgmtAssignEngineer();
+                    $store->id_asset     = $request->id_asset;
+                    $store->engineer_atm = $value['name'];
+                    $store->role         = $value['roles'];
+                    $store->date_add     = Carbon::now()->toDateTimeString();
+                    $store->save();
+
+                    $storeLog = new AssetMgmtLog();
+                    $storeLog->id_asset = $request->id_asset;
+                    $storeLog->operator = Auth::User()->name;
+                    $storeLog->date_add = Carbon::now()->toDateTimeString();
+                    $storeLog->activity = 'Assign Engineer ' .$value['name'] . ' as ' . $value['roles'] . ' Engineer to asset ' . AssetMgmt::where('id',$request->id_asset)->first()->id_asset;
+                    $storeLog->save();
+                }
             } 
         }
 
@@ -1692,7 +1694,7 @@ class AssetMgmtController extends Controller
                     'tb_asset_management_dokumen.link_drive as link_drive_BA',
                     'tb_asset_management_dokumen.document_name as document_name_BA',
                     'tb_asset_management_dokumen.document_location as document_location_BA',
-                    'tb_asset_management_detail.pr as pr',
+                    'tb_asset_management.pr as pr',
                     'users.nik as pic', 'id_device_customer',
                     DB::raw('CONCAT(users.name," - ",(CASE WHEN roles.mini_group IS NULL THEN roles.group ELSE roles.mini_group END)) AS text_name'))
             ->where('tb_asset_management_detail.id_asset',$request->id_asset)
