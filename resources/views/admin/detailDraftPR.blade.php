@@ -1801,7 +1801,7 @@
         console.log(tempTotal + "kkkk")
         console.log(tempDiscount)
 
-        if (valueVat != 0) {
+        if (valueVat != 0 && valueVat != "false") {
           tax_base_other = formatter.format(customRound(formatter.format((tempTotal - tempDiscount)*11/12)))
         }else{
           tax_base_other = 0
@@ -2218,7 +2218,7 @@
         
         // finalGrand = tempGrand + tempPb1 + tempService - tempDiscount
         $("#vat_tax_preview").val(formatter.format(tempVat))
-        if (valueVat != 0) {
+        if (valueVat != 0 && valueVat != "false") {
           tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12)))
         }else{
           tax_base_other = 0
@@ -2668,7 +2668,7 @@
     $("#inputDiscountPembanding[data-value='" + i + "']").val(formatter.format(tempDiscount))
     $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(item.nominal))
 
-    if (valueVat != 0) {
+    if (valueVat != 0 && valueVat != "false") {
       tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscount)*11/12)))
     }else{
       tax_base_other = 0
@@ -5032,7 +5032,7 @@
     tempPb1 = Math.round(((parseFloat(sum) - tempDiscNominal)* ($("#inputPb1Final").val() == ""?0:parseFloat($("#inputPb1Final").val())) / 100))
     tempService = Math.round(((parseFloat(sum) - tempDiscNominal) * ($("#inputServiceChargeFinal").val() == ""?0:parseFloat($("#inputServiceChargeFinal").val())) / 100))
 
-    if (valueVat != 0) {
+    if (valueVat != 0 && valueVat != "false") {
       tax_base_other = formatter.format(customRound(formatter.format((sum - tempDiscNominal)*11/12)))
     }else{
       tax_base_other = 0
