@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 use App\Barang;
 use Auth;
-use DB;
 use App\Cuti;
 use App\Task;
 use App\User;
@@ -1453,23 +1453,26 @@ class HRGAController extends Controller
                 ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik')
                 ->where('tb_cuti_detail.id_cuti',$cuti)
                 ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                ->orderBy('date_off')
                 ->get(),(int)$request->$cuti);
         }else{
             if ($request->status == 'detil') {
                 return array(DB::table('tb_cuti_detail')
-                ->join('tb_cuti','tb_cuti.id_cuti','=','tb_cuti_detail.id_cuti')
-                ->join('users','users.nik','=','tb_cuti.nik')
-                ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik','decline_reason','tb_cuti.status','tb_cuti_detail.status as status_detail','idtb_cuti_detail')
-                ->where('tb_cuti_detail.id_cuti',$cuti)
-                ->get(),(int)$request->$cuti);
+                    ->join('tb_cuti','tb_cuti.id_cuti','=','tb_cuti_detail.id_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik','decline_reason','tb_cuti.status','tb_cuti_detail.status as status_detail','idtb_cuti_detail')
+                    ->where('tb_cuti_detail.id_cuti',$cuti)
+                    ->orderBy('date_off')
+                    ->get(),(int)$request->$cuti);
             }else{
                 return array(DB::table('tb_cuti_detail')
-                ->join('tb_cuti','tb_cuti.id_cuti','=','tb_cuti_detail.id_cuti')
-                ->join('users','users.nik','=','tb_cuti.nik')
-                ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik','decline_reason','tb_cuti.status','tb_cuti_detail.status as status_detail','idtb_cuti_detail')
-                ->where('tb_cuti_detail.id_cuti',$cuti)
-                ->whereRaw("(`tb_cuti_detail`.`status` = 'NEW' OR `tb_cuti_detail`.`status` = 'ACCEPT' OR `tb_cuti_detail`.`status` = 'REJECT')")
-                ->get(),(int)$request->$cuti);
+                    ->join('tb_cuti','tb_cuti.id_cuti','=','tb_cuti_detail.id_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik','decline_reason','tb_cuti.status','tb_cuti_detail.status as status_detail','idtb_cuti_detail')
+                    ->where('tb_cuti_detail.id_cuti',$cuti)
+                    ->whereRaw("(`tb_cuti_detail`.`status` = 'NEW' OR `tb_cuti_detail`.`status` = 'ACCEPT' OR `tb_cuti_detail`.`status` = 'REJECT')")
+                    ->orderBy('date_off')
+                    ->get(),(int)$request->$cuti);
             }
             
         }
@@ -1668,7 +1671,7 @@ class HRGAController extends Controller
                 if ($cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->mini_group == 'Supply Chain Management') {
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 } else {
-                    if ($hitung >= 5) {
+                    if ($hitung >= 1) {
                         if ($cek_role->mini_group == 'Organizational & People Development') {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                             ->whereRaw(
@@ -1843,106 +1846,126 @@ class HRGAController extends Controller
         $id_cuti = $request['id_cuti_detil'];
         $nik = $request['nik_cuti'];
 
-        $update = Cuti::where('id_cuti',$id_cuti)->first();
-        $update->decline_reason = $request['reason_reject'];
-        $update->pic            = Auth::User()->name;
-        $update->updated_at     = date('Y-m-d');
-        $update->status = 'v';
-        $update->update();
-        
-        $cuti_accept = explode(',', $request['cuti_fix_accept']);
-        $cuti_reject = explode(',', $request['cuti_fix_reject']);
+        try {
+            DB::beginTransaction();
+            $update = Cuti::where('id_cuti',$id_cuti)->first();
+            $update->decline_reason = $request['reason_reject'];
+            $update->pic            = Auth::User()->name;
+            $update->updated_at     = date('Y-m-d');
+            $update->status = 'v';
+            $update->update();
 
-        $hitung = sizeof($cuti_accept);
+            $cuti_accept = explode(',', $request['cuti_fix_accept']);
+            $cuti_reject = explode(',', $request['cuti_fix_reject']);
 
-        $update_cuti = User::where('nik',$nik)->first();        
+            $hitung = sizeof($cuti_accept);
 
-        if ($hitung >= $update_cuti->cuti) {
-            Log::debug("$hitung >= $update_cuti->cuti");
+//        update cuti old
+//        $update_cuti = User::where('nik',$nik)->first();
+//        if ($hitung >= $update_cuti->cuti) {
+//            Log::debug("$hitung >= $update_cuti->cuti");
+//
+//            $ambil2020 = $hitung - $update_cuti->cuti;
+//            Log::debug("$ambil2020 = " . $ambil2020);
+//
+//            $hasilsisa = $update_cuti->cuti2 - $ambil2020;
+//            Log::debug("$hasilsisa = " . $hasilsisa);
+//
+//            if ($ambil2020 == 0) {
+//                $update_cuti->cuti = $update_cuti->cuti - $hitung;
+//            }else{
+//                $update_cuti->cuti = 0;
+//                $update_cuti->cuti2 = $hasilsisa;
+//            }
+//
+//        }else{
+//            $update_cuti->cuti = $update_cuti->cuti - $hitung;
+//        }
+//
+//        $update_cuti->update();
 
-            $ambil2020 = $hitung - $update_cuti->cuti;
-            Log::debug("$ambil2020 = " . $ambil2020);            
+            $getStatus  = Cuti::select('status')->where('id_cuti',$id_cuti)->first();
+            $status     = $getStatus->status;
 
-            $hasilsisa = $update_cuti->cuti2 - $ambil2020;
-            Log::debug("$hasilsisa = " . $hasilsisa); 
+            $nik_kirim = DB::table('tb_cuti')->join('users','users.nik','=','tb_cuti.nik')->select('users.email')->where('id_cuti',$id_cuti)->first();
+            $kirim = User::where('email',$nik_kirim->email)
+                ->get();
 
-            if ($ambil2020 == 0) {
-                $update_cuti->cuti = $update_cuti->cuti - $hitung;
-            }else{
-                $update_cuti->cuti = 0;
-                $update_cuti->cuti2 = $hasilsisa;
-            }
-
-        }else{
-            $update_cuti->cuti = $update_cuti->cuti - $hitung;
-        }
-
-        $update_cuti->update();       
-
-        $getStatus  = Cuti::select('status')->where('id_cuti',$id_cuti)->first();
-        $status     = $getStatus->status;
-
-        $nik_kirim = DB::table('tb_cuti')->join('users','users.nik','=','tb_cuti.nik')->select('users.email')->where('id_cuti',$id_cuti)->first();
-        $kirim = User::where('email',$nik_kirim->email)
-                        ->get();
-
-        $name_cuti = DB::table('tb_cuti')
+            $name_cuti = DB::table('tb_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
                 ->select('users.name')
-                ->where('id_cuti', $id_cuti)->first();                 
+                ->where('id_cuti', $id_cuti)->first();
 
-        if ($cuti_accept[0] != "") {
-            foreach ($cuti_accept as $accept_dates) {
-                $update = CutiDetil::where('idtb_cuti_detail',$accept_dates)->first();
-                $update->status = 'ACCEPT';
-                $update->update();
+            if ($cuti_accept[0] != "") {
+                foreach ($cuti_accept as $accept_dates) {
+                    $update = CutiDetil::where('idtb_cuti_detail',$accept_dates)->first();
+                    $cutiDate = Carbon::parse($update->date_off);
+                    $march31 = Carbon::create(null, 3, 31);
+                    $update_cuti = User::where('nik',$nik)->first();
+                    if($cutiDate->lessThanOrEqualTo($march31) && $update_cuti->cuti > 0){
+                        $update_cuti->cuti = $update_cuti->cuti - 1;
+                    }else {
+                        if ($update_cuti->cuti2 == 0){
+                            DB::rollBack();
+                            return response()->json(['status' => 'error', 'message' => 'Jumlah request cuti melebihi jumlah sisa cuti']);
+                        }
+                        $update_cuti->cuti2 = $update_cuti->cuti2 - 1;
+                    }
+                    $update_cuti->update();
+                    $update->status = 'ACCEPT';
+                    $update->update();
+                }
+
+                $cuti_accept_data = DB::table('tb_cuti')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
+                    ->groupby('tb_cuti_detail.id_cuti')->where('tb_cuti_detail.status','ACCEPT')
+                    ->where('tb_cuti.id_cuti', $id_cuti)
+                    ->first();
+            }else{
+                $ardetil_after = "";
+
+                $cuti_accept_data = "";
             }
 
-            $cuti_accept_data = DB::table('tb_cuti')
-                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
-                ->groupby('tb_cuti_detail.id_cuti')->where('tb_cuti_detail.status','ACCEPT')
-                ->where('tb_cuti.id_cuti', $id_cuti)
-                ->first();
-        }else{
-            $ardetil_after = ""; 
-        
-            $cuti_accept_data = "";  
+
+            if ($cuti_reject[0] != "") {
+                foreach ($cuti_reject as $reject_dates) {
+                    $update = CutiDetil::where('idtb_cuti_detail',$reject_dates)->first();
+                    $update->status = 'REJECT';
+                    $update->update();
+                }
+
+                $cuti_reject_data = DB::table('tb_cuti')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
+                    ->groupby('tb_cuti_detail.id_cuti')->where('tb_cuti_detail.status','REJECT')
+                    ->where('tb_cuti.id_cuti', $id_cuti)
+                    ->first();
+
+                $ardetil_after = explode(',', $cuti_reject_data->dates);
+
+            }else{
+                $ardetil_after = "";
+
+                $cuti_reject_data = "";
+            }
+
+            $hari = collect(['cuti_accept'=>$cuti_accept_data,'cuti_reject'=>$cuti_reject_data]);
+
+            $ardetil = explode(',', $cuti_accept_data->dates);
+
+            $hr_manager = DB::table('role_user')->join('users','users.nik','=','role_user.user_id')->select('users.email')->where('role_id','2')->first();
+
+            Mail::to($kirim)->cc($hr_manager)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));
+            DB::commit();
+            return response()->json(['status' => 'success', 'message' => 'Cuti berhasil diapprove']);
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return response()->json(['status' => 'error', 'message' => $exception->getMessage()]);
         }
-        
-
-        if ($cuti_reject[0] != "") {
-            foreach ($cuti_reject as $reject_dates) {
-                $update = CutiDetil::where('idtb_cuti_detail',$reject_dates)->first();
-                $update->status = 'REJECT';
-                $update->update();
-            }
-
-            $cuti_reject_data = DB::table('tb_cuti')
-                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
-                ->groupby('tb_cuti_detail.id_cuti')->where('tb_cuti_detail.status','REJECT')
-                ->where('tb_cuti.id_cuti', $id_cuti) 
-                ->first();
-
-            $ardetil_after = explode(',', $cuti_reject_data->dates);
-
-        }else{
-            $ardetil_after = ""; 
-        
-            $cuti_reject_data = "";  
-        }                
-
-        $hari = collect(['cuti_accept'=>$cuti_accept_data,'cuti_reject'=>$cuti_reject_data]);
-      
-        $ardetil = explode(',', $cuti_accept_data->dates); 
-
-        $hr_manager = DB::table('role_user')->join('users','users.nik','=','role_user.user_id')->select('users.email')->where('role_id','2')->first();        
-
-        Mail::to($kirim)->cc($hr_manager)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));        
 
 
-        return redirect()->back();
     
     }
 
@@ -2218,7 +2241,7 @@ class HRGAController extends Controller
                     if ($cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->mini_group == 'Supply Chain Management') {
                         $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                     } else {
-                        if (sizeof($resultB) >= 5) {
+                        if (sizeof($resultB) >= 1) {
                             if ($cek_role->mini_group == 'Organizational & People Development') {
                                 $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                                 ->whereRaw(
@@ -2368,7 +2391,7 @@ class HRGAController extends Controller
                 if ($cek_role->name_role == 'Channeling Partnership & Marketing' || $cek_role->mini_group == 'Supply Chain Management') {
                     $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')->where('roles.name','like', 'VP%')->where('group',$cek_role->group)->where('status_karyawan','!=','dummy')->where('id_company','1')->first();
                 } else {
-                    if ($hitung >= 5) {
+                    if ($hitung >= 1) {
                         if ($cek_role->mini_group == 'Organizational & People Development') {
                             $kirim = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.email')
                             ->whereRaw(
@@ -2615,6 +2638,7 @@ class HRGAController extends Controller
                     ->where('status', '<>', 'd')
                     ->where('nik','=',Auth::user()->nik);
             })
+            ->where('tb_cuti_detail.status', 'ACCEPT')
             ->pluck('date_off');
 
         return collect([
@@ -2662,16 +2686,18 @@ class HRGAController extends Controller
 
         $spreadsheet->removeSheetByIndex(0);
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'Sinergy informasi Pratama'));
-        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Multi Solusindo Perkasa'));
+//        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Multi Solusindo Perkasa'));
         // $spreadsheet->addSheet(new Worksheet($spreadsheet,'Detail Report Cuti SIP & MSP'));
-        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Rekap Cuti SIP & MSP'));
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Rekap Cuti SIP'));
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'History Cuti'));
         $sipSheet = $spreadsheet->setActiveSheetIndex(0);
-        $mspSheet = $spreadsheet->setActiveSheetIndex(1);
+//        $mspSheet = $spreadsheet->setActiveSheetIndex(1);
         // $detailSheet = $spreadsheet->setActiveSheetIndex(2);
-        $rekapSheet = $spreadsheet->setActiveSheetIndex(2);
+        $rekapSheet = $spreadsheet->setActiveSheetIndex(1);
+        $historySheet = $spreadsheet->setActiveSheetIndex(2);
 
         $sipSheet->mergeCells('A1:H1');
-        $mspSheet->mergeCells('A1:H1');
+//        $mspSheet->mergeCells('A1:H1');
         // $detailSheet->mergeCells('A1:H1');
         $normalStyle = [
             'font' => [
@@ -2708,8 +2734,7 @@ class HRGAController extends Controller
         $sipSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
         $sipSheet->setCellValue('A1','Report Cuti SIP');
 
-        $sipCutiData = User::orderBy('users.id_division')
-            ->select(
+        $sipCutiData = User::select(
                 'users.name',
                 DB::raw('CONCAT(12, " Hari") AS `hak_cuti`'),
                 DB::raw('CONCAT(' . $cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
@@ -2731,11 +2756,14 @@ class HRGAController extends Controller
                 ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
             ->where('users.status_karyawan','!=','dummy')
             ->where('users.id_company','1')
+            ->orderBy('users.name', 'ASC')
             ->get();
+
 
         $headerContent = ["No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ", "Sisa Cuti " . date('Y'),"Status Hak Cuti Karyawan"];
         $sipSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
         $sipSheet->fromArray($headerContent,NULL,'A2');
+
 
         $sipCutiData->map(function($item,$key) use ($sipSheet){
             $sipSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
@@ -2750,49 +2778,84 @@ class HRGAController extends Controller
         $sipSheet->getColumnDimension('G')->setAutoSize(true);
         $sipSheet->getColumnDimension('H')->setAutoSize(true);
 
-        $mspSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
-        $mspSheet->setCellValue('A1','Report Cuti MSP');
+        $historySheet->getStyle('A1:G1')->applyFromArray($titleStyle);
+        $historySheet->setCellValue('A1','History Cuti SIP');
 
-        $mspCutiData = User::orderBy('users.id_division')
-            ->select(
-                'users.name',
-                DB::raw('CONCAT(12, " Hari") AS `hak_cuti`'),
-                DB::raw('CONCAT(' . $cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
-                DB::raw('IF(`tb_cuti_counted`.`cuti_diambil` > 0,CONCAT(`tb_cuti_counted`.`cuti_diambil`, " Hari"),"-") AS `cuti_diambil_' . date('Y') . '`'),
-                DB::raw('IF(`users`.`cuti` > 0,CONCAT(`users`.`cuti`, " Hari"),"-") AS `sisah_cuti_' . (date('Y')-1) . '`'),
-                DB::raw('IF(`users`.`cuti2` > 0,CONCAT(`users`.`cuti2`, " Hari"),"-") AS `sisah_cuti_' . date('Y') . '`'),
-                DB::raw('IF(`users`.`status_karyawan` = "belum_cuti","Belum 1 tahun",IF((`users`.`cuti` + `users`.`cuti2`) = 0,"Habis","-")) AS `status`')
+        $headerHistoryContent = ["No","Nama Karyawan","Tanggal Request", "Jumlah Hari","Detail Request", "Tanggal Approve ", "Diapprove Oleh"];
+        $historySheet->getStyle('A2:G2')->applyFromArray($headerStyle);
+        $historySheet->fromArray($headerHistoryContent,NULL,'A2');
+
+        $sipHistoryData = Cuti::join('tb_cuti_detail', 'tb_cuti.id_cuti', 'tb_cuti_detail.id_cuti')
+            ->join('users', 'tb_cuti.nik', 'users.nik')
+            ->select(DB::raw('ANY_VALUE(users.name) as name'), 'tb_cuti.date_req',
+                DB::raw('CONCAT(COUNT(tb_cuti_detail.id_cuti), " hari") as jumlah_hari_cuti'),
+                DB::raw('GROUP_CONCAT(DATE_FORMAT(tb_cuti_detail.date_off, "%d-%m-%Y") SEPARATOR ", ") as detail'), // Format d-m-Y
+                'tb_cuti.updated_at',
+                'tb_cuti.pic'
             )
-            ->leftJoinSub(DB::table('tb_cuti')
-                ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
-                ->join('tb_cuti_detail','tb_cuti.id_cuti', '=', 'tb_cuti_detail.id_cuti')
-                ->where('tb_cuti.status','=','v')
-                // ->where('date_req','>','2021-03-16')
-                // ->where('date_req','<','2021-04-15')
-                // ->whereYear('date_req',date('Y'))
-                // ->whereRaw('`date_off` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
-                ->groupBy('nik')
-                ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
-            ->where('users.status_karyawan','!=','dummy')
-            ->where('users.id_company','2')
-            ->get();
+            ->where('tb_cuti.status','v')
+            ->where('tb_cuti.date_req', '>=', $dateStart)
+            ->where('tb_cuti.date_req', '<=', $dateEnd)
+            ->orderBy('users.name')
+            ->groupBy('tb_cuti.id_cuti', 'tb_cuti.date_req', 'tb_cuti.updated_at', 'tb_cuti.pic')
+            ->get()
+            ->makeHidden(['remarks']);
 
-        $headerContent = ["No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ", "Sisa Cuti " . date('Y'),"Status Hak Cuti Karyawan"];
-        $mspSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
-        $mspSheet->fromArray($headerContent,NULL,'A2');
-
-        $mspCutiData->map(function($item,$key) use ($mspSheet){
-            $mspSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        $sipHistoryData->map(function ($item,$key) use ($historySheet){
+            $historySheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
         });
 
-        $mspSheet->getColumnDimension('A')->setAutoSize(true);
-        $mspSheet->getColumnDimension('B')->setAutoSize(true);
-        $mspSheet->getColumnDimension('C')->setAutoSize(true);
-        $mspSheet->getColumnDimension('D')->setAutoSize(true);
-        $mspSheet->getColumnDimension('E')->setAutoSize(true);
-        $mspSheet->getColumnDimension('F')->setAutoSize(true);
-        $mspSheet->getColumnDimension('G')->setAutoSize(true);
-        $mspSheet->getColumnDimension('H')->setAutoSize(true);
+        $historySheet->getColumnDimension('A')->setAutoSize(true);
+        $historySheet->getColumnDimension('B')->setAutoSize(true);
+        $historySheet->getColumnDimension('C')->setAutoSize(true);
+        $historySheet->getColumnDimension('D')->setAutoSize(true);
+        $historySheet->getColumnDimension('E')->setAutoSize(true);
+        $historySheet->getColumnDimension('F')->setAutoSize(true);
+        $historySheet->getColumnDimension('G')->setAutoSize(true);
+
+//        $mspSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+//        $mspSheet->setCellValue('A1','Report Cuti MSP');
+//
+//        $mspCutiData = User::select(
+//                'users.name',
+//                DB::raw('CONCAT(12, " Hari") AS `hak_cuti`'),
+//                DB::raw('CONCAT(' . $cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
+//                DB::raw('IF(`tb_cuti_counted`.`cuti_diambil` > 0,CONCAT(`tb_cuti_counted`.`cuti_diambil`, " Hari"),"-") AS `cuti_diambil_' . date('Y') . '`'),
+//                DB::raw('IF(`users`.`cuti` > 0,CONCAT(`users`.`cuti`, " Hari"),"-") AS `sisah_cuti_' . (date('Y')-1) . '`'),
+//                DB::raw('IF(`users`.`cuti2` > 0,CONCAT(`users`.`cuti2`, " Hari"),"-") AS `sisah_cuti_' . date('Y') . '`'),
+//                DB::raw('IF(`users`.`status_karyawan` = "belum_cuti","Belum 1 tahun",IF((`users`.`cuti` + `users`.`cuti2`) = 0,"Habis","-")) AS `status`')
+//            )
+//            ->leftJoinSub(DB::table('tb_cuti')
+//                ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
+//                ->join('tb_cuti_detail','tb_cuti.id_cuti', '=', 'tb_cuti_detail.id_cuti')
+//                ->where('tb_cuti.status','=','v')
+//                // ->where('date_req','>','2021-03-16')
+//                // ->where('date_req','<','2021-04-15')
+//                // ->whereYear('date_req',date('Y'))
+//                // ->whereRaw('`date_off` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+//                ->groupBy('nik')
+//                ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
+//            ->where('users.status_karyawan','!=','dummy')
+//            ->where('users.id_company','2')
+//            ->orderBy('users.name', 'ASC')
+//            ->get();
+
+//        $headerContent = ["No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ", "Sisa Cuti " . date('Y'),"Status Hak Cuti Karyawan"];
+//        $mspSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
+//        $mspSheet->fromArray($headerContent,NULL,'A2');
+//
+//        $mspCutiData->map(function($item,$key) use ($mspSheet){
+//            $mspSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+//        });
+//
+//        $mspSheet->getColumnDimension('A')->setAutoSize(true);
+//        $mspSheet->getColumnDimension('B')->setAutoSize(true);
+//        $mspSheet->getColumnDimension('C')->setAutoSize(true);
+//        $mspSheet->getColumnDimension('D')->setAutoSize(true);
+//        $mspSheet->getColumnDimension('E')->setAutoSize(true);
+//        $mspSheet->getColumnDimension('F')->setAutoSize(true);
+//        $mspSheet->getColumnDimension('G')->setAutoSize(true);
+//        $mspSheet->getColumnDimension('H')->setAutoSize(true);
 
         // $detailSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
         // $detailSheet->setCellValue('A1','Detail Report Bulanan Cuti');
@@ -2863,16 +2926,15 @@ class HRGAController extends Controller
         $rekapSheet->setCellValue('B1','PT. SINERGY INFORMASI PRATAMA');
         $rekapSheet->setCellValue('D1','Report cuti per ' . Carbon::now()->format("d M Y"));
 
-        $headerContent = ["No","NAMA","Tanggal Mulai Masuk","Hak Cuti ".date('Y', strtotime("-1 year")),"Sisa Cuti ".date('Y', strtotime("-1 year")),"Hak Cuti Tahunan","Cuti Bersama","Hak Cuti ". date('Y'),"Cuti yg Diminta","Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des","Sisa Cuti ". date('Y')];
-        $rekapSheet->getStyle('A2:V2')->applyFromArray($headerStyle);
+        $headerContent = ["No","NAMA","Tanggal Mulai Masuk","Hak Cuti ".date('Y', strtotime("-1 year")),"Sisa Cuti ".date('Y', strtotime("-1 year")),"Hak Cuti Tahunan","Cuti Bersama","Hak Cuti ". date('Y'),"Cuti yg Diminta","Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des"];
+        $rekapSheet->getStyle('A2:U2')->applyFromArray($headerStyle);
         $rekapSheet->getStyle('E2')->getFont()->getColor()->setARGB("FF0B24FB");
         $rekapSheet->getStyle('F2')->getFont()->getColor()->setARGB("FF0B24FB");
         $rekapSheet->getStyle('U2')->getFont()->getColor()->setARGB("FF0B24FB");
         $rekapSheet->getStyle('W2')->getFont()->getColor()->setARGB("FF0B24FB");
-        $rekapSheet->getStyle('V2')->getFont()->getColor()->setARGB("FF0B24FB");
+//        $rekapSheet->getStyle('V2')->getFont()->getColor()->setARGB("FF0B24FB");
 
         $rekapSheet->getStyle('G2')->getFont()->getColor()->setARGB("FFF32229");
-        $rekapSheet->getStyle('V2')->getFont()->getColor()->setARGB("FFF32229");
         $rekapSheet->fromArray($headerContent,NULL,'A2');
 
         // $jumlah_cuti = "7";
@@ -2969,13 +3031,13 @@ class HRGAController extends Controller
         $dataLeavingPermit->map(function($item,$key) use ($rekapSheet,$itemStyle,$cuti_summary){
             $item_filtered = array_values($item->toArray());
             print_r($item_filtered[10]+ $item_filtered[11]);
-            $total_sisah = array($item_filtered[10] + $item_filtered[11]);
+//            $total_sisah = array($item_filtered[10] + $item_filtered[11]);
             unset($item_filtered[0]);
             unset($item_filtered[1]);
             unset($item_filtered[10]);
             unset($item_filtered[11]);
             // print_r($item_filtered);
-            $cuti_summary_individual = array_merge($cuti_summary[$item->nik]->pluck('summarize')->toArray(),$total_sisah);
+            $cuti_summary_individual = array_merge($cuti_summary[$item->nik]->pluck('summarize')->toArray());
             // array_push($cuti_summary_individual,$total_sisah);
             // print_r(
             //     array_merge(
@@ -2998,11 +3060,11 @@ class HRGAController extends Controller
                 'A' . ($key + 3)
             );
             $item->cuti_summary = $cuti_summary[$item->nik]->pluck('summarize');
-            $rekapSheet->getStyle('A' . ($key + 3) . ':V' . ($key + 3))->applyFromArray($itemStyle);
-            $rekapSheet->getStyle('A' . ($key + 3) . ':V' . ($key + 3))->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-            $rekapSheet->getStyle('C' . ($key + 3) . ':V' . ($key + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $rekapSheet->getStyle('C' . ($key + 3) . ':V' . ($key + 3))->getAlignment()->setWrapText(true);
-            $rekapSheet->getStyle('C' . ($key + 3) . ':V' . ($key + 3))->getFont()->setBold(true);
+            $rekapSheet->getStyle('A' . ($key + 3) . ':U' . ($key + 3))->applyFromArray($itemStyle);
+            $rekapSheet->getStyle('A' . ($key + 3) . ':U' . ($key + 3))->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':U' . ($key + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':U' . ($key + 3))->getAlignment()->setWrapText(true);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':U' . ($key + 3))->getFont()->setBold(true);
             $rekapSheet->getStyle('J' . ($key + 3) . ':T' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
 
             $rekapSheet->getStyle('G' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
@@ -3037,7 +3099,7 @@ class HRGAController extends Controller
         $rekapSheet->getColumnDimension('S')->setWidth(8);
         $rekapSheet->getColumnDimension('T')->setWidth(8);
         $rekapSheet->getColumnDimension('U')->setWidth(8);
-        $rekapSheet->getColumnDimension('V')->setWidth(8);
+//        $rekapSheet->getColumnDimension('V')->setWidth(8);
 
         $spreadsheet->setActiveSheetIndex(0);
 
@@ -3057,6 +3119,7 @@ class HRGAController extends Controller
         $formattedStartDate = Carbon::parse($startDate)->toISOString();
         $formattedEndDate   = Carbon::parse($endDate)->toISOString();
 
+//        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?timeMin='. $formattedStartDate .'&timeMax='. $formattedEndDate .'&key=AIzaSyB0MWK6KLjhJlY7cL7G6STOCVGnxzjapXU');
         $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?timeMin='. $formattedStartDate .'&timeMax='. $formattedEndDate .'&key='.env('GCALENDAR_API_KEY'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
@@ -3125,18 +3188,18 @@ class HRGAController extends Controller
             $cuti_index = DB::table('users')
                 ->join('tb_cuti','tb_cuti.nik','=','users.nik')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->join('tb_position','tb_position.id_position','=','users.id_position')
-                ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division',
-                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                ->join('role_user as ru', 'users.nik', 'ru.user_id')
+                ->join('roles as r', 'ru.role_id', 'r.id')
+                ->select('users.nik','users.date_of_entry','users.name','r.name as id_division',
                     'users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
-                ->groupby('tb_cuti.nik')
+                ->groupBy('users.nik', 'users.date_of_entry', 'users.name', 'r.name',
+                    'users.cuti', 'users.email', 'users.cuti2', 'users.status_karyawan')
                 ->where('status_karyawan','!=','dummy');
 
             $cuti_list = DB::table('users')
-                ->join('tb_position','tb_position.id_position','=','users.id_position')
-                ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+                ->join('role_user as ru', 'users.nik', 'ru.user_id')
+                ->join('roles as r', 'ru.role_id', 'r.id')
+                ->select('users.nik','users.name','users.cuti','r.name as id_division','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
                 ->where('status_karyawan','!=','dummy')
                 ->whereNotIn('nik',function($query) { 
                     $query->select('nik')->from('tb_cuti');
@@ -3650,23 +3713,22 @@ class HRGAController extends Controller
         $cuti_index = DB::table('users')
             ->join('tb_cuti','tb_cuti.nik','=','users.nik')
             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-            ->join('tb_position','tb_position.id_position','=','users.id_position')
-            ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division',
-                DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+            ->join('role_user as ru', 'users.nik', 'ru.user_id')
+            ->join('roles as r', 'ru.role_id', 'r.id')
+            ->select('users.nik','users.date_of_entry','users.name','r.name as id_division',
                 'users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
-            ->groupby('tb_cuti.nik')
+            ->groupBy('users.nik', 'users.date_of_entry', 'users.name', 'r.name',
+                'users.cuti', 'users.email', 'users.cuti2', 'users.status_karyawan')
             ->where('status_karyawan','!=','dummy')
             ->get();
 
         $cuti_list = DB::table('users')
-            ->join('tb_position','tb_position.id_position','=','users.id_position')
-            ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
-                DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER' OR users.id_position = 'ENGINEER SPV' OR users.id_position = 'ENGINEER CO-SPV') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+            ->join('role_user as ru', 'users.nik', 'ru.user_id')
+            ->join('roles as r', 'ru.role_id', 'r.id')
+            ->select('users.nik','users.name','r.name as id_division',
                 'users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
             ->where('status_karyawan','!=','dummy')
-            ->whereNotIn('nik',function($query) { 
+            ->whereNotIn('nik',function($query) {
                 $query->select('nik')->from('tb_cuti');
             })
             ->get();

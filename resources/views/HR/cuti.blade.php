@@ -201,7 +201,7 @@ Leaving Permitte
                     <tr>
                       <th rowspan="2"><center>Employees Name</center></th>
                       <th rowspan="2"><center>Email</center></th>
-                      <th rowspan="2"><center>Division</center></th>
+                      <th rowspan="2"><center>Role</center></th>
                       <th rowspan="2"><center>Tanggal Masuk Kerja</center></th>
                       <th rowspan="2"><center>Lama Bekerja</center></th>
                       <th rowspan="2"><center>Cuti sudah diambil</center></th>
@@ -657,6 +657,43 @@ Leaving Permitte
         </div>
       </div>
     </div>
+
+      <div class="modal fade" id="announcement" role="dialog">
+          <div class="modal-dialog modal-md">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">
+                          &times;
+                      </button>
+                      <h4 class="modal-title">Announcement</h4>
+                  </div>
+                  <div class="modal-body">
+                      <h3 class="box-title text-center">
+                          <b>Announcement</i>
+                      </h3>
+                      <div class="row">
+                          <div class="col-md-12">
+                              <h4>
+                                  Sehubungan dengan kebijakan baru terkait penggunaan cuti, kami ingin menginformasikan hal-hal berikut:
+                              </h4>
+                              <br>
+                              <h4>
+                                  <b>Batas Waktu Pengajuan Cuti</b>: Jika mengajukan permohonan cuti sebelum tanggal 31 Maret 2025, namun tanggal cuti yang diminta jatuh setelah tanggal 31 Maret 2025, maka pemotongan cuti akan diambil dari cuti tahun berjalan.
+
+                              </h4>
+                              <br>
+                              <h4>
+                                  <b>Penting untuk Diperhatikan</b>: Pastikan untuk mengajukan cuti sesuai dengan kebijakan yang berlaku dan memperhatikan tanggal permohonan serta tanggal cuti yang diminta agar tidak terjadi kekeliruan dalam pemotongan hari cuti.
+                              </h4>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                  </div>
+              </div>
+          </div>
+      </div>
 </section>
 
 
@@ -699,6 +736,8 @@ Leaving Permitte
         var column2 = monthCuti.column(3).header();
         $(column2).text('Time Off');
       }
+        $("#announcement").modal("show");
+
     })
 
     function submitConfigCuti(){
@@ -905,7 +944,7 @@ Leaving Permitte
               var index = hari_libur_nasional.indexOf(moment(date).format("L"))
               if(index > 0){
                 return {
-                  // enabled: false,
+                  enabled: false,
                   tooltip: hari_libur_nasional_tooltip[index],
                   classes: 'hari_libur'
                 };
@@ -1475,16 +1514,25 @@ Leaving Permitte
               cuti_fix_reject:$('#cuti_fix_reject').val()
             },
             success: function(result){
-              Swal.showLoading()
-              Swal.fire(
-                'Successfully!',
-                'success'
-              ).then((result) => {
-                if (result.value) {
-                  location.reload()
-                  $("#detail_cuti").modal('toggle')
+                if(result.status == 'error'){
+                    Swal.fire({
+                        icon: 'error',
+                        text: result.message,
+                        title: 'Error!'
+                    })
+                }else{
+                    Swal.showLoading()
+                    Swal.fire({
+                        icon: 'success',
+                        text: result.message,
+                        title: 'Successfully!'
+                    }).then((result) => {
+                        if (result.value) {
+                            location.reload()
+                            $("#detail_cuti").modal('toggle')
+                        }
+                    })
                 }
-              })
             },
           });
         }        
@@ -1833,14 +1881,8 @@ Leaving Permitte
             } 
           },
           { "data": "email" },
-          { 
-            render: function ( data, type, row ) {
-              if (row.id_division == '-') {
-                  return 'Admin';
-              }else{
-                  return row.id_division;  
-              }
-            } 
+          {
+              "data": "id_division"
           },
           { 
             render: function (data, type, row) {
@@ -2160,7 +2202,7 @@ Leaving Permitte
       }
     })
 
-    @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','People Operations & Services Manager')->exists()}}")
+    @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->whereIn('roles.name',['People Operations & Services Manager', 'VP Human Capital Management'])->exists()}}")
       $(document).on('click',"button[class^='date_off']",function(e) {
           $.ajax({
             type:"GET",
@@ -2271,8 +2313,8 @@ Leaving Permitte
           url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
           success: function(result){
             $.each(result.items,function(key,value){
-              if(value.description == "Public holiday"){
-                if (value.summary.indexOf('Joint') == -1) {
+              if(value.description == "Public holiday" || value.description == "Public holiday\nDate is tentative and may change."){
+                if (value.summary.indexOf("Joint Holiday for Bali's Day of Silence and Hindu New Year (Nyepi)") && value.summary.indexOf('Joint Holiday for Waisak Day') && value.summary.indexOf('Joint Holiday after Ascension Day') && value.summary.indexOf('Joint Holiday for Idul Adha') && value.summary.indexOf('Boxing Day')) {
                   if(!liburNasionalException.includes(value.start.date)){
                     hari_libur_nasional.push(moment(value.start.date).format("L"))
                     hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
@@ -2355,7 +2397,7 @@ Leaving Permitte
       if (id == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
       } else if(id == "request") {
-        @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','People Operations & Services Manager')->exists()}}")
+        @if("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->whereIn('roles.name',['People Operations & Services Manager', 'VP Human Capital Management'])->exists()}}")
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
         @else 
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
